@@ -1,97 +1,597 @@
+neuro-cottage/
+├─ App.js
+├─ package.json
+├─ app.json
+├─ README.md
+├─ assets/
+│  └─ logo.png        <-- replace with the generated logo asset
+├─ components/
+│  ├─ ThemeContext.js
+│  └─ Logo.js
+└─ screens/
+   ├─ HomeScreen.js
+   ├─ BlogScreen.js
+   ├─ QuizScreen.js
+   └─ ChatScreen.js
+{
+  "name": "neuro-cottage",
+  "version": "1.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "^49.0.0",
+    "expo-status-bar": "~1.4.4",
+    "react": "18.2.0",
+    "react-native": "0.72.4",
+    "@react-navigation/native": "^6.1.7",
+    "@react-navigation/bottom-tabs": "^6.5.7",
+    "react-native-safe-area-context": "4.5.0",
+    "react-native-screens": "~3.22.0",
+    "@react-native-async-storage/async-storage": "^1.17.11",
+    "moti": "^0.24.0",
+    "react-native-gesture-handler": "~2.9.0",
+    "react-native-paper": "^5.10.0",
+    "@expo/vector-icons": "^13.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  }
+}
+{
+  "expo": {
+    "name": "Neuro Cottage",
+    "slug": "neuro-cottage",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#fff0f6"
+    },
+    "platforms": ["ios", "android", "web"],
+    "sdkVersion": "49.0.0"
+  }
+}
+# Neuro Cottage
+
+Cute, cozy, neurodivergent-friendly starter app built with Expo.
+
+## Quick start
+
+1. Replace `assets/logo.png` with your generated logo.
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn
+
 ---
-title: Start developing
-description: Make your first change to an Expo project and see it live on your device.
-hideTOC: true
----
 
-import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+## components/ThemeContext.js
+```js
+import React, { createContext, useState } from "react";
 
-<Step label="1">
-## Start a development server
-To start the development server, run the following command:
+export const ThemeContext = createContext();
 
-<Terminal cmd={['$ npx expo start']} />
+export function ThemeProvider({ children }) {
+  const [pastelMode, setPastelMode] = useState(true);
+  const [dyslexiaFont, setDyslexiaFont] = useState(false);
 
-</Step>
-
-<Step label="2">
-## Open the app on your device
-
-After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
-
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>a</kbd> or <kbd>i</kbd> respectively to open the app.
-
-<Collapsible summary="Having problems?">
-
-Make sure you are on the same Wi-Fi network on your computer and your device.
-
-If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
-
-<Terminal cmd={['$ npx expo start --tunnel']} />
-
-> Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
-
-</Collapsible>
-
-</Step>
-
-<Step label="3">
-
-## Make your first change
-
-Open the **app/(tabs)/index.tsx** file in your code editor and make a change.
-
-<DiffBlock
-  raw={`diff --git a/app/(tabs)/index.tsx b/app/(tabs)/index.tsx
-index 45cfa0e..4d1b384 100644
---- a/app/(tabs)/index.tsx
-+++ b/app/(tabs)/index.tsx
-@@ -17,7 +17,7 @@ export default function HomeScreen() {
+  const theme = pastelMode
+    ? {
+        mode: "pastel",
+        background: "#fff7fb",
+        card: "#ffeef6",
+        text: "#4b2a3a",
+        accent: "#ffb3d9",
       }
+    : {
+        mode: "cozyDark",
+        background: "#151515",
+        card: "#262626",
+        text: "#f2f2f2",
+        accent: "#c084fc",
+      };
+
+  return (
+    <ThemeContext.Provider
+      value={{ theme, pastelMode, setPastelMode, dyslexiaFont, setDyslexiaFont }}
     >
-      <ThemedView style={styles.titleContainer}>
--       <ThemedText type="title">Welcome!</ThemedText>
-+       <ThemedText type="title">Hello World!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-  `}
-/>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+import React, { useContext } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ThemeProvider, ThemeContext } from "./components/ThemeContext";
+import HomeScreen from "./screens/HomeScreen";
+import BlogScreen from "./screens/BlogScreen";
+import QuizScreen from "./screens/QuizScreen";
+import ChatScreen from "./screens/ChatScreen";
+import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-<Collapsible summary="Changes not showing up on your device?">
+const Tab = createBottomTabNavigator();
 
-Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
+function AppInner() {
+  const { theme } = useContext(ThemeContext);
 
-- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
-- Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS.
-- If you see **Enable Fast Refresh**, press it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
+  // Simple paper theme augmentation
+  const paperTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: theme.accent,
+      background: theme.background,
+      text: theme.text,
+    },
+  };
 
-  <ContentSpotlight
-    alt="Developer menu in Expo Go app."
-    src="/static/images/get-started/developer-menu.png"
-    className="max-w-[540px]"
-  />
+  return (
+    <PaperProvider theme={paperTheme}>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            headerShown: false,
+            tabBarStyle: {
+              backgroundColor: theme.card,
+              borderTopLeftRadius: 18,
+              borderTopRightRadius: 18,
+              height: 70,
+              paddingBottom: 8,
+            },
+            tabBarActiveTintColor: theme.accent,
+            tabBarInactiveTintColor: "#888",
+            tabBarIcon: ({ color, size }) => {
+              let iconName = "home";
+              if (route.name === "Home") iconName = "home";
+              if (route.name === "Blog") iconName = "book-open-page-variant";
+              if (route.name === "Quizzes") iconName = "puzzle";
+              if (route.name === "Chat") iconName = "chat";
+              return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+            },
+          })}
+        >
+          <Tab.Screen name="Home" component={HomeScreen} />
+          <Tab.Screen name="Blog" component={BlogScreen} />
+          <Tab.Screen name="Quizzes" component={QuizScreen} />
+          <Tab.Screen name="Chat" component={ChatScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
+  );
+}
 
-</Collapsible>
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <AppInner />
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
+}
+import React, { useContext } from "react";
+import { View, Text, StyleSheet, Switch, TouchableOpacity } from "react-native";
+import Logo from "../components/Logo";
+import { ThemeContext } from "../components/ThemeContext";
+import { MotiView } from "moti";
 
-</Step>
+export default function HomeScreen() {
+  const { theme, pastelMode, setPastelMode, dyslexiaFont, setDyslexiaFont } = useContext(ThemeContext);
 
----
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <MotiView from={{ scale: 0.98 }} animate={{ scale: 1 }} transition={{ type: "timing", duration: 500 }}>
+        <Logo size={96} />
+      </MotiView>
 
-## File structure
+      <View style={[styles.card, { backgroundColor: theme.card }]}>
+        <Text style={[styles.heading, { color: theme.text }]}>Welcome to Neuro Cottage 🌸</Text>
+        <Text style={[styles.sub, { color: theme.text }]}>
+          A cozy, customizable space for writing, chatting, and gentle quizzes.
+        </Text>
 
-Below, you can get familiar with the default project's file structure:
+        <View style={styles.row}>
+          <Text style={{ color: theme.text }}>Pastel Mode</Text>
+          <Switch value={pastelMode} onValueChange={setPastelMode} />
+        </View>
 
-<ProjectStructure />
+        <View style={styles.row}>
+          <Text style={{ color: theme.text }}>Dyslexia-friendly font</Text>
+          <Switch value={dyslexiaFont} onValueChange={setDyslexiaFont} />
+        </View>
 
-## Features
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme.accent }]}>
+          <Text style={{ color: "#fff", fontWeight: "700" }}>Start Writing 📖</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 
-The default project template has the following features:
+const styles = StyleSheet.create({
+  container: { flex: 1, alignItems: "center", padding: 20 },
+  card: { width: "100%", marginTop: 20, borderRadius: 16, padding: 18, shadowColor: "#000", elevation: 4 },
+  heading: { fontSize: 20, fontWeight: "800", marginBottom: 8 },
+  sub: { fontSize: 14, marginBottom: 12 },
+  row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 6 },
+  button: { marginTop: 12, paddingVertical: 12, borderRadius: 12, alignItems: "center" },
+});
+import React, { useContext, useState } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { ThemeContext } from "../components/ThemeContext";
 
-<TemplateFeatures />
+export default function BlogScreen() {
+  const { theme } = useContext(ThemeContext);
+  const [posts, setPosts] = useState([]);
+  const [draft, setDraft] = useState("");
+
+  const publish = () => {
+    if (!draft.trim()) return;
+    setPosts([{ id: Date.now().toString(), body: draft }, ...posts]);
+    setDraft("");
+  };
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.editor, { backgroundColor: theme.card }]}>
+        <TextInput
+          placeholder="Write something cozy..."
+          placeholderTextColor="#9a8a9a"
+          multiline
+          value={draft}
+          onChangeText={setDraft}
+          style={[styles.input, { color: theme.text }]}
+        />
+        <TouchableOpacity style={[styles.publish, { backgroundColor: theme.accent }]} onPress={publish}>
+          <Text style={{ color: "#fff", fontWeight: "700" }}>Publish</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={{ padding: 12 }}>
+        {posts.length === 0 ? (
+          <Text style={{ color: theme.text, opacity: 0.8 }}>No posts yet — write the first one! ✨</Text>
+        ) : (
+          posts.map((p) => (
+            <View key={p.id} style={[styles.post, { backgroundColor: "#fff" }]}>
+              <Text style={{ color: "#222" }}>{p.body}</Text>
+            </View>
+          ))
+        )}
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  editor: { padding: 12, borderRadius: 12, margin: 12 },
+  input: { minHeight: 80, textAlignVertical: "top", fontSize: 16 },
+  publish: { marginTop: 8, padding: 10, borderRadius: 10, alignItems: "center" },
+  post: { padding: 12, borderRadius: 12, marginBottom: 10, shadowColor: "#000", elevation: 2 }
+});
+import React from "react";
+import { View, Image, Text, StyleSheet } from "react-native";
+
+export default function Logo({ size = 64, title = "Neuro Cottage" }) {
+  return (
+    <View style={styles.wrap}>
+      <Image
+        source={require("../assets/logo.png")}
+        style={{ width: size, height: size, borderRadius: size / 8 }}
+        resizeMode="contain"
+      />
+      <Text style={styles.title}>{title}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  wrap: {
+    alignItems: "center",
+    gap: 8,
+  },
+  title: {
+    marginTop: 6,
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#66334d"
+  }
+});
+import React, { useContext } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ThemeProvider, ThemeContext } from "./components/ThemeContext";
+import HomeScreen from "./screens/HomeScreen";
+import BlogScreen from "./screens/BlogScreen";
+import QuizScreen from "./screens/QuizScreen";
+import ChatScreen from "./screens/ChatScreen";
+import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+const Tab = createBottomTabNavigator();
+
+function AppInner() {
+  const { theme } = useContext(ThemeContext);
+
+  // Simple paper theme augmentation
+  const paperTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: theme.accent,
+      background: theme.background,
+      text: theme.text,
+    },
+  };
+
+  return (
+    <PaperProvider theme={paperTheme}>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            headerShown: false,
+            tabBarStyle: {
+              backgroundColor: theme.card,
+              borderTopLeftRadius: 18,
+              borderTopRightRadius: 18,
+              height: 70,
+              paddingBottom: 8,
+            },
+            tabBarActiveTintColor: theme.accent,
+            tabBarInactiveTintColor: "#888",
+            tabBarIcon: ({ color, size }) => {
+              let iconName = "home";
+              if (route.name === "Home") iconName = "home";
+              if (route.name === "Blog") iconName = "book-open-page-variant";
+              if (route.name === "Quizzes") iconName = "puzzle";
+              if (route.name === "Chat") iconName = "chat";
+              return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+            },
+          })}
+        >
+          <Tab.Screen name="Home" component={HomeScreen} />
+          <Tab.Screen name="Blog" component={BlogScreen} />
+          <Tab.Screen name="Quizzes" component={QuizScreen} />
+          <Tab.Screen name="Chat" component={ChatScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <AppInner />
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
+}
+import React, { useContext } from "react";
+import { View, Text, StyleSheet, Switch, TouchableOpacity } from "react-native";
+import Logo from "../components/Logo";
+import { ThemeContext } from "../components/ThemeContext";
+import { MotiView } from "moti";
+
+export default function HomeScreen() {
+  const { theme, pastelMode, setPastelMode, dyslexiaFont, setDyslexiaFont } = useContext(ThemeContext);
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <MotiView from={{ scale: 0.98 }} animate={{ scale: 1 }} transition={{ type: "timing", duration: 500 }}>
+        <Logo size={96} />
+      </MotiView>
+
+      <View style={[styles.card, { backgroundColor: theme.card }]}>
+        <Text style={[styles.heading, { color: theme.text }]}>Welcome to Neuro Cottage 🌸</Text>
+        <Text style={[styles.sub, { color: theme.text }]}>
+          A cozy, customizable space for writing, chatting, and gentle quizzes.
+        </Text>
+
+        <View style={styles.row}>
+          <Text style={{ color: theme.text }}>Pastel Mode</Text>
+          <Switch value={pastelMode} onValueChange={setPastelMode} />
+        </View>
+
+        <View style={styles.row}>
+          <Text style={{ color: theme.text }}>Dyslexia-friendly font</Text>
+          <Switch value={dyslexiaFont} onValueChange={setDyslexiaFont} />
+        </View>
+
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme.accent }]}>
+          <Text style={{ color: "#fff", fontWeight: "700" }}>Start Writing 📖</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, alignItems: "center", padding: 20 },
+  card: { width: "100%", marginTop: 20, borderRadius: 16, padding: 18, shadowColor: "#000", elevation: 4 },
+  heading: { fontSize: 20, fontWeight: "800", marginBottom: 8 },
+  sub: { fontSize: 14, marginBottom: 12 },
+  row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 6 },
+  button: { marginTop: 12, paddingVertical: 12, borderRadius: 12, alignItems: "center" },
+});
+import React, { useContext, useState } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { ThemeContext } from "../components/ThemeContext";
+
+export default function BlogScreen() {
+  const { theme } = useContext(ThemeContext);
+  const [posts, setPosts] = useState([]);
+  const [draft, setDraft] = useState("");
+
+  const publish = () => {
+    if (!draft.trim()) return;
+    setPosts([{ id: Date.now().toString(), body: draft }, ...posts]);
+    setDraft("");
+  };
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.editor, { backgroundColor: theme.card }]}>
+        <TextInput
+          placeholder="Write something cozy..."
+          placeholderTextColor="#9a8a9a"
+          multiline
+          value={draft}
+          onChangeText={setDraft}
+          style={[styles.input, { color: theme.text }]}
+        />
+        <TouchableOpacity style={[styles.publish, { backgroundColor: theme.accent }]} onPress={publish}>
+          <Text style={{ color: "#fff", fontWeight: "700" }}>Publish</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={{ padding: 12 }}>
+        {posts.length === 0 ? (
+          <Text style={{ color: theme.text, opacity: 0.8 }}>No posts yet — write the first one! ✨</Text>
+        ) : (
+          posts.map((p) => (
+            <View key={p.id} style={[styles.post, { backgroundColor: "#fff" }]}>
+              <Text style={{ color: "#222" }}>{p.body}</Text>
+            </View>
+          ))
+        )}
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  editor: { padding: 12, borderRadius: 12, margin: 12 },
+  input: { minHeight: 80, textAlignVertical: "top", fontSize: 16 },
+  publish: { marginTop: 8, padding: 10, borderRadius: 10, alignItems: "center" },
+  post: { padding: 12, borderRadius: 12, marginBottom: 10, shadowColor: "#000", elevation: 2 }
+});
+import React, { useContext, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { ThemeContext } from "../components/ThemeContext";
+
+const sampleQ = {
+  q: "Which cozy space do you prefer?",
+  options: ["Fairy Garden", "Tea Table", "Window Seat", "Comfy Couch"],
+};
+
+export default function QuizScreen() {
+  const { theme } = useContext(ThemeContext);
+  const [selected, setSelected] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  const submit = () => {
+    if (selected === null) return;
+    setSubmitted(true);
+  };
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background, padding: 16 }]}>
+      <Text style={[styles.q, { color: theme.text }]}>{sampleQ.q}</Text>
+
+      {sampleQ.options.map((o, i) => {
+        const active = selected === i;
+        return (
+          <TouchableOpacity
+            key={o}
+            onPress={() => setSelected(i)}
+            style={[
+              styles.option,
+              { borderColor: active ? theme.accent : "#ddd", backgroundColor: active ? theme.card : "#fff" },
+            ]}
+          >
+            <Text style={{ color: theme.text }}>{o}</Text>
+          </TouchableOpacity>
+        );
+      })}
+
+      <TouchableOpacity onPress={submit} style={[styles.submit, { backgroundColor: theme.accent }]}>
+        <Text style={{ color: "#fff", fontWeight: "700" }}>{submitted ? "Submitted ✓" : "Submit"}</Text>
+      </TouchableOpacity>
+
+      {submitted && selected !== null && (
+        <View style={[styles.result, { borderColor: theme.accent }]}>
+          <Text style={{ color: theme.text }}>Result: You picked "{sampleQ.options[selected]}" — cute choice! 🌸</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  q: { fontWeight: "800", fontSize: 18, marginBottom: 12 },
+  option: { padding: 12, borderRadius: 12, borderWidth: 1, marginBottom: 10 },
+  submit: { marginTop: 8, padding: 12, borderRadius: 12, alignItems: "center" },
+  result: { marginTop: 12, padding: 12, borderRadius: 12, borderWidth: 2 }
+});
+import React, { useContext, useState, useRef } from "react";
+import { View, TextInput, TouchableOpacity, Text, FlatList, KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
+import { ThemeContext } from "../components/ThemeContext";
+
+export default function ChatScreen() {
+  const { theme } = useContext(ThemeContext);
+  const [messages, setMessages] = useState([
+    { id: "1", text: "Welcome to the cottage chat! Be kind, be cozy 💖" },
+  ]);
+  const [text, setText] = useState("");
+
+  const send = () => {
+    if (!text.trim()) return;
+    const newMsg = { id: Date.now().toString(), text };
+    setMessages((m) => [newMsg, ...m]);
+    setText("");
+  };
+
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={[styles.container, { backgroundColor: theme.background }]}>
+      <FlatList
+        data={messages}
+        inverted
+        keyExtractor={(i) => i.id}
+        contentContainerStyle={{ padding: 12 }}
+        renderItem={({ item }) => (
+          <View style={[styles.msg, { backgroundColor: theme.card }]}>
+            <Text style={{ color: theme.text }}>{item.text}</Text>
+          </View>
+        )}
+      />
+      <View style={styles.compose}>
+        <TextInput
+          placeholder="Say something cozy..."
+          placeholderTextColor="#9a8a9a"
+          value={text}
+          onChangeText={setText}
+          style={[styles.input, { color: theme.text }]}
+        />
+        <TouchableOpacity onPress={send} style={[styles.send, { backgroundColor: theme.accent }]}>
+          <Text style={{ color: "#fff", fontWeight: "700" }}>Send</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  msg: { padding: 12, borderRadius: 12, marginBottom: 8 },
+  compose: { flexDirection: "row", padding: 12, alignItems: "center", gap: 8 },
+  input: { flex: 1, minHeight: 44, borderRadius: 10, paddingHorizontal: 12, backgroundColor: "#fff" },
+  send: { paddingVertical: 12, paddingHorizontal: 14, borderRadius: 10 }
+});
+
+
