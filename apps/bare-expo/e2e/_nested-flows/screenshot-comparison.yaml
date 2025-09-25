@@ -2,17 +2,18 @@
 # This flow can be reused across different image comparison tests
 # it fails if the images are too different
 
+# making changes? update apps/bare-expo/scripts/lib/pathUtils.test.ts
+
 # Parameters:
 #   - screenshotOutputPath: The path including the name of the screenshot to take and compare
 #   - similarityThreshold: The percentage of similarity required to pass the comparison (default: <=5% difference)
 
 appId: dev.expo.Payments
 ---
-- takeScreenshot: ${screenshotOutputPath}.${maestro.platform}
 - runScript:
     file: ./compare-images-http.js
     env:
-      currentScreenshot: ${screenshotOutputPath}.${maestro.platform} # keep the same as taken screenshot
+      currentScreenshot: ${screenshotOutputPath}.${maestro.platform}
       platform: ${maestro.platform}
       testID: ${testID}
       baseImage: ${screenshotOutputPath}.base.${maestro.platform}

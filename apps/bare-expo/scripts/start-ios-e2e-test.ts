@@ -44,6 +44,12 @@ const __dirname = dirname(__filename);
     }
     if (startMode === 'TEST' || startMode === 'BUILD_AND_TEST') {
       const e2eDir = path.join(projectRoot, 'e2e');
+      await testAsync(
+        path.join(e2eDir, '_nested-flows', 'confirm-app-open-ios.yaml'),
+        deviceId,
+        appBinaryPath,
+        e2eDir
+      );
       await runCustomMaestroFlowsAsync(e2eDir, (maestroFlowFilePath) =>
         testAsync(maestroFlowFilePath, deviceId, appBinaryPath, e2eDir)
       );
@@ -90,8 +96,6 @@ async function buildAsync(projectRoot: string, deviceId: string): Promise<string
   const binaryPath = await XcodeBuild.default.getAppBinaryPath(buildOutput);
   return binaryPath;
 }
-
-const runsOnCI = Boolean(process.env.CI);
 
 function prettyPrintNativeErrorLogs(logs: string[]) {
   // the output shape is always: actual logs, some unrelated stuff from simctrl
@@ -243,7 +247,7 @@ async function testAsync(
     throw e;
   } finally {
     stopLogCollectionController.abort();
-    runsOnCI && (await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' }));
+    await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
   }
 }
 

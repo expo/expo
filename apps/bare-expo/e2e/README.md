@@ -19,7 +19,7 @@ avdmanager create avd --force -n pixel_7_pro --package 'system-images;android-36
 3. Start the screenshot server if you want to take screenshots:
 
 ```bash
-cd e2e/_nested-flows && ./image-comparison-server.ts
+cd e2e/_nested-flows && bun --watch --no-clear-screen ./image-comparison-server.ts
 ```
 
 4. In Maestro Studio, deep link into the screen and write your test. Here are the available [selectors](https://docs.maestro.dev/api-reference/selectors) and [commands](https://docs.maestro.dev/api-reference/commands). Studio will offer some guidance on the yaml syntax.

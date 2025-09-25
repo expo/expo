@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { schema } from './schema';
+import { takeScreenshot } from './screenshot';
 import { compareImages, type ComparisonResult } from '../../scripts/compare-images';
 import { transformPaths } from '../../scripts/lib/pathUtils';
 import { ViewCropper } from '../../scripts/lib/viewCropper';
@@ -20,8 +21,7 @@ Bun.serve({
       try {
         const bodyJson = await req.json();
         const parsedBody = schema.parse(bodyJson);
-        console.log('Received request:', parsedBody);
-        const { similarityThreshold = 5, platform } = parsedBody;
+        const { similarityThreshold = 5, platform, diffOutputPath } = parsedBody;
 
         const testID = 'testID' in parsedBody ? parsedBody.testID : undefined;
 
@@ -31,11 +31,17 @@ Bun.serve({
           currentScreenshotPath,
           viewShotOutputPath,
           imageForComparisonPath,
-          diffOutputPath,
+          diffOutputFilePath,
+          currentScreenshotArtifactPath,
         } = transformPaths(e2eDir, parsedBody);
 
+        await takeScreenshot({
+          platform,
+          outputFilePath: currentScreenshotPath,
+          copyAlsoTo: currentScreenshotArtifactPath,
+        });
+
         if (testID) {
-          // Crop view by testID using unified cropper
           const viewCropper = new ViewCropper();
           await viewCropper.cropViewByTestID({
             testID,
@@ -67,11 +73,14 @@ Bun.serve({
           );
         }
 
-        const result: ComparisonResult = compareImages({
+        const isCrossPlatformMode = 'mode' in parsedBody && parsedBody.mode === 'crossPlatform';
+
+        const result: ComparisonResult = await compareImages({
           image1Path: baseImagePath,
           image2Path: imageForComparisonPath,
-          outputPath: diffOutputPath,
+          outputPath: diffOutputFilePath,
           similarityThreshold,
+          crossPlatformMode: isCrossPlatformMode,
         });
 
         if (result.success) {

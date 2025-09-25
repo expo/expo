@@ -12,7 +12,6 @@ const SERVER_URL = 'http://localhost:3000';
 
 function compareImagesHttp() {
   try {
-    const thresholdParam = typeof similarityThreshold === 'number' ? similarityThreshold : 5;
     const testIDparam = typeof testID === 'string' && testID !== 'undefined' ? testID : undefined;
 
     const response = http.post(`${SERVER_URL}/process`, {

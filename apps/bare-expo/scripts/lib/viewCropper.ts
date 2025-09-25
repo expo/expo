@@ -56,6 +56,8 @@ export class ViewCropper {
       height: bounds.height,
     });
 
+    // we don't care about the full screenshot when taking view shots
+    console.log(`deleting full screenshot: ${currentScreenshotPath} because we have a view shot`);
     await fs.promises.rm(currentScreenshotPath, { force: true });
 
     return {
@@ -85,7 +87,7 @@ export class ViewCropper {
     const endTime = Date.now();
     const duration = endTime - startTime;
 
-    console.log(`DEBUG: Maestro took ${duration}ms`);
+    console.log(`Maestro took ${duration}ms to capture the ${platform} view hierarchy`);
 
     const hierarchyOutput = result.stdout || '';
     const jsonStart = hierarchyOutput.indexOf('{');

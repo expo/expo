@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const screenshotSchema = z.object({
+const screenshotSchema = z.object({
   baseImage: z.string().nonempty(),
   currentScreenshot: z.string().nonempty(),
   diffOutputPath: z.string().nonempty(),
@@ -8,7 +8,7 @@ export const screenshotSchema = z.object({
   platform: z.enum(['ios', 'android']),
 });
 
-export const viewShotSchema = screenshotSchema.and(
+const viewShotSchema = screenshotSchema.and(
   z.object({
     testID: z.string().nonempty(),
     mode: z.enum(['crossPlatform', 'platformDependent']),

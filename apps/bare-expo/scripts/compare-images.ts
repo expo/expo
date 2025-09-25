@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
+
+import { ImageNormalizer, type NormalizationOptions } from './lib/imageNormalizer';
 
 export interface ComparisonResult {
   success: boolean;
@@ -37,7 +37,7 @@ function createSuccessResult(
   if (diffPixels === 0) {
     message = '✅ Images are identical';
   } else if (success) {
-    message = `✅ Images are very similar (${diffPercentage}% difference)`;
+    message = `✅ Images are similar (${diffPercentage}% difference, similarityThreshold ${similarityThreshold})`;
   } else {
     message = `❌ Images are significantly different (${diffPercentage}% difference)`;
   }
@@ -57,10 +57,18 @@ export interface CompareImagesOptions {
   image2Path: string;
   outputPath?: string;
   similarityThreshold?: number;
+  crossPlatformMode?: boolean;
+  normalizationOptions?: NormalizationOptions;
 }
 
-export function compareImages(options: CompareImagesOptions): ComparisonResult {
-  const { image1Path, image2Path, outputPath, similarityThreshold = 5 } = options;
+export async function compareImages({
+  image1Path,
+  image2Path,
+  outputPath,
+  similarityThreshold,
+  crossPlatformMode = false,
+  normalizationOptions,
+}: CompareImagesOptions): Promise<ComparisonResult> {
   try {
     if (!fs.existsSync(image1Path)) {
       return createErrorResult(`Image 1 not found: ${image1Path}`);
@@ -70,8 +78,52 @@ export function compareImages(options: CompareImagesOptions): ComparisonResult {
       return createErrorResult(`Image 2 not found: ${image2Path}`);
     }
 
-    const img1 = PNG.sync.read(fs.readFileSync(image1Path));
-    const img2 = PNG.sync.read(fs.readFileSync(image2Path));
+    let finalImage1Path = image1Path;
+    let finalImage2Path = image2Path;
+
+    // Handle cross-platform mode with different dimensions
+    if (crossPlatformMode) {
+      similarityThreshold = 15; // Relax threshold for cross-platform comparisons
+      const img1 = PNG.sync.read(fs.readFileSync(image1Path));
+      const img2 = PNG.sync.read(fs.readFileSync(image2Path));
+
+      // Check if dimensions are different
+      if (img1.width !== img2.width || img1.height !== img2.height) {
+        console.log(`Cross-platform mode: Normalizing images with different dimensions`);
+        console.log(`Image 1: ${img1.width}x${img1.height}, Image 2: ${img2.width}x${img2.height}`);
+
+        const normalizer = new ImageNormalizer();
+
+        // Calculate optimal target dimensions based on the actual images
+        const optimalDimensions = await normalizer.getOptimalTargetDimensions(
+          image1Path,
+          image2Path
+        );
+
+        // Use provided options or calculated optimal dimensions
+        const defaultOptions: NormalizationOptions = {
+          targetWidth: optimalDimensions.width,
+          targetHeight: optimalDimensions.height,
+          backgroundColor: 0xffffffff, // White background
+          quality: 100,
+        };
+
+        const options = normalizationOptions || defaultOptions;
+
+        const { normalizedImage1Path, normalizedImage2Path } =
+          await normalizer.normalizeImagesForComparison(image1Path, image2Path, options);
+
+        finalImage1Path = normalizedImage1Path;
+        finalImage2Path = normalizedImage2Path;
+
+        console.log(`Normalized images to: ${options.targetWidth}x${options.targetHeight}`);
+        console.log(`Image 1 normalized path: ${finalImage1Path}`);
+        console.log(`Image 2 normalized path: ${finalImage2Path}`);
+      }
+    }
+
+    const img1 = PNG.sync.read(fs.readFileSync(finalImage1Path));
+    const img2 = PNG.sync.read(fs.readFileSync(finalImage2Path));
 
     const { width, height } = img1;
 
@@ -92,22 +144,8 @@ export function compareImages(options: CompareImagesOptions): ComparisonResult {
       if (!outputPath) {
         return undefined;
       }
-      const expandedPath = expandTilde(outputPath);
-      const dir = path.dirname(expandedPath);
-      const ext = path.extname(expandedPath);
-      const baseName = path.basename(expandedPath, ext);
-
-      fs.mkdirSync(dir, { recursive: true });
-
-      let finalPath: string | undefined;
-      let counter = 1;
-      do {
-        finalPath = path.join(dir, `${baseName}_${counter.toString().padStart(2, '0')}${ext}`);
-        counter++;
-      } while (fs.existsSync(finalPath));
-
-      fs.writeFileSync(finalPath, PNG.sync.write(diff));
-      return path.resolve(finalPath);
+      fs.writeFileSync(outputPath, PNG.sync.write(diff));
+      return outputPath;
     })();
 
     const totalPixels = width * height;
@@ -126,8 +164,8 @@ export function compareImages(options: CompareImagesOptions): ComparisonResult {
   }
 }
 
-function compareImagesSync(options: CompareImagesOptions): void {
-  const { message, success } = compareImages(options);
+async function compareImagesSync(options: CompareImagesOptions): Promise<void> {
+  const { message, success } = await compareImages(options);
   const exitCode = success ? 0 : 1;
 
   if (success) {
@@ -139,19 +177,15 @@ function compareImagesSync(options: CompareImagesOptions): void {
   process.exit(exitCode);
 }
 
-function expandTilde(filePath: string): string {
-  if (filePath.startsWith('~/')) {
-    return path.join(os.homedir(), filePath.slice(2));
-  }
-  return filePath;
-}
-
 // If this script is run directly, compare the two images provided as command line arguments
 if (require.main === module) {
   const [, , image1Path, image2Path, outputPath] = process.argv;
 
   if (image1Path && image2Path) {
-    compareImagesSync({ image1Path, image2Path, outputPath });
+    compareImagesSync({ image1Path, image2Path, outputPath }).catch((error) => {
+      console.error('Error:', error.message);
+      process.exit(1);
+    });
   } else {
     throw new Error('Usage: compare-images.ts <image1> <image2> [outputDiffImage]');
   }
