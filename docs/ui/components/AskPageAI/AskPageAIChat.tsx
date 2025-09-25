@@ -166,6 +166,12 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
               setQuestion(event.target.value);
             }}
             disabled={isBusy && conversation.length === 0}
+            onKeyDown={event => {
+              if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                event.currentTarget.form?.requestSubmit();
+              }
+            }}
           />
           <Button
             type="submit"
