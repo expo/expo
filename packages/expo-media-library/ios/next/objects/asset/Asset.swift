@@ -49,6 +49,17 @@ class Asset: SharedObject {
     return date.millisecondsSince1970
   }
 
+  func getLocation() async throws -> Location? {
+    let phAsset = try await requirePHAsset()
+    guard let clLocation = phAsset.location else {
+      return nil
+    }
+    return Location(
+      latitude: clLocation.coordinate.latitude,
+      longitude: clLocation.coordinate.longitude
+    )
+  }
+
   func getModificationTime() async throws -> Int? {
     let phAsset = try await requirePHAsset()
     guard let date = phAsset.modificationDate else {
@@ -62,29 +73,21 @@ class Asset: SharedObject {
     return MediaTypeNext.from(phAsset.mediaType)
   }
 
+  func getExif() async throws -> [String: Any?] {
+    let phAsset = try await requirePHAsset()
+    guard try await getMediaType() == MediaTypeNext.IMAGE else {
+      return [:]
+    }
+    let uri = try await UriExtractor.extract(from: phAsset)
+    guard let ciImage = CIImage(contentsOf: uri) else {
+      return [:]
+    }
+    return ciImage.properties
+  }
+
   func getUri() async throws -> String {
     let phAsset = try await requirePHAsset()
-
-    switch phAsset.mediaType {
-      case PHAssetMediaType.image:
-        let contentEditingInput = try await phAsset.requestContentEditingInput()
-        guard let url = contentEditingInput.fullSizeImageURL else {
-          throw FailedToGetPropertyException("uri")
-        }
-        return url.absoluteString
-
-      case PHAssetMediaType.video:
-        let options = PHVideoRequestOptions()
-        options.version = .original
-        guard let avAsset = try await PHImageManager.default()
-          .requestAVAsset(forVideo: phAsset, options: options) as? AVURLAsset else {
-          throw FailedToGetPropertyException("uri")
-        }
-        return avAsset.url.absoluteString
-
-      default:
-        throw FailedToGetPropertyException("uri")
-      }
+    return try await UriExtractor.extract(from: phAsset).absoluteString
   }
 
   func delete() async throws {

@@ -92,6 +92,16 @@ class MediaLibraryNextModule : Module() {
         self.getDuration()
       }
 
+      AsyncFunction("getExif") Coroutine { self: Asset ->
+        systemPermissionsDelegate.requireSystemPermissions(false)
+        self.getExif()
+      }
+
+      AsyncFunction("getLocation") Coroutine { self: Asset ->
+        systemPermissionsDelegate.requireSystemPermissions(false)
+        self.getLocation()
+      }
+
       AsyncFunction("getFilename") Coroutine { self: Asset ->
         systemPermissionsDelegate.requireSystemPermissions(false)
         self.getFilename()
