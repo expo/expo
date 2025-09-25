@@ -196,7 +196,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
           aria-label="Ask AI form">
           <textarea
             aria-label="Ask AI about this page"
-            className="min-h-[72px] flex-1 resize-none rounded-md border border-transparent bg-subtle px-1 py-2 text-sm leading-relaxed text-default outline-none"
+            className="min-h-[72px] flex-1 resize-none rounded-md border border-transparent bg-subtle px-4 py-2 text-sm leading-relaxed text-default outline-none"
             rows={3}
             value={question}
             onChange={event => {

@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, createRef, type PropsWithChildren, useRef, forwardRef } from 'react';
+import { useEffect, useState, createRef, type PropsWithChildren, useRef } from 'react';
 
 import { InlineHelp } from 'ui/components/InlineHelp';
 import { PageHeader } from 'ui/components/PageHeader';
@@ -14,15 +14,14 @@ import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScr
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
-import { AskPageAIChat } from '~/ui/components/AskPageAI';
+import { AskPageAIOverlay } from '~/ui/components/AskPageAI';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
 import {
-  TableOfContentsWithManager,
   TableOfContentsHandles,
-  type TableOfContentsProps,
+  TableOfContentsWithManager,
 } from '~/ui/components/TableOfContents';
 import { A } from '~/ui/components/Text';
 
@@ -113,14 +112,6 @@ export default function DocumentationPage({
   };
 
   const sidebarElement = <Sidebar routes={routes} />;
-  const sidebarRightElement = (
-    <SidebarRightPane
-      ref={tableOfContentsRef}
-      isChatOpen={isAskAIVisible}
-      onCloseChat={handleAskAIChatClose}
-      pageTitle={title}
-    />
-  );
   const headerElement = (
     <Header
       sidebar={sidebarElement}
@@ -145,94 +136,82 @@ export default function DocumentationPage({
   const previousPage = flattenStructure[pageIndex - 1];
   const nextPage = flattenStructure[pageIndex + 1];
 
-  const hideSidebarRight = (hideTOC ?? false) && !isAskAIVisible;
+  const hideSidebarRight = hideTOC ?? false;
 
   return (
-    <DocumentationNestedScrollLayout
-      ref={layoutRef}
-      header={headerElement}
-      sidebar={sidebarElement}
-      sidebarRight={sidebarRightElement}
-      sidebarActiveGroup={sidebarActiveGroup}
-      hideTOC={hideSidebarRight}
-      isMobileMenuVisible={isMobileMenuVisible}
-      onContentScroll={handleContentScroll}
-      sidebarScrollPosition={sidebarScrollPosition}>
-      <DocumentationHead
-        title={title}
-        description={description}
-        canonicalUrl={
-          version !== 'unversioned' ? RoutesUtils.getCanonicalUrl(pathname) : undefined
-        }>
-        {hideFromSearch !== true && (
-          <meta
-            name="docsearch:version"
-            content={RoutesUtils.isReferencePath(pathname) ? version : 'none'}
-          />
-        )}
-        {(version === 'unversioned' ||
-          RoutesUtils.isPreviewPath(pathname) ||
-          RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
-        {searchRank && <meta name="searchRank" content={String(searchRank)} />}
-        {searchPosition && <meta name="searchPosition" content={String(searchPosition)} />}
-      </DocumentationHead>
-      <div
-        className={mergeClasses(
-          'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-          'bg-gradient-to-b from-default to-transparent opacity-90'
-        )}
-      />
-      <main
-        className={mergeClasses('mx-auto px-14 pt-10', 'max-lg-gutters:px-4 max-lg-gutters:pt-5')}>
-        {version && version === 'unversioned' && (
-          <InlineHelp type="default" size="sm" className="!mb-5 !inline-flex w-full">
-            This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
-            <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
-            {versionToText(LATEST_VERSION)}).
-          </InlineHelp>
-        )}
-        {title && (
-          <PageHeader
-            title={title}
-            description={description}
-            sourceCodeUrl={sourceCodeUrl}
-            packageName={packageName}
-            iconUrl={iconUrl}
-            platforms={platforms}
-            showAskAIButton={isLatestSdkPage}
-            onAskAIClick={handleAskAIToggle}
-            isAskAIVisible={isAskAIVisible}
-          />
-        )}
-        {title && <Separator />}
-        {children}
-      </main>
-      <Footer
-        title={title}
-        sourceCodeUrl={sourceCodeUrl}
-        packageName={packageName}
-        previousPage={previousPage}
-        nextPage={nextPage}
-        modificationDate={modificationDate}
-      />
-    </DocumentationNestedScrollLayout>
+    <>
+      <DocumentationNestedScrollLayout
+        ref={layoutRef}
+        header={headerElement}
+        sidebar={sidebarElement}
+        sidebarRight={<TableOfContentsWithManager ref={tableOfContentsRef} />}
+        sidebarActiveGroup={sidebarActiveGroup}
+        hideTOC={hideSidebarRight}
+        isMobileMenuVisible={isMobileMenuVisible}
+        onContentScroll={handleContentScroll}
+        sidebarScrollPosition={sidebarScrollPosition}>
+        <DocumentationHead
+          title={title}
+          description={description}
+          canonicalUrl={
+            version !== 'unversioned' ? RoutesUtils.getCanonicalUrl(pathname) : undefined
+          }>
+          {hideFromSearch !== true && (
+            <meta
+              name="docsearch:version"
+              content={RoutesUtils.isReferencePath(pathname) ? version : 'none'}
+            />
+          )}
+          {(version === 'unversioned' ||
+            RoutesUtils.isPreviewPath(pathname) ||
+            RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
+          {searchRank && <meta name="searchRank" content={String(searchRank)} />}
+          {searchPosition && <meta name="searchPosition" content={String(searchPosition)} />}
+        </DocumentationHead>
+        <div
+          className={mergeClasses(
+            'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
+            'bg-gradient-to-b from-default to-transparent opacity-90'
+          )}
+        />
+        <main
+          className={mergeClasses(
+            'mx-auto px-14 pt-10',
+            'max-lg-gutters:px-4 max-lg-gutters:pt-5'
+          )}>
+          {version && version === 'unversioned' && (
+            <InlineHelp type="default" size="sm" className="!mb-5 !inline-flex w-full">
+              This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
+              <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
+              {versionToText(LATEST_VERSION)}).
+            </InlineHelp>
+          )}
+          {title && (
+            <PageHeader
+              title={title}
+              description={description}
+              sourceCodeUrl={sourceCodeUrl}
+              packageName={packageName}
+              iconUrl={iconUrl}
+              platforms={platforms}
+              showAskAIButton={isLatestSdkPage}
+              onAskAIClick={handleAskAIToggle}
+              isAskAIVisible={isAskAIVisible}
+            />
+          )}
+          {title && <Separator />}
+          {children}
+        </main>
+        <Footer
+          title={title}
+          sourceCodeUrl={sourceCodeUrl}
+          packageName={packageName}
+          previousPage={previousPage}
+          nextPage={nextPage}
+          modificationDate={modificationDate}
+        />
+      </DocumentationNestedScrollLayout>
+      {isAskAIVisible && <AskPageAIOverlay onClose={handleAskAIChatClose} pageTitle={title} />}
+    </>
   );
 }
-
-type SidebarRightPaneProps = TableOfContentsProps & {
-  isChatOpen: boolean;
-  onCloseChat: () => void;
-  pageTitle?: string;
-};
-
-const SidebarRightPane = forwardRef<TableOfContentsHandles, SidebarRightPaneProps>(
-  ({ isChatOpen, onCloseChat, pageTitle, selfRef, contentRef }, ref) => {
-    if (isChatOpen) {
-      return <AskPageAIChat onClose={onCloseChat} pageTitle={pageTitle} />;
-    }
-
-    return <TableOfContentsWithManager ref={ref} selfRef={selfRef} contentRef={contentRef} />;
-  }
-);
-
-SidebarRightPane.displayName = 'SidebarRightPane';
