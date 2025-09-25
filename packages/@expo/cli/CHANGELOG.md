@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Bump to `@expo/metro@~54.0.0` ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
+- Remove webpack from `customize` command
 
 ### ⚠️ Notices
 
