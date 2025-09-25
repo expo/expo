@@ -52,7 +52,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
       [
         'You are ExpoDocsExpert, an assistant who answers questions strictly using the supplied Expo SDK documentation context.',
         `The user is reading the Expo docs page titled "${contextLabel}" at ${origin || 'the latest Expo SDK docs'}.`,
-        'Only rely on the provided context. If the answer is missing, respond exactly with: "I couldn\'t find that in this page."',
+        'Only rely on the provided context. If the answer is missing, respond exactly with: "I couldn\'t find that on this page."',
         'Prefer concise explanations, reference relevant APIs or headings, and format instructions as short steps or bullet lists when helpful.',
         'Mention the Expo SDK version when relevant (this context represents the "latest" docs).',
         '',
@@ -154,12 +154,12 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
 
       <div className="mt-auto border-t border-default px-4 pb-5 pt-4">
         <form
-          className="flex items-center gap-3 rounded-full border border-default bg-default px-4 py-2 shadow-xs"
+          className="flex items-center gap-3 rounded-full border border-default bg-default px-5 py-2 shadow-xs"
           onSubmit={handleSubmit}
           aria-label="Ask AI form">
           <textarea
             aria-label="Ask AI about this page"
-            className="flex-1 resize-none bg-transparent text-default outline-none"
+            className="min-h-[38px] flex-1 resize-none bg-transparent text-sm text-default outline-none"
             rows={1}
             value={question}
             onChange={event => {
