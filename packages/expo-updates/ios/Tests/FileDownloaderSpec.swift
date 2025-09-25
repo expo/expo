@@ -268,8 +268,11 @@ class FileDownloaderSpec : ExpoSpec {
 
         var success = false
         var error: Error?
+        let testAsset = UpdateAsset(key: "test-asset", type: "txt")
+
         waitUntil { done in
           downloader.downloadAsset(
+            asset: testAsset,
             fromURL: URL(string: "https://example.com/testfile.txt")!,
             verifyingHash: expectedHash,
             toPath: destinationURL.path,
@@ -282,7 +285,8 @@ class FileDownloaderSpec : ExpoSpec {
             errorBlock: { err in
               error = err
               done()
-            }
+            },
+            allowPatch: false
           )
         }
 

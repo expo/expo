@@ -394,7 +394,8 @@ open class AppLoader: NSObject {
 
       if self.erroredAssets.isEmpty {
         do {
-          try self.database.markUpdateFinished(self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest)
+          let updateManifest = self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest
+          try self.database.markUpdateFinished(updateManifest)
         } catch {
           self.arrayLock.unlock()
           self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
