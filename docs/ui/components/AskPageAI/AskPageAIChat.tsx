@@ -100,7 +100,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="flex-1 overflow-y-auto px-5 py-6">
         {conversation.length > 0 ? (
           <div className="space-y-5">
             {conversation.map((qa, index) => {
@@ -152,15 +152,15 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
         )}
       </div>
 
-      <div className="mt-auto border-t border-default px-4 pb-5 pt-4">
+      <div className="mt-auto border-t border-default px-5 pb-6 pt-4">
         <form
-          className="flex items-center gap-3 rounded-full border border-default bg-default px-5 py-2 shadow-xs"
+          className="flex items-end gap-3 rounded-md border border-default bg-default px-5 py-3 shadow-xs"
           onSubmit={handleSubmit}
           aria-label="Ask AI form">
           <textarea
             aria-label="Ask AI about this page"
-            className="min-h-[38px] flex-1 resize-none bg-transparent text-sm text-default outline-none"
-            rows={1}
+            className="min-h-[72px] flex-1 resize-none rounded-md border border-transparent bg-subtle px-1 py-2 text-sm leading-relaxed text-default outline-none"
+            rows={3}
             value={question}
             onChange={event => {
               setQuestion(event.target.value);
@@ -177,9 +177,9 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
             type="submit"
             theme="quaternary"
             size="sm"
-            className="flex size-9 items-center justify-center rounded-full !p-0"
+            className="flex size-8 items-center justify-center rounded-full !p-0"
             disabled={isBusy || question.trim().length === 0}>
-            <Send03Icon className="icon-sm text-icon-default" />
+            <Send03Icon className="icon-xs text-icon-default" />
           </Button>
         </form>
       </div>
