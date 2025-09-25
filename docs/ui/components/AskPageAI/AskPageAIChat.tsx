@@ -4,14 +4,7 @@ import { Copy04Icon } from '@expo/styleguide-icons/outline/Copy04Icon';
 import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { useChat } from '@kapaai/react-sdk';
-import {
-  Children,
-  type FormEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { Children, type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -90,7 +83,15 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
 
   const markdownComponents = useMemo(() => {
     return {
-      code({ inline, children, className }: { inline?: boolean; children?: React.ReactNode; className?: string }) {
+      code({
+        inline,
+        children,
+        className,
+      }: {
+        inline?: boolean;
+        children?: React.ReactNode;
+        className?: string;
+      }) {
         const childArray = Children.toArray(children);
         const raw = childArray.map(node => (typeof node === 'string' ? node : '')).join('');
         const clean = raw.replace(/\n$/, '');
@@ -103,7 +104,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
           );
         }
 
-        return <MarkdownCodeBlock code={clean} language={className} />;
+        return <MarkdownCodeBlock code={clean} />;
       },
     } as Components;
   }, []);
@@ -149,9 +150,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
                     <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
                     <div className="prose prose-sm mt-1 text-secondary dark:prose-invert prose-a:text-link">
                       {qa.answer ? (
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          components={markdownComponents}>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                           {qa.answer}
                         </ReactMarkdown>
                       ) : (
@@ -229,13 +228,18 @@ function MarkdownCodeBlock({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (copied) {
-      const timer = setTimeout(() => setCopied(false), 2000);
-      return () => clearTimeout(timer);
+    if (!copied) {
+      return undefined;
     }
+    const timer = setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [copied]);
 
-  const handleCopy = async () => {
+  const handleCopyAsync = async () => {
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
@@ -248,9 +252,9 @@ function MarkdownCodeBlock({ code }: { code: string }) {
     <div className="relative overflow-hidden rounded-md border border-default bg-subtle">
       <button
         type="button"
-        className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-default/80 px-2 py-1 text-3xs font-medium text-secondary shadow-sm hover:bg-default"
-        onClick={handleCopy}>
-        <Copy04Icon className="icon-xxs" />
+        className="bg-default/80 absolute right-3 top-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-3xs font-medium text-secondary shadow-sm hover:bg-default"
+        onClick={handleCopyAsync}>
+        <Copy04Icon className="icon-xs" />
         {copied ? 'Copied' : 'Copy'}
       </button>
       <pre className="overflow-x-auto whitespace-pre px-4 pb-4 pt-9 text-xs leading-relaxed text-default">
