@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Always include autolinking for top-level `devDependencies` and memoize intermediate config loading. ([#39955](https://github.com/expo/expo/pull/39955) by [@kitten](https://github.com/kitten))
+
 ## 3.0.13 — 2025-09-22
 
 ### 🎉 New features
