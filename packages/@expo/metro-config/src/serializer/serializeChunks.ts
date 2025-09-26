@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { MetroConfig, AssetData } from '@expo/metro/metro';
-import sourceMapStringMod from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
+import { sourceMapString } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
 import type {
   MixedOutput,
   Module,
@@ -57,11 +57,6 @@ function pathToRegex(path: string) {
   // Create a RegExp object with the modified string
   return new RegExp('^' + regexSafePath + '$');
 }
-
-const sourceMapString =
-  typeof sourceMapStringMod !== 'function'
-    ? sourceMapStringMod.sourceMapString
-    : sourceMapStringMod;
 
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,

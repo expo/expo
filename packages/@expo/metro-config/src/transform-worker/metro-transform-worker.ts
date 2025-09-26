@@ -11,7 +11,7 @@
 import { transformFromAstSync, parse, types as t, template } from '@babel/core';
 import type { ParseResult, PluginItem, NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
 import {
   importLocationsPlugin,

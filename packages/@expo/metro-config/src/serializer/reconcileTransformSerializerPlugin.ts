@@ -12,7 +12,7 @@ import type {
   ReadOnlyGraph,
   SerializerOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
-import JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import { locToKey } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import type { SerializerConfigT } from '@expo/metro/metro-config';

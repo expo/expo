@@ -6,7 +6,7 @@
  */
 import type { MetroConfig } from '@expo/metro/metro';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
-import sourceMapStringMod from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
+import { sourceMapString } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
 import type { SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
@@ -46,11 +46,6 @@ export type SerializerConfigOptions = {
 export type SerializerPlugin = (
   ...props: SerializerParameters
 ) => SerializerParameters | Promise<SerializerParameters>;
-
-const sourceMapString =
-  typeof sourceMapStringMod !== 'function'
-    ? sourceMapStringMod.sourceMapString
-    : sourceMapStringMod;
 
 export function withExpoSerializers(
   config: InputConfigT,
