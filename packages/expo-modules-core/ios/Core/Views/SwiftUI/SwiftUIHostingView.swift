@@ -143,6 +143,11 @@ extension ExpoSwiftUI {
       return true
     }
 
+    public override func layoutSubviews() {
+      super.layoutSubviews()
+      setupHostingViewConstraints()
+    }
+
 #if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
