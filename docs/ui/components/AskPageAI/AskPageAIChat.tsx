@@ -225,7 +225,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
   return (
     <div className="flex h-full flex-col overflow-hidden bg-default">
       <div className="flex items-center justify-between border-b border-default bg-palette-black px-4 py-3 text-palette-white">
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <span
             className={mergeClasses(
               'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
