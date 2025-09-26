@@ -273,6 +273,7 @@ public class ReactAndroidKotlinTransformer {
         public String transform(String content) {
             content = makePublic(content, "class BridgelessDevSupportManager");
             content = content.replaceAll("constructor", "public constructor");
+            content = content.replaceAll("fun tracingState():", "public fun tracingState():");
             return content;
         }
     }

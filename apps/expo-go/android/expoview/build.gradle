@@ -106,18 +106,22 @@ import org.apache.tools.ant.taskdefs.condition.Os
 class GenerateDynamicMacrosPlugin implements Plugin<Project> {
   @Override
   void apply(org.gradle.api.Project target) {
-    target.exec {
+    target.tasks.create("generateDynamicMacros", Exec) {
       def configuration = target.gradle.startParameter.taskNames.any {
         it.toLowerCase().contains("release")
       } ? "release" : "debug"
 
-      workingDir '../../../../bin'
+      workingDir project.file('../../../../bin')
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         commandLine 'cmd.exe', '/c', "expotools android-generate-dynamic-macros --configuration ${configuration}"
       } else {
         commandLine "./expotools", "android-generate-dynamic-macros", "--configuration", configuration
       }
+    }
+
+    target.tasks.named("preBuild").configure {
+      dependsOn("generateDynamicMacros")
     }
   }
 }

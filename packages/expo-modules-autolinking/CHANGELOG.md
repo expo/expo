@@ -14,6 +14,7 @@
 
 - [iOS] Added support for passing pod targets that should be statically linked and not built as frameworks. ([#39742](https://github.com/expo/expo/pull/39742) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
+- [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
 
 ## 3.0.11 — 2025-09-16
 
