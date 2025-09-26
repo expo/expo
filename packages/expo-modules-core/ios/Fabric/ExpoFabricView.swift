@@ -39,6 +39,10 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   public func setViewSize(_ size: CGSize) {
     super.setShadowNodeSize(Float(size.width), height: Float(size.height))
   }
+  
+  public override func setStyleSize(_ width: NSNumber?, height: NSNumber?) {
+    super.setStyleSize(width, height: height)
+  }
 
   required public init(appContext: AppContext? = nil) {
     self.appContext = appContext

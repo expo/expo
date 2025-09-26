@@ -34,6 +34,11 @@ open class ExpoClassicView: RCTView, AnyExpoView {
     // Stub function – it's not used on the old architecture and non-SwiftUI views
   }
 
+  public func setStyleSize(_ width: NSNumber?, height: NSNumber?) {
+    // Stub function – it's not used on the old architecture
+    NSLog("setStyleSize called on ExpoClassicView with width: %@, height: %@", width ?? "nil", height ?? "nil")
+  }
+
   public func supportsProp(withName name: String) -> Bool {
     // Stub function – it's not used on the old architecture and non-SwiftUI views
     return false
