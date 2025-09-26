@@ -87,13 +87,13 @@ internal inline fun withJSIInterop(
     val coreModule = run {
       val module = CoreModule()
       module._runtimeContext = runtimeContext
-      ModuleHolder(module)
+      ModuleHolder(module, null)
     }
     every { runtimeContext.coreModule } answers { coreModule }
 
     val registry = ModuleRegistry(appContextMock.hostingRuntimeContext.weak()).apply {
       modules.forEach {
-        register(it)
+        register(it, null)
       }
     }
     val sharedObjectRegistry = SharedObjectRegistry(appContextMock.hostingRuntimeContext)
