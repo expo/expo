@@ -400,7 +400,6 @@ it(`can create a micro Metro graph fixture`, async () => {
           },
           "dev": true,
           "experimentalImportSupport": true,
-          "hot": false,
           "inlineRequires": false,
           "minify": false,
           "platform": "web",

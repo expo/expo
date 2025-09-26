@@ -106,7 +106,7 @@ export function createDefaultExportCustomSerializer(
     graph: ReadOnlyGraph<MixedOutput>,
     inputOptions: SerializerOptions<MixedOutput>
   ): Promise<string | { code: string; map: string }> => {
-    const isPossiblyDev = graph.transformOptions.hot;
+    const isPossiblyDev = graph.transformOptions.dev;
     // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
     const enableDebugId = inputOptions.inlineSourceMap !== true && !isPossiblyDev;
 

@@ -41,7 +41,6 @@ it(`passes the environment as isServer to the babel preset`, () => {
       enableBabelRCLookup: true,
       dev: true,
       projectRoot: '/',
-      hot: true,
       inlineRequires: false as any, // TODO(@kitten): Remove
       minify: false,
       platform: 'ios',
@@ -105,7 +104,6 @@ it(`passes the environment as isReactServer to the babel preset`, () => {
       enableBabelRCLookup: true,
       dev: true,
       projectRoot: '/',
-      hot: true,
       inlineRequires: false as any, // TODO(@kitten): Remove
       minify: false,
       platform: 'ios',

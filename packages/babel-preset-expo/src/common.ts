@@ -73,7 +73,7 @@ export function getIsDev(caller?: any) {
 export function getIsFastRefreshEnabled(caller?: any) {
   assertExpoBabelCaller(caller);
   if (!caller) return false;
-  return caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
+  return !caller.isServer && !caller.isNodeModule && getIsDev(caller);
 }
 
 export function getIsProd(caller?: any) {

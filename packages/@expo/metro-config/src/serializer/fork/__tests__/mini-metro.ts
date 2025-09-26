@@ -82,7 +82,6 @@ export async function microBundle({
     isServer?: boolean;
     isReactServer?: boolean;
     inlineSourceMaps?: boolean;
-    hot?: boolean;
     minify?: boolean;
     splitChunks?: boolean;
     treeshake?: boolean;
@@ -122,7 +121,6 @@ export async function microBundle({
   const absEntry = path.join(projectRoot, entry);
   const dev = options.dev ?? true;
   const transformOptions: PickPartial<JsTransformOptions, 'inlinePlatform' | 'inlineRequires'> = {
-    hot: options.hot ?? false,
     minify: options.minify ?? false,
     dev,
     type: 'module',
