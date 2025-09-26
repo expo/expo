@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Introduce ExpoAppDelegateSubscriberManager class ([#40008](https://github.com/expo/expo/pull/40008) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
