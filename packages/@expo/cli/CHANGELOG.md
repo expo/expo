@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `rawBody` handling on `/symbolicate` endpoint. Clients MUST send the header `'Content-Type': 'application/json'`. ([#35757](https://github.com/expo/expo/pull/35757) by [@huntie](https://github.com/huntie))
+
 ### 🎉 New features
 
 - Add support for experimental node:sqlite in API routes. ([#39822](https://github.com/expo/expo/pull/39822) by [@EvanBacon](https://github.com/EvanBacon))
