@@ -34,10 +34,6 @@ export function BlockQuote({ style, cite, ...props }: BlockQuoteProps) {
   return <View {...props} style={[styles.blockQuote, style]} />;
 }
 
-export function BR({ style, ...props }: TextProps) {
-  return <Text {...props} style={[styles.br, style]} />;
-}
-
 export function Mark({ style, ...props }: TextProps) {
   return <Text {...props} style={[styles.mark, style]} />;
 }
@@ -95,11 +91,6 @@ const styles = StyleSheet.create({
   blockQuote: {
     // @ts-ignore
     marginVertical: em(1),
-  },
-  br: {
-    width: 0,
-    // @ts-ignore
-    height: em(0.5),
   },
   s: {
     textDecorationLine: 'line-through',
