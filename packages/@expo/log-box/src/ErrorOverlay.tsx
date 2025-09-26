@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { use, useCallback, useEffect, useState } from 'react';
 
 import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog, useLogs, type LogLevel, type StackType } from './Data/LogBoxLog';
@@ -76,51 +76,52 @@ export function LogBoxInspector({
   const isDismissable = !['static', 'syntax', 'resolution'].includes(log.level);
   const [closing, setClosing] = useState(false);
 
-  const animateClosed = (callback: () => void) => {
+  const animateClose = (callback: () => void) => {
     setClosing(true);
     setTimeout(() => {
       callback();
     }, 200);
   };
 
-  const onMinimize = useCallback((): void => {
+  const onMinimize = useCallback((cb?: () => void): void => {
     if (isNative) {
-      onMinimizeAction();
+      onMinimizeAction?.();
+      cb?.();
     } else {
-      animateClosed(() => {
-        onMinimizeAction();
+      animateClose(() => {
+        onMinimizeAction?.();
+        console.log('onMinimizeAction called', typeof cb);
+        cb?.();
       });
     }
-  }, []);
+  }, [onMinimizeAction]);
 
   return (
-    <>
-      <div className={[
-        styles.overlay,
-        platform === 'ios' ? styles.overlayIos : null,
-        platform === 'android' ? styles.overlayAndroid : null,
-        platform === 'web' ? styles.overlayWeb : null,
-      ].filter(Boolean).join(' ')}>
-        <div
-          data-expo-log-backdrop="true"
-          className={platform === 'web' ? `${styles.bg} ${closing ? styles.bgExit : ''}` : undefined}
-          onClick={() => {
-            if (isDismissable) {
-              onMinimize();
-            }
-          }}
+    <div className={[
+      styles.overlay,
+      platform === 'ios' ? styles.overlayIos : null,
+      platform === 'android' ? styles.overlayAndroid : null,
+      platform === 'web' ? styles.overlayWeb : null,
+    ].filter(Boolean).join(' ')}>
+      <div
+        data-expo-log-backdrop="true"
+        className={platform === 'web' ? `${styles.bg} ${closing ? styles.bgExit : ''}` : undefined}
+        onClick={() => {
+          if (isDismissable) {
+            onMinimize();
+          }
+        }}
+      />
+      <div className={`${styles.container} ${closing ? styles.containerExit : ''}`}>
+        <LogBoxContent
+          log={log}
+          selectedLogIndex={selectedLogIndex}
+          logs={logs}
+          isDismissable={isDismissable}
+          onMinimize={onMinimize}
         />
-        <div className={`${styles.container} ${closing ? styles.containerExit : ''}`}>
-          <LogBoxContent
-            log={log}
-            selectedLogIndex={selectedLogIndex}
-            logs={logs}
-            isDismissable={isDismissable}
-            onMinimize={onMinimize}
-          />
-        </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -135,40 +136,24 @@ export function LogBoxContent({
   selectedLogIndex: number;
   logs: LogBoxLog[];
   isDismissable: boolean;
-  onMinimize: () => void;
+  onMinimize: (cb?: () => void) => void;
 }) {
   const meta = useDevServerMeta();
-  const [_, setClosing] = useState(false);
 
   const projectRoot = meta?.projectRoot;
-
-  const animateClosed = (callback: () => void) => {
-    setClosing(true);
-    setTimeout(() => {
-      callback();
-    }, 200);
-  };
 
   const onDismiss = (): void => {
     // Here we handle the cases when the log is dismissed and it
     // was either the last log, or when the current index
     // is now outside the bounds of the log array.
-    const logsArray = Array.from(logs);
     if (selectedLogIndex != null) {
-      if (logsArray.length - 1 <= 0) {
-        animateClosed(() => {
-          LogBoxData.setSelectedLog(-1);
+      if (logs.length - 1 <= 0) {
+        onMinimize(() => {
+          LogBoxData.dismiss(logs[selectedLogIndex]);
         });
-      } else if (selectedLogIndex >= logsArray.length - 1) {
+      } else if (selectedLogIndex >= logs.length - 1) {
         LogBoxData.setSelectedLog(selectedLogIndex - 1);
-      }
-
-      if (logs.length === 1) {
-        animateClosed(() => {
-          LogBoxData.dismiss(logsArray[selectedLogIndex]);
-        });
-      } else {
-        LogBoxData.dismiss(logsArray[selectedLogIndex]);
+        LogBoxData.dismiss(logs[selectedLogIndex]);
       }
     }
   };
@@ -293,7 +278,7 @@ export function LogBoxContent({
             total={logs.length}
             isDismissable={isDismissable}
             onDismiss={onDismiss}
-            onMinimize={onMinimize}
+            onMinimize={() => onMinimize()}
             onSelectIndex={onChangeSelectedIndex}
             level={log.level}
             onCopy={onCopy}

@@ -119,7 +119,7 @@ export default function LogBoxPolyfillDOM({
         return log;
       }) ?? [])),
     ];
-  }, []);
+  }, [props.logs, props.nativeLogs, platform]);
   const selectedIndex = props.selectedIndex ?? (logs && logs?.length - 1) ?? -1;
 
   // @ts-ignore

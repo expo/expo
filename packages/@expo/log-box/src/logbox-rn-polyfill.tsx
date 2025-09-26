@@ -51,13 +51,13 @@ function LogBoxRNPolyfill(
   const [open, setOpen] = React.useState(true);
   const bundledLogBoxUrl = getBundledLogBoxURL();
 
-  const onMinimize = React.useCallback(() => {
+  const closeModal = (cb: () => void) => {
     setOpen(false);
-    // changing the selected index to -1 will interfere with the slide down animation on iOS
-    setTimeout(() => {
-      props.onMinimize();
-    }, Platform.select({ ios: 500, default: 0 }));
-  }, [props]);
+    setTimeout(cb, Platform.select({ ios: 500, default: 0 }));
+  };
+
+  const onMinimize = () => closeModal(props.onMinimize);
+  const onDismiss = props.onDismiss;
 
   return (
     <Modal
@@ -114,7 +114,7 @@ function LogBoxRNPolyfill(
               // TODO: Export to helper and use DevServer to for host clipboard with fallback to device clipboard
               Clipboard.setString(text);
             }}
-            onDismiss={props.onDismiss}
+            onDismiss={onDismiss}
             onMinimize={onMinimize}
             onChangeSelectedIndex={props.onChangeSelectedIndex}
             selectedIndex={props.selectedIndex}
