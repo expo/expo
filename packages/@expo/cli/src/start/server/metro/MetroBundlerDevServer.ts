@@ -1819,44 +1819,48 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       const serializer = this.getMetroSerializer();
 
+      const options = {
+        asyncRequireModulePath: await this.metro._resolveRelativePath(
+          config.transformer.asyncRequireModulePath,
+          {
+            relativeTo: 'project',
+            resolverOptions,
+            transformOptions,
+          }
+        ),
+        // ...serializerOptions,
+        processModuleFilter: config.serializer.processModuleFilter,
+        createModuleId: this.metro._createModuleId,
+        getRunModuleStatement: config.serializer.getRunModuleStatement,
+        globalPrefix: config.transformer.globalPrefix,
+        includeAsyncPaths: graphOptions.lazy,
+        dev: transformOptions.dev,
+        projectRoot: config.projectRoot,
+        modulesOnly: serializerOptions.modulesOnly,
+        runBeforeMainModule: config.serializer.getModulesRunBeforeMainModule(
+          resolvedEntryFilePath
+          // path.relative(config.projectRoot, entryFile)
+        ),
+        runModule: serializerOptions.runModule,
+        sourceMapUrl: serializerOptions.sourceMapUrl,
+        sourceUrl: serializerOptions.sourceUrl,
+        inlineSourceMap: serializerOptions.inlineSourceMap,
+        serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
+        shouldAddToIgnoreList,
+
+        // TODO(@kitten): This is incoherently typed. The target should be typed to accept this coherently
+        // but we have no type overrides or a proper type chain for this
+        serializerOptions,
+      };
+
+      // TODO(@kitten): Yearns for a refactor. The typings here were and are questionable
       const bundle = await serializer(
         // NOTE: Using absolute path instead of relative input path is a breaking change.
         // entryFile,
         resolvedEntryFilePath,
-
-        revision.prepend as any,
-        revision.graph as any,
-        {
-          asyncRequireModulePath: await this.metro._resolveRelativePath(
-            config.transformer.asyncRequireModulePath,
-            {
-              relativeTo: 'project',
-              resolverOptions,
-              transformOptions,
-            }
-          ),
-          // ...serializerOptions,
-          processModuleFilter: config.serializer.processModuleFilter,
-          createModuleId: this.metro._createModuleId,
-          getRunModuleStatement: config.serializer.getRunModuleStatement,
-          includeAsyncPaths: graphOptions.lazy,
-          dev: transformOptions.dev,
-          projectRoot: config.projectRoot,
-          modulesOnly: serializerOptions.modulesOnly,
-          runBeforeMainModule: config.serializer.getModulesRunBeforeMainModule(
-            resolvedEntryFilePath
-            // path.relative(config.projectRoot, entryFile)
-          ),
-          runModule: serializerOptions.runModule,
-          sourceMapUrl: serializerOptions.sourceMapUrl,
-          sourceUrl: serializerOptions.sourceUrl,
-          inlineSourceMap: serializerOptions.inlineSourceMap,
-          serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
-          shouldAddToIgnoreList,
-
-          // @ts-expect-error: passed to our serializer to enable non-serial return values.
-          serializerOptions,
-        }
+        revision.prepend,
+        revision.graph,
+        options
       );
 
       this.metro._reporter.update({
