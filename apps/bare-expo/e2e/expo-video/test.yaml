@@ -1,12 +1,11 @@
 appId: dev.expo.Payments
 ---
 # when devving, start from different screen so state is reset
-- openLink: bareexpo://components
+#- openLink: bareexpo://components
+- openLink: bareexpo://components/video/events
 - tapOn:
     text: 'Open'
     optional: true
-
-- openLink: bareexpo://components/video/events
 
 - assertVisible: 'source = Sintel'
 - assertVisible: 'isPlaying = false'

@@ -2,6 +2,8 @@ import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs';
 import Jimp from 'jimp-compact';
 
+import { MAESTRO_DRIVER_STARTUP_TIMEOUT } from './e2e-common';
+
 interface Bounds {
   x: number;
   y: number;
@@ -83,6 +85,10 @@ export class ViewCropper {
     const startTime = Date.now();
     const result = await spawnAsync('maestro', [`--platform=${platform}`, 'hierarchy'], {
       stdio: 'pipe',
+      env: {
+        ...process.env,
+        MAESTRO_DRIVER_STARTUP_TIMEOUT,
+      },
     });
     const endTime = Date.now();
     const duration = endTime - startTime;

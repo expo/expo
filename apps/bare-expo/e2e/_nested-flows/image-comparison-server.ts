@@ -21,7 +21,7 @@ Bun.serve({
       try {
         const bodyJson = await req.json();
         const parsedBody = schema.parse(bodyJson);
-        const { similarityThreshold = 5, platform, diffOutputPath } = parsedBody;
+        const { similarityThreshold = 5, platform } = parsedBody;
 
         const testID = 'testID' in parsedBody ? parsedBody.testID : undefined;
 

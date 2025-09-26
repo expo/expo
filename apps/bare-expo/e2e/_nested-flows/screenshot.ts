@@ -26,6 +26,8 @@ export async function takeScreenshot({
   if (!fs.existsSync(copyDir)) {
     fs.mkdirSync(copyDir, { recursive: true });
   }
+  const label = `${platform} screenshot duration`;
+  console.time(label);
 
   if (platform === 'ios') {
     await takeIOSScreenshot(outputFilePath);
@@ -34,6 +36,7 @@ export async function takeScreenshot({
   } else {
     throw new Error(`Unsupported platform: ${platform}`);
   }
+  console.timeEnd(label);
   await fs.promises.copyFile(outputFilePath, copyAlsoTo);
   console.log(`Screenshot also copied to: ${copyAlsoTo}`);
 }

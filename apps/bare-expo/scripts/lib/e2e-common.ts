@@ -2,6 +2,8 @@ import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs/promises';
 import { glob } from 'glob';
 import * as path from 'path';
+// note: the name matters as it's used as an env variable
+export const MAESTRO_DRIVER_STARTUP_TIMEOUT = String(120_000); // Wait 2 minutes for Maestro driver to start
 
 export type StartMode = 'BUILD' | 'TEST' | 'BUILD_AND_TEST';
 

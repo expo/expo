@@ -14,13 +14,13 @@ import {
   retryAsync,
   prettyPrintTestSuiteLogs,
   runCustomMaestroFlowsAsync,
+  MAESTRO_DRIVER_STARTUP_TIMEOUT,
 } from './lib/e2e-common';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
 const TARGET_DEVICE_IOS_VERSION = 26;
 const APP_ID = 'dev.expo.Payments';
 const OUTPUT_APP_PATH = 'ios/build/BareExpo.app';
-const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
 const NUM_OF_RETRIES = 6;
 
 const __filename = fileURLToPath(import.meta.url);
@@ -146,16 +146,18 @@ export function setupLogger(predicate: string, signal: AbortSignal): () => Promi
 
 async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60 * 3) {
   await retryAsync(async (retryNumber) => {
-    if (process.env.CI) {
+    if (process.env.CI && retryNumber > 0) {
       try {
         await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
         await spawnAsync('xcrun', ['simctl', 'erase', deviceId], { stdio: 'inherit' });
       } catch {}
     }
 
-    console.time(
+    console.log(
       `\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}] retry[${retryNumber}]`
     );
+    const label = 'device startup timer';
+    console.time(label);
     const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], {
       stdio: 'inherit',
     });
@@ -179,7 +181,7 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60
     });
 
     clearTimeout(timeoutHandle);
-    console.timeEnd(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
+    console.timeEnd(label);
   }, 3);
 }
 
@@ -212,6 +214,9 @@ async function testAsync(
 
     console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
     try {
+      const label = 'test duration';
+      console.time(label);
+
       await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
         stdio: 'inherit',
         cwd: maestroWorkspaceRoot,
@@ -220,6 +225,7 @@ async function testAsync(
           MAESTRO_DRIVER_STARTUP_TIMEOUT,
         },
       });
+      console.timeEnd(label);
     } catch {
       stopLogCollectionController.abort();
       console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
@@ -247,7 +253,6 @@ async function testAsync(
     throw e;
   } finally {
     stopLogCollectionController.abort();
-    await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
   }
 }
 

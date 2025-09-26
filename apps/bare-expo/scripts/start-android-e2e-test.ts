@@ -14,11 +14,11 @@ import {
   prettyPrintTestSuiteLogs,
   setupLogger,
   runCustomMaestroFlowsAsync,
+  MAESTRO_DRIVER_STARTUP_TIMEOUT,
 } from './lib/e2e-common';
 
 const APP_ID = 'dev.expo.payments';
 const OUTPUT_APP_PATH = 'android/app/build/outputs/apk/release/app-release.apk';
-const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
 const NUM_OF_RETRIES = 6; // Number of retries for the suite
 
 const __filename = fileURLToPath(import.meta.url);
