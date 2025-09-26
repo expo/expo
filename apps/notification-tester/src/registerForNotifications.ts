@@ -1,18 +1,11 @@
 import Constants from 'expo-constants';
-import { isDevice } from 'expo-device';
 import {
   getExpoPushTokenAsync,
   getPermissionsAsync,
   requestPermissionsAsync,
 } from 'expo-notifications';
-import { Platform } from 'react-native';
 
 export async function registerForPushNotificationsAsync() {
-  if (Platform.OS === 'ios' && !isDevice) {
-    console.error('Must use physical device for Push Notifications');
-    return;
-  }
-
   const { status: existingStatus } = await getPermissionsAsync();
   let finalStatus = existingStatus;
   if (existingStatus !== 'granted') {
