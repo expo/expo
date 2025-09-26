@@ -7,6 +7,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { useChat } from '@kapaai/react-sdk';
 import {
   Children,
+  type CSSProperties,
   type FormEvent,
   type MouseEvent,
   useCallback,
@@ -18,7 +19,7 @@ import {
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import { FOOTNOTE, RawH5 } from '../Text';
+import { FOOTNOTE } from '../Text';
 
 type AskPageAIChatProps = {
   onClose: () => void;
@@ -60,6 +61,15 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
   }, [conversation.length, askedQuestions.length]);
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
+  const closeButtonThemeOverrides = useMemo(
+    () =>
+      ({
+        '--expo-theme-button-quaternary-hover': 'rgba(255,255,255,0.12)',
+        '--expo-theme-button-quaternary-text': '#ffffff',
+        '--expo-theme-button-quaternary-icon': '#ffffff',
+      }) as CSSProperties,
+    []
+  );
   const buildPrompt = useMemo(() => {
     const origin = typeof window !== 'undefined' ? window.location.href : '';
     return (text: string) =>
@@ -107,7 +117,6 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
       code({
         inline,
         children,
-        className,
       }: {
         inline?: boolean;
         children?: React.ReactNode;
@@ -127,9 +136,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
 
           if (shouldRenderInline) {
             return (
-              <code className="rounded bg-subtle px-1.5 py-0.5 text-xs text-default">
-                {display}
-              </code>
+              <code className="rounded bg-subtle px-1 py-0.5 text-xs text-default">{display}</code>
             );
           }
 
@@ -138,7 +145,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
 
         if (!hasLineBreak && tokenCount <= 1) {
           return (
-            <code className="rounded bg-subtle px-1.5 py-0.5 text-xs text-default">
+            <code className="rounded bg-subtle px-1 py-0.5 text-xs text-default">
               {clean.trim()}
             </code>
           );
@@ -168,23 +175,24 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-default">
-      <div className="flex items-center justify-between border-b border-default px-4 py-3">
+      <div className="flex items-center justify-between border-b border-default bg-palette-black px-4 py-3 text-palette-white">
         <div className="flex items-center gap-2">
           <span
             className={mergeClasses(
-              'inline-flex size-8 items-center justify-center rounded-full bg-element shadow-xs'
+              'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
             )}>
-            <Stars03DuotoneIcon className="icon-sm text-icon-default" />
+            <Stars03DuotoneIcon className="icon-sm" />
           </span>
-          <RawH5 className="!my-0">AI Assistant</RawH5>
+          <span className="text-sm font-medium leading-tight text-palette-white">AI Assistant</span>
         </div>
         <Button
           aria-label="Close Ask AI assistant"
           theme="quaternary"
           size="xs"
-          className="px-2"
+          className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+          style={closeButtonThemeOverrides}
           onClick={handleClose}>
-          <XIcon className="icon-xs text-icon-secondary" />
+          <XIcon className="icon-sm text-palette-white" />
         </Button>
       </div>
 
@@ -212,7 +220,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
                         </ReactMarkdown>
                       ) : (
                         <FOOTNOTE theme="secondary">
-                          {isLast && isBusy ? 'Thinking...' : ''}
+                          {isLast && isBusy ? 'Preparing answer...' : ''}
                         </FOOTNOTE>
                       )}
                     </div>
@@ -254,7 +262,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
 
       <div className="mt-auto border-t border-default px-5 pb-6 pt-4">
         <form
-          className="flex items-end gap-1 rounded-md border border-default bg-default px-2 py-1.5"
+          className="flex items-center gap-1 rounded-md border border-default bg-default px-2 py-1.5"
           onSubmit={handleSubmit}
           aria-label="Ask AI form">
           <textarea
