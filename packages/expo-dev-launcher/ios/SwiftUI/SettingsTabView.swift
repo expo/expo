@@ -56,6 +56,9 @@ struct SettingsTabView: View {
       .padding()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    #if os(tvOS)
+    .background()
+    #endif
     .navigationBarHidden(true)
   }
 
