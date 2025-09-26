@@ -145,6 +145,7 @@ extension ExpoSwiftUI {
 
     public override func layoutSubviews() {
       super.layoutSubviews()
+      // TODO: Use updateLayoutMetrics from RN. Add support in ExpoFabricView.
       setupHostingViewConstraints()
     }
 
