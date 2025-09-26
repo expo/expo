@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-// import { useState } from 'react';
 import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
