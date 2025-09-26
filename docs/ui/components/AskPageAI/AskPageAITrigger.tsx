@@ -50,16 +50,18 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
           type="button"
           theme="quaternary"
           className={mergeClasses(
-            'min-h-[36px] justify-center gap-2 px-2.5',
+            'min-h-[36px] justify-center px-2.5',
             isActive && 'border border-default bg-element'
           )}
           onClick={onClick}
           aria-pressed={isActive}
           aria-label="Ask about this configuration page with AI">
-          <Stars03DuotoneIcon className="icon-sm text-icon-secondary" />
-          <FOOTNOTE crawlable={false} theme="secondary">
-            Ask AI
-          </FOOTNOTE>
+          <div className="flex items-center gap-2">
+            <Stars03DuotoneIcon className="icon-sm text-icon-secondary" />
+            <FOOTNOTE crawlable={false} theme="secondary">
+              Ask AI
+            </FOOTNOTE>
+          </div>
         </Button>
       </Tooltip.Trigger>
       <Tooltip.Content sideOffset={8} className="max-w-[300px] text-center">
