@@ -40,7 +40,7 @@ const HostNativeView: React.ComponentType<HostProps> = requireNativeView('ExpoUI
 /**
  * A hosting component for SwiftUI views.
  */
-export function Host(props: HostProps) {
+export function HostV2(props: HostProps) {
   const { matchContents, onLayoutContent, modifiers, ...restProps } = props;
 
   return (
@@ -60,5 +60,3 @@ export function Host(props: HostProps) {
     />
   );
 }
-
-export { HostV2 } from './HostV2';

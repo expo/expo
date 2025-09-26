@@ -10,6 +10,7 @@ import * as React from 'react';
 import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
+import { fixedSize } from '@expo/ui/swift-ui/modifiers';
 
 export default function ButtonScreen() {
   return (
@@ -109,8 +110,10 @@ function Button(
 ) {
   const { style, ...restProps } = props;
   return (
-    <Host matchContents={{ vertical: true }} style={style}>
-      <ButtonPrimitive {...restProps}>{props.children}</ButtonPrimitive>
+    <Host matchContents style={style}>
+      <ButtonPrimitive modifiers={[fixedSize()]} {...restProps}>
+        {props.children}
+      </ButtonPrimitive>
     </Host>
   );
 }
