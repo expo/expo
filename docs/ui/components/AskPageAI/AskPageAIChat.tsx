@@ -16,7 +16,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
@@ -47,16 +46,6 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
   const contextLabel = pageTitle?.trim() ? pageTitle : 'This page';
   const [question, setQuestion] = useState('');
   const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
-  const previousTitleRef = useRef<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (previousTitleRef.current !== pageTitle) {
-      previousTitleRef.current = pageTitle;
-      resetConversation();
-      setQuestion('');
-      setAskedQuestions([]);
-    }
-  }, [pageTitle, resetConversation]);
 
   useEffect(() => {
     if (conversation.length === 0 && askedQuestions.length > 0) {
@@ -134,9 +123,9 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
     if (isBusy && conversation.length > 0) {
       stopGeneration();
     }
-    resetConversation();
     setQuestion('');
     setAskedQuestions([]);
+    resetConversation();
   }, [conversation.length, isBusy, resetConversation, stopGeneration]);
 
   const handleFeedback = useCallback(
