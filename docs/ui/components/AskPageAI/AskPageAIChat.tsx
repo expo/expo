@@ -225,74 +225,79 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-default">
-      <div className="flex items-center justify-between border-b border-default bg-palette-black px-4 py-3 text-palette-white">
-        <div className="flex items-center gap-2">
-          <span
-            className={mergeClasses(
-              'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
-            )}
-            style={headerAccentBackground}>
-            <Stars03DuotoneIcon className="icon-sm text-palette-white" />
-          </span>
-          <span className="text-sm font-medium leading-tight text-palette-white">
-            Expo AI Assistant
-          </span>
+      <div className="flex flex-col gap-3 border-b border-default bg-palette-black px-4 py-3 text-palette-white">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span
+              className={mergeClasses(
+                'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
+              )}
+              style={headerAccentBackground}>
+              <Stars03DuotoneIcon className="icon-sm text-palette-white" />
+            </span>
+            <span className="text-sm font-medium leading-tight text-palette-white">
+              Expo AI Assistant
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              type="button"
+              aria-label="Provide positive feedback"
+              theme="quaternary"
+              size="xs"
+              className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+              style={{
+                ...closeButtonThemeOverrides,
+                ...(feedbackTarget?.reaction === 'upvote' ? activeFeedbackBackground : {}),
+              }}
+              aria-pressed={feedbackTarget?.reaction === 'upvote'}
+              disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
+              onClick={() => {
+                handleFeedback('upvote');
+              }}>
+              <ThumbsUpIcon className="icon-xs text-palette-white" />
+            </Button>
+            <Button
+              type="button"
+              aria-label="Provide negative feedback"
+              theme="quaternary"
+              size="xs"
+              className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+              style={{
+                ...closeButtonThemeOverrides,
+                ...(feedbackTarget?.reaction === 'downvote' ? activeFeedbackBackground : {}),
+              }}
+              aria-pressed={feedbackTarget?.reaction === 'downvote'}
+              disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
+              onClick={() => {
+                handleFeedback('downvote');
+              }}>
+              <ThumbsDownIcon className="icon-xs text-palette-white" />
+            </Button>
+            <Button
+              type="button"
+              aria-label="Reset conversation"
+              theme="quaternary"
+              size="xs"
+              className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+              style={closeButtonThemeOverrides}
+              onClick={handleConversationReset}>
+              <RefreshCcw02Icon className="icon-xs text-palette-white" />
+            </Button>
+            <Button
+              aria-label="Close Ask AI assistant"
+              theme="quaternary"
+              size="xs"
+              className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+              style={closeButtonThemeOverrides}
+              onClick={handleClose}>
+              <XIcon className="icon-xs text-palette-white" />
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            aria-label="Provide positive feedback"
-            theme="quaternary"
-            size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-            style={{
-              ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'upvote' ? activeFeedbackBackground : {}),
-            }}
-            aria-pressed={feedbackTarget?.reaction === 'upvote'}
-            disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
-            onClick={() => {
-              handleFeedback('upvote');
-            }}>
-            <ThumbsUpIcon className="icon-xs text-palette-white" />
-          </Button>
-          <Button
-            type="button"
-            aria-label="Provide negative feedback"
-            theme="quaternary"
-            size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-            style={{
-              ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'downvote' ? activeFeedbackBackground : {}),
-            }}
-            aria-pressed={feedbackTarget?.reaction === 'downvote'}
-            disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
-            onClick={() => {
-              handleFeedback('downvote');
-            }}>
-            <ThumbsDownIcon className="icon-xs text-palette-white" />
-          </Button>
-          <Button
-            type="button"
-            aria-label="Reset conversation"
-            theme="quaternary"
-            size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-            style={closeButtonThemeOverrides}
-            onClick={handleConversationReset}>
-            <RefreshCcw02Icon className="icon-xs text-palette-white" />
-          </Button>
-          <Button
-            aria-label="Close Ask AI assistant"
-            theme="quaternary"
-            size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-            style={closeButtonThemeOverrides}
-            onClick={handleClose}>
-            <XIcon className="icon-sm text-palette-white" />
-          </Button>
-        </div>
+        <FOOTNOTE className="text-palette-white">
+          Ask a question about <span className="font-semibold">{contextLabel}</span>.
+        </FOOTNOTE>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
@@ -349,9 +354,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
               );
             })}
           </div>
-        ) : (
-          <FOOTNOTE theme="secondary">Ask a question about {contextLabel}.</FOOTNOTE>
-        )}
+        ) : null}
         {error && (
           <FOOTNOTE theme="danger" className="mt-4">
             {error}
