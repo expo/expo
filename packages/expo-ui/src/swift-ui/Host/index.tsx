@@ -60,5 +60,3 @@ export function Host(props: HostProps) {
     />
   );
 }
-
-export { HostV2 } from './HostV2';
