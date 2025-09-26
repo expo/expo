@@ -194,14 +194,9 @@ extension ExpoSwiftUI {
       guard let view = hostingController.view as UIView? else {
         return
       }
-      view.translatesAutoresizingMaskIntoConstraints = false
-
-      NSLayoutConstraint.activate([
-        view.topAnchor.constraint(equalTo: topAnchor),
-        view.bottomAnchor.constraint(equalTo: bottomAnchor),
-        view.leftAnchor.constraint(equalTo: leftAnchor),
-        view.rightAnchor.constraint(equalTo: rightAnchor)
-      ])
+      let frame = self.bounds;
+      view.frame = frame;
+      view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
 
     // MARK: - UIView lifecycle
