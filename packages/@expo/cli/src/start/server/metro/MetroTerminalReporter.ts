@@ -77,7 +77,6 @@ export class MetroTerminalReporter extends TerminalReporter {
           break;
         }
 
-        const mode = event.mode === 'NOBRIDGE' || event.mode === 'BRIDGE' ? '' : (event.mode ?? '');
         // @ts-expect-error
         if (level === 'warn' || level === 'error') {
           let hasStack = false;
@@ -124,14 +123,14 @@ export class MetroTerminalReporter extends TerminalReporter {
                   ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
                   : symbolicated;
 
-              logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...filtered);
+              logLikeMetro(this.terminal.log.bind(this.terminal), level, ...filtered);
             })();
             return;
           }
         }
 
         // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-        logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
+        logLikeMetro(this.terminal.log.bind(this.terminal), level, ...event.data);
         return;
       }
     }
