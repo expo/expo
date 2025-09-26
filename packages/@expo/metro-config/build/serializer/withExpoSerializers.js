@@ -43,7 +43,9 @@ function withSerializerPlugins(config, processors, options = {}) {
 }
 function createDefaultExportCustomSerializer(config, configOptions = {}) {
     return async (entryPoint, preModules, graph, inputOptions) => {
-        const isPossiblyDev = graph.transformOptions.dev;
+        // NOTE(@kitten): My guess is that this was supposed to always be disabled for `node` since we set `hot: true` manually for it
+        const isPossiblyDev = graph.transformOptions.dev ||
+            graph.transformOptions.customTransformOptions?.environment === 'node';
         // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
         const enableDebugId = inputOptions.inlineSourceMap !== true && !isPossiblyDev;
         const context = {
