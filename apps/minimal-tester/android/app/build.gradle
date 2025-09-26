@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.community.papertester'
+    namespace 'com.community.minimaltester'
     defaultConfig {
-        applicationId 'com.community.papertester'
+        applicationId 'com.community.minimaltester'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
