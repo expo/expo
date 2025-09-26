@@ -7,7 +7,7 @@
 import { getConfig } from '@expo/config';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
-import output from '@expo/metro/metro/shared/output/bundle';
+import * as output from '@expo/metro/metro/shared/output/bundle';
 import type { BundleOptions } from '@expo/metro/metro/shared/types';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
@@ -37,15 +37,6 @@ import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 import { resolveRealEntryFilePath } from '../../utils/filePath';
 
 const debug = require('debug')('expo:export:embed');
-
-/**
- * Extended type for the Metro server build result to support the `code` property as a `Buffer`.
- */
-type ExtendedMetroServerBuildResult =
-  | Awaited<ReturnType<Server['build']>>
-  | {
-      code: string | Buffer;
-    };
 
 function guessCopiedAppleBundlePath(bundleOutput: string) {
   // Ensure the path is familiar before guessing.
@@ -145,7 +136,6 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
 
   // Persist bundle and source maps.
   await Promise.all([
-    // @ts-expect-error: The `save()` method from metro is typed to support `code: string` only but it also supports `Buffer` actually.
     output.save(bundle, options, Log.log),
 
     // Write dom components proxy files.
@@ -174,7 +164,7 @@ export async function exportEmbedBundleAndAssetsAsync(
   projectRoot: string,
   options: Options
 ): Promise<{
-  bundle: ExtendedMetroServerBuildResult;
+  bundle: Awaited<ReturnType<Server['build']>>;
   assets: readonly BundleAssetWithFileHashes[];
   files: ExportAssetMap;
 }> {
