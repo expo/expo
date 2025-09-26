@@ -2,6 +2,15 @@ pluginManagement {
   // Linked manually to used version from our RN fork
   includeBuild(new File(rootDir, "../../../react-native-lab/react-native/packages/gradle-plugin").toString())
 
+  def expoPluginsPath = new File(
+          providers.exec {
+            workingDir(rootDir)
+            commandLine("node", "--print", "require.resolve('expo-modules-autolinking/package.json', { paths: [require.resolve('expo/package.json')] })")
+          }.standardOutput.asText.get().trim(),
+          "../android/expo-gradle-plugin"
+  ).absolutePath
+  includeBuild(expoPluginsPath)
+
   repositories {
     mavenCentral()
     gradlePluginPortal()
@@ -9,23 +18,40 @@ pluginManagement {
     google()
   }
 }
-plugins { id("com.facebook.react.settings") }
+
+plugins {
+  id("com.facebook.react.settings")
+  id("expo-autolinking-settings")
+}
 
 extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
-  def command = [
-    'npx',
-    'expo-modules-autolinking',
-    'react-native-config',
-    '--json',
-    '--platform',
-    'android'
-  ].toList()
-  ex.autolinkLibrariesFromCommand(command)
+  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
 }
+
+expoAutolinking.searchPaths = [
+  '../../../packages'
+]
+expoAutolinking.exclude = [
+  'expo-module-template',
+  'expo-module-template-local',
+  'react-native-reanimated',
+  'expo-dev-menu-interface',
+  'expo-dev-menu',
+  'expo-dev-launcher',
+  'expo-dev-client',
+  'expo-maps',
+  'expo-network-addons',
+  'expo-splash-screen',
+  'expo-blob',
+  '@expo/ui',
+  'expo-mesh-gradient',
+  '@expo/app-integrity'
+]
+
+expoAutolinking.useExpoModules()
 
 include ':app'
 
-apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 apply from: new File(rootDir, "versioning_linking.gradle")
 
 // Linked manually to used version from our RN fork
@@ -57,25 +83,3 @@ project(':expo-modules-test-core').projectDir = new File(rootDir, '../../../pack
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
-
-useExpoModules([
-    searchPaths: [
-        '../../../packages'
-    ],
-    exclude : [
-        'expo-module-template',
-        'expo-module-template-local',
-        'react-native-reanimated',
-        'expo-dev-menu-interface',
-        'expo-dev-menu',
-        'expo-dev-launcher',
-        'expo-dev-client',
-        'expo-maps',
-        'expo-network-addons',
-        'expo-splash-screen',
-        'expo-blob',
-        '@expo/ui',
-        'expo-mesh-gradient',
-        '@expo/app-integrity'
-    ]
-])
