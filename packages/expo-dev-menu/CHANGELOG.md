@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Remove unused dev dependencies ([#39987](https://github.com/expo/expo/pull/39987) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 7.0.11 — 2025-09-11
 
 ### 🐛 Bug fixes
