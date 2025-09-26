@@ -6,7 +6,7 @@ import { MarkdownActionsDropdown } from '~/ui/components/MarkdownActions/Markdow
 import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/paths';
 import { H1, P } from '~/ui/components/Text';
 
-import { AskPageAITrigger } from '../AskPageAI';
+import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI';
 import { PagePackageVersion } from './PagePackageVersion';
 import { PagePlatformTags } from './PagePlatformTags';
 import { PageTitleButtons } from './PageTitleButtons';
@@ -21,6 +21,7 @@ type Props = {
   showAskAIButton?: boolean;
   onAskAIClick?: () => void;
   isAskAIVisible?: boolean;
+  askAIButtonVariant?: 'default' | 'config';
 } & WithTestRequire;
 
 export function PageHeader({
@@ -34,6 +35,7 @@ export function PageHeader({
   showAskAIButton = false,
   onAskAIClick,
   isAskAIVisible = false,
+  askAIButtonVariant = 'default',
 }: Props) {
   const router = useRouter();
   const currentPath = router?.asPath ?? router?.pathname ?? '';
@@ -67,7 +69,11 @@ export function PageHeader({
             <span className="flex items-center gap-1">
               {showMarkdownActions && <MarkdownActionsDropdown />}
               {showAskAIButton && onAskAIClick && (
-                <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+                askAIButtonVariant === 'config' ? (
+                  <AskPageAIConfigTrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+                ) : (
+                  <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+                )
               )}
             </span>
           )}
@@ -84,7 +90,11 @@ export function PageHeader({
           <span className="ml-1 flex items-center gap-1">
             {showMarkdownActions && <MarkdownActionsDropdown />}
             {showAskAIButton && onAskAIClick && (
-              <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+              askAIButtonVariant === 'config' ? (
+                <AskPageAIConfigTrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+              ) : (
+                <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+              )
             )}
           </span>
         )}

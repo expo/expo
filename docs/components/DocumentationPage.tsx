@@ -57,12 +57,15 @@ export default function DocumentationPage({
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
   const currentPath = router?.asPath ?? '';
   const isLatestSdkPage = currentPath.startsWith('/versions/latest/sdk/');
+  const isLatestConfigPage = currentPath.startsWith('/versions/latest/config/');
+  const isAskAIEligiblePage = isLatestSdkPage || isLatestConfigPage;
+  const askAIButtonVariant = isLatestConfigPage ? 'config' : 'default';
 
   useEffect(() => {
-    if (!isLatestSdkPage && isAskAIVisible) {
+    if (!isAskAIEligiblePage && isAskAIVisible) {
       setAskAIVisible(false);
     }
-  }, [isLatestSdkPage, isAskAIVisible]);
+  }, [isAskAIEligiblePage, isAskAIVisible]);
 
   const handleAskAIChatClose = () => {
     setAskAIVisible(false);
@@ -71,7 +74,7 @@ export default function DocumentationPage({
     setAskAIVisible(false);
   };
   const handleAskAIToggle = () => {
-    if (!isLatestSdkPage) {
+    if (!isAskAIEligiblePage) {
       return;
     }
 
@@ -197,9 +200,10 @@ export default function DocumentationPage({
               packageName={packageName}
               iconUrl={iconUrl}
               platforms={platforms}
-              showAskAIButton={isLatestSdkPage}
+              showAskAIButton={isAskAIEligiblePage}
               onAskAIClick={handleAskAIToggle}
               isAskAIVisible={isAskAIVisible}
+              askAIButtonVariant={askAIButtonVariant}
             />
           )}
           {title && <Separator />}
@@ -214,7 +218,7 @@ export default function DocumentationPage({
           modificationDate={modificationDate}
         />
       </DocumentationNestedScrollLayout>
-      {isLatestSdkPage && (
+      {isAskAIEligiblePage && (
         <AskPageAIOverlay
           onClose={handleAskAIChatClose}
           onMinimize={handleAskAIMinimize}
