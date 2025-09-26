@@ -19,22 +19,6 @@ export default function StepperScreen() {
   const [rating, setRating] = useState(3);
   const [items, setItems] = useState(0);
 
-  const createStepperHandler = (
-    currentValue: number,
-    setValue: (value: number) => void,
-    min: number,
-    max: number,
-    step: number,
-    isIncrement: boolean
-  ) => {
-    return () => {
-      const newValue = isIncrement ? currentValue + step : currentValue - step;
-      if (newValue >= min && newValue <= max) {
-        setValue(newValue);
-      }
-    };
-  };
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <HeadingText style={styles.heading}>Native SwiftUI Stepper Component</HeadingText>
@@ -48,9 +32,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Items: ${quantity}`}
-              value={quantity}
-              onIncrement={createStepperHandler(quantity, setQuantity, 0, 50, 1, true)}
-              onDecrement={createStepperHandler(quantity, setQuantity, 0, 50, 1, false)}
+              defaultValue={quantity}
+              min={0}
+              max={50}
+              step={1}
+              onValueChanged={setQuantity}
               modifiers={modifiers}
             />
           </Host>
@@ -59,9 +45,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Temperature: ${temperature}°C`}
-              value={temperature}
-              onIncrement={createStepperHandler(temperature, setTemperature, -10, 50, 5, true)}
-              onDecrement={createStepperHandler(temperature, setTemperature, -10, 50, 5, false)}
+              defaultValue={temperature}
+              min={-10}
+              max={50}
+              step={5}
+              onValueChanged={setTemperature}
               modifiers={modifiers}
             />
           </Host>
@@ -70,9 +58,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Volume: ${volume}%`}
-              value={volume}
-              onIncrement={createStepperHandler(volume, setVolume, 0, 100, 10, true)}
-              onDecrement={createStepperHandler(volume, setVolume, 0, 100, 10, false)}
+              defaultValue={volume}
+              min={0}
+              max={100}
+              step={10}
+              onValueChanged={setVolume}
               modifiers={modifiers}
             />
           </Host>
@@ -84,9 +74,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Speed: ${speed}/10`}
-              value={speed}
-              onIncrement={createStepperHandler(speed, setSpeed, 1, 10, 1, true)}
-              onDecrement={createStepperHandler(speed, setSpeed, 1, 10, 1, false)}
+              defaultValue={speed}
+              min={1}
+              max={10}
+              step={1}
+              onValueChanged={setSpeed}
               modifiers={modifiers}
             />
           </Host>
@@ -95,9 +87,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Rating: ${rating} stars`}
-              value={rating}
-              onIncrement={createStepperHandler(rating, setRating, 1, 5, 1, true)}
-              onDecrement={createStepperHandler(rating, setRating, 1, 5, 1, false)}
+              defaultValue={rating}
+              min={1}
+              max={5}
+              step={1}
+              onValueChanged={setRating}
               modifiers={modifiers}
             />
           </Host>
@@ -106,9 +100,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Cart Items: ${items} items`}
-              value={items}
-              onIncrement={createStepperHandler(items, setItems, 0, 20, 2, true)}
-              onDecrement={createStepperHandler(items, setItems, 0, 20, 2, false)}
+              defaultValue={items}
+              min={0}
+              max={20}
+              step={2}
+              onValueChanged={setItems}
               modifiers={modifiers}
             />
           </Host>
@@ -120,9 +116,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Stepper: ${quantity}`}
-              value={quantity}
-              onIncrement={createStepperHandler(quantity, setQuantity, 0, 50, 1, true)}
-              onDecrement={createStepperHandler(quantity, setQuantity, 0, 50, 1, false)}
+              defaultValue={quantity}
+              min={0}
+              max={50}
+              step={1}
+              onValueChanged={setQuantity}
               modifiers={modifiers}
             />
           </Host>

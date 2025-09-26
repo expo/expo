@@ -10,16 +10,29 @@ export type StepperProps = {
    */
   label: string;
   /**
-   * The current value of the stepper.
+   * The initial/default value of the stepper.
    */
-  value: number;
-  onIncrement: (value: number) => void;
-  onDecrement: (value: number) => void;
+  defaultValue?: number;
+  /**
+   * The step value for increment/decrement operations.
+   */
+  step?: number;
+  /**
+   * The minimum value allowed.
+   */
+  min?: number;
+  /**
+   * The maximum value allowed.
+   */
+  max?: number;
+  /**
+   * Called when the stepper value changes.
+   */
+  onValueChanged: (value: number) => void;
 } & CommonViewModifierProps;
 
-type NativeStepperProps = Omit<StepperProps, 'onIncrement' | 'onDecrement'> &
-  ViewEvent<'onIncrement', { value: number }> &
-  ViewEvent<'onDecrement', { value: number }>;
+type NativeStepperProps = Omit<StepperProps, 'onValueChanged'> &
+  ViewEvent<'onValueChanged', { value: number }>;
 
 const StepperNativeView: React.ComponentType<NativeStepperProps> = requireNativeView(
   'ExpoUI',
@@ -32,11 +45,8 @@ function transformStepperProps(props: StepperProps): NativeStepperProps {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    onIncrement: ({ nativeEvent: { value } }) => {
-      props.onIncrement(value);
-    },
-    onDecrement: ({ nativeEvent: { value } }) => {
-      props.onDecrement(value);
+    onValueChanged: ({ nativeEvent: { value } }) => {
+      props.onValueChanged(value);
     },
   };
 }

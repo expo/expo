@@ -5,11 +5,25 @@ export type StepperProps = {
      */
     label: string;
     /**
-     * The current value of the stepper.
+     * The initial/default value of the stepper.
      */
-    value: number;
-    onIncrement: (value: number) => void;
-    onDecrement: (value: number) => void;
+    defaultValue?: number;
+    /**
+     * The step value for increment/decrement operations.
+     */
+    step?: number;
+    /**
+     * The minimum value allowed.
+     */
+    min?: number;
+    /**
+     * The maximum value allowed.
+     */
+    max?: number;
+    /**
+     * Called when the stepper value changes.
+     */
+    onValueChanged: (value: number) => void;
 } & CommonViewModifierProps;
 export declare function Stepper(props: StepperProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
