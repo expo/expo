@@ -109,7 +109,7 @@ function Button(
 ) {
   const { style, ...restProps } = props;
   return (
-    <Host matchContents style={style}>
+    <Host matchContents={{ vertical: true }} style={style}>
       <ButtonPrimitive {...restProps}>{props.children}</ButtonPrimitive>
     </Host>
   );

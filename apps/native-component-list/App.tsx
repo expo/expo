@@ -5,8 +5,6 @@ import { Platform, StatusBar } from 'react-native';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
-import { Host, Text } from '@expo/ui/swift-ui';
-import ButtonScreen from 'src/screens/UI/ButtonScreen.ios';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -41,5 +39,5 @@ export default function App() {
     await loadAssetsAsync();
   });
 
-  return <ButtonScreen />;
+  return <ThemeProvider>{isLoadingCompleted ? <RootNavigation /> : null}</ThemeProvider>;
 }
