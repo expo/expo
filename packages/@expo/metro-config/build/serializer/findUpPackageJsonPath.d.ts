@@ -1,1 +1,1 @@
-export declare const findUpPackageJsonPath: (dir: string) => string;
+export declare const findUpPackageJsonPath: (root: string) => string;

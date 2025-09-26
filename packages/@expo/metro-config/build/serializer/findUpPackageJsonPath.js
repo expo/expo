@@ -12,16 +12,14 @@ exports.findUpPackageJsonPath = void 0;
  */
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const findUpPackageJsonPath = (dir) => {
-    if (dir === path_1.default.sep) {
-        // All files should have `package.json`.
-        throw new Error(`Cannot find package.json from ${dir}`);
+const findUpPackageJsonPath = (root) => {
+    for (let dir = root; path_1.default.dirname(dir) !== dir; dir = path_1.default.dirname(dir)) {
+        const file = path_1.default.resolve(dir, 'package.json');
+        if (fs_1.default.existsSync(file)) {
+            return file;
+        }
     }
-    const packageJsonPath = path_1.default.join(dir, 'package.json');
-    if (fs_1.default.existsSync(packageJsonPath)) {
-        return packageJsonPath;
-    }
-    return (0, exports.findUpPackageJsonPath)(path_1.default.dirname(dir));
+    throw new Error(`Cannot find package.json from "${root}"`);
 };
 exports.findUpPackageJsonPath = findUpPackageJsonPath;
 //# sourceMappingURL=findUpPackageJsonPath.js.map
