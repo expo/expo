@@ -30,6 +30,7 @@ struct StepperView: ExpoSwiftUI.View {
   }
 
   var body: some View {
+#if !os(tvOS)
     Stepper(props.label, value: $value, in: props.min...props.max, step: props.step)
       .onChange(of: value, perform: { newValue in
         props.onValueChanged(([
@@ -44,5 +45,8 @@ struct StepperView: ExpoSwiftUI.View {
         }
       }
       .modifier(CommonViewModifiers(props: props))
+#else
+    EmptyView()
+#endif
   }
 }
