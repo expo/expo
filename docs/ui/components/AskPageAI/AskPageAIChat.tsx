@@ -244,7 +244,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
             className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
             style={{
               ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'upvote' ? activeFeedbackBackground : null),
+              ...(feedbackTarget?.reaction === 'upvote' ? activeFeedbackBackground : {}),
             }}
             aria-pressed={feedbackTarget?.reaction === 'upvote'}
             disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
@@ -261,7 +261,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
             className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
             style={{
               ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'downvote' ? activeFeedbackBackground : null),
+              ...(feedbackTarget?.reaction === 'downvote' ? activeFeedbackBackground : {}),
             }}
             aria-pressed={feedbackTarget?.reaction === 'downvote'}
             disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
