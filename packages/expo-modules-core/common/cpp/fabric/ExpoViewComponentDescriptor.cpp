@@ -26,7 +26,7 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
 
   auto width = state._width;
   auto height = state._height;
-  
+
   if (!isnan(width) or !isnan(height)) {
     auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(snode->getProps());
 
