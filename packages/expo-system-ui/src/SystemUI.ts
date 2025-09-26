@@ -33,3 +33,5 @@ export async function setBackgroundColorAsync(color: ColorValue | null): Promise
 export async function getBackgroundColorAsync(): Promise<ColorValue | null> {
   return await ExpoSystemUI.getBackgroundColorAsync();
 }
+
+export { DynamicColor } from './DynamicColor';

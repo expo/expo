@@ -1,8 +1,12 @@
 import { Link } from 'expo-router';
+import { DynamicColor } from 'expo-system-ui';
 import { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 
 const colors = [
+  DynamicColor('Primary'),
+  DynamicColor('Secondary'),
+  DynamicColor('Tertiary'),
   '#1e3a8a',
   '#fef7ed',
   '#9ca3af',
