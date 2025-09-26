@@ -47,11 +47,34 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
   const [question, setQuestion] = useState('');
   const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
 
+  const extractUserQuestion = useCallback((fullPrompt: string, fallback: string) => {
+    const marker = 'User question:';
+    const markerIndex = fullPrompt.lastIndexOf(marker);
+    if (markerIndex === -1) {
+      return fallback;
+    }
+    return fullPrompt.slice(markerIndex + marker.length).trim();
+  }, []);
+
   useEffect(() => {
     if (conversation.length === 0 && askedQuestions.length > 0) {
       setAskedQuestions([]);
     }
   }, [conversation.length, askedQuestions.length]);
+
+  useEffect(() => {
+    if (conversation.length <= askedQuestions.length) {
+      return;
+    }
+    setAskedQuestions(prev => {
+      const next = [...prev];
+      for (let index = prev.length; index < conversation.length; index += 1) {
+        const qa = conversation[index];
+        next[index] = extractUserQuestion(qa.question, qa.question);
+      }
+      return next;
+    });
+  }, [conversation, askedQuestions.length, extractUserQuestion]);
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
   const closeButtonThemeOverrides = useMemo(
@@ -295,7 +318,8 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
             {conversation.map((qa, index) => {
               const isLast = index === conversation.length - 1;
               const key = (qa.id as ConversationKey) ?? `${qa.question}-${index}`;
-              const displayQuestion = askedQuestions[index] ?? qa.question;
+              const displayQuestion =
+                askedQuestions[index] ?? extractUserQuestion(qa.question, qa.question);
 
               return (
                 <div key={key} className="space-y-2">

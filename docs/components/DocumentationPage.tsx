@@ -82,25 +82,49 @@ export default function DocumentationPage({
   };
 
   useEffect(() => {
-    if (layoutRef.current) {
-      layoutRef.current.contentRef.current?.getScrollRef().current?.focus();
-      router?.events.on('routeChangeStart', url => {
-        if (
-          RoutesUtils.getPageSection(pathname) !== RoutesUtils.getPageSection(url) ||
-          pathname === '/' ||
-          !layoutRef.current
-        ) {
-          window.__sidebarScroll = 0;
-        } else {
-          window.__sidebarScroll = layoutRef.current.getSidebarScrollTop();
-        }
-      });
-      window.addEventListener('resize', handleResize);
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
+    if (typeof window === 'undefined') {
+      return;
     }
-  }, [layoutRef.current, tableOfContentsRef.current]);
+    const stored = window.sessionStorage.getItem('expo-docs-ask-ai-visible');
+    if (stored === 'true') {
+      setAskAIVisible(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    window.sessionStorage.setItem('expo-docs-ask-ai-visible', String(isAskAIVisible));
+  }, [isAskAIVisible]);
+
+  useEffect(() => {
+    if (!layoutRef.current) {
+      return;
+    }
+
+    layoutRef.current.contentRef.current?.getScrollRef().current?.focus();
+
+    const handleRouteChangeStart = (url: string) => {
+      if (
+        RoutesUtils.getPageSection(pathname) !== RoutesUtils.getPageSection(url) ||
+        pathname === '/' ||
+        !layoutRef.current
+      ) {
+        window.__sidebarScroll = 0;
+      } else {
+        window.__sidebarScroll = layoutRef.current.getSidebarScrollTop();
+      }
+    };
+
+    router?.events.on('routeChangeStart', handleRouteChangeStart);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      router?.events.off('routeChangeStart', handleRouteChangeStart);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [layoutRef, tableOfContentsRef, router?.events, pathname]);
 
   const handleResize = () => {
     if (WindowUtils.getViewportSize().width >= breakpoints.medium + 124) {
