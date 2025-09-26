@@ -2,9 +2,12 @@ import { Button, mergeClasses } from '@expo/styleguide';
 import { Stars03DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars03DuotoneIcon';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
+import { RefreshCcw02Icon } from '@expo/styleguide-icons/outline/RefreshCcw02Icon';
 import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
+import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
+import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
-import { useChat } from '@kapaai/react-sdk';
+import { useChat, type Reaction } from '@kapaai/react-sdk';
 import {
   Children,
   type CSSProperties,
@@ -38,6 +41,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
     error,
     resetConversation,
     stopGeneration,
+    addFeedback,
   } = useChat();
 
   const contextLabel = pageTitle?.trim() ? pageTitle : 'This page';
@@ -70,6 +74,26 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
       }) as CSSProperties,
     []
   );
+  const headerAccentBackground = useMemo(() => ({ backgroundColor: 'rgba(255,255,255,0.1)' }), []);
+  const activeFeedbackBackground = useMemo(
+    () => ({ backgroundColor: 'rgba(255,255,255,0.12)' }),
+    []
+  );
+
+  const feedbackTarget = useMemo(() => {
+    for (let index = conversation.length - 1; index >= 0; index -= 1) {
+      const entry = conversation[index];
+      if (
+        entry &&
+        entry.id &&
+        'isFeedbackSubmissionEnabled' in entry &&
+        entry.isFeedbackSubmissionEnabled
+      ) {
+        return entry;
+      }
+    }
+    return null;
+  }, [conversation]);
   const buildPrompt = useMemo(() => {
     const origin = typeof window !== 'undefined' ? window.location.href : '';
     return (text: string) =>
@@ -101,6 +125,28 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
     }
     onClose();
   };
+
+  const handleConversationReset = useCallback(() => {
+    if (isBusy && conversation.length > 0) {
+      stopGeneration();
+    }
+    resetConversation();
+    setQuestion('');
+    setAskedQuestions([]);
+  }, [conversation.length, isBusy, resetConversation, stopGeneration]);
+
+  const handleFeedback = useCallback(
+    (reaction: Reaction) => {
+      if (!feedbackTarget || !feedbackTarget.isFeedbackSubmissionEnabled) {
+        return;
+      }
+      if (feedbackTarget.reaction === reaction) {
+        return;
+      }
+      addFeedback(feedbackTarget.id, reaction);
+    },
+    [addFeedback, feedbackTarget]
+  );
 
   const handleNavigation = useCallback(
     (event?: MouseEvent<HTMLAnchorElement>) => {
@@ -176,24 +222,73 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
   return (
     <div className="flex h-full flex-col overflow-hidden bg-default">
       <div className="flex items-center justify-between border-b border-default bg-palette-black px-4 py-3 text-palette-white">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           <span
             className={mergeClasses(
               'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
-            )}>
-            <Stars03DuotoneIcon className="icon-sm" />
+            )}
+            style={headerAccentBackground}>
+            <Stars03DuotoneIcon className="icon-sm text-palette-white" />
           </span>
-          <span className="text-sm font-medium leading-tight text-palette-white">AI Assistant</span>
+          <span className="text-sm font-medium leading-tight text-palette-white">
+            Expo AI Assistant
+          </span>
         </div>
-        <Button
-          aria-label="Close Ask AI assistant"
-          theme="quaternary"
-          size="xs"
-          className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-          style={closeButtonThemeOverrides}
-          onClick={handleClose}>
-          <XIcon className="icon-sm text-palette-white" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            aria-label="Provide positive feedback"
+            theme="quaternary"
+            size="xs"
+            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+            style={{
+              ...closeButtonThemeOverrides,
+              ...(feedbackTarget?.reaction === 'upvote' ? activeFeedbackBackground : null),
+            }}
+            aria-pressed={feedbackTarget?.reaction === 'upvote'}
+            disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
+            onClick={() => {
+              handleFeedback('upvote');
+            }}>
+            <ThumbsUpIcon className="icon-xs text-palette-white" />
+          </Button>
+          <Button
+            type="button"
+            aria-label="Provide negative feedback"
+            theme="quaternary"
+            size="xs"
+            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+            style={{
+              ...closeButtonThemeOverrides,
+              ...(feedbackTarget?.reaction === 'downvote' ? activeFeedbackBackground : null),
+            }}
+            aria-pressed={feedbackTarget?.reaction === 'downvote'}
+            disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
+            onClick={() => {
+              handleFeedback('downvote');
+            }}>
+            <ThumbsDownIcon className="icon-xs text-palette-white" />
+          </Button>
+          <Button
+            type="button"
+            aria-label="Reset conversation"
+            theme="quaternary"
+            size="xs"
+            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+            style={closeButtonThemeOverrides}
+            onClick={handleConversationReset}>
+            <RefreshCcw02Icon className="icon-xs text-palette-white" />
+          </Button>
+          <Button
+            aria-label="Close Ask AI assistant"
+            theme="quaternary"
+            size="xs"
+            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+            style={closeButtonThemeOverrides}
+            onClick={handleClose}>
+            <XIcon className="icon-xs text-palette-white" />
+          </Button>
+        </div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
