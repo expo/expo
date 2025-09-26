@@ -286,7 +286,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
             className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
             style={closeButtonThemeOverrides}
             onClick={handleClose}>
-            <XIcon className="icon-xs text-palette-white" />
+            <XIcon className="icon-sm text-palette-white" />
           </Button>
         </div>
       </div>
