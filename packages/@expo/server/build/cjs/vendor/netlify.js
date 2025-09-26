@@ -1,21 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ExpoError = void 0;
 exports.createRequestHandler = createRequestHandler;
 exports.respond = respond;
 exports.createHeaders = createHeaders;
 exports.convertRequest = convertRequest;
 exports.isBinaryType = isBinaryType;
 const abort_controller_1 = require("abort-controller");
-const index_1 = require("../index");
-const node_1 = require("../runtime/node");
-function createRequestHandler({ build }) {
-    const handleRequest = (0, index_1.createRequestHandler)({
-        getRoutesManifest: (0, node_1.getRoutesManifest)(build),
-        getHtml: (0, node_1.getHtml)(build),
-        getApiRoute: (0, node_1.getApiRoute)(build),
-        getMiddleware: (0, node_1.getMiddleware)(build),
-        handleRouteError: (0, node_1.handleRouteError)(),
-    });
+const abstract_1 = require("./abstract");
+const node_1 = require("./environment/node");
+var abstract_2 = require("./abstract");
+Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function () { return abstract_2.ExpoError; } });
+function createRequestHandler(params) {
+    const handleRequest = (0, abstract_1.createRequestHandler)((0, node_1.createNodeEnv)(params));
     return async (event) => {
         const response = await handleRequest(convertRequest(event));
         return respond(response);

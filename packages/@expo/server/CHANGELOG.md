@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove (undocumented) `createRequestHandler` from `@expo/server` entrypoint API ([#39894](https://github.com/expo/expo/pull/39894) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

@@ -6,13 +6,13 @@
  */
 
 import type { ProjectConfig } from '@expo/config';
-import { MiddlewareModule } from '@expo/server/build/types';
+import type { MiddlewareSettings } from '@expo/server';
 import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
 import { fetchManifest } from './fetchRouterManifest';
-import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import {
   warnInvalidWebOutput,
   warnInvalidMiddlewareOutput,
@@ -115,9 +115,9 @@ export function createRouteHandlerMiddleware(
         }
       },
       async handleRouteError(error) {
-        const { ExpoError } = require('@expo/server') as typeof import('@expo/server');
-
-        if (ExpoError.isExpoError(error)) {
+        // NOTE(@kitten): temporarily vendored check instead of `ExpoError.isExpoError` to avoid API incompatibility for when
+        // we rename `@expo/server` if we ever hot-swap the implementation
+        if (error && typeof error === 'object' && error.name === 'ExpoError') {
           // TODO(@krystofwoldrich): Can we show code snippet of the handler?
           // NOTE(@krystofwoldrich): Removing stack since to avoid confusion. The error is not in the server code.
           delete error.stack;
@@ -193,11 +193,9 @@ export function createRouteHandlerMiddleware(
 
         try {
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
-          const middlewareModule = (await options.bundleApiRoute(
-            resolvedFunctionPath!
-          )) as unknown as MiddlewareModule;
+          const middlewareModule = (await options.bundleApiRoute(resolvedFunctionPath!)) as any;
 
-          if (middlewareModule.unstable_settings?.matcher) {
+          if ((middlewareModule.unstable_settings as MiddlewareSettings)?.matcher) {
             warnInvalidMiddlewareMatcherSettings(middlewareModule.unstable_settings?.matcher);
           }
 

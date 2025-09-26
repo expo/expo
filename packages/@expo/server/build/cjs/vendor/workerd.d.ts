@@ -1,8 +1,9 @@
-import { createRequestHandler as createExpoHandler } from '../index';
+import { type RequestHandlerParams } from './abstract';
+export { ExpoError } from './abstract';
 export type RequestHandler = (req: Request) => Promise<Response>;
 /**
  * Returns a request handler for Workerd deployments.
  */
-export declare function createRequestHandler({ build }: {
+export declare function createRequestHandler(params: {
     build: string;
-}, setup?: Partial<Parameters<typeof createExpoHandler>[0]>): RequestHandler;
+}, setup?: Partial<RequestHandlerParams>): RequestHandler;

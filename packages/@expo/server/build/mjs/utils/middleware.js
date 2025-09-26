@@ -1,4 +1,4 @@
-import { matchDynamicName, matchDeepDynamicRouteName } from '../utils';
+import { matchDynamicName, matchDeepDynamicRouteName } from './matchers';
 /**
  * Determines whether middleware should run for a given request based on matcher configuration.
  */

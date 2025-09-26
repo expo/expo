@@ -1,35 +1,17 @@
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { createRequestHandler as createExpoHandler } from '../index';
-import { getApiRoute, getHtml, getMiddleware, getRoutesManifest, handleRouteError, } from '../runtime/node';
+import { createRequestHandler as createExpoHandler } from './abstract';
+import { createNodeEnv } from './environment/node';
+export { ExpoError } from './abstract';
 /**
  * Returns a request handler for http that serves the response using Remix.
  */
-export function createRequestHandler({ build }, setup = {}) {
-    let routesManifest = null;
-    const defaultGetRoutesManifest = getRoutesManifest(build);
-    const getRoutesManifestCached = async () => {
-        let manifest = null;
-        if (setup.getRoutesManifest) {
-            // Development
-            manifest = await setup.getRoutesManifest();
-        }
-        else if (!routesManifest) {
-            // Production
-            manifest = await defaultGetRoutesManifest();
-        }
-        if (manifest) {
-            routesManifest = manifest;
-        }
-        return routesManifest;
-    };
+export function createRequestHandler(params, setup) {
+    const nodeEnv = createNodeEnv(params);
     const handleRequest = createExpoHandler({
-        getRoutesManifest: getRoutesManifestCached,
-        getHtml: getHtml(build),
-        getApiRoute: getApiRoute(build),
-        getMiddleware: getMiddleware(build),
-        handleRouteError: handleRouteError(),
+        ...nodeEnv,
         ...setup,
+        getRoutesManifest: setup?.getRoutesManifest ?? nodeEnv.getRoutesManifest,
     });
     return async (req, res, next) => {
         if (!req?.url || !req.method) {

@@ -1,18 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ExpoError = void 0;
 exports.createRequestHandler = createRequestHandler;
-const index_1 = require("../index");
-const workerd_1 = require("../runtime/workerd");
+const abstract_1 = require("./abstract");
+const workerd_1 = require("./environment/workerd");
+var abstract_2 = require("./abstract");
+Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function () { return abstract_2.ExpoError; } });
 /**
  * Returns a request handler for Workerd deployments.
  */
-function createRequestHandler({ build }, setup = {}) {
-    return (0, index_1.createRequestHandler)({
-        getRoutesManifest: (0, workerd_1.getRoutesManifest)(build),
-        getHtml: (0, workerd_1.getHtml)(build),
-        getApiRoute: (0, workerd_1.getApiRoute)(build),
-        getMiddleware: (0, workerd_1.getMiddleware)(build),
-        handleRouteError: (0, workerd_1.handleRouteError)(),
+function createRequestHandler(params, setup) {
+    return (0, abstract_1.createRequestHandler)({
+        ...(0, workerd_1.createWorkerdEnv)(params),
         ...setup,
     });
 }

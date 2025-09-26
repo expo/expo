@@ -4,6 +4,7 @@
   "description": "Server API for Expo Router projects",
   "main": "build/cjs/index.js",
   "module": "build/mjs/index.js",
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./build/mjs/index.js",
@@ -49,8 +50,7 @@
     "adapter"
   ],
   "dependencies": {
-    "abort-controller": "^3.0.0",
-    "debug": "^4.3.4"
+    "abort-controller": "^3.0.0"
   },
   "devDependencies": {
     "@netlify/functions": "^1.4.0",

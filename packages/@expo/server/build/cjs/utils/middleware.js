@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.shouldRunMiddleware = shouldRunMiddleware;
-const utils_1 = require("../utils");
+const matchers_1 = require("./matchers");
 /**
  * Determines whether middleware should run for a given request based on matcher configuration.
  */
@@ -57,7 +57,7 @@ function matchesPattern(pathname, pattern) {
  */
 function hasNamedParameters(pattern) {
     return pattern.split('/').some((segment) => {
-        return (0, utils_1.matchDynamicName)(segment) || (0, utils_1.matchDeepDynamicRouteName)(segment);
+        return (0, matchers_1.matchDynamicName)(segment) || (0, matchers_1.matchDeepDynamicRouteName)(segment);
     });
 }
 /**
@@ -69,10 +69,10 @@ function namedParamToRegex(pattern) {
     const regexSegments = segments.map((segment) => {
         if (!segment)
             return '';
-        if ((0, utils_1.matchDeepDynamicRouteName)(segment)) {
+        if ((0, matchers_1.matchDeepDynamicRouteName)(segment)) {
             return '.+';
         }
-        if ((0, utils_1.matchDynamicName)(segment)) {
+        if ((0, matchers_1.matchDynamicName)(segment)) {
             return '[^/]+';
         }
         return segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

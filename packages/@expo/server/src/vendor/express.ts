@@ -3,14 +3,10 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
-import { createRequestHandler as createExpoHandler } from '../index';
-import {
-  getApiRoute,
-  getHtml,
-  getMiddleware,
-  getRoutesManifest,
-  handleRouteError,
-} from '../runtime/node';
+import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
+import { createNodeEnv } from './environment/node';
+
+export { ExpoError } from './abstract';
 
 export type RequestHandler = (
   req: express.Request,
@@ -22,15 +18,11 @@ export type RequestHandler = (
  * Returns a request handler for Express that serves the response using Remix.
  */
 export function createRequestHandler(
-  { build }: { build: string },
-  setup: Partial<Parameters<typeof createExpoHandler>[0]> = {}
+  params: { build: string },
+  setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
   const handleRequest = createExpoHandler({
-    getRoutesManifest: getRoutesManifest(build),
-    getHtml: getHtml(build),
-    getApiRoute: getApiRoute(build),
-    getMiddleware: getMiddleware(build),
-    handleRouteError: handleRouteError(),
+    ...createNodeEnv(params),
     ...setup,
   });
 

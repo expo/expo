@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config';
-import type { MiddlewareMatcher } from '@expo/server/build/types';
+import type { MiddlewareMatcher } from '@expo/server';
 import chalk from 'chalk';
 import { sync as globSync } from 'glob';
 import path from 'path';

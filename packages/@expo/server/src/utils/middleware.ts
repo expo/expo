@@ -1,5 +1,10 @@
-import type { MiddlewareModule, MiddlewarePattern } from '../types';
-import { matchDynamicName, matchDeepDynamicRouteName } from '../utils';
+import type { MiddlewareFunction, MiddlewarePattern, MiddlewareSettings } from '../types';
+import { matchDynamicName, matchDeepDynamicRouteName } from './matchers';
+
+export interface MiddlewareModule {
+  default: MiddlewareFunction;
+  unstable_settings?: MiddlewareSettings;
+}
 
 /**
  * Determines whether middleware should run for a given request based on matcher configuration.
