@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix incorrect FileSystemFileProvider path. ([#39634](https://github.com/expo/expo/pull/39634) by [@robertying](https://github.com/robertying))
+
 ### 💡 Others
 
 ## 19.0.14 — 2025-09-13
