@@ -51,10 +51,6 @@ extension ExpoSwiftUI {
       super.setShadowNodeSize(Float(size.width), height: Float(size.height))
     }
     
-    override func setStyleSize(_ width: NSNumber?, height: NSNumber?) {
-      super.setStyleSize(width, height: height)
-    }
-
     // MARK: - ExpoSwiftUIView implementations
 
     var body: some SwiftUI.View {
