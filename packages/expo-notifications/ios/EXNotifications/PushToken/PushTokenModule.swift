@@ -30,6 +30,12 @@ To obtain the push token, await the result of the newer call.
 """
         existingPromise.reject("E_PROMISE_REPLACED", message)
       }
+
+      #if targetEnvironment(simulator)
+      if let appContext = appContext {
+        appContext.jsLogger.warn("expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433")
+      }
+      #endif
       promiseNotYetResolved = promise
       UIApplication.shared.registerForRemoteNotifications()
     }
@@ -52,3 +58,4 @@ To obtain the push token, await the result of the newer call.
     promiseNotYetResolved = nil
   }
 }
+

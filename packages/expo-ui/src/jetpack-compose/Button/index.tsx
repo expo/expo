@@ -3,6 +3,7 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
+import { getTextFromChildren } from '../../utils';
 
 /**
  * The built-in button styles available on Android.
@@ -53,7 +54,7 @@ export type ButtonProps = {
   /**
    * The text to display inside the button.
    */
-  children: string;
+  children: string | string[];
   /**
    * Colors for button's core elements.
    * @platform android
@@ -101,7 +102,7 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
 
   return {
     ...restProps,
-    text: children ?? '',
+    text: getTextFromChildren(children) ?? '',
     leadingIcon: finalLeadingIcon,
     trailingIcon,
     onButtonPressed: onPress,

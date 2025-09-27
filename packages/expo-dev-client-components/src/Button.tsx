@@ -192,7 +192,8 @@ function FadeOnPressContainer({
 }
 
 function HighlightOnPressContainer(props: React.ComponentProps<typeof Container>) {
-  const theme = useColorScheme();
+  const systemTheme = useColorScheme();
+  const theme = systemTheme !== 'unspecified' ? systemTheme : 'light';
   const [isPressing, setIsPressing] = React.useState(false);
 
   const onPressIn = React.useCallback(() => {

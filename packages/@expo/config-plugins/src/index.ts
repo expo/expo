@@ -56,6 +56,8 @@ export {
   withGradleProperties,
 } from './plugins/android-plugins';
 
+export { isValidAndroidAssetName, assertValidAndroidAssetName } from './utils/validations';
+
 export { withStaticPlugin } from './plugins/withStaticPlugin';
 
 export { compileModsAsync, withDefaultBaseMods, evalModsAsync } from './plugins/mod-compiler';

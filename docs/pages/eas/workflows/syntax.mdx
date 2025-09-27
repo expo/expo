@@ -597,6 +597,7 @@ jobs:
     params:
       platform: ios | android # required
       profile: string # optional, default: production
+      message: string # optional
 ```
 
 This job outputs the following properties:
@@ -921,7 +922,10 @@ jobs:
     # @info #
     type: repack
     params:
-      build_id: string
+      build_id: string # required
+      profile: string # optional
+      embed_bundle_assets: boolean # optional
+      message: string # optional
     # @end #
 ```
 

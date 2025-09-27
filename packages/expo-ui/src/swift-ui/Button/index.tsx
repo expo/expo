@@ -3,6 +3,7 @@ import type { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { type ViewEvent } from '../../types';
+import { getTextFromChildren } from '../../utils';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -129,7 +130,7 @@ export function Button(props: ButtonProps) {
     throw new Error('Button without systemImage prop should have React children');
   }
 
-  const text = typeof children === 'string' ? children : undefined;
+  const text = getTextFromChildren(children);
 
   const transformedProps = transformButtonProps(restProps, text);
 

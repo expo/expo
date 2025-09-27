@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Added support for iOS 17. ([#39797](https://github.com/expo/expo/pull/39797) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Added support for iOS 26 and iPhone 17 devices. ([#39797](https://github.com/expo/expo/pull/39797) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 

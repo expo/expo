@@ -39,6 +39,12 @@ class DevMenuModule : Module() {
         }
         DevMenuManager.registeredCallbacks.add(DevMenuManager.Callback(name, shouldCollapse))
       }
+
+      appContext.activityProvider?.currentActivity?.let { activity ->
+        DevMenuManager.withBindingView(activity) { bindingView ->
+          bindingView.viewModel.updateCustomItems(DevMenuManager.registeredCallbacks)
+        }
+      }
     }
 
     OnDestroy {

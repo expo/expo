@@ -17,6 +17,14 @@ export interface ImageProps extends CommonViewModifierProps {
      */
     color?: ColorValue;
     /**
+     * The variable value for SF Symbols with variable color support.
+     * Can be a number between 0.0 and 1.0.
+     * Only works with SF Symbols that support variable color.
+     *
+     * Requires iOS 16.0+.
+     */
+    variableValue?: number;
+    /**
      * Callback triggered when the view is pressed.
      */
     onPress?: () => void;
