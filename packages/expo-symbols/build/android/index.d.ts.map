@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/android/index.ts"],"names":[],"mappings":"AAAA;;;GAGG;AACH,OAAO,OAAO,MAAM,gBAAgB,CAAC;AACrC,MAAM,MAAM,aAAa,GAAG,MAAM,OAAO,OAAO,CAAC;AACjD,MAAM,MAAM,mBAAmB,GAAG;IAChC,IAAI,EAAE,MAAM,CAAC;IACb,IAAI,EAAE,MAAM,CAAC;CACd,CAAC;AAEF,wBAAgB,qBAAqB,CAAC,MAAM,EAAE,aAAa,GAAG,IAAI,iBAGjE"}
