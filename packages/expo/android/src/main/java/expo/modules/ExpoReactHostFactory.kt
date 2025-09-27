@@ -19,7 +19,9 @@ import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
+import com.facebook.react.runtime.internal.bolts.Task
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executors
 
 object ExpoReactHostFactory {
   private var reactHost: ReactHost? = null
@@ -92,18 +94,33 @@ object ExpoReactHostFactory {
         handler.onWillCreateReactInstance(useDeveloperSupport)
       }
 
-      val reactHostImpl =
-        ReactHostImpl(
-          context,
-          reactHostDelegate,
-          componentFactory,
-          true,
-          useDeveloperSupport
-        )
+//      val _reactHostImpl =
+//        ReactHostImpl(
+//          context,
+//          reactHostDelegate,
+//          componentFactory,
+//          true,
+//          useDeveloperSupport
+//        )
+
+      val reactHostImpl = ReactHostImpl(
+        context,
+        reactHostDelegate,
+        componentFactory,
+        Executors.newSingleThreadExecutor(),
+        Task.UI_THREAD_EXECUTOR,
+        true,
+        useDeveloperSupport,
+        ExpoDefaultDevSupportManagerFactory(),
+      )
+
+
 
       reactNativeHost.reactNativeHostHandlers.forEach { handler ->
         handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
       }
+
+
 
       reactHostImpl.addReactInstanceEventListener(object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {

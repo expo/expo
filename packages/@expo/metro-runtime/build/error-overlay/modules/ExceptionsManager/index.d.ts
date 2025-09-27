@@ -15,9 +15,7 @@ declare function parseException(e: ExtendedError, isFatal: boolean): {
     originalMessage: any;
     name: any;
     componentStack: any;
-    stack: (import("stacktrace-parser").StackFrame & {
-        collapse?: boolean;
-    })[];
+    stack: import("../../devServerEndpoints").MetroStackFrame[];
     id: number;
     isFatal: boolean;
     extraData: {

@@ -10,4 +10,5 @@ import type { CodeFrame } from '../Data/parseLogBoxLog';
 export declare function LogBoxInspectorCodeFrame({ codeFrame }: {
     codeFrame?: CodeFrame;
 }): React.JSX.Element | null;
+export declare function FileIcon(): React.JSX.Element;
 //# sourceMappingURL=LogBoxInspectorCodeFrame.d.ts.map

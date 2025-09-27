@@ -17,5 +17,5 @@ if (__DEV__) {
   require('./promiseRejectionTracking').enablePromiseRejectionTracking();
 
   // @ts-expect-error: TODO: Remove this when we remove the log box.
-  globalThis.__expo_dev_resetErrors = require('./error-overlay/LogBox').default.clearAllLogs;
+  globalThis.__expo_dev_resetErrors = require('@expo/log-box/src/LogBox').default.clearAllLogs;
 }

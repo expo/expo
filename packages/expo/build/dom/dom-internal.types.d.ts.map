@@ -1,0 +1,1 @@
+{"version":3,"file":"dom-internal.types.d.ts","sourceRoot":"","sources":["../../src/dom/dom-internal.types.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,aAAa,CAAC;AAE5C,MAAM,WAAW,gBAAiB,SAAQ,QAAQ;IAChD;;;OAGG;IACH,cAAc,CAAC,EAAE;QAAE,GAAG,EAAE,MAAM,CAAA;KAAE,CAAC;CAClC"}

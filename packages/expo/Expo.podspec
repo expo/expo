@@ -87,8 +87,10 @@ Pod::Spec.new do |s|
       # [end] transitive dependencies of React-RCTAppDelegate that are not defined modules
     ])
   end
+
   s.pod_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
+    'OTHER_SWIFT_FLAGS' => '$(inherited)' + (ENV["EXPO_DEBUG_LOG_BOX"] == "1" ? " -DEXPO_DEBUG_LOG_BOX" : ""),
   }
   s.user_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => [
@@ -106,4 +108,7 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.compiler_flags = compiler_flags
   s.private_header_files = ['ios/**/Swift.h']
+  # s.resource_bundles = {
+  #   'ExpoLogBox' => ['ExpoLogBox/_expo', 'ExpoLogBox/index.html'],
+  # }
 end
