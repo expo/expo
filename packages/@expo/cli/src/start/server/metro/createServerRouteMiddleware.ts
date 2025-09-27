@@ -11,7 +11,7 @@ import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
-import { fetchManifest } from './fetchRouterManifest';
+import { fetchManifest, type ExpoRouterServerManifestV1Route } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
 import {
   warnInvalidWebOutput,
@@ -32,7 +32,10 @@ export function createRouteHandlerMiddleware(
   options: {
     appDir: string;
     routerRoot: string;
-    getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
+    getStaticPageAsync: (
+      pathname: string,
+      route: ExpoRouterServerManifestV1Route<RegExp>
+    ) => Promise<{ content: string }>;
     bundleApiRoute: (
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;
@@ -74,9 +77,9 @@ export function createRouteHandlerMiddleware(
           }
         );
       },
-      async getHtml(request) {
+      async getHtml(request, route) {
         try {
-          const { content } = await options.getStaticPageAsync(request.url);
+          const { content } = await options.getStaticPageAsync(request.url, route);
           return content;
         } catch (error: any) {
           // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.

@@ -115,9 +115,9 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
     // copies should be rendered. However, an API route is always the same regardless of parent segments.
     let key: string;
     if (route.type.includes('api')) {
-      key = getContextKey(route.contextKey).replace(/\/index$/, '') ?? '/';
+      key = getNormalizedContextKey(route.contextKey);
     } else {
-      key = getContextKey(absoluteRoute).replace(/\/index$/, '') ?? '/';
+      key = getNormalizedContextKey(absoluteRoute);
     }
     return [[key, '/' + absoluteRoute, route]];
   }
@@ -202,6 +202,7 @@ function getMatchableManifestForPaths(
       absoluteRoute,
       node.contextKey
     );
+
     if (node.generated) {
       matcher.generated = true;
     }
@@ -363,4 +364,8 @@ export function parseParameter(param: string) {
   }
 
   return { name, repeat, optional };
+}
+
+function getNormalizedContextKey(contextKey: string): string {
+  return getContextKey(contextKey).replace(/\/index$/, '') ?? '/';
 }

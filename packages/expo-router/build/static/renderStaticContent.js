@@ -55,6 +55,8 @@ const getRootComponent_1 = require("./getRootComponent");
 const _ctx_1 = require("../../_ctx");
 const ExpoRoot_1 = require("../ExpoRoot");
 const head_1 = require("../head");
+const html_1 = require("./html");
+const ServerDataLoaderContext_1 = require("../loaders/ServerDataLoaderContext");
 const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 function resetReactNavigationContexts() {
@@ -65,7 +67,7 @@ function resetReactNavigationContexts() {
     const contexts = '__react_navigation__elements_contexts';
     global[contexts] = new Map();
 }
-async function getStaticContent(location) {
+async function getStaticContent(location, options) {
     const headContext = {};
     const ref = react_1.default.createRef();
     const { 
@@ -87,8 +89,11 @@ async function getStaticContent(location) {
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
+    const loadedData = options?.loader?.data ? { [location.pathname]: options.loader.data } : null;
     const html = await server_node_1.default.renderToString(<head_1.Head.Provider context={headContext}>
-      <native_1.ServerContainer ref={ref}>{element}</native_1.ServerContainer>
+      <ServerDataLoaderContext_1.ServerDataLoaderContext value={loadedData}>
+        <native_1.ServerContainer ref={ref}>{element}</native_1.ServerContainer>
+      </ServerDataLoaderContext_1.ServerDataLoaderContext>
     </head_1.Head.Provider>);
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
     const css = server_node_1.default.renderToStaticMarkup(getStyleElement());
@@ -99,6 +104,10 @@ async function getStaticContent(location) {
     // debug('Push static fonts:', fonts)
     // Inject static fonts loaded with expo-font
     output = output.replace('</head>', `${fonts.join('')}</head>`);
+    if (loadedData) {
+        const loaderDataScript = server_node_1.default.renderToStaticMarkup(<html_1.PreloadedDataScript data={loadedData}/>);
+        output = output.replace('</head>', `${loaderDataScript}</head>`);
+    }
     return '<!DOCTYPE html>' + output;
 }
 function mixHeadComponentsWithStaticResults(helmet, html) {

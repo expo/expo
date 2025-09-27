@@ -1,6 +1,6 @@
 import { useRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
 export { useRouteInfo };
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
@@ -189,4 +189,5 @@ export declare function useLocalSearchParams<TRoute extends Route, TParams exten
 export declare function useSearchParams({ global }?: {
     global?: boolean | undefined;
 }): URLSearchParams;
+export declare function useLoaderData<T = any>(loader: LoaderFunction<T>): T;
 //# sourceMappingURL=hooks.d.ts.map
