@@ -122,7 +122,7 @@ The request body must be JSON. It may either be a single [message object](#messa
 ]
 ```
 
-The Expo Push Service also optionally accepts gzip-compressed request bodies. This can greatly reduce the amount of upload bandwidth needed to send large numbers of notifications. The [Node Expo Server SDK](https://github.com/expo/expo-server-sdk-node) automatically gzips requests for you and automatically throttles your requests to smooth out the load, so we highly recommend it.
+The Expo Push Service also optionally accepts gzip-compressed request bodies. This can greatly reduce the amount of upload bandwidth needed to send large numbers of notifications. The [Node Expo Server SDK](https://github.com/expo/expo-server-sdk-node) and [Rust Expo Server SDK](https://github.com/katayama8000/expo-push-notification-client-rust) automatically gzips requests for you and automatically throttles your requests to smooth out the load, so we highly recommend it.
 
 ### Push tickets
 
