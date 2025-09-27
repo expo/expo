@@ -1,6 +1,6 @@
 # Expo Secrets
 
-This directory contains keys and other data that is for only the Expo team. Expo's software works without these secrets, which are used to configure the official Expo client and connect to services that Expo uses.
+This directory previously contained encrypted keys and data for the Expo team. **These secrets have been migrated to Google Cloud Secret Manager**.
 
 ---
 
@@ -8,18 +8,38 @@ This directory contains keys and other data that is for only the Expo team. Expo
 
 ### Security
 
-This directory contains only secrets that cannot cause significant damage or create significant work for us if they are exposed. It also contains data that isn't actually secret, such as client API keys, but that belong only in the official releases of Expo software and we want to prevent from accidentally being included in developers' own builds.
+Secrets are now stored in Google Cloud Secret Manager. Do not add secret credentials to this repository or CI systems.
 
-In the interest of defense in depth, we mitigate the consequences of these secrets being exposed. **Do not add especially sensitive or hard-to-revoke secret credentials, such as an Android keystore, to this repository or CI, even if they are encrypted.**
+### Accessing secrets
 
-We also require full-disk encryption (FileVault 2) to decrypt the secrets.
+Secrets are now accessed via Google Cloud Secret Manager:
 
-### Unlocking the secrets
+#### Keys (previously `keys.json`)
 
-The secrets are encrypted using [`git-crypt`](https://github.com/AGWA/git-crypt). Run `unlock` in this repo to decrypt the secrets. If you do not have a decryption key, `unlock` will print instructions for you. You also must have full-disk encryption (FileVault 2) enabled to decrypt the secrets.
+- **Secret Name**: `expo-expo-keys-json` (configurable via `EXPO_KEYS_SECRET_NAME`)
+- **Access**: `gcloud secrets versions access latest --secret expo-expo-keys`
+- **Usage**: Automatically handled by build tools
 
-The secrets will remain decrypted on your local computer but will automatically be encrypted when you push your changes to GitHub.
+#### Environment Variables (previously `expotools.env`)
 
-### Locking the secrets
+- **Secret Name**: `expo-expotools-env` (configurable via `EXPO_EXPOTOOLS_SECRET_NAME`)
+- **Format**: JSON object with key-value pairs
+- **Access**: `gcloud secrets versions access latest --secret expo-expotools-env`
+- **Usage**:
+  ```bash
+  secrets=$(gcloud secrets versions access latest --secret expo-expotools-env)
+  eval "export $(echo "$secrets" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
+  ```
 
-You can encrypt the secrets again by running `lock`. You should rarely need to lock the secrets, but if you encounter issues with `git-crypt` it may be useful. Locking the secrets does not protect them unless you securely delete the key and your ability to acquire another copy of the key, however.
+### Setting up access
+
+1. Ensure you have Google Cloud SDK installed: `brew install google-cloud-sdk`
+2. Authenticate: `gcloud auth login`
+3. Set project: `gcloud config set project [exponentjs project id]`
+4. Verify access: `gcloud secrets list`
+
+### For CI/CD
+
+Use service account keys with appropriate permissions for automated access:
+- Set `GCP_SERVICE_ACCOUNT_KEY` environment variable (base64 encoded JSON)
+- Use the updated GitHub Actions and EAS build scripts
