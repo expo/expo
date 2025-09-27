@@ -2,7 +2,6 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { activateWindowAsync } from './activateWindow';
-import * as AndroidDebugBridge from './adb';
 import { startDeviceAsync } from './emulator';
 import { getDevicesAsync } from './getDevices';
 import { promptForDeviceAsync } from './promptAndroidDevice';
@@ -12,6 +11,7 @@ import { validateUrl } from '../../../utils/url';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 import { BaseResolveDeviceProps } from '../PlatformManager';
+import * as AndroidDebugBridge from './adb';
 
 const EXPO_GO_APPLICATION_IDENTIFIER = 'host.exp.exponent';
 
@@ -142,14 +142,11 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     const parsed = new URL(url);
 
     if (parsed.protocol === 'exp:') {
-      // NOTE(brentvatne): temporary workaround! launch Expo Go first, then
-      // launch the project!
-      // https://github.com/expo/expo/issues/7772
-      // adb shell monkey -p host.exp.exponent -c android.intent.category.LAUNCHER 1
-      // Note: this is not needed in Expo Development Client, it only applies to Expo Go
-      await AndroidDebugBridge.openAppIdAsync(
+      await AndroidDebugBridge.launchActivityAsync(
         { pid: this.device.pid },
-        { applicationId: EXPO_GO_APPLICATION_IDENTIFIER }
+        {
+          launchActivity: `${EXPO_GO_APPLICATION_IDENTIFIER}/.experience.HomeActivity`,
+        }
       );
     }
 
