@@ -11,7 +11,7 @@ import type {
   MixedOutput,
   Module,
   ReadOnlyGraph,
-} from '@expo/metro/metro/DeltaBundler/types.flow';
+} from '@expo/metro/metro/DeltaBundler/types';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import type { SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';

@@ -1,4 +1,4 @@
-import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
 import { SerialAsset } from './serializerAssets';
 type Options = {
     processModuleFilter: (modules: Module) => boolean;
