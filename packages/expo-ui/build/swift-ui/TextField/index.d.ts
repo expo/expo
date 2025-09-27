@@ -22,10 +22,12 @@ import { type CommonViewModifierProps } from '../types';
  */
 export type TextFieldKeyboardType = 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'ascii-capable' | 'numbers-and-punctuation' | 'url' | 'name-phone-pad' | 'decimal-pad' | 'twitter' | 'web-search' | 'ascii-capable-number-pad';
 /**
- * Can be used for imperatively setting text on the TextField component.
+ * Can be used for imperatively setting text and focus on the TextField component.
  */
 export type TextFieldRef = {
     setText: (newText: string) => Promise<void>;
+    focus: () => Promise<void>;
+    blur: () => Promise<void>;
 };
 export type TextFieldProps = {
     ref?: Ref<TextFieldRef>;
@@ -40,7 +42,11 @@ export type TextFieldProps = {
     /**
      * A callback triggered when user types in text into the TextField.
      */
-    onChangeText: (value: string) => void;
+    onChangeText?: (value: string) => void;
+    /**
+     * A callback triggered when user focuses or blurs the TextField.
+     */
+    onChangeFocus?: (focused: boolean) => void;
     /**
      * If true, the text input can be multiple lines.
      * While the content will wrap, there's no keyboard button to insert a new line.
@@ -62,6 +68,8 @@ export type TextFieldProps = {
 } & CommonViewModifierProps;
 export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;
+}> & ViewEvent<'onFocusChanged', {
+    value: boolean;
 }>;
 /**
  * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.

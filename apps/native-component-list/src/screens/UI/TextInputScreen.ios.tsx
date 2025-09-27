@@ -1,4 +1,4 @@
-import { Button, Host, TextField, TextFieldRef, SecureField } from '@expo/ui/swift-ui';
+import { Button, Host, TextField, TextFieldRef, SecureField, VStack } from '@expo/ui/swift-ui';
 import * as React from 'react';
 import { Text, TextInput as RNTextInput } from 'react-native';
 
@@ -15,13 +15,28 @@ export default function TextInputScreen() {
         <Text>{JSON.stringify(value)}</Text>
       </Section>
       <Host matchContents>
-        <Button
-          onPress={async () => {
-            textRef.current?.setText('Hello there!');
-            secureRef.current?.setText('123');
-          }}>
-          Set text
-        </Button>
+        <VStack>
+          <Button
+            onPress={async () => {
+              textRef.current?.setText('Hello there!');
+              secureRef.current?.setText('123');
+            }}>
+            Set text
+          </Button>
+          <Button
+            onPress={async () => {
+              textRef.current?.focus();
+            }}>
+            Focus
+          </Button>
+          <Button
+            onPress={async () => {
+              textRef.current?.blur();
+              secureRef.current?.blur();
+            }}>
+            Blur
+          </Button>
+        </VStack>
       </Host>
       <Section title="Text Input">
         <Host matchContents>
