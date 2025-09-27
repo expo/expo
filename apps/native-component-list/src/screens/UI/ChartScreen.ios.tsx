@@ -295,10 +295,11 @@ export default function ChartScreen() {
           </View>
         </>
       )}
-      {chartType === 'bar' && (
+      {(chartType === 'bar' || chartType === 'rectangle') && (
         <>
-          <HeadingText style={styles.controlHeading}>Bar Styling</HeadingText>
-
+          <HeadingText style={styles.controlHeading}>
+            {chartType === 'bar' ? 'Bar Styling' : 'Rectangle Styling'}
+          </HeadingText>
           <Text style={styles.optionLabel}>Corner Radius</Text>
           <View style={styles.pickerContainer}>
             <Host matchContents>
@@ -312,19 +313,23 @@ export default function ChartScreen() {
               />
             </Host>
           </View>
-          <Text style={styles.optionLabel}>Bar Width</Text>
-          <View style={styles.pickerContainer}>
-            <Host matchContents>
-              <Picker
-                options={barWidthOptions}
-                selectedIndex={barWidthIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setBarWidthIndex(index);
-                }}
-                variant="segmented"
-              />
-            </Host>
-          </View>
+          {chartType === 'bar' && (
+            <>
+              <Text style={styles.optionLabel}>Bar Width</Text>
+              <View style={styles.pickerContainer}>
+                <Host matchContents>
+                  <Picker
+                    options={barWidthOptions}
+                    selectedIndex={barWidthIndex}
+                    onOptionSelected={({ nativeEvent: { index } }) => {
+                      setBarWidthIndex(index);
+                    }}
+                    variant="segmented"
+                  />
+                </Host>
+              </View>
+            </>
+          )}
         </>
       )}
       {chartType === 'pie' && (
@@ -351,24 +356,6 @@ export default function ChartScreen() {
                 selectedIndex={pieAngularInsetIndex}
                 onOptionSelected={({ nativeEvent: { index } }) => {
                   setPieAngularInsetIndex(index);
-                }}
-                variant="segmented"
-              />
-            </Host>
-          </View>
-        </>
-      )}
-      {chartType === 'rectangle' && (
-        <>
-          <HeadingText style={styles.controlHeading}>Rectangle Styling</HeadingText>
-          <Text style={styles.optionLabel}>Corner Radius</Text>
-          <View style={styles.pickerContainer}>
-            <Host matchContents>
-              <Picker
-                options={barCornerRadiusOptions}
-                selectedIndex={barCornerRadiusIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setBarCornerRadiusIndex(index);
                 }}
                 variant="segmented"
               />
