@@ -130,6 +130,7 @@ export async function prepareMarkdownForCopyAsync(
   content = await replaceApiSectionsAsync(content, enrichedContext);
 
   content = replaceBoxLinks(content);
+  content = replaceFileTrees(content);
 
   content = content.replace(VIDEO_BOX_LINK_PATTERN, match => {
     const titleMatch = match.match(/title="([^"]+)"/);
@@ -238,6 +239,110 @@ function replaceBoxLinks(content: string) {
   }
 
   return result;
+}
+
+const FILE_TREE_PATTERN = /<FileTree\s+files={(\[[\s\S]*?\])}\s*\/>/g;
+
+function replaceFileTrees(content: string) {
+  return content.replace(FILE_TREE_PATTERN, (_match, filesLiteral) => {
+    const files = parseFileTreeFilesLiteral(filesLiteral);
+    if (!files || files.length === 0) {
+      return '';
+    }
+
+    const structure = buildFileTreeStructure(files);
+    const lines = renderFileTreeAscii(structure);
+    if (lines.length === 0) {
+      return '';
+    }
+    const codeBlock = ['```', ...lines, '```'].join('\n');
+    return `\n${codeBlock}\n`;
+  });
+}
+
+type FileTreeInput = (string | [string, string])[];
+
+type FileTreeNode = {
+  name: string;
+  note?: string;
+  children: FileTreeNode[];
+};
+
+function parseFileTreeFilesLiteral(literal: string): FileTreeInput {
+  try {
+    // eslint-disable-next-line no-new-func
+    return new Function(`return (${literal})`)() as FileTreeInput;
+  } catch (error) {
+    console.warn('Unable to parse FileTree files literal:', error);
+    return [];
+  }
+}
+
+function buildFileTreeStructure(files: FileTreeInput): FileTreeNode[] {
+  const root: FileTreeNode[] = [];
+
+  function modifyPath(path: string, note?: string) {
+    const segments = path.split('/');
+    let currentLevel = root;
+
+    segments.forEach((segment, index) => {
+      const existing = currentLevel.find(node => node.name === segment);
+      if (existing) {
+        if (note && index === segments.length - 1) {
+          existing.note = note;
+        }
+        currentLevel = existing.children;
+        return;
+      }
+
+      const newNode: FileTreeNode = {
+        name: segment,
+        note: note && index === segments.length - 1 ? note : undefined,
+        children: [],
+      };
+      currentLevel.push(newNode);
+      currentLevel = newNode.children;
+    });
+  }
+
+  files.forEach(entry => {
+    if (Array.isArray(entry)) {
+      modifyPath(entry[0], entry[1]);
+    } else if (typeof entry === 'string') {
+      modifyPath(entry);
+    }
+  });
+
+  return root;
+}
+
+function renderFileTreeAscii(structure: FileTreeNode[]): string[] {
+  const lines: string[] = [];
+
+  function renderNodes(nodes: FileTreeNode[], prefix: string) {
+    nodes.forEach((node, index) => {
+      const isLast = index === nodes.length - 1;
+      const connector = `${prefix}${isLast ? '└── ' : '├── '}`;
+      const isDirectory = node.children.length > 0;
+      const name = isDirectory ? `${node.name}/` : node.name;
+      const note = node.note ? `  # ${node.note}` : '';
+
+      lines.push(`${connector}${name}${note}`);
+
+      if (isDirectory) {
+        const childPrefix = `${prefix}${isLast ? '    ' : '│   '}`;
+        renderNodes(node.children, childPrefix);
+      }
+    });
+  }
+
+  renderNodes(structure, '');
+
+  if (lines.length > 0) {
+    return lines.map(line => line.replace(/^(├── |└── )/, ''));
+  }
+
+  return lines;
 }
 
 function findBoxLinkClosingIndex(source: string, searchStart: number) {
