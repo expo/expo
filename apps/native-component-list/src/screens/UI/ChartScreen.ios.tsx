@@ -106,7 +106,7 @@ export default function ChartScreen() {
   const [pieInnerRadiusIndex, setPieInnerRadiusIndex] = useState(2);
   const [pieAngularInsetIndex, setPieAngularInsetIndex] = useState(2);
 
-  const [showAnnotationsIndex, setShowAnnotationsIndex] = useState(0);
+  const [showReferenceLinesIndex, setShowReferenceLinesIndex] = useState(0);
   const [ruleLineWidthIndex, setRuleLineWidthIndex] = useState(1);
   const [ruleDashIndex, setRuleDashIndex] = useState(1);
 
@@ -124,7 +124,7 @@ export default function ChartScreen() {
     }
   };
 
-  const getCurrentAnnotations = () => {
+  const getCurrentReferenceLines = () => {
     switch (currentDataSet) {
       case 'temperature':
         return temperatureAnnotations;
@@ -217,14 +217,14 @@ export default function ChartScreen() {
             showGrid={gridIndex === 1}
             animate={animateIndex === 1}
             showLegend={legendIndex === 1}
-            referenceLines={showAnnotationsIndex === 1 ? getCurrentAnnotations() : []}
+            referenceLines={showReferenceLinesIndex === 1 ? getCurrentReferenceLines() : []}
             lineStyle={chartType === 'line' ? getLineStyle() : undefined}
             pointStyle={chartType === 'point' ? getPointStyle() : undefined}
             areaStyle={chartType === 'area' ? getAreaStyle() : undefined}
             barStyle={chartType === 'bar' ? getBarStyle() : undefined}
             pieStyle={chartType === 'pie' ? getPieStyle() : undefined}
             rectangleStyle={chartType === 'rectangle' ? getRectangleStyle() : undefined}
-            ruleStyle={showAnnotationsIndex === 1 ? getRuleStyle() : undefined}
+            ruleStyle={showReferenceLinesIndex === 1 ? getRuleStyle() : undefined}
             style={styles.chart}
           />
         </Host>
@@ -233,7 +233,7 @@ export default function ChartScreen() {
         <MonoText textStyle={styles.settings}>
           Type: {chartType} | Data: {dataSet} | Grid: {gridIndex === 1 ? 'ON' : 'OFF'} | Animate:{' '}
           {animateIndex === 1 ? 'ON' : 'OFF'} | Legend: {legendIndex === 1 ? 'ON' : 'OFF'} |
-          Annotations: {showAnnotationsIndex === 1 ? 'ON' : 'OFF'}
+          Reference Lines: {showReferenceLinesIndex === 1 ? 'ON' : 'OFF'}
         </MonoText>
       </View>
       <HeadingText style={styles.controlHeading}>Chart Type</HeadingText>
@@ -417,21 +417,21 @@ export default function ChartScreen() {
           />
         </Host>
       </View>
-      <Text style={styles.optionLabel}>Annotations</Text>
-      <Text style={styles.optionDescription}>Add rule mark annotations to charts</Text>
+      <Text style={styles.optionLabel}>Reference Lines</Text>
+      <Text style={styles.optionDescription}>Add reference lines to charts</Text>
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
             options={toggleOptions}
-            selectedIndex={showAnnotationsIndex}
+            selectedIndex={showReferenceLinesIndex}
             onOptionSelected={({ nativeEvent: { index } }) => {
-              setShowAnnotationsIndex(index);
+              setShowReferenceLinesIndex(index);
             }}
             variant="segmented"
           />
         </Host>
       </View>
-      {showAnnotationsIndex === 1 && (
+      {showReferenceLinesIndex === 1 && (
         <>
           <Text style={styles.optionLabel}>Rule Line Width</Text>
           <Text style={styles.optionDescription}>Set the thickness of rule lines</Text>
