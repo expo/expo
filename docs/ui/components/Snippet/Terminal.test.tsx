@@ -54,8 +54,41 @@ describe(Terminal, () => {
     expect(screen.queryByText('Copy')).toBe(null);
   });
 
-  it('do not generate copyCmd if there is more than one command', () => {
-    render(<Terminal cmd={['$ npx create-expo-app init test', '$ cd test']} />);
-    expect(screen.queryByText('Copy')).toBe(null);
+  it('generates correct copyCmd for multiple commands', async () => {
+    render(
+      <>
+        <Terminal cmd={['$ npx create-expo-app init test', '$ cd test']} />
+        <textarea />
+      </>
+    );
+    expect(screen.getByText('Copy')).toBeVisible();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByText('Copy'));
+    await user.click(screen.getByRole('textbox'));
+    await user.paste();
+
+    expect(screen.getByRole<HTMLTextAreaElement>('textbox').value).toBe(
+      'npx create-expo-app init test\ncd test'
+    );
+  });
+
+  it('generates correct copyCmd for multiple commands with comments and blank lines', async () => {
+    render(
+      <>
+        <Terminal cmd={['$ npx expo install --fix', '', '$ npx expo-doctor']} />
+        <textarea />
+      </>
+    );
+    expect(screen.getByText('Copy')).toBeVisible();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByText('Copy'));
+    await user.click(screen.getByRole('textbox'));
+    await user.paste();
+
+    expect(screen.getByRole<HTMLTextAreaElement>('textbox').value).toBe(
+      'npx expo install --fix\nnpx expo-doctor'
+    );
   });
 });
