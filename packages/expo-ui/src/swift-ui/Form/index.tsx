@@ -12,6 +12,13 @@ export interface FormProps extends CommonViewModifierProps {
    * @platform ios 16.0+
    */
   scrollEnabled?: boolean;
+
+  /**
+   * Controls the visibility of the scroll content background.
+   * @default 'visible'
+   * @platform ios 16.0+
+   */
+  scrollContentBackground?: 'visible' | 'hidden';
 }
 
 const FormNativeView: React.ComponentType<FormProps> = requireNativeView('ExpoUI', 'FormView');
