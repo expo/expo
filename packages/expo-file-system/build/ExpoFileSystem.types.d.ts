@@ -10,6 +10,23 @@ export type FileCreateOptions = {
      */
     overwrite?: boolean;
 };
+export declare enum EncodingType {
+    /**
+     * Standard encoding format.
+     */
+    UTF8 = "utf8",
+    /**
+     * Binary, radix-64 representation.
+     */
+    Base64 = "base64"
+}
+export type FileWriteOptions = {
+    /**
+     * The encoding format to use when writing the file.
+     * @default FileSystem.EncodingType.UTF8
+     */
+    encoding?: EncodingType | 'utf8' | 'base64';
+};
 export type DirectoryCreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
@@ -187,7 +204,7 @@ export declare class File {
      * Writes content to the file.
      * @param content The content to write into the file.
      */
-    write(content: string | Uint8Array): void;
+    write(content: string | Uint8Array, options: FileWriteOptions): void;
     /**
      * Deletes a file.
      *

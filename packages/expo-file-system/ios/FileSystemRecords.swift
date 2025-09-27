@@ -35,3 +35,12 @@ struct DirectoryInfo: Record {
   @Field var modificationTime: Int64?
   @Field var creationTime: Int64?
 }
+
+enum WriteEncoding: String, Enumerable {
+  case utf8
+  case base64
+}
+
+struct WriteOptions: Record {
+  @Field var encoding: WriteEncoding?
+}

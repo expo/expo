@@ -282,6 +282,13 @@ export async function test({ describe, expect, it, ...t }) {
       expect(outputFile.exists).toBe(true);
     });
 
+    it('Writes a base64 encoded string to a file reference', () => {
+      const outputFile = new File(testDirectory, 'file.txt');
+      expect(outputFile.exists).toBe(false);
+      outputFile.write('SGVsbG8gd29ybGQh', { encoding: 'base64' });
+      expect(outputFile.textSync()).toEqual('Hello world!');
+    });
+
     it('Writes a string to a file reference', async () => {
       const outputFile = new File(testDirectory, 'file.txt');
       outputFile.create();
