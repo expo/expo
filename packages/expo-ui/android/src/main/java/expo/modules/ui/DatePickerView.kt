@@ -56,7 +56,7 @@ enum class Variant(val value: String) : Enumerable {
 
 data class DateTimePickerProps(
   val title: MutableState<String> = mutableStateOf(""),
-  val initialDate: MutableState<Date?> = mutableStateOf(null),
+  val initialDate: MutableState<Long?> = mutableStateOf(null),
   val variant: MutableState<Variant> = mutableStateOf(Variant.PICKER),
   val displayedComponents: MutableState<DisplayedComponents> = mutableStateOf(DisplayedComponents.DATE),
   val showVariantToggle: MutableState<Boolean> = mutableStateOf(true),
@@ -97,8 +97,8 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     DatePickerState(
       initialDisplayMode = variant,
       locale = locale,
-      initialSelectedDateMillis = initialDate?.time ?: Date().time,
-      initialDisplayedMonthMillis = initialDate?.time ?: Date().time,
+      initialSelectedDateMillis = initialDate ?: Date().time,
+      initialDisplayedMonthMillis = initialDate ?: Date().time,
       yearRange = DatePickerDefaults.YearRange,
       selectableDates = DatePickerDefaults.AllDates
     )
@@ -129,7 +129,12 @@ fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
   val cal = Calendar.getInstance()
 
   val state = remember(props.initialDate.value, props.is24Hour.value) {
-    cal.time = props.initialDate.value ?: Date()
+    val initialDate = props.initialDate.value
+    if (initialDate != null) {
+      cal.timeInMillis = initialDate
+    } else {
+      cal.time = Date()
+    }
     val hour = cal.get(Calendar.HOUR_OF_DAY)
     val minute = cal.get(Calendar.MINUTE)
 
