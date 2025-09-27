@@ -173,6 +173,14 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   }
 }
 
+- (void)setShadowNodeMeasuredSize:(float)width height:(float)height
+{
+  if (_state) {
+    _state->updateState(ExpoViewState::withMeasuredDimensions(width,height));
+  }
+}
+
+
 - (BOOL)supportsPropWithName:(nonnull NSString *)name
 {
   // Implemented in `ExpoFabricView.swift`

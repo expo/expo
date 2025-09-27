@@ -69,3 +69,5 @@ export function Host(props: HostProps) {
     />
   );
 }
+
+export { SimpleHost } from './SimpleHost';

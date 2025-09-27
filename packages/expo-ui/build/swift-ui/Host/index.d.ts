@@ -36,4 +36,5 @@ export type HostProps = {
  * A hosting component for SwiftUI views.
  */
 export declare function Host(props: HostProps): import("react").JSX.Element;
+export { SimpleHost } from './SimpleHost';
 //# sourceMappingURL=index.d.ts.map
