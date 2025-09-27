@@ -235,6 +235,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     val currentReactInstance = currentReactInstance.get() ?: return
     val appInfo = AppInfo.getAppInfo(currentReactInstance)
     bindingView.viewModel.updateAppInfo(appInfo)
+    bindingView.viewModel.updateCustomItems(registeredCallbacks)
   }
 
   inline fun withBindingView(
