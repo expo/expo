@@ -1,5 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import AVFoundation
 import ExpoModulesCore
 import MobileCoreServices
 import Photos
@@ -310,10 +311,12 @@ internal struct MediaHandler {
         let fileExtension = getFileExtension(from: originalFilename)
         let destinationUrl = try generateUrl(withFileExtension: fileExtension)
 
+        let resourceOptions = PHAssetResourceRequestOptions()
+        resourceOptions.isNetworkAccessAllowed = true
         try await PHAssetResourceManager.default().writeData(
           for: resource,
           toFile: destinationUrl,
-          options: nil
+          options: resourceOptions
         )
 
         let mimeType = getMimeType(from: destinationUrl.pathExtension)
@@ -368,14 +371,14 @@ internal struct MediaHandler {
   }
 
   private func handleVideo(from selectedVideo: PHPickerResult) async throws -> AssetInfo {
-    // Fast-path: If transcoding is disabled (passthrough) and we have direct access to the underlying
+    // Fast-path: Always try to use PHAssetResourceManager first to force iCloud downloads when we have direct access to the underlying
     // `PHAsset`, try to copy the original/full-size video resource via `PHAssetResourceManager`.
     // This avoids `loadFileRepresentation`, which can be noticeably slower once a user
     // tweaks only the metadata (e.g. adjusts the capture date) because the photo service marks the
     // asset as *adjusted* and will re-render a temporary file for us. Copying the resource bytes
     // ourselves is dramatically faster because it just streams the already-existing file.
 
-    if options.videoExportPreset == .passthrough, let assetId = selectedVideo.assetIdentifier {
+    if let assetId = selectedVideo.assetIdentifier {
       let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [assetId], options: nil)
       if let asset = fetchResult.firstObject {
         // Prefer the full-size resource when available, otherwise fall back to the default `.video`.
@@ -388,8 +391,10 @@ internal struct MediaHandler {
           let destinationUrl = try generateUrl(withFileExtension: fileExtension)
 
           // Stream the resource into our cache directory. This API is asynchronous but doesn't require
-          // a temporary file like `loadFileRepresentation`.
-          try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: nil)
+          // a temporary file like `loadFileRepresentation` and forces iCloud downloads.
+          let resourceOptions = PHAssetResourceRequestOptions()
+          resourceOptions.isNetworkAccessAllowed = true
+          try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: resourceOptions)
 
           // Build and return the result using the helper.
           let mimeType = getMimeType(from: destinationUrl.pathExtension)

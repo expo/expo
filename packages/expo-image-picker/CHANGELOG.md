@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix issue on iOS 26 where videos stored in iCloud were not downloaded when picked.
+  
 ### 💡 Others
 
 ## 17.0.8 — 2025-09-11
