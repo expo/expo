@@ -9,7 +9,8 @@ class DevMenuViewModel : ViewModel() {
   private val menuPreferences = DevMenuPreferencesHandle
   private val _state = mutableStateOf(
     DevMenuState(
-      devToolsSettings = DevMenuManager.getDevSettings()
+      devToolsSettings = DevMenuManager.getDevSettings(),
+      customItems = mapCallbacks(DevMenuManager.registeredCallbacks)
     )
   )
 
@@ -36,6 +37,10 @@ class DevMenuViewModel : ViewModel() {
       appInfo = appInfo,
       isOnboardingFinished = DevMenuManager.getSettings()?.isOnboardingFinished ?: true
     )
+  }
+
+  fun updateCustomItems(callbacks: List<DevMenuManager.Callback>) {
+    _state.value = _state.value.copy(customItems = mapCallbacks(callbacks))
   }
 
   private fun closeMenu() {
@@ -69,6 +74,14 @@ class DevMenuViewModel : ViewModel() {
         DevMenuManager.getSettings()?.isOnboardingFinished = true
         _state.value = _state.value.copy(isOnboardingFinished = true)
       }
+      is DevMenuAction.TriggerCustomCallback -> {
+        sendEventToDelegateBridge("registeredCallbackFired", action.name)
+      }
     }
+  }
+
+  companion object {
+    private fun mapCallbacks(callbacks: List<DevMenuManager.Callback>) =
+      callbacks.map { DevMenuState.CustomItem(name = it.name, shouldCollapse = it.shouldCollapse) }
   }
 }

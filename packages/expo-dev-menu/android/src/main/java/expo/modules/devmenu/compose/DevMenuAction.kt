@@ -12,6 +12,10 @@ sealed class DevMenuAction(val shouldCloseMenu: Boolean = false) {
   data class ToggleFastRefresh(val newValue: Boolean) : DevMenuAction(shouldCloseMenu = false)
   object OpenReactNativeDevMenu : DevMenuAction(shouldCloseMenu = true)
   object FinishOnboarding : DevMenuAction(shouldCloseMenu = false)
+  data class TriggerCustomCallback(
+    val name: String,
+    val shouldCollapse: Boolean
+  ) : DevMenuAction(shouldCloseMenu = shouldCollapse)
 }
 
 typealias DevMenuActionHandler = (DevMenuAction) -> Unit
