@@ -185,6 +185,11 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
     const OrderedListComponent = (docsMarkdownComponents.ol as ComponentType<any>) ?? 'ol';
     const UnorderedListComponent = (docsMarkdownComponents.ul as ComponentType<any>) ?? 'ul';
     const ListItemComponent = (docsMarkdownComponents.li as ComponentType<any>) ?? 'li';
+    const Heading1Component = (docsMarkdownComponents.h1 as ComponentType<any>) ?? 'h1';
+    const Heading2Component = (docsMarkdownComponents.h2 as ComponentType<any>) ?? 'h2';
+    const Heading3Component = (docsMarkdownComponents.h3 as ComponentType<any>) ?? 'h3';
+    const Heading4Component = (docsMarkdownComponents.h4 as ComponentType<any>) ?? 'h4';
+    const Heading5Component = (docsMarkdownComponents.h5 as ComponentType<any>) ?? 'h5';
     const PreComponent = (docsMarkdownComponents.pre as ComponentType<any>) ?? 'pre';
 
     const ChatPre: ComponentType<any> = preProps => {
@@ -237,34 +242,64 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
 
     return {
       ...docsMarkdownComponents,
+      h1: props => (
+        <Heading1Component
+          {...props}
+          className={mergeClasses('text-xs font-semibold text-default', props.className)}
+        />
+      ),
+      h2: props => (
+        <Heading2Component
+          {...props}
+          className={mergeClasses('text-xs font-semibold text-default', props.className)}
+        />
+      ),
+      h3: props => (
+        <Heading3Component
+          {...props}
+          className={mergeClasses('text-[11px] font-semibold text-default', props.className)}
+        />
+      ),
+      h4: props => (
+        <Heading4Component
+          {...props}
+          className={mergeClasses('text-[11px] font-semibold text-default', props.className)}
+        />
+      ),
+      h5: props => (
+        <Heading5Component
+          {...props}
+          className={mergeClasses('text-[10px] font-semibold text-default', props.className)}
+        />
+      ),
       p: props => (
         <ParagraphComponent
           {...props}
-          className={mergeClasses('text-xs leading-[1.65] text-secondary', props.className)}
+          className={mergeClasses('text-[11px] leading-[1.65] text-secondary', props.className)}
         />
       ),
       ol: props => (
         <OrderedListComponent
           {...props}
-          className={mergeClasses('text-xs leading-[1.65] text-secondary', props.className)}
+          className={mergeClasses('text-[10px] leading-[1.6] text-secondary', props.className)}
         />
       ),
       ul: props => (
         <UnorderedListComponent
           {...props}
-          className={mergeClasses('text-xs leading-[1.65] text-secondary', props.className)}
+          className={mergeClasses('text-[10px] leading-[1.6] text-secondary', props.className)}
         />
       ),
       li: props => (
         <ListItemComponent
           {...props}
-          className={mergeClasses('text-xs leading-[1.65] text-secondary', props.className)}
+          className={mergeClasses('text-[10px] leading-[1.55] text-secondary', props.className)}
         />
       ),
       sup: ({ children, className, ...supProps }: any) => (
         <span
           {...supProps}
-          className={mergeClasses('align-baseline text-xs text-secondary', className)}>
+          className={mergeClasses('align-baseline text-[10px] text-secondary', className)}>
           [{children}]
         </span>
       ),
@@ -392,7 +427,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
                   </div>
                   <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
                     <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
-                    <div className="prose prose-sm mt-1 text-secondary dark:prose-invert prose-a:text-link prose-pre:!bg-transparent">
+                    <div className="mt-1 space-y-3 text-xs text-secondary">
                       {qa.answer ? (
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                           {qa.answer}
