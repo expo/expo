@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.scale
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.views.ComposableScope
 
 data class Resolution(
   @Field
@@ -50,7 +51,7 @@ class MeshGradientView(context: Context, appContext: AppContext) : ExpoComposeVi
   private val paint = Paint()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     val pointData = pointsFromProps()
 
     Canvas(modifier = Modifier.fillMaxSize()) {
