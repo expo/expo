@@ -10,6 +10,7 @@ enum ChartType: String, Enumerable {
   case bar
   case area
   case pie
+  case rectangle
 }
 
 struct ChartDataPoint: Record {
@@ -51,6 +52,17 @@ struct PointChartStyle: Record {
   @Field var pointSize: Double = 6.0
 }
 
+struct RectangleChartStyle: Record {
+  @Field var color: Color?
+  @Field var cornerRadius: Double = 0.0
+}
+
+struct RuleChartStyle: Record {
+  @Field var color: Color?
+  @Field var lineWidth: Double?
+  @Field var dashArray: [Double]?
+}
+
 final class ChartProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var modifiers: ModifierArray?
   @Field var fixedSize: Bool?
@@ -62,11 +74,14 @@ final class ChartProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var showGrid: Bool = true
   @Field var animate: Bool = true
   @Field var showLegend: Bool = false
+  @Field var annotations: [ChartDataPoint] = []
   @Field var lineStyle: LineChartStyle?
   @Field var pointStyle: PointChartStyle?
   @Field var areaStyle: AreaChartStyle?
   @Field var barStyle: BarChartStyle?
   @Field var pieStyle: PieChartStyle?
+  @Field var rectangleStyle: RectangleChartStyle?
+  @Field var ruleStyle: RuleChartStyle?
 }
 
 struct ChartView: ExpoSwiftUI.View {
@@ -109,32 +124,62 @@ struct ChartView: ExpoSwiftUI.View {
       .symbolSize(CGFloat(props.pointStyle?.pointSize ?? 6.0))
   }
 
+  @available(iOS 16.0, tvOS 16.0, *)
+  private func createRectangleMark(for dataPoint: ChartDataPoint) -> some ChartContent {
+    RectangleMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
+      .foregroundStyle(dataPoint.color ?? props.rectangleStyle?.color ?? .blue)
+      .cornerRadius(CGFloat(props.rectangleStyle?.cornerRadius ?? 0.0))
+  }
+
+  @available(iOS 16.0, tvOS 16.0, *)
+  private func createRuleMark(for rule: ChartDataPoint) -> some ChartContent {
+    let lineWidth = props.ruleStyle?.lineWidth ?? 2.0
+    let dashArray = props.ruleStyle?.dashArray
+    let color = rule.color ?? props.ruleStyle?.color ?? .red
+
+    let ruleMark = RuleMark(y: .value("Reference", rule.y))
+      .foregroundStyle(color)
+
+    if let dashArray = dashArray {
+      return ruleMark.lineStyle(.init(lineWidth: CGFloat(lineWidth), dash: dashArray.map { CGFloat($0) }))
+    }
+    return ruleMark.lineStyle(.init(lineWidth: CGFloat(lineWidth)))
+  }
+
   var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       let hasIndividualColors = props.data.contains { $0.color != nil }
 
-      Chart(props.data, id: \.x) { dataPoint in
-        switch props.type {
-        case .line:
-          createLineMark(for: dataPoint)
-        case .point:
-          createPointMark(for: dataPoint)
-        case .bar:
-          if hasIndividualColors {
-            createBaseBarMark(for: dataPoint).foregroundStyle(dataPoint.color ?? .blue).cornerRadius(CGFloat(props.barStyle?.cornerRadius ?? 0.0))
-          } else {
-            createBaseBarMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.x)).cornerRadius(CGFloat(props.barStyle?.cornerRadius ?? 0.0))
-          }
-        case .area:
-          createAreaMark(for: dataPoint)
-        case .pie:
-          if #available(iOS 17.0, tvOS 17.0, *) {
+      Chart {
+        ForEach(props.data, id: \.x) { dataPoint in
+          switch props.type {
+          case .line:
+            createLineMark(for: dataPoint)
+          case .point:
+            createPointMark(for: dataPoint)
+          case .bar:
             if hasIndividualColors {
-              createBasePieMark(for: dataPoint).foregroundStyle(dataPoint.color ?? .blue).opacity(0.8)
+              createBaseBarMark(for: dataPoint).foregroundStyle(dataPoint.color ?? .blue).cornerRadius(CGFloat(props.barStyle?.cornerRadius ?? 0.0))
             } else {
-              createBasePieMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.x)).opacity(0.8)
+              createBaseBarMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.x)).cornerRadius(CGFloat(props.barStyle?.cornerRadius ?? 0.0))
             }
+          case .area:
+            createAreaMark(for: dataPoint)
+          case .pie:
+            if #available(iOS 17.0, tvOS 17.0, *) {
+              if hasIndividualColors {
+                createBasePieMark(for: dataPoint).foregroundStyle(dataPoint.color ?? .blue).opacity(0.8)
+              } else {
+                createBasePieMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.x)).opacity(0.8)
+              }
+            }
+          case .rectangle:
+            createRectangleMark(for: dataPoint)
           }
+        }
+
+        ForEach(props.annotations, id: \.x) { rule in
+          createRuleMark(for: rule)
         }
       }
       .chartXAxis(props.showGrid ? .visible : .hidden)

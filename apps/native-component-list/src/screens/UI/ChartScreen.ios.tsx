@@ -6,6 +6,7 @@ import {
   PointChartStyle,
   PointStyle,
   ChartDataPoint,
+  RuleChartStyle,
   Host,
 } from '@expo/ui/swift-ui';
 import React, { useState } from 'react';
@@ -19,6 +20,11 @@ const pointStyles: PointStyle[] = ['circle', 'square', 'diamond'];
 
 const lineStyleOptions = ['Solid', 'Dashed', 'Dotted'];
 const pointStyleOptions = ['Circle', 'Square', 'Diamond'];
+
+const ruleLineWidths = [1, 2, 4];
+const ruleDashArrays: (number[] | undefined)[] = [undefined, [5, 5], [2, 2]];
+const ruleLineWidthOptions = ['1pt', '2pt', '4pt'];
+const ruleDashOptions = ['Solid', 'Dashed', 'Dotted'];
 
 const salesData: ChartDataPoint[] = [
   { x: 'Jan', y: 15 },
@@ -46,13 +52,31 @@ const performanceData: ChartDataPoint[] = [
   { x: 'Q4', y: 95 },
 ];
 
+const salesAnnotations: ChartDataPoint[] = [
+  { x: 'Sales Target', y: 30, color: '#10B981' },
+  { x: 'Average', y: 25, color: '#F59E0B' },
+  { x: 'Minimum', y: 15, color: '#EF4444' },
+];
+
+const temperatureAnnotations: ChartDataPoint[] = [
+  { x: 'Hot', y: 25, color: '#EF4444' },
+  { x: 'Average', y: 22, color: '#F59E0B' },
+  { x: 'Cool', y: 18, color: '#3B82F6' },
+];
+
+const performanceAnnotations: ChartDataPoint[] = [
+  { x: 'Excellent', y: 90, color: '#10B981' },
+  { x: 'Target', y: 80, color: '#F59E0B' },
+  { x: 'Minimum', y: 65, color: '#EF4444' },
+];
+
 type DataSet = 'sales' | 'temperature' | 'performance';
 
 const dataSet: DataSet[] = ['sales', 'temperature', 'performance'];
 
-const charts: ChartType[] = ['line', 'point', 'bar', 'area', 'pie'];
+const charts: ChartType[] = ['line', 'point', 'bar', 'area', 'pie', 'rectangle'];
 
-const chartTypeOptions = ['Line', 'Point', 'Bar', 'Area', 'Pie'];
+const chartTypeOptions = ['Line', 'Point', 'Bar', 'Area', 'Pie', 'Rectangle'];
 const dataSetOptions = ['Sales', 'Temperature', 'Performance'];
 const toggleOptions = ['OFF', 'ON'];
 
@@ -82,6 +106,10 @@ export default function ChartScreen() {
   const [pieInnerRadiusIndex, setPieInnerRadiusIndex] = useState(2);
   const [pieAngularInsetIndex, setPieAngularInsetIndex] = useState(2);
 
+  const [showAnnotationsIndex, setShowAnnotationsIndex] = useState(0);
+  const [ruleLineWidthIndex, setRuleLineWidthIndex] = useState(1);
+  const [ruleDashIndex, setRuleDashIndex] = useState(1);
+
   const chartType: ChartType = charts[chartTypeIndex];
   const currentDataSet: DataSet = dataSet[dataSetIndex];
 
@@ -96,6 +124,17 @@ export default function ChartScreen() {
     }
   };
 
+  const getCurrentAnnotations = () => {
+    switch (currentDataSet) {
+      case 'temperature':
+        return temperatureAnnotations;
+      case 'performance':
+        return performanceAnnotations;
+      default:
+        return salesAnnotations;
+    }
+  };
+
   const getChartColor = () => {
     switch (chartType) {
       case 'line':
@@ -104,6 +143,8 @@ export default function ChartScreen() {
         return '#EC4899';
       case 'area':
         return '#10B981';
+      case 'rectangle':
+        return '#8B5CF6';
       default:
         return '#6366F1';
     }
@@ -146,6 +187,21 @@ export default function ChartScreen() {
     };
   };
 
+  const getRectangleStyle = () => {
+    return {
+      color: getChartColor(),
+      cornerRadius: barCornerRadiusValues[barCornerRadiusIndex],
+    };
+  };
+
+  const getRuleStyle = (): RuleChartStyle => {
+    return {
+      color: '#FF6B6B',
+      lineWidth: ruleLineWidths[ruleLineWidthIndex],
+      dashArray: ruleDashArrays[ruleDashIndex],
+    };
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <HeadingText style={styles.heading}>Native Swift Charts with Styling</HeadingText>
@@ -161,11 +217,14 @@ export default function ChartScreen() {
             showGrid={gridIndex === 1}
             animate={animateIndex === 1}
             showLegend={legendIndex === 1}
+            annotations={showAnnotationsIndex === 1 ? getCurrentAnnotations() : []}
             lineStyle={chartType === 'line' ? getLineStyle() : undefined}
             pointStyle={chartType === 'point' ? getPointStyle() : undefined}
             areaStyle={chartType === 'area' ? getAreaStyle() : undefined}
             barStyle={chartType === 'bar' ? getBarStyle() : undefined}
             pieStyle={chartType === 'pie' ? getPieStyle() : undefined}
+            rectangleStyle={chartType === 'rectangle' ? getRectangleStyle() : undefined}
+            ruleStyle={showAnnotationsIndex === 1 ? getRuleStyle() : undefined}
             style={styles.chart}
           />
         </Host>
@@ -173,7 +232,8 @@ export default function ChartScreen() {
       <View style={styles.settingsContainer}>
         <MonoText textStyle={styles.settings}>
           Type: {chartType} | Data: {dataSet} | Grid: {gridIndex === 1 ? 'ON' : 'OFF'} | Animate:{' '}
-          {animateIndex === 1 ? 'ON' : 'OFF'} | Legend: {legendIndex === 1 ? 'ON' : 'OFF'}
+          {animateIndex === 1 ? 'ON' : 'OFF'} | Legend: {legendIndex === 1 ? 'ON' : 'OFF'} |
+          Annotations: {showAnnotationsIndex === 1 ? 'ON' : 'OFF'}
         </MonoText>
       </View>
       <HeadingText style={styles.controlHeading}>Chart Type</HeadingText>
@@ -298,6 +358,24 @@ export default function ChartScreen() {
           </View>
         </>
       )}
+      {chartType === 'rectangle' && (
+        <>
+          <HeadingText style={styles.controlHeading}>Rectangle Styling</HeadingText>
+          <Text style={styles.optionLabel}>Corner Radius</Text>
+          <View style={styles.pickerContainer}>
+            <Host matchContents>
+              <Picker
+                options={barCornerRadiusOptions}
+                selectedIndex={barCornerRadiusIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setBarCornerRadiusIndex(index);
+                }}
+                variant="segmented"
+              />
+            </Host>
+          </View>
+        </>
+      )}
       <HeadingText style={styles.controlHeading}>Options</HeadingText>
       <Text style={styles.optionLabel}>Grid</Text>
       <View style={styles.pickerContainer}>
@@ -339,6 +417,52 @@ export default function ChartScreen() {
           />
         </Host>
       </View>
+      <Text style={styles.optionLabel}>Annotations</Text>
+      <Text style={styles.optionDescription}>Add rule mark annotations to charts</Text>
+      <View style={styles.pickerContainer}>
+        <Host matchContents>
+          <Picker
+            options={toggleOptions}
+            selectedIndex={showAnnotationsIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setShowAnnotationsIndex(index);
+            }}
+            variant="segmented"
+          />
+        </Host>
+      </View>
+      {showAnnotationsIndex === 1 && (
+        <>
+          <Text style={styles.optionLabel}>Rule Line Width</Text>
+          <Text style={styles.optionDescription}>Set the thickness of rule lines</Text>
+          <View style={styles.pickerContainer}>
+            <Host matchContents>
+              <Picker
+                options={ruleLineWidthOptions}
+                selectedIndex={ruleLineWidthIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setRuleLineWidthIndex(index);
+                }}
+                variant="segmented"
+              />
+            </Host>
+          </View>
+          <Text style={styles.optionLabel}>Rule Line Style</Text>
+          <Text style={styles.optionDescription}>Set the dash pattern for rule lines</Text>
+          <View style={styles.pickerContainer}>
+            <Host matchContents>
+              <Picker
+                options={ruleDashOptions}
+                selectedIndex={ruleDashIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setRuleDashIndex(index);
+                }}
+                variant="segmented"
+              />
+            </Host>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }
