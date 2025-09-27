@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- [Android] The `dimezisBlurView` experimental blur method will no longer work without creating a related `BlurTargetView`. ([#39990](https://github.com/expo/expo/pull/39990) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
+
+- [Android] Introduce new, more performant Blur API for Android. ([#39990](https://github.com/expo/expo/pull/39990) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

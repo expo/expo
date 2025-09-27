@@ -4,9 +4,9 @@ import ExpoModulesCore
 
 public final class BlurViewModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoBlurView")
+    Name("ExpoBlur")
 
-    View(BlurView.self) {
+    View(ExpoBlurView.self) {
       Prop("tint") { (view, tint: TintStyle) in
         view.setTint(tint)
       }

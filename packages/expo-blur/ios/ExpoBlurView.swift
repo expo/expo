@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-public final class BlurView: ExpoView {
+public final class ExpoBlurView: ExpoView {
   private let blurEffectView = BlurEffectView()
 
   public required init(appContext: AppContext? = nil) {
