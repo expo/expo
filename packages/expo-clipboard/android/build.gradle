@@ -15,9 +15,9 @@ android {
 }
 
 dependencies {
-  implementation "androidx.core:core-ktx:1.6.0"
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+  implementation "androidx.core:core-ktx:1.17.0"
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
