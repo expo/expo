@@ -1,6 +1,6 @@
 ---
 title: TrackingTransparency
-description: A library for requesting permission to track the users on devices using iOS 14 and higher.
+description: A library for tracking users and managing tracking permissions.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-52/packages/expo-tracking-transparency'
 packageName: 'expo-tracking-transparency'
 platforms: ['android', 'ios', 'tvos']
@@ -16,9 +16,9 @@ import {
 } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, and more. This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](../config/app/#infoplist) to explain how the user will be tracked. Otherwise, your app will be rejected by Apple.
+A library for tracking users and managing tracking permissions. Provides access to advertising identifiers and manages the required permissions for tracking. Examples of data used for tracking include email address, device ID, advertising ID, and more. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](../config/app/#infoplist) to explain how the user will be tracked. Otherwise, your app will be rejected by Apple.
 
-For more information on Apple's new App Tracking Transparency framework, see their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
+For more information on Apple's App Tracking Transparency framework, see their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
 
 ## Installation
 

@@ -19,15 +19,13 @@ import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionH
  *
  * On iOS, this function returns the "Identifier for Advertisers"
  * ([IDFA](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier)),
- * a string that's unique to each device. On devices running iOS 14.5 and newer, your app must
- * request tracking authorization using `requestTrackingPermissionsAsync()` before it can get the
- * advertising identifier.
+ * a string that's unique to each device. Your app must request tracking authorization using
+ * `requestTrackingPermissionsAsync()` before it can get the advertising identifier.
  *
  * @return Returns either a UUID `string` or `null`. It returns null in the following cases:
  * - On Android, when `isLimitAdTrackingEnabled()` is `true`
  * - In the iOS simulator, regardless of any settings
- * - On devices running iOS 14.5 and later if you haven't received permission using
- *   `requestTrackingPermissionsAsync()`
+ * - On iOS if you haven't received permission using `requestTrackingPermissionsAsync()`
  * - On iOS, if you've requested permission and the user declines
  * - On iOS, when a profile or configuration restricts access to the advertising identifier, such as
  *   when the user has turned off the system-wide "Allow Apps to Request to Track" setting
@@ -42,14 +40,13 @@ export declare function getAdvertisingId(): string | null;
 /**
  * Requests the user to authorize or deny access to app-related data that can be used for tracking
  * the user or the device. Examples of data used for tracking include email address, device ID,
- * advertising ID, etc. On iOS 14.5 and above, if the user denies this permission, any attempt to
- * collect the IDFA will return a string of 0s.
+ * advertising ID, etc. On iOS, if the user denies this permission, any attempt to collect the
+ * IDFA will return a string of 0s.
  *
  * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
  * reinstalls the app on the device.
  *
- * On Android, web, and iOS 13 and below, this method always returns that the permission was
- * granted.
+ * On Android and web, this method always returns that the permission was granted.
  * @example
  * ```typescript
  * const { granted } = await requestTrackingPermissionsAsync();
@@ -64,8 +61,7 @@ export declare function requestTrackingPermissionsAsync(): Promise<PermissionRes
  * Checks whether or not the user has authorized the app to access app-related data that can be used
  * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
  *
- * On Android, web, and iOS 13 and below, this method always returns that the permission was
- * granted.
+ * On Android and web, this method always returns that the permission was granted.
  *
  * @example
  * ```typescript
@@ -80,14 +76,13 @@ export declare function getTrackingPermissionsAsync(): Promise<PermissionRespons
 /**
  * Check or request the user to authorize or deny access to app-related data that can be used for tracking
  * the user or the device. Examples of data used for tracking include email address, device ID,
- * advertising ID, etc. On iOS 14.5 and above, if the user denies this permission, any attempt to
- * collect the IDFA will return a string of 0s.
+ * advertising ID, etc. On iOS, if the user denies this permission, any attempt to collect the
+ * IDFA will return a string of 0s.
  *
  * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
  * reinstalls the app on the device.
  *
- * On Android, web, and iOS 13 and below, this method always returns that the permission was
- * granted.
+ * On Android and web, this method always returns that the permission was granted.
  * @example
  * ```ts
  * const [status, requestPermission] = useTrackingPermissions();

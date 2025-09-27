@@ -1,7 +1,7 @@
 {
   "name": "expo-tracking-transparency",
   "version": "6.0.7",
-  "description": "An Expo library for requesting permission to track the users on devices using iOS 14.5 and higher.",
+  "description": "A library for tracking users and managing tracking permissions",
   "main": "build/TrackingTransparency.js",
   "types": "build/TrackingTransparency.d.ts",
   "scripts": {
