@@ -12,8 +12,8 @@ import {
   ensureDirAsync,
   getStartMode,
   retryAsync,
-  getMaestroFlowFilePath,
   prettyPrintTestSuiteLogs,
+  runCustomMaestroFlowsAsync,
 } from './lib/e2e-common';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
@@ -43,16 +43,25 @@ const __dirname = dirname(__filename);
       await fs.cp(binaryPath, appBinaryPath, { recursive: true });
     }
     if (startMode === 'TEST' || startMode === 'BUILD_AND_TEST') {
-      const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
-      await createMaestroFlowAsync({
+      const e2eDir = path.join(projectRoot, 'e2e');
+      await testAsync(
+        path.join(e2eDir, '_nested-flows', 'confirm-app-open-ios.yaml'),
+        deviceId,
+        appBinaryPath,
+        e2eDir
+      );
+      await runCustomMaestroFlowsAsync(e2eDir, (maestroFlowFilePath) =>
+        testAsync(maestroFlowFilePath, deviceId, appBinaryPath, e2eDir)
+      );
+
+      const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,
-        workflowFile: maestroFlowFilePath,
-        confirmFirstRunPrompt: true,
+        e2eDir,
       });
 
       await retryAsync((retryNumber) => {
         console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-        return testAsync(maestroFlowFilePath, deviceId, appBinaryPath);
+        return testAsync(maestroNativeModulesFlowFilePath, deviceId, appBinaryPath, e2eDir);
       }, NUM_OF_RETRIES);
     }
   } catch (e) {
@@ -177,7 +186,8 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60
 async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
-  appBinaryPath: string
+  appBinaryPath: string,
+  maestroWorkspaceRoot: string
 ): Promise<void> {
   const stopLogCollectionController = new AbortController();
 
@@ -185,6 +195,11 @@ async function testAsync(
     await startSimulatorAsync(deviceId);
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
+    console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
+    await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
+    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
+      stdio: 'inherit',
+    });
 
     const getTestSuiteLogs = setupLogger(
       '(subsystem == "com.facebook.react.log")',
@@ -199,6 +214,7 @@ async function testAsync(
     try {
       await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
         stdio: 'inherit',
+        cwd: maestroWorkspaceRoot,
         env: {
           ...process.env,
           MAESTRO_DRIVER_STARTUP_TIMEOUT,

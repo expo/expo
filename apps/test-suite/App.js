@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
 
-import AppNavigator from './AppNavigator';
+import { TestStackNavigator } from './TestStackNavigator';
 import { ThemeProvider } from '../common/ThemeProvider';
 
 const linking = {
@@ -18,7 +18,7 @@ const linking = {
 export default () => (
   <ThemeProvider>
     <NavigationContainer linking={linking}>
-      <AppNavigator />
+      <TestStackNavigator />
     </NavigationContainer>
   </ThemeProvider>
 );
