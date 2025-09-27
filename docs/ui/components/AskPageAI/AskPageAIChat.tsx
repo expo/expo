@@ -2,6 +2,8 @@ import { Button, mergeClasses } from '@expo/styleguide';
 import { Stars03DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars03DuotoneIcon';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
+import { Maximize02Icon } from '@expo/styleguide-icons/outline/Maximize02Icon';
+import { Minimize02Icon } from '@expo/styleguide-icons/outline/Minimize02Icon';
 import { RefreshCcw02Icon } from '@expo/styleguide-icons/outline/RefreshCcw02Icon';
 import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
 import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
@@ -31,11 +33,19 @@ type AskPageAIChatProps = {
   onClose: () => void;
   onMinimize?: () => void;
   pageTitle?: string;
+  onToggleExpand?: () => void;
+  isExpanded?: boolean;
 };
 
 type ConversationKey = string | null;
 
-export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatProps) {
+export function AskPageAIChat({
+  onClose,
+  onMinimize,
+  pageTitle,
+  onToggleExpand,
+  isExpanded = false,
+}: AskPageAIChatProps) {
   const {
     conversation,
     submitQuery,
@@ -269,13 +279,13 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
       h5: props => (
         <Heading5Component
           {...props}
-          className={mergeClasses('!text-[9px] font-semibold text-default', props.className)}
+          className={mergeClasses('!text-[10px] font-semibold text-default', props.className)}
         />
       ),
       p: ({ className, style, ...rest }) => (
         <ParagraphComponent
           {...rest}
-          style={{ fontSize: '14px', lineHeight: '1.50', ...(style ?? {}) }}
+          style={{ ...(style ?? {}), fontSize: '14px', lineHeight: '1.5' }}
           className={mergeClasses(
             '!mb-2 text-secondary',
             className,
@@ -286,21 +296,21 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
       ol: ({ className, style, ...rest }) => (
         <OrderedListComponent
           {...rest}
-          style={{ fontSize: '14px', lineHeight: '1.5', ...(style ?? {}) }}
+          style={{ ...(style ?? {}), fontSize: '14px', lineHeight: '1.5' }}
           className={mergeClasses('text-secondary', className, '!text-[10px] leading-normal')}
         />
       ),
       ul: ({ className, style, ...rest }) => (
         <UnorderedListComponent
           {...rest}
-          style={{ fontSize: '14px', lineHeight: '1.5', ...(style ?? {}) }}
+          style={{ ...(style ?? {}), fontSize: '14px', lineHeight: '1.5' }}
           className={mergeClasses('text-secondary', className, '!text-[10px] leading-normal')}
         />
       ),
       li: ({ className, style, ...rest }) => (
         <ListItemComponent
           {...rest}
-          style={{ fontSize: '14px', lineHeight: '1.45', ...(style ?? {}) }}
+          style={{ ...(style ?? {}), fontSize: '14px', lineHeight: '1.45' }}
           className={mergeClasses('text-secondary', className, '!text-[10px] !leading-[1.45]')}
         />
       ),
@@ -391,6 +401,25 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
               }}>
               <ThumbsDownIcon className="icon-xs text-palette-white" />
             </Button>
+            {onToggleExpand ? (
+              <Button
+                type="button"
+                aria-label={
+                  isExpanded ? 'Restore Ask AI assistant size' : 'Expand Ask AI assistant'
+                }
+                theme="quaternary"
+                size="xs"
+                className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+                style={closeButtonThemeOverrides}
+                aria-pressed={isExpanded}
+                onClick={onToggleExpand}>
+                {isExpanded ? (
+                  <Minimize02Icon className="icon-xs text-palette-white" />
+                ) : (
+                  <Maximize02Icon className="icon-xs text-palette-white" />
+                )}
+              </Button>
+            ) : null}
             <Button
               type="button"
               aria-label="Reset conversation"
