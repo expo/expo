@@ -217,7 +217,7 @@ export default function ChartScreen() {
             showGrid={gridIndex === 1}
             animate={animateIndex === 1}
             showLegend={legendIndex === 1}
-            annotations={showAnnotationsIndex === 1 ? getCurrentAnnotations() : []}
+            referenceLines={showAnnotationsIndex === 1 ? getCurrentAnnotations() : []}
             lineStyle={chartType === 'line' ? getLineStyle() : undefined}
             pointStyle={chartType === 'point' ? getPointStyle() : undefined}
             areaStyle={chartType === 'area' ? getAreaStyle() : undefined}

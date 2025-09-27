@@ -74,7 +74,7 @@ final class ChartProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var showGrid: Bool = true
   @Field var animate: Bool = true
   @Field var showLegend: Bool = false
-  @Field var annotations: [ChartDataPoint] = []
+  @Field var referenceLines: [ChartDataPoint] = []
   @Field var lineStyle: LineChartStyle?
   @Field var pointStyle: PointChartStyle?
   @Field var areaStyle: AreaChartStyle?
@@ -178,8 +178,8 @@ struct ChartView: ExpoSwiftUI.View {
           }
         }
 
-        ForEach(props.annotations, id: \.x) { rule in
-          createRuleMark(for: rule)
+        ForEach(props.referenceLines, id: \.x) { referenceLine in
+          createRuleMark(for: referenceLine)
         }
       }
       .chartXAxis(props.showGrid ? .visible : .hidden)

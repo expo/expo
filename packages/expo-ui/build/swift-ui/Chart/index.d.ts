@@ -158,9 +158,9 @@ export type ChartProps = {
      */
     showLegend?: boolean;
     /**
-     * Optional annotations to overlay on the chart as rule marks.
+     * Optional reference lines to overlay on the chart as rule marks.
      */
-    annotations?: ChartDataPoint[];
+    referenceLines?: ChartDataPoint[];
     /**
      * Line chart specific styling options.
      */
