@@ -14,17 +14,15 @@ import {
   type CSSProperties,
   type FormEvent,
   type MouseEvent,
-  type ReactElement,
-  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState,
-  isValidElement,
 } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+import { cleanCopyValue, getCodeBlockDataFromChildren } from '~/common/code-utilities';
 import { markdownComponents as docsMarkdownComponents } from '~/ui/components/Markdown';
 
 import { FOOTNOTE } from '../Text';
@@ -190,8 +188,12 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
     const PreComponent = (docsMarkdownComponents.pre as ComponentType<any>) ?? 'pre';
 
     const ChatPre: ComponentType<any> = preProps => {
+      const { value } = useMemo(
+        () => getCodeBlockDataFromChildren(preProps.children, preProps.className),
+        [preProps.children, preProps.className]
+      );
+      const codeToCopy = useMemo(() => cleanCopyValue(value ?? ''), [value]);
       const [copied, setCopied] = useState(false);
-      const codeToCopy = normalizeCodeString(preProps.children);
 
       useEffect(() => {
         if (!copied) {
@@ -215,11 +217,12 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
 
       return (
         <div className="relative">
+          <PreComponent {...preProps} />
           <Button
             type="button"
             theme="quaternary"
             size="xs"
-            className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full !border !border-default !bg-default !p-0 shadow-sm"
+            className="pointer-events-auto absolute right-2 top-2 z-10 flex size-7 items-center justify-center rounded-full !border !border-default !bg-default !p-0 shadow-sm"
             onClick={handleCopy}
             aria-label="Copy code block">
             {copied ? (
@@ -228,7 +231,6 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
               <ClipboardIcon className="icon-xs text-icon-secondary" aria-hidden />
             )}
           </Button>
-          <PreComponent {...preProps} />
         </div>
       );
     };
@@ -238,25 +240,25 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
       p: props => (
         <ParagraphComponent
           {...props}
-          className={mergeClasses('text-[13px] leading-[1.65] text-secondary', props.className)}
+          className={mergeClasses('text-xs leading-[1.65] text-secondary', props.className)}
         />
       ),
       ol: props => (
         <OrderedListComponent
           {...props}
-          className={mergeClasses('text-[13px] leading-[1.65] text-secondary', props.className)}
+          className={mergeClasses('text-xs leading-[1.65] text-secondary', props.className)}
         />
       ),
       ul: props => (
         <UnorderedListComponent
           {...props}
-          className={mergeClasses('text-[13px] leading-[1.65] text-secondary', props.className)}
+          className={mergeClasses('text-xs leading-[1.65] text-secondary', props.className)}
         />
       ),
       li: props => (
         <ListItemComponent
           {...props}
-          className={mergeClasses('text-[13px] leading-[1.65] text-secondary', props.className)}
+          className={mergeClasses('text-xs leading-[1.65] text-secondary', props.className)}
         />
       ),
       sup: ({ children, className, ...supProps }: any) => (
@@ -468,23 +470,4 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
       </div>
     </div>
   );
-}
-
-function normalizeCodeString(children: ReactNode): string {
-  const text = collectNodeText(children);
-  return text.endsWith('\n') ? text.slice(0, -1) : text;
-}
-
-function collectNodeText(node: ReactNode): string {
-  if (typeof node === 'string' || typeof node === 'number') {
-    return String(node);
-  }
-  if (Array.isArray(node)) {
-    return node.map(child => collectNodeText(child)).join('');
-  }
-  if (isValidElement(node)) {
-    const element = node as ReactElement<{ children?: ReactNode }>;
-    return collectNodeText(element.props.children);
-  }
-  return '';
 }
