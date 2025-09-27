@@ -21,6 +21,9 @@ import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.ui.button.Button
+import expo.modules.ui.listDetails.DetailContentView
+import expo.modules.ui.listDetails.ListContentView
+import expo.modules.ui.listDetails.ListDetailView
 import expo.modules.ui.menu.ContextMenu
 
 class ExpoUIModule : Module() {
@@ -47,6 +50,10 @@ class ExpoUIModule : Module() {
     View(SwitchView::class) {
       Events("onValueChange")
     }
+
+    View(DetailContentView::class){}
+    View(ListContentView::class){}
+    View(ListDetailView::class){}
 
     View(Button::class) {
       Events("onButtonPressed")

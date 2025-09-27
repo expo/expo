@@ -10,3 +10,4 @@ export * from './Switch';
 export * from './TextInput';
 export * from './Shape';
 export * from './modifiers';
+export * from './ListDetail';
