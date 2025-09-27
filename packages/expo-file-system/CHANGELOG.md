@@ -10,13 +10,14 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix incorrect FileSystemFileProvider path. ([#39634](https://github.com/expo/expo/pull/39634) by [@robertying](https://github.com/robertying))
+- [Android] Fix incorrect AndroidManifest.xml location. ([#39134](https://github.com/expo/expo/pull/39134) by [@robertying](https://github.com/robertying))
+- [Android] file-system: fix legacy provider declaration ([#40033](https://github.com/expo/expo/pull/40033) by [@Hazer](https://github.com/Hazer))
 
 ### 💡 Others
 
 ## 19.0.14 — 2025-09-13
 
-_This version does not introduce any user-facing changes._
+- Reverts: [Android] Fix incorrect AndroidManifest.xml location. ([#39134](https://github.com/expo/expo/pull/39134) by [@robertying](https://github.com/robertying))
 
 ## 19.0.13 — 2025-09-12
 
