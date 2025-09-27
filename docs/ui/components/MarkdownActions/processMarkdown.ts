@@ -241,7 +241,7 @@ function replaceBoxLinks(content: string) {
   return result;
 }
 
-const FILE_TREE_PATTERN = /<FileTree\s+files={(\[[\s\S]*?\])}\s*\/>/g;
+const FILE_TREE_PATTERN = /<FileTree\s+files={(\[[\S\s]*?])}\s*\/>/g;
 
 function replaceFileTrees(content: string) {
   return content.replace(FILE_TREE_PATTERN, (_match, filesLiteral) => {

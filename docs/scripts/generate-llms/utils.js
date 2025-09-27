@@ -171,7 +171,7 @@ export function cleanContent(content) {
       .replace(/<\/PaddedAPIBox>/g, '')
       .replace(/<CodeBlocksTable[^>]*>/g, '')
       .replace(/<\/CodeBlocksTable>/g, '')
-      .replace(/<FileTree\s+files={(\[[\s\S]*?\])}\s*\/>/g, (_match, filesLiteral) => {
+      .replace(/<FileTree\s+files={(\[[\S\s]*?])}\s*\/>/g, (_match, filesLiteral) => {
         const files = parseFileTreeFilesLiteral(filesLiteral);
         if (!files || files.length === 0) {
           return '';
