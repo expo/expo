@@ -9,17 +9,23 @@ import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { useChat, type Reaction } from '@kapaai/react-sdk';
 import {
-  Children,
+  type AnchorHTMLAttributes,
+  type ComponentType,
   type CSSProperties,
   type FormEvent,
   type MouseEvent,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState,
+  isValidElement,
 } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+
+import { markdownComponents as docsMarkdownComponents } from '~/ui/components/Markdown';
 
 import { FOOTNOTE } from '../Text';
 
@@ -174,64 +180,118 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
     [onMinimize]
   );
 
-  const markdownComponents = useMemo(() => {
+  const markdownComponents = useMemo<Components>(() => {
+    const AnchorComponent =
+      (docsMarkdownComponents.a as ComponentType<AnchorHTMLAttributes<HTMLAnchorElement>>) ?? 'a';
+    const ParagraphComponent = (docsMarkdownComponents.p as ComponentType<any>) ?? 'p';
+    const OrderedListComponent = (docsMarkdownComponents.ol as ComponentType<any>) ?? 'ol';
+    const UnorderedListComponent = (docsMarkdownComponents.ul as ComponentType<any>) ?? 'ul';
+    const ListItemComponent = (docsMarkdownComponents.li as ComponentType<any>) ?? 'li';
+    const PreComponent = (docsMarkdownComponents.pre as ComponentType<any>) ?? 'pre';
+
+    const ChatPre: ComponentType<any> = preProps => {
+      const [copied, setCopied] = useState(false);
+      const codeToCopy = normalizeCodeString(preProps.children);
+
+      useEffect(() => {
+        if (!copied) {
+          return undefined;
+        }
+        const timer = setTimeout(() => {
+          setCopied(false);
+        }, 2000);
+        return () => {
+          clearTimeout(timer);
+        };
+      }, [copied]);
+
+      const handleCopy = () => {
+        if (!codeToCopy) {
+          return;
+        }
+        void navigator.clipboard?.writeText(codeToCopy);
+        setCopied(true);
+      };
+
+      return (
+        <div className="relative">
+          <Button
+            type="button"
+            theme="quaternary"
+            size="xs"
+            className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full !border !border-default !bg-default !p-0 shadow-sm"
+            onClick={handleCopy}
+            aria-label="Copy code block">
+            {copied ? (
+              <CheckIcon className="icon-xs text-success" aria-hidden />
+            ) : (
+              <ClipboardIcon className="icon-xs text-icon-secondary" aria-hidden />
+            )}
+          </Button>
+          <PreComponent {...preProps} />
+        </div>
+      );
+    };
+
     return {
-      code({
-        inline,
+      ...docsMarkdownComponents,
+      p: props => (
+        <ParagraphComponent
+          {...props}
+          className={mergeClasses('text-[13px] leading-[1.65] text-secondary', props.className)}
+        />
+      ),
+      ol: props => (
+        <OrderedListComponent
+          {...props}
+          className={mergeClasses('text-[13px] leading-[1.65] text-secondary', props.className)}
+        />
+      ),
+      ul: props => (
+        <UnorderedListComponent
+          {...props}
+          className={mergeClasses('text-[13px] leading-[1.65] text-secondary', props.className)}
+        />
+      ),
+      li: props => (
+        <ListItemComponent
+          {...props}
+          className={mergeClasses('text-[13px] leading-[1.65] text-secondary', props.className)}
+        />
+      ),
+      sup: ({ children, className, ...supProps }: any) => (
+        <span
+          {...supProps}
+          className={mergeClasses('align-baseline text-xs text-secondary', className)}>
+          [{children}]
+        </span>
+      ),
+      a: ({
+        href,
         children,
-      }: {
-        inline?: boolean;
-        children?: React.ReactNode;
-        className?: string;
-      }) {
-        const childArray = Children.toArray(children);
-        const raw = childArray.map(node => (typeof node === 'string' ? node : '')).join('');
-        const clean = raw.replace(/\n$/, '');
-
-        const tokenCount = clean.trim().split(/\s+/).length;
-        const hasLineBreak = clean.includes('\n');
-
-        if (inline) {
-          const trimmed = clean.replace(/^`+/, '').replace(/`+$/, '');
-          const display = trimmed.length > 0 ? trimmed : clean;
-          const shouldRenderInline = display.trim().split(/\s+/).length <= 1;
-
-          if (shouldRenderInline) {
-            return (
-              <code className="rounded bg-subtle px-1 py-0.5 text-xs text-default">{display}</code>
-            );
-          }
-
-          return <MarkdownCodeBlock code={display.trim()} compact />;
-        }
-
-        if (!hasLineBreak && tokenCount <= 1) {
-          return (
-            <code className="rounded bg-subtle px-1 py-0.5 text-xs text-default">
-              {clean.trim()}
-            </code>
-          );
-        }
-
-        return <MarkdownCodeBlock code={clean} />;
-      },
-      a({ children, href, ...rest }) {
-        return (
-          <a
-            {...rest}
-            href={href ?? '#'}
-            className={mergeClasses('text-link', rest.className)}
-            onClick={event => {
-              rest.onClick?.(event);
-              if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.button !== 0) {
-                return;
-              }
-              handleNavigation(event);
-            }}>
-            {children}
-          </a>
-        );
-      },
+        onClick: originalOnClick,
+        ...props
+      }: AnchorHTMLAttributes<HTMLAnchorElement>) => (
+        <AnchorComponent
+          {...props}
+          href={href ?? '#'}
+          onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+            originalOnClick?.(event);
+            if (
+              event.defaultPrevented ||
+              event.metaKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              event.button !== 0
+            ) {
+              return;
+            }
+            handleNavigation(event);
+          }}>
+          {children}
+        </AnchorComponent>
+      ),
+      pre: ChatPre,
     } as Components;
   }, [handleNavigation]);
 
@@ -410,50 +470,21 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
   );
 }
 
-function MarkdownCodeBlock({ code, compact = false }: { code: string; compact?: boolean }) {
-  const [copied, setCopied] = useState(false);
+function normalizeCodeString(children: ReactNode): string {
+  const text = collectNodeText(children);
+  return text.endsWith('\n') ? text.slice(0, -1) : text;
+}
 
-  useEffect(() => {
-    if (!copied) {
-      return undefined;
-    }
-    const timer = setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [copied]);
-
-  const handleCopyAsync = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-    } catch (error) {
-      console.error('Unable to copy code snippet', error);
-    }
-  };
-
-  return (
-    <div className="relative overflow-hidden rounded-md border border-default bg-subtle">
-      <button
-        type="button"
-        className="bg-default/90 absolute right-2 top-2 inline-flex size-7 items-center justify-center rounded-full text-secondary shadow-sm transition hover:bg-default"
-        onClick={handleCopyAsync}>
-        <span className="sr-only">Copy code</span>
-        {copied ? (
-          <CheckIcon className="icon-xs text-success" aria-hidden />
-        ) : (
-          <ClipboardIcon className="icon-xs text-icon-secondary" aria-hidden />
-        )}
-      </button>
-      <pre
-        className={mergeClasses(
-          'overflow-x-auto whitespace-pre bg-transparent text-xs leading-relaxed text-default',
-          compact ? 'px-3 py-1' : 'px-3 py-1.5'
-        )}>
-        <code className="block whitespace-pre text-default">{code}</code>
-      </pre>
-    </div>
-  );
+function collectNodeText(node: ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node);
+  }
+  if (Array.isArray(node)) {
+    return node.map(child => collectNodeText(child)).join('');
+  }
+  if (isValidElement(node)) {
+    const element = node as ReactElement<{ children?: ReactNode }>;
+    return collectNodeText(element.props.children);
+  }
+  return '';
 }
