@@ -3,6 +3,7 @@ import { type CommonViewModifierProps } from '../types';
 export type HostProps = {
     /**
      * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
+     * Can be only set once on mount.
      * @default false
      */
     matchContents?: boolean | {
