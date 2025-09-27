@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix (glide) crash when rapidly updating images on new architecture. ([#39091](https://github.com/expo/expo/pull/39091) by [@SeanSanker](https://github.com/SeanSanker))
+
 ### 💡 Others
 
 ## 3.0.8 — 2025-09-11
