@@ -128,3 +128,67 @@ The following properties are available in the schema for the `submit` key in **e
 ### iOS-specific options
 
 <EasJsonPropertiesTable schema={submitIosSchema} />
+This is a well-written and detailed guide on **internal distribution with EAS Build**, explaining how to quickly share builds with teammates and testers via a secure URL.
+
+Here’s a **concise summary** to make it easier to follow:
+
+---
+
+## 📌 Quick Guide: Internal Distribution with EAS Build
+
+### 1. **Setup**
+
+* In your `eas.json`, add `"distribution": "internal"` to the build profile you want to use.
+* Example:
+
+```jsonc
+{
+  "build": {
+    "internal": {
+      "distribution": "internal"
+    }
+  }
+}
+```
+
+### 2. **Behavior by Platform**
+
+* **Android**:
+
+  * Builds APKs by default (instead of AABs).
+  * Requires a valid keystore for signing.
+* **iOS**:
+
+  * Uses **Ad Hoc** (UDID allow-list) or **Enterprise** provisioning.
+  * Add devices with `eas device:create` before building.
+
+### 3. **Sharing Builds**
+
+* After the build completes, you get a shareable URL.
+* Anyone with the URL can install the app by default (optional sign-in restriction available in [project settings](https://expo.dev/accounts/[account]/projects/[project]/settings)).
+
+### 4. **Device Management (iOS)**
+
+* **List devices:** `eas device:list`
+* **Add device:** `eas device:create`
+* **Remove device:** `eas device:delete` (optionally disable in Apple Developer Portal)
+* **Rename device:** `eas device:rename`
+
+> ⚠️ **Apple Limit:** 100 devices per year for Ad Hoc provisioning.
+
+### 5. **Automation (CI)**
+
+* Use `eas build --non-interactive` to trigger builds in CI.
+* You must add devices interactively first (can’t add new UDIDs in CI mode).
+
+### 6. **Distribution Mechanisms Overview**
+
+| Platform             | Method             | Notes                                                      |
+| -------------------- | ------------------ | ---------------------------------------------------------- |
+| **Android**          | APK                | Direct installable file (web/USB).                         |
+| **iOS (Ad Hoc)**     | Provisioned build  | Limited to 100 devices/year. Needs UDIDs.                  |
+| **iOS (Enterprise)** | Enterprise profile | Unlimited devices, requires enterprise program membership. |
+
+---
+
+Would you like me to create a **step-by-step visual workflow (diagram)** that shows the process (configure → build → share → install) for your team’s internal documentation? This could make it clearer for developers and testers.
