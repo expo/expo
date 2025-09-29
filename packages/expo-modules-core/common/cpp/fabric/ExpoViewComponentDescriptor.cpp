@@ -67,8 +67,9 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
     
     // Update yoga props and dirty layout if we changed the style
     if (changedStyle) {
-      const_cast<ExpoViewShadowNode*>(snode)->updateYogaProps();
-      const_cast<ExpoViewShadowNode*>(snode)->dirtyLayout();
+      auto* expoNode = const_cast<ExpoViewShadowNode*>(snode);
+      expoNode->updateYogaProps();
+      expoNode->dirtyLayout();
     }
   }
   ConcreteComponentDescriptor::adopt(shadowNode);
