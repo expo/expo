@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.pod_target_xcconfig = {
-    'OTHER_SWIFT_FLAGS' => '$(inherited)' + (ENV["EXPO_DEBUG_LOG_BOX"] == "1" ? " -DEXPO_DEBUG_LOG_BOX" : ""),
+    'OTHER_SWIFT_FLAGS' => '$(inherited)' + (ENV["EXPO_DEVELOP_LOG_BOX"] == "1" ? " -DEXPO_DEVELOP_LOG_BOX" : ""),
   }
 
   s.dependency "React-Core"
