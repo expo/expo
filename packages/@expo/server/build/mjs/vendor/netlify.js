@@ -31,6 +31,10 @@ export function createRequestHandler(params) {
     const run = createRequestScope(STORE, makeRequestAPISetup);
     const onRequest = createExpoHandler(createNodeEnv(params));
     return async (req, ctx) => {
+        if ('multiValueHeaders' in req) {
+            throw new Error('Unexpected Request object. API was called by Netlify Server Functions 1.0\n' +
+                '- Make sure your Netlify function has a default export instead of exporting "handler".');
+        }
         return await run(onRequest, req, ctx);
     };
 }
