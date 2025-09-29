@@ -9,7 +9,6 @@ import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Linking, Platform, StyleSheet, View, useColorScheme } from 'react-native';
-import url from 'url';
 
 import ApolloClient from './api/ApolloClient';
 import { ColorTheme } from './constants/Colors';
@@ -223,7 +222,7 @@ export default function HomeApp() {
 
 // Certain links (i.e. 'expo.dev/expo-go') should just open the HomeScreen
 function shouldOpenUrl(urlString: string) {
-  const parsedUrl = url.parse(urlString);
+  const parsedUrl = new URL(urlString);
   return !(
     (parsedUrl.hostname === 'expo.io' || parsedUrl.hostname === 'expo.dev') &&
     parsedUrl.pathname === '/expo-go'
