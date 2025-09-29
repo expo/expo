@@ -15,7 +15,7 @@ import { Step } from '~/ui/components/Step';
 
 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is a standard protocol that allows AI models to integrate with external data sources, providing enhanced context for more precise responses. MCP enables AI tools to understand your development environment more deeply, allowing them to provide better assistance with your codebase.
 
-The Expo MCP server is a remote MCP server hosted at [mcp.expo.dev](https://mcp.expo.dev) that integrates with popular AI tools such as Claude Code, Cursor, VSCode, and others, enabling them to interact directly with your Expo projects.
+The Expo MCP server is a remote MCP server hosted at [mcp.expo.dev](https://mcp.expo.dev) that integrates with popular AI tools such as Claude Code, Cursor, VS Code, and others, enabling them to interact directly with your Expo projects.
 
 ## Prerequisites
 
@@ -23,9 +23,9 @@ Before using the Expo MCP server, ensure you have:
 
 - An expo.dev account (MCP server access is currently feature-gated for EAS paid subscribers)
 - An Expo project with Expo SDK 54 and the latest `expo` package version
-- AI tools with remote MCP server support (Claude Code, Cursor, VSCode, etc.)
+- AI tools with remote MCP server support (Claude Code, Cursor, VS Code and so on)
 
-## Installation and Setup
+## Installation and setup
 
 <Step label="1">
 
@@ -64,7 +64,7 @@ Click the following link to install the MCP server for Cursor:
 
 </Collapsible>
 
-<Collapsible summary="VSCode setup">
+<Collapsible summary="VS Code setup">
 
 1. Open Command Palette (<kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>)
 2. Run **MCP: Add Server**
@@ -83,7 +83,7 @@ Click the following link to install the MCP server for Cursor:
 
 After installing the MCP server, you'll need to authenticate using one of two methods:
 
-#### Access Token (Recommended)
+#### Access token (recommended)
 
 Generate an access token from your Expo account settings and use it during the OAuth flow.
 
@@ -99,7 +99,7 @@ Use your Expo account username and password. In this case, the server will gener
 
 > **info** Local capabilities are only available in **SDK 54 and above**.
 
-For the full MCP experience with advanced features like taking screenshots from your iOS simulator, opening dev tools, and automation capabilities, set up a local Expo development server:
+For the full MCP experience with advanced features like taking screenshots from your iOS Simulator, opening DevTools, and automation capabilities, set up a local Expo development server:
 
 <Terminal
   cmd={[
