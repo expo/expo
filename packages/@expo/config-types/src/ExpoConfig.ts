@@ -346,6 +346,9 @@ export interface ExpoConfig {
    * Configuration for local modules
    */
   localModules?: {
+    /**
+     * List of directories watched for local modules.
+     */
     watchedDirs: [string];
   };
 }

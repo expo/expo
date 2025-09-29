@@ -96,7 +96,7 @@ function findUpTSConfig(cwd) {
         return null;
     return findUpTSConfig(parent);
 }
-function findUpTSProjectRootOrAssert(dir) {
+function findUpTSProjectRootOrThrow(dir) {
     const tsProjectRoot = findUpTSConfig(dir);
     if (!tsProjectRoot) {
         throw new Error('Local modules watched dir needs to be inside a TS project with tsconfig.json');
@@ -113,9 +113,9 @@ function resolveLocalModules(projectRoot, context, moduleName, platform) {
         localModuleFileExtension = '.view.js';
     }
     if (localModuleFileExtension) {
-        const tsProjectRoot = findUpTSProjectRootOrAssert(path_1.default.dirname(context.originModulePath));
-        const relativePathToOriginModule = path_1.default.relative(tsProjectRoot, fs_1.default.realpathSync(path_1.default.dirname(context.originModulePath)));
-        const modulePath = path_1.default.resolve(localModulesModulesPath, relativePathToOriginModule, moduleName.substring(0, moduleName.lastIndexOf('.')) + localModuleFileExtension);
+        const tsProjectRoot = findUpTSProjectRootOrThrow(path_1.default.dirname(context.originModulePath));
+        const modulePathRelativeToTSRoot = path_1.default.relative(tsProjectRoot, fs_1.default.realpathSync(path_1.default.dirname(context.originModulePath)));
+        const modulePath = path_1.default.resolve(localModulesModulesPath, modulePathRelativeToTSRoot, moduleName.substring(0, moduleName.lastIndexOf('.')) + localModuleFileExtension);
         return {
             filePath: modulePath,
             type: 'sourceFile',
