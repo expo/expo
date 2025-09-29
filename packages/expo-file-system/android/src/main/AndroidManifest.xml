@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application>
-        <provider tools:replace="android:authorities" android:name=".FileSystemFileProvider" android:authorities="${applicationId}.FileSystemFileProvider" android:exported="false" android:grantUriPermissions="true">
+        <provider tools:replace="android:authorities" android:name=".legacy.FileSystemFileProvider" android:authorities="${applicationId}.FileSystemFileProvider" android:exported="false" android:grantUriPermissions="true"> <!-- DEPRECATED: Due to removal with the legacy API -->
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_system_provider_paths" />
         </provider>
     </application>
