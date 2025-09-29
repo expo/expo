@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo-router/server` exports ([#40071](https://github.com/expo/expo/pull/40071) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 6.0.8 — 2025-09-22
