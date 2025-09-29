@@ -98,6 +98,7 @@ def ktlintTarget = '**/*.kt'
 
 subprojects { project ->
   if (project.name == "ReactAndroid") { return; }
+  if (project.name == "packages") { return; }
   if (project.name.startsWith("vendored_")) { return; }
   if (project.name.startsWith("react-native")) { return; }
   if (project.projectDir.toString().contains("/node_modules/")) { return; }
