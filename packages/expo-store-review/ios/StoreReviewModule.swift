@@ -24,7 +24,21 @@ public class StoreReviewModule: Module {
   }
 
   private func getForegroundActiveScene() -> UIWindowScene? {
-    return UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+    // First try to find a foreground active scene
+    if let activeScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+      return activeScene
+    }
+    
+    // If no foreground active scene is found (e.g., app is in App Switcher), 
+    // try to find any foreground scene (including inactive ones)
+    if let foregroundScene = UIApplication.shared.connectedScenes.first(where: { 
+      $0.activationState == .foregroundInactive || $0.activationState == .foregroundActive 
+    }) as? UIWindowScene {
+      return foregroundScene
+    }
+    
+    // As a last resort, return any connected window scene
+    return UIApplication.shared.connectedScenes.first(where: { $0 is UIWindowScene }) as? UIWindowScene
   }
 
   private func isRunningFromTestFlight() -> Bool {
