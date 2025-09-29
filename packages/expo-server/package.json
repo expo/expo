@@ -1,5 +1,5 @@
 {
-  "name": "@expo/server",
+  "name": "expo-server",
   "version": "0.7.4",
   "description": "Server API for Expo Router projects",
   "main": "build/cjs/index.js",
@@ -35,7 +35,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/server"
+    "directory": "packages/expo-server"
   },
   "keywords": [
     "expo"
@@ -44,7 +44,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/server#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-server#readme",
   "files": [
     "build",
     "adapter"
