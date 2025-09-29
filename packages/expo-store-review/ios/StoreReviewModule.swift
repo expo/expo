@@ -12,6 +12,8 @@ public class StoreReviewModule: Module {
     AsyncFunction("requestReview") {
       try await MainActor.run {
         guard let currentScene = getForegroundActiveScene() else {
+          // If no valid foreground scene is found, throw an exception
+          // as the review prompt won't be visible in background
           throw MissingCurrentWindowSceneException()
         }
         if #available(iOS 16.0, *) {
@@ -24,7 +26,21 @@ public class StoreReviewModule: Module {
   }
 
   private func getForegroundActiveScene() -> UIWindowScene? {
-    return UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+    // First try to find a foreground active scene
+    if let activeScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+      return activeScene
+    }
+
+    // If no foreground active scene is found (e.g., app is in App Switcher),
+    // try to find any foreground inactive scene
+    if let foregroundScene = UIApplication.shared.connectedScenes.first(where: {
+      $0.activationState == .foregroundInactive
+    }) as? UIWindowScene {
+      return foregroundScene
+    }
+
+    // If no valid foreground scene is found, return nil
+    return nil
   }
 
   private func isRunningFromTestFlight() -> Bool {
