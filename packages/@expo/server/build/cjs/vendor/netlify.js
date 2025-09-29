@@ -12,20 +12,28 @@ const runtime_1 = require("../runtime");
 const node_1 = require("./environment/node");
 var abstract_2 = require("./abstract");
 Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function () { return abstract_2.ExpoError; } });
+const scopeSymbol = Symbol.for('expoServerScope');
 /** @see https://docs.netlify.com/build/functions/api/#netlify-specific-context-object */
 function getContext() {
     const fromGlobal = globalThis;
     return fromGlobal.Netlify?.context ?? {};
 }
+// Netlify already has an async-scoped context in NetlifyContext, so we can attach
+// our scope context to this object
+const STORE = {
+    getStore: () => getContext()[scopeSymbol],
+    run(scope, runner, ...args) {
+        getContext()[scopeSymbol] = scope;
+        return runner(...args);
+    },
+};
 function createRequestHandler(params) {
-    const makeRequestAPISetup = (request) => {
-        return {
-            origin: request.headers.get('Origin') || 'null',
-            environment: getContext().deploy?.context || null,
-            waitUntil: getContext().waitUntil,
-        };
-    };
-    const run = (0, runtime_1.createRequestScope)(makeRequestAPISetup);
+    const makeRequestAPISetup = (request) => ({
+        origin: request.headers.get('Origin') || 'null',
+        environment: getContext().deploy?.context || null,
+        waitUntil: getContext().waitUntil,
+    });
+    const run = (0, runtime_1.createRequestScope)(STORE, makeRequestAPISetup);
     const onRequest = (0, abstract_1.createRequestHandler)((0, node_1.createNodeEnv)(params));
     return async (event) => {
         const response = await run(onRequest, convertRequest(event));
