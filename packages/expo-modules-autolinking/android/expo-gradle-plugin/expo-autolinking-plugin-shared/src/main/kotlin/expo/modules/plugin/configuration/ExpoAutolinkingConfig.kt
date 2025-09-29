@@ -104,6 +104,7 @@ data class GradleProject(
   val publication: Publication? = null,
   val aarProjects: List<GradleAarProject> = emptyList(),
   val modules: List<String> = emptyList(),
+  val packages: List<String> = emptyList(),
   val shouldUsePublicationScriptPath: String? = null,
   @Transient val configuration: GradleProjectConfiguration = GradleProjectConfiguration()
 ) {

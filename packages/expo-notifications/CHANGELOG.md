@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- add a warning for getDevicePushTokenAsync on iOS simulators ([#40028](https://github.com/expo/expo/pull/40028) by [@vonovak](https://github.com/vonovak))
 - validate sound resource names with `assertValidAndroidAssetName` from `expo/config-plugins` ([#39883](https://github.com/expo/expo/pull/39883) by [@vonovak](https://github.com/vonovak))
 
 ## 0.32.11 — 2025-09-11

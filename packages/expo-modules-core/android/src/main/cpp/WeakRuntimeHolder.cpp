@@ -6,7 +6,7 @@ namespace expo {
 WeakRuntimeHolder::WeakRuntimeHolder(std::weak_ptr<JavaScriptRuntime> runtime)
   : std::weak_ptr<JavaScriptRuntime>(std::move(runtime)) {}
 
-jsi::Runtime &WeakRuntimeHolder::getJSRuntime() {
+jsi::Runtime &WeakRuntimeHolder::getJSRuntime() const {
   auto runtime = lock();
   assert((runtime != nullptr) && "JS Runtime was used after deallocation");
   return runtime->get();

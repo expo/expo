@@ -26,16 +26,18 @@ jobs:
     params:
       platform: android | ios # required
       profile: string # optional - default: production
+      message: string # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                                |
-| --------- | ------ | -------------------------------------------------------------------------- |
-| platform  | string | **Required.** The platform to build for. Can be either `android` or `ios`. |
-| profile   | string | Optional. The build profile to use. Defaults to `production`.              |
+| Parameter | Type   | Description                                                                                                   |
+| --------- | ------ | ------------------------------------------------------------------------------------------------------------- |
+| platform  | string | **Required.** The platform to build for. Can be either `android` or `ios`.                                    |
+| profile   | string | Optional. The build profile to use. Defaults to `production`.                                                 |
+| message   | string | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`. |
 
 #### Outputs
 
@@ -1526,6 +1528,7 @@ jobs:
       build_id: string # required
       profile: string # optional
       embed_bundle_assets: boolean # optional
+      message: string # optional
 ```
 
 #### Parameters
@@ -1537,6 +1540,7 @@ You can pass the following parameters into the `params` list:
 | build_id            | string  | Required. The source build ID of the build to repack.                                                                                       |
 | profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
 | embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
+| message             | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                               |
 
 ### Examples
 
