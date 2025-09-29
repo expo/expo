@@ -141,3 +141,5 @@ subprojects { project ->
     }
   }
 }
+
+apply plugin: "expo-root-project"
