@@ -30,9 +30,9 @@ public class StoreReviewModule: Module {
     }
     
     // If no foreground active scene is found (e.g., app is in App Switcher), 
-    // try to find any foreground scene (including inactive ones)
+    // try to find any foreground inactive scene
     if let foregroundScene = UIApplication.shared.connectedScenes.first(where: { 
-      $0.activationState == .foregroundInactive || $0.activationState == .foregroundActive 
+      $0.activationState == .foregroundInactive 
     }) as? UIWindowScene {
       return foregroundScene
     }
