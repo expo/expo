@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 type TapEvent = ViewEvent<'onTap', object> & {
@@ -6,7 +7,7 @@ type TapEvent = ViewEvent<'onTap', object> & {
 interface StackBaseProps extends CommonViewModifierProps {
     children: React.ReactNode;
     spacing?: number;
-    backgroundColor?: string;
+    backgroundColor?: ColorValue;
     /**
      * Callback triggered when the view is pressed.
      */

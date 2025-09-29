@@ -1,4 +1,4 @@
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 import { CommonViewModifierProps } from '../types';
 /**
  * The type of chart to display.
