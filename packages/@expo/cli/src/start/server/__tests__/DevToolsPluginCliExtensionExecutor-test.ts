@@ -1,4 +1,4 @@
-import { DevToolsPlugin } from '../DevToolsPlugin';
+import { DevToolsPluginInfo } from '../DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from '../DevToolsPluginCliExtensionExecutor';
 
 describe('DevToolsPluginCliExtensionExecutor', () => {
@@ -74,42 +74,67 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
           entryPoint: 'index.js',
         },
       };
-      const closeListeneres: (() => void)[] = [];
-      let resolver: (() => void) | null = null;
-      const closePromise = new Promise<void>((resolve) => (resolver = resolve));
-      let log = '';
-      let err = '';
-      const mock = {
-        spawn: jest.fn().mockReturnValue({
-          on: (_evt, listener) => {
-            closeListeneres.push(() => {
-              listener(0);
-              resolver();
-            });
-          },
-          stdout: { on: (t) => (log += t) },
-          stderr: { on: (t) => (err += t) },
-        }),
-      };
-      jest.doMock('child_process', () => mock);
+      const { close, spawn } = await executePluginCommandAsync({ pluginDescriptor });
+      const result = await close(0);
 
-      const executor = new DevToolsPluginCliExtensionExecutor(
-        pluginDescriptor,
-        PROJECT_ROOT,
-        mock.spawn
-      );
-
-      const resultPromise = executor.execute({
-        command: 'test-command',
-        args: {},
-        metroServerOrigin: 'http://localhost:8081',
-      });
-      closeListeneres.forEach((listener) => listener());
-      await closePromise;
-      const result = await resultPromise;
-
-      expect(mock.spawn).toHaveBeenCalled();
+      expect(spawn).toHaveBeenCalled();
       expect(result).toEqual([]);
+    });
+
+    it('should fail gracefuly if the command times out', async () => {
+      const pluginDescriptor = {
+        ...PLUGIN_DESCRIPTOR,
+        cliExtensions: {
+          commands: [COMMAND],
+          description: 'Test Plugin',
+          entryPoint: 'index.js',
+        },
+      };
+      const { close, kill } = await executePluginCommandAsync({ pluginDescriptor, timeoutMs: 0 });
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const result = await close(0);
+
+      expect(kill).toHaveBeenCalled();
+      expect(result).toEqual([{ type: 'text', level: 'error', text: 'Command timed out' }]);
+    });
+
+    it('should handle arguments with characters that need escaping', async () => {
+      const pluginDescriptor = {
+        ...PLUGIN_DESCRIPTOR,
+        cliExtensions: {
+          commands: [COMMAND_WITH_PARAMS],
+          description: 'Test Plugin',
+          entryPoint: 'index.js',
+        },
+      };
+      const args = { param1: `value'with"quotes' && || |##`, param2: 42 };
+      const { close, spawn } = await executePluginCommandAsync({ pluginDescriptor, args });
+      const result = await close(0);
+
+      expect(spawn).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.arrayContaining([expect.stringContaining(JSON.stringify(args))]),
+        expect.any(Object)
+      );
+      expect(result).toEqual([]);
+    });
+
+    it('should handle errors thrown by the command', async () => {
+      const pluginDescriptor = {
+        ...PLUGIN_DESCRIPTOR,
+        cliExtensions: {
+          commands: [COMMAND],
+          description: 'Test Plugin',
+          entryPoint: 'index.js',
+        },
+      };
+
+      const { close } = await executePluginCommandAsync({ pluginDescriptor });
+      const result = await close(1);
+
+      expect(result).toEqual([
+        { type: 'text', level: 'error', text: 'Process exited with code 1' },
+      ]);
     });
   });
 
@@ -152,41 +177,55 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
 
 // --------------- HELPERS  ---------------
 
-const executePluginCommandAsync = async (pluginDescriptor: DevToolsPlugin) => {
-  const closeListeneres: (() => void)[] = [];
+const executePluginCommandAsync = async (params: {
+  pluginDescriptor: DevToolsPluginInfo;
+  args?: Record<string, any>;
+  timeoutMs?: number;
+  spawnFunc?: typeof import('child_process').spawn;
+}) => {
+  const { pluginDescriptor, args = {}, timeoutMs = 10_000, spawnFunc } = params;
+  const closeListeneres: ((exitCode: number) => void)[] = [];
   let resolver: (() => void) | null = null;
   const closePromise = new Promise<void>((resolve) => (resolver = resolve));
   let log = '';
   let err = '';
+  const kill = jest.fn();
   const mock = {
-    spawn: jest.fn().mockReturnValue({
-      on: (_evt, listener) => {
-        closeListeneres.push(() => {
-          listener(0);
-          resolver();
-        });
-      },
-      stdout: { on: (t) => (log += t) },
-      stderr: { on: (t) => (err += t) },
-    }),
+    spawn:
+      spawnFunc ||
+      jest.fn().mockReturnValue({
+        on: (_evt, listener) => {
+          closeListeneres.push((exitCode: number) => {
+            listener(exitCode);
+            resolver();
+          });
+        },
+        kill,
+        stdout: { on: (t) => (log += t) },
+        stderr: { on: (t) => (err += t) },
+      }),
   };
   jest.doMock('child_process', () => mock);
 
   const executor = new DevToolsPluginCliExtensionExecutor(
     pluginDescriptor,
     PROJECT_ROOT,
-    mock.spawn
+    mock.spawn,
+    timeoutMs
   );
   const resultPromise = executor.execute({
     command: 'test-command',
-    args: {},
+    args,
     metroServerOrigin: 'http://localhost:8081',
   });
 
-  closeListeneres.forEach((listener) => listener());
-  await closePromise;
+  const close = async (exitCode: number) => {
+    closeListeneres.forEach((listener) => listener(exitCode));
+    await closePromise;
 
-  return await resultPromise;
+    return await resultPromise;
+  };
+  return { close, spawn: mock.spawn, kill };
 };
 
 // --------------- FIXTURES ---------------

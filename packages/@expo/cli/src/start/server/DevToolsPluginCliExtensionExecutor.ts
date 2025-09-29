@@ -28,7 +28,8 @@ export class DevToolsPluginCliExtensionExecutor {
   constructor(
     private plugin: DevToolsPluginInfo,
     private projectRoot: string,
-    private spawnFunc: typeof spawn = spawn // Used for injection when testing
+    private spawnFunc: typeof spawn = spawn, // Used for injection when testing,
+    private timeoutMs = DEFAULT_TIMEOUT_MS // Timeout for command execution
   ) {
     // Validate that this is a plugin with cli extensions
     if (!this.plugin.cliExtensions?.entryPoint) {
@@ -97,7 +98,6 @@ export class DevToolsPluginCliExtensionExecutor {
       child.stderr.on('data', (data) => pluginResults.append(data.toString(), 'error'));
 
       // Setup timeout
-      const timeoutMs = DEFAULT_TIMEOUT_MS;
       const timeout = setTimeout(() => {
         if (!finished) {
           finished = true;
@@ -105,7 +105,7 @@ export class DevToolsPluginCliExtensionExecutor {
           pluginResults.append('Command timed out', 'error');
           resolve(pluginResults.getOutput());
         }
-      }, timeoutMs);
+      }, this.timeoutMs);
 
       child.on('close', (code: number) => {
         if (finished) return;
