@@ -61,12 +61,12 @@ function createWorkerdEnv(params) {
         loadModule,
     });
 }
-function createWorkerdRequestScope(params) {
+function createWorkerdRequestScope(scopeDefinition, params) {
     const makeRequestAPISetup = (request, _env, ctx) => ({
         origin: request.headers.get('Origin') || 'null',
         environment: params.environment ?? null,
         waitUntil: ctx.waitUntil?.bind(ctx),
     });
-    return (0, runtime_1.createRequestScope)(makeRequestAPISetup);
+    return (0, runtime_1.createRequestScope)(scopeDefinition, makeRequestAPISetup);
 }
 //# sourceMappingURL=workerd.js.map

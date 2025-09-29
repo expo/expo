@@ -1,14 +1,20 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
+import { RequestAPI } from './api';
 
-import type { RequestAPI } from './api';
+export interface ScopeDefinition<Scope extends RequestAPI = any> {
+  getStore(): Scope | undefined;
+  run<R>(scope: Scope, runner: () => R): R;
+  run<R, TArgs extends any[]>(scope: Scope, runner: (...args: TArgs) => R, ...args: TArgs): R;
+}
 
+// NOTE(@kitten): When multiple versions of `@expo/server` are bundled, we still want to reuse the same scope definition
 const scopeSymbol = Symbol.for('expoServerRuntime');
+const sharedScope: { [scopeSymbol]?: { current: ScopeDefinition | null } } & typeof globalThis =
+  globalThis;
 
-export function getRequestScopeSingleton(): AsyncLocalStorage<RequestAPI> {
-  const setup: { [scopeSymbol]?: AsyncLocalStorage<RequestAPI> } & typeof globalThis = globalThis;
-  return setup[scopeSymbol] ?? (setup[scopeSymbol] = new AsyncLocalStorage());
-}
+const scopeRef: { current: ScopeDefinition<RequestAPI> | null } =
+  sharedScope[scopeSymbol] ||
+  (sharedScope[scopeSymbol] = {
+    current: null,
+  });
 
-export function getRequestScope() {
-  return getRequestScopeSingleton().getStore();
-}
+export { scopeRef };

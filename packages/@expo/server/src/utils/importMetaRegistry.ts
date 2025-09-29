@@ -1,5 +1,3 @@
-import * as node_util from 'node:util';
-
 const DEFAULT_SCRIPT_NAME = 'file:///__main.js';
 
 // - ./runtime/importMetaRegistry.ts (this file) -> importMetaRegistry.url
@@ -22,13 +20,7 @@ function getFileName(offset = 0): any {
 
 export const importMetaRegistry = {
   get url() {
-    let scriptName: string;
-    if (node_util.getCallSites) {
-      const callSites = node_util.getCallSites(CALL_DEPTH);
-      scriptName = callSites[callSites.length - 1]?.scriptName;
-    } else {
-      scriptName = getFileName(CALL_DEPTH);
-    }
+    let scriptName = getFileName(CALL_DEPTH);
     if (scriptName?.[0] === '/') scriptName = `file://${scriptName}`;
     return scriptName || DEFAULT_SCRIPT_NAME;
   },

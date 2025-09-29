@@ -9,14 +9,18 @@ import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 import { createRequestHandler as createExpoHandler } from './abstract';
 import { createRequestScope } from '../runtime';
 import { createNodeEnv } from './environment/node';
+import { ScopeDefinition } from '../runtime/scope';
 import { createReadableStreamFromReadable } from '../utils/createReadableStreamFromReadable';
 
 export { ExpoError } from './abstract';
 
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 
+const scopeSymbol = Symbol.for('expoServerScope');
+
 interface VercelContext {
   waitUntil?: (promise: Promise<unknown>) => void;
+  [scopeSymbol]?: unknown;
 }
 
 const SYMBOL_FOR_REQ_CONTEXT = Symbol.for('@vercel/request-context');
@@ -28,6 +32,16 @@ function getContext(): VercelContext {
   } = globalThis;
   return fromSymbol[SYMBOL_FOR_REQ_CONTEXT]?.get?.() ?? {};
 }
+
+// Vercel already has an async-scoped context in VercelContext, so we can attach
+// our scope context to this object
+const STORE: ScopeDefinition = {
+  getStore: () => getContext()[scopeSymbol],
+  run(scope: any, runner: (...args: any[]) => any, ...args: any[]) {
+    getContext()[scopeSymbol] = scope;
+    return runner(...args);
+  },
+};
 
 /**
  * Returns a request handler for Vercel's Node.js runtime that serves the
@@ -44,7 +58,7 @@ export function createRequestHandler(params: { build: string }): RequestHandler 
       waitUntil: getContext().waitUntil,
     };
   };
-  const run = createRequestScope(makeRequestAPISetup);
+  const run = createRequestScope(STORE, makeRequestAPISetup);
   const onRequest = createExpoHandler(createNodeEnv(params));
   return async (req, res) => {
     return respond(res, await run(onRequest, convertRequest(req, res)));

@@ -5,12 +5,22 @@ import { createRequestScope } from '../runtime';
 import { createNodeEnv } from './environment/node';
 import { createReadableStreamFromReadable } from '../utils/createReadableStreamFromReadable';
 export { ExpoError } from './abstract';
+const scopeSymbol = Symbol.for('expoServerScope');
 const SYMBOL_FOR_REQ_CONTEXT = Symbol.for('@vercel/request-context');
 /** @see https://github.com/vercel/vercel/blob/b189b39/packages/functions/src/get-context.ts */
 function getContext() {
     const fromSymbol = globalThis;
     return fromSymbol[SYMBOL_FOR_REQ_CONTEXT]?.get?.() ?? {};
 }
+// Vercel already has an async-scoped context in VercelContext, so we can attach
+// our scope context to this object
+const STORE = {
+    getStore: () => getContext()[scopeSymbol],
+    run(scope, runner, ...args) {
+        getContext()[scopeSymbol] = scope;
+        return runner(...args);
+    },
+};
 /**
  * Returns a request handler for Vercel's Node.js runtime that serves the
  * response using Remix.
@@ -26,7 +36,7 @@ export function createRequestHandler(params) {
             waitUntil: getContext().waitUntil,
         };
     };
-    const run = createRequestScope(makeRequestAPISetup);
+    const run = createRequestScope(STORE, makeRequestAPISetup);
     const onRequest = createExpoHandler(createNodeEnv(params));
     return async (req, res) => {
         return respond(res, await run(onRequest, convertRequest(req, res)));

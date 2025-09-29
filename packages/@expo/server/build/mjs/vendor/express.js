@@ -1,13 +1,15 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { createRequestHandler as createExpoHandler } from './abstract';
 import { createNodeEnv, createNodeRequestScope } from './environment/node';
 export { ExpoError } from './abstract';
+const STORE = new AsyncLocalStorage();
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
 export function createRequestHandler(params, setup) {
-    const run = createNodeRequestScope(params);
+    const run = createNodeRequestScope(STORE, params);
     const onRequest = createExpoHandler({
         ...createNodeEnv(params),
         ...setup,

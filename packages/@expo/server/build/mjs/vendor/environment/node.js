@@ -39,8 +39,8 @@ export function createNodeEnv(params) {
         loadModule,
     });
 }
-export function createNodeRequestScope(params) {
-    return createRequestScope((request) => ({
+export function createNodeRequestScope(scopeDefinition, params) {
+    return createRequestScope(scopeDefinition, (request) => ({
         origin: request.headers.get('Origin') || 'null',
         environment: params.environment ?? process.env.NODE_ENV,
     }));

@@ -7,7 +7,7 @@ exports.runTask = runTask;
 exports.deferTask = deferTask;
 const scope_1 = require("./scope");
 function enforcedRequestScope() {
-    const scope = (0, scope_1.getRequestScope)();
+    const scope = scope_1.scopeRef.current?.getStore();
     if (scope === undefined) {
         throw new Error('Invalid server runtime API call. Runtime APIs can only be called during ongoing requests.\n' +
             '- You may be calling this API in the global scope.\n' +

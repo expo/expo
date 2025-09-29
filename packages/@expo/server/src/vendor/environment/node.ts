@@ -4,6 +4,7 @@ import path from 'node:path';
 import { createEnvironment } from './common';
 import { assertRuntimeFetchAPISupport } from '../../ImmutableRequest';
 import { createRequestScope } from '../../runtime';
+import type { ScopeDefinition } from '../../runtime/scope';
 
 interface NodeEnvParams {
   build: string;
@@ -48,8 +49,8 @@ export function createNodeEnv(params: NodeEnvParams) {
   });
 }
 
-export function createNodeRequestScope(params: NodeEnvParams) {
-  return createRequestScope((request: Request) => ({
+export function createNodeRequestScope(scopeDefinition: ScopeDefinition, params: NodeEnvParams) {
+  return createRequestScope(scopeDefinition, (request: Request) => ({
     origin: request.headers.get('Origin') || 'null',
     environment: params.environment ?? process.env.NODE_ENV,
   }));

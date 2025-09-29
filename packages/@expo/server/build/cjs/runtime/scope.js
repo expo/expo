@@ -1,14 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRequestScopeSingleton = getRequestScopeSingleton;
-exports.getRequestScope = getRequestScope;
-const node_async_hooks_1 = require("node:async_hooks");
+exports.scopeRef = void 0;
+// NOTE(@kitten): When multiple versions of `@expo/server` are bundled, we still want to reuse the same scope definition
 const scopeSymbol = Symbol.for('expoServerRuntime');
-function getRequestScopeSingleton() {
-    const setup = globalThis;
-    return setup[scopeSymbol] ?? (setup[scopeSymbol] = new node_async_hooks_1.AsyncLocalStorage());
-}
-function getRequestScope() {
-    return getRequestScopeSingleton().getStore();
-}
+const sharedScope = globalThis;
+const scopeRef = sharedScope[scopeSymbol] ||
+    (sharedScope[scopeSymbol] = {
+        current: null,
+    });
+exports.scopeRef = scopeRef;
 //# sourceMappingURL=scope.js.map
