@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix typedoc for filesystem example ([#40064](https://github.com/expo/expo/pull/40064) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 19.0.14 — 2025-09-13
