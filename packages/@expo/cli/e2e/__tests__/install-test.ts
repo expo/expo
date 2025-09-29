@@ -201,7 +201,7 @@ it('runs `npx expo install expo@<version> --fix`', async () => {
   });
 });
 
-it('does not validate for `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --check`', async () => {
+it('validates when with `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --check`', async () => {
   const env = { EXPO_NO_DEPENDENCY_VALIDATION: '1' };
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'install-check-no-validation',
@@ -223,28 +223,9 @@ it('does not validate for `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --ch
   expect(pkg.read().dependencies).toMatchObject({ 'expo-image': '1.0.0' });
 
   // Ensure `expo install --check` does not throw when validation is disabled
-  await expect(
-    executeExpoAsync(projectRoot, ['install', '--check'], { env })
-  ).resolves.toMatchObject({
-    stdout: expect.stringContaining('Dependencies are up to date'),
-  });
-
-  // Ensure `expo install --check <package>` does not throw when validation is disabled
-  await expect(
-    executeExpoAsync(projectRoot, ['install', 'expo-image', '--check'], {
-      env: { ...env, EXPO_DEBUG: '1' },
-    })
-  ).resolves.toMatchObject({
-    // Ensure no dependency issues are found
-    stdout: expect.stringContaining('Dependencies are up to date'),
-    // Ensure a debug warning is printed
-    stderr: expect.stringContaining(
-      'Dependency validation is disabled through EXPO_NO_DEPENDENCY_VALIDATION=1'
-    ),
-  });
-
-  // Ensure `--check` did not fix the version
-  expect(pkg.read().dependencies).toMatchObject({ 'expo-image': '1.0.0' });
+  await expect(() => {
+    return executeExpoAsync(projectRoot, ['install', '--check'], { env, verbose: false });
+  }).rejects.toThrow(/Found outdated dependencies/);
 });
 
 describe('expo-router integration', () => {
