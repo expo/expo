@@ -37,7 +37,7 @@ function findUpTSConfig(cwd) {
   return findUpTSConfig(parent);
 }
 
-function findUpTSProjectRootOrAssert(dir) {
+function findUpTSProjectRootOrThrow(dir) {
   const tsProjectRoot = findUpTSConfig(dir);
   if (!tsProjectRoot) {
     throw new Error('Local modules watched dir needs to be inside a TS project with tsconfig.json');
@@ -64,15 +64,15 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     localModuleFileExtension = '.view.js';
   }
   if (localModuleFileExtension) {
-    const tsProjectRoot = findUpTSProjectRootOrAssert(path.dirname(context.originModulePath));
-    const relativePathToOriginModule = path.relative(
+    const tsProjectRoot = findUpTSProjectRootOrThrow(path.dirname(context.originModulePath));
+    const modulePathRelativeToTSRoot = path.relative(
       tsProjectRoot,
       fs.realpathSync(path.dirname(context.originModulePath))
     );
 
     const modulePath = path.resolve(
       localModulesModulesPath,
-      relativePathToOriginModule,
+      modulePathRelativeToTSRoot,
       moduleName.substring(0, moduleName.lastIndexOf('.')) + localModuleFileExtension
     );
 
@@ -82,8 +82,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     };
   }
 
-  const resolution = context.resolveRequest(context, moduleName, platform);
-  return resolution;
+  return context.resolveRequest(context, moduleName, platform);
 };
 
 // When testing on MacOS we need to include the `react-native-macos/Libraries/Core/InitializeCore` as prepended global module

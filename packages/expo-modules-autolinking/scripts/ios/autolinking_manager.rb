@@ -200,9 +200,7 @@ module Expo
       search_paths = @options.fetch(:searchPaths, @options.fetch(:modules_paths, nil))
       ignore_paths = @options.fetch(:ignorePaths, nil)
       exclude = @options.fetch(:exclude, [])
-      args = []
-
-      args.concat([@watched_dirs])
+      args = [@watched_dirs]
 
       if !search_paths.nil? && !search_paths.empty?
         args.concat(search_paths)

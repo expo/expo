@@ -1,18 +1,17 @@
 import fs from 'fs';
 import path from 'path';
 
-import { getAppRoot, getMirrorStateObject } from './localModules';
+import { getMirrorStateObject } from './localModules';
 
 export async function createSymlinksToKotlinFiles(mirrorPath: string, watchedDirs: string[]) {
   const localModulesObject = await getMirrorStateObject(watchedDirs);
-  const appRoot = await getAppRoot();
 
   for (const { filePath, watchedDirRoot } of localModulesObject.files) {
     if (!filePath.endsWith('.kt')) {
       continue;
     }
-    const filePathRelativeToRoot = path.relative(watchedDirRoot, filePath);
-    const targetPath = path.resolve(mirrorPath, filePathRelativeToRoot);
+    const filePathRelativeToWatchedDirRoot = path.relative(watchedDirRoot, filePath);
+    const targetPath = path.resolve(mirrorPath, filePathRelativeToWatchedDirRoot);
 
     fs.mkdirSync(path.dirname(targetPath), { recursive: true });
     fs.symlinkSync(filePath, targetPath);
@@ -37,7 +36,7 @@ public class ExpoLocalModulesList implements ModulesProvider {
   @Override
   public List<Class<? extends Module>> getModulesList() {
     return Arrays.<Class<? extends Module>>asList(
-      ${localModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.class`).join(',\n')}
+${localModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.class`).join(',\n')}
     );
   }
 }
