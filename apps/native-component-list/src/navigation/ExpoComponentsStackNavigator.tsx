@@ -8,6 +8,7 @@ import { optionalRequire } from './routeBuilder';
 import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
+import { BlurScreens } from '../screens/BlurView/BlurViewScreen';
 import { CameraScreens } from '../screens/Camera/CameraScreen';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { MapsScreens } from '../screens/ExpoMaps/MapsScreen';
@@ -51,6 +52,7 @@ const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/BlurView/BlurViewScreen'));
     },
     name: 'BlurView',
+    route: 'blur',
   },
   {
     getComponent() {
@@ -304,6 +306,7 @@ const ScreensList: ScreenConfig[] = [
 export const Screens: ScreenConfig[] = [
   ...ScreensList,
 
+  ...BlurScreens,
   ...GLScreens,
   ...CameraScreens,
   ...ImageScreens,
