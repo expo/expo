@@ -13,9 +13,9 @@ export const name = 'MediaLibrary@Next';
 
 const mp3Path = require('../assets/LLizard.mp3');
 const mp4Path = require('../assets/big_buck_bunny.mp4');
+const exifJpgPath = require('../assets/exif_data_image.jpg');
 const pngPath = require('../assets/icons/app.png');
 const jpgPath = require('../assets/qrcode_expo.jpg');
-const exifJpgPath = require('../assets/exif_data_image.jpg');
 
 export async function test(t) {
   let permissions;
