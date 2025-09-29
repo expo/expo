@@ -1,8 +1,8 @@
 import { Directory, File, Paths } from 'expo-file-system';
 import { Image } from 'expo-image';
-import { Asset, MediaType } from 'expo-media-library/next';
+import { Asset, MediaType, requestPermissionsAsync } from 'expo-media-library/next';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Pressable, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 
 enum TestState {
@@ -41,6 +41,17 @@ const AssetScreen = () => {
       player.play();
     }
   });
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      const { status } = await requestPermissionsAsync();
+      if (status === 'denied') {
+        Alert.alert('Permission denied', 'Cannot proceed without media library permissions.');
+        setTestState(TestState.ERROR);
+      }
+    };
+    requestPermissions();
+  }, []);
 
   const handleAddAsset = async (type: 'image' | 'video') => {
     setTestState(TestState.LOADING);

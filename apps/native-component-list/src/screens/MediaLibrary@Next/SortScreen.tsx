@@ -9,6 +9,7 @@ import {
   Dimensions,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 const numColumns = 3;
@@ -50,7 +51,6 @@ const SortScreen = () => {
   const [ascending, setAscending] = useState<boolean>(false);
 
   const fetchAssets = async () => {
-    await requestPermissionsAsync();
     try {
       setLoading(true);
       const rawAssets = await new Query()
@@ -75,6 +75,16 @@ const SortScreen = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      const { status } = await requestPermissionsAsync();
+      if (status === 'denied') {
+        Alert.alert('Permission denied', 'Cannot proceed without media library permissions.');
+      }
+    };
+    requestPermissions();
+  }, []);
 
   useEffect(() => {
     fetchAssets();
