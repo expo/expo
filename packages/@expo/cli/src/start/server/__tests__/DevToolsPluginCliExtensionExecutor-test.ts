@@ -192,7 +192,7 @@ const executePluginCommandAsync = async (params: {
   const kill = jest.fn();
   const mock = {
     spawn:
-      spawnFunc ||
+      spawnFunc ??
       jest.fn().mockReturnValue({
         on: (_evt, listener) => {
           closeListeneres.push((exitCode: number) => {
