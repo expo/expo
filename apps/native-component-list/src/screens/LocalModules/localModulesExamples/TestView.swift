@@ -31,7 +31,7 @@ class ExpoWebView: ExpoView, WKNavigationDelegate {
     webView.frame = bounds
   }
 
-  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+  func webView(_ webView: WKWebView, _: WKNavigation) {
     if let url = webView.url {
       onLoad([
         "url": url.absoluteString

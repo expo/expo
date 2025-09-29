@@ -9,19 +9,20 @@ const path_1 = __importDefault(require("path"));
 const autolinkingOptions_1 = require("./autolinkingOptions");
 const androidLocalModules_1 = require("../localModules/androidLocalModules");
 function mirrorKotlinLocalModulesCommand(cli) {
-    return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('mirror-kotlin-local-modules <mirrorPath> <localModulesListPath> <watchedDirsSerialized>')).action(async (mirrorPath, localModulesListPath, watchedDirsSerialized) => {
+    return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('mirror-kotlin-local-modules <kotlinFilesMirrorDirectory> <localModulesListPath> <watchedDirsSerialized>')).action(async (kotlinFilesMirrorDirectory, localModulesListPath, watchedDirsSerialized) => {
         const watchedDirs = JSON.parse(watchedDirsSerialized);
-        if (!mirrorPath || !localModulesListPath) {
-            throw new Error('Need to provide mirrorPath and localModulesListPath!');
+        if (!kotlinFilesMirrorDirectory || !localModulesListPath) {
+            throw new Error('Need to provide kotlinFilesMirrorDirectory and localModulesListPath!');
         }
-        if (!/.android./.test(mirrorPath) || !/.android./.test(localModulesListPath)) {
+        if (!/.android./.test(kotlinFilesMirrorDirectory) ||
+            !/.android./.test(localModulesListPath)) {
             throw new Error('Generation path is not inside any android directory!');
         }
-        if (!path_1.default.isAbsolute(mirrorPath) || !path_1.default.isAbsolute(localModulesListPath)) {
+        if (!path_1.default.isAbsolute(kotlinFilesMirrorDirectory) || !path_1.default.isAbsolute(localModulesListPath)) {
             throw new Error('Need to provide the absolute path to both the local modules src mirror and generated mirror directory!');
         }
-        fs_1.default.rmSync(mirrorPath, { recursive: true, force: true });
-        await (0, androidLocalModules_1.createSymlinksToKotlinFiles)(mirrorPath, watchedDirs);
+        fs_1.default.rmSync(kotlinFilesMirrorDirectory, { recursive: true, force: true });
+        await (0, androidLocalModules_1.createSymlinksToKotlinFiles)(kotlinFilesMirrorDirectory, watchedDirs);
         await (0, androidLocalModules_1.generateLocalModulesListFile)(localModulesListPath, watchedDirs);
     });
 }

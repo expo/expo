@@ -7,15 +7,6 @@ export type LocalModulesMirror = {
   kotlinClasses: string[];
 };
 
-/** Look up directories until one with a `package.json` can be found, assert if none can be found. */
-function findUpProjectRootOrAssert(cwd: string): string {
-  const projectRoot = findUpProjectRoot(cwd);
-  if (!projectRoot) {
-    throw new Error(`Project root directory not found (working directory: ${cwd})`);
-  }
-  return projectRoot;
-}
-
 function findUpProjectRoot(cwd: string): string | null {
   const packageJsonPath = path.resolve(cwd, './package.json');
   if (fs.existsSync(packageJsonPath)) {
@@ -30,7 +21,7 @@ function findUpProjectRoot(cwd: string): string | null {
 
 export async function getAppRoot(): Promise<string> {
   const cwd = process.cwd();
-  const result = await findUpProjectRootOrAssert(cwd);
+  const result = findUpProjectRoot(cwd);
   if (!result) {
     throw new Error(`Couldn't find "package.json" up from path "${cwd}"`);
   }
@@ -70,7 +61,7 @@ function getKotlinFileNameWithItsPackage(absoluteFilePath: string): string {
     return '';
   }
   const packageName = lines[packageLine].substring('package '.length);
-  return packageName + '.' + trimExtension(path.basename(absoluteFilePath));
+  return `${packageName}.${trimExtension(path.basename(absoluteFilePath))}`;
 }
 
 function getSwiftModuleClassName(absoluteFilePath: string): string {

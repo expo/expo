@@ -1,4 +1,3 @@
-
 package localModulesExamples
 
 import expo.modules.kotlin.modules.Module
