@@ -1,8 +1,9 @@
 #import <objc/runtime.h>
 #import <React/RCTRedBox.h>
-#import "Expo-Swift.h"
+#import <React/RCTUtils.h>
+#import "ExpoLogBox-Swift.h"
 
-@implementation RCTRedBox (Swizzling)
+@implementation RCTRedBox (WithExpoLogBox)
 
 + (void)load {
   static dispatch_once_t onceToken;
@@ -10,7 +11,7 @@
     Class classs = [self class];
 
     SEL originalSelector = @selector(showErrorMessage:);
-    SEL swizzledSelector = @selector(my_showErrorMessage:);
+    SEL swizzledSelector = @selector(showErrorMessageWithExpoLogBox:);
 
     Method originalMethod = class_getInstanceMethod(classs, originalSelector);
     Method swizzledMethod = class_getInstanceMethod(classs, swizzledSelector);
@@ -32,15 +33,9 @@
   });
 }
 
-- (void)my_showErrorMessage:(NSString *)message {
-  // Call original (because of swizzling)s
-  // [self my_showErrorMessage:message];
-
-  // Custom behavior
-  NSLog(@"[Swizzled RCTRedBox] Intercepted error: %@", message);
-    
-  UIViewController *vc = [SwiftUIScreenProvider makeHostingControllerWithMessage:message];
-  [RCTKeyWindow().rootViewController presentViewController:vc animated:YES completion:nil];
+- (void)showErrorMessageWithExpoLogBox:(NSString *)message {
+  UIViewController *expoRedBox = [ExpoLogBoxScreenProvider makeHostingControllerWithMessage:message];
+  [RCTKeyWindow().rootViewController presentViewController:expoRedBox animated:YES completion:nil];
 }
 
 @end

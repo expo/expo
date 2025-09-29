@@ -2,7 +2,7 @@ import UIKit
 import WebKit
 import React
 
-@objc public class SwiftUIScreenProvider: NSObject {
+@objc public class ExpoLogBoxScreenProvider: NSObject {
     @objc public static func makeHostingController(message: String) -> UIViewController {
         return WebViewController(message: message)
     }
@@ -54,11 +54,16 @@ class WebViewController: UIViewController, WKScriptMessageHandler {
             return
         }
 
+        var devServerOrigin: String = "http://localhost:8081"
+        let bundleUrl = RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "unused.name")
+        if let bundleUrl {
+            devServerOrigin = "\((bundleUrl as NSURL).scheme ?? "http")://\((bundleUrl as NSURL).host ?? "localhost"):\(String(bundleUrl.port ?? 8081))"
+        }
+
         // Inject global JS variable
         let userScript = WKUserScript(
             source:
-                "var process=globalThis.process||{};process.env=process.env||{};process.env.EXPO_DEV_SERVER_ORIGIN='http://localhost:8081';" +
-//                "var __expoLogBoxNativeData = { rawMessage: \(safeValue) };" +
+                "var process=globalThis.process||{};process.env=process.env||{};process.env.EXPO_DEV_SERVER_ORIGIN='\(devServerOrigin)';" +
                 "window.$$EXPO_INITIAL_PROPS = \(initPropsStringified);" +
                 "window.ReactNativeWebView = {};" +
                 "window.ReactNativeWebView.postMessage = (message) => {console.log('postMessage: ', message);window.webkit.messageHandlers.nativeHandler.postMessage(JSON.parse(message));};",

@@ -17,11 +17,12 @@ Pod::Spec.new do |s|
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
-  s.header_dir     = 'Expo'
 
   s.pod_target_xcconfig = {
     'OTHER_SWIFT_FLAGS' => '$(inherited)' + (ENV["EXPO_DEBUG_LOG_BOX"] == "1" ? " -DEXPO_DEBUG_LOG_BOX" : ""),
   }
+
+  s.dependency "React-Core"
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   script_phase = {
