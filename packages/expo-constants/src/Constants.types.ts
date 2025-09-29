@@ -19,10 +19,17 @@ export enum AppOwnership {
   Expo = 'expo',
 }
 
-// @docsMissing
+/**
+ * Identifies where the app's JavaScript bundle is currently running.
+ */
 export enum ExecutionEnvironment {
+  /** A project that includes native project directories that you maintain directly in your
+   * [existing (bare) React Native app](https://docs.expo.dev/bare/overview/).
+   */
   Bare = 'bare',
+  /** Production/release build created with or without EAS Build. */
   Standalone = 'standalone',
+  /** Expo Go or a development build built with `expo-dev-client`. */
   StoreClient = 'storeClient',
 }
 

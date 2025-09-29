@@ -85,20 +85,21 @@ async function verifySearchResults(results, options) {
         return;
     }
     if (options.verbose) {
+        const sortResolutions = (resolutions) => [...resolutions].sort((a, b) => a.name.localeCompare(b.name));
         if (groups.reactNativeProjectConfig.length) {
             console.log(`🔎  Found ${groups.reactNativeProjectConfig.length} modules from React Native project config`);
-            for (const revision of groups.reactNativeProjectConfig) {
+            for (const revision of sortResolutions(groups.reactNativeProjectConfig)) {
                 console.log(` - ${await getHumanReadableDependency(revision)}`);
             }
         }
         if (groups.searchPaths.length) {
             console.log(`🔎  Found ${groups.searchPaths.length} modules in search paths`);
-            for (const revision of groups.searchPaths) {
+            for (const revision of sortResolutions(groups.searchPaths)) {
                 console.log(` - ${await getHumanReadableDependency(revision)}`);
             }
         }
         console.log(`🔎  Found ${groups.dependencies.length} modules in dependencies`);
-        for (const revision of groups.dependencies) {
+        for (const revision of sortResolutions(groups.dependencies)) {
             console.log(` - ${await getHumanReadableDependency(revision)}`);
         }
     }

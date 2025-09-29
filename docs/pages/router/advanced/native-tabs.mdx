@@ -222,7 +222,7 @@ Since the native tab layout's appearance varies by platform, the customization o
 
 ## Advanced
 
-### Hiding a tab conditionally
+### Hide a tab conditionally
 
 If you want to hide a tab based on a condition, you can either remove the trigger or pass the `hidden` prop to the `NativeTabs.Trigger` component.
 
@@ -238,6 +238,8 @@ export default function TabLayout() {
   );
 }
 ```
+
+> **info** **Note**: Marking a tab as `hidden` means it cannot be navigated to in any way.
 
 ### Dismiss behavior
 
@@ -351,16 +353,8 @@ export default function TabLayout() {
 import { Stack } from 'expo-router';
 
 export default function SearchLayout() {
-  return <Stack />;
-}
-```
-
-```tsx app/search/index.tsx
-import { Stack } from 'expo-router';
-
-export default function SearchIndex() {
   return (
-    <>
+    <Stack>
       <Stack.Screen
         name="index"
         options={{
@@ -372,9 +366,16 @@ export default function SearchIndex() {
           },
         }}
       />
-      <ScrollView>{/* Screen content */}</ScrollView>
-    </>
+    </Stack>
   );
+}
+```
+
+```tsx app/search/index.tsx
+import { ScrollView } from 'react-native';
+
+export default function SearchIndex() {
+  return <ScrollView>{/* Screen content */}</ScrollView>;
 }
 ```
 
