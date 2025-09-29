@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Adds `controlSize` prop to Button([#40030](https://github.com/expo/expo/pull/40030) by [@betomoedano](https://github.com/betomoedano))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
