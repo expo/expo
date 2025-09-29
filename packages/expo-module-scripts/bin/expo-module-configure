@@ -4,15 +4,34 @@ set -eo pipefail
 
 script_dir="$(dirname "$0")"
 
+template_dir="$script_dir/../templates"
+
 shopt -s dotglob
 
 # an optional template file will be synced only if the target file is present in the file system,
 # and its content contains the string `@generated`.
 OPTIONAL_TEMPLATE_FILES=(
   # add a relative file path from `templates/` for each new optional file
-  "eslint.config.js"
   "scripts/with-node.sh"
 )
+
+# mutually exclusive file groups - only one file per group should be present
+# if no files from the group exist, all files in the group will be created
+MUTUALLY_EXCLUSIVE_GROUPS=(
+  ".eslintrc.js eslint.config.js"
+)
+
+# get all mutually exclusive files
+# usage: get_mutually_exclusive_files
+get_mutually_exclusive_files() {
+  local mutually_exclusive_files=""
+  for group in "${MUTUALLY_EXCLUSIVE_GROUPS[@]}"; do
+    for file in $group; do
+      mutually_exclusive_files="$mutually_exclusive_files $file"
+    done
+  done
+  echo "$mutually_exclusive_files"
+}
 
 # returns relative file paths inside a given directory without the leading "./".
 # usage: get_relative_files "/path/to/dir"
@@ -61,17 +80,50 @@ is_optional_file() {
   return
 }
 
+# check if any file from a mutually exclusive group already exists.
+# usage: if has_mutually_exclusive_file "file1 file2 file3"; then ... fi
+has_mutually_exclusive_file() {
+  local group="$1"
+  for file in $group; do
+    if [ -f "$file" ]; then
+      true
+      return
+    fi
+  done
+  false
+  return
+}
+
 #
 # script main starts from here
 #
 
 "$script_dir/expo-module-readme"
 
-template_files=$(get_relative_files "$script_dir/../templates")
+template_files=$(get_relative_files "$template_dir")
+
+mutually_exclusive_files=$(get_mutually_exclusive_files)
+
 for template_relative_file in $template_files; do
+  if [[ " $mutually_exclusive_files " == *" $template_relative_file "* ]]; then
+    for group in "${MUTUALLY_EXCLUSIVE_GROUPS[@]}"; do
+      if [[ " $group " == *" $template_relative_file "* ]]; then
+        if ! has_mutually_exclusive_file "$group"; then
+          for file in $group; do
+            sync_file_if_missing "$template_dir/$file" "$file"
+          done
+          return
+        fi
+        sync_file_if_present "$template_dir/$template_relative_file" "$template_relative_file"
+        break
+      fi
+    done
+    continue
+  fi
+
   if is_optional_file "$template_relative_file"; then
-    sync_file_if_present "$script_dir/../templates/$template_relative_file" "$template_relative_file"
+    sync_file_if_present "$template_dir/$template_relative_file" "$template_relative_file"
   else
-    sync_file_if_missing "$script_dir/../templates/$template_relative_file" "$template_relative_file"
+    sync_file_if_missing "$template_dir/$template_relative_file" "$template_relative_file"
   fi
 done
