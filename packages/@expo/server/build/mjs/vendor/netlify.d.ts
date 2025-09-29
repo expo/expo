@@ -4,6 +4,9 @@ interface NetlifyContext {
     deploy?: {
         context?: string | null;
     };
+    site?: {
+        url?: string | null;
+    };
     waitUntil?: (promise: Promise<unknown>) => void;
     [scopeSymbol]?: unknown;
 }

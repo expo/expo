@@ -9,6 +9,7 @@ const scopeSymbol = Symbol.for('expoServerScope');
 
 interface NetlifyContext {
   deploy?: { context?: string | null };
+  site?: { url?: string | null };
   waitUntil?: (promise: Promise<unknown>) => void;
   [scopeSymbol]?: unknown;
 }
@@ -40,7 +41,7 @@ const STORE: ScopeDefinition = {
 
 export function createRequestHandler(params: { build: string }) {
   const makeRequestAPISetup = (request: Request, context?: NetlifyContext) => ({
-    origin: request.headers.get('Origin') || 'null',
+    origin: (context ?? getContext()).site?.url || request.headers.get('Origin') || 'null',
     environment: (context ?? getContext()).deploy?.context || null,
     waitUntil: (context ?? getContext()).waitUntil,
   });
