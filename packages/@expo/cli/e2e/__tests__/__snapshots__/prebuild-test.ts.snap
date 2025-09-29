@@ -138,6 +138,7 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "android/app/debug.keystore",
   "android/app/proguard-rules.pro",
   "android/app/src/debug/AndroidManifest.xml",
+  "android/app/src/debugOptimized/AndroidManifest.xml",
   "android/app/src/main/AndroidManifest.xml",
   "android/app/src/main/java/com/example/minimal/MainActivity.kt",
   "android/app/src/main/java/com/example/minimal/MainApplication.kt",

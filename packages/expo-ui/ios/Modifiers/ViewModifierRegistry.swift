@@ -250,6 +250,14 @@ internal struct HiddenModifier: ViewModifier, Record {
   }
 }
 
+internal struct DisabledModifier: ViewModifier, Record {
+  @Field var disabled: Bool = true
+
+  func body(content: Content) -> some View {
+    content.disabled(disabled)
+  }
+}
+
 internal struct ZIndexModifier: ViewModifier, Record {
   @Field var index: Double = 0
 
@@ -501,6 +509,23 @@ internal struct FixedSizeModifier: ViewModifier, Record {
       content.fixedSize(horizontal: false, vertical: vertical)
     } else {
       content.fixedSize()
+    }
+  }
+}
+
+internal struct IgnoreSafeAreaModifier: ViewModifier, Record {
+  @Field var regions: SafeAreaRegionOptions?
+  @Field var edges: EdgeOptions?
+
+  func body(content: Content) -> some View {
+    if let regions, let edges {
+      content.ignoresSafeArea(regions.toSafeAreaRegions(), edges: edges.toEdge())
+    } else if let regions {
+      content.ignoresSafeArea(regions.toSafeAreaRegions())
+    } else if let edges {
+      content.ignoresSafeArea(edges: edges.toEdge())
+    } else {
+      content.ignoresSafeArea()
     }
   }
 }
@@ -793,6 +818,14 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   }
 }
 
+internal struct ContainerShapeModifier: ViewModifier, Record {
+  @Field var cornerRadius: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    content.containerShape(.rect(cornerRadius: cornerRadius))
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -848,6 +881,10 @@ extension ViewModifierRegistry {
 
     register("hidden") { params, appContext, _ in
       return try HiddenModifier(from: params, appContext: appContext)
+    }
+
+    register("disabled") { params, appContext, _ in
+      return try DisabledModifier(from: params, appContext: appContext)
     }
 
     register("zIndex") { params, appContext, _ in
@@ -952,6 +989,14 @@ extension ViewModifierRegistry {
 
     register("fixedSize") { params, appContext, _ in
       return try FixedSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("ignoreSafeArea") { params, appContext, _ in
+      return try IgnoreSafeAreaModifier(from: params, appContext: appContext)
+    }
+
+    register("containerShape") { params, appContext, _ in
+      return try ContainerShapeModifier(from: params, appContext: appContext)
     }
   }
 }

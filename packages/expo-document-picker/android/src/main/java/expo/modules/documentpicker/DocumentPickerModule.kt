@@ -32,6 +32,11 @@ class DocumentPickerModule : Module() {
       if (pendingPromise != null) {
         throw PickingInProgressException()
       }
+
+      if (options.type.isEmpty()) {
+        throw DocumentPickerOptionsEmptyListException()
+      }
+
       pendingPromise = promise
       copyToCacheDirectory = options.copyToCacheDirectory
       val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {

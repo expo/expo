@@ -6,6 +6,7 @@
 import { ColorValue } from 'react-native';
 
 import { animation } from './animation/index';
+import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 
 /**
@@ -114,6 +115,16 @@ export const padding = (params: {
  */
 export const fixedSize = (params?: { horizontal?: boolean; vertical?: boolean }) =>
   createModifier('fixedSize', params);
+
+/**
+ * Allows a view to ignore safe area constraints.
+ * @param regions - The safe area regions to ignore ('all', 'container', 'keyboard')
+ * @param edges - The edges to expand into ('all', 'top', 'bottom', 'leading', 'trailing', 'horizontal', 'vertical')
+ */
+export const ignoreSafeArea = (params?: {
+  regions?: 'all' | 'container' | 'keyboard';
+  edges?: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical';
+}) => createModifier('ignoreSafeArea', params);
 
 /**
  * Adds a tap gesture recognizer.
@@ -309,6 +320,12 @@ export const tint = (color: Color) => createModifier('tint', { color });
 export const hidden = (hidden: boolean = true) => createModifier('hidden', { hidden });
 
 /**
+ * Disables or enables a view.
+ * @param disabled - Whether the view should be disabled
+ */
+export const disabled = (disabled: boolean = true) => createModifier('disabled', { disabled });
+
+/**
  * Sets the z-index (display order) of a view.
  * @param index - The z-index value
  */
@@ -461,6 +478,7 @@ export type BuiltInModifier =
   | ReturnType<typeof frame>
   | ReturnType<typeof padding>
   | ReturnType<typeof fixedSize>
+  | ReturnType<typeof ignoreSafeArea>
   | ReturnType<typeof onTapGesture>
   | ReturnType<typeof onLongPressGesture>
   | ReturnType<typeof opacity>
@@ -473,6 +491,7 @@ export type BuiltInModifier =
   | ReturnType<typeof foregroundStyle>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
+  | ReturnType<typeof disabled>
   | ReturnType<typeof zIndex>
   | ReturnType<typeof blur>
   | ReturnType<typeof brightness>
@@ -492,7 +511,8 @@ export type BuiltInModifier =
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
-  | ReturnType<typeof animation>;
+  | ReturnType<typeof animation>
+  | ReturnType<typeof containerShape>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -532,3 +552,4 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 };
 
 export * from './animation/index';
+export * from './containerShape';

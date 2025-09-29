@@ -146,7 +146,7 @@ export type SymbolOrImageSource = {
     /**
      * The image source to use as an icon.
      */
-    src?: ImageSourcePropType | Promise<ImageSourcePropType>;
+    src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
 };
 export interface ExtendedNativeTabOptions extends NativeTabOptions {
     /**
@@ -351,6 +351,8 @@ export interface NativeTabTriggerProps {
     name?: string;
     /**
      * If true, the tab will be hidden from the tab bar.
+     *
+     * > **Note**: Marking a tab as `hidden` means it cannot be navigated to in any way.
      */
     hidden?: boolean;
     /**

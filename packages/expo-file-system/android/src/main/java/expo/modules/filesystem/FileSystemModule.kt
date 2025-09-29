@@ -74,7 +74,7 @@ class FileSystemModule : Module() {
         to.javaFile
       }
 
-      if (destination.exists()) {
+      if (options?.idempotent != true && destination.exists()) {
         throw DestinationAlreadyExistsException()
       }
 

@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getConfiguration = getConfiguration;
-exports.generatePackageListAsync = generatePackageListAsync;
 exports.isAndroidProject = isAndroidProject;
 exports.resolveModuleAsync = resolveModuleAsync;
 exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
@@ -19,17 +18,6 @@ const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
 function getConfiguration(options) {
     return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
-}
-/**
- * Generates Java file that contains all autolinked packages.
- */
-async function generatePackageListAsync(modules, targetPath, namespace) {
-    const generatedFileContent = await generatePackageListFileContentAsync(modules, namespace);
-    const parentPath = path_1.default.dirname(targetPath);
-    if (!fs_1.default.existsSync(parentPath)) {
-        await fs_1.default.promises.mkdir(parentPath, { recursive: true });
-    }
-    await fs_1.default.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
 function isAndroidProject(projectRoot) {
     return (fs_1.default.existsSync(path_1.default.join(projectRoot, 'build.gradle')) ||
@@ -63,7 +51,7 @@ async function resolveModuleAsync(packageName, revision) {
             plugins,
         };
     }
-    const projects = androidProjects.map((project) => {
+    const projects = await Promise.all(androidProjects.map(async (project) => {
         const projectPath = path_1.default.join(revision.path, project.path);
         const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
             const projectName = `${defaultProjectName}$${aarProject.name}`;
@@ -78,15 +66,32 @@ async function resolveModuleAsync(packageName, revision) {
         const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
             ? path_1.default.join(revision.path, project.shouldUsePublicationScriptPath)
             : undefined;
+        const packages = [];
+        const files = (await (0, glob_1.glob)('**/*Package.{java,kt}', {
+            cwd: projectPath,
+        })) || [];
+        for (const file of files) {
+            const fileContent = await fs_1.default.promises.readFile(path_1.default.join(projectPath, file), 'utf8');
+            // Very naive check to skip non-expo packages
+            if (!/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)) {
+                continue;
+            }
+            const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
+            if (classPathMatches) {
+                const basename = path_1.default.basename(file, path_1.default.extname(file));
+                packages.push(`${classPathMatches[1]}.${basename}`);
+            }
+        }
         return {
             name: project.name,
             sourceDir: projectPath,
             modules: project.modules ?? [],
+            packages,
             ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
             ...(publication ? { publication } : {}),
             ...(aarProjects?.length > 0 ? { aarProjects } : {}),
         };
-    });
+    }));
     const coreFeatures = revision.config?.coreFeatures() ?? [];
     return {
         packageName,
@@ -116,84 +121,6 @@ async function resolveGradlePropertyAsync(projectNativeRoot, propertyKey) {
     }
     catch { }
     return null;
-}
-/**
- * Generates the string to put into the generated package list.
- */
-async function generatePackageListFileContentAsync(modules, namespace) {
-    // TODO: Instead of ignoring `expo` here, make the package class paths configurable from `expo-module.config.json`.
-    const packagesClasses = await findAndroidPackagesAsync(modules.filter((module) => module.packageName !== 'expo'));
-    const modulesClasses = await findAndroidModules(modules);
-    return `package ${namespace};
-
-import java.util.Arrays;
-import java.util.List;
-import expo.modules.core.interfaces.Package;
-import expo.modules.kotlin.modules.Module;
-import expo.modules.kotlin.ModulesProvider;
-
-public class ExpoModulesPackageList implements ModulesProvider {
-  private static class LazyHolder {
-    static final List<Package> packagesList = Arrays.<Package>asList(
-${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n')}
-    );
-
-    static final List<Class<? extends Module>> modulesList = Arrays.<Class<? extends Module>>asList(
-      ${modulesClasses.map((moduleClass) => `      ${moduleClass}.class`).join(',\n')}
-    );
-  }
-
-  public static List<Package> getPackageList() {
-    return LazyHolder.packagesList;
-  }
-
-  @Override
-  public List<Class<? extends Module>> getModulesList() {
-    return LazyHolder.modulesList;
-  }
-}
-`;
-}
-function findAndroidModules(modules) {
-    const projects = modules.flatMap((module) => module.projects ?? []);
-    const modulesToProvide = projects.filter((project) => project.modules?.length > 0);
-    const classNames = [].concat(...modulesToProvide.map((module) => module.modules));
-    return classNames;
-}
-async function findAndroidPackagesAsync(modules) {
-    const classes = [];
-    const flattenedSourceDirList = [];
-    for (const module of modules) {
-        for (const project of module.projects ?? []) {
-            flattenedSourceDirList.push(project.sourceDir);
-        }
-    }
-    await Promise.all(flattenedSourceDirList.map(async (sourceDir) => {
-        const files = await (0, glob_1.glob)('**/*Package.{java,kt}', {
-            cwd: sourceDir,
-        });
-        for (const file of files) {
-            const fileContent = await fs_1.default.promises.readFile(path_1.default.join(sourceDir, file), 'utf8');
-            const packageRegex = (() => {
-                if (process.env.EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE) {
-                    return /\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/;
-                }
-                else {
-                    return /\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/;
-                }
-            })();
-            // Very naive check to skip non-expo packages
-            if (!packageRegex.test(fileContent)) {
-                continue;
-            }
-            const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
-            if (classPathMatches) {
-                const basename = path_1.default.basename(file, path_1.default.extname(file));
-                classes.push(`${classPathMatches[1]}.${basename}`);
-            }
-        }
-    }));
-    return classes.sort();
 }
 /**
  * Converts the package name to Android's project name.

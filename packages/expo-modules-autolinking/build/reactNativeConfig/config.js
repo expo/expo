@@ -3,18 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadConfigAsync = loadConfigAsync;
+exports.loadConfigAsync = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const require_from_string_1 = __importDefault(require("require-from-string"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const utils_1 = require("../utils");
 const fileUtils_1 = require("../fileUtils");
 let tsMain = undefined;
 const mockedNativeModules = path_1.default.join(__dirname, '..', '..', 'node_modules_mock');
 /**
  * Load the `react-native.config.js` or `react-native.config.ts` from the package.
  */
-async function loadConfigAsync(packageRoot) {
+exports.loadConfigAsync = (0, utils_1.memoize)(async function loadConfigAsync(packageRoot) {
     const configJsPath = path_1.default.join(packageRoot, 'react-native.config.js');
     if (await (0, fileUtils_1.fileExistsAsync)(configJsPath)) {
         return requireConfig(configJsPath, await promises_1.default.readFile(configJsPath, 'utf8'));
@@ -44,7 +45,7 @@ async function loadConfigAsync(packageRoot) {
         }
     }
     return null;
-}
+});
 /**
  * Temporarily, we need to mock the community CLI, because
  * some packages are checking the version of the CLI in the `react-native.config.js` file.

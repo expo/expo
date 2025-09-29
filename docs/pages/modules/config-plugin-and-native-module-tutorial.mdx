@@ -1,7 +1,7 @@
 ---
 title: 'Tutorial: Create a module with a config plugin'
 sidebar_title: Create a module with a config plugin
-description: A tutorial on creating a native module with a config plugin using Expo modules API.
+description: A tutorial on creating a native module with a config plugin using Expo Modules API.
 searchRank: 3
 ---
 
@@ -11,7 +11,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Config plugins let you customize native Android and iOS projects generated with `npx expo prebuild`. You can use them to add properties to native config files, copy assets to native projects, or apply advanced configurations, such as adding an [app extension target](/build-reference/app-extensions/).
+[Config plugins](/config-plugins/introduction/) let you customize native Android and iOS projects generated with `npx expo prebuild` in [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) projects. You can use them to add properties to native config files, copy assets to native projects, or apply advanced configurations, such as adding an [app extension target](/build-reference/app-extensions/).
 
 As an app developer, config plugins help you apply customizations not exposed in the default [app config](/workflow/configuration). As a library author, they enable you to configure native projects automatically for developers using your library.
 
@@ -25,7 +25,7 @@ Start by initializing a new Expo module project with `create-expo-module`. This 
 
 <Terminal cmd={['$ npx create-expo-module expo-native-configuration']} />
 
-This guide uses the name `expo-native-configuration`/`ExpoNativeConfiguration` for the project. However, you can choose any name you prefer.
+This guide uses the name `expo-native-configuration`/`ExpoNativeConfiguration` for the module project. However, you can choose any name you prefer.
 
 </Step>
 
@@ -53,6 +53,7 @@ Locate the following files and replace them with the provided minimal boilerplat
 - **src/ExpoNativeConfigurationModule.ts**
 - **src/index.ts**
 - **example/App.tsx**
+- **package.json**
 
 ```kotlin android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationModule.kt
 package expo.modules.nativeconfiguration
@@ -117,6 +118,17 @@ export default function App() {
 }
 ```
 
+{/* prettier-ignore */}
+```json package.json
+{
+  /* @hide ... */ /* @end */
+  "dependencies": {
+    "expo-native-configuration": "file:.."
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
 </Step>
 
 <Step label="3">
@@ -136,14 +148,18 @@ In the root of your project, run the TypeScript compiler to watch for changes an
 In another terminal window, compile and run the example app:
 
 <Terminal
-  cmdCopy="cd example && npx expo run:ios"
   cmd={[
     '# Navigate to the example project',
     '$ cd example',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
+    '',
+    '# Reinstall the dependencies',
+    '$ rm -rf node_modules && npm install',
+    '',
     '# Run the example app on Android',
     '$ npx expo run:android',
+    '',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
   ]}
 />
 
@@ -155,7 +171,7 @@ You should see a screen with the text "API key: api-key".
 
 ## Create a new config plugin
 
-Plugins are synchronous functions that accept an `ExpoConfig` and return a modified `ExpoConfig`. By convention, these functions are prefixed with the word `with`. Name your plugin `withMyApiKey` or use a different name, as long as it follows this convention.
+[Plugins](/config-plugins/introduction/#plugin-function) are synchronous functions that accept an `ExpoConfig` and return a modified `ExpoConfig`. By convention, these functions are prefixed with the word `with`. Name your plugin `withMyApiKey` or use a different name, as long as it follows this convention.
 
 Here is an example of a basic config plugin function:
 
@@ -212,10 +228,11 @@ module.exports = require('./plugin/build');
 
 At the root of your project, run `npm run build plugin` to start the TypeScript compiler in watch mode. Next, configure your example project to use your plugin by adding the following line to the **example/app.json** file:
 
+{/* prettier-ignore */}
 ```json example/app.json
 {
   "expo": {
-    ...
+    /* @hide ... */ /* @end */
     "plugins": ["../app.plugin.js"]
   }
 }
@@ -223,7 +240,10 @@ At the root of your project, run `npm run build plugin` to start the TypeScript 
 
 When you run the `npx expo prebuild` command inside your **example** directory, the terminal logs "my custom plugin" through a console statement.
 
-<Terminal cmd={['$ cd example', '$ npx expo prebuild --clean']} />
+<Terminal
+  cmd={['$ cd example', '$ npx expo prebuild --clean']}
+  cmdCopy="$ cd example && npx expo prebuild --clean"
+/>
 
 To inject your custom API keys into **AndroidManifest.xml** and **Info.plist**, use helper [`mods` provided by `expo/config-plugins`](/config-plugins/plugins-and-mods/#what-are-mods). These make it easy to modify native files. For this example, use `withAndroidManifest` and `withInfoPlist`.
 
@@ -294,16 +314,17 @@ export default withMyApiKey;
 
 With the plugin ready to use, update the example app to pass your API key to the plugin as a configuration option. Modify the `plugins` field in **example/app.json** as shown below:
 
+{/* prettier-ignore */}
 ```json example/app.json
 {
   "expo": {
-    ...
+    /* @hide ... */ /* @end */
     "plugins": [["../app.plugin.js", { "apiKey": "custom_secret_api" }]]
   }
 }
 ```
 
-After making this change, test that the plugin works correctly by running `npx expo prebuild --clean` inside the **example** directory. This command executes your plugin and updates native files, injecting `"MY_CUSTOM_API_KEY"` into **AndroidManifest.xml** and **Info.plist**. You can verify this by checking the contents of **example/android/app/src/main/AndroidManifest.xml**.
+After making this change, test that the plugin works correctly by running `npx expo prebuild --clean` inside the **example** directory. This command executes your plugin and updates native files, injecting `"MY_CUSTOM_API_KEY"` into **AndroidManifest.xml** and **Info.plist**. You can verify this by checking the contents of **example/android/app/src/main/AndroidManifest.xml** and **example/ios/exponativeconfigurationexample/Info.plist**.
 
 </Step>
 
@@ -360,13 +381,15 @@ public class ExpoNativeConfigurationModule: Module {
 With your native modules reading the fields added to the native files, you can now run the example app and access your custom API key using the `ExamplePlugin.getApiKey()` function.
 
 <Terminal
-  cmdCopy="cd example && npx expo run:ios"
   cmd={[
     '$ cd example',
-    '# execute our plugin and update native files',
+    '',
+    '# Execute your plugin and update native files',
     '$ npx expo prebuild',
+    '',
     '# Run the example app on Android',
     '$ npx expo run:android',
+    '',
     '# Run the example app on iOS',
     '$ npx expo run:ios',
   ]}

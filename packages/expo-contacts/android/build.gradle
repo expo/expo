@@ -13,7 +13,3 @@ android {
     versionName "15.0.8"
   }
 }
-
-dependencies {
-  implementation 'androidx.annotation:annotation:1.2.0'
-}

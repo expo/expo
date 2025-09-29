@@ -9,5 +9,8 @@ export interface ExpoAppIntegrityModule extends NativeModule {
     generateAssertion(keyId: string, challenge: string): Promise<string>;
     prepareIntegrityTokenProvider(cloudProjectNumber: string): Promise<void>;
     requestIntegrityCheck(requestHash: string): Promise<string>;
+    isHardwareAttestationSupported(): Promise<boolean>;
+    generateHardwareAttestedKey(keyAlias: string, challenge: string): Promise<void>;
+    getAttestationCertificateChain(keyAlias: string): Promise<string[]>;
 }
 //# sourceMappingURL=ExpoAppIntegrity.types.d.ts.map

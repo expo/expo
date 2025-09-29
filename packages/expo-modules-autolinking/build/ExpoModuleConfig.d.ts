@@ -79,4 +79,4 @@ export declare class ExpoModuleConfig {
      */
     toJSON(): RawExpoModuleConfig;
 }
-export declare function discoverExpoModuleConfigAsync(directoryPath: string): Promise<ExpoModuleConfig | null>;
+export declare const discoverExpoModuleConfigAsync: (input: string, ...args: any[]) => Promise<any>;

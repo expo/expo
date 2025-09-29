@@ -33,7 +33,7 @@ export function Item({
     <DropdownMenu.Item
       aria-disabled={disabled}
       className={mergeClasses(
-        'relative z-40 flex cursor-pointer select-none items-center justify-between rounded-sm px-2 py-1',
+        'group relative z-40 flex cursor-pointer select-none items-center justify-between rounded-sm px-2 py-1 transition-colors',
         'hover:outline-0 hocus:bg-hover',
         disabled && 'cursor-default opacity-60 hocus:bg-default'
       )}
@@ -58,14 +58,30 @@ export function Item({
       <div className="flex flex-1 flex-col gap-0.5">
         <div
           className={mergeClasses(
-            'flex items-center justify-between',
+            'flex items-center justify-between transition-colors',
             disabled && 'pointer-events-none'
           )}>
           <div className="flex items-center gap-2">
             {Icon && (
-              <Icon className={mergeClasses('icon-sm', destructive && 'text-icon-danger')} />
+              <Icon
+                className={mergeClasses(
+                  'icon-sm text-icon-default transition-colors',
+                  destructive
+                    ? 'group-hocus:text-icon-danger group-data-[highlighted]:text-icon-danger'
+                    : 'group-hocus:text-icon-secondary group-data-[highlighted]:text-icon-secondary'
+                )}
+              />
             )}
-            <CALLOUT theme={destructive ? 'danger' : 'default'}>{label}</CALLOUT>
+            <CALLOUT
+              theme={destructive ? 'danger' : 'default'}
+              className={mergeClasses(
+                'transition-colors',
+                destructive
+                  ? 'group-hocus:text-danger group-data-[highlighted]:text-danger'
+                  : 'group-hocus:text-secondary group-data-[highlighted]:text-secondary'
+              )}>
+              {label}
+            </CALLOUT>
           </div>
           {typeof rightSlot === 'string' ? (
             <FOOTNOTE theme="secondary">{rightSlot}</FOOTNOTE>
@@ -85,11 +101,11 @@ export function Item({
 
   if (href) {
     return (
-      <A href={href} openInNewTab={openInNewTab}>
+      <A href={href} openInNewTab={openInNewTab} isStyled>
         {textItem}
       </A>
     );
-  } else {
-    return textItem;
   }
+
+  return textItem;
 }
