@@ -13,6 +13,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnable
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
@@ -59,6 +60,7 @@ internal class ReactActivityDelegateWrapperDelayLoadTest {
   fun setUp() {
     SoLoader.setInTestMode()
     mockkObject(ExpoModulesPackage.Companion)
+    ReactNativeFeatureFlagsForTests.setUp()
     mockkStatic(ReactNativeFeatureFlags::class)
     every { ReactNativeFeatureFlags.enableBridgelessArchitecture() } returns true
     every { ReactNativeFeatureFlags.enableFabricRenderer() } returns true
