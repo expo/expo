@@ -72,7 +72,11 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
             forMainFrameOnly: true
         ))
         if #available(iOS 16.4, *) {
+#if EXPO_DEBUG_LOG_BOX || EXPO_DEVELOP_LOG_BOX
             webView.isInspectable = true
+#else
+            webView.isInspectable = false
+#endif
         }
         webView.configuration.userContentController.add(self, name: nativeMessageHandlerName)
         webView.translatesAutoresizingMaskIntoConstraints = false
