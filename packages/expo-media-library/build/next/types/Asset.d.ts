@@ -11,13 +11,13 @@ import { MediaType } from './MediaType';
 export declare class Asset {
     /**
      * Reinitialize an instance of an asset with a given ID.
-     * @param id - For Android, it is a `contentUri` (content://media/external/images/media/12345) and for iOS, it is `PHAsset` localIdentifier.
+     * @param id - For Android, it is a `contentUri` (content://media/external/images/media/12345) and for iOS, it is `PHAsset` localIdentifier URI.
      */
     constructor(id: string);
     /**
      * ID of the asset.
      * Can be used to re-instantiate an {@link Asset} later.
-     * For android it is a contentUri and PHAsset localIdentifier for iOS.
+     * For android it is a contentUri and PHAsset localIdentifier URI for iOS.
      */
     id: string;
     /**
@@ -28,7 +28,8 @@ export declare class Asset {
     getCreationTime(): Promise<number | null>;
     /**
      * Gets the duration of the asset.
-     * Applies only to media types like video or audio.
+     * Applies only to assets with media type {@link MediaType.audio} or {@link MediaType.video}.
+     * For other media types, it returns `null`.
      * @returns A promise resolving to the duration in milliseconds, or `null` if not applicable.
      * @throws An exception if the asset could not be found.
      */

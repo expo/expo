@@ -413,5 +413,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       setUpReactInstance(newReactInstance)
     }
   }
+
+  fun refreshCustomItems() {
+    delegateActivity?.let { activity ->
+      withBindingView(activity) { bindingView ->
+        bindingView.viewModel.updateCustomItems(registeredCallbacks)
+      }
+    }
+  }
 //endregion
 }
