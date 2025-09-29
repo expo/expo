@@ -1,5 +1,9 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
+
 import { StatusError, environment, origin, runTask, deferTask } from '../api';
 import { createRequestScope } from '../index';
+
+const STORE = new AsyncLocalStorage();
 
 it('throws when API is called in uninitialized context', async () => {
   expect(() => {
@@ -8,7 +12,7 @@ it('throws when API is called in uninitialized context', async () => {
 });
 
 it('throws when API is not provided by scope', async () => {
-  const run = createRequestScope(() => ({ environment: undefined }));
+  const run = createRequestScope(STORE, () => ({ environment: undefined }));
   await expect(async () => {
     await run(async () => {
       environment();
@@ -18,7 +22,7 @@ it('throws when API is not provided by scope', async () => {
 });
 
 it('provides specified origin and environment values', async () => {
-  const run = createRequestScope(() => ({
+  const run = createRequestScope(STORE, () => ({
     environment: 'test',
     origin: 'https://test.local',
   }));
@@ -32,7 +36,7 @@ it('provides specified origin and environment values', async () => {
 });
 
 it('provides specified origin as a global', async () => {
-  const run = createRequestScope(() => ({
+  const run = createRequestScope(STORE, () => ({
     origin: 'https://test.local',
   }));
 
@@ -46,7 +50,7 @@ it('provides specified origin as a global', async () => {
 it('calls waitUntil with specified runTask invocation', async () => {
   const mockTask = jest.fn().mockResolvedValue(undefined);
   const waitUntil = jest.fn();
-  const run = createRequestScope(() => ({ waitUntil }));
+  const run = createRequestScope(STORE, () => ({ waitUntil }));
   const result = await run(async () => {
     runTask(mockTask);
     expect(mockTask).toHaveBeenCalled();
@@ -59,7 +63,7 @@ it('calls waitUntil with specified runTask invocation', async () => {
 it('calls waitUntil with specified deferTask invocation after response resolved', async () => {
   const mockTask = jest.fn().mockResolvedValue(undefined);
   const waitUntil = jest.fn();
-  const run = createRequestScope(() => ({ waitUntil }));
+  const run = createRequestScope(STORE, () => ({ waitUntil }));
   const result = await run(async () => {
     deferTask(mockTask);
     expect(mockTask).not.toHaveBeenCalled();
@@ -73,7 +77,7 @@ it('calls waitUntil with specified deferTask invocation after response resolved'
 
 it('provides mock waitUntil implementation if none is provided', async () => {
   const mockTask = jest.fn().mockResolvedValue(undefined);
-  const run = createRequestScope(() => ({}));
+  const run = createRequestScope(STORE, () => ({}));
   const result = await run(async () => {
     runTask(mockTask);
     expect(mockTask).toHaveBeenCalled();
@@ -85,7 +89,7 @@ it('provides mock waitUntil implementation if none is provided', async () => {
 it('ignores deferred tasks on error', async () => {
   const mockTask = jest.fn().mockResolvedValue(undefined);
   const waitUntil = jest.fn();
-  const run = createRequestScope(() => ({ waitUntil }));
+  const run = createRequestScope(STORE, () => ({ waitUntil }));
   const result = await run(async () => {
     deferTask(mockTask);
     throw new StatusError();
@@ -96,7 +100,7 @@ it('ignores deferred tasks on error', async () => {
 });
 
 it('uses StatusError to construct error response if one is thrown', async () => {
-  const run = createRequestScope(() => ({}));
+  const run = createRequestScope(STORE, () => ({}));
   const result = await run(async () => {
     throw new StatusError(418, 'I might be a teapot');
   });
@@ -106,7 +110,7 @@ it('uses StatusError to construct error response if one is thrown', async () => 
 });
 
 it('uses StatusError to construct a JSON response if one is thrown', async () => {
-  const run = createRequestScope(() => ({}));
+  const run = createRequestScope(STORE, () => ({}));
   const result = await run(async () => {
     throw new StatusError(418, { test: 'I might be a teapot' });
   });
