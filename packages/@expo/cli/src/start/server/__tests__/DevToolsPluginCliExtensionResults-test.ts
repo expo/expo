@@ -1,6 +1,6 @@
 import { DevToolsPluginCliExtensionResults } from '../DevToolsPluginCliExtensionResults';
 
-describe('DevToolsPluginResults', () => {
+describe('DevToolsPluginCliExtensionResults', () => {
   describe('exit code handling', () => {
     it('should return the exit code that was set', () => {
       const valueToTest = new DevToolsPluginCliExtensionResults();

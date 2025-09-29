@@ -1,7 +1,7 @@
 import { DevToolsPlugin } from '../DevToolsPlugin';
 import { DevToolsPluginCliExtensionExecutor } from '../DevToolsPluginCliExtensionExecutor';
 
-describe('DevToolsPluginExecutor', () => {
+describe('DevToolsPluginCliExtensionExecutor', () => {
   it("should throw if the plugin doesn't have CLI extensions", () => {
     expect(() => new DevToolsPluginCliExtensionExecutor(PLUGIN_DESCRIPTOR, PROJECT_ROOT)).toThrow(
       /has no CLI extensions/
