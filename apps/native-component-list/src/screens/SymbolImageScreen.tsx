@@ -96,7 +96,6 @@ function SymbolScales({ title, ...props }: RowProps) {
 }
 
 export default function SymbolImageScreen() {
-
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: 10, gap: 10 }}>
       <Text style={styles.title}>Use component directly</Text>
