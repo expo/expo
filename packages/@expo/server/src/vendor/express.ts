@@ -4,7 +4,7 @@ import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
-import { createNodeEnv } from './environment/node';
+import { createNodeEnv, createNodeRequestScope } from './environment/node';
 
 export { ExpoError } from './abstract';
 
@@ -18,10 +18,11 @@ export type RequestHandler = (
  * Returns a request handler for Express that serves the response using Remix.
  */
 export function createRequestHandler(
-  params: { build: string },
+  params: { build: string; environment?: string | null },
   setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
-  const handleRequest = createExpoHandler({
+  const run = createNodeRequestScope(params);
+  const onRequest = createExpoHandler({
     ...createNodeEnv(params),
     ...setup,
   });
@@ -32,9 +33,7 @@ export function createRequestHandler(
     }
     try {
       const request = convertRequest(req, res);
-
-      const response = await handleRequest(request);
-
+      const response = await run(onRequest, request);
       await respond(res, response);
     } catch (error: unknown) {
       // Express doesn't support async functions, so we have to pass along the

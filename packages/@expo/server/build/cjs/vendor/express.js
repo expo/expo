@@ -15,7 +15,8 @@ Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function ()
  * Returns a request handler for Express that serves the response using Remix.
  */
 function createRequestHandler(params, setup) {
-    const handleRequest = (0, abstract_1.createRequestHandler)({
+    const run = (0, node_1.createNodeRequestScope)(params);
+    const onRequest = (0, abstract_1.createRequestHandler)({
         ...(0, node_1.createNodeEnv)(params),
         ...setup,
     });
@@ -25,7 +26,7 @@ function createRequestHandler(params, setup) {
         }
         try {
             const request = convertRequest(req, res);
-            const response = await handleRequest(request);
+            const response = await run(onRequest, request);
             await respond(res, response);
         }
         catch (error) {

@@ -6,4 +6,5 @@ export type RequestHandler = (req: Request) => Promise<Response>;
  */
 export declare function createRequestHandler(params: {
     build: string;
+    environment?: string | null;
 }, setup?: Partial<RequestHandlerParams>): RequestHandler;

@@ -3,7 +3,7 @@
   "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "install.d.ts", "install.js"],
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable"],
+    "lib": ["es2022", "dom", "dom.iterable"],
     "sourceMap": true,
     "outDir": "./build/cjs",
     "typeRoots": ["../cli/ts-declarations"]
