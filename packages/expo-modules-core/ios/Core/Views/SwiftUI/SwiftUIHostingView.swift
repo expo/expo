@@ -136,6 +136,12 @@ extension ExpoSwiftUI {
       return true
     }
 
+    public override func layoutSubviews() {
+      super.layoutSubviews()
+      // TODO: Use updateLayoutMetrics from RN. Add support in ExpoFabricView.
+      setupHostingViewConstraints()
+    }
+
 #if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
@@ -186,15 +192,16 @@ extension ExpoSwiftUI {
       guard let view = hostingController.view as UIView? else {
         return
       }
-      view.frame = self.bounds
-      view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+      let frame = self.bounds;
+      view.frame = frame;
+        #if os(iOS) || os(tvOS)
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        #elseif os(macOS)
+        view.autoresizingMask = [.width, .height]
+        #endif
     }
-    
+
     // MARK: - UIView lifecycle
-    public override func layoutSubviews() {
-      super.layoutSubviews()
-      setupHostingViewConstraints()
-    }
 
     public override func didMoveToWindow() {
       super.didMoveToWindow()
