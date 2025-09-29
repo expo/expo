@@ -25,6 +25,7 @@
 
 ### 💡 Others
 
+- fix typo in CLI error message when `expo-router` is not installed. ([#36608](https://github.com/expo/expo/pull/36608) by [@abraj](https://github.com/abraj))
 - Bump to `@expo/metro@~54.0.0` ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
 
 ## 54.0.6 — 2025-09-16
