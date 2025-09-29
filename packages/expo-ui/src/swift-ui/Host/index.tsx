@@ -34,7 +34,9 @@ export type HostProps = {
   style?: StyleProp<ViewStyle>;
 } & CommonViewModifierProps;
 
-const HostNativeView: React.ComponentType<HostProps> = requireNativeView('ExpoUI', 'HostView');
+const HostNativeView: React.ComponentType<
+  HostProps & { matchContentsVertical?: boolean; matchContentsHorizontal?: boolean }
+> = requireNativeView('ExpoUI', 'HostView');
 
 /**
  * A hosting component for SwiftUI views.
@@ -46,11 +48,9 @@ export function Host(props: HostProps) {
     <HostNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      // @ts-ignore - Native prop
       matchContentsVertical={
         typeof matchContents === 'object' ? matchContents.vertical : matchContents
       }
-      // @ts-ignore - Native prop
       matchContentsHorizontal={
         typeof matchContents === 'object' ? matchContents.horizontal : matchContents
       }
