@@ -7,7 +7,7 @@ function enforcedRequestScope(): RequestAPI {
       'Invalid server runtime API call. Runtime APIs can only be called during ongoing requests.\n' +
         '- You may be calling this API in the global scope.\n' +
         '- You might be calling this API outside of a promise scoped to a request.\n' +
-        +'- You might have more than one copy of this API installed.'
+        '- You might have more than one copy of this API installed.'
     );
   }
   return scope;
