@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix passing exclude options
+- [Android] Fix passing exclude options. ([#40014](https://github.com/expo/expo/pull/40014) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
