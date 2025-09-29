@@ -18,6 +18,7 @@
 
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
 - [iOS] Add explicit CallInvoker and CallbackWrapper imports to EXJSIUtils ([#39818](https://github.com/expo/expo/pull/39818) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [ios] - Set host dimension synchronously on native ([#40017](https://github.com/expo/expo/pull/40017) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 3.0.16 — 2025-09-16
 
