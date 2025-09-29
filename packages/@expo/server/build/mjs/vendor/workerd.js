@@ -1,15 +1,12 @@
-import { createRequestHandler as createExpoHandler } from '../index';
-import { getApiRoute, getHtml, getRoutesManifest, handleRouteError, getMiddleware, } from '../runtime/workerd';
+import { createRequestHandler as createExpoHandler } from './abstract';
+import { createWorkerdEnv } from './environment/workerd';
+export { ExpoError } from './abstract';
 /**
  * Returns a request handler for Workerd deployments.
  */
-export function createRequestHandler({ build }, setup = {}) {
+export function createRequestHandler(params, setup) {
     return createExpoHandler({
-        getRoutesManifest: getRoutesManifest(build),
-        getHtml: getHtml(build),
-        getApiRoute: getApiRoute(build),
-        getMiddleware: getMiddleware(build),
-        handleRouteError: handleRouteError(),
+        ...createWorkerdEnv(params),
         ...setup,
     });
 }

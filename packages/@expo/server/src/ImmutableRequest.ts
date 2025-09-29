@@ -5,15 +5,27 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// This provides a better error message when ImmutableRequest is used in a non-standard JS runtime.
-assertRuntimeFetchAPISupport();
+const getHeadersConstructor = (): typeof Headers => {
+  if (typeof Headers !== 'undefined') {
+    return Headers;
+  } else {
+    // NOTE(@kitten): The `assertRuntimeFetchAPISupport` helper will catch this. Currently only an issue in Jest
+    return (
+      globalThis.Headers ??
+      class _MockHeaders {
+        constructor() {
+          throw new Error('Runtime built-in Headers API is not available.');
+        }
+      }
+    );
+  }
+};
 
 /**
  * An immutable version of the Fetch API's [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object which prevents mutations.
  */
-class ImmutableHeaders extends Headers {
+class ImmutableHeaders extends getHeadersConstructor() {
   // TODO(@hassankhan): Merge with `ReadonlyHeaders` from `expo-router`
-
   #throwImmutableError() {
     throw new Error('This operation is not allowed on immutable headers.');
   }

@@ -1,15 +1,12 @@
-import { createRequestHandler as createExpoHandler } from '../index';
-import { getApiRoute, getHtml, getMiddleware, getRoutesManifest, handleRouteError, } from '../runtime/node';
+import { createRequestHandler as createExpoHandler } from './abstract';
+import { createNodeEnv } from './environment/node';
+export { ExpoError } from './abstract';
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
-export function createRequestHandler({ build }, setup = {}) {
+export function createRequestHandler(params, setup) {
     return createExpoHandler({
-        getRoutesManifest: getRoutesManifest(build),
-        getHtml: getHtml(build),
-        getApiRoute: getApiRoute(build),
-        getMiddleware: getMiddleware(build),
-        handleRouteError: handleRouteError(),
+        ...createNodeEnv(params),
         ...setup,
     });
 }
