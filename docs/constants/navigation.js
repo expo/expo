@@ -764,13 +764,17 @@ function makePage(file) {
     data.title = '';
   }
 
+  const isIndex = path.basename(file, path.extname(file)) === 'index';
+
   const result = {
     // TODO(cedric): refactor name into title
     name: data.sidebar_title ?? data.title,
     // TODO(cedric): refactor href into url
     href: url,
+    isIndex, // If the page is index from a directory, it will be listed at first
     isNew: data.isNew ?? undefined,
     isAlpha: data.isAlpha ?? undefined,
+    isBeta: data.isBeta ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
     hasVideoLink: data.hasVideoLink ?? undefined,
@@ -792,11 +796,36 @@ function makePage(file) {
  * Load all pages from a single directory.
  */
 function pagesFromDir(dir) {
-  return fs
-    .readdirSync(path.resolve(PAGES_DIR, dir), { withFileTypes: true })
+  const dirPath = path.resolve(PAGES_DIR, dir);
+  const entities = fs.readdirSync(dirPath, { withFileTypes: true });
+
+  const files = entities
     .filter(entity => entity.isFile())
-    .map(file => makePage(path.join(dir, file.name)))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .map(file => makePage(path.join(dir, file.name)));
+
+  const folders = entities
+    .filter(entity => entity.isDirectory())
+    .map(folder => {
+      const folderPages = pagesFromDir(path.join(dir, folder.name));
+      const sortedFolderPages = folderPages.sort((a, b) => {
+        // prioritize index files first
+        if (a.isIndex && !b.isIndex) {
+          return -1;
+        }
+        if (!a.isIndex && b.isIndex) {
+          return 1;
+        }
+
+        // otherwise sort by name (title)
+        return a.name.localeCompare(b.name);
+      });
+      return folderPages.length > 0
+        ? makeGroup(folder.name.toUpperCase(), sortedFolderPages, { expanded: true })
+        : null;
+    })
+    .filter(Boolean);
+
+  return [...files, ...folders].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /**

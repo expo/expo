@@ -33,6 +33,9 @@ includeBuild(new File(rootDir, "../../../react-native-lab/react-native/packages/
 
 include ':expoview'
 include ':tools'
+
+include(":packages")
+project(":packages").projectDir = file("$rootDir/../../../react-native-lab/react-native/packages") // Gradle 9 require us to include this
 include ':packages:react-native:ReactAndroid'
 project(':packages:react-native:ReactAndroid').projectDir = new File(rootDir, '../../../react-native-lab/react-native/packages/react-native/ReactAndroid')
 dependencyResolutionManagement {
