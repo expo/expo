@@ -202,7 +202,11 @@ extension ExpoSwiftUI {
       }
       let frame = self.bounds;
       view.frame = frame;
-      view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        #if os(iOS) || os(tvOS)
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        #elseif os(macOS)
+        view.autoresizingMask = [.width, .height]
+        #endif
     }
 
     // MARK: - UIView lifecycle
