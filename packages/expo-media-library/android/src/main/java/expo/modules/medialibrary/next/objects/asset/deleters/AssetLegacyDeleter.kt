@@ -9,6 +9,7 @@ import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
 import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetPath
+import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -16,8 +17,11 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
 
-@DeprecatedSinceApi(Build.VERSION_CODES.Q)
-class AssetLegacyDeleter(context: Context) : AssetDeleter {
+@DeprecatedSinceApi(Build.VERSION_CODES.R)
+class AssetLegacyDeleter(
+  val systemPermissionsDelegate: SystemPermissionsDelegate,
+  context: Context
+) : AssetDeleter {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
@@ -26,6 +30,7 @@ class AssetLegacyDeleter(context: Context) : AssetDeleter {
       .contentResolver ?: throw ContentResolverNotObtainedException()
 
   override suspend fun delete(contentUri: Uri): Unit = withContext(Dispatchers.IO) {
+    systemPermissionsDelegate.requireWritePermissions()
     val path = contentResolver.queryAssetPath(contentUri)
       ?: throw AssetPropertyNotFoundException("Uri")
     if (!File(path).delete()) {

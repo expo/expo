@@ -50,7 +50,6 @@ const SortScreen = () => {
   const [ascending, setAscending] = useState<boolean>(false);
 
   const fetchAssets = async () => {
-    await requestPermissionsAsync();
     try {
       setLoading(true);
       const rawAssets = await new Query()
@@ -75,6 +74,10 @@ const SortScreen = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    requestPermissionsAsync();
+  }, []);
 
   useEffect(() => {
     fetchAssets();

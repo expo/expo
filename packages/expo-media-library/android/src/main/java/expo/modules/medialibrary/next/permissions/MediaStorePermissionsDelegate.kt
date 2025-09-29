@@ -56,12 +56,9 @@ class MediaStorePermissionsDelegate(val appContext: AppContext) {
     writeLauncher = registerForActivityResult(WriteContract(appContextProvider))
   }
 
-  private fun hasWritePermissionForUri(uri: Uri): Boolean {
-    return context.checkUriPermission(
-      uri,
-      Binder.getCallingPid(),
-      Binder.getCallingUid(),
-      Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-    ) == PackageManager.PERMISSION_GRANTED
-  }
+  private fun hasWritePermissionForUri(uri: Uri): Boolean =
+    runCatching {
+      context.contentResolver.openOutputStream(uri, "rw")?.close()
+      return true
+    }.getOrDefault(false)
 }

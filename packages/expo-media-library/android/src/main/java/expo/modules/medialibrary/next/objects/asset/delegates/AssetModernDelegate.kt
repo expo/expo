@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import expo.modules.core.utilities.ifNull
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
 import expo.modules.medialibrary.next.extensions.getOrThrow
@@ -28,6 +29,7 @@ import expo.modules.medialibrary.next.objects.asset.EXIF_TAGS
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
+import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import expo.modules.medialibrary.next.records.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,6 +45,7 @@ import kotlin.time.toDuration
 class AssetModernDelegate(
   override val contentUri: Uri,
   val assetDeleter: AssetDeleter,
+  val mediaStorePermissionsDelegate: MediaStorePermissionsDelegate,
   context: Context
 ) : AssetDelegate {
   private val contextRef = WeakReference(context)
@@ -74,21 +77,19 @@ class AssetModernDelegate(
 
   override suspend fun getHeight(): Int {
     val height = contentResolver.queryAssetHeight(contentUri)
-      ?: throw AssetPropertyNotFoundException("Height")
     // If height is not saved to the database
-    if (getMediaType() == MediaType.IMAGE && height <= 0) {
+    if (getMediaType() == MediaType.IMAGE && height != null && height <= 0) {
       return downloadBitmapAndGet { it.outHeight }
     }
-    return height
+    return height ?: throw AssetPropertyNotFoundException("Height")
   }
 
   override suspend fun getWidth(): Int {
     val width = contentResolver.queryAssetWidth(contentUri)
-      ?: throw AssetPropertyNotFoundException("Width")
-    if (getMediaType() == MediaType.IMAGE && width <= 0) {
+    if (getMediaType() == MediaType.IMAGE && width != null && width <= 0) {
       return downloadBitmapAndGet { it.outWidth }
     }
-    return width
+    return width ?: throw AssetPropertyNotFoundException("Width")
   }
 
   private suspend fun downloadBitmapAndGet(extract: (BitmapFactory.Options) -> Int): Int {
@@ -153,6 +154,7 @@ class AssetModernDelegate(
   }
 
   override suspend fun move(relativePath: RelativePath) {
+    mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(listOf(contentUri))
     contentResolver.updateRelativePath(contentUri, relativePath)
   }
 
@@ -160,7 +162,7 @@ class AssetModernDelegate(
     val newAssetUri = contentResolver.insertPendingAsset(getFilename(), getMimeType(), relativePath)
     contentResolver.copyUriContent(contentUri, newAssetUri)
     contentResolver.publishPendingAsset(newAssetUri)
-    val newAssetDelegate = AssetModernDelegate(newAssetUri, assetDeleter, contextRef.getOrThrow())
+    val newAssetDelegate = AssetModernDelegate(newAssetUri, assetDeleter, mediaStorePermissionsDelegate, contextRef.getOrThrow())
     return@withContext Asset(newAssetDelegate)
   }
 }
