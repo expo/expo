@@ -1,6 +1,13 @@
-import { useAudioPlayer, useAudioPlayerStatus, AudioModule, AudioSource } from 'expo-audio';
+import {
+  useAudioPlayer,
+  useAudioPlayerStatus,
+  AudioModule,
+  AudioSource,
+  LockScreenButton,
+} from 'expo-audio';
+import Checkbox from 'expo-checkbox';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Player from './Player';
 import Button from '../../../components/Button';
@@ -46,6 +53,7 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
   const status = useAudioPlayerStatus(player);
   const [enabled, setEnabled] = useState(false);
   const [metadata, setMetadata] = useState<1 | 2>(1);
+  const [buttons, setButtons] = useState<LockScreenButton[]>();
 
   const setIsMuted = (isMuted: boolean) => {
     player.muted = isMuted;
@@ -62,6 +70,14 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
 
   const setVolume = (volume: number) => {
     player.volume = volume;
+  };
+
+  const toggleButton = (button: LockScreenButton) => {
+    if (buttons?.includes(button)) {
+      setButtons((b) => b?.filter((btn) => btn !== button));
+    } else {
+      setButtons((b) => (b ? [...b, button] : [button]));
+    }
   };
 
   return (
@@ -87,14 +103,47 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
         <Button
           title={`${enabled ? 'Disable' : 'Enable'} Lock Screen controls`}
           onPress={() => {
-            player.setActiveForLockScreen(!enabled, {
-              title: 'Test',
-              artist: 'Test artist',
-              artworkUrl: artworkUrl1,
-            });
+            player.setActiveForLockScreen(
+              !enabled,
+              {
+                title: 'Test',
+                artist: 'Test artist',
+                artworkUrl: artworkUrl1,
+              },
+              {
+                buttons,
+              }
+            );
             setEnabled((e) => !e);
           }}
         />
+        <View style={styles.optionRow}>
+          <Checkbox
+            value={buttons?.includes(LockScreenButton.PLAY_PAUSE)}
+            onValueChange={() => toggleButton(LockScreenButton.PLAY_PAUSE)}
+          />
+          <Text style={styles.optionsText}>Play/Pause</Text>
+          <Checkbox
+            value={buttons?.includes(LockScreenButton.BACKWARD)}
+            onValueChange={() => toggleButton(LockScreenButton.BACKWARD)}
+          />
+          <Text style={styles.optionsText}>Backward</Text>
+          <Checkbox
+            value={buttons?.includes(LockScreenButton.FORWARD)}
+            onValueChange={() => toggleButton(LockScreenButton.FORWARD)}
+          />
+          <Text style={styles.optionsText}>Forward</Text>
+          <Checkbox
+            value={buttons?.includes(LockScreenButton.NEXT)}
+            onValueChange={() => toggleButton(LockScreenButton.NEXT)}
+          />
+          <Text style={styles.optionsText}>Next</Text>
+          <Checkbox
+            value={buttons?.includes(LockScreenButton.PREVIOUS)}
+            onValueChange={() => toggleButton(LockScreenButton.PREVIOUS)}
+          />
+          <Text style={styles.optionsText}>Previous</Text>
+        </View>
         <Button
           title="Update Metadata"
           onPress={() => {
@@ -126,5 +175,15 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     gap: 10,
+  },
+  optionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  optionsText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
