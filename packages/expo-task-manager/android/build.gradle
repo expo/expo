@@ -16,5 +16,5 @@ android {
 
 dependencies {
   implementation project(':unimodules-app-loader')
-  api "androidx.core:core:1.0.0"
+  api "androidx.core:core:1.17.0"
 }
