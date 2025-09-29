@@ -65,7 +65,7 @@ export class Paths extends PathUtilities {
  * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `File` instance (which creates a new reference to the same file).
  * @example
  * ```ts
- * const file = new File(File.cache, "subdirName", "file.txt");
+ * const file = new File(Paths.cache, "subdirName", "file.txt");
  * ```
  */
 export class File extends ExpoFileSystem.FileSystemFile implements Blob {
@@ -76,7 +76,7 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
    * @param uris An array of: `file:///` string URIs, `File` instances, and `Directory` instances representing an arbitrary location on the file system.
    * @example
    * ```ts
-   * const file = new File(File.cache, "subdirName", "file.txt");
+   * const file = new File(Paths.cache, "subdirName", "file.txt");
    * ```
    */
   constructor(...uris: (string | File | Directory)[]) {
