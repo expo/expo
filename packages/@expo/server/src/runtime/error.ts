@@ -2,7 +2,21 @@ export class StatusError extends Error {
   status: number;
   body: string;
 
-  constructor(status = 500, body?: { error?: string; [key: string]: any } | Error | string) {
+  constructor(status?: number, body?: { error?: string; [key: string]: any } | Error | string);
+  constructor(status?: number, errorOptions?: { cause: unknown; error?: string });
+  constructor(
+    status?: number,
+    body?: { error?: string; [key: string]: any } | Error | string,
+    errorOptions?: { cause?: unknown }
+  );
+  constructor(
+    status = 500,
+    body?: { error?: string; [key: string]: any; cause?: unknown } | Error | string,
+    errorOptions?: { cause?: unknown }
+  ) {
+    const cause =
+      (errorOptions != null && errorOptions.cause) ??
+      (body != null && typeof body === 'object' && body.cause != null ? body.cause : undefined);
     let message =
       typeof body === 'object' ? (body instanceof Error ? body.message : body.error) : body;
     if (message == null) {
@@ -26,7 +40,7 @@ export class StatusError extends Error {
           message = 'Unknown Error';
       }
     }
-    super(message);
+    super(message, cause ? { cause } : undefined);
     this.name = 'StatusError';
     this.status = status;
     if (body instanceof Error) {
