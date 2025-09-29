@@ -3,8 +3,6 @@ import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtension
 import { DevToolsPluginEndpoint } from './DevToolsPluginManager';
 import { Log } from '../../log';
 
-const DEFAULT_TIMEOUT_MS = 10_000; // 10 seconds
-
 /**
  * Class that represents a DevTools plugin with CLI and/or web extensions
  *
