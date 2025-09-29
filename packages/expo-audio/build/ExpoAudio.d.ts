@@ -151,7 +151,7 @@ export declare function useAudioRecorder(options: RecordingOptions, statusListen
  *   return (
  *     <View>
  *       <Text>Recording: {state.isRecording ? 'Yes' : 'No'}</Text>
- *       <Text>Duration: {state.currentTime}s</Text>
+ *       <Text>Duration: {Math.round(state.durationMillis / 1000)}s</Text>
  *       <Text>Can Record: {state.canRecord ? 'Yes' : 'No'}</Text>
  *     </View>
  *   );

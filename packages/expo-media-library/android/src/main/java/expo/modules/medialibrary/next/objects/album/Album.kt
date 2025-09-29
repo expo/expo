@@ -12,14 +12,18 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAlbumFilepath
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumRelativePath
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
+import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.lang.ref.WeakReference
 
-class Album(val id: String, context: Context) : SharedObject() {
+class Album(
+  val id: String,
+  val assetDeleter: AssetDeleter,
+  val assetFactory: AssetFactory,
+  context: Context
+) : SharedObject() {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
@@ -51,21 +55,16 @@ class Album(val id: String, context: Context) : SharedObject() {
     return RelativePath(relative)
   }
 
-  suspend fun getAssets(): List<Asset> {
-    return contentResolver
+  suspend fun getAssets(): List<Asset> =
+    contentResolver
       .queryAlbumAssetsContentUris(id)
-      .map { contentUri -> Asset(contentUri, contextRef.getOrThrow()) }
-  }
+      .map { assetFactory.create(it) }
 
-  suspend fun delete() = coroutineScope {
-    getAssets().map { asset ->
-      async {
-        asset.delete()
-      }
-    }.awaitAll()
-  }
+  suspend fun delete() =
+    assetDeleter.delete(
+      getAssets().map { it.contentUri }
+    )
 
-  suspend fun add(asset: Asset) {
+  suspend fun add(asset: Asset) =
     asset.move(getRelativePath())
-  }
 }

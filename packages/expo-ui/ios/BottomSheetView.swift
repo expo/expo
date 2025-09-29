@@ -3,6 +3,23 @@
 import SwiftUI
 import ExpoModulesCore
 
+internal enum PresentationDragIndicatorVisibility: String, Enumerable {
+  case automatic
+  case visible
+  case hidden
+
+  func toPresentationDragIndicator() -> Visibility {
+    switch self {
+    case .visible:
+      return .visible
+    case .hidden:
+      return .hidden
+    default:
+      return .automatic
+    }
+  }
+}
+
 final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
@@ -11,7 +28,11 @@ final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var modifiers: ModifierArray?
 
   @Field var isOpened: Bool = false
+  // Accepts `medium`, `large`, and `fraction` like 0.4
+  @Field var presentationDetents: [Any]?
+  @Field var presentationDragIndicator: PresentationDragIndicatorVisibility = .automatic
   var onIsOpenedChange = EventDispatcher()
+  @Field var interactiveDismissDisabled: Bool = false
 }
 
 struct HeightPreferenceKey: PreferenceKey {
@@ -48,6 +69,32 @@ struct BottomSheetView: ExpoSwiftUI.View {
     self._isOpened = State(initialValue: props.isOpened)
   }
 
+  @available(iOS 16.0, tvOS 16.0, *)
+  private func getDetents() -> Set<PresentationDetent> {
+    guard let detentArray = props.presentationDetents, !detentArray.isEmpty else {
+      return [.height(self.height)]
+    }
+
+    var result: Set<PresentationDetent> = []
+
+    for detent in detentArray {
+      if let str = detent as? String {
+        switch str {
+        case "medium":
+          result.insert(.medium)
+        case "large":
+          result.insert(.large)
+        default:
+          break
+        }
+      } else if let value = detent as? Double {
+        result.insert(.fraction(CGFloat(value)))
+      }
+    }
+
+    return result.isEmpty ? [.height(self.height)] : result
+  }
+
   var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       // When children contain a UIView (UIViewRepresentable),
@@ -77,7 +124,9 @@ struct BottomSheetView: ExpoSwiftUI.View {
                   }
                 }
             }
-            .presentationDetents([.height(self.height)])
+            .presentationDetents(getDetents())
+            .interactiveDismissDisabled(props.interactiveDismissDisabled)
+            .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
         }
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
@@ -98,6 +147,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
       Rectangle().hidden()
         .sheet(isPresented: $isOpened) {
           Children()
+            .interactiveDismissDisabled(props.interactiveDismissDisabled)
         }
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in

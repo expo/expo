@@ -44,7 +44,8 @@
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
-  [controller startWithWindow:self.window delegate:(id<EXDevLauncherControllerDelegate>)self launchOptions:launchOptions];
+  [controller autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)self launchOptions:launchOptions];
+  [controller startWithWindow:self.window];
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
@@ -90,11 +91,11 @@
 @end
 
 @implementation AppDelegate (EXDevLauncherControllerDelegate)
- 
+
 - (void)devLauncherController:(EXDevLauncherController *)developmentClientController
           didStartWithSuccess:(BOOL)success
 {
   developmentClientController.appBridge = [self initializeReactNativeApp];
 }
- 
+
 @end

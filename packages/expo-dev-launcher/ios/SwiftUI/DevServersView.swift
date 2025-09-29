@@ -132,6 +132,7 @@ struct DevServersView: View {
       } label: {
         Text("info".uppercased())
           #if os(tvOS)
+          .foregroundColor(.primary)
           .font(.system(size: 24))
           #else
           .font(.system(size: 12))

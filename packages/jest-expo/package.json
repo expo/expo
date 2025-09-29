@@ -49,7 +49,7 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
     "react-server-dom-webpack": "~19.0.0",
-    "react-test-renderer": "19.1.0",
+    "react-test-renderer": "19.1.1",
     "server-only": "^0.0.1",
     "stacktrace-js": "^2.0.2"
   },

@@ -8,11 +8,20 @@ body:
   - type: markdown
     attributes:
       value: If you are unsure if this is a bug in Expo Router, or have a question, or you think your issue might be caused by your application code, you can get help from the community on [Discord](https://chat.expo.dev).
+  - type: markdown
+    attributes:
+      value: |
+        > [!IMPORTANT]  
+        > Reproductions are necessary for **most** bug reports.
+        > Without one, maintainers will be forced to first reproduce the issue and craft missing context, rather than being able to address the report immediately.
+        > Issues without a reproduction link may be closed without further notice.
   - type: input
     attributes:
       label: Minimal reproducible example
       description: |
-        To create a minimal reproducible example, run `npx create-expo-app@latest` (or use an equivalent for your package manager of choice) and then run `npm run reset-project` in the project directory and press `n` to delete the files, then run `git commit -m "Initial commit"`. Now, add in only the necessary pieces of code to reproduce the issue. Next, put the project on GitHub and share the link here.
+        Create a minimal repository that clearly demonstrates the bug you're trying to report.
+        Either, reduce your app's repository to the bare minimum to reproduce the bug, or create a new app with `npx create-expo-app@latest --template blank` (or an equivalent).
+        Upload this repository (for example to GitHub) and paste the link to it here.
         
         - If the issue depends on a third party library that Expo does not maintain, you should make your best effort to reproduce it without that library in order to ensure that the issue belongs on this repository, rather than the other library's repository.
         - A maintainer may close your issue if they feel it is not minimal enough. The purpose of this is to make it as safe and fast as possible for maintainers to reproduce and fix the issue.

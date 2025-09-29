@@ -1,6 +1,6 @@
 import { glob } from 'glob';
 import { vol } from 'memfs';
-import path from 'path';
+import * as path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
 import { registerGlobMock } from '../../__tests__/mockHelpers';
@@ -52,6 +52,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          packages: [],
         },
       ],
     });
@@ -79,6 +80,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          packages: [],
         },
       ],
       coreFeatures: ['jetpackcompose'],
@@ -103,6 +105,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          packages: [],
         },
       ],
     });
@@ -145,16 +148,19 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          packages: [],
         },
         {
           name: 'react-native-third-party$subproject',
           sourceDir: 'node_modules/react-native-third-party/subproject',
           modules: [],
+          packages: [],
         },
         {
           name: 'react-native-third-party$kotlinSubProject',
           sourceDir: 'node_modules/react-native-third-party/kotlinSubProject',
           modules: [],
+          packages: [],
         },
       ],
     });

@@ -31,7 +31,7 @@ public:
   /**
    * @return an reference to the jsi::Runtime.
    */
-  jsi::Runtime &getJSRuntime();
+  jsi::Runtime &getJSRuntime() const;
 
   JSIContext *getJSIContext();
 

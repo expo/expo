@@ -48,7 +48,7 @@ export type ButtonProps = {
     /**
      * The text to display inside the button.
      */
-    children: string;
+    children: string | string[];
     /**
      * Colors for button's core elements.
      * @platform android

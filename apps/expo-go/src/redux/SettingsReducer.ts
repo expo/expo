@@ -22,7 +22,7 @@ type SettingsActions =
   | { type: 'setDevMenuSettings'; payload: SettingsObject['devMenuSettings'] };
 
 const SettingsState = Record<SettingsObject>({
-  preferredAppearance: undefined,
+  preferredAppearance: null,
   devMenuSettings: null,
 });
 

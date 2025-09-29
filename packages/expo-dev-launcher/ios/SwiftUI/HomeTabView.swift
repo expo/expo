@@ -51,6 +51,9 @@ struct HomeTabView: View {
         .padding()
       }
     }
+    #if os(tvOS)
+    .background()
+    #endif
     .overlay(
       DevServerInfoModal(showingInfoDialog: $showingInfoDialog)
     )

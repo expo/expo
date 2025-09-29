@@ -18,6 +18,7 @@ export interface ModuleAndroidProjectInfo {
     name: string;
     sourceDir: string;
     modules: string[];
+    packages: string[];
     publication?: AndroidPublication;
     aarProjects?: AndroidGradleAarProjectDescriptor[];
     shouldUsePublicationScriptPath?: string;

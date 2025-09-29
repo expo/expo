@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.DeprecatedSinceApi
 import androidx.core.net.toUri
-import expo.modules.medialibrary.AssetFileException
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.next.exceptions.AssetCouldNotBeCreated
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
@@ -24,6 +23,7 @@ import expo.modules.medialibrary.next.extensions.safeCopy
 import expo.modules.medialibrary.next.extensions.safeMove
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +34,11 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 @DeprecatedSinceApi(Build.VERSION_CODES.Q)
-class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
+class AssetLegacyDelegate(
+  contentUri: Uri,
+  val assetDeleter: AssetDeleter,
+  context: Context
+) : AssetDelegate {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
@@ -111,12 +115,7 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
   }
 
   override suspend fun delete(): Unit = withContext(Dispatchers.IO) {
-    val path = contentResolver.queryAssetPath(contentUri)
-      ?: throw AssetPropertyNotFoundException("Uri")
-    if (!File(path).delete()) {
-      throw AssetFileException("Could not delete file.")
-    }
-    contentResolver.delete(contentUri, null, null)
+    assetDeleter.delete(contentUri)
   }
 
   override suspend fun getUri(): Uri {
@@ -146,6 +145,7 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
     if (uri == null) {
       throw AssetCouldNotBeCreated("Could not create a new asset while copying the old one")
     }
-    return@withContext Asset(uri, contextRef.getOrThrow())
+    val newAssetDelegate = AssetLegacyDelegate(contentUri, assetDeleter, contextRef.getOrThrow())
+    return@withContext Asset(newAssetDelegate)
   }
 }

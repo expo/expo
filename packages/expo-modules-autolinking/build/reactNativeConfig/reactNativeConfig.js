@@ -28,7 +28,14 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
     if (excludeNames.has(resolution.name)) {
         return null;
     }
-    const libraryConfig = await (0, config_1.loadConfigAsync)(resolution.path);
+    else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
+        // Starting from version 0.76, the `react-native` package only defines platforms
+        // when @react-native-community/cli-platform-android/ios is installed.
+        // Therefore, we need to manually filter it out.
+        // NOTE(@kitten): `loadConfigAsync` is skipped too, because react-native's config is too slow
+        return null;
+    }
+    const libraryConfig = (await (0, config_1.loadConfigAsync)(resolution.path));
     const reactNativeConfig = {
         ...libraryConfig?.dependency,
         ...projectConfig?.dependencies?.[resolution.name],
@@ -36,12 +43,6 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
     if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
         // Package defines platforms would be a platform host package.
         // The rnc-cli will skip this package.
-        return null;
-    }
-    else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
-        // Starting from version 0.76, the `react-native` package only defines platforms
-        // when @react-native-community/cli-platform-android/ios is installed.
-        // Therefore, we need to manually filter it out.
         return null;
     }
     let maybeExpoModuleConfig;
@@ -81,7 +82,7 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
  */
 async function createReactNativeConfigAsync({ appRoot, sourceDir, autolinkingOptions, }) {
     const excludeNames = new Set(autolinkingOptions.exclude);
-    const projectConfig = await (0, config_1.loadConfigAsync)(appRoot);
+    const projectConfig = (await (0, config_1.loadConfigAsync)(appRoot));
     // custom native modules should be resolved first so that they can override other modules
     const searchPaths = autolinkingOptions.nativeModulesDir
         ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]

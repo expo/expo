@@ -245,6 +245,41 @@ describe('PeerDependencyChecks', () => {
     expect(result.issues).toHaveLength(0);
   });
 
+  it('ignores hybrid peer/regular dependencies', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/node_modules/some-ui-lib/package.json`]: JSON.stringify({
+        name: 'some-ui-lib',
+        version: '1.0.0',
+        peerDependencies: {
+          'styled-components': '^5.0.0',
+        },
+        dependencies: {
+          'styled-components': '>=5.0.0',
+        },
+      }),
+    });
+
+    const check = new PeerDependencyChecks();
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            'some-ui-lib': '^1.0.0',
+          },
+        },
+        ...additionalProjectProps,
+      },
+      {
+        nativeModuleNames: Promise.resolve([]),
+      }
+    );
+
+    expect(result.isSuccessful).toBeTruthy();
+    expect(result.issues).toHaveLength(0);
+  });
+
   it('handles missing package.json gracefully', async () => {
     const check = new PeerDependencyChecks();
     const result = await check.runAsync(

@@ -140,23 +140,23 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
-  implementation("org.bouncycastle:bcutil-jdk15to18:1.78.1")
+  implementation("org.bouncycastle:bcutil-jdk15to18:1.81")
 
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'androidx.test:core:1.6.1'
-  testImplementation 'com.google.truth:truth:1.1.2'
+  testImplementation 'androidx.test:core:1.7.0'
+  testImplementation 'com.google.truth:truth:1.4.5'
   testImplementation "io.mockk:mockk:$mockk_version"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
-  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
-  testImplementation 'org.robolectric:robolectric:4.14.1'
+  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
+  testImplementation 'org.robolectric:robolectric:4.16'
 
   androidTestImplementation 'com.squareup.okio:okio:2.9.0'
-  androidTestImplementation 'androidx.test:runner:1.6.2'
-  androidTestImplementation 'androidx.test:core:1.6.1'
-  androidTestImplementation 'androidx.test:rules:1.6.1'
+  androidTestImplementation 'androidx.test:runner:1.7.0'
+  androidTestImplementation 'androidx.test:core:1.7.0'
+  androidTestImplementation 'androidx.test:rules:1.7.0'
   androidTestImplementation "io.mockk:mockk-android:$mockk_version"
   androidTestImplementation "androidx.room:room-testing:$room_version"
-  androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
+  androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
   androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
 
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"

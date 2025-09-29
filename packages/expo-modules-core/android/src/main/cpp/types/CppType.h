@@ -31,5 +31,6 @@ enum CppType {
   ANY = 1 << 19,
   NULLABLE = 1 << 20,
   VALUE_OR_UNDEFINED = 1 << 21,
+  JS_ARRAY_BUFFER = 1 << 22,
 };
 } // namespace expo

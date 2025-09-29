@@ -23,7 +23,7 @@ namespace expo {
 class JavaScriptFunction;
 class JavaScriptValue;
 class JavaScriptWeakObject;
-
+class JavaScriptArrayBuffer;
 
 /**
  * Represents any JavaScript object. Its purpose is to exposes `jsi::Object` API back to Kotlin.
@@ -84,6 +84,12 @@ public:
    * Sets the memory pressure to inform the GC about how much external memory is associated with that specific JS object.
   */
   void setExternalMemoryPressure(int size);
+
+  [[nodiscard]] bool isArray();
+  [[nodiscard]] jni::local_ref<jni::JArrayClass<jni::HybridClass<JavaScriptValue, Destructible>::javaobject>> getArray();
+
+  [[nodiscard]] bool isArrayBuffer();
+  [[nodiscard]] jni::local_ref<jni::HybridClass<JavaScriptArrayBuffer, Destructible>::javaobject> getArrayBuffer();
 
 protected:
   WeakRuntimeHolder runtimeHolder;

@@ -14,8 +14,6 @@ android {
   }
 }
 
-def glideVersion = expoModule.safeExtGet('glideVersion', '4.16.0')
-
 dependencies {
-  api "com.github.bumptech.glide:glide:${glideVersion}"
+  api "com.github.bumptech.glide:glide:5.0.5"
 }

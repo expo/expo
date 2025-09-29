@@ -6,11 +6,18 @@ export var AppOwnership;
      */
     AppOwnership["Expo"] = "expo";
 })(AppOwnership || (AppOwnership = {}));
-// @docsMissing
+/**
+ * Identifies where the app's JavaScript bundle is currently running.
+ */
 export var ExecutionEnvironment;
 (function (ExecutionEnvironment) {
+    /** A project that includes native project directories that you maintain directly in your
+     * [existing (bare) React Native app](https://docs.expo.dev/bare/overview/).
+     */
     ExecutionEnvironment["Bare"] = "bare";
+    /** Production/release build created with or without EAS Build. */
     ExecutionEnvironment["Standalone"] = "standalone";
+    /** Expo Go or a development build built with `expo-dev-client`. */
     ExecutionEnvironment["StoreClient"] = "storeClient";
 })(ExecutionEnvironment || (ExecutionEnvironment = {}));
 // @needsAudit

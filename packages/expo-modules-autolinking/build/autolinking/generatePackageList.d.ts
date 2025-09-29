@@ -1,11 +1,4 @@
 import { ModuleDescriptor, SupportedPlatform } from '../types';
-interface GeneratePackageListParams {
-    platform: SupportedPlatform;
-    targetPath: string;
-    namespace: string;
-}
-/** Generates a source file listing all packages to link (Android-only) */
-export declare function generatePackageListAsync(modules: ModuleDescriptor[], params: GeneratePackageListParams): Promise<void>;
 interface GenerateModulesProviderParams {
     platform: SupportedPlatform;
     targetPath: string;

@@ -104,7 +104,7 @@ class ExpoAutolinkingManager {
   private Object cachedResolvingResults
 
   static String generatedPackageListNamespace = 'expo.modules'
-  static String generatedPackageListFilename = 'ExpoModulesPackageList.java'
+  static String generatedPackageListFilename = 'ExpoModulesPackageList.kt'
   static String generatedFilesSrcDir = 'generated/expo/src/main/java'
 
   ExpoAutolinkingManager(File projectDir, Map options = [:]) {

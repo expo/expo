@@ -9,6 +9,7 @@ import {
   RawModuleConfigApple,
   SupportedPlatform,
 } from './types';
+import { memoize } from './utils';
 
 function arrayize<T>(value: T[] | T | undefined): T[] {
   if (Array.isArray(value)) {
@@ -188,7 +189,7 @@ export class ExpoModuleConfig {
 /** Names of Expo Module config files (highest to lowest priority) */
 const EXPO_MODULE_CONFIG_FILENAMES = ['expo-module.config.json', 'unimodule.json'];
 
-export async function discoverExpoModuleConfigAsync(
+export const discoverExpoModuleConfigAsync = memoize(async function discoverExpoModuleConfigAsync(
   directoryPath: string
 ): Promise<ExpoModuleConfig | null> {
   for (let idx = 0; idx < EXPO_MODULE_CONFIG_FILENAMES.length; idx++) {
@@ -205,4 +206,4 @@ export async function discoverExpoModuleConfigAsync(
     return new ExpoModuleConfig(JSON.parse(text) as RawExpoModuleConfig);
   }
   return null;
-}
+});

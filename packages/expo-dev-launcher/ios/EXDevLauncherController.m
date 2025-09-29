@@ -252,15 +252,13 @@
   return _errorManager;
 }
 
-- (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
+- (void)startWithWindow:(UIWindow *)window
 {
   _isStarted = YES;
-  _delegate = delegate;
-  _launchOptions = launchOptions;
   _window = window;
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
-  if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+  if (_launchOptions[UIApplicationLaunchOptionsURLKey]) {
     // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
     [_window makeKeyWindow];
     return;
@@ -310,7 +308,7 @@
 - (void)autoSetupStart:(UIWindow *)window
 {
   if (_delegate != nil) {
-    [self startWithWindow:window delegate:_delegate launchOptions:_launchOptions];
+    [self startWithWindow:window];
   } else {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"[EXDevLauncherController autoSetupStart:] was called before autoSetupPrepare:. Make sure you've set up expo-modules correctly in AppDelegate and are using ReactDelegate to create a bridge before calling [super application:didFinishLaunchingWithOptions:]." userInfo:nil];
   }

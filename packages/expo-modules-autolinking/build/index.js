@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = __importDefault(require("commander"));
 const generateModulesProviderCommand_1 = require("./commands/generateModulesProviderCommand");
-const generatePackageListCommand_1 = require("./commands/generatePackageListCommand");
 const mirrorKotlinLocalModulesCommand_1 = require("./commands/mirrorKotlinLocalModulesCommand");
 const reactNativeConfigCommand_1 = require("./commands/reactNativeConfigCommand");
 const resolveCommand_1 = require("./commands/resolveCommand");
@@ -19,7 +18,6 @@ async function main(args) {
     (0, searchCommand_1.searchCommand)(cli);
     (0, resolveCommand_1.resolveCommand)(cli);
     (0, mirrorKotlinLocalModulesCommand_1.mirrorKotlinLocalModulesCommand)(cli);
-    (0, generatePackageListCommand_1.generatePackageListCommand)(cli);
     (0, generateModulesProviderCommand_1.generateModulesProviderCommand)(cli);
     (0, reactNativeConfigCommand_1.reactNativeConfigCommand)(cli);
     await cli.parseAsync(args, { from: 'user' });

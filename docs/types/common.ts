@@ -46,6 +46,7 @@ export type NavigationRoute = {
   weight?: number;
   isNew?: boolean;
   isAlpha?: boolean;
+  isBeta?: boolean;
   isDeprecated?: boolean;
   inExpoGo?: boolean;
   hasVideoLink?: boolean;

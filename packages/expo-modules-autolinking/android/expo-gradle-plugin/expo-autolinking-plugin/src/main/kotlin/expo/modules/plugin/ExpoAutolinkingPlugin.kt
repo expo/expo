@@ -2,6 +2,7 @@ package expo.modules.plugin
 
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import expo.modules.plugin.configuration.ExpoModule
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
 import org.gradle.api.Plugin
@@ -11,11 +12,10 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
-import java.io.File
 import java.nio.file.Paths
 
 const val generatedPackageListNamespace = "expo.modules"
-const val generatedPackageListFilename = "ExpoModulesPackageList.java"
+const val generatedPackageListFilename = "ExpoModulesPackageList.kt"
 const val generatedFilesSrcDir = "generated/expo/src/main/java"
 
 open class ExpoAutolinkingPlugin : Plugin<Project> {
@@ -50,7 +50,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     project.logger.quiet("")
 
     // Creates a task that generates a list of expo modules.
-    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.options, gradleExtension.hash, gradleExtension.projectRoot)
+    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.config.modules, gradleExtension.hash)
 
     // Ensures that the task is executed before the build.
     project.tasks
@@ -80,15 +80,12 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     return project.layout.buildDirectory.file(packageListRelativePath)
   }
 
-  fun createGeneratePackagesListTask(project: Project, options: AutolinkingOptions, hash: String, projectRoot: File): TaskProvider<GeneratePackagesListTask> {
+  fun createGeneratePackagesListTask(project: Project, modules: List<ExpoModule>, hash: String): TaskProvider<GeneratePackagesListTask> {
     return project.tasks.register("generatePackagesList", GeneratePackagesListTask::class.java) {
       it.hash.set(hash)
       it.namespace.set(generatedPackageListNamespace)
       it.outputFile.set(getPackageListFile(project))
-      it.workingDir = projectRoot
-      // Serializes the autolinking options to JSON to pass them to the task.
-      // The types supported as a task input are limited to primitives, strings, and files.
-      it.options.set(options.toJson())
+      it.modules = modules
     }
   }
 }

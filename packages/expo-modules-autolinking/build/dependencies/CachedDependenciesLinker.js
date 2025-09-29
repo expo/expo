@@ -25,7 +25,6 @@ function makeCachedDependenciesLinker(params) {
     let reactNativeProjectConfig;
     let reactNativeProjectConfigDependencies;
     let recursiveDependencies;
-    let devDependencies;
     return {
         async getOptionsForPlatform(platform) {
             const options = await autolinkingOptionsLoader.getPlatformOptions(platform);
@@ -45,9 +44,6 @@ function makeCachedDependenciesLinker(params) {
         async scanDependenciesRecursively() {
             return (recursiveDependencies ||
                 (recursiveDependencies = (0, resolution_1.scanDependenciesRecursively)(await getAppRoot())));
-        },
-        async scanDevDependenciesShallowly() {
-            return (devDependencies || (devDependencies = (0, resolution_1.scanDevDependenciesShallowly)(await getAppRoot())));
         },
         async scanDependenciesInSearchPath(searchPath) {
             let result = dependenciesResultBySearchPath.get(searchPath);
@@ -103,7 +99,6 @@ async function scanExpoModuleResolutionsForPlatform(linker, platform) {
         ...searchPaths.map((searchPath) => {
             return linker.scanDependenciesInSearchPath(searchPath);
         }),
-        platform === 'devtools' ? linker.scanDevDependenciesShallowly() : null,
         linker.scanDependenciesRecursively(),
     ].filter((x) => x != null)));
     return await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {

@@ -8,6 +8,6 @@ dependencies {
 }
 
 task execute(type: JavaExec) {
-  main = 'host.exp.exponent.tools.ReactAndroidCodeTransformer'
+  mainClass = 'host.exp.exponent.tools.ReactAndroidCodeTransformer'
   classpath = sourceSets.main.runtimeClasspath
 }

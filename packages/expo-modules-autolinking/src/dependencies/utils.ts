@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { memoize } from '../utils';
 import type { DependencyResolution, ResolutionResult } from './types';
 
 const NODE_MODULES_PATTERN = `${path.sep}node_modules${path.sep}`;
@@ -50,7 +51,9 @@ export const maybeRealpath = async (target: string): Promise<string | null> => {
 
 export type PackageJson = Record<string, unknown> & { name: string; version?: string };
 
-export async function loadPackageJson(jsonPath: string): Promise<PackageJson | null> {
+export const loadPackageJson = memoize(async function loadPackageJson(
+  jsonPath: string
+): Promise<PackageJson | null> {
   try {
     const packageJsonText = await fs.promises.readFile(jsonPath, 'utf8');
     const json = JSON.parse(packageJsonText);
@@ -63,7 +66,7 @@ export async function loadPackageJson(jsonPath: string): Promise<PackageJson | n
   } catch {
     return null;
   }
-}
+});
 
 export function mergeWithDuplicate(
   a: DependencyResolution,

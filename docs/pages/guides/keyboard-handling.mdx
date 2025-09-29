@@ -28,7 +28,7 @@ The following sections explain how to handle keyboard interactions with common A
 
 ### Keyboard avoiding view
 
-The `KeyboardAvoidingView` is a component that automatically adjusts a keyboard's height, position, or bottom padding based on the keyboard height to remain visible while it is displayed.
+The `KeyboardAvoidingView` is a component that automatically adjusts a view's height, position, or bottom padding based on the keyboard height to remain visible while it is displayed.
 
 Android and iOS interact with the `behavior` property differently. On iOS, `padding` is usually what works best, and for Android, just having the `KeyboardAvoidingView` prevents covering the input. This is why the following example uses `undefined` for Android. Playing around with the `behavior` is a good practice since a different option could work best for your app.
 

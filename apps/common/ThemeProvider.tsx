@@ -18,7 +18,8 @@ export const ThemeContext = createContext<ThemeContextType>({
 });
 
 export function ThemeProvider({ children }: PropsWithChildren) {
-  const defaultTheme = useColorScheme() ?? 'light';
+  const systemColorScheme = useColorScheme();
+  const defaultTheme = systemColorScheme !== 'unspecified' ? systemColorScheme : 'light';
   const [currentThemeName, setCurrentThemeName] = useState<ThemeName>(defaultTheme);
   const [currentTheme, setCurrentTheme] = useState<ThemeType>(
     defaultTheme === 'dark' ? darkTheme : lightTheme

@@ -220,8 +220,11 @@ const LANGUAGE_SAMPLES: {
         throw 0;
       } catch {
       }`,
-    getCompiledCode() {
-      return `try{throw 0;}catch{}`;
+    getCompiledCode({ platform }) {
+      if (platform === 'web') {
+        return `try{throw 0;}catch{}`;
+      }
+      return `try{throw 0;}catch(_unused){}`;
     },
   },
   {
@@ -266,16 +269,22 @@ const LANGUAGE_SAMPLES: {
   {
     name: 'optional-chaining',
     code: `var m = {}?.x;`,
-    getCompiledCode() {
-      return `var m={}?.x;`;
+    getCompiledCode({ platform }) {
+      if (platform === 'web') {
+        return `var m={}?.x;`;
+      }
+      return `var _ref;var m=(_ref={})==null?void 0:_ref.x;`;
     },
   },
   {
     name: 'nullish-coalescing-operator',
     code: `var obj2 = {};
     var foo = obj2.foo ?? "default";`,
-    getCompiledCode() {
-      return `var obj2={};var foo=obj2.foo??"default";`;
+    getCompiledCode({ platform }) {
+      if (platform === 'web') {
+        return `var obj2={};var foo=obj2.foo??"default";`;
+      }
+      return `var _obj2$foo;var obj2={};var foo=(_obj2$foo=obj2.foo)!=null?_obj2$foo:"default";`;
     },
   },
   {
@@ -337,7 +346,7 @@ const LANGUAGE_SAMPLES: {
       if (platform === 'web') {
         return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");class C{}_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch{_C.y="unknown";}})();`;
       }
-      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");var C=(0,_createClass2.default)(function C(){(0,_classCallCheck2.default)(this,C);});_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch{_C.y="unknown";}})();`;
+      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");var C=(0,_createClass2.default)(function C(){(0,_classCallCheck2.default)(this,C);});_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch(_unused){_C.y="unknown";}})();`;
     },
     hermesError: /private properties are not supported/,
   },

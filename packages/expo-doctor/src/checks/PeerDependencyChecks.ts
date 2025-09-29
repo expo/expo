@@ -11,6 +11,7 @@ import {
 interface PackageJson {
   name: string;
   version: string;
+  dependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
   peerDependenciesMeta?: Record<string, { optional?: boolean }>;
 }
@@ -128,9 +129,13 @@ export class PeerDependencyChecks implements DoctorCheck<DoctorCache> {
 
       await Promise.all(
         Object.keys(packageJson.peerDependencies).map(async (peerDepName) => {
-          const isOptional = packageJson.peerDependenciesMeta?.[peerDepName]?.optional;
+          // NOTE(@kitten): A peer dependency can be optional or it can also be a regular dependency
+          // - If it's also a regular dependency, it's always auto-installed
+          // - If it's optional, it isn't strictly required to be installed
+          const isRegularDep = !!packageJson.dependencies?.[peerDepName];
+          const isOptional = !!packageJson.peerDependenciesMeta?.[peerDepName]?.optional;
 
-          if (!isOptional && !installedDependencies[peerDepName]) {
+          if (!isOptional && !isRegularDep && !installedDependencies[peerDepName]) {
             issues.push({
               missingPeerDependency: peerDepName,
               requiredBy: packageName,

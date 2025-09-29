@@ -204,6 +204,8 @@ You may also want to provide a separate icon for older Android devices that do n
 
 For iOS, your app's icon should follow the [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons/). You can use the [Icon Composer](https://developer.apple.com/icon-composer/) app to create your app icon. This will output a **.icon** directory that you can add to your project's **assets** directory. You can then provide the path to this directory in your app config. Adding support for dark mode is handled in Icon Composer, so you do not need to provide variants when using this approach.
 
+> **info** **Note:** Providing an Icon Composer **.icon** directory via `ios.icon` is supported **in SDK 54** and later.
+
 ```json app.json
 {
   "expo": {

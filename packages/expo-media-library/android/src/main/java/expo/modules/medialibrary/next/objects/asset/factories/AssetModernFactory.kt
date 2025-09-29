@@ -11,20 +11,39 @@ import expo.modules.medialibrary.next.extensions.resolver.insertPendingAsset
 import expo.modules.medialibrary.next.extensions.resolver.publishPendingAsset
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.delegates.AssetDelegate
+import expo.modules.medialibrary.next.objects.asset.delegates.AssetModernDelegate
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 
-@RequiresApi(Build.VERSION_CODES.Q)
-class AssetModernFactory(context: Context) : AssetFactory {
+@RequiresApi(Build.VERSION_CODES.R)
+class AssetModernFactory(
+  val assetDeleter: AssetDeleter,
+  context: Context
+) : AssetFactory {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
     get() = contextRef
       .getOrThrow()
       .contentResolver ?: throw ContentResolverNotObtainedException()
+
+  private fun createAssetDelegate(contentUri: Uri): AssetDelegate {
+    return AssetModernDelegate(
+      contentUri,
+      assetDeleter,
+      contextRef.getOrThrow()
+    )
+  }
+
+  override fun create(contentUri: Uri): Asset {
+    val assetDelegate = createAssetDelegate(contentUri)
+    return Asset(assetDelegate)
+  }
 
   override suspend fun create(filePath: Uri, relativePath: RelativePath?): Asset = withContext(Dispatchers.IO) {
     val mimeType = contentResolver.getType(filePath)?.let { MimeType(it) }
@@ -37,6 +56,6 @@ class AssetModernFactory(context: Context) : AssetFactory {
     contentResolver.copyUriContent(filePath, contentUri)
     ensureActive()
     contentResolver.publishPendingAsset(contentUri)
-    return@withContext Asset(contentUri, contextRef.getOrThrow())
+    return@withContext create(contentUri)
   }
 }

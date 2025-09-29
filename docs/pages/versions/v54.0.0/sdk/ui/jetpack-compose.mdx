@@ -1,0 +1,425 @@
+---
+title: Jetpack Compose
+sidebar_title: Jetpack Compose
+description: Jetpack Compose components for building native Android interfaces with @expo/ui.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+isAlpha: true
+---
+
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+> **important** **This library is currently in alpha and will frequently experience breaking changes.** It is not available in the Expo Go app &mdash; use [development builds](/develop/development-builds/introduction/) to try it out.
+
+The Jetpack Compose components in `@expo/ui/jetpack-compose` allow you to build fully native Android interfaces using Jetpack Compose from React Native.
+
+## Installation
+
+<APIInstallSection />
+
+## Components
+
+### Button
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Button component on Android."
+      src="/static/images/expo-ui/button/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Button } from '@expo/ui/jetpack-compose';
+
+    <Button
+      style={{ flex: 1 }}
+      variant="default"
+      onPress={() => {
+        setEditingProfile(true);
+      }}>
+      Edit profile
+    </Button>
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/button)*
+
+  </Tab>
+</Tabs>
+
+### CircularProgress
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="CircularProgress component on Android."
+      src="/static/images/expo-ui/circularprogress/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { CircularProgress } from '@expo/ui/jetpack-compose';
+
+    <CircularProgress progress={0.5} style={{ width: 300 }} color="blue" elementColors={{ trackColor: '#cccccc' }} />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
+
+  </Tab>
+</Tabs>
+
+### ContextMenu
+
+> **Note:** Also known as **DropdownMenu**.
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="ContextMenu component on Android."
+      src="/static/images/expo-ui/contextMenu/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { ContextMenu } from '@expo/ui/jetpack-compose';
+
+    <ContextMenu style={{ width: 150, height: 50 }}>
+      <ContextMenu.Items>
+        <Button
+          elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}
+          onPress={() => console.log('Pressed1')}>
+          Hello
+        </Button>
+        <Button
+          variant="bordered"
+          color="#ff0000"
+          onPress={() => console.log('Pressed2')}>
+          Love it
+        </Button>
+        <Picker
+          label="Doggos"
+          options={['very', 'veery', 'veeery', 'much']}
+          variant="menu"
+          selectedIndex={selectedIndex}
+          onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
+        />
+      </ContextMenu.Items>
+      <ContextMenu.Trigger>
+        <Button variant="bordered" style={{ width: 150, height: 50 }}>
+          Show Menu
+        </Button>
+      </ContextMenu.Trigger>
+    </ContextMenu>
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/menu)*
+
+  </Tab>
+</Tabs>
+
+### Chip
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Chip component on Android."
+      src="/static/images/expo-ui/chip/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Chip } from '@expo/ui/jetpack-compose';
+
+    // Assist chip with icon
+    <Chip
+      variant="assist"
+      label="Book"
+      leadingIcon="filled.Add"
+      onPress={() => console.log('Opening flight booking...')}
+    />
+
+    // Filter chip with selection
+    <Chip
+      variant="filter"
+      label="Images"
+      leadingIcon="filled.Star"
+      selected={selectedFilters.includes('Images')}
+      onPress={() => handleFilterToggle('Images')}
+    />
+
+    // Input chip with dismiss
+    <Chip
+      variant="input"
+      label="Work"
+      leadingIcon="filled.Create"
+      onDismiss={() => handleInputDismiss('Work')}
+    />
+
+    // Suggestion chip
+    <Chip
+      variant="suggestion"
+      label="Nearby"
+      leadingIcon="filled.LocationOn"
+      onPress={() => console.log('Searching nearby...')}
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/chip)*
+
+  </Tab>
+</Tabs>
+
+### DateTimePicker (date)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="DateTimePicker component on Android."
+      src="/static/images/expo-ui/datetimepicker/date/android.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker } from '@expo/ui/jetpack-compose';
+
+    <DateTimePicker
+      onDateSelected={date => {
+        setSelectedDate(date);
+      }}
+      displayedComponents='date'
+      initialDate={selectedDate.toISOString()}
+      variant='picker'
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/datepickers)*
+
+  </Tab>
+</Tabs>
+
+### DateTimePicker (time)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="DateTimePicker (time) component on Android."
+      src="/static/images/expo-ui/datetimepicker/time/android.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker } from '@expo/ui/jetpack-compose';
+
+    <DateTimePicker
+      onDateSelected={date => {
+        setSelectedDate(date);
+      }}
+      displayedComponents='hourAndMinute'
+      initialDate={selectedDate.toISOString()}
+      variant='picker'
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/time-pickers)*
+
+  </Tab>
+</Tabs>
+
+### LinearProgress
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="LinearProgress component on Android."
+      src="/static/images/expo-ui/linearprogress/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { LinearProgress } from '@expo/ui/jetpack-compose';
+
+    <LinearProgress progress={0.5} style={{ width: 300 }} color="red" />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
+
+  </Tab>
+</Tabs>
+
+### Picker (radio)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Picker component (radio) on Android."
+      src="/static/images/expo-ui/radioPicker/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Picker } from '@expo/ui/jetpack-compose';
+
+    <Picker
+      options={['$', '$$', '$$$', '$$$$']}
+      selectedIndex={selectedIndex}
+      onOptionSelected={({ nativeEvent: { index } }) => {
+        setSelectedIndex(index);
+      }}
+      variant="radio"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/radio-button)*
+
+  </Tab>
+</Tabs>
+
+### Picker (segmented)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Picker component on Android."
+      src="/static/images/expo-ui/segmentedPicker/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Picker } from '@expo/ui/jetpack-compose';
+
+    <Picker
+      options={['$', '$$', '$$$', '$$$$']}
+      selectedIndex={selectedIndex}
+      onOptionSelected={({ nativeEvent: { index } }) => {
+        setSelectedIndex(index);
+      }}
+      variant="segmented"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/segmented-button)*
+
+  </Tab>
+</Tabs>
+
+### Slider
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Slider component on Android."
+      src="/static/images/expo-ui/slider/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Slider } from '@expo/ui/jetpack-compose';
+
+    <Slider
+      style={{ minHeight: 60 }}
+      value={value}
+      onValueChange={(value) => {
+        setValue(value);
+      }}
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/slider)*
+
+  </Tab>
+</Tabs>
+
+### Switch (toggle)
+
+> **Note:** also known as **Toggle**.
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Switch component on Android."
+      src="/static/images/expo-ui/switch/android.png"
+      className="max-w-[480px]"
+    />
+
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Switch } from '@expo/ui/jetpack-compose';
+
+    <Switch
+      value={checked}
+      onValueChange={checked => {
+        setChecked(checked);
+      }}
+      color="#ff0000"
+      label="Play music"
+      variant="switch"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/switch)*
+
+  </Tab>
+</Tabs>
+
+### Switch (checkbox)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Switch (checkbox variant) component on Android."
+      src="/static/images/expo-ui/checkbox/android.png"
+      className="max-w-[480px]"
+    />
+
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Switch } from '@expo/ui/jetpack-compose';
+
+    <Switch
+      value={checked}
+      onValueChange={checked => {
+        setChecked(checked);
+      }}
+      label="Play music"
+      color="#ff0000"
+      variant="checkbox"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/checkbox)*
+
+  </Tab>
+</Tabs>
+
+### TextInput
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="TextInput component on Android."
+      src="/static/images/expo-ui/textinput/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { TextInput } from '@expo/ui/jetpack-compose';
+
+    <TextInput autocorrection={false} defaultValue="A single line text input" onChangeText={setValue} />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/text/user-input)*
+
+  </Tab>
+</Tabs>
+
+## API
+
+Full documentation is not yet available. Use TypeScript types to explore the API.
+
+```ts
+// Import from the Jetpack Compose package
+import { Button } from '@expo/ui/jetpack-compose';
+```

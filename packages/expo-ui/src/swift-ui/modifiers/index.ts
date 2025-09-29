@@ -6,6 +6,7 @@
 import { ColorValue } from 'react-native';
 
 import { animation } from './animation/index';
+import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 
 /**
@@ -319,6 +320,12 @@ export const tint = (color: Color) => createModifier('tint', { color });
 export const hidden = (hidden: boolean = true) => createModifier('hidden', { hidden });
 
 /**
+ * Disables or enables a view.
+ * @param disabled - Whether the view should be disabled
+ */
+export const disabled = (disabled: boolean = true) => createModifier('disabled', { disabled });
+
+/**
  * Sets the z-index (display order) of a view.
  * @param index - The z-index value
  */
@@ -484,6 +491,7 @@ export type BuiltInModifier =
   | ReturnType<typeof foregroundStyle>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
+  | ReturnType<typeof disabled>
   | ReturnType<typeof zIndex>
   | ReturnType<typeof blur>
   | ReturnType<typeof brightness>
@@ -503,7 +511,8 @@ export type BuiltInModifier =
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
-  | ReturnType<typeof animation>;
+  | ReturnType<typeof animation>
+  | ReturnType<typeof containerShape>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -543,3 +552,4 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 };
 
 export * from './animation/index';
+export * from './containerShape';
