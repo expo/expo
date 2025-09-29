@@ -7,14 +7,6 @@ exports.getAppRoot = getAppRoot;
 exports.getMirrorStateObject = getMirrorStateObject;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-/** Look up directories until one with a `package.json` can be found, assert if none can be found. */
-function findUpProjectRootOrAssert(cwd) {
-    const projectRoot = findUpProjectRoot(cwd);
-    if (!projectRoot) {
-        throw new Error(`Project root directory not found (working directory: ${cwd})`);
-    }
-    return projectRoot;
-}
 function findUpProjectRoot(cwd) {
     const packageJsonPath = path_1.default.resolve(cwd, './package.json');
     if (fs_1.default.existsSync(packageJsonPath)) {
@@ -27,7 +19,7 @@ function findUpProjectRoot(cwd) {
 }
 async function getAppRoot() {
     const cwd = process.cwd();
-    const result = await findUpProjectRootOrAssert(cwd);
+    const result = findUpProjectRoot(cwd);
     if (!result) {
         throw new Error(`Couldn't find "package.json" up from path "${cwd}"`);
     }
@@ -61,7 +53,7 @@ function getKotlinFileNameWithItsPackage(absoluteFilePath) {
         return '';
     }
     const packageName = lines[packageLine].substring('package '.length);
-    return packageName + '.' + trimExtension(path_1.default.basename(absoluteFilePath));
+    return `${packageName}.${trimExtension(path_1.default.basename(absoluteFilePath))}`;
 }
 function getSwiftModuleClassName(absoluteFilePath) {
     return trimExtension(path_1.default.basename(absoluteFilePath));

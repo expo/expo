@@ -1388,9 +1388,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
-  public async startTypeScriptServices() {
+  public async startTypeScriptServices(): Promise<any> {
     const { projectRoot, metro } = this;
-    startTypescriptTypeGenerationAsync({
+    const startTypescriptTypeGenerationPromise = startTypescriptTypeGenerationAsync({
       server: this.instance?.server,
       metro: this.metro,
       projectRoot: this.projectRoot,
@@ -1398,8 +1398,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const { exp } = getConfig(this.projectRoot);
     if (exp.experiments?.localModules === true) {
-      startModuleGenerationAsync({ projectRoot, metro });
+      return Promise.all([
+        startTypescriptTypeGenerationPromise,
+        startModuleGenerationAsync({ projectRoot, metro }),
+      ]);
     }
+    return startTypescriptTypeGenerationPromise;
   }
 
   protected getConfigModuleIds(): string[] {
