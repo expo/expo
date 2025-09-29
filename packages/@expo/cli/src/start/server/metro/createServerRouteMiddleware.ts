@@ -41,7 +41,7 @@ export function createRouteHandlerMiddleware(
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {
     throw new CommandError(
-      `static and server rendering requires the expo-router package to be installed in your project. Either install the expo-router package or change 'web.output' to 'static' in your app.json.`
+      `static and server rendering requires the expo-router package to be installed in your project. Either install the expo-router package or change 'web.output' to 'single' in your app.json.`
     );
   }
 

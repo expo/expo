@@ -49,9 +49,17 @@ export async function resolveReactNativeModule(
 ): Promise<RNConfigDependency | null> {
   if (excludeNames.has(resolution.name)) {
     return null;
+  } else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
+    // Starting from version 0.76, the `react-native` package only defines platforms
+    // when @react-native-community/cli-platform-android/ios is installed.
+    // Therefore, we need to manually filter it out.
+    // NOTE(@kitten): `loadConfigAsync` is skipped too, because react-native's config is too slow
+    return null;
   }
 
-  const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(resolution.path);
+  const libraryConfig = (await loadConfigAsync(
+    resolution.path
+  )) as RNConfigReactNativeLibraryConfig;
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
     ...projectConfig?.dependencies?.[resolution.name],
@@ -60,11 +68,6 @@ export async function resolveReactNativeModule(
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
-    return null;
-  } else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
-    // Starting from version 0.76, the `react-native` package only defines platforms
-    // when @react-native-community/cli-platform-android/ios is installed.
-    // Therefore, we need to manually filter it out.
     return null;
   }
 
@@ -132,7 +135,7 @@ export async function createReactNativeConfigAsync({
   autolinkingOptions,
 }: CreateRNConfigParams): Promise<RNConfigResult> {
   const excludeNames = new Set(autolinkingOptions.exclude);
-  const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(appRoot);
+  const projectConfig = (await loadConfigAsync(appRoot)) as RNConfigReactNativeProjectConfig;
 
   // custom native modules should be resolved first so that they can override other modules
   const searchPaths = autolinkingOptions.nativeModulesDir

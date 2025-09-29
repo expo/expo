@@ -135,6 +135,45 @@ export function setupLogger(predicate: string, signal: AbortSignal): () => Promi
   };
 }
 
+async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60 * 3) {
+  await retryAsync(async (retryNumber) => {
+    if (process.env.CI) {
+      try {
+        await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
+        await spawnAsync('xcrun', ['simctl', 'erase', deviceId], { stdio: 'inherit' });
+      } catch {}
+    }
+
+    console.time(
+      `\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}] retry[${retryNumber}]`
+    );
+    const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], {
+      stdio: 'inherit',
+    });
+
+    let timeoutHandle: NodeJS.Timeout | null = null;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutHandle = setTimeout(() => {
+        bootProc.child?.kill('SIGTERM');
+        reject(new Error('Timeout from booting up simulator'));
+      }, timeout);
+    });
+
+    await Promise.race([bootProc, timeoutPromise]);
+    if (timeoutHandle) {
+      clearTimeout(timeoutHandle);
+      timeoutHandle = null;
+    }
+
+    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
+      stdio: 'inherit',
+    });
+
+    clearTimeout(timeoutHandle);
+    console.timeEnd(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
+  }, 3);
+}
+
 async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
@@ -143,12 +182,7 @@ async function testAsync(
   const stopLogCollectionController = new AbortController();
 
   try {
-    console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
-    await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
-    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
-      stdio: 'inherit',
-    });
-
+    await startSimulatorAsync(deviceId);
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
 
@@ -192,6 +226,9 @@ async function testAsync(
       console.log('\n\n');
       throw new Error('e2e tests have failed.');
     }
+  } catch (e: unknown) {
+    console.error('Uncaught Error', e);
+    throw e;
   } finally {
     stopLogCollectionController.abort();
     await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
