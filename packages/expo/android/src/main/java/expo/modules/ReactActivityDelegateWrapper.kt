@@ -64,7 +64,7 @@ class ReactActivityDelegateWrapper(
   }
   private val delayLoadAppHandler: DelayLoadAppHandler? by lazy {
     reactActivityHandlers.asSequence()
-      .mapNotNull { it.getDelayLoadAppHandler(activity, reactNativeHost) }
+      .mapNotNull { it.getDelayLoadAppHandler(activity, reactHost) }
       .firstOrNull()
   }
 
