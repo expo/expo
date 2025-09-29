@@ -91,7 +91,7 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
           stderr: { on: (t) => (err += t) },
         }),
       };
-      jest.mock('child_process', () => mock);
+      jest.doMock('child_process', () => mock);
 
       const executor = new DevToolsPluginCliExtensionExecutor(
         pluginDescriptor,
@@ -170,7 +170,7 @@ const executePluginCommandAsync = async (pluginDescriptor: DevToolsPlugin) => {
       stderr: { on: (t) => (err += t) },
     }),
   };
-  jest.mock('child_process', () => mock);
+  jest.doMock('child_process', () => mock);
 
   const executor = new DevToolsPluginCliExtensionExecutor(
     pluginDescriptor,
