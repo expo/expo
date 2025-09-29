@@ -28,15 +28,15 @@ public class StoreReviewModule: Module {
     if let activeScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
       return activeScene
     }
-    
-    // If no foreground active scene is found (e.g., app is in App Switcher), 
+
+    // If no foreground active scene is found (e.g., app is in App Switcher),
     // try to find any foreground inactive scene
-    if let foregroundScene = UIApplication.shared.connectedScenes.first(where: { 
-      $0.activationState == .foregroundInactive 
+    if let foregroundScene = UIApplication.shared.connectedScenes.first(where: {
+      $0.activationState == .foregroundInactive
     }) as? UIWindowScene {
       return foregroundScene
     }
-    
+
     // As a last resort, return any connected window scene
     return UIApplication.shared.connectedScenes.first(where: { $0 is UIWindowScene }) as? UIWindowScene
   }
