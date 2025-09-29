@@ -178,14 +178,22 @@ extension ExpoSwiftUI {
       }
     }
 #endif // RCT_NEW_ARCH_ENABLED
-
-    // MARK: - UIView lifecycle
-    public override func layoutSubviews() {
-      super.layoutSubviews()
+    /**
+     Setups layout constraints of the hosting controller view to match the layout set by React.
+     */
+    private func setupHostingViewConstraints() {
+      // NSView is not optional in NSViewController in macOS
       guard let view = hostingController.view as UIView? else {
         return
       }
       view.frame = self.bounds
+      view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    }
+    
+    // MARK: - UIView lifecycle
+    public override func layoutSubviews() {
+      super.layoutSubviews()
+      setupHostingViewConstraints()
     }
 
     public override func didMoveToWindow() {
@@ -205,6 +213,7 @@ extension ExpoSwiftUI {
         #if os(iOS) || os(tvOS)
         hostingController.didMove(toParent: parentController)
         #endif
+        setupHostingViewConstraints()
       } else {
         hostingController.view.removeFromSuperview()
         hostingController.removeFromParent()
