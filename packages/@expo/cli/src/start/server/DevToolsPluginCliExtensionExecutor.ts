@@ -85,7 +85,7 @@ export class DevToolsPluginCliExtensionExecutor {
         [tool, command, `'${JSON.stringify(args)}'`, `'${metroServerOrigin}'`],
         {
           cwd: this.projectRoot,
-          env: { ...process.env, FORCE_COLOR: '1' },
+          env: { ...process.env },
         }
       );
 
