@@ -356,6 +356,7 @@ export const general = [
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
         makePage('guides/expo-ui-swift-ui.mdx'),
+        makePage('guides/mcp.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
