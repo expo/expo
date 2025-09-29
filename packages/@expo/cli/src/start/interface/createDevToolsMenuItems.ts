@@ -63,7 +63,7 @@ export const createDevToolsMenuItems = (
               await children.find((item) => item.value === value)?.action?.();
             } catch (error: any) {
               // Handle aborting prompt
-              debug(`Failed to execute command: ${error.toString()}`);
+              debug(`Aborted selection prompt by user: ${error.toString()}`);
             }
           },
         };
