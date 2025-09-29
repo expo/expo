@@ -1,6 +1,6 @@
 import { RequestAPI } from './api';
 import { errorToResponse } from './error';
-import { getRequestScope, getRequestScopeSingleton } from './scope';
+import { scopeRef } from './scope';
 import { importMetaRegistry } from '../utils/importMetaRegistry';
 
 export interface RequestAPISetup extends RequestAPI {
@@ -15,7 +15,7 @@ function setupRuntime() {
       enumerable: true,
       configurable: true,
       get() {
-        return getRequestScope()?.origin || 'null';
+        return scopeRef.current?.getStore()?.origin || 'null';
       },
     });
   } catch {}
@@ -48,7 +48,6 @@ export function createRequestScope<F extends RequestContextFactory>(
     promise.finally(() => {});
   }
 
-  const requestScope = getRequestScopeSingleton();
   return async (run, ...args) => {
     const setup = makeRequestAPISetup(...args);
     const { waitUntil = defaultWaitUntil } = setup;
@@ -70,7 +69,10 @@ export function createRequestScope<F extends RequestContextFactory>(
 
     let result: Response;
     try {
-      result = await requestScope.run(scope, () => run(...args));
+      result =
+        scopeRef.current != null
+          ? await scopeRef.current.run(scope, () => run(...args))
+          : await run(...args);
     } catch (error) {
       if (error != null && error instanceof Error && 'status' in error) {
         return errorToResponse(error);

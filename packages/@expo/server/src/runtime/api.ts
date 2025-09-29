@@ -1,7 +1,7 @@
-import { getRequestScope } from './scope';
+import { scopeRef } from './scope';
 
 function enforcedRequestScope(): RequestAPI {
-  const scope = getRequestScope();
+  const scope = scopeRef.current?.getStore();
   if (scope === undefined) {
     throw new Error(
       'Invalid server runtime API call. Runtime APIs can only be called during ongoing requests.\n' +
