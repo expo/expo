@@ -152,7 +152,9 @@ runs:
 
     - name: ♻️ Restore Gradle cache
       if: inputs.ndk == 'true' || inputs.gradle == 'true'
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        cache-read-only: ${{ github.ref != 'refs/heads/main' && !contains(github.ref, 'sdk-') }}
 
     - name: ♻️ Restore Android NDK from cache
       if: inputs.ndk == 'true'
