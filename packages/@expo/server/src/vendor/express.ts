@@ -1,4 +1,5 @@
 import type * as express from 'express';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
@@ -14,6 +15,8 @@ export type RequestHandler = (
   next: express.NextFunction
 ) => Promise<void>;
 
+const STORE = new AsyncLocalStorage();
+
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
@@ -21,7 +24,7 @@ export function createRequestHandler(
   params: { build: string; environment?: string | null },
   setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
-  const run = createNodeRequestScope(params);
+  const run = createNodeRequestScope(STORE, params);
   const onRequest = createExpoHandler({
     ...createNodeEnv(params),
     ...setup,

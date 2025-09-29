@@ -1,6 +1,6 @@
-import { RequestAPI } from './api';
+import type { RequestAPI } from './api';
 import { errorToResponse } from './error';
-import { scopeRef } from './scope';
+import { type ScopeDefinition, scopeRef } from './scope';
 import { importMetaRegistry } from '../utils/importMetaRegistry';
 
 export interface RequestAPISetup extends RequestAPI {
@@ -38,6 +38,7 @@ type RequestScopeRunner<F extends RequestContextFactory> = (
 ) => Promise<Response>;
 
 export function createRequestScope<F extends RequestContextFactory>(
+  scopeDefinition: ScopeDefinition,
   makeRequestAPISetup: F
 ): RequestScopeRunner<F> {
   setupRuntime();
@@ -49,6 +50,11 @@ export function createRequestScope<F extends RequestContextFactory>(
   }
 
   return async (run, ...args) => {
+    // Initialize the scope definition which is used to isolate the runtime API between
+    // requests. The implementation of scopes differs per runtime, and is only initialized
+    // once the first request is received
+    scopeRef.current = scopeDefinition;
+
     const setup = makeRequestAPISetup(...args);
     const { waitUntil = defaultWaitUntil } = setup;
 
