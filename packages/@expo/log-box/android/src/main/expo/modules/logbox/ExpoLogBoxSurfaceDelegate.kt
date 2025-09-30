@@ -5,12 +5,23 @@ import android.app.Activity
 import android.app.Dialog
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
+import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
+import android.view.WindowManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebView.setWebContentsDebuggingEnabled
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updatePadding
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.SurfaceDelegate
@@ -37,7 +48,6 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
         // Noop
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun show() {
         val context: Activity? = devSupportManager.currentActivity
         if (context == null || context.isFinishing) {
@@ -54,33 +64,35 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
         }
 
         // Create the BottomSheetDialog
-        dialog = BottomSheetDialog(context)
-
-        dialog?.setOnShowListener { d ->
-            val bottomSheet = (d as BottomSheetDialog)
-                .findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
-
-            bottomSheet?.setBackgroundColor(Color.TRANSPARENT)
-
-            bottomSheet?.let {
-                val behavior = BottomSheetBehavior.from(it)
-                behavior.isDraggable = false
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                behavior.skipCollapsed = true
-
-                val layoutParams = it.layoutParams
-                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-                it.layoutParams = layoutParams
-            }
+        dialog = Dialog(context, android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen)
+        val rootContainer = FrameLayout(context).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            setBackgroundColor(Color.TRANSPARENT)
         }
+
 
         // Create a simple layout programmatically
         val webView = WebView(context).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+
             setBackgroundColor(Color.TRANSPARENT)
             settings.javaScriptEnabled = true
             webViewClient = WebViewClient()
             setWebContentsDebuggingEnabled(true);
         }
+
+        var savedInsets: Insets? = null
+        ViewCompat.setOnApplyWindowInsetsListener(webView) { view, insets ->
+            savedInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            insets
+        }
+
 
         webView.addJavascriptInterface(object : Any() {
             @JavascriptInterface
@@ -107,6 +119,20 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
         }, "ReactNativeWebView")
 
         webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+
+                val safeAreaJs = """
+                    document.documentElement.style.setProperty('--android-safe-area-inset-left', '${savedInsets?.left ?: 0}px');
+                    document.documentElement.style.setProperty('--android-safe-area-inset-right', '${savedInsets?.right ?: 0}px');
+                    document.documentElement.style.setProperty('--android-safe-area-inset-top', '${savedInsets?.top ?: 0}px');
+                    document.documentElement.style.setProperty('--android-safe-area-inset-bottom', '${savedInsets?.bottom ?: 0}px');
+                """.trimIndent()
+                webView.post {
+                    webView.evaluateJavascript(safeAreaJs, null)
+                }
+            }
+
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
 
@@ -142,7 +168,22 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
         // TODO: use build config to specify the dev url
         // webView.loadUrl("http://10.0.2.2:8082/")
 
-        dialog?.setContentView(webView)
+        dialog?.window?.apply {
+            setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+            WindowCompat.setDecorFitsSystemWindows(this, false)
+            decorView.post {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    insetsController?.show(WindowInsets.Type.statusBars())
+                }
+            }
+        }
+        rootContainer.addView(webView)
+        dialog?.setContentView(rootContainer)
         dialog?.show()
     }
 

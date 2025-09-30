@@ -144,7 +144,7 @@ html {
   border-radius: 0 0 10px 10px;
   min-height: var(--expo-log-footer-height);
   overflow: hidden;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: var(--android-safe-area-inset-bottom, env(safe-area-inset-bottom));
   background-color: var(--expo-log-secondary-system-background);
 }
 
