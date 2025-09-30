@@ -11,6 +11,7 @@ isNew: true
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
 
 `expo-file-system` provides access to files and directories stored on a device or bundled as assets into the native project. It also allows downloading files from the network.
 
@@ -120,7 +121,7 @@ src.write(await response.bytes());
 
 </Collapsible>
 
-<Collapsible summary="Uploading files using `expo/fetch`">
+<Collapsible summary={<>Uploading files using <CODE>expo/fetch</CODE></>}>
 
 You can upload files as blobs directly with `fetch` built into the Expo package:
 
