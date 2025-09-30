@@ -1,16 +1,13 @@
 import type * as express from 'express';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
-import { createRequestHandler as createExpoHandler } from '../index';
-import {
-  getApiRoute,
-  getHtml,
-  getMiddleware,
-  getRoutesManifest,
-  handleRouteError,
-} from '../runtime/node';
+import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
+import { createNodeEnv, createNodeRequestScope } from './environment/node';
+
+export { ExpoError } from './abstract';
 
 export type RequestHandler = (
   req: express.Request,
@@ -18,19 +15,18 @@ export type RequestHandler = (
   next: express.NextFunction
 ) => Promise<void>;
 
+const STORE = new AsyncLocalStorage();
+
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
 export function createRequestHandler(
-  { build }: { build: string },
-  setup: Partial<Parameters<typeof createExpoHandler>[0]> = {}
+  params: { build: string; environment?: string | null },
+  setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
-  const handleRequest = createExpoHandler({
-    getRoutesManifest: getRoutesManifest(build),
-    getHtml: getHtml(build),
-    getApiRoute: getApiRoute(build),
-    getMiddleware: getMiddleware(build),
-    handleRouteError: handleRouteError(),
+  const run = createNodeRequestScope(STORE, params);
+  const onRequest = createExpoHandler({
+    ...createNodeEnv(params),
     ...setup,
   });
 
@@ -40,9 +36,7 @@ export function createRequestHandler(
     }
     try {
       const request = convertRequest(req, res);
-
-      const response = await handleRequest(request);
-
+      const response = await run(onRequest, request);
       await respond(res, response);
     } catch (error: unknown) {
       // Express doesn't support async functions, so we have to pass along the

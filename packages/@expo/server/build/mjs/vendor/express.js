@@ -1,17 +1,17 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { createRequestHandler as createExpoHandler } from '../index';
-import { getApiRoute, getHtml, getMiddleware, getRoutesManifest, handleRouteError, } from '../runtime/node';
+import { createRequestHandler as createExpoHandler } from './abstract';
+import { createNodeEnv, createNodeRequestScope } from './environment/node';
+export { ExpoError } from './abstract';
+const STORE = new AsyncLocalStorage();
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
-export function createRequestHandler({ build }, setup = {}) {
-    const handleRequest = createExpoHandler({
-        getRoutesManifest: getRoutesManifest(build),
-        getHtml: getHtml(build),
-        getApiRoute: getApiRoute(build),
-        getMiddleware: getMiddleware(build),
-        handleRouteError: handleRouteError(),
+export function createRequestHandler(params, setup) {
+    const run = createNodeRequestScope(STORE, params);
+    const onRequest = createExpoHandler({
+        ...createNodeEnv(params),
         ...setup,
     });
     return async (req, res, next) => {
@@ -20,7 +20,7 @@ export function createRequestHandler({ build }, setup = {}) {
         }
         try {
             const request = convertRequest(req, res);
-            const response = await handleRequest(request);
+            const response = await run(onRequest, request);
             await respond(res, response);
         }
         catch (error) {
