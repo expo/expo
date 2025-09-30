@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fixed race condition when generating ios splashscreen assets ([#37559](https://github.com/expo/expo/pull/37559) by [@alfonsocj](https://github.com/alfonsocj))
+
 ### 💡 Others
 
 ### ⚠️ Notices

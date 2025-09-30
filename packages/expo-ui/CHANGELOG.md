@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Adds `controlSize` prop to Button([#40030](https://github.com/expo/expo/pull/40030) by [@betomoedano](https://github.com/betomoedano))
 - [iOS] Add `variableValue` prop to Image component for SF Symbols with variable color support ([#39852](https://github.com/expo/expo/pull/39852) by [@morellodev](https://github.com/morellodev))
 - [iOS] Adds `Rectangle`, `RoundedRectangle`, `UnevenRoundedRectangle`, `Circle`, `Ellipse`, `Capsule` shape components and `fill` modifier ([#39793](https://github.com/expo/expo/pull/39793) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add `ignoreSafeArea` modifier ([#39804](https://github.com/expo/expo/pull/39804) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -18,6 +19,8 @@
 ### 🐛 Bug fixes
 
 - [iOS] Updated description for glass button styles availability ([#39736](https://github.com/expo/expo/pull/39736) by [@terijaki](https://github.com/terijaki))
+
+- [Android] Fix DateTimePicker crashes. ([#39718](https://github.com/expo/expo/pull/39718) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ### 💡 Others
 
