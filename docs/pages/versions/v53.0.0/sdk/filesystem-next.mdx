@@ -9,7 +9,6 @@ platforms: ['android', 'ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { CODE } from '~/ui/components/Text';
 
 > **info** The `next` version of the FileSystem API is included in the `expo-file-system` library. It can be used alongside the previous API, and offers a simplified, object oriented way of performing filesystem operations.
 
@@ -69,7 +68,7 @@ const src = new File(Paths.cache, 'file.pdf');
 src.write(await response.bytes());
 ```
 
-<Collapsible summary={<>Uploading files using <CODE>expo/fetch</CODE></>}>
+### Uploading files using `expo/fetch`
 
 You can upload files as blobs directly with `fetch` built into the Expo package:
 
