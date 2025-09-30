@@ -14,17 +14,17 @@ struct Colors {
 
 class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
     private var message: String
-    
+
     init(message: String) {
         self.message = message
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         self.message = "If you see this message this is an issue in ExpoLogBox."
         super.init(coder: coder)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Colors.background
@@ -44,7 +44,7 @@ class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-        
+
 #if EXPO_DEVELOP_LOG_BOX
         // TODO: In the @expo/log-box add `yarn dev` which will return the same as
         // http://localhost:8081/_expo/@dom/logbox-polyfill-dom.tsx?file=file:///user/repos/expo/expo/packages/@expo/log-box/src/logbox-polyfill-dom.tsx
@@ -66,9 +66,46 @@ class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
         }
         dismiss(animated: true)
     }
-    
-    func fetchJsonAsync() -> String {
-        print("fetchJsonAsync is not implemented")
-        return ""
+
+    func fetchJsonAsync(url: String, method: String?, body: String?) async -> String {
+        let finalMethod = method ?? "GET"
+        let finalBody = body ?? ""
+
+        guard let url = URL(string: url) else {
+            print("Invalid URL: \(url)")
+            return "{}" // Return empty JSON object for invalid URL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = finalMethod.uppercased()
+
+        // Set Content-Type for POST/PUT requests with body
+        if !finalBody.isEmpty && (finalMethod.uppercased() == "POST" || finalMethod.uppercased() == "PUT") {
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = body!.data(using: .utf8)
+        }
+
+        // Perform async request
+        let semaphore = DispatchSemaphore(value: 0)
+        var result = "{}"
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                print("Invalid response status: \(String(describing: response))")
+                return "{}"
+            }
+
+            guard let jsonString = String(data: data, encoding: .utf8) else {
+                print("Failed to convert data to UTF-8 string")
+                return "{}"
+            }
+            return jsonString
+        } catch {
+            print("Request failed: \(error.localizedDescription)")
+            return "{}"
+        }
     }
 }

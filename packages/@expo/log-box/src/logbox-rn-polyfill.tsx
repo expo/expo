@@ -98,11 +98,10 @@ function LogBoxRNPolyfill(
               suppressMenuItems: ['underline', 'lookup', 'translate'],
               bounces: true,
             }}
-            fetchJsonAsync={async (input: RequestInfo, init?: RequestInit) => {
+            fetchJsonAsync={async (input, init) => {
               try {
                 const res = await fetch(input, init);
-                const json = await res.json();
-                return json;
+                return await res.text();
               } catch (e) {
                 throw e;
               }

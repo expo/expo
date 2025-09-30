@@ -19,7 +19,10 @@ export default function LogBoxPolyfillDOM({
   ...props
 }: {
   onCopyText: (text: string) => void;
-  fetchJsonAsync: (input: RequestInfo, init?: RequestInit) => Promise<any>;
+  fetchJsonAsync: (input: string, init?: {
+    method?: string;
+    body?: string;
+  }) => Promise<any>;
   reloadRuntime: () => void;
   platform?: string;
   onDismiss?: (index: number) => void;
@@ -127,7 +130,13 @@ export default function LogBoxPolyfillDOM({
   // @ts-ignore
   globalThis.__polyfill_platform = platform;
   // @ts-ignore
-  globalThis.__polyfill_dom_fetchJsonAsync = fetchJsonAsync;
+  globalThis.__polyfill_dom_fetchJsonAsync = async (url: string, options?: {
+    method?: string;
+    body?: string;
+  }) => {
+    const response = await fetchJsonAsync(url, options);
+    return JSON.parse(response);
+  };
   // @ts-ignore
   globalThis.__polyfill_dom_reloadRuntime = reloadRuntime;
   useViewportMeta('width=device-width, initial-scale=1, viewport-fit=cover');
