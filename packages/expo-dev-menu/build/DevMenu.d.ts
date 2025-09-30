@@ -16,5 +16,9 @@ export declare function closeMenu(): void;
  * @param items
  */
 export declare function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void>;
+/**
+ * A method that returns a boolean to indicate if the current application is a development build.
+ */
+export declare function isDevelopmentBuild(): boolean;
 export { ExpoDevMenuItem } from './ExpoDevMenu.types';
 //# sourceMappingURL=DevMenu.d.ts.map

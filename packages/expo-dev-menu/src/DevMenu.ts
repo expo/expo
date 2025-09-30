@@ -59,4 +59,11 @@ export async function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<vo
   return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);
 }
 
+/**
+ * A method that returns a boolean to indicate if the current application is a development build.
+ */
+export function isDevelopmentBuild(): boolean {
+  return !!ExpoDevMenu;
+}
+
 export { ExpoDevMenuItem } from './ExpoDevMenu.types';
