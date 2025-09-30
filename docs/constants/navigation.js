@@ -356,7 +356,6 @@ export const general = [
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
         makePage('guides/expo-ui-swift-ui.mdx'),
-        makePage('guides/mcp.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
@@ -406,6 +405,7 @@ export const eas = [
       expanded: true,
     }
   ),
+  makeSection('AI', [makePage('eas/ai/mcp.mdx')]),
   makeSection('EAS Workflows', [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
@@ -776,6 +776,7 @@ function makePage(file) {
     isNew: data.isNew ?? undefined,
     isAlpha: data.isAlpha ?? undefined,
     isBeta: data.isBeta ?? undefined,
+    isPreview: data.isPreview ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
     hasVideoLink: data.hasVideoLink ?? undefined,

@@ -116,6 +116,14 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
           BETA
         </div>
       )}
+      {info.isPreview && (
+        <div
+          className={mergeClasses(
+            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full bg-element px-[10px] text-[10px] font-normal leading-none text-secondary'
+          )}>
+          PREVIEW
+        </div>
+      )}
       {isExternal && (
         <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary group-hover:text-icon-info" />
       )}
