@@ -625,6 +625,13 @@ export async function test(t) {
       const exif = await asset.getExif();
       // then
       const numberOfKeys = Object.keys(exif || {}).length;
+      if (Platform.OS === 'android') {
+        t.expect(exif['Make']).not.toBeUndefined();
+        t.expect(exif['Model']).not.toBeUndefined();
+      } else if (Platform.OS === 'ios') {
+        t.expect(exif['{TIFF}']['Make']).not.toBeUndefined();
+        t.expect(exif['{TIFF}']['Model']).not.toBeUndefined();
+      }
       t.expect(numberOfKeys).toBeGreaterThan(0);
       t.expect(exif).toBeDefined();
     });

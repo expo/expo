@@ -30,6 +30,7 @@ import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.records.Location
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
@@ -128,24 +129,25 @@ class AssetModernDelegate(
         ?.let { (lat, long) -> Location(lat, long) }
     }
 
-  override suspend fun getExif(): Bundle {
+  override suspend fun getExif(): Bundle = withContext(Dispatchers.IO) {
     if (getMediaType() != MediaType.IMAGE) {
-      return Bundle()
+      return@withContext Bundle()
     }
-    val exifMap = Bundle()
+    val exifBundle = Bundle()
     contentResolver.openInputStream(contentUri)?.use { stream ->
+      ensureActive()
       val exifInterface = ExifInterface(stream)
       for ((type, name) in EXIF_TAGS) {
         if (exifInterface.getAttribute(name) != null) {
           when (type) {
-            "string" -> exifMap.putString(name, exifInterface.getAttribute(name))
-            "int" -> exifMap.putInt(name, exifInterface.getAttributeInt(name, 0))
-            "double" -> exifMap.putDouble(name, exifInterface.getAttributeDouble(name, 0.0))
+            "string" -> exifBundle.putString(name, exifInterface.getAttribute(name))
+            "int" -> exifBundle.putInt(name, exifInterface.getAttributeInt(name, 0))
+            "double" -> exifBundle.putDouble(name, exifInterface.getAttributeDouble(name, 0.0))
           }
         }
       }
     }
-    return exifMap
+    return@withContext exifBundle
   }
 
   override suspend fun delete() = withContext(Dispatchers.IO) {
