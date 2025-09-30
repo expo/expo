@@ -86,13 +86,13 @@ Let's consider three different examples to understand how your invoice might loo
 
 In the first example, the invoice table shows a subscription charge for a Production plan:
 
-| Description                                                                                | Quantity | Unit price |     Amount |
-| ------------------------------------------------------------------------------------------ | -------: | ---------: | ---------: |
-| _FEB 1 - MAR 1, 2025_                                                                      |          |            |            |
-| EAS Build - Build (Android: 5 large and 5 medium builds; iOS: 5 large and 5 medium builds) |        1 |     $40.00 |     $40.00 |
-| EAS Build - Plan credit                                                                    |        1 |    -$40.00 |    -$40.00 |
-| _MAR 1 - APR 1, 2025_                                                                      |          |            |            |
-| Expo Application Services - Production                                                     |        1 |     $199.00 |     $199.00 |
+| Description                                                                                | Quantity | Unit price |      Amount |
+| ------------------------------------------------------------------------------------------ | -------: | ---------: | ----------: |
+| _FEB 1 - MAR 1, 2025_                                                                      |          |            |             |
+| EAS Build - Build (Android: 5 large and 5 medium builds; iOS: 5 large and 5 medium builds) |        1 |     $40.00 |      $40.00 |
+| EAS Build - Plan credit                                                                    |        1 |    -$40.00 |     -$40.00 |
+| _MAR 1 - APR 1, 2025_                                                                      |          |            |             |
+| Expo Application Services - Production                                                     |        1 |    $199.00 |     $199.00 |
 | **Total (USD)**                                                                            |          |            | **$199.00** |
 
 In the above example:
@@ -107,14 +107,14 @@ Since the EAS Build usage ($40) doesn't exceed the plan's $225 credit amount, th
 
 In the second example, the invoice table shows a subscription charge for a Production plan with an overage charge:
 
-| Description                                                                                   | Quantity | Unit price |      Amount |
-| --------------------------------------------------------------------------------------------- | -------: | ---------: | ----------: |
-| _FEB 1 - MAR 1, 2025_                                                                         |          |            |             |
+| Description                                                              | Quantity | Unit price |      Amount |
+| ------------------------------------------------------------------------ | -------: | ---------: | ----------: |
+| _FEB 1 - MAR 1, 2025_                                                    |          |            |             |
 | EAS Build - Build (Android: 35 large; iOS 40 large and 35 medium builds) |        1 |    $300.00 |     $300.00 |
-| EAS Build - Plan credit                                                                       |        1 |   -$225.00 |    -$225.00 |
-| _MAR 1 - APR 1, 2025_                                                                         |          |            |             |
-| Expo Application Services - Production                                                        |        1 |     $199.00 |      $199.00 |
-| **Total (USD)**                                                                               |          |            | **$274.00** |
+| EAS Build - Plan credit                                                  |        1 |   -$225.00 |    -$225.00 |
+| _MAR 1 - APR 1, 2025_                                                    |          |            |             |
+| Expo Application Services - Production                                   |        1 |    $199.00 |     $199.00 |
+| **Total (USD)**                                                          |          |            | **$274.00** |
 
 In the above example:
 
