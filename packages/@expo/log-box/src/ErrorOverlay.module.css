@@ -8,8 +8,7 @@ html {
 }
 
 .overlayAndroid {
-  /* NOTE(@krystofwoldrich) This is not ideal, should be enough, but it doesn't work on all Android versions (14,15,16) the same */
-  top: calc(10vh + env(safe-area-inset-top, 2vh));
+  top: var(--android-safe-area-inset-top, env(safe-area-inset-top));
 }
 
 .overlayWeb {

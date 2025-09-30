@@ -70,7 +70,7 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
-            setBackgroundColor(Color.TRANSPARENT)
+            setBackgroundColor(Color.argb(102, 0, 0, 0))
         }
 
 
@@ -85,14 +85,11 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
             settings.javaScriptEnabled = true
             webViewClient = WebViewClient()
             setWebContentsDebuggingEnabled(true);
+            overScrollMode = View.OVER_SCROLL_ALWAYS
         }
 
-        var savedInsets: Insets? = null
-        ViewCompat.setOnApplyWindowInsetsListener(webView) { view, insets ->
-            savedInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            insets
-        }
-
+        val savedInsets = WindowInsetsCompat.toWindowInsetsCompat(context.window.decorView.rootWindowInsets)
+            .getInsets(WindowInsetsCompat.Type.systemBars())
 
         webView.addJavascriptInterface(object : Any() {
             @JavascriptInterface
@@ -123,10 +120,10 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
                 super.onPageFinished(view, url)
 
                 val safeAreaJs = """
-                    document.documentElement.style.setProperty('--android-safe-area-inset-left', '${savedInsets?.left ?: 0}px');
-                    document.documentElement.style.setProperty('--android-safe-area-inset-right', '${savedInsets?.right ?: 0}px');
-                    document.documentElement.style.setProperty('--android-safe-area-inset-top', '${savedInsets?.top ?: 0}px');
-                    document.documentElement.style.setProperty('--android-safe-area-inset-bottom', '${savedInsets?.bottom ?: 0}px');
+                    document.documentElement.style.setProperty('--android-safe-area-inset-left', '${(savedInsets?.left ?: 0) / context.resources.displayMetrics.density}px');
+                    document.documentElement.style.setProperty('--android-safe-area-inset-right', '${(savedInsets?.right ?: 0) / context.resources.displayMetrics.density}px');
+                    document.documentElement.style.setProperty('--android-safe-area-inset-top', '${(savedInsets?.top ?: 0) / context.resources.displayMetrics.density}px');
+                    document.documentElement.style.setProperty('--android-safe-area-inset-bottom', '${(savedInsets?.bottom ?: 0) / context.resources.displayMetrics.density}px');
                 """.trimIndent()
                 webView.post {
                     webView.evaluateJavascript(safeAreaJs, null)
