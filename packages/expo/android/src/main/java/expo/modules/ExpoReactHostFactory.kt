@@ -19,7 +19,6 @@ import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
-import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
 import com.facebook.react.runtime.hermes.HermesInstance
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import java.lang.ref.WeakReference
@@ -94,7 +93,8 @@ object ExpoReactHostFactory {
         handler.onWillCreateReactInstance(useDeveloperSupport)
       }
 
-      val reactHostDelegate = ExpoReactHostDelegate(WeakReference(context),
+      val reactHostDelegate = ExpoReactHostDelegate(
+        WeakReference(context),
         reactNativeHost.packages,
         reactNativeHost.jsMainModuleName,
         reactNativeHost.bundleAssetName,
@@ -139,9 +139,8 @@ object ExpoReactHostFactory {
     jsBundleFilePath: String? = null,
     jsRuntimeFactory: JSRuntimeFactory? = null,
     useDevSupport: Boolean = ReactBuildConfig.DEBUG,
-    bindingsInstaller: BindingsInstaller? = null,
+    bindingsInstaller: BindingsInstaller? = null
   ): ReactHost {
-
     if (reactHost == null) {
       val hostHandlers = ExpoModulesPackage.packageList
         .flatMap { it.createReactNativeHostHandlers(context) }
@@ -154,7 +153,7 @@ object ExpoReactHostFactory {
         jsBundleFilePath,
         useDevSupport,
         bindingsInstaller,
-        hostHandlers = hostHandlers,
+        hostHandlers = hostHandlers
       )
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
