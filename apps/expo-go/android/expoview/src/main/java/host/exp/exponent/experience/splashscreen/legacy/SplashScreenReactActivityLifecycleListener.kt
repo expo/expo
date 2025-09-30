@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
