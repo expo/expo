@@ -128,7 +128,7 @@ export type DownloadOptions = {
      * (safe to call multiple times without error).
      *
      * If `true`, downloading a file that already exists overwrites the previous one.
-     * If `false`, an error is thrown when the target file already exists.
+     * If `false`, an error with code `DestinationAlreadyExists` is thrown when the target file already exists.
      *
      * @default false
      */
@@ -233,6 +233,7 @@ export declare class File {
      *
      * @param url - The URL of the file to download.
      * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
+     * @param options - Download options. When the destination already contains a file, the promise rejects with a `DestinationAlreadyExists` error unless `options.idempotent` is set to `true`. With `idempotent: true`, the download overwrites the existing file instead of failing.
      *
      * @returns A promise that resolves to the downloaded file.
      *
