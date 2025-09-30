@@ -198,13 +198,13 @@ export declare class File {
 
   /**
    * Retrieves byte content of the entire file.
-   * @returns A promise that resolves with the contents of the file as a Uint8Array.
+   * @returns A promise that resolves with the contents of the file as a `Uint8Array`.
    */
   bytes(): Promise<Uint8Array<ArrayBuffer>>;
 
   /**
    * Retrieves byte content of the entire file.
-   * @returns A promise that resolves with the contents of the file as a Uint8Array.
+   * @returns The contents of the file as a `Uint8Array`.
    */
   bytesSync(): Uint8Array;
 
@@ -288,7 +288,7 @@ export declare class File {
    *
    * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
    * @param mimeType A mime type that is used to filter out files that can be picked out.
-   * @returns a `File` instance or an array of `File` instances.
+   * @returns A `File` instance or an array of `File` instances.
    */
   static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
 
