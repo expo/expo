@@ -129,7 +129,7 @@ class ModuleHolder<T : Module>(
    * Invokes a function with promise. Is used in the bridge implementation of the Sweet API.
    */
   fun call(methodName: String, args: Array<Any?>, promise: Promise) = exceptionDecorator({
-    FunctionCallException(methodName, definition.name, it)
+    FunctionCallException(methodName, name, it)
   }) {
     val method = definition.asyncFunctions[methodName]
       ?: throw MethodNotFoundException()
