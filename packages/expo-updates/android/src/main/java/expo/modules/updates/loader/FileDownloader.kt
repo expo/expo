@@ -1,6 +1,5 @@
 package expo.modules.updates.loader
 
-import android.util.Base64
 import androidx.annotation.VisibleForTesting
 import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.Dictionary
@@ -95,7 +94,8 @@ class FileDownloader(
   data class FileDownloadResult(val file: File, val hash: ByteArray)
   data class AssetDownloadResult(val assetEntity: AssetEntity, val isNew: Boolean)
 
-  private suspend fun downloadAssetAndVerifyHashAndWriteToPath(
+  @VisibleForTesting
+  internal suspend fun downloadAssetAndVerifyHashAndWriteToPath(
     asset: AssetEntity,
     extraHeaders: JSONObject,
     request: Request,
@@ -137,37 +137,17 @@ class FileDownloader(
             logger.warn(
               "Patch application failed for asset ${asset.key}; retrying with full asset download",
               UpdatesErrorCode.AssetsFailedToLoad,
-              request.header("Expo-Requested-Update-ID"),
+              request.header(EXPO_REQUESTED_UPDATE_ID_HEADER),
               asset.key
             )
 
-            val fallbackRequest = createRequestForAsset(
-              assetEntity = asset,
+            fallbackBundleDownload(
+              asset = asset,
               extraHeaders = extraHeaders,
-              configuration = configuration,
-              allowPatch = false
+              progressListener = progressListener,
+              destination = destination,
+              expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash
             )
-
-            val fallbackResponse = downloadData(fallbackRequest, progressListener)
-
-            fallbackResponse.use { fallbackResp ->
-              val fallbackBody = fallbackResp.body
-                ?: throw IOException("Fallback asset download response from ${request.url} had no body")
-
-              fallbackBody.use { body ->
-                if (!fallbackResp.isSuccessful) {
-                  throw IOException(body.string())
-                }
-
-                body.byteStream().use { inputStream ->
-                  UpdatesUtils.verifySHA256AndWriteToFile(
-                    inputStream,
-                    destination,
-                    expectedBase64URLEncodedSHA256Hash
-                  )
-                }
-              }
-            }
           }
         } else {
           if (!allowPatch && isPatch) {
@@ -195,6 +175,42 @@ class FileDownloader(
     }
   }
 
+  private suspend fun fallbackBundleDownload(
+    asset: AssetEntity,
+    extraHeaders: JSONObject,
+    progressListener: FileDownloadProgressListener?,
+    destination: File,
+    expectedBase64URLEncodedSHA256Hash: String?
+  ): ByteArray {
+    val fallbackRequest = createRequestForAsset(
+      assetEntity = asset,
+      extraHeaders = extraHeaders,
+      configuration = configuration,
+      allowPatch = false
+    )
+
+    val fallbackResponse = downloadData(fallbackRequest, progressListener)
+
+    return fallbackResponse.use { fallbackResp ->
+      val fallbackBody = fallbackResp.body
+        ?: throw IOException("Fallback asset download response from ${fallbackRequest.url} had no body")
+
+      fallbackBody.use { body ->
+        if (!fallbackResp.isSuccessful) {
+          throw IOException(body.string())
+        }
+
+        body.byteStream().use { inputStream ->
+          UpdatesUtils.verifySHA256AndWriteToFile(
+            inputStream,
+            destination,
+            expectedBase64URLEncodedSHA256Hash
+          )
+        }
+      }
+    }
+  }
+
   private fun isPatchResponse(responseBody: ResponseBody): Boolean {
     val mediaType = responseBody.contentType()
     return mediaType?.let { it.type == "application" && it.subtype == "vnd.bsdiff" } ?: false
@@ -210,6 +226,11 @@ class FileDownloader(
     requestedUpdateId: String?,
     expectedBase64URLEncodedSHA256Hash: String?
   ): ByteArray {
+    val currentUpdateIdHeader = request.header(EXPO_CURRENT_UPDATE_ID_HEADER)
+      ?: failWithClosedBody(
+        responseBody,
+        "Cannot apply patch without $EXPO_CURRENT_UPDATE_ID_HEADER header"
+      )
     val launchAssetContext = prepareAssetForDiff(
       asset,
       request,
@@ -229,9 +250,10 @@ class FileDownloader(
     }
   }
 
-  private data class LaunchAssetContext(val baseFile: File)
+  internal data class LaunchAssetContext(val baseFile: File)
 
-  private fun prepareAssetForDiff(
+  @VisibleForTesting
+  internal fun prepareAssetForDiff(
     asset: AssetEntity,
     request: Request,
     responseBody: ResponseBody,
@@ -270,12 +292,11 @@ class FileDownloader(
 
     val baseFile = File(updatesDirectory, launchAssetRelativePath)
     if (!baseFile.exists()) {
-      failWithClosedBody(responseBody, "Base asset $baseFile is missing; cannot apply Hermes diff")
+      failWithClosedBody(responseBody, "Base asset $baseFile is missing; cannot apply patch")
     }
 
     val actualBaseHash = try {
-      val hashBytes = UpdatesUtils.sha256(baseFile)
-      Base64.encodeToString(hashBytes, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+      UpdatesUtils.toBase64Url(UpdatesUtils.sha256(baseFile))
     } catch (_: Exception) {
       null
     }
@@ -297,7 +318,14 @@ class FileDownloader(
     return LaunchAssetContext(baseFile)
   }
 
-  private fun applyHermesDiff(
+  // Allows us to skip the native layer in tests
+  @VisibleForTesting
+  internal var applyPatch: (String, String, String) -> Int = { baseFilePath, newFilePath, patchFilePath ->
+    BSPatch.applyPatch(baseFilePath, newFilePath, patchFilePath)
+  }
+
+  @VisibleForTesting
+  internal fun applyHermesDiff(
     baseFile: File,
     diffBody: ResponseBody,
     destination: File,
@@ -316,14 +344,14 @@ class FileDownloader(
         patchFile.outputStream().use { output -> input.copyTo(output) }
       }
 
-      val patchResult = BSPatch.applyPatch(
+      val patchResult = applyPatch(
         baseFile.absolutePath,
         patchedTempFile.absolutePath,
         patchFile.absolutePath
       )
 
       if (patchResult != 0) {
-        throw IOException("BSPatch exited with code $patchResult while applying Hermes diff")
+        throw IOException("BSPatch exited with code $patchResult while applying patch")
       }
 
       FileInputStream(patchedTempFile).use { patchedInputStream ->
@@ -898,7 +926,7 @@ class FileDownloader(
   }
 }
 
-private fun interface FileDownloadProgressListener {
+internal fun interface FileDownloadProgressListener {
   fun update(bytesRead: Long, contentLength: Long) {
     // Only emit progress if content length is known
     if (contentLength > 0) {
