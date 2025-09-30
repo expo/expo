@@ -167,7 +167,7 @@ export declare class File {
      * Retrieves content of the file as base64.
      * @returns A promise that resolves with the contents of the file as a base64 string.
      */
-    base64(): string;
+    base64(): Promise<string>;
     /**
      * Retrieves content of the file as base64.
      * @returns The contents of the file as a base64 string.
