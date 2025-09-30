@@ -274,7 +274,9 @@ export declare class File {
    * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
    * @param options - Download options. When the destination already contains a file, the promise rejects with a `DestinationAlreadyExists` error unless `options.idempotent` is set to `true`. With `idempotent: true`, the download overwrites the existing file instead of failing.
    *
-   * @returns A promise that resolves to the downloaded file.
+   * @returns A promise that resolves to the downloaded file. When the server responds with
+   * a non-2xx HTTP status, the promise rejects with an `UnableToDownload` error whose
+   * message includes the status code. No file is created in that scenario.
    *
    * @example
    * ```ts
