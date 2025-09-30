@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add ref methods and onChangeFocus to TextField and SecureField. ([#39898](https://github.com/expo/expo/pull/39898) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Adds `controlSize` prop to Button([#40030](https://github.com/expo/expo/pull/40030) by [@betomoedano](https://github.com/betomoedano))
 - [iOS] Add `variableValue` prop to Image component for SF Symbols with variable color support ([#39852](https://github.com/expo/expo/pull/39852) by [@morellodev](https://github.com/morellodev))
 - [iOS] Adds `Rectangle`, `RoundedRectangle`, `UnevenRoundedRectangle`, `Circle`, `Ellipse`, `Capsule` shape components and `fill` modifier ([#39793](https://github.com/expo/expo/pull/39793) by [@nishan](https://github.com/intergalacticspacehighway))
