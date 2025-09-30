@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Export missing `DownloadOptions` type.
+
 ## 19.0.14 — 2025-09-13
 
 _This version does not introduce any user-facing changes._

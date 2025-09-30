@@ -3,6 +3,7 @@ export * from './FileSystem';
 export {
   type FileCreateOptions,
   type DirectoryCreateOptions,
+  type DownloadOptions,
   type FileHandle,
   type FileInfo,
   type InfoOptions,
