@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Removing `Record` from `RecordingPresets` type annotation to improve type safety ([#39391](https://github.com/expo/expo/pull/39391) by [@Shoghy](https://github.com/Shoghy))
+
 ## 1.0.12 — 2025-09-16
 
 ### 🎉 New features
