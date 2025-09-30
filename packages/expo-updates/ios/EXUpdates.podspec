@@ -46,6 +46,7 @@ Pod::Spec.new do |s|
   if podfile_properties['expo.updates.useThirdPartySQLitePod'] === 'true'
     s.dependency 'sqlite3'
   end
+  s.libraries = 'bz2'
 
   unless defined?(install_modules_dependencies)
     # `install_modules_dependencies` is defined from react_native_pods.rb.

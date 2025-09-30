@@ -8,15 +8,30 @@ set(PACKAGE_NAME "expo-updates")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src/main/cpp")
-set(BSDIFF_SRC_DIR "${CMAKE_SOURCE_DIR}/../vendor/bsdiff")
+set(BSDIFF_SRC_DIR "${CMAKE_SOURCE_DIR}/../vendor/bspatch")
+set(BZIP2_SRC_DIR "${SRC_DIR}/third-party/bzip2")
 
 file(GLOB SOURCES "${SRC_DIR}/*.cpp")
 file(GLOB BSDIFF_SOURCES "${BSDIFF_SRC_DIR}/*.c")
+file(GLOB BZIP2_SOURCES "${BZIP2_SRC_DIR}/*.c")
+
 add_library(
   ${PACKAGE_NAME}
   SHARED
   ${SOURCES}
   ${BSDIFF_SOURCES}
+)
+
+add_library(
+  bzip2
+  STATIC
+  ${BZIP2_SOURCES}
+)
+
+target_include_directories(
+  bzip2
+  PUBLIC
+  "${BZIP2_SRC_DIR}"
 )
 
 target_include_directories(
@@ -32,6 +47,7 @@ find_package(fbjni REQUIRED CONFIG)
 target_link_libraries(
   ${PACKAGE_NAME}
   ${LOG_LIB}
+  bzip2
   fbjni::fbjni
   android
 )
