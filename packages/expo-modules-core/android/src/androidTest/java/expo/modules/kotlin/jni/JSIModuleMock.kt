@@ -87,7 +87,7 @@ internal inline fun withJSIInterop(
     val coreModule = run {
       val module = CoreModule()
       module._runtimeContext = runtimeContext
-      ModuleHolder(module, null)
+      ModuleHolder(module, "CoreModule")
     }
     every { runtimeContext.coreModule } answers { coreModule }
 
