@@ -1,27 +1,14 @@
 package expo.modules.updates
 
-import com.facebook.jni.HybridData
 import com.facebook.jni.annotations.DoNotStrip
 
 @DoNotStrip
-class BSPatch private constructor() {
-  @DoNotStrip
-  private val mHybridData: HybridData
-
+object BSPatch {
   init {
-    mHybridData = initHybrid()
+    System.loadLibrary("expo-updates")
   }
 
-  companion object {
-    init {
-      System.loadLibrary("expo-updates")
-    }
-
-    @JvmStatic
-    @DoNotStrip
-    external fun applyPatch(oldFilePath: String, newFilePath: String, patchFilePath: String): Int
-  }
-
+  @JvmStatic
   @DoNotStrip
-  private external fun initHybrid(): HybridData
+  external fun applyPatch(oldFilePath: String, newFilePath: String, patchFilePath: String): Int
 }
