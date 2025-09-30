@@ -7,7 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
-import android.net.Uri
+import androidx.core.net.toUri
 import com.facebook.react.common.assets.ReactFontManager
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -33,10 +33,12 @@ open class FontUtilsModule : Module() {
     AsyncFunction("renderToImageAsync") { glyphs: String, options: RenderToImageOptions, promise: Promise ->
       val typeface = ReactFontManager.getInstance().getTypeface(options.fontFamily, Typeface.NORMAL, context.assets)
 
+      val scalingFactor = context.resources.displayMetrics.density
+      val scaledSize = options.size * scalingFactor
       val paint = Paint().apply {
         this.typeface = typeface
         color = options.color
-        textSize = options.size
+        textSize = scaledSize
         isAntiAlias = true
       }
 
@@ -66,9 +68,10 @@ open class FontUtilsModule : Module() {
         }
         promise.resolve(
           mapOf(
-            "uri" to Uri.fromFile(output).toString(),
-            "width" to bitmap.width,
-            "height" to bitmap.height
+            "uri" to output.toUri().toString(),
+            "width" to bitmap.width / scalingFactor,
+            "height" to bitmap.height / scalingFactor,
+            "scale" to scalingFactor
           )
         )
       } catch (e: IOException) {
