@@ -1,6 +1,5 @@
 package expo.modules.updates.loader
 
-import android.util.Base64
 import androidx.annotation.VisibleForTesting
 import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.Dictionary
@@ -95,7 +94,8 @@ class FileDownloader(
   data class FileDownloadResult(val file: File, val hash: ByteArray)
   data class AssetDownloadResult(val assetEntity: AssetEntity, val isNew: Boolean)
 
-  private suspend fun downloadAssetAndVerifyHashAndWriteToPath(
+  @VisibleForTesting
+  internal suspend fun downloadAssetAndVerifyHashAndWriteToPath(
     asset: AssetEntity,
     extraHeaders: JSONObject,
     request: Request,
@@ -103,8 +103,9 @@ class FileDownloader(
     destination: File,
     updatesDirectory: File,
     progressListener: FileDownloadProgressListener? = null,
-    launchedUpdate: UpdateEntity?,
-    requestedUpdate: UpdateEntity?
+    allowPatch: Boolean,
+    launchedUpdate: UpdateEntity? = null,
+    requestedUpdate: UpdateEntity? = null
   ): FileDownloadResult {
     try {
       val response = downloadData(request, progressListener)
@@ -119,7 +120,7 @@ class FileDownloader(
         val responseBody = resp.body
           ?: throw IOException("Asset download response from ${request.url} had no body")
         responseBody.use { body ->
-          val isPatch = isPatchResponse(responseBody)
+          val isPatch = isPatchResponse(body)
           if (!isPatch) {
             body.byteStream().use { inputStream ->
               UpdatesUtils.verifySHA256AndWriteToFile(
@@ -130,11 +131,8 @@ class FileDownloader(
             }
           } else {
             val requestedUpdateId = requestedUpdate?.id?.toString()
-            val shouldAttemptPatch =
-              launchedUpdate != null &&
-                requestedUpdate != null &&
-                asset.isLaunchAsset &&
-                launchedUpdate.id != requestedUpdate.id
+            val idsAreSame = launchedUpdate != null && requestedUpdate != null && launchedUpdate.id != requestedUpdate.id
+            val shouldAttemptPatch = allowPatch && asset.isLaunchAsset && idsAreSame
 
             if (!shouldAttemptPatch) {
               logger.warn(
@@ -143,12 +141,12 @@ class FileDownloader(
                 requestedUpdateId,
                 asset.key
               )
-              return@use downloadFullAsset(
-                asset,
-                extraHeaders,
-                expectedBase64URLEncodedSHA256Hash,
-                destination,
-                progressListener
+              return@use fallbackBundleDownload(
+                asset = asset,
+                extraHeaders = extraHeaders,
+                progressListener = progressListener,
+                destination = destination,
+                expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash
               )
             }
 
@@ -169,12 +167,12 @@ class FileDownloader(
                 requestedUpdateId,
                 asset.key
               )
-              downloadFullAsset(
-                asset,
-                extraHeaders,
-                expectedBase64URLEncodedSHA256Hash,
-                destination,
-                progressListener
+              fallbackBundleDownload(
+                asset = asset,
+                extraHeaders = extraHeaders,
+                progressListener = progressListener,
+                destination = destination,
+                expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash
               )
             }
           }
@@ -188,12 +186,12 @@ class FileDownloader(
     }
   }
 
-  private suspend fun downloadFullAsset(
+  private suspend fun fallbackBundleDownload(
     asset: AssetEntity,
     extraHeaders: JSONObject,
-    expectedBase64URLEncodedSHA256Hash: String?,
+    progressListener: FileDownloadProgressListener?,
     destination: File,
-    progressListener: FileDownloadProgressListener?
+    expectedBase64URLEncodedSHA256Hash: String?
   ): ByteArray {
     val fallbackRequest = createRequestForAsset(
       assetEntity = asset,
@@ -238,13 +236,14 @@ class FileDownloader(
     requestedUpdate: UpdateEntity?,
     expectedBase64URLEncodedSHA256Hash: String?
   ): ByteArray {
-    val launchAssetContext = preparePatchBaseAsset(
-      asset,
-      updatesDirectory,
-      launchedUpdate
+    val launchAssetContext = prepareAssetForDiff(
+      asset = asset,
+      responseBody = responseBody,
+      updatesDirectory = updatesDirectory,
+      launchedUpdate = launchedUpdate
     )
 
-    return applyBSPatch(
+    return applyHermesDiff(
       baseFile = launchAssetContext.baseFile,
       diffBody = responseBody,
       destination = destination,
@@ -254,7 +253,26 @@ class FileDownloader(
     )
   }
 
-  private data class LaunchAssetContext(val baseFile: File)
+  internal data class LaunchAssetContext(val baseFile: File)
+
+  @VisibleForTesting
+  internal fun prepareAssetForDiff(
+    asset: AssetEntity,
+    responseBody: ResponseBody,
+    updatesDirectory: File,
+    launchedUpdate: UpdateEntity
+  ): LaunchAssetContext {
+    return try {
+      preparePatchBaseAsset(asset, updatesDirectory, launchedUpdate)
+    } catch (e: Exception) {
+      responseBody.close()
+      if (e is IOException) {
+        throw e
+      } else {
+        throw IOException("Failed to prepare asset for diff", e)
+      }
+    }
+  }
 
   private fun preparePatchBaseAsset(
     asset: AssetEntity,
@@ -265,21 +283,21 @@ class FileDownloader(
       throw IOException("Received patch for non-launch asset ${asset.key}")
     }
 
-    val launchAssetEntity = database.updateDao().loadLaunchAssetForUpdate(launchedUpdate.id)
-      ?: throw IOException("Launch asset not found for current update ${launchedUpdate.id}")
+    val currentUpdateId = launchedUpdate.id
 
-    val launchAssetRelativePath = launchAssetEntity.relativePath ?: throw IOException(
-      "Launch asset for update ${launchedUpdate.id} is missing a relative path"
-    )
+    val launchAssetEntity = database.updateDao().loadLaunchAssetForUpdate(currentUpdateId)
+      ?: throw IOException("Launch asset not found for current update $currentUpdateId")
+
+    val launchAssetRelativePath = launchAssetEntity.relativePath
+      ?: throw IOException("Launch asset for update $currentUpdateId is missing a relative path")
 
     val baseFile = File(updatesDirectory, launchAssetRelativePath)
     if (!baseFile.exists()) {
-      throw IOException("Base asset $baseFile is missing; cannot apply Hermes diff")
+      throw IOException("Base asset $baseFile is missing; cannot apply patch")
     }
 
     val actualBaseHash = try {
-      val hashBytes = UpdatesUtils.sha256(baseFile)
-      Base64.encodeToString(hashBytes, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+      UpdatesUtils.toBase64Url(UpdatesUtils.sha256(baseFile))
     } catch (_: Exception) {
       null
     }
@@ -287,18 +305,24 @@ class FileDownloader(
     val expectedBaseHash = launchAssetEntity.expectedHash
     if (expectedBaseHash != null && actualBaseHash != null && expectedBaseHash != actualBaseHash) {
       logger.warn(
-        "Asset hash mismatch for update ${launchedUpdate.id}; expected=$expectedBaseHash actual=$actualBaseHash",
+        "Asset hash mismatch for update $currentUpdateId; expected=$expectedBaseHash actual=$actualBaseHash",
         UpdatesErrorCode.AssetsFailedToLoad,
-        launchedUpdate.id.toString(),
+        currentUpdateId.toString(),
         asset.key
       )
-      throw IOException("Asset hash mismatch for update ${launchedUpdate.id}; expected=$expectedBaseHash actual=$actualBaseHash")
+      throw IOException("Asset hash mismatch for update $currentUpdateId; expected=$expectedBaseHash actual=$actualBaseHash")
     }
 
     return LaunchAssetContext(baseFile)
   }
 
-  private fun applyBSPatch(
+  @VisibleForTesting
+  internal var applyPatch: (String, String, String) -> Int = { baseFilePath, newFilePath, patchFilePath ->
+    BSPatch.applyPatch(baseFilePath, newFilePath, patchFilePath)
+  }
+
+  @VisibleForTesting
+  internal fun applyHermesDiff(
     baseFile: File,
     diffBody: ResponseBody,
     destination: File,
@@ -317,14 +341,14 @@ class FileDownloader(
         patchFile.outputStream().use { output -> input.copyTo(output) }
       }
 
-      val patchResult = BSPatch.applyPatch(
+      val patchResult = applyPatch(
         baseFile.absolutePath,
         patchedTempFile.absolutePath,
         patchFile.absolutePath
       )
 
       if (patchResult != 0) {
-        throw IOException("BSPatch exited with code $patchResult while applying Hermes diff")
+        throw IOException("BSPatch exited with code $patchResult while applying patch")
       }
 
       FileInputStream(patchedTempFile).use { patchedInputStream ->
@@ -630,6 +654,7 @@ class FileDownloader(
           path,
           destinationDirectory,
           assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
+          allowPatch = canApplyPatch,
           launchedUpdate = launchedUpdate,
           requestedUpdate = requestedUpdate
         )
@@ -880,7 +905,7 @@ class FileDownloader(
   }
 }
 
-private fun interface FileDownloadProgressListener {
+internal fun interface FileDownloadProgressListener {
   fun update(bytesRead: Long, contentLength: Long) {
     // Only emit progress if content length is known
     if (contentLength > 0) {
