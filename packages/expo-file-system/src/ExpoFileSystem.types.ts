@@ -265,6 +265,11 @@ export declare class File {
   /**
    * A static method that downloads a file from the network.
    *
+   * On Android, the response body streams directly into the target file. If the download fails after
+   * it starts, a partially written file may remain at the destination. On iOS, the download first
+   * completes in a temporary location and the file is moved into place only after success, so no
+   * file is left behind when the request fails.
+   *
    * @param url - The URL of the file to download.
    * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
    * @param options - Download options. When the destination already contains a file, the promise rejects with a `DestinationAlreadyExists` error unless `options.idempotent` is set to `true`. With `idempotent: true`, the download overwrites the existing file instead of failing.
