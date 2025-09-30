@@ -81,6 +81,13 @@ extension ExpoSwiftUI {
         self.setViewSize(size)
         #endif
       }
+      
+      shadowNodeProxy.setStyleSize = { width, height in
+        #if RCT_NEW_ARCH_ENABLED
+        self.setStyleSize(width, height: height)
+        #endif
+      }
+      
       shadowNodeProxy.objectWillChange.send()
 
       #if os(iOS) || os(tvOS)
@@ -136,6 +143,12 @@ extension ExpoSwiftUI {
       return true
     }
 
+    public override func layoutSubviews() {
+      super.layoutSubviews()
+      // TODO: Use updateLayoutMetrics from RN. Add support in ExpoFabricView.
+      setupHostingViewConstraints()
+    }
+
 #if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
@@ -187,14 +200,13 @@ extension ExpoSwiftUI {
       guard let view = hostingController.view as UIView? else {
         return
       }
-      view.translatesAutoresizingMaskIntoConstraints = false
-
-      NSLayoutConstraint.activate([
-        view.topAnchor.constraint(equalTo: topAnchor),
-        view.bottomAnchor.constraint(equalTo: bottomAnchor),
-        view.leftAnchor.constraint(equalTo: leftAnchor),
-        view.rightAnchor.constraint(equalTo: rightAnchor)
-      ])
+      let frame = self.bounds;
+      view.frame = frame;
+        #if os(iOS) || os(tvOS)
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        #elseif os(macOS)
+        view.autoresizingMask = [.width, .height]
+        #endif
     }
 
     // MARK: - UIView lifecycle
