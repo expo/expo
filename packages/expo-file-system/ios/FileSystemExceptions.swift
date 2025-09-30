@@ -13,6 +13,12 @@ internal final class UnableToDownloadException: GenericException<String> {
   }
 }
 
+internal final class UnableToWriteBase64DataException: GenericException<String> {
+  override var reason: String {
+    "Unable to write base64 data to a file: \(param)"
+  }
+}
+
 internal final class InvalidTypeFileException: Exception {
   override var reason: String {
     "A folder with the same name already exists in the file location"
