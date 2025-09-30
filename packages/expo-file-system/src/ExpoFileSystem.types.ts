@@ -143,7 +143,7 @@ export type DownloadOptions = {
    * (safe to call multiple times without error).
    *
    * If `true`, downloading a file that already exists overwrites the previous one.
-   * If `false`, an error with code `DestinationAlreadyExists` is thrown when the target file already exists.
+   * If `false`, an error is thrown when the target file already exists.
    *
    * @default false
    */
