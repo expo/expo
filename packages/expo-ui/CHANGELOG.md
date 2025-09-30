@@ -28,6 +28,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Updated description for glass button styles availability ([#39736](https://github.com/expo/expo/pull/39736) by [@terijaki](https://github.com/terijaki))
+
 ## 0.2.0-beta.3 — 2025-09-16
 
 ### 🎉 New features
