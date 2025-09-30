@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add write options for base64 encoded bytes. ([#39963](https://github.com/expo/expo/pull/39963) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 - Fix typedoc for filesystem example ([#40064](https://github.com/expo/expo/pull/40064) by [@aleqsio](https://github.com/aleqsio))
