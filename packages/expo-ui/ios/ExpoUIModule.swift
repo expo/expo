@@ -47,6 +47,7 @@ public final class ExpoUIModule: Module {
     View(ShareLinkView.self)
     View(SliderView.self)
     View(SpacerView.self)
+    View(StepperView.self)
     View(SwitchView.self)
     View(TextView.self)
     View(TextFieldView.self) {
