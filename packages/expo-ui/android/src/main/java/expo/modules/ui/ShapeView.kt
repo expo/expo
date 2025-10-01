@@ -25,6 +25,8 @@ import androidx.graphics.shapes.pill
 import androidx.graphics.shapes.pillStar
 import androidx.graphics.shapes.rectangle
 import androidx.graphics.shapes.star
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import android.graphics.Color as GraphicsColor
 
@@ -117,6 +119,40 @@ private fun createRectanglePath(size: Size, cornerRounding: Float, smoothing: Fl
   ).toPath().asComposePath()
 }
 
+data class ShapeRecord(
+  @Field
+  val cornerRounding: Float = 0.0f,
+  @Field
+  val smoothing: Float = 0.0f,
+  @Field
+  val verticesCount: Int = 6,
+  @Field
+  val innerRadius: Float = 0.0f,
+  @Field
+  val radius: Float = 0.0f,
+  @Field
+  val type: ShapeType = ShapeType.CIRCLE
+) : Record
+
+fun Path.Companion.fromShapeRecord(record: ShapeRecord, size: Size): Path {
+  val cornerRounding = record.cornerRounding
+  val smoothing = record.smoothing
+  val innerRadius = record.innerRadius
+  val radius = record.radius
+  val shapeType = record.type
+  val verticesCount = record.verticesCount
+
+  val path = when (shapeType) {
+    ShapeType.STAR -> createStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, radius = radius, verticesCount = verticesCount)
+    ShapeType.PILL_STAR -> createPillStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, verticesCount = verticesCount)
+    ShapeType.PILL -> createPillPath(size = size, smoothing = smoothing)
+    ShapeType.CIRCLE -> createCirclePath(size = size, radius = radius, verticesCount = verticesCount)
+    ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = cornerRounding, smoothing = smoothing)
+    ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, verticesCount = verticesCount)
+  }
+  return path
+}
+
 class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<ShapeProps>(context, appContext, withHostingView = true) {
   override val props = ShapeProps()
 
@@ -130,16 +166,20 @@ class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<Shap
     val (verticesCount) = props.verticesCount
     val (color) = props.color
     Box(
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+      modifier = Modifier
+        .fromExpoModifiers(props.modifiers.value)
         .drawWithCache {
-          val path = when (shapeType) {
-            ShapeType.STAR -> createStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, radius = radius, verticesCount = verticesCount)
-            ShapeType.PILL_STAR -> createPillStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, verticesCount = verticesCount)
-            ShapeType.PILL -> createPillPath(size = size, smoothing = smoothing)
-            ShapeType.CIRCLE -> createCirclePath(size = size, radius = radius, verticesCount = verticesCount)
-            ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = cornerRounding, smoothing = smoothing)
-            ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, verticesCount = verticesCount)
-          }
+          val path = Path.fromShapeRecord(
+            ShapeRecord(
+              cornerRounding = cornerRounding,
+              smoothing = smoothing,
+              innerRadius = innerRadius,
+              radius = radius,
+              type = shapeType,
+              verticesCount = verticesCount
+            ),
+            size
+          )
 
           onDrawBehind {
             drawPath(path, color = color.composeOrNull ?: Color.Transparent)
