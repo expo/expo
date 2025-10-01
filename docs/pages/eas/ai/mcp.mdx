@@ -121,7 +121,7 @@ For the full MCP experience with advanced features like taking screenshots from 
 
 </Step>
 
-## Server capabilities vs client capabilities
+## Server capabilities vs local capabilities
 
 The Expo MCP server provides two types of capabilities depending on your setup:
 
@@ -129,15 +129,15 @@ The Expo MCP server provides two types of capabilities depending on your setup:
 
 Server capabilities are available with just the remote MCP server connection, without needing to set up a local development server. The **generate_agents_md** tool is an example of a server capability.
 
-### Client capabilities
+### Local capabilities
 
-Client capabilities require a local Expo development server to be running and provide advanced features that interact with your local development environment:
+Local capabilities require a local Expo development server to be running and provide advanced features that interact with your local development environment:
 
 - **Automation tools**: Take screenshots, tap views, find elements by testID
 - **Development tools**: Open React Native DevTools
 - **Project analysis**: Generate `expo-router` sitemap
 
-These capabilities enable more sophisticated workflows like automated testing, visual verification, and deeper project introspection.
+These capabilities enable more sophisticated workflows like automated testing, visual verification, and deeper project introspection. To use local capabilities, you will need to follow the [Set up local capabilities](#set-up-local-capabilities-recommended) section above.
 
 ## Available MCP capabilities
 
