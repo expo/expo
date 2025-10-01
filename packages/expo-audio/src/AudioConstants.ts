@@ -4,7 +4,7 @@
  */
 export type AudioLockScreenOptions = {
   /**
-   * Whether the seek forward button should be displayed on the lock screen
+   * Whether the seek forward button should be displayed on the lock screen.
    */
   showSeekForward?: boolean;
   /**
