@@ -7,6 +7,7 @@
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
+import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import { type RoutesManifest } from 'expo-server/private';
@@ -207,12 +208,13 @@ export async function exportFromServerAsync(
     exp,
   });
 
-  const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({
-      includeSourceMaps,
-    }),
-    devServer.getStaticRenderFunctionAsync(),
-  ]);
+  const [resources, { manifest, serverManifest, renderAsync, executeLoaderAsync }] =
+    await Promise.all([
+      devServer.getStaticResourcesAsync({
+        includeSourceMaps,
+      }),
+      devServer.getStaticRenderFunctionAsync(),
+    ]);
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
@@ -224,7 +226,29 @@ export async function exportFromServerAsync(
     serverManifest,
     exportServer,
     async renderAsync({ pathname, route }) {
-      const template = await renderAsync(pathname, route);
+      const normalizedPathname =
+        pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
+
+      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
+      let renderOpts;
+
+      if (useServerLoaders) {
+        const loaderData = await executeLoaderAsync(normalizedPathname, route);
+
+        if (loaderData != null) {
+          const loaderPath = getLoaderModulePath(normalizedPathname);
+          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+          files.set(fileSystemPath, {
+            contents: JSON.stringify(loaderData, null, 2),
+            targetDomain: 'client',
+            loaderId: normalizedPathname,
+          });
+
+          renderOpts = { loader: { data: loaderData } };
+        }
+      }
+
+      const template = await renderAsync(normalizedPathname, route, renderOpts);
       let html = await serializeHtmlWithAssets({
         isExporting,
         resources: resources.artifacts,

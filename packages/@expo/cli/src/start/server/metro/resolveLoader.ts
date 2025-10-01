@@ -30,8 +30,11 @@ export function fromRuntimeManifestRoute(
     return null;
   }
 
-  // TODO(@hassankhan): Add safety check here
-  const relativeFile = route.entryPoints.at(-1).replace(options.appDir, '');
+  if (!route.entryPoints || route.entryPoints.length === 0) {
+    return null;
+  }
+
+  const relativeFile = route.entryPoints.at(-1)!.replace(options.appDir, '');
   const parentPath = relativeFile.replace(/\.[j|t]s(x)?/, '');
 
   const parentManifestRoute = options.serverManifest.htmlRoutes.find((r) =>

@@ -31,6 +31,8 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import assert from 'assert';
 import chalk from 'chalk';
 import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
+import type { RouteNode } from 'expo-router/build/Route';
+import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -56,7 +58,7 @@ import {
 } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import {
+import type {
   BundleAssetWithFileHashes,
   ExportAssetDescriptor,
   ExportAssetMap,
@@ -72,6 +74,11 @@ import {
   evalMetroAndWrapFunctions,
   evalMetroNoHandling,
 } from '../getStaticRenderFunctions';
+import {
+  fromRuntimeManifestRoute,
+  fromServerManifestRoute,
+  type ResolvedLoaderRoute,
+} from './resolveLoader';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DataLoaderModuleMiddleware } from '../middleware/DataLoaderModuleMiddleware';
@@ -95,12 +102,6 @@ import {
 import { prependMiddleware } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import {
-  fromRuntimeManifestRoute,
-  fromServerManifestRoute,
-  ResolvedLoaderRoute,
-} from './resolveLoader';
-import { RouteNode } from 'expo-router/build/Route';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('@expo/router-server/build/static/renderStaticContent').getManifest>
@@ -388,7 +389,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticRenderFunctionAsync(): Promise<{
     serverManifest: RoutesManifest<string>;
     manifest: ExpoRouterRuntimeManifest;
-    renderAsync: (path: string, route: RouteNode) => Promise<string>;
+    renderAsync: (
+      path: string,
+      route: RouteNode,
+      opts?: GetStaticContentOptions
+    ) => Promise<string>;
+    executeLoaderAsync: (path: string, route: RouteNode) => Promise<any>;
   }> {
     const { routerRoot } = this.instanceMetroOptions;
     assert(
@@ -419,12 +425,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Get routes from Expo Router.
       manifest: await getManifest({ preserveApiRoutes: false, ...exp.extra?.router }),
       // Get route generating function
-      renderAsync: async (path, route) => {
+      renderAsync: async (path, route, opts?) => {
         const location = new URL(path, url);
-        const useServerDataLoaders = exp.extra?.router?.unstable_useServerDataLoaders;
-        if (!useServerDataLoaders) {
-          return await getStaticContent(location);
-        }
+        return await getStaticContent(location, opts);
+      },
+      executeLoaderAsync: async (path, route) => {
+        const location = new URL(path, url);
 
         const resolvedLoaderRoute = fromRuntimeManifestRoute(location.pathname, route, {
           serverManifest: inflateManifest(serverManifest),
@@ -432,11 +438,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         });
 
         if (!resolvedLoaderRoute) {
-          return await getStaticContent(location);
+          return undefined;
         }
 
-        const data = await this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
-        return await getStaticContent(location, { loader: { data } });
+        return await this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
       },
     };
   }

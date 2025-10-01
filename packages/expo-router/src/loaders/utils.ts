@@ -1,4 +1,20 @@
 /**
+ * Convert a route pathname to a loader module path.
+ *
+ * @example
+ * getLoaderModulePath(`/`);       // `/_expo/loaders/index.json`
+ * getLoaderModulePath(`/about`)   // `/_expo/loaders/about.json`
+ * getLoaderModulePath(`/posts/1`) // `/_expo/loaders/posts/1.json`
+ */
+export function getLoaderModulePath(pathname: string): string {
+  const cleanPath = new URL(pathname, 'http://localhost').pathname;
+  const normalizedPath = cleanPath === '/' ? '/' : cleanPath.replace(/\/$/, '');
+  const pathSegment = normalizedPath === '/' ? '/index' : normalizedPath;
+
+  return `/_expo/loaders${pathSegment}.json`;
+}
+
+/**
  * Fetches and parses a loader module from the given route path.
  * This works in all environments including:
  * 1. Development with Metro dev server (see `LoaderModuleMiddleware`)
@@ -6,9 +22,8 @@
  * 3. SSR environments
  */
 export async function fetchLoaderModule(routePath: string): Promise<any> {
-  const loaderPath = `/_expo/loaders${routePath}`;
+  const loaderPath = getLoaderModulePath(routePath);
 
-  // NOTE(@hassankhan): Might be a good idea to convert `loaderPath` to an `URL` object
   const response = await fetch(loaderPath, {
     headers: {
       Accept: 'application/json',
