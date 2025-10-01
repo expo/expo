@@ -47,7 +47,7 @@ function matchesPattern(pathname, pattern) {
             return namedParamToRegex(pattern).test(pathname);
         }
     }
-    if (pattern instanceof RegExp) {
+    else if (pattern != null) {
         return pattern.test(pathname);
     }
     return false;

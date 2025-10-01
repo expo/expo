@@ -17,6 +17,7 @@ declare class ImmutableHeaders extends ImmutableHeaders_base {
     append(): void;
     delete(): void;
 }
+/** @hidden */
 export type _ImmutableRequest = Omit<Request, 'body' | 'bodyUsed' | 'arrayBuffer' | 'blob' | 'formData' | 'json' | 'text' | 'bytes' | 'headers'> & {
     headers: ImmutableHeaders;
 };

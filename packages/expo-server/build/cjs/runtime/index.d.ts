@@ -1,5 +1,4 @@
-import type { RequestAPI } from './api';
-import { type ScopeDefinition } from './scope';
+import { type ScopeDefinition, type RequestAPI } from './scope';
 export interface RequestAPISetup extends RequestAPI {
     origin?: string;
     environment?: string | null;
