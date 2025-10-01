@@ -1,4 +1,4 @@
-export type { MiddlewareFunction } from '@expo/server';
+export type { MiddlewareFunction } from 'expo-server';
 
 /**
  * @deprecated Use Fetch API `Request` instead.

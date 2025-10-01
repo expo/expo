@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Rename to `@expo/server` to `expo-server` ([#40087](https://github.com/expo/expo/pull/40087) by [@kitten](https://github.com/kitten))
+
 ## 6.0.9 — 2025-10-01
 
 ### 🐛 Bug fixes

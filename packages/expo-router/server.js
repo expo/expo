@@ -1,1 +1,1 @@
-// Use `@expo/server` directly instead
+// Use `expo-server` directly instead

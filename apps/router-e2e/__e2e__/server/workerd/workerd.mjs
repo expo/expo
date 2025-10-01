@@ -1,4 +1,4 @@
-import { createRequestHandler } from '@expo/server/build/vendor/workerd';
+import { createRequestHandler } from 'expo-server/build/vendor/workerd';
 
 console.log('Workerd server listening on configured port');
 
