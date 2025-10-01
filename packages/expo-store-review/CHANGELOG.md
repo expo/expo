@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix 'requestReview' function failing. ([#40080](https://github.com/expo/expo/pull/40080) by [@hryhoriiK97](https://github.com/hryhoriiK97))
-
 ### 💡 Others
+
+## 9.0.8 - 2025-10-01
+
+### 🐛 Bug fixes
+
+- [iOS] Fix 'requestReview' function failing. ([#40080](https://github.com/expo/expo/pull/40080) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ## 9.0.7 — 2025-09-11
 
