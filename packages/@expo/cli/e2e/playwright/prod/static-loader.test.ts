@@ -85,7 +85,7 @@ test.describe('static loader in production', () => {
     await page.click('a[href="/posts/static-post-1"]');
     await page.waitForSelector('[data-testid="loader-result"]');
     expect(loaderRequests).toContainEqual(
-      expect.stringContaining('/_expo/loaders/posts/static-post-1.json')
+      expect.stringContaining('/_expo/loaders/posts/static-post-1')
     );
 
     const loaderData = page.locator('[data-testid="loader-result"]');

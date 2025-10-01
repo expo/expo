@@ -57,10 +57,10 @@ describe('static loader', () => {
       expect(files).toContain('posts/static-post-1.html');
       expect(files).toContain('posts/static-post-2.html');
 
-      expect(files).toContain('_expo/loaders/second.json');
-      expect(files).toContain('_expo/loaders/posts/[postId].json');
-      expect(files).toContain('_expo/loaders/posts/static-post-1.json');
-      expect(files).toContain('_expo/loaders/posts/static-post-2.json');
+      expect(files).toContain('_expo/loaders/second');
+      expect(files).toContain('_expo/loaders/posts/[postId]');
+      expect(files).toContain('_expo/loaders/posts/static-post-1');
+      expect(files).toContain('_expo/loaders/posts/static-post-2');
     });
   });
 });

@@ -30,25 +30,27 @@ export function fromRuntimeManifestRoute(
     return null;
   }
 
-  if (!route.entryPoints || route.entryPoints.length === 0) {
+  // For static routes that were generated from dynamic routes, we need to use the parent's
+  // context key to find the loader
+  // @see expo-router/src/loadStaticParamsAsync.ts
+  const contextKey =
+    route.dynamic === null && route.parentContextKey ? route.parentContextKey : route.contextKey;
+
+  if (!contextKey) {
     return null;
   }
 
-  const relativeFile = route.entryPoints.at(-1)!.replace(options.appDir, '');
-  const parentPath = relativeFile.replace(/\.[j|t]s(x)?/, '');
+  // Find the server manifest route that matches this context key
+  const serverManifestRoute = options.serverManifest.htmlRoutes.find((r) => r.file === contextKey);
 
-  const parentManifestRoute = options.serverManifest.htmlRoutes.find((r) =>
-    r.namedRegex.test(parentPath)
-  );
-
-  if (!parentManifestRoute) {
+  if (!serverManifestRoute) {
     return null;
   }
 
   return {
-    file: `.${relativeFile}`,
+    file: serverManifestRoute.file,
     pathname,
-    params: extractParams(pathname, parentManifestRoute),
+    params: extractParams(pathname, serverManifestRoute),
   };
 }
 
