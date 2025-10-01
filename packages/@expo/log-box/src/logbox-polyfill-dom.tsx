@@ -16,6 +16,7 @@ export default function LogBoxPolyfillDOM({
   platform,
   fetchJsonAsync,
   reloadRuntime,
+  devServerUrl,
   ...props
 }: {
   onCopyText: (text: string) => void;
@@ -25,6 +26,7 @@ export default function LogBoxPolyfillDOM({
   }) => Promise<any>;
   reloadRuntime: () => void;
   platform?: string;
+  devServerUrl?: string;
   onDismiss?: (index: number) => void;
   onMinimize?: () => void;
   onChangeSelectedIndex?: (index: number) => void;
@@ -125,6 +127,14 @@ export default function LogBoxPolyfillDOM({
   }, [props.logs, props.nativeLogs, platform]);
   const selectedIndex = props.selectedIndex ?? (logs && logs?.length - 1) ?? -1;
 
+  if (devServerUrl) {
+    globalThis.process = globalThis.process || {};
+    globalThis.process.env = {
+      ...globalThis.process.env,
+      EXPO_DEV_SERVER_ORIGIN: devServerUrl,
+    };
+  }
+
   // @ts-ignore
   globalThis.__polyfill_onCopyText = onCopyText;
   // @ts-ignore
@@ -136,6 +146,13 @@ export default function LogBoxPolyfillDOM({
   }) => {
     const response = await fetchJsonAsync(url, options);
     return JSON.parse(response);
+  };
+  // @ts-ignore
+  globalThis.__polyfill_dom_fetchAsync = async (url: string, options?: {
+    method?: string;
+    body?: string;
+  }) => {
+    return await fetchJsonAsync(url, options);
   };
   // @ts-ignore
   globalThis.__polyfill_dom_reloadRuntime = reloadRuntime;

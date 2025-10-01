@@ -11,6 +11,7 @@ import { LogBoxLog } from './Data/LogBoxLog';
 // @ts-ignore
 import RCTModalHostView from 'react-native/Libraries/Modal/RCTModalHostViewNativeComponent';
 import { isRunningInExpoGo } from 'expo';
+import { getBaseUrl } from './devServerEndpoints';
 
 const Modal = RCTModalHostView as typeof ModalInterface;
 
@@ -81,6 +82,7 @@ function LogBoxRNPolyfill(
         >
           <LogBoxPolyfillDOM
             platform={process.env.EXPO_OS}
+            devServerUrl={getBaseUrl()}
             dom={{
               sourceOverride: bundledLogBoxUrl ? { uri: bundledLogBoxUrl } : undefined,
               contentInsetAdjustmentBehavior: 'never',

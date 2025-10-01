@@ -19,7 +19,7 @@ export type SymbolicatedStackTrace = {
 
 const cache: Map<MetroStackFrame[], Promise<SymbolicatedStackTrace>> = new Map();
 
-function getBaseUrl() {
+export function getBaseUrl() {
   const devServerOverride = process.env.EXPO_DEV_SERVER_ORIGIN;
   if (devServerOverride) {
     return devServerOverride;
@@ -42,9 +42,9 @@ export function installPackageInProject(pkg: string): void {
   const url = new URL('/_expo/install-pkg', getBaseUrl()).href;
 
   // @ts-ignore
-  if (globalThis.__polyfill_dom_fetch) {
+  if (globalThis.__polyfill_dom_fetchAsync) {
     // @ts-ignore
-    globalThis.__polyfill_dom_fetch(url, {
+    globalThis.__polyfill_dom_fetchAsync(url, {
       method: 'POST',
       body: JSON.stringify({ pkg }),
     });
@@ -61,9 +61,9 @@ export function openFileInEditor(file: string, lineNumber: number): void {
   const url = new URL('/open-stack-frame', getBaseUrl()).href;
 
   // @ts-ignore
-  if (globalThis.__polyfill_dom_fetch) {
+  if (globalThis.__polyfill_dom_fetchAsync) {
     // @ts-ignore
-    globalThis.__polyfill_dom_fetch(url, {
+    globalThis.__polyfill_dom_fetchAsync(url, {
       method: 'POST',
       body: JSON.stringify({ file, lineNumber }),
     });
