@@ -375,6 +375,20 @@ export const colorInvert = (inverted: boolean = true) =>
 export const grayscale = (amount: number) => createModifier('grayscale', { amount });
 
 /**
+ * Sets the button style for button views.
+ */
+export const buttonStyle = (
+  style:
+    | 'automatic'
+    | 'bordered'
+    | 'borderedProminent'
+    | 'borderless'
+    | 'glass'
+    | 'glassProminent'
+    | 'plain'
+) => createModifier('buttonStyle', { style });
+
+/**
  * Sets accessibility label for the view.
  * @param label - The accessibility label
  */
@@ -500,6 +514,7 @@ export type BuiltInModifier =
   | ReturnType<typeof hueRotation>
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
+  | ReturnType<typeof buttonStyle>
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
