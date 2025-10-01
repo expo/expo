@@ -836,7 +836,11 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
     case "borderedProminent":
       content.buttonStyle(.borderedProminent)
     case "borderless":
-      content.buttonStyle(.borderless)
+      if #available(iOS 13.0, macOS 10.15, tvOS 17.0, *) {
+        content.buttonStyle(.borderless)
+      } else {
+        content.buttonStyle(.automatic)
+      }
     case "glass":
       if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
         #if compiler(>=6.2) // Xcode 26
