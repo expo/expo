@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.0.0 — 2025-10-01
+
+### 🛠 Breaking changes
+
 - Rename to `expo-server` ([#40087](https://github.com/expo/expo/pull/40087) by [@kitten](https://github.com/kitten))
 - Remove (undocumented) `createRequestHandler` from `@expo/server` entrypoint API ([#39894](https://github.com/expo/expo/pull/39894) by [@kitten](https://github.com/kitten))
 - Update `/adapter/netlify` export to Netlify Functions 2.0 ([#40082](https://github.com/expo/expo/pull/40082) by [@kitten](https://github.com/kitten))
@@ -12,11 +22,7 @@
 
 - Add new Runtime Server API with `environment()`, `origin()`, `runTask()`, `deferTask()`, and `StatusError` ([#39925](https://github.com/expo/expo/pull/39925) by [@kitten](https://github.com/kitten))
 
-### 🐛 Bug fixes
-
-### 💡 Others
-
-## 0.7.5 - 2025-09-22
+## 0.7.5 — 2025-09-22
 
 ### 🐛 Bug fixes
 
