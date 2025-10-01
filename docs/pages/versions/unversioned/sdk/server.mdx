@@ -12,8 +12,7 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 
-`expo-server` is a server-side API and runtime library for Expo Router. It provides helpers you can use in your Expo Router API routes
-or other server code, and contains adapters to run Expo Router server exports.
+`expo-server` is a server-side API and runtime library for Expo Router. It provides helpers you can use in your Expo Router API routes or other server code, and contains adapters to run Expo Router server exports.
 
 ## Installation
 
@@ -30,9 +29,7 @@ To use `expo-server` in your project, you need to configure your Expo Router pro
 
 ## Usage
 
-`expo-server`'s runtime APIs can only be used in server-side code and give you access to the server-side runtime environment.
-The runtiem API exposes functions that can be called within the async-context of request handlers and give you information
-about the current request or schedule tasks that run concurrently to the incoming request.
+`expo-server`'s runtime APIs can only be used in server-side code and give you access to the server-side runtime environment. The runtime API exposes functions that can be called within the async context of request handlers and give you information about the current request or schedule tasks that run concurrently to the incoming request.
 
 ### Accessing request metadata
 
@@ -68,8 +65,7 @@ export async function GET() {
 
 ## Adapters
 
-`expo-server` exposes adapters to run Expo Router server-side exports in different environments or on different cloud provider serverless functions. Typically, every runtime needs its own adapter to function with the `expo-server` runtime. Before deploying
-to these providers, it may be good to be familiar with the basics of [`npx expo export`](/more/expo-cli#exporting) command.
+`expo-server` exposes adapters to run Expo Router server-side exports in different environments or on different cloud provider serverless functions. Typically, every runtime needs its own adapter to function with the `expo-server` runtime. Before deploying to these providers, it is good to be familiar with the basics of [`npx expo export`](/more/expo-cli#exporting) command.
 
 | Adapter                       | Provider                                                                 |
 | ----------------------------- | ------------------------------------------------------------------------ |
