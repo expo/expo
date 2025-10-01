@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type AssetData } from '@expo/metro/metro/Assets';
-import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
 type Options = {
     processModuleFilter: (modules: Module) => boolean;
     assetPlugins: readonly string[];

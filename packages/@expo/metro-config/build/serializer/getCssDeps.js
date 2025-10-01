@@ -103,6 +103,7 @@ function getCssMetadata(module) {
     return null;
 }
 function fileNameFromContents({ filepath, src }) {
+    // TODO(@kitten): As of metro@0.83.2 but maybe before, this does not look correct. Encoding has changed, see: https://github.com/facebook/metro/commit/cb02cdb
     // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
     const decoded = decodeURIComponent(filepath).replace(/\\/g, '/');
     return getFileName(decoded) + '-' + (0, hash_1.hashString)(src);

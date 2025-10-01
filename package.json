@@ -20,7 +20,7 @@
     ]
   },
   "resolutions": {
-    "@expo/metro": "~54.0.0",
+    "@expo/metro": "./tarballs/expo-metro-54.0.1.tgz",
     "react-native": "0.82.0-rc.4",
     "react": "19.1.1",
     "react-dom": "19.1.1",

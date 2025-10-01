@@ -1,10 +1,9 @@
-import { platform } from 'node:process';
+import path from 'node:path';
 
-const REGEXP_REPLACE_SLASHES = /\\/g;
-
-/**
- * Convert any platform-specific path to a POSIX path.
+/** Convert any platform-specific path to a POSIX path.
+ * @privateRemarks
+ * Metro's equivalent is `normalizePathSeparatorsToPosix`
  */
 export function toPosixPath(filePath: string): string {
-  return platform === 'win32' ? filePath.replace(REGEXP_REPLACE_SLASHES, '/') : filePath;
+  return path.sep === '\\' ? filePath.replaceAll('\\', '/') : filePath;
 }
