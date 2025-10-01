@@ -10,9 +10,11 @@ Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function ()
  * Returns a request handler for Workerd deployments.
  */
 function createRequestHandler(params, setup) {
-    return (0, abstract_1.createRequestHandler)({
+    const run = (0, workerd_1.createWorkerdRequestScope)(params);
+    const onRequest = (0, abstract_1.createRequestHandler)({
         ...(0, workerd_1.createWorkerdEnv)(params),
         ...setup,
     });
+    return (request, env, ctx) => run(onRequest, request, env, ctx);
 }
 //# sourceMappingURL=workerd.js.map

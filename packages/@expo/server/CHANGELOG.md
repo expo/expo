@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add new Runtime Server API with `environment()`, `origin()`, `runTask()`, `deferTask()`, and `StatusError` ([#39925](https://github.com/expo/expo/pull/39925) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

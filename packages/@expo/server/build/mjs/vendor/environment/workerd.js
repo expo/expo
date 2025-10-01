@@ -1,4 +1,5 @@
 import { createEnvironment } from './common';
+import { createRequestScope } from '../../runtime';
 const createCachedImport = () => {
     const importCache = new Map();
     return async function importCached(request) {
@@ -21,10 +22,11 @@ const createCachedImport = () => {
     };
 };
 export function createWorkerdEnv(params) {
+    const build = params.build || '.';
     const importCached = createCachedImport();
     async function readText(request) {
         try {
-            const mod = await importCached(`${params.build}/${request}`);
+            const mod = await importCached(`${build}/${request}`);
             return mod.default;
         }
         catch {
@@ -33,7 +35,7 @@ export function createWorkerdEnv(params) {
     }
     async function readJson(request) {
         try {
-            const mod = await importCached(`${params.build}/${request}`);
+            const mod = await importCached(`${build}/${request}`);
             if (typeof mod.default === 'string' && mod.default[0] === '{') {
                 return JSON.parse(mod.default);
             }
@@ -46,7 +48,7 @@ export function createWorkerdEnv(params) {
         }
     }
     async function loadModule(request) {
-        const target = `${params.build}/${request}`;
+        const target = `${build}/${request}`;
         return (await import(target)).default;
     }
     return createEnvironment({
@@ -54,5 +56,13 @@ export function createWorkerdEnv(params) {
         readJson,
         loadModule,
     });
+}
+export function createWorkerdRequestScope(params) {
+    const makeRequestAPISetup = (request, _env, ctx) => ({
+        origin: request.headers.get('Origin') || 'null',
+        environment: params.environment ?? null,
+        waitUntil: ctx.waitUntil?.bind(ctx),
+    });
+    return createRequestScope(makeRequestAPISetup);
 }
 //# sourceMappingURL=workerd.js.map
