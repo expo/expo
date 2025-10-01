@@ -7,7 +7,6 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
@@ -252,8 +251,6 @@ internal class MockApplication : Application(), ReactApplication {
   internal fun bindCurrentActivity(activity: Activity?) {
     currentActivity = activity
   }
-
-  override val reactNativeHost: ReactNativeHost = mockk<ReactNativeHost>(relaxed = true)
 
   override val reactHost: ReactHost by lazy {
     mockk<ReactHost>(relaxed = true)
