@@ -52,6 +52,11 @@ struct Metadata: Record {
   @Field var artworkUrl: URL?
 }
 
+struct LockScreenOptions: Record {
+  @Field var showSeekForward: Bool = false
+  @Field var showSeekBackward: Bool = false
+}
+
 enum BitRateStrategy: String, Enumerable {
   case constant
   case longTermAverage
