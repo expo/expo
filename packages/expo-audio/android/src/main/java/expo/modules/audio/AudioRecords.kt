@@ -86,6 +86,18 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
   }
 }
 
+enum class LockScreenButtons(val value: Int) : Enumerable {
+  PLAY_PAUSE(0),
+  FORWARD(1),
+  BACKWARD(2),
+  NEXT(3),
+  PREVIOUS(4)
+}
+
+class AudioLockScreenOptions(
+  @Field val buttons: Array<LockScreenButtons>
+) : Record
+
 enum class InterruptionMode(val value: String) : Enumerable {
   DO_NOT_MIX("doNotMix"),
   DUCK_OTHERS("duckOthers")
