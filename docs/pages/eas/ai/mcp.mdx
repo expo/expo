@@ -145,27 +145,27 @@ These capabilities enable more sophisticated workflows like automated testing, v
 
 ### Tools
 
-| Tool                                   | Description                                                          | Example Prompt                                      | Availability                 |
-| -------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------- |
-| `add_library`                          | Install Expo packages with `npx expo install` and show documentation | "add sqlite and basic CRUD to the app"              | Server                       |
-| `generate_claude_md`                   | Generate **CLAUDE.md** configuration files                           | "generate a CLAUDE.md for the project"              | Server (Claude Code only)    |
-| `generate_agents_md`                   | Generate **AGENTS.md** files                                         | "generate an AGENTS.md file for the project"        | Server                       |
+| Tool                                   | Description                                                          | Example Prompt                                      | Availability                           |
+| -------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------- |
+| `add_library`                          | Install Expo packages with `npx expo install` and show documentation | "add sqlite and basic CRUD to the app"              | Server                                 |
+| `generate_claude_md`                   | Generate **CLAUDE.md** configuration files                           | "generate a CLAUDE.md for the project"              | Server (Claude Code only)              |
+| `generate_agents_md`                   | Generate **AGENTS.md** files                                         | "generate an AGENTS.md file for the project"        | Server                                 |
 | `expo_router_sitemap`                  | Execute and display expo-router-sitemap output                       | "check the expo-router-sitemap output"              | Local (requires `expo-router` library) |
-| `open_devtools`                        | Open React Native DevTools                                           | "open devtools"                                     | Local                        |
-| `automation_tap`                       | Tap at specific screen coordinates                                   | "tap the screen at x=12, y=22"                      | Local                        |
-| `automation_take_screenshot`           | Take full device screenshots                                         | "take a screenshot and verify the blue circle view" | Local                        |
-| `automation_find_view_by_testid`       | Find and analyze views by testID                                     | "dump properties for testID 'button-123'"           | Local                        |
-| `automation_tap_by_testid`             | Tap views by testID                                                  | "click the view with testID 'button-123'"           | Local                        |
-| `automation_take_screenshot_by_testid` | Screenshot specific views by testID                                  | "screenshot the view with testID 'button-123'"      | Local                        |
+| `open_devtools`                        | Open React Native DevTools                                           | "open devtools"                                     | Local                                  |
+| `automation_tap`                       | Tap at specific screen coordinates                                   | "tap the screen at x=12, y=22"                      | Local                                  |
+| `automation_take_screenshot`           | Take full device screenshots                                         | "take a screenshot and verify the blue circle view" | Local                                  |
+| `automation_find_view_by_testid`       | Find and analyze views by testID                                     | "dump properties for testID 'button-123'"           | Local                                  |
+| `automation_tap_by_testid`             | Tap views by testID                                                  | "click the view with testID 'button-123'"           | Local                                  |
+| `automation_take_screenshot_by_testid` | Screenshot specific views by testID                                  | "screenshot the view with testID 'button-123'"      | Local                                  |
 
 ### Prompts
 
 If your AI tool supports [MCP prompts](https://modelcontextprotocol.io/specification/2025-06-18/server/prompts), you may see additional menu options, such as [slash commands in Claude Code](https://docs.claude.com/en/docs/claude-code/mcp#use-mcp-prompts-as-slash-commands):
 
-| Tool                  | Description                                    | Availability                 |
-| --------------------- | ---------------------------------------------- | ---------------------------- |
+| Tool                  | Description                                    | Availability                           |
+| --------------------- | ---------------------------------------------- | -------------------------------------- |
 | `expo_router_sitemap` | Execute and display expo-router-sitemap output | Local (requires `expo-router` library) |
-| `onboarding`          | Display **AGENTS.md** content to the AI        | Server                       |
+| `onboarding`          | Display **AGENTS.md** content to the AI        | Server                                 |
 
 ## Limitations
 
