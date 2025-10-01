@@ -10,12 +10,26 @@
 
 ### 🐛 Bug fixes
 
-- fix VectorIcon types ([#39747](https://github.com/expo/expo/pull/39747) by [@Ubax](https://github.com/Ubax))
-- [iOS] fix icons in context menu not being removed with `undefined` ([#39845](https://github.com/expo/expo/pull/39845) by [@hassankhan](https://github.com/hassankhan))
-- [iOS] fix optional context menu props not being unset with `undefined` ([#39853](https://github.com/expo/expo/pull/39853) by [@hassankhan](https://github.com/hassankhan))
+### 💡 Others
+
+## 6.0.9 - 2025-10-01
+
+### 🐛 Bug fixes
+
 - Fix `expo-router/server` exports ([#40071](https://github.com/expo/expo/pull/40071) by [@kitten](https://github.com/kitten))
 
-### 💡 Others
+## 6.0.8 - 2025-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] fix icons in context menu not being removed with `undefined` ([#39845](https://github.com/expo/expo/pull/39845) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] fix optional context menu props not being unset with `undefined` ([#39853](https://github.com/expo/expo/pull/39853) by [@hassankhan](https://github.com/hassankhan))
+
+## 6.0.7 - 2025-09-18
+
+### 🐛 Bug fixes
+
+- fix VectorIcon types ([#39747](https://github.com/expo/expo/pull/39747) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.6 — 2025-09-16
 

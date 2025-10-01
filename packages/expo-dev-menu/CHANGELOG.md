@@ -8,9 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Adjust tvOS colors. ([#40006](https://github.com/expo/expo/pull/40006) by [@douglowder](https://github.com/douglowder))
-- [Android] Render registered custom Dev Menu items and allow invoking callbacks ([#39995](https://github.com/expo/expo/pull/39995) by [@Jc-Cloete](https://github.com/Jc-Cloete))
-
 ### 💡 Others
 
 - change debugger connection "warning" to a "tip" ([#39942](https://github.com/expo/expo/pull/39942) by [@vonovak](https://github.com/vonovak))
@@ -19,6 +16,17 @@
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 7.0.13 - 2025-10-01
+
+### 🐛 Bug fixes
+
+- [iOS] Adjust tvOS colors. ([#40006](https://github.com/expo/expo/pull/40006) by [@douglowder](https://github.com/douglowder))
+- [Android] Render registered custom Dev Menu items and allow invoking callbacks ([#39995](https://github.com/expo/expo/pull/39995) by [@Jc-Cloete](https://github.com/Jc-Cloete))
+
+## 7.0.12 - 2025-09-22
+
+_This version does not introduce any user-facing changes._
 
 ## 7.0.11 — 2025-09-11
 
