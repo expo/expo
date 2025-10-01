@@ -34,7 +34,7 @@ Using [`supabase-js`](https://supabase.com/docs/reference/javascript/introductio
 
 After you have created your [Expo project](/get-started/create-a-project/), install `@supabase/supabase-js` and the required dependencies using the following command:
 
-<Terminal cmd={['$ npx expo install @supabase/supabase-js @react-native-async-storage/async-storage react-native-url-polyfill']} />
+<Terminal cmd={['$ npx expo install @supabase/supabase-js @react-native-async-storage/async-storage']} />
 </Step>
 
 <Step label="2">
@@ -42,7 +42,6 @@ After you have created your [Expo project](/get-started/create-a-project/), inst
 Create a helper file to initialize the Supabase client (`@supabase/supabase-js`). You need the API URL and the `anon` key copied [earlier](#get-the-api-keys). These variables are safe to expose in your Expo app since Supabase has [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) enabled in the Database.
 
 ```ts utils/supabase.ts
-import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 
