@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update usage of `@expo/server` API ([#39894](https://github.com/expo/expo/pull/39894) by [@kitten](https://github.com/kitten))
+
 ## 54.0.9 — 2025-10-01
 
 ### 🐛 Bug fixes

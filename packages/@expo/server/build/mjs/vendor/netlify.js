@@ -1,14 +1,9 @@
 import { AbortController } from 'abort-controller';
-import { createRequestHandler as createExpoHandler } from '../index';
-import { getApiRoute, getHtml, getMiddleware, getRoutesManifest, handleRouteError, } from '../runtime/node';
-export function createRequestHandler({ build }) {
-    const handleRequest = createExpoHandler({
-        getRoutesManifest: getRoutesManifest(build),
-        getHtml: getHtml(build),
-        getApiRoute: getApiRoute(build),
-        getMiddleware: getMiddleware(build),
-        handleRouteError: handleRouteError(),
-    });
+import { createRequestHandler as createExpoHandler } from './abstract';
+import { createNodeEnv } from './environment/node';
+export { ExpoError } from './abstract';
+export function createRequestHandler(params) {
+    const handleRequest = createExpoHandler(createNodeEnv(params));
     return async (event) => {
         const response = await handleRequest(convertRequest(event));
         return respond(response);

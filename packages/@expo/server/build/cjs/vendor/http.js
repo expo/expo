@@ -1,41 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ExpoError = void 0;
 exports.createRequestHandler = createRequestHandler;
 exports.convertRequest = convertRequest;
 exports.convertHeaders = convertHeaders;
 exports.respond = respond;
 const node_stream_1 = require("node:stream");
 const promises_1 = require("node:stream/promises");
-const index_1 = require("../index");
-const node_1 = require("../runtime/node");
+const abstract_1 = require("./abstract");
+const node_1 = require("./environment/node");
+var abstract_2 = require("./abstract");
+Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function () { return abstract_2.ExpoError; } });
 /**
  * Returns a request handler for http that serves the response using Remix.
  */
-function createRequestHandler({ build }, setup = {}) {
-    let routesManifest = null;
-    const defaultGetRoutesManifest = (0, node_1.getRoutesManifest)(build);
-    const getRoutesManifestCached = async () => {
-        let manifest = null;
-        if (setup.getRoutesManifest) {
-            // Development
-            manifest = await setup.getRoutesManifest();
-        }
-        else if (!routesManifest) {
-            // Production
-            manifest = await defaultGetRoutesManifest();
-        }
-        if (manifest) {
-            routesManifest = manifest;
-        }
-        return routesManifest;
-    };
-    const handleRequest = (0, index_1.createRequestHandler)({
-        getRoutesManifest: getRoutesManifestCached,
-        getHtml: (0, node_1.getHtml)(build),
-        getApiRoute: (0, node_1.getApiRoute)(build),
-        getMiddleware: (0, node_1.getMiddleware)(build),
-        handleRouteError: (0, node_1.handleRouteError)(),
+function createRequestHandler(params, setup) {
+    const nodeEnv = (0, node_1.createNodeEnv)(params);
+    const handleRequest = (0, abstract_1.createRequestHandler)({
+        ...nodeEnv,
         ...setup,
+        getRoutesManifest: setup?.getRoutesManifest ?? nodeEnv.getRoutesManifest,
     });
     return async (req, res, next) => {
         if (!req?.url || !req.method) {
