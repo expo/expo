@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
 const react_1 = __importStar(require("react"));
 const react_native_screens_1 = require("react-native-screens");
+const private_1 = require("react-native-screens/private");
 const appearance_1 = require("./appearance");
 const types_1 = require("./types");
 const utils_1 = require("./utils");
@@ -125,8 +126,13 @@ function Screen(props) {
     const title = descriptor.options.title ?? name;
     const icon = useAwaitedScreensIcon(descriptor.options.icon);
     const selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
+    let content = descriptor.render();
+    if ((process.env.EXPO_OS === 'android' && !descriptor.options.disableAndroidSafeInsets) ||
+        (process.env.EXPO_OS === 'ios' && descriptor.options.addIOSSafeInsets)) {
+        content = <private_1.SafeAreaView edges={{ bottom: true }}>{content}</private_1.SafeAreaView>;
+    }
     return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(icon)} iconResource={getAndroidIconResource(icon)} icon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(icon)} selectedIcon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(selectedIcon)} title={shouldResetTitleAndIcon ? undefined : title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
-      {descriptor.render()}
+      {content}
     </react_native_screens_1.BottomTabsScreen>);
 }
 function useAwaitedScreensIcon(icon) {

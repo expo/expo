@@ -8,6 +8,7 @@ import {
   type BottomTabsScreenAppearance,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
+import { SafeAreaView as RNSSafeAreaView } from 'react-native-screens/private';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import {
@@ -201,6 +202,15 @@ function Screen(props: {
   const icon = useAwaitedScreensIcon(descriptor.options.icon);
   const selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
 
+  let content = descriptor.render();
+
+  if (
+    (process.env.EXPO_OS === 'android' && !descriptor.options.disableAndroidSafeInsets) ||
+    (process.env.EXPO_OS === 'ios' && descriptor.options.addIOSSafeInsets)
+  ) {
+    content = <RNSSafeAreaView edges={{ bottom: true }}>{content}</RNSSafeAreaView>;
+  }
+
   return (
     <BottomTabsScreen
       {...descriptor.options}
@@ -221,7 +231,7 @@ function Screen(props: {
       tabKey={routeKey}
       systemItem={descriptor.options.role}
       isFocused={isFocused}>
-      {descriptor.render()}
+      {content}
     </BottomTabsScreen>
   );
 }

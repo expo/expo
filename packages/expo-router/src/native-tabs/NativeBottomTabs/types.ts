@@ -137,6 +137,25 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    * @platform web
    */
   indicatorColor?: ColorValue;
+  /**
+   * Disables the safe area view for the screen on Android.
+   * When set to `false`, the screen content will be adjusted to avoid being hidden behind the tab bar.
+   *
+   * @default false
+   * @platform android
+   */
+  disableAndroidSafeInsets?: boolean;
+
+  /**
+   * Enables the safe area view for the screen on iOS.
+   * This ensures that the screen content is not hidden behind the tab bar.
+   *
+   * Use this only when you have static content that does not use a scroll view.
+   *
+   * @default false
+   * @platform ios
+   */
+  addIOSSafeInsets?: boolean;
 }
 
 export type SymbolOrImageSource =
@@ -465,6 +484,25 @@ export interface NativeTabTriggerProps {
    * @platform ios
    */
   role?: NativeTabsTabBarItemRole;
+  /**
+   * Disables the safe area view for the screen on Android.
+   * When set to `false`, the screen content will be adjusted to avoid being hidden behind the tab bar.
+   *
+   * @default false
+   * @platform android
+   */
+  disableAndroidSafeInsets?: boolean;
+
+  /**
+   * Enables the safe area view for the screen on iOS.
+   * This ensures that the screen content is not hidden behind the tab bar.
+   *
+   * Use this only when you have static content that does not use a scroll view.
+   *
+   * @default false
+   * @platform ios
+   */
+  addIOSSafeInsets?: boolean;
 }
 
 const SUPPORTED_TAB_BAR_ITEM_ROLES = [
