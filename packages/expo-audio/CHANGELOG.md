@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
