@@ -23,7 +23,7 @@ export default function ContextMenuScreen() {
   return (
     <View>
       <Section title="Context Menu with glass effect button" row>
-        <Host matchContents>
+        <Host matchContents style={{ margin: 10 }}>
           <ContextMenu modifiers={[fixedSize(), buttonStyle('glass')]}>
             <ContextMenu.Items>
               <Button
@@ -45,7 +45,7 @@ export default function ContextMenuScreen() {
         </Host>
       </Section>
       <Section title="Single-Press Context Menu" row>
-        <Host matchContents>
+        <Host matchContents style={{ margin: 10 }}>
           <ContextMenu modifiers={[fixedSize(), buttonStyle('bordered')]}>
             <ContextMenu.Items>
               <Button
