@@ -26,9 +26,8 @@ export { StatusError } from './error';
 
 /** Returns the current request's origin URL.
  *
- * This typically returns the request's Origin header, which contains the
+ * This typically returns the request's `Origin` header, which contains the
  * request origin URL or defaults to `null`.
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Origin
  * @returns A request origin
  */
 export function origin(): string | null {
@@ -37,10 +36,10 @@ export function origin(): string | null {
 
 /** Returns the request's environment, if the server runtime supports this.
  *
- * In EAS Hosting, the returned environment name is the alias or deployment identifier,
+ * In EAS Hosting, the returned environment name is the
+ * [alias or deployment identifier](https://docs.expo.dev/eas/hosting/deployments-and-aliases/),
  * but the value may differ for other providers.
  *
- * @see https://docs.expo.dev/eas/hosting/deployments-and-aliases/
  * @returns A request environment name, or `null` for production.
  */
 export function environment(): string | null {
