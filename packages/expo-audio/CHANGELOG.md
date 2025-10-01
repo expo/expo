@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix issue where after replacing the media source, events are emitted twice.
+
 ### 💡 Others
 
 ## 1.0.13 - 2025-09-18
