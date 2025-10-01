@@ -18,10 +18,19 @@
       "import": "./build/mjs/vendor/*.js",
       "require": "./build/cjs/vendor/*.js"
     },
+    "./vendor/*": {
+      "import": "./build/mjs/vendor/*.js",
+      "require": "./build/cjs/vendor/*.js"
+    },
+    "./runtime/*": {
+      "import": "./build/mjs/runtime/index.js",
+      "require": "./build/cjs/runtime/index.js"
+    },
     "./build/*": {
       "import": "./build/mjs/*.js",
       "require": "./build/cjs/*.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "run-p build:cjs build:mjs",
