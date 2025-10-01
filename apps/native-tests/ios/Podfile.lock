@@ -433,9 +433,9 @@ PODS:
   - EXUpdatesInterface (2.0.0):
     - ExpoModulesCore
   - FBLazyVector (0.82.0-rc.5)
-  - hermes-engine (0.82.0-rc.4):
-    - hermes-engine/Pre-built (= 0.82.0-rc.4)
-  - hermes-engine/Pre-built (0.82.0-rc.4)
+  - hermes-engine (0.82.0-rc.5):
+    - hermes-engine/Pre-built (= 0.82.0-rc.5)
+  - hermes-engine/Pre-built (0.82.0-rc.5)
   - libavif/core (0.11.1)
   - libavif/libdav1d (0.11.1):
     - libavif/core
@@ -2479,7 +2479,7 @@ SPEC CHECKSUMS:
   EXUpdates: b96ad490c9456eebc38f949f3c30ce6258845773
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   FBLazyVector: bd5db632a304b99a915e07040696286715b97462
-  hermes-engine: 883ad6cdbcb152221038266a5908c1fa6c1002f7
+  hermes-engine: a14f7f403796d60a2ae636a4d5b6c1f7646503f8
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
