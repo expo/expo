@@ -31,6 +31,8 @@
 
 - fix VectorIcon types ([#39747](https://github.com/expo/expo/pull/39747) by [@Ubax](https://github.com/Ubax))
 
+- Rename to `@expo/server` to `expo-server` ([#40087](https://github.com/expo/expo/pull/40087) by [@kitten](https://github.com/kitten))
+
 ## 6.0.6 — 2025-09-16
 
 ### 🐛 Bug fixes
