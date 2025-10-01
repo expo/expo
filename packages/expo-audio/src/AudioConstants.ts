@@ -8,7 +8,7 @@ export type AudioLockScreenOptions = {
    */
   showSeekForward?: boolean;
   /**
-   * Whether the seek backward button should be displayed on the lock screen
+   * Whether the seek backward button should be displayed on the lock screen.
    */
   showSeekBackward?: boolean;
 };
