@@ -24,42 +24,51 @@ function assertSupport<T>(name: string, v: T | undefined): T {
 
 export { StatusError } from './error';
 
-/** Returns the current request's origin URL
- * @remarks
- * This returns the request's Origin header, which contains the
+/** Returns the current request's origin URL.
+ *
+ * This typically returns the request's Origin header, which contains the
  * request origin URL or defaults to `null`.
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Origin
+ * @returns A request origin
  */
 export function origin(): string | null {
   return assertSupport('origin()', enforcedRequestScope().origin);
 }
 
-/** Returns the currently specified "environment", if any is set up.
- * @remarks
- * The request's environment. When this is `null`, this by convention typically
- * signifies the production environment. This is typically customized via the
- * Expo server adapters, and will default to the current `alias` name in
- * EAS Hosting.
+/** Returns the request's environment, if the server runtime supports this.
+ *
+ * In EAS Hosting, the returned environment name is the alias or deployment identifier,
+ * but the value may differ for other providers.
+ *
+ * @see https://docs.expo.dev/eas/hosting/deployments-and-aliases/
+ * @returns A request environment name, or `null` for production.
  */
 export function environment(): string | null {
   return assertSupport('environment()', enforcedRequestScope().environment);
 }
 
 /** Runs a task immediately and instructs the runtime to complete the task.
- * @remarks
- * Running a promise concurrently to the request doesn't usually guarantee that your
- * serverless function will continue executing the task. Passing the task to `runTask`
- * will attempt to keep the current invocation running until the task is completed.
+ *
+ * A request handler may be terminated as soon as the client has finished the full `Response`
+ * and unhandled promise rejections may not be logged properly. To run tasks concurrently to
+ * a request handler and keep the request alive until the task is completed, pass a task
+ * function to `runTask` instead. The request handler will be kept alive until the task
+ * completes.
+ *
+ * @param fn - A task function to execute. The request handler will be kept alive until this task finishes.
  */
 export function runTask(fn: () => Promise<unknown>): void {
   assertSupport('runTask()', enforcedRequestScope().waitUntil)(fn());
 }
 
 /** Defers a task until after a response has been sent.
- * @remarks
- * After a response has been sent, if no error occurred, the tasks passed to `deferTask`
- * will be executed and the serverless function will be instructed to continue executing
- * the task until it has completed.
+ *
+ * This only calls the task function once the request handler has finished resolving a `Response`
+ * and keeps the request handler alive until the task is completed. This is useful to run non-critical
+ * tasks after the request handler, for example to log analytics datapoints. If the request handler
+ * rejects with an error, deferred tasks won't be executed.
+ *
+ * @param fn - A task function to execute after the request handler has finished.
  */
 export function deferTask(fn: () => Promise<unknown>): void {
   assertSupport('deferTask()', enforcedRequestScope().deferTask)(fn);
