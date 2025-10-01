@@ -12,7 +12,8 @@ const octokit = new Octokit({
 const cachedPullRequests = new Map<number, PullRequest>();
 
 // Predefine some params used across almost all requests.
-const owner = 'expo';
+// const owner = 'expo';
+const owner = 'jakex7';
 const repo = 'expo';
 
 /**
@@ -52,6 +53,30 @@ export async function getPullRequestAsync(
   });
   cachedPullRequests.set(pull_number, data);
   return data;
+}
+
+/**
+ * Requests for the pull request object.
+ */
+export async function getPullRequestsByLabelAsync(label: string): Promise<PullRequestsSearch> {
+  const query = `repo:${owner}/${repo} is:pr is:closed label:"${label}"`;
+
+  return await octokit.paginate(octokit.search.issuesAndPullRequests, {
+    q: query,
+  });
+}
+
+/**
+ * Returns all SDK labels in the repository.
+ */
+export async function getAllSdkLabelsAsync(): Promise<LabelsSearch> {
+  const query = await octokit.paginate(octokit.search.labels, {
+    repository_id: 1067230096,
+    q: 'SDK',
+  });
+
+  // return query;
+  return query.filter((label) => label.name.match(/^SDK \d+$/));
 }
 
 /**
@@ -438,6 +463,9 @@ export async function updateReleaseTitle(
 export type PullRequestReviewEvent = 'COMMENT' | 'APPROVE' | 'REQUEST_CHANGES';
 export type PullRequest = RestEndpointMethodTypes['pulls']['get']['response']['data'];
 export type PullRequestReview = RestEndpointMethodTypes['pulls']['getReview']['response']['data'];
+export type PullRequestsSearch =
+  RestEndpointMethodTypes['search']['issuesAndPullRequests']['response']['data']['items'];
+export type LabelsSearch = RestEndpointMethodTypes['search']['labels']['response']['data']['items'];
 export type IssueComment = RestEndpointMethodTypes['issues']['getComment']['response']['data'];
 export type ListCommentsOptions = RestEndpointMethodTypes['issues']['listComments']['parameters'];
 export type ListCommentsResponse = RestEndpointMethodTypes['issues']['listComments']['response'];
