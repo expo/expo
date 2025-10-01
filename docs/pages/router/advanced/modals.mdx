@@ -192,7 +192,23 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Handle deep-linked modals
+
+While working with stack or nested stack navigators, modals need to be anchored to ensure correct navigation behavior. This is essential when deep-linking to modal routes. Without anchoring, the screen behind the modal will be wiped away, leaving no navigation context.
+
+An _anchor_ serves as the base for the modal. In complex apps, when you have nested stacks, the anchor must be defined for the nested stack, and its value becomes the initial route of the stack.
+
+You can configure an anchor by exporting `unable_settings` from your stack's layout file:
+
+```tsx
+export const unstable_settings = {
+  anchor: 'index', // Anchor to the index route
+};
+```
+
 ## Additional information
+
+In the above example, the `anchor: 'index'` tells the Expo Router that it should maintain the specified anchor route in the background when presenting a modal.
 
 ### Presentation options
 
