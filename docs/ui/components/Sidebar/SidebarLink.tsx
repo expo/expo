@@ -119,7 +119,10 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isPreview && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full bg-element px-[10px] text-[10px] font-normal leading-none text-secondary'
+            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-purple10 px-[5px] text-[10px] font-semibold leading-none text-palette-white',
+            isSelected
+              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
+              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
           )}>
           PREVIEW
         </div>
