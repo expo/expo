@@ -95,7 +95,12 @@ import {
 import { prependMiddleware } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import { fromServerManifestRoute, ResolvedLoaderRoute } from './resolveLoader';
+import {
+  fromRuntimeManifestRoute,
+  fromServerManifestRoute,
+  ResolvedLoaderRoute,
+} from './resolveLoader';
+import { RouteNode } from 'expo-router/build/Route';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('@expo/router-server/build/static/renderStaticContent').getManifest>
@@ -383,8 +388,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticRenderFunctionAsync(): Promise<{
     serverManifest: RoutesManifest<string>;
     manifest: ExpoRouterRuntimeManifest;
-    renderAsync: (path: string) => Promise<string>;
+    renderAsync: (path: string, route: RouteNode) => Promise<string>;
   }> {
+    const { routerRoot } = this.instanceMetroOptions;
+    assert(
+      routerRoot != null,
+      'The server must be started before calling exportExpoRouterApiRoutesAsync.'
+    );
+
+    const appDir = path.join(this.projectRoot, routerRoot);
     const url = this.getDevServerUrlOrAssert();
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
@@ -407,8 +419,24 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Get routes from Expo Router.
       manifest: await getManifest({ preserveApiRoutes: false, ...exp.extra?.router }),
       // Get route generating function
-      async renderAsync(path: string) {
-        return await getStaticContent(new URL(path, url));
+      renderAsync: async (path, route) => {
+        const location = new URL(path, url);
+        const useServerDataLoaders = exp.extra?.router?.unstable_useServerDataLoaders;
+        if (!useServerDataLoaders) {
+          return await getStaticContent(location);
+        }
+
+        const resolvedLoaderRoute = fromRuntimeManifestRoute(location.pathname, route, {
+          serverManifest: inflateManifest(serverManifest),
+          appDir,
+        });
+
+        if (!resolvedLoaderRoute) {
+          return await getStaticContent(location);
+        }
+
+        const data = await this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
+        return await getStaticContent(location, { loader: { data } });
       },
     };
   }
@@ -1592,8 +1620,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     try {
       debug('Matched route loader to file: ', route.file);
 
-      let modulePath = route.file;
       const appDir = path.join(this.projectRoot, routerRoot);
+      let modulePath = route.file;
       modulePath = path.isAbsolute(modulePath) ? modulePath : path.join(appDir, modulePath);
       modulePath = modulePath.replace(/\.(js|ts)x?$/, '');
 
