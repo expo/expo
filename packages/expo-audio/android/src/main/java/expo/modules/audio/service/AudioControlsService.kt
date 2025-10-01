@@ -59,7 +59,7 @@ class AudioControlsService : MediaSessionService() {
     .setCustomIconResId(R.drawable.seek_forwards_10s)
     .setSessionCommand(SessionCommand(ACTION_SEEK_FORWARD, Bundle.EMPTY))
     .build()
-  
+
   // Notification helper removed; logic inlined here
 
   inner class AudioControlsBinder : Binder() {
