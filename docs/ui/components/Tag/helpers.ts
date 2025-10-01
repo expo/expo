@@ -11,6 +11,9 @@ export function getPlatformName(text: string): PlatformName {
   if (text.toLowerCase().includes('web')) {
     return 'web';
   }
+  if (text.toLowerCase().includes('server')) {
+    return 'server';
+  }
   if (text.toLowerCase().includes('macos')) {
     return 'macos';
   }
@@ -28,6 +31,8 @@ export function getTagClasses(type: string) {
       return 'bg-palette-blue3 text-palette-blue12 border-palette-blue4';
     case 'web':
       return 'bg-palette-orange3 text-palette-orange12 border-palette-orange3.5 dark:bg-palette-orange4 dark:border-palette-orange5';
+    case 'server':
+      return 'bg-palette-gray3 text-palette-gray12 border-palette-gray4 dark:bg-palette-gray4 dark:border-palette-gray4';
     case 'macos':
       return 'bg-palette-purple3 text-palette-purple12 border-palette-purple4';
     case 'tvos':

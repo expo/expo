@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update tsdoc documentation ([#40128](https://github.com/expo/expo/pull/40128) by [@kitten](https://github.com/kitten))
+
 ## 1.0.0 — 2025-10-01
 
 ### 🛠 Breaking changes
