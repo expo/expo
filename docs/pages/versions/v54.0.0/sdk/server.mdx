@@ -3,6 +3,7 @@ title: Server
 description: Server-side API and runtime for Expo Router projects.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-server'
 packageName: 'expo-server'
+platforms: ['server']
 isNew: true
 ---
 
@@ -12,8 +13,7 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 
-`expo-server` is a server-side API and runtime library for Expo Router. It provides helpers you can use in your Expo Router API routes
-or other server code, and contains adapters to run Expo Router server exports.
+`expo-server` is a server-side API and runtime library for Expo Router. It provides helpers you can use in your Expo Router API routes or other server code, and contains adapters to run Expo Router server exports.
 
 ## Installation
 
@@ -30,9 +30,7 @@ To use `expo-server` in your project, you need to configure your Expo Router pro
 
 ## Usage
 
-`expo-server`'s runtime APIs can only be used in server-side code and give you access to the server-side runtime environment.
-The runtiem API exposes functions that can be called within the async-context of request handlers and give you information
-about the current request or schedule tasks that run concurrently to the incoming request.
+`expo-server`'s runtime APIs can only be used in server-side code and give you access to the server-side runtime environment. The runtime API exposes functions that can be called within the async context of request handlers and give you information about the current request or schedule tasks that run concurrently to the incoming request.
 
 ### Accessing request metadata
 
@@ -68,8 +66,7 @@ export async function GET() {
 
 ## Adapters
 
-`expo-server` exposes adapters to run Expo Router server-side exports in different environments or on different cloud provider serverless functions. Typically, every runtime needs its own adapter to function with the `expo-server` runtime. Before deploying
-to these providers, it may be good to be familiar with the basics of [`npx expo export`](/more/expo-cli#exporting) command.
+`expo-server` exposes adapters to run Expo Router server-side exports in different environments or on different cloud provider serverless functions. Typically, every runtime needs its own adapter to function with the `expo-server` runtime. Before deploying to these providers, it may be good to be familiar with the basics of [`npx expo export`](/more/expo-cli#exporting) command.
 
 | Adapter                       | Provider                                                                 |
 | ----------------------------- | ------------------------------------------------------------------------ |
@@ -89,9 +86,7 @@ To learn how to host API routes on different third-party services, follow the in
   Icon={BookOpen02Icon}
 />
 
-By convention, all adapters export a `createRequestHandler` function that accepts a parameters object. This accepts
-a `build` parameter that must be set to the relative path to the `dist/server` output directory that `npx expo export`
-created. Some adapters may also accept more values to configure the runtime API.
+By convention, all adapters export a `createRequestHandler` function that accepts a parameters object. This accepts a `build` parameter that must be set to the relative path to the `dist/server` output directory that `npx expo export` created. Some adapters may also accept more values to configure the runtime API.
 
 ```ts
 import path from 'node:path';

@@ -86,9 +86,7 @@ To learn how to host API routes on different third-party services, follow the in
   Icon={BookOpen02Icon}
 />
 
-By convention, all adapters export a `createRequestHandler` function that accepts a parameters object. This accepts
-a `build` parameter that must be set to the relative path to the `dist/server` output directory that `npx expo export`
-created. Some adapters may also accept more values to configure the runtime API.
+By convention, all adapters export a `createRequestHandler` function that accepts a parameters object. This accepts a `build` parameter that must be set to the relative path to the `dist/server` output directory that `npx expo export` created. Some adapters may also accept more values to configure the runtime API.
 
 ```ts
 import path from 'node:path';
