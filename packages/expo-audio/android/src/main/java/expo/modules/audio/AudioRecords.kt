@@ -87,15 +87,13 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
 }
 
 enum class LockScreenButtons(val value: Int) : Enumerable {
-  PLAY_PAUSE(0),
-  FORWARD(1),
-  BACKWARD(2),
-  NEXT(3),
-  PREVIOUS(4)
+  SEEK_FORWARD(0),
+  SEEK_BACKWARD(1)
 }
 
 class AudioLockScreenOptions(
-  @Field val buttons: Array<LockScreenButtons>
+  @Field val showSeekForward: Boolean,
+  @Field val showSeekBackward: Boolean
 ) : Record
 
 enum class InterruptionMode(val value: String) : Enumerable {
