@@ -1,10 +1,10 @@
 import { Button, Host, Picker, Switch, ContextMenu, Submenu, Text } from '@expo/ui/swift-ui';
+import { buttonStyle, fixedSize } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
 
 import { Section } from '../../components/Page';
-import { buttonStyle, fixedSize } from '@expo/ui/swift-ui/modifiers';
 
 const videoLink =
   'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_2MB.mp4';
