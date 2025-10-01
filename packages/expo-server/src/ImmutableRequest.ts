@@ -41,6 +41,7 @@ class ImmutableHeaders extends getHeadersConstructor() {
   }
 }
 
+/** @hidden */
 export type _ImmutableRequest = Omit<
   Request,
   'body' | 'bodyUsed' | 'arrayBuffer' | 'blob' | 'formData' | 'json' | 'text' | 'bytes' | 'headers'

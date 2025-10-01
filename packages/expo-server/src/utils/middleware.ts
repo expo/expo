@@ -1,4 +1,4 @@
-import type { MiddlewareFunction, MiddlewarePattern, MiddlewareSettings } from '../types';
+import type { MiddlewareFunction, MiddlewareSettings } from '../types';
 import { matchDynamicName, matchDeepDynamicRouteName } from './matchers';
 
 export interface MiddlewareModule {
@@ -48,7 +48,7 @@ export function shouldRunMiddleware(request: Request, middleware: MiddlewareModu
  * - Named parameters (supports `[param]` and `[...param]`)
  * - Regular expression
  */
-function matchesPattern(pathname: string, pattern: MiddlewarePattern): boolean {
+function matchesPattern(pathname: string, pattern: string | RegExp): boolean {
   if (typeof pattern === 'string') {
     if (pattern === pathname) {
       return true;
@@ -57,12 +57,9 @@ function matchesPattern(pathname: string, pattern: MiddlewarePattern): boolean {
     if (hasNamedParameters(pattern)) {
       return namedParamToRegex(pattern).test(pathname);
     }
-  }
-
-  if (pattern instanceof RegExp) {
+  } else if (pattern != null) {
     return pattern.test(pathname);
   }
-
   return false;
 }
 
