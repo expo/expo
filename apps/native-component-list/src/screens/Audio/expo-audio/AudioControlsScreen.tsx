@@ -3,7 +3,7 @@ import {
   useAudioPlayerStatus,
   AudioModule,
   AudioSource,
-  LockScreenButton,
+  AudioLockScreenOptions,
 } from 'expo-audio';
 import Checkbox from 'expo-checkbox';
 import React, { useState } from 'react';
@@ -20,6 +20,17 @@ const artworkUrl2 =
 const remoteSource =
   'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02';
 const localSource = require('../../../../assets/sounds/polonez.mp3');
+
+enum LockScreenButton {
+  /**
+   * Seek 10s forward button
+   */
+  SEEK_FORWARD = 0,
+  /**
+   * Seek 10s back button
+   */
+  SEEK_BACKWARD = 1,
+}
 
 export default function AudioControlsScreen(props: any) {
   React.useLayoutEffect(() => {
@@ -53,7 +64,7 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
   const status = useAudioPlayerStatus(player);
   const [enabled, setEnabled] = useState(false);
   const [metadata, setMetadata] = useState<1 | 2>(1);
-  const [buttons, setButtons] = useState<LockScreenButton[]>();
+  const [options, setOptions] = useState<AudioLockScreenOptions>();
 
   const setIsMuted = (isMuted: boolean) => {
     player.muted = isMuted;
@@ -73,10 +84,13 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
   };
 
   const toggleButton = (button: LockScreenButton) => {
-    if (buttons?.includes(button)) {
-      setButtons((b) => b?.filter((btn) => btn !== button));
-    } else {
-      setButtons((b) => (b ? [...b, button] : [button]));
+    switch (button) {
+      case LockScreenButton.SEEK_FORWARD:
+        setOptions((o) => ({ ...o, showSeekForward: !o?.showSeekForward }));
+        break;
+      case LockScreenButton.SEEK_BACKWARD:
+        setOptions((o) => ({ ...o, showSeekBackward: !o?.showSeekBackward }));
+        break;
     }
   };
 
@@ -110,39 +124,25 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
                 artist: 'Test artist',
                 artworkUrl: artworkUrl1,
               },
-              {
-                buttons,
-              }
+              options
             );
             setEnabled((e) => !e);
           }}
         />
+        <Text>Lock screen buttons:</Text>
         <View style={styles.optionRow}>
           <Checkbox
-            value={buttons?.includes(LockScreenButton.PLAY_PAUSE)}
-            onValueChange={() => toggleButton(LockScreenButton.PLAY_PAUSE)}
+            value={options?.showSeekForward}
+            onValueChange={() => toggleButton(LockScreenButton.SEEK_FORWARD)}
           />
-          <Text style={styles.optionsText}>Play/Pause</Text>
+          <Text style={styles.optionsText}>Seek forward</Text>
+        </View>
+        <View style={styles.optionRow}>
           <Checkbox
-            value={buttons?.includes(LockScreenButton.BACKWARD)}
-            onValueChange={() => toggleButton(LockScreenButton.BACKWARD)}
+            value={options?.showSeekBackward}
+            onValueChange={() => toggleButton(LockScreenButton.SEEK_BACKWARD)}
           />
-          <Text style={styles.optionsText}>Backward</Text>
-          <Checkbox
-            value={buttons?.includes(LockScreenButton.FORWARD)}
-            onValueChange={() => toggleButton(LockScreenButton.FORWARD)}
-          />
-          <Text style={styles.optionsText}>Forward</Text>
-          <Checkbox
-            value={buttons?.includes(LockScreenButton.NEXT)}
-            onValueChange={() => toggleButton(LockScreenButton.NEXT)}
-          />
-          <Text style={styles.optionsText}>Next</Text>
-          <Checkbox
-            value={buttons?.includes(LockScreenButton.PREVIOUS)}
-            onValueChange={() => toggleButton(LockScreenButton.PREVIOUS)}
-          />
-          <Text style={styles.optionsText}>Previous</Text>
+          <Text style={styles.optionsText}>Seek backward</Text>
         </View>
         <Button
           title="Update Metadata"
@@ -178,8 +178,7 @@ const styles = StyleSheet.create({
   },
   optionRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+
     gap: 10,
   },
   optionsText: {
