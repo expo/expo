@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Remove (undocumented) `createRequestHandler` from `@expo/server` entrypoint API ([#39894](https://github.com/expo/expo/pull/39894) by [@kitten](https://github.com/kitten))
+- Update `/adapter/netlify` export to Netlify Functions 2.0 ([#40082](https://github.com/expo/expo/pull/40082) by [@kitten](https://github.com/kitten))
 
 ### 🎉 New features
 
