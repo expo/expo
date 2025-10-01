@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { View, DevSettings, Platform, Clipboard, type Modal as ModalInterface} from 'react-native';
 
@@ -60,69 +60,78 @@ function LogBoxRNPolyfill(
   const onMinimize = () => closeModal(props.onMinimize);
   const onDismiss = props.onDismiss;
 
-  return (
+  const LogBoxWrapper = useMemo(() => (Platform.OS === 'ios') ? ({ children }: { children: React.ReactNode }) => {
+    return (
     <Modal
-      // android
-      hardwareAccelerated={true}
-      // ios
       animationType="slide"
       presentationStyle="pageSheet"
-      // common
       visible={open}
       onRequestClose={onMinimize}
       >
-        <View
-          style={{
-            backgroundColor: Platform.select({ default: undefined, ios: Colors.background }),
-            pointerEvents: 'box-none',
-            top: 0,
-            flex: 1,
+        {children}
+      </Modal>
+    );
+  } : ({children}: { children: React.ReactNode }) => <>{children}</>, []);
+
+  if (!open && Platform.OS !== 'ios') {
+    return null;
+  }
+
+  return (
+    <LogBoxWrapper>
+      <View
+        style={{
+          backgroundColor: Platform.select({ default: undefined, ios: Colors.background }),
+          pointerEvents: 'box-none',
+          top: 0,
+          flex: 1,
+        }}
+        collapsable={false}
+      >
+        <LogBoxPolyfillDOM
+          platform={process.env.EXPO_OS}
+          devServerUrl={getBaseUrl()}
+          dom={{
+            sourceOverride: bundledLogBoxUrl ? { uri: bundledLogBoxUrl } : undefined,
+            contentInsetAdjustmentBehavior: 'never',
+            containerStyle: {
+              pointerEvents: 'box-none',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            },
+            style: {
+              flex: 1,
+            },
+            suppressMenuItems: ['underline', 'lookup', 'translate'],
+            bounces: true,
+            overScrollMode: "never",
           }}
-          collapsable={false}
-        >
-          <LogBoxPolyfillDOM
-            platform={process.env.EXPO_OS}
-            devServerUrl={getBaseUrl()}
-            dom={{
-              sourceOverride: bundledLogBoxUrl ? { uri: bundledLogBoxUrl } : undefined,
-              contentInsetAdjustmentBehavior: 'never',
-              containerStyle: {
-                pointerEvents: 'box-none',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-              },
-              style: {
-                flex: 1,
-              },
-              suppressMenuItems: ['underline', 'lookup', 'translate'],
-              bounces: true,
-            }}
-            fetchJsonAsync={async (input, init) => {
-              try {
-                const res = await fetch(input, init);
-                return await res.text();
-              } catch (e) {
-                throw e;
-              }
-            }}
-            reloadRuntime={() => {
-              DevSettings.reload();
-            }}
-            onCopyText={(text: string) => {
-              // TODO: Export to helper and use DevServer to for host clipboard with fallback to device clipboard
-              Clipboard.setString(text);
-            }}
-            onDismiss={onDismiss}
-            onMinimize={onMinimize}
-            onChangeSelectedIndex={props.onChangeSelectedIndex}
-            selectedIndex={props.selectedIndex}
-            logs={logs}
-          />
-        </View>
-    </Modal>
+          fetchJsonAsync={async (input, init) => {
+            try {
+              const res = await fetch(input, init);
+              return await res.text();
+            } catch (e) {
+              throw e;
+            }
+          }}
+          reloadRuntime={() => {
+            DevSettings.reload();
+          }}
+          onCopyText={(text: string) => {
+            // TODO: Export to helper and use DevServer to for host clipboard with fallback to device clipboard
+            Clipboard.setString(text);
+          }}
+          onDismiss={onDismiss}
+          onMinimize={onMinimize}
+          onChangeSelectedIndex={props.onChangeSelectedIndex}
+          selectedIndex={props.selectedIndex}
+          logs={logs}
+        />
+      </View>
+    </LogBoxWrapper>
   );
 }
 
