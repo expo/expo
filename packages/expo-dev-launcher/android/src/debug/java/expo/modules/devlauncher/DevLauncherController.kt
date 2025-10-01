@@ -471,7 +471,7 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
-      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, { reactApplication.reactHost }))
+      initialize(reactApplication as Context, ReactHostWrapper(null, { reactApplication.reactHost }))
       sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }

@@ -16,7 +16,7 @@ import java.lang.reflect.Field
  * An abstract wrapper to host [ReactNativeHost] and [ReactHost],
  * so that call-sites do not have to handle the difference between legacy bridge and bridgeless mode.
  */
-class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHostProvider: () -> ReactHost?) {
+class ReactHostWrapper(reactNativeHost: ReactNativeHost?, reactHostProvider: () -> ReactHost?) {
   lateinit var reactNativeHost: ReactNativeHost
   lateinit var reactHost: ReactHost
 
@@ -24,7 +24,7 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHostProvider: () -
     if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
       this.reactHost = requireNotNull(reactHostProvider())
     } else {
-      this.reactNativeHost = reactNativeHost
+      this.reactNativeHost = requireNotNull(reactNativeHost)
     }
   }
 
