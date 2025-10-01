@@ -1,10 +1,9 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
+// NOTE(@kitten): When multiple versions of `@expo/server` are bundled, we still want to reuse the same scope definition
 const scopeSymbol = Symbol.for('expoServerRuntime');
-export function getRequestScopeSingleton() {
-    const setup = globalThis;
-    return setup[scopeSymbol] ?? (setup[scopeSymbol] = new AsyncLocalStorage());
-}
-export function getRequestScope() {
-    return getRequestScopeSingleton().getStore();
-}
+const sharedScope = globalThis;
+const scopeRef = sharedScope[scopeSymbol] ||
+    (sharedScope[scopeSymbol] = {
+        current: null,
+    });
+export { scopeRef };
 //# sourceMappingURL=scope.js.map

@@ -1,5 +1,6 @@
 import { createEnvironment } from './common';
 import { createRequestScope } from '../../runtime';
+import type { ScopeDefinition } from '../../runtime/scope';
 
 const createCachedImport = () => {
   const importCache = new Map<string, { type: 'error' | 'success'; value: unknown }>();
@@ -69,11 +70,14 @@ export interface ExecutionContext {
   props?: any;
 }
 
-export function createWorkerdRequestScope<Env = unknown>(params: WorkerdEnvParams) {
+export function createWorkerdRequestScope<Env = unknown>(
+  scopeDefinition: ScopeDefinition,
+  params: WorkerdEnvParams
+) {
   const makeRequestAPISetup = (request: Request, _env: Env, ctx: ExecutionContext) => ({
     origin: request.headers.get('Origin') || 'null',
     environment: params.environment ?? null,
     waitUntil: ctx.waitUntil?.bind(ctx),
   });
-  return createRequestScope(makeRequestAPISetup);
+  return createRequestScope(scopeDefinition, makeRequestAPISetup);
 }

@@ -1,7 +1,9 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { createRequestScope } from '../runtime';
 import { createRequestHandler as createExpoHandler } from './abstract';
 import { createWorkerdEnv } from './environment/workerd';
 export { ExpoError } from './abstract';
+const STORE = new AsyncLocalStorage();
 /**
  * Returns a request handler for EAS Hosting deployments.
  */
@@ -11,7 +13,7 @@ export function createRequestHandler(params, setup) {
         environment: request.headers.get('eas-environment') || null,
         waitUntil: ctx.waitUntil?.bind(ctx),
     });
-    const run = createRequestScope(makeRequestAPISetup);
+    const run = createRequestScope(STORE, makeRequestAPISetup);
     const onRequest = createExpoHandler({
         ...createWorkerdEnv(params),
         ...setup,

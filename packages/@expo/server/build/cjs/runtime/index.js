@@ -10,7 +10,7 @@ function setupRuntime() {
             enumerable: true,
             configurable: true,
             get() {
-                return (0, scope_1.getRequestScope)()?.origin || 'null';
+                return scope_1.scopeRef.current?.getStore()?.origin || 'null';
             },
         });
     }
@@ -26,15 +26,18 @@ function setupRuntime() {
     }
     catch { }
 }
-function createRequestScope(makeRequestAPISetup) {
+function createRequestScope(scopeDefinition, makeRequestAPISetup) {
     setupRuntime();
     // NOTE(@kitten): For long-running servers, this will always be a noop. It therefore
     // makes sense for us to provide a default that doesn't do anything.
     function defaultWaitUntil(promise) {
         promise.finally(() => { });
     }
-    const requestScope = (0, scope_1.getRequestScopeSingleton)();
     return async (run, ...args) => {
+        // Initialize the scope definition which is used to isolate the runtime API between
+        // requests. The implementation of scopes differs per runtime, and is only initialized
+        // once the first request is received
+        scope_1.scopeRef.current = scopeDefinition;
         const setup = makeRequestAPISetup(...args);
         const { waitUntil = defaultWaitUntil } = setup;
         const scope = {
@@ -52,7 +55,10 @@ function createRequestScope(makeRequestAPISetup) {
         }
         let result;
         try {
-            result = await requestScope.run(scope, () => run(...args));
+            result =
+                scope_1.scopeRef.current != null
+                    ? await scope_1.scopeRef.current.run(scope, () => run(...args))
+                    : await run(...args);
         }
         catch (error) {
             if (error != null && error instanceof Error && 'status' in error) {
