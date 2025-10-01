@@ -1,4 +1,4 @@
-import { scopeRef } from './scope';
+import { type RequestAPI, scopeRef } from './scope';
 
 function enforcedRequestScope(): RequestAPI {
   const scope = scopeRef.current?.getStore();
@@ -23,13 +23,6 @@ function assertSupport<T>(name: string, v: T | undefined): T {
 }
 
 export { StatusError } from './error';
-
-export interface RequestAPI {
-  origin?: string;
-  environment?: string | null;
-  waitUntil?(promise: Promise<unknown>): void;
-  deferTask?(fn: () => Promise<unknown>): void;
-}
 
 /** Returns the current request's origin URL
  * @remarks

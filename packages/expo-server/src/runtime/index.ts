@@ -1,6 +1,5 @@
-import type { RequestAPI } from './api';
 import { errorToResponse } from './error';
-import { type ScopeDefinition, scopeRef } from './scope';
+import { type ScopeDefinition, type RequestAPI, scopeRef } from './scope';
 import { importMetaRegistry } from '../utils/importMetaRegistry';
 
 export interface RequestAPISetup extends RequestAPI {
