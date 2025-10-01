@@ -15,6 +15,7 @@ import {
   prettyPrintTestSuiteLogs,
   runCustomMaestroFlowsAsync,
   MAESTRO_DRIVER_STARTUP_TIMEOUT,
+  TEST_DURATION_LABEL,
 } from './lib/e2e-common';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
@@ -44,13 +45,7 @@ const __dirname = dirname(__filename);
     }
     if (startMode === 'TEST' || startMode === 'BUILD_AND_TEST') {
       const e2eDir = path.join(projectRoot, 'e2e');
-      await testAsync(
-        path.join(e2eDir, '_nested-flows', 'confirm-app-open-ios.yaml'),
-        deviceId,
-        appBinaryPath,
-        e2eDir
-      );
-      await runCustomMaestroFlowsAsync(e2eDir, (maestroFlowFilePath) =>
+      await runCustomMaestroFlowsAsync(e2eDir, 'ios', (maestroFlowFilePath) =>
         testAsync(maestroFlowFilePath, deviceId, appBinaryPath, e2eDir)
       );
 
@@ -144,7 +139,7 @@ export function setupLogger(predicate: string, signal: AbortSignal): () => Promi
   };
 }
 
-async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60 * 3) {
+async function startSimulatorAsync(deviceId: string, timeout: number = 180_000) {
   await retryAsync(async (retryNumber) => {
     if (process.env.CI && retryNumber > 0) {
       try {
@@ -156,7 +151,7 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60
     console.log(
       `\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}] retry[${retryNumber}]`
     );
-    const label = 'device startup timer';
+    const label = 'device startup duration';
     console.time(label);
     const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], {
       stdio: 'inherit',
@@ -176,10 +171,11 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60
       timeoutHandle = null;
     }
 
-    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
-      stdio: 'inherit',
-    });
-
+    if (!process.env.CI) {
+      await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
+        stdio: 'inherit',
+      });
+    }
     clearTimeout(timeoutHandle);
     console.timeEnd(label);
   }, 3);
@@ -214,8 +210,7 @@ async function testAsync(
 
     console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
     try {
-      const label = 'test duration';
-      console.time(label);
+      console.time(TEST_DURATION_LABEL);
 
       await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
         stdio: 'inherit',
@@ -225,10 +220,12 @@ async function testAsync(
           MAESTRO_DRIVER_STARTUP_TIMEOUT,
         },
       });
-      console.timeEnd(label);
+      console.timeEnd(TEST_DURATION_LABEL);
     } catch {
       stopLogCollectionController.abort();
+      console.timeEnd(TEST_DURATION_LABEL);
       console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
+
       console.log(prettyPrintTestSuiteLogs(await getTestSuiteLogs()));
       // we need to always get these logs since it stops listener process
       const nativeLogs = await getNativeErrorLogs();

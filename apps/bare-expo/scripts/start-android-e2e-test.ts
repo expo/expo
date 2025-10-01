@@ -15,6 +15,7 @@ import {
   setupLogger,
   runCustomMaestroFlowsAsync,
   MAESTRO_DRIVER_STARTUP_TIMEOUT,
+  TEST_DURATION_LABEL,
 } from './lib/e2e-common';
 
 const APP_ID = 'dev.expo.payments';
@@ -49,7 +50,7 @@ const __dirname = dirname(__filename);
         );
       }
       const e2eDir = path.join(projectRoot, 'e2e');
-      await runCustomMaestroFlowsAsync(e2eDir, (maestroFlowFilePath) =>
+      await runCustomMaestroFlowsAsync(e2eDir, 'android', (maestroFlowFilePath) =>
         testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir)
       );
 
@@ -100,6 +101,7 @@ async function testAsync(
   );
   const getLogs = setupLogger(`adb logcat -e ${APP_ID}`, stopLogCollectionController.signal);
   try {
+    console.time(TEST_DURATION_LABEL);
     await spawnAsync('maestro', ['--platform', 'android', 'test', maestroFlowFilePath], {
       stdio: 'inherit',
       env: {
@@ -108,8 +110,10 @@ async function testAsync(
         MAESTRO_DRIVER_STARTUP_TIMEOUT,
       },
     });
+    console.timeEnd(TEST_DURATION_LABEL);
   } catch {
     stopLogCollectionController.abort();
+    console.timeEnd(TEST_DURATION_LABEL);
     console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
     const logs = await getLogs();
     console.log(prettyPrintTestSuiteLogs(logs));

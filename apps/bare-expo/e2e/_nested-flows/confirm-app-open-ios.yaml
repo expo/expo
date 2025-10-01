@@ -1,7 +1,0 @@
-appId: dev.expo.Payments
----
-- openLink: bareexpo://components
-# approve the deep linking prompt on iOS; this is a one-time permission
-- tapOn:
-    text: 'Open'
-    optional: true # in CI this should always appear but when you run the test locally it might not
