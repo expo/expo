@@ -194,7 +194,9 @@ function Screen(props: {
   const role = descriptor.options.role;
   // To align with apple documentation and prevent untested cases,
   // title and icon cannot be changed when role is defined
-  const shouldResetTitleAndIcon = !!role && process.env.EXPO_OS === 'ios';
+  // However, allow custom icons when explicitly provided via options
+  const hasCustomIcon = descriptor.options.icon || descriptor.options.selectedIcon;
+  const shouldResetTitleAndIcon = !!role && process.env.EXPO_OS === 'ios' && !hasCustomIcon;
 
   const title = descriptor.options.title ?? name;
 

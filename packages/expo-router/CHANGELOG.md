@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Allow custom icons on NativeTabs.Trigger when role prop is set ([#40143](https://github.com/expo/expo/pull/40143) by [@osikes](https://github.com/osikes))
+
 ### 💡 Others
 
 ## 6.0.9 - 2025-10-01
