@@ -1,6 +1,5 @@
 package expo.modules.logbox
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.graphics.Bitmap
@@ -16,25 +15,31 @@ import android.webkit.WebView
 import android.webkit.WebView.setWebContentsDebuggingEnabled
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import androidx.core.graphics.Insets
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.updatePadding
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.SurfaceDelegate
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import java.io.IOException
 
 class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager) :
     SurfaceDelegate {
 
     private var dialog: Dialog? = null
+    private var webView: WebView? = null
 
     override fun createContentView(appKey: String) {
         // Noop
@@ -75,7 +80,7 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
 
 
         // Create a simple layout programmatically
-        val webView = WebView(context).apply {
+        webView = WebView(context).apply {
             layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT
@@ -91,7 +96,7 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
         val savedInsets = WindowInsetsCompat.toWindowInsetsCompat(context.window.decorView.rootWindowInsets)
             .getInsets(WindowInsetsCompat.Type.systemBars())
 
-        webView.addJavascriptInterface(object : Any() {
+        webView?.addJavascriptInterface(object : Any() {
             @JavascriptInterface
             fun postMessage(rawMessage: String) {
                 val gson = Gson()
@@ -99,23 +104,64 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
 
                 val messageType = jsonObject.getAsJsonPrimitive("type")
 
-                if (messageType.isString && messageType.asString == "\$\$native_action") {
+                if (messageType.isString && messageType.asString == NATIVE_ACTION) {
                     val data = jsonObject.getAsJsonObject("data")
                     val actionId = data.getAsJsonPrimitive("actionId")
-                    if (!actionId.isString) {
+                    val uid = data.getAsJsonPrimitive("uid")
+                    val args = data.getAsJsonArray("args")
+                    if (!actionId.isString || !uid.isString || !args.isJsonArray) {
                         return
                     }
 
                     when(actionId.asString) {
-                        "reloadRuntime" -> { devSupportManager.handleReloadJS() }
-                        "fetchJsonAsync" -> { print("fetchJsonAsync") }
+                        "reloadRuntime" -> { reloadRuntime() }
+                        "fetchJsonAsync" -> {
+                            CoroutineScope(Dispatchers.Default).launch {
+                                val url = when {
+                                    args.get(0).isJsonPrimitive
+                                            && args.get(0).asJsonPrimitive.isString
+                                                -> args.get(0).asJsonPrimitive.asString
+                                    else -> null
+                                }
+                                val options = args.get(1).asJsonObject
+                                val method = when {
+                                    options.has("method")
+                                            && options.get("method").isJsonPrimitive
+                                            && options.getAsJsonPrimitive("method").isString
+                                                -> options.getAsJsonPrimitive("method").asString
+                                    else -> null
+                                }
+                                val body = when {
+                                    options.has("body")
+                                            && options.get("body").isJsonPrimitive
+                                            && options.getAsJsonPrimitive("body").isString
+                                        -> options.getAsJsonPrimitive("body").asString
+                                    else -> null
+                                }
+
+                                if (url != null) {
+                                    fetchJsonAsync(
+                                        url,
+                                        method ?: "GET",
+                                        body ?: "",
+                                        { result ->
+                                            sendReturn(result, uid.asString, actionId.asString)
+                                        },
+                                        { exception ->
+                                            sendReturn(exception, uid.asString, actionId.asString)
+                                        },
+                                    )
+                                }
+                            }
+
+                        }
                     }
                 }
 
             }
         }, "ReactNativeWebView")
 
-        webView.webViewClient = object : WebViewClient() {
+        webView?.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 
@@ -125,8 +171,8 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
                     document.documentElement.style.setProperty('--android-safe-area-inset-top', '${(savedInsets?.top ?: 0) / context.resources.displayMetrics.density}px');
                     document.documentElement.style.setProperty('--android-safe-area-inset-bottom', '${(savedInsets?.bottom ?: 0) / context.resources.displayMetrics.density}px');
                 """.trimIndent()
-                webView.post {
-                    webView.evaluateJavascript(safeAreaJs, null)
+                webView?.post {
+                    webView?.evaluateJavascript(safeAreaJs, null)
                 }
             }
 
@@ -155,13 +201,13 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
                     window.$$${"EXPO_INITIAL_PROPS"} = ${jsonObject};
                 """.trimIndent()
 
-                webView.post {
-                    webView.evaluateJavascript(script, null)
+                webView?.post {
+                    webView?.evaluateJavascript(script, null)
                 }
             }
         }
 
-        webView.loadUrl("file:///android_asset/ExpoLogBox.bundle/index.html")
+        webView?.loadUrl("file:///android_asset/ExpoLogBox.bundle/index.html")
         // TODO: use build config to specify the dev url
         // webView.loadUrl("http://10.0.2.2:8082/")
 
@@ -193,7 +239,95 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
         return dialog?.isShowing == true
     }
 
+    fun reloadRuntime() {
+        devSupportManager.handleReloadJS()
+    }
+
+    fun fetchJsonAsync(
+        url: String,
+        method: String,
+        body: String,
+        onResult: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val client = OkHttpClient()
+
+        val requestBody = if (method.uppercase() != "GET") {
+            body.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        } else null
+
+        val request = Request.Builder()
+            .url(url)
+            .method(method.uppercase(), requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                onFailure(e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    val responseBody = it.body?.string() ?: "{}"
+                    onResult(responseBody)
+                }
+            }
+        })
+    }
+
+    fun sendReturn(result: Any, uid: String, actionId: String) {
+        sendReturn(mapOf(
+            "type" to NATIVE_ACTION_RESULT,
+            "data" to mapOf(
+                "uid" to uid,
+                "actionId" to actionId,
+                "result" to result
+            )
+        ))
+    }
+
+    fun sendReturn(exception: Exception, uid: String, actionId: String) {
+        sendReturn(mapOf(
+            "type" to NATIVE_ACTION_RESULT,
+            "data" to mapOf(
+                "uid" to uid,
+                "actionId" to actionId,
+                "error" to mapOf(
+                    "message" to "$exception"
+                )
+            )
+        ))
+    }
+
+    fun sendReturn(data: Map<String, Any>) {
+        sendReturn(Gson().toJson(mapOf(
+            "detail" to data
+        )))
+    }
+
+    fun sendReturn(value: String) {
+        val injectedJavascript = """
+            ;
+            (function() {
+                try {
+                    console.log("received", $value)
+                    window.dispatchEvent(new CustomEvent("$DOM_EVENT", $value));
+                } catch (e) {
+                    console.log('error', e)
+                }
+            })();
+            true;
+            """
+        webView?.post {
+            webView?.evaluateJavascript(injectedJavascript, null)
+        }
+    }
+
     companion object {
+        private val DOM_EVENT = "$\$dom_event"
+        private val NATIVE_ACTION_RESULT = "$\$native_action_result"
+        private val NATIVE_ACTION = "$\$native_action"
+
         private fun runAfterHostResume(reactContext: ReactContext, runnable: Runnable) {
             reactContext.addLifecycleEventListener(
                 object : LifecycleEventListener {

@@ -34,5 +34,6 @@ android {
 dependencies {
   implementation 'com.facebook.react:react-android'
   implementation 'com.google.android.material:material:1.13.0'
+  implementation 'com.squareup.okhttp3:okhttp:3.14.9'
   implementation 'com.google.code.gson:gson:2.8.6'
 }
