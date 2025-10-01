@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Remove `ExpoAppDelegate` inheritance requirement in ExpoReactNativeFactory ([#39844](https://github.com/expo/expo/pull/39844) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 54.0.11 — 2025-10-01
+
+### 🎉 New features
+
+- Remove `ExpoAppDelegate` inheritance requirement in ExpoReactNativeFactory ([#39844](https://github.com/expo/expo/pull/39844) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 54.0.10 — 2025-09-22
 

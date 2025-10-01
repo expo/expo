@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Adjust tvOS colors. ([#40006](https://github.com/expo/expo/pull/40006) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 6.0.13 — 2025-10-01
+
+### 🐛 Bug fixes
+
+- [iOS] Adjust tvOS colors. ([#40006](https://github.com/expo/expo/pull/40006) by [@douglowder](https://github.com/douglowder))
 
 ## 6.0.12 — 2025-09-22
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Prevent peer dependency check from warning on peer/regular hybrid dependency ([#39916](https://github.com/expo/expo/pull/39916) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 1.17.9 — 2025-10-01
+
+### 🐛 Bug fixes
+
+- Prevent peer dependency check from warning on peer/regular hybrid dependency ([#39916](https://github.com/expo/expo/pull/39916) by [@kitten](https://github.com/kitten))
 
 ## 1.17.8 — 2025-09-18
 

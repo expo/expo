@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.13 — 2025-10-01
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.12 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

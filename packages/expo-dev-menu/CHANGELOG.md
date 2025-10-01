@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 7.0.13 — 2025-10-01
+
+### 🐛 Bug fixes
+
 - [iOS] Adjust tvOS colors. ([#40006](https://github.com/expo/expo/pull/40006) by [@douglowder](https://github.com/douglowder))
 - [Android] Render registered custom Dev Menu items and allow invoking callbacks ([#39995](https://github.com/expo/expo/pull/39995) by [@Jc-Cloete](https://github.com/Jc-Cloete))
-
-### 💡 Others
 
 ## 7.0.12 — 2025-09-22
 

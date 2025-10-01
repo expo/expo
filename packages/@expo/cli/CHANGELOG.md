@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- revert ([#34677](https://github.com/expo/expo/pull/34677) by [@DimitarNestorov](https://github.com/DimitarNestorov))
-
 ### 💡 Others
+
+## 54.0.9 — 2025-10-01
+
+### 🐛 Bug fixes
+
+- revert ([#34677](https://github.com/expo/expo/pull/34677) by [@DimitarNestorov](https://github.com/DimitarNestorov))
 
 ## 54.0.8 — 2025-09-22
 

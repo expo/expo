@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.0.19 — 2025-10-01
+
+### 💡 Others
+
 - [ios] - Set host dimension synchronously on native ([#40017](https://github.com/expo/expo/pull/40017) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 3.0.18 — 2025-09-22
