@@ -5,6 +5,7 @@ import { type ButtonProps } from '../Button';
 import { type PickerProps } from '../Picker';
 import { type SwitchProps } from '../Switch';
 import { type SubmenuProps } from './Submenu';
+import { type CommonViewModifierProps } from '../types';
 
 export type EventHandlers = Record<
   string,
@@ -44,4 +45,4 @@ export type ContextMenuProps = {
    * The children will be wrapped in a pressable element, which triggers opening of the context menu.
    */
   children: ReactNode;
-};
+} & CommonViewModifierProps;

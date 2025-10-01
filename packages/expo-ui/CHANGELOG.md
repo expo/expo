@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Add `buttonStyle` modifier. ([#40119](https://github.com/expo/expo/pull/40119) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 0.2.0-beta.5 - 2025-10-01

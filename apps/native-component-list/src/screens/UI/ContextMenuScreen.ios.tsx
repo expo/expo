@@ -1,7 +1,8 @@
-import { Button, Host, Picker, Switch, ContextMenu, Submenu } from '@expo/ui/swift-ui';
+import { Button, Host, Picker, Switch, ContextMenu, Submenu, Text } from '@expo/ui/swift-ui';
+import { buttonStyle, fixedSize } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text as RNText } from 'react-native';
 
 import { Section } from '../../components/Page';
 
@@ -21,9 +22,31 @@ export default function ContextMenuScreen() {
 
   return (
     <View>
+      <Section title="Context Menu with glass effect button" row>
+        <Host matchContents style={{ margin: 10 }}>
+          <ContextMenu modifiers={[fixedSize(), buttonStyle('glass')]}>
+            <ContextMenu.Items>
+              <Button
+                systemImage="person.crop.circle.badge.xmark"
+                onPress={() => console.log('Pressed1')}>
+                Hello
+              </Button>
+              <Button
+                variant="bordered"
+                systemImage="heart"
+                onPress={() => console.log('Pressed2')}>
+                I love
+              </Button>
+            </ContextMenu.Items>
+            <ContextMenu.Trigger>
+              <Text color="accentColor">Show menu</Text>
+            </ContextMenu.Trigger>
+          </ContextMenu>
+        </Host>
+      </Section>
       <Section title="Single-Press Context Menu" row>
-        <Host style={{ width: 150, height: 50 }}>
-          <ContextMenu>
+        <Host matchContents style={{ margin: 10 }}>
+          <ContextMenu modifiers={[fixedSize(), buttonStyle('bordered')]}>
             <ContextMenu.Items>
               <Button
                 systemImage="person.crop.circle.badge.xmark"
@@ -45,7 +68,7 @@ export default function ContextMenuScreen() {
               />
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <Button variant="bordered">Show Menu</Button>
+              <Text color="accentColor">Show Menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
         </Host>
@@ -85,7 +108,7 @@ export default function ContextMenuScreen() {
             </ContextMenu.Trigger>
             <ContextMenu.Preview>
               <View style={styles.preview}>
-                <Text>This is a preview</Text>
+                <RNText>This is a preview</RNText>
               </View>
             </ContextMenu.Preview>
           </ContextMenu>
