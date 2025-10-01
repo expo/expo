@@ -71,13 +71,13 @@ export async function GET() {
 `expo-server` exposes adapters to run Expo Router server-side exports in different environments or on different cloud provider serverless functions. Typically, every runtime needs its own adapter to function with the `expo-server` runtime. Before deploying
 to these providers, it may be good to be familiar with the basics of [`npx expo export`](/more/expo-cli#exporting) command.
 
-| Adapter    | Provider     | 
-| ----------- | ------------- | 
-| `expo-server/adapter/bun` | [Bun](https://bun.com/docs) |
-| `expo-server/adapter/express` | [Express](https://expressjs.com/en/5x/api.html) |
-| `expo-server/adapter/http` | [Node.js](https://nodejs.org/api/http.html) |
-| `expo-server/adapter/netlify` | [Netlify Functions](https://docs.netlify.com/build/functions/overview/) |
-| `expo-server/adapter/vercel` | [Vercel Functions](https://vercel.com/docs/functions) |
+| Adapter                       | Provider                                                                 |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| `expo-server/adapter/bun`     | [Bun](https://bun.com/docs)                                              |
+| `expo-server/adapter/express` | [Express](https://expressjs.com/en/5x/api.html)                          |
+| `expo-server/adapter/http`    | [Node.js](https://nodejs.org/api/http.html)                              |
+| `expo-server/adapter/netlify` | [Netlify Functions](https://docs.netlify.com/build/functions/overview/)  |
+| `expo-server/adapter/vercel`  | [Vercel Functions](https://vercel.com/docs/functions)                    |
 | `expo-server/adapter/workerd` | [Cloudflare Workers](https://developers.cloudflare.com/pages/functions/) |
 
 To learn how to host API routes on different third-party services, follow the instructions from Expo Router's API Routes guide:
