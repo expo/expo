@@ -119,12 +119,23 @@ class AppContext(
 
       registry.register(modulesProvider)
 
+      // Register local modules
+      registerLocalModulesList()
+
       logger.info("✅ AppContext was initialized")
     }
   }
 
   fun onCreate() = trace("AppContext.onCreate") {
     hostingRuntimeContext.registry.postOnCreate()
+  }
+
+  private fun registerLocalModulesList() {
+    try {
+      val localModulesList = Class.forName("local.modules.ExpoLocalModulesList").getConstructor()
+        .newInstance() as ModulesProvider
+      hostingRuntimeContext.registry.register(localModulesList)
+    } catch (_: ClassNotFoundException) {}
   }
 
   /**

@@ -4,6 +4,7 @@ import { glob } from 'glob';
 import path from 'path';
 
 import { fileExistsAsync } from '../../fileUtils';
+import { getIosLocalModulesClassNames } from '../../localModules/iosLocalModules';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
@@ -96,14 +97,16 @@ export async function resolveExtraBuildDependenciesAsync(
 export async function generateModulesProviderAsync(
   modules: ModuleDescriptorIos[],
   targetPath: string,
-  entitlementPath: string | null
+  entitlementPath: string | null,
+  watchedDirs: string[]
 ): Promise<void> {
   const className = path.basename(targetPath, path.extname(targetPath));
   const entitlements = await parseEntitlementsAsync(entitlementPath);
   const generatedFileContent = await generatePackageListFileContentAsync(
     modules,
     className,
-    entitlements
+    entitlements,
+    watchedDirs
   );
   const parentPath = path.dirname(targetPath);
   await fs.promises.mkdir(parentPath, { recursive: true });
@@ -116,7 +119,8 @@ export async function generateModulesProviderAsync(
 async function generatePackageListFileContentAsync(
   modules: ModuleDescriptorIos[],
   className: string,
-  entitlements: AppleCodeSignEntitlements
+  entitlements: AppleCodeSignEntitlements,
+  watchedDirs: string[]
 ): Promise<string> {
   const iosModules = modules.filter(
     (module) =>
@@ -136,9 +140,11 @@ async function generatePackageListFileContentAsync(
     .concat(...debugOnlyModules.map((module) => module.swiftModuleNames))
     .filter(Boolean);
 
-  const modulesClassNames = ([] as string[])
+  let modulesClassNames = ([] as string[])
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
+
+  modulesClassNames = modulesClassNames.concat(await getIosLocalModulesClassNames(watchedDirs));
 
   const debugOnlyModulesClassNames = ([] as string[])
     .concat(...debugOnlyModules.map((module) => module.modules))
