@@ -113,6 +113,10 @@ class MediaLibraryNextModule : Module() {
         self.getModificationTime()
       }
 
+      AsyncFunction("getShape") Coroutine { self: Asset ->
+        self.getShape()
+      }
+
       AsyncFunction("getUri") Coroutine { self: Asset ->
         self.getUri()
       }

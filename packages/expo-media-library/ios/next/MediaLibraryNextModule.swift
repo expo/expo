@@ -46,6 +46,10 @@ public final class MediaLibraryNextModule: Module {
         try await this.getLocation()
       }
 
+      AsyncFunction("getShape") { (this: Asset) in
+        try await this.getShape()
+      }
+
       AsyncFunction("getUri") { (this: Asset) in
         try await this.getUri()
       }
