@@ -1,6 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getLoaderModulePath = getLoaderModulePath;
 exports.fetchLoaderModule = fetchLoaderModule;
+/**
+ * Convert a route's pathname to a loader module path.
+ *
+ * @example
+ * getLoaderModulePath(`/`);       // `/_expo/loaders/index`
+ * getLoaderModulePath(`/about`)   // `/_expo/loaders/about`
+ * getLoaderModulePath(`/posts/1`) // `/_expo/loaders/posts/1`
+ */
+function getLoaderModulePath(pathname) {
+    const urlPath = new URL(pathname, 'http://localhost').pathname;
+    const normalizedPath = urlPath === '/' ? '/' : urlPath.replace(/\/$/, '');
+    const pathSegment = normalizedPath === '/' ? '/index' : normalizedPath;
+    return `/_expo/loaders${pathSegment}`;
+}
 /**
  * Fetches and parses a loader module from the given route path.
  * This works in all environments including:
@@ -9,8 +24,7 @@ exports.fetchLoaderModule = fetchLoaderModule;
  * 3. SSR environments
  */
 async function fetchLoaderModule(routePath) {
-    const loaderPath = `/_expo/loaders${routePath}`;
-    // NOTE(@hassankhan): Might be a good idea to convert `loaderPath` to an `URL` object
+    const loaderPath = getLoaderModulePath(routePath);
     const response = await fetch(loaderPath, {
         headers: {
             Accept: 'application/json',
