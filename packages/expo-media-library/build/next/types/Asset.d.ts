@@ -1,4 +1,5 @@
 import { Album } from './Album';
+import { AssetInfo } from './AssetInfo';
 import { Location } from './Location';
 import { MediaType } from './MediaType';
 import { Shape } from './Shape';
@@ -81,6 +82,12 @@ export declare class Asset {
      * @throws An exception if the asset could not be found.
      */
     getWidth(): Promise<number>;
+    /**
+     * Gets detailed information about the asset.
+     * @returns A promise resolving to an {@link AssetInfo}
+     * @throws An exception if the asset could not be found.
+     */
+    getInfo(): Promise<AssetInfo>;
     /**
      * Gets the location of the asset.
      * On Android, this method requires the `ACCESS_MEDIA_LOCATION` permission to access location metadata.

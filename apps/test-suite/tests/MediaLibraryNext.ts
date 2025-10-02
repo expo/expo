@@ -308,6 +308,20 @@ export async function test(t) {
       const width = await asset.getWidth();
       t.expect(width).toBeGreaterThan(0);
     });
+
+    t.it('returns an asset info object', async () => {
+      const info = await asset.getInfo();
+      t.expect(info).toBeDefined();
+      t.expect(info.id).toBe(asset.id);
+      t.expect(info.mediaType).toBe(await asset.getMediaType());
+      t.expect(info.width).toBe(await asset.getWidth());
+      t.expect(info.height).toBe(await asset.getHeight());
+      t.expect(info.uri).toBe(await asset.getUri());
+      t.expect(info.filename).toBe(await asset.getFilename());
+      t.expect(info.duration).toBe(await asset.getDuration());
+      t.expect(info.creationTime).toBe(await asset.getCreationTime());
+      t.expect(info.modificationTime).toBe(await asset.getModificationTime());
+    });
   });
 
   t.describe('Video asset properties', () => {

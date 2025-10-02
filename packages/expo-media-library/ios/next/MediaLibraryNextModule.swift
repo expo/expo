@@ -58,6 +58,10 @@ public final class MediaLibraryNextModule: Module {
         try await this.getWidth()
       }
 
+      AsyncFunction("getInfo") { (this: Asset) in
+        try await this.getInfo()
+      }
+
       AsyncFunction("delete") { (this: Asset) in
         try await this.delete()
       }
