@@ -87,6 +87,7 @@ class AudioPlayer(
   }
 
   private fun startUpdating() {
+    updateJob?.cancel()
     updateJob = flow {
       while (true) {
         emit(Unit)
@@ -240,6 +241,7 @@ class AudioPlayer(
   }
 
   override fun sharedObjectDidRelease() {
+    super.sharedObjectDidRelease()
     appContext?.mainQueue?.launch {
       playerScope.cancel()
       visualizer?.release()
