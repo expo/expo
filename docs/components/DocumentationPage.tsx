@@ -247,6 +247,7 @@ export default function DocumentationPage({
           onClose={handleAskAIChatClose}
           onMinimize={handleAskAIMinimize}
           pageTitle={title}
+          isExpoSdkPage={isLatestSdkPage}
           isVisible={isAskAIVisible}
         />
       )}

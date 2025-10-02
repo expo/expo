@@ -35,6 +35,7 @@ type AskPageAIChatProps = {
   pageTitle?: string;
   onToggleExpand?: () => void;
   isExpanded?: boolean;
+  isExpoSdkPage?: boolean;
 };
 
 type ConversationKey = string | null;
@@ -45,6 +46,7 @@ export function AskPageAIChat({
   pageTitle,
   onToggleExpand,
   isExpanded = false,
+  isExpoSdkPage = false,
 }: AskPageAIChatProps) {
   const {
     conversation,
@@ -58,6 +60,17 @@ export function AskPageAIChat({
   } = useChat();
 
   const contextLabel = pageTitle?.trim() ? pageTitle : 'This page';
+  const displayContextLabel = useMemo(() => {
+    const label = contextLabel.trim();
+    if (!isExpoSdkPage) {
+      return label;
+    }
+    const lower = label.toLowerCase();
+    if (lower === 'expo' || lower.startsWith('expo ')) {
+      return label;
+    }
+    return `Expo ${label}`;
+  }, [contextLabel, isExpoSdkPage]);
   const [question, setQuestion] = useState('');
   const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
 
@@ -442,7 +455,7 @@ export function AskPageAIChat({
           </div>
         </div>
         <FOOTNOTE className="text-palette-white">
-          Ask a question about <span className="font-semibold">{contextLabel}</span>.
+          Ask a question about <span className="font-semibold">{displayContextLabel}</span>.
         </FOOTNOTE>
       </div>
 

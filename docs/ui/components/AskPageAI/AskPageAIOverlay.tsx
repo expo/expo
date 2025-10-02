@@ -8,6 +8,7 @@ type AskPageAIOverlayProps = {
   onClose: () => void;
   onMinimize: () => void;
   pageTitle?: string;
+  isExpoSdkPage?: boolean;
   isVisible: boolean;
 };
 
@@ -15,6 +16,7 @@ export function AskPageAIOverlay({
   onClose,
   onMinimize,
   pageTitle,
+  isExpoSdkPage,
   isVisible,
 }: AskPageAIOverlayProps) {
   const [isMounted, setMounted] = useState(false);
@@ -52,6 +54,7 @@ export function AskPageAIOverlay({
             onClose={onClose}
             onMinimize={onMinimize}
             pageTitle={pageTitle}
+            isExpoSdkPage={isExpoSdkPage}
             isExpanded={isExpanded}
             onToggleExpand={() => {
               setExpanded(prev => !prev);
