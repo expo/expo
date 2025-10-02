@@ -55,7 +55,7 @@ export type ButtonProps = {
   /**
    * The text to display inside the button.
    */
-  children?: string | string[];
+  children?: string | string[] | React.JSX.Element;
   /**
    * Colors for button's core elements.
    * @platform android
@@ -80,7 +80,7 @@ export type ButtonProps = {
  */
 export type NativeButtonProps = Omit<
   ButtonProps,
-  'role' | 'onPress' | 'children' | 'leadingIcon' | 'trailingIcon' | 'systemImage' | 'shape'
+  'role' | 'onPress' | 'leadingIcon' | 'trailingIcon' | 'systemImage' | 'shape'
 > & {
   text: string;
   leadingIcon?: string;
@@ -106,6 +106,7 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
   return {
     ...restProps,
     text: getTextFromChildren(children) ?? '',
+    children,
     leadingIcon: finalLeadingIcon,
     shape: parseJSXShape(shape),
     trailingIcon,

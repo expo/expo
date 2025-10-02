@@ -1,4 +1,4 @@
-import { Button } from '@expo/ui/jetpack-compose';
+import { Button, Shape } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
@@ -78,6 +78,13 @@ export default function UIScreen() {
             {/* eslint-disable-next-line */}
             Hello {'world'}
           </Button>
+        </Section>
+        <Section title="Custom shapes">
+          <Button
+            style={{ aspectRatio: 2, width: 200 }}
+            shape={Shape.PillStar({ innerRadius: 0.5, radius: 1, verticesCount: 20 })}
+            leadingIcon="rounded.Check"
+          />
         </Section>
       </ScrollView>
     </Page>

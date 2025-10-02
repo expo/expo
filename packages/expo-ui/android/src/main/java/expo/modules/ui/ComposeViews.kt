@@ -94,7 +94,7 @@ data class LayoutProps(
   val verticalArrangement: MutableState<VerticalArrangement> = mutableStateOf(VerticalArrangement.TOP),
   val horizontalAlignment: MutableState<HorizontalAlignment> = mutableStateOf(HorizontalAlignment.START),
   val verticalAlignment: MutableState<VerticalAlignment> = mutableStateOf(VerticalAlignment.TOP),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val modifiers: MutableState<List<ExpoModifier>?> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 class RowView(context: Context, appContext: AppContext) : ExpoComposeView<LayoutProps>(context, appContext) {
@@ -182,7 +182,7 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
   }
 }
 
-class ContainerView(context: Context, appContext: AppContext) :
+class HostView(context: Context, appContext: AppContext) :
   ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
   @Composable
   override fun Content(modifier: Modifier) {

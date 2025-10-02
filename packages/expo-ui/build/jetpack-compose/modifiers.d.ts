@@ -1,5 +1,7 @@
 import { ExpoModifier } from '../types';
-export declare const padding: (all: number) => ExpoModifier;
+import { ShapeJSXElement } from './Shape';
+export declare const paddingAll: (all: number) => ExpoModifier;
+export declare const padding: (start: number, top: number, end: number, bottom: number) => ExpoModifier;
 export declare const size: (width: number, height: number) => ExpoModifier;
 export declare const fillMaxSize: () => ExpoModifier;
 export declare const offset: (x: number, y: number) => ExpoModifier;
@@ -11,4 +13,5 @@ export declare const blur: (radius: number) => ExpoModifier;
 export declare const clickable: (callback: () => void) => ExpoModifier;
 export declare const rotate: (degrees: number) => ExpoModifier;
 export declare const zIndex: (index: number) => ExpoModifier;
+export declare const clip: (shape: ShapeJSXElement) => ExpoModifier;
 //# sourceMappingURL=modifiers.d.ts.map

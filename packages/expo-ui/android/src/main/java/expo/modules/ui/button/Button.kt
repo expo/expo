@@ -39,6 +39,7 @@ import expo.modules.ui.compose
 import expo.modules.ui.fromExpoModifiers
 import expo.modules.ui.fromShapeRecord
 import expo.modules.ui.getImageVector
+import expo.modules.ui.shapeFromShapeRecord
 
 open class ButtonPressedEvent() : Record, Serializable
 
@@ -71,7 +72,7 @@ data class ButtonProps(
   val leadingIcon: MutableState<String?> = mutableStateOf(null),
   val trailingIcon: MutableState<String?> = mutableStateOf(null),
   val disabled: MutableState<Boolean> = mutableStateOf(false),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
+  val modifiers: MutableState<List<ExpoModifier>?> = mutableStateOf(emptyList()),
   val shape: MutableState<ShapeRecord?> = mutableStateOf(null),
 ) : ComposeProps
 
@@ -150,18 +151,8 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
   }
 }
 
-fun getShape(shapeRecord: ShapeRecord?): Shape? {
-  if(shapeRecord == null) return null
-  return object : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-      val path = Path.fromShapeRecord(shapeRecord, size)
-      return Outline.Generic(path)
-    }
-  }
-}
-
 class Button(context: Context, appContext: AppContext) :
-  ExpoComposeView<ButtonProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<ButtonProps>(context, appContext) {
   override val props = ButtonProps()
   private val onButtonPressed by EventDispatcher<ButtonPressedEvent>()
 
@@ -170,8 +161,8 @@ class Button(context: Context, appContext: AppContext) :
     clipChildren = false
   }
 
-  @Composable
-  override fun Content(modifier: Modifier) {
+    @Composable
+    override fun Content(modifier: Modifier) {
     val (variant) = props.variant
     val (text) = props.text
     val (colors) = props.elementColors
@@ -185,9 +176,10 @@ class Button(context: Context, appContext: AppContext) :
         disabled,
         onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
         modifier = Modifier.fromExpoModifiers(props.modifiers.value),
-        shape = getShape(props.shape.value)
+        shape = shapeFromShapeRecord(props.shape.value)
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+          Children()
           leadingIcon?.let { iconName ->
             getImageVector(iconName)?.let {
               Icon(
