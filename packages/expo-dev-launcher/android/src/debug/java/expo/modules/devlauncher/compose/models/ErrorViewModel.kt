@@ -14,8 +14,6 @@ sealed interface ErrorAction {
 }
 
 class ErrorViewModel() : ViewModel() {
-  private val devLauncher = inject<DevLauncherController>()
-
   private val _appError = mutableStateOf<DevLauncherAppError?>(null)
 
   val appError
@@ -26,6 +24,8 @@ class ErrorViewModel() : ViewModel() {
   }
 
   fun onAction(action: ErrorAction) {
+    val devLauncher = inject<DevLauncherController>()
+
     when (action) {
       is ErrorAction.Reload -> {
         val appUrl = devLauncher.latestLoadedApp
