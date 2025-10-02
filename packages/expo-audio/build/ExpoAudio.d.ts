@@ -61,7 +61,7 @@ export declare function useAudioPlayer(source?: AudioSource, options?: AudioPlay
  *
  *   return (
  *     <View>
- *       <Text>Playing: {status.isPlaying ? 'Yes' : 'No'}</Text>
+ *       <Text>Playing: {status.playing ? 'Yes' : 'No'}</Text>
  *       <Text>Current Time: {status.currentTime}s</Text>
  *       <Text>Duration: {status.duration}s</Text>
  *     </View>
