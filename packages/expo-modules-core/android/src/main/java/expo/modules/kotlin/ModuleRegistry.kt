@@ -44,6 +44,12 @@ class ModuleRegistry(
     }
   }
 
+  fun register(vararg modules: Module) = apply {
+    modules.forEach { module ->
+      register(module, null)
+    }
+  }
+
   fun hasModule(name: String): Boolean = registry.containsKey(name)
 
   fun getModule(name: String): Module? = registry[name]?.module
