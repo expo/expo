@@ -10,6 +10,7 @@ import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
 import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { useChat, type Reaction } from '@kapaai/react-sdk';
+import { useRouter } from 'next/compat/router';
 import {
   type AnchorHTMLAttributes,
   type ComponentType,
@@ -19,6 +20,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
@@ -48,6 +50,7 @@ export function AskPageAIChat({
   isExpanded = false,
   isExpoSdkPage = false,
 }: AskPageAIChatProps) {
+  const router = useRouter();
   const {
     conversation,
     submitQuery,
@@ -102,6 +105,68 @@ export function AskPageAIChat({
       return next;
     });
   }, [conversation, askedQuestions.length, extractUserQuestion]);
+
+  // Show a brief notice when the page context changes while the chat is open
+  const [contextNotice, setContextNotice] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const prevDisplayContextRef = useRef<string>(displayContextLabel);
+  const prevBasePathRef = useRef<string | null>(null);
+  const [pendingContextNotice, setPendingContextNotice] = useState(false);
+  // Detect route changes (ignore hash-only changes)
+  const basePath = (router?.asPath ?? '').split('#')[0];
+  useEffect(() => {
+    const prevPath = prevBasePathRef.current;
+    const prevLabel = prevDisplayContextRef.current;
+    const pathChanged = Boolean(prevPath && prevPath !== basePath);
+    const labelChanged = Boolean(prevLabel && prevLabel !== displayContextLabel);
+    if (pathChanged || labelChanged) {
+      if (conversation.length > 0) {
+        setContextNotice(displayContextLabel);
+      } else {
+        setPendingContextNotice(true);
+      }
+    }
+    prevBasePathRef.current = basePath;
+    prevDisplayContextRef.current = displayContextLabel;
+  }, [basePath, displayContextLabel, conversation.length]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const storedPath = window.sessionStorage.getItem('expo-docs-ask-ai-last-path');
+    if (storedPath && storedPath !== basePath) {
+      if (conversation.length > 0) {
+        setContextNotice(displayContextLabel);
+      } else {
+        setPendingContextNotice(true);
+      }
+    }
+    window.sessionStorage.setItem('expo-docs-ask-ai-last-path', basePath);
+  }, [basePath, displayContextLabel, conversation.length]);
+
+  useEffect(() => {
+    if (pendingContextNotice && conversation.length > 0) {
+      setContextNotice(displayContextLabel);
+      setPendingContextNotice(false);
+    }
+  }, [pendingContextNotice, conversation.length, displayContextLabel]);
+  useEffect(() => {
+    if (question.length > 0) {
+      setContextNotice(null);
+    }
+  }, [question]);
+
+  useEffect(() => {
+    if (contextNotice) {
+      window.requestAnimationFrame(() => {
+        const el = scrollRef.current;
+        if (el) {
+          el.scrollTop = el.scrollHeight;
+        }
+      });
+    }
+  }, [contextNotice]);
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
   const closeButtonThemeOverrides = useMemo(
@@ -160,6 +225,7 @@ export function AskPageAIChat({
     submitQuery(buildPrompt(trimmed));
     setAskedQuestions(prev => [...prev, trimmed]);
     setQuestion('');
+    setContextNotice(null);
   };
 
   const handleClose = () => {
@@ -459,7 +525,7 @@ export function AskPageAIChat({
         </FOOTNOTE>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
         {conversation.length > 0 ? (
           <div className="space-y-5">
             {conversation.map((qa, index) => {
@@ -514,6 +580,15 @@ export function AskPageAIChat({
                 </div>
               );
             })}
+            {contextNotice ? (
+              <div className="flex justify-center">
+                <FOOTNOTE
+                  theme="secondary"
+                  className="rounded inline-block border border-default bg-subtle px-2 py-1">
+                  Switched to <span className="font-medium text-default">{contextNotice}</span>.
+                </FOOTNOTE>
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
