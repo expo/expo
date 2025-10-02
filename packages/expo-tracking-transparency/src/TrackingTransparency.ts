@@ -121,7 +121,7 @@ export async function getTrackingPermissionsAsync(): Promise<PermissionResponse>
 /**
  * Check or request the user to authorize or deny access to app-related data that can be used for tracking
  * the user or the device. Examples of data used for tracking include email address, device ID,
- * advertising ID, etc. On iOS, if the user denies this permission, any attempt to collect the
+ * advertising ID, and so on. On iOS, if the user denies this permission, any attempt to collect the
  * IDFA will return a string of 0s.
  *
  * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
