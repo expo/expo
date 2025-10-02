@@ -132,6 +132,7 @@ exceptions:
   - '.*Legend-State.*'
   - '.*Link component.*'
   - '.*Linking.*'
+  - '.*MCP*'
   - '.*macOS.*'
   - '.*manifest\.json.*'
   - '.*metro\.config\.js.*'
