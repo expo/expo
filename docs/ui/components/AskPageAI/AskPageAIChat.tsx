@@ -515,7 +515,15 @@ export function AskPageAIChat({
               );
             })}
           </div>
-        ) : null}
+        ) : (
+          <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
+            <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
+            <div className="mt-1 space-y-3 text-xs text-secondary">
+              I'm an SDK AI assistant — ask me a question about the{' '}
+              <span className="font-medium text-default">{displayContextLabel}</span> page.
+            </div>
+          </div>
+        )}
         {error && (
           <FOOTNOTE theme="danger" className="mt-4">
             {error}
