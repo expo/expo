@@ -17,7 +17,7 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
           type="button"
           theme="quaternary"
           className={mergeClasses(
-            'min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset] border border-palette-purple7 hover:border-palette-purple8 focus:border-palette-purple8',
+            'min-h-[48px] min-w-[60px] justify-center border border-palette-purple7 px-2 hover:border-palette-purple8 focus:border-palette-purple8 max-xl-gutters:min-h-[unset]',
             isActive && 'border border-default bg-element'
           )}
           onClick={onClick}
@@ -50,7 +50,7 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
           type="button"
           theme="quaternary"
           className={mergeClasses(
-            'min-h-[36px] justify-center px-2.5 border border-palette-purple7 hover:border-palette-purple8 focus:border-palette-purple8',
+            'min-h-[36px] justify-center border border-palette-purple7 px-2.5 hover:border-palette-purple8 focus:border-palette-purple8',
             isActive && 'border border-default bg-element'
           )}
           onClick={onClick}
