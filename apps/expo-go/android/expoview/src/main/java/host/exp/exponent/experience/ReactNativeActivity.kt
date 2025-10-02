@@ -443,9 +443,7 @@ abstract class ReactNativeActivity :
     }
 
     val devSettings = reactHost.devSupportManager.devSettings as? DevInternalSettings
-    if (devSettings != null) {
-      devSettings.setExponentActivityId(activityId)
-    }
+    devSettings?.setExponentActivityId(activityId)
 
     val appKey = manifest!!.getAppKey()
     val surface = ReactSurfaceImpl.createWithView(
