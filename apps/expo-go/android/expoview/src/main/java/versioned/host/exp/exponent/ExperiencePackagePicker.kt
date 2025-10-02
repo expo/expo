@@ -1,6 +1,5 @@
 package versioned.host.exp.exponent
 
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
 import expo.modules.audio.AudioModule
@@ -90,113 +89,113 @@ import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
 
 object ExperiencePackagePicker : ModulesProvider {
-    private val EXPO_MODULES_PACKAGES = listOf(
-        AVPackage(),
-        ConstantsPackage(),
-        FileSystemPackage(),
-        ExpoLinkingPackage(),
-        ImageLoaderPackage(),
-        KeepAwakePackage(),
-        NavigationBarPackage(),
-        NotificationsPackage(),
-        SplashScreenPackage(),
-        SystemUIPackage(),
-        TaskManagerPackage(),
-        UpdatesPackage()
-    )
+  private val EXPO_MODULES_PACKAGES = listOf(
+    AVPackage(),
+    ConstantsPackage(),
+    FileSystemPackage(),
+    ExpoLinkingPackage(),
+    ImageLoaderPackage(),
+    KeepAwakePackage(),
+    NavigationBarPackage(),
+    NotificationsPackage(),
+    SplashScreenPackage(),
+    SystemUIPackage(),
+    TaskManagerPackage(),
+    UpdatesPackage()
+  )
 
-    /**
-     * Returns all available packages.
-     */
-    fun packages(): List<Package> {
-        return EXPO_MODULES_PACKAGES
-    }
+  /**
+   * Returns all available packages.
+   */
+  fun packages(): List<Package> {
+    return EXPO_MODULES_PACKAGES
+  }
 
-    /**
-     * Returns packages filtered based on the app's manifest.
-     * For now, filtering is not applied but it is on the todo list.
-     */
-    fun packages(manifest: Manifest?): List<Package> {
-        return EXPO_MODULES_PACKAGES
-    }
+  /**
+   * Returns packages filtered based on the app's manifest.
+   * For now, filtering is not applied but it is on the todo list.
+   */
+  fun packages(manifest: Manifest?): List<Package> {
+    return EXPO_MODULES_PACKAGES
+  }
 
-    override fun getModulesMap(): Map<Class<out Module>, String?> = mapOf(
-        AudioModule::class.java to null,
-        AVModule::class.java to null,
-        ApplicationModule::class.java to null,
-        // Sensors
-        AccelerometerModule::class.java to null,
-        AssetModule::class.java to null,
-        BarometerModule::class.java to null,
-        GyroscopeModule::class.java to null,
-        LightSensorModule::class.java to null,
-        DeviceMotionModule::class.java to null,
-        MagnetometerModule::class.java to null,
-        MagnetometerUncalibratedModule::class.java to null,
-        PedometerModule::class.java to null,
-        // End of Sensors
-        // Notifications
-        BadgeModule::class.java to null,
-        PushTokenModule::class.java to null,
-        NotificationPermissionsModule::class.java to null,
-        NotificationChannelManagerModule::class.java to null,
-        NotificationChannelGroupManagerModule::class.java to null,
-        ExpoBackgroundNotificationTasksModule::class.java to null,
-        // End of Notifications
-        BatteryModule::class.java to null,
-        BackgroundFetchModule::class.java to null,
-        BackgroundTaskModule::class.java to null,
-        BlurModule::class.java to null,
-        CalendarModule::class.java to null,
-        CameraViewModule::class.java to null,
-        CellularModule::class.java to null,
-        ClipboardModule::class.java to null,
-        CryptoModule::class.java to null,
-        ConstantsModule::class.java to null,
-        ContactsModule::class.java to null,
-        DeviceModule::class.java to null,
-        DocumentPickerModule::class.java to null,
-        EASClientModule::class.java to null,
-        ExpoFetchModule::class.java to null,
-        FontUtilsModule::class.java to null,
-        ExpoLinkingModule::class.java to null,
-        FileSystemModule::class.java to null,
-        FileSystemLegacyModule::class.java to null,
-        FontLoaderModule::class.java to null,
-        PrintModule::class.java to null,
-        GLViewModule::class.java to null,
-        GLObjectManagerModule::class.java to null,
-        HapticsModule::class.java to null,
-        ImagePickerModule::class.java to null,
-        ImageManipulatorModule::class.java to null,
-        ExpoImageModule::class.java to null,
-        IntentLauncherModule::class.java to null,
-        KeepAwakeModule::class.java to null,
-        LinearGradientModule::class.java to null,
-        LocalAuthenticationModule::class.java to null,
-        LocalizationModule::class.java to null,
-        LocationModule::class.java to null,
-        MailComposerModule::class.java to null,
-        MediaLibraryModule::class.java to null,
-        NavigationBarModule::class.java to null,
-        NetworkModule::class.java to null,
-        ScreenCaptureModule::class.java to null,
-        ScreenOrientationModule::class.java to null,
-        // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
-        // because it needs access to scopedContext for Expo Go support
-        SMSModule::class.java to null,
-        SharingModule::class.java to null,
-        SpeechModule::class.java to null,
-        SplashScreenModule::class.java to null,
-        StoreReviewModule::class.java to null,
-        SQLiteModule::class.java to null,
-        SystemUIModule::class.java to null,
-        TaskManagerModule::class.java to null,
-        TrackingTransparencyModule::class.java to null,
-        VideoThumbnailsModule::class.java to null,
-        VideoModule::class.java to null,
-        VideoViewModule::class.java to null,
-        WebBrowserModule::class.java to null,
-        BrightnessModule::class.java to null,
-    )
+  override fun getModulesMap(): Map<Class<out Module>, String?> = mapOf(
+    AudioModule::class.java to null,
+    AVModule::class.java to null,
+    ApplicationModule::class.java to null,
+    // Sensors
+    AccelerometerModule::class.java to null,
+    AssetModule::class.java to null,
+    BarometerModule::class.java to null,
+    GyroscopeModule::class.java to null,
+    LightSensorModule::class.java to null,
+    DeviceMotionModule::class.java to null,
+    MagnetometerModule::class.java to null,
+    MagnetometerUncalibratedModule::class.java to null,
+    PedometerModule::class.java to null,
+    // End of Sensors
+    // Notifications
+    BadgeModule::class.java to null,
+    PushTokenModule::class.java to null,
+    NotificationPermissionsModule::class.java to null,
+    NotificationChannelManagerModule::class.java to null,
+    NotificationChannelGroupManagerModule::class.java to null,
+    ExpoBackgroundNotificationTasksModule::class.java to null,
+    // End of Notifications
+    BatteryModule::class.java to null,
+    BackgroundFetchModule::class.java to null,
+    BackgroundTaskModule::class.java to null,
+    BlurModule::class.java to null,
+    CalendarModule::class.java to null,
+    CameraViewModule::class.java to null,
+    CellularModule::class.java to null,
+    ClipboardModule::class.java to null,
+    CryptoModule::class.java to null,
+    ConstantsModule::class.java to null,
+    ContactsModule::class.java to null,
+    DeviceModule::class.java to null,
+    DocumentPickerModule::class.java to null,
+    EASClientModule::class.java to null,
+    ExpoFetchModule::class.java to null,
+    FontUtilsModule::class.java to null,
+    ExpoLinkingModule::class.java to null,
+    FileSystemModule::class.java to null,
+    FileSystemLegacyModule::class.java to null,
+    FontLoaderModule::class.java to null,
+    PrintModule::class.java to null,
+    GLViewModule::class.java to null,
+    GLObjectManagerModule::class.java to null,
+    HapticsModule::class.java to null,
+    ImagePickerModule::class.java to null,
+    ImageManipulatorModule::class.java to null,
+    ExpoImageModule::class.java to null,
+    IntentLauncherModule::class.java to null,
+    KeepAwakeModule::class.java to null,
+    LinearGradientModule::class.java to null,
+    LocalAuthenticationModule::class.java to null,
+    LocalizationModule::class.java to null,
+    LocationModule::class.java to null,
+    MailComposerModule::class.java to null,
+    MediaLibraryModule::class.java to null,
+    NavigationBarModule::class.java to null,
+    NetworkModule::class.java to null,
+    ScreenCaptureModule::class.java to null,
+    ScreenOrientationModule::class.java to null,
+    // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
+    // because it needs access to scopedContext for Expo Go support
+    SMSModule::class.java to null,
+    SharingModule::class.java to null,
+    SpeechModule::class.java to null,
+    SplashScreenModule::class.java to null,
+    StoreReviewModule::class.java to null,
+    SQLiteModule::class.java to null,
+    SystemUIModule::class.java to null,
+    TaskManagerModule::class.java to null,
+    TrackingTransparencyModule::class.java to null,
+    VideoThumbnailsModule::class.java to null,
+    VideoModule::class.java to null,
+    VideoViewModule::class.java to null,
+    WebBrowserModule::class.java to null,
+    BrightnessModule::class.java to null
+  )
 }
