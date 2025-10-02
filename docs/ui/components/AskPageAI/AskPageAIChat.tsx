@@ -608,8 +608,8 @@ export function AskPageAIChat({
               <div className="flex justify-center">
                 <FOOTNOTE
                   theme="secondary"
-                  className="rounded inline-block border border-default bg-subtle px-2 py-1">
-                  Switched to <span className="font-medium text-default">{contextNotice}</span>.
+                  className="inline-block rounded-md border border-default bg-subtle px-2 py-1">
+                  Switched to <span className="font-medium text-default">{contextNotice}</span>
                 </FOOTNOTE>
               </div>
             ) : null}
