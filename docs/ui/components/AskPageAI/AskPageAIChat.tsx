@@ -109,6 +109,12 @@ export function AskPageAIChat({
   // Show a brief notice when the page context changes while the chat is open
   const [contextNotice, setContextNotice] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = useCallback(() => {
+    const el = scrollRef.current;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, []);
   const prevDisplayContextRef = useRef<string>(displayContextLabel);
   const prevBasePathRef = useRef<string | null>(null);
   const [pendingContextNotice, setPendingContextNotice] = useState(false);
@@ -160,13 +166,21 @@ export function AskPageAIChat({
   useEffect(() => {
     if (contextNotice) {
       window.requestAnimationFrame(() => {
-        const el = scrollRef.current;
-        if (el) {
-          el.scrollTop = el.scrollHeight;
-        }
+        scrollToBottom();
       });
     }
-  }, [contextNotice]);
+  }, [contextNotice, scrollToBottom]);
+
+  // Auto-scroll when a new message is added
+  const lastEntry = conversation[conversation.length - 1];
+  const lastEntryKey = `${conversation.length}-${lastEntry?.id ?? 'noid'}-${
+    lastEntry?.answer?.length ?? 0
+  }`;
+  useEffect(() => {
+    window.requestAnimationFrame(() => {
+      scrollToBottom();
+    });
+  }, [lastEntryKey, scrollToBottom]);
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
   const closeButtonThemeOverrides = useMemo(
