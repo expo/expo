@@ -52,6 +52,7 @@ module.exports = {
       {
         ios: {
           ccacheEnabled: true,
+          // buildReactNativeFromSource: true,
         },
       },
     ],

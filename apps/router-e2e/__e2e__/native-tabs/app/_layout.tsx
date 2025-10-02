@@ -4,6 +4,7 @@ import { Badge, Icon, Label, NativeTabs, VectorIcon } from 'expo-router/unstable
 import { useState } from 'react';
 import { Appearance, Platform, useColorScheme } from 'react-native';
 
+import { MiniPlayer } from '../components/mini-player';
 import { ActiveTabsContext } from '../utils/active-tabs-context';
 
 if (process.env.EXPO_OS !== 'web') {
@@ -17,27 +18,27 @@ export default function Layout() {
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ActiveTabsContext.Provider value={{ activeTabs, setActiveTabs }}>
         <NativeTabs
-        // Both platforms
-        // labelStyle={{
-        //   fontSize: 16,
-        //   fontWeight: 700,
-        //   fontStyle: 'italic',
-        //   // fontFamily: 'Courier New',
-        //   color: Platform.OS === 'android' ? '#888' : undefined,
-        // }}
-        // backgroundColor={Platform.OS === 'android' ? 'black' : undefined}
-        // badgeBackgroundColor="green"
-        // tintColor="orange"
-        // iconColor={Platform.OS === 'android' ? '#888' : undefined}
-        // iOS only
-        // blurEffect="systemChromeMaterial"
-        // minimizeBehavior="onScrollDown"
-        // disableTransparentOnScrollEdge
-        // Android only
-        // labelVisibilityMode="auto"
-        // rippleColor="orange"
-        // indicatorColor="black"
-        >
+          // Both platforms
+          // labelStyle={{
+          //   fontSize: 16,
+          //   fontWeight: 700,
+          //   fontStyle: 'italic',
+          //   // fontFamily: 'Courier New',
+          //   color: Platform.OS === 'android' ? '#888' : undefined,
+          // }}
+          // backgroundColor={Platform.OS === 'android' ? 'black' : undefined}
+          // badgeBackgroundColor="green"
+          // tintColor="orange"
+          // iconColor={Platform.OS === 'android' ? '#888' : undefined}
+          // iOS only
+          // blurEffect="systemChromeMaterial"
+          // minimizeBehavior="onScrollDown"
+          // disableTransparentOnScrollEdge
+          // Android only
+          // labelVisibilityMode="auto"
+          // rippleColor="orange"
+          // indicatorColor="black"
+          unstable__bottomAccessory={<MiniPlayer />}>
           <NativeTabs.Trigger name="index">
             <Label
             // selectedStyle={{ color: '#0f0' }}

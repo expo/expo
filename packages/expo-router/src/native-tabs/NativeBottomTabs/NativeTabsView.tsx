@@ -24,6 +24,7 @@ import {
   type NativeTabsViewProps,
 } from './types';
 import { shouldTabBeVisible } from './utils';
+import { NativeBottomAccessory } from '../botom-accessory/native';
 
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
@@ -32,7 +33,8 @@ featureFlags.experiment.controlledBottomTabs = false;
 const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { builder, minimizeBehavior, disableIndicator, focusedIndex } = props;
+  const { builder, minimizeBehavior, disableIndicator, focusedIndex, unstable__bottomAccessory } =
+    props;
   const { state, descriptors, navigation } = builder;
   const { routes } = state;
 
@@ -84,7 +86,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   const children = routes
     .map((route, index) => ({ route, index }))
     .filter(({ route: { key } }) => shouldTabBeVisible(descriptors[key].options))
-    .map(({ route, index }) => {
+    .map(({ route, index }, i) => {
       const descriptor = descriptors[route.key];
       const isFocused = index === deferredFocusedIndex;
 
@@ -95,6 +97,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
           name={route.name}
           descriptor={descriptor}
           isFocused={isFocused}
+          // This will not work with first route hidden
+          bottomAccessory={i === 0 ? unstable__bottomAccessory : undefined}
           standardAppearance={appearances[index].standardAppearance}
           scrollEdgeAppearance={appearances[index].scrollEdgeAppearance}
           badgeTextColor={props.badgeTextColor}
@@ -181,6 +185,7 @@ function Screen(props: {
   standardAppearance: BottomTabsScreenAppearance;
   scrollEdgeAppearance: BottomTabsScreenAppearance;
   badgeTextColor: ColorValue | undefined;
+  bottomAccessory: React.ReactNode | undefined;
 }) {
   const {
     routeKey,
@@ -190,6 +195,7 @@ function Screen(props: {
     standardAppearance,
     scrollEdgeAppearance,
     badgeTextColor,
+    bottomAccessory,
   } = props;
   const role = descriptor.options.role;
   // To align with apple documentation and prevent untested cases,
@@ -200,6 +206,12 @@ function Screen(props: {
 
   const icon = useAwaitedScreensIcon(descriptor.options.icon);
   const selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
+
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  useEffect(() => {
+    return () => setIsMounted(false);
+  }, []);
 
   return (
     <BottomTabsScreen
@@ -218,10 +230,16 @@ function Screen(props: {
       }
       title={shouldResetTitleAndIcon ? undefined : title}
       freezeContents={false}
+      onWillAppear={() => setIsMounted(true)}
       tabKey={routeKey}
       systemItem={descriptor.options.role}
       isFocused={isFocused}>
       {descriptor.render()}
+      {bottomAccessory && isMounted && (
+        <NativeBottomAccessory onLayout={() => console.log('layout')}>
+          {bottomAccessory}
+        </NativeBottomAccessory>
+      )}
     </BottomTabsScreen>
   );
 }

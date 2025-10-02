@@ -169,7 +169,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 - (void)setShadowNodeSize:(float)width height:(float)height
 {
   if (_state) {
-    _state->updateState(ExpoViewState(width,height));
+    _state->updateState(ExpoViewState(width,height), facebook::react::EventQueue::UpdateMode::unstable_Immediate);
   }
 }
 

@@ -7,6 +7,8 @@
 ### 🎉 New features
 
 - Add support for server data loaders in development ([#39570](https://github.com/expo/expo/pull/39570) by [@hassankhan](https://github.com/hassankhan))
+- add support for bottom tab accessory in native tabs ([#39114](https://github.com/expo/expo/pull/39114) by [@Ubax](https://github.com/Ubax))
+
 
 ### 🐛 Bug fixes
 

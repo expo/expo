@@ -325,6 +325,14 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @platform iOS
    */
   disableTransparentOnScrollEdge?: boolean;
+  /**
+   * A slot for bottom accessory.
+   *
+   * Currently the minimize animation is unstable, so use with caution.
+   *
+   * @platform iOS
+   */
+  unstable__bottomAccessory?: React.ReactNode;
   // #endregion iOS props
   // #region android props
   /**

@@ -16,7 +16,7 @@ export function Post(props: { title: string; href: Href }) {
           }}>
           <Text style={{ color: colors.text, fontSize: 18 }}>{props.title}</Text>
           <View
-            style={{ width: '100%', aspectRatio: 1, backgroundColor: '#9ca3af', borderRadius: 8 }}
+            style={{ width: '100%', aspectRatio: 1, backgroundColor: '#000', borderRadius: 8 }}
           />
         </Pressable>
       </Link.Trigger>
