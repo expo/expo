@@ -180,6 +180,10 @@ export function appendIconOptions(options: ExtendedNativeTabOptions, props: Icon
           }
         : undefined;
     }
+  } else if ('androidSrc' in props && process.env.EXPO_OS === 'android') {
+    const icon = convertIconSrcToIconOption({ src: props.androidSrc });
+    options.icon = icon?.icon;
+    options.selectedIcon = icon?.selectedIcon;
   } else if ('drawable' in props && process.env.EXPO_OS === 'android') {
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
