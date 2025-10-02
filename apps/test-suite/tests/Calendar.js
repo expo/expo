@@ -520,6 +520,54 @@ export async function test(t) {
         t.expect(error instanceof Error).toBe(true);
       });
 
+      if (Platform.OS === 'ios') {
+        t.it('deletes a specific instance of a recurring event', async () => {
+          // Create a recurring event (weekly for 3 occurrences)
+          const recurringEventId = await createTestEventAsync(calendarId, {
+            recurrenceRule: {
+              frequency: Calendar.Frequency.WEEKLY,
+              occurrence: 3,
+            },
+            startDate: new Date(2019, 3, 7), // 7th April 2019 (Sunday)
+            endDate: new Date(2019, 3, 8),
+            allDay: false,
+          });
+
+          // Get all instances of the recurring event
+          const events = await Calendar.getEventsAsync(
+            [calendarId],
+            new Date(2019, 3, 1),
+            new Date(2019, 4, 1)
+          );
+          const recurringEvents = events.filter((e) => e.id === recurringEventId);
+
+          t.expect(recurringEvents.length).toBe(3);
+
+          // Delete the second instance (April 14)
+          const secondInstanceDate = recurringEvents[1].startDate;
+          await Calendar.deleteEventAsync(recurringEventId, {
+            instanceStartDate: secondInstanceDate,
+            futureEvents: false,
+          });
+
+          // Verify only the second instance was deleted
+          const eventsAfterDelete = await Calendar.getEventsAsync(
+            [calendarId],
+            new Date(2019, 3, 1),
+            new Date(2019, 4, 1)
+          );
+          const remainingEvents = eventsAfterDelete.filter((e) => e.id === recurringEventId);
+
+          t.expect(remainingEvents.length).toBe(2);
+
+          // Verify the first and third instances still exist
+          const remainingDates = remainingEvents.map((e) => e.startDate);
+          t.expect(remainingDates).toContain(recurringEvents[0].startDate);
+          t.expect(remainingDates).toContain(recurringEvents[2].startDate);
+          t.expect(remainingDates).not.toContain(secondInstanceDate);
+        });
+      }
+
       t.afterAll(async () => {
         await Calendar.deleteCalendarAsync(calendarId);
       });
