@@ -1,5 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { Stars03DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars03DuotoneIcon';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { FOOTNOTE } from '../Text';
 import * as Tooltip from '../Tooltip';
@@ -17,7 +17,7 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
           type="button"
           theme="quaternary"
           className={mergeClasses(
-            'min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset]',
+            'min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset] border border-palette-purple7 hover:border-palette-purple8 focus:border-palette-purple8',
             isActive && 'border border-default bg-element'
           )}
           onClick={onClick}
@@ -28,7 +28,7 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
               'flex flex-col items-center',
               'max-xl-gutters:flex-row max-xl-gutters:gap-1.5'
             )}>
-            <Stars03DuotoneIcon className="mt-0.5 text-icon-secondary" />
+            <Star06Icon className="mt-0.5 text-palette-purple11" />
             <FOOTNOTE crawlable={false} theme="secondary">
               Ask AI
             </FOOTNOTE>
@@ -50,14 +50,14 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
           type="button"
           theme="quaternary"
           className={mergeClasses(
-            'min-h-[36px] justify-center px-2.5',
+            'min-h-[36px] justify-center px-2.5 border border-palette-purple7 hover:border-palette-purple8 focus:border-palette-purple8',
             isActive && 'border border-default bg-element'
           )}
           onClick={onClick}
           aria-pressed={isActive}
           aria-label="Ask about this configuration page with AI">
           <div className="flex items-center gap-2">
-            <Stars03DuotoneIcon className="icon-sm text-icon-secondary" />
+            <Star06Icon className="icon-sm text-palette-purple11" />
             <FOOTNOTE crawlable={false} theme="secondary">
               Ask AI
             </FOOTNOTE>

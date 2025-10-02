@@ -1,11 +1,11 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { Stars03DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars03DuotoneIcon';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
 import { Maximize02Icon } from '@expo/styleguide-icons/outline/Maximize02Icon';
 import { Minimize02Icon } from '@expo/styleguide-icons/outline/Minimize02Icon';
 import { RefreshCcw02Icon } from '@expo/styleguide-icons/outline/RefreshCcw02Icon';
 import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
 import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
@@ -373,7 +373,7 @@ export function AskPageAIChat({
                 'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
               )}
               style={headerAccentBackground}>
-              <Stars03DuotoneIcon className="icon-sm text-palette-white" />
+              <Star06Icon className="icon-sm text-palette-white" />
             </span>
             <span className="text-sm font-medium leading-tight text-palette-white">
               Expo AI Assistant
