@@ -1,7 +1,7 @@
 {
   "name": "expo-tracking-transparency",
   "version": "6.0.7",
-  "description": "A library for tracking users and managing tracking permissions",
+  "description": "A library for tracking app users and managing tracking permissions",
   "main": "build/TrackingTransparency.js",
   "types": "build/TrackingTransparency.d.ts",
   "scripts": {
