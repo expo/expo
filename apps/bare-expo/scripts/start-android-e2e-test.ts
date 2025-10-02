@@ -11,14 +11,15 @@ import {
   fileExistsAsync,
   getStartMode,
   retryAsync,
-  getMaestroFlowFilePath,
   prettyPrintTestSuiteLogs,
   setupLogger,
+  runCustomMaestroFlowsAsync,
+  MAESTRO_ENV_VARS,
+  TEST_DURATION_LABEL,
 } from './lib/e2e-common';
 
 const APP_ID = 'dev.expo.payments';
 const OUTPUT_APP_PATH = 'android/app/build/outputs/apk/release/app-release.apk';
-const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
 const NUM_OF_RETRIES = 6; // Number of retries for the suite
 
 const __filename = fileURLToPath(import.meta.url);
@@ -44,18 +45,30 @@ const __dirname = dirname(__filename);
       );
       const deviceId = await queryDeviceIdAsync(adbPath);
       if (!deviceId) {
-        throw new Error(`No connected Android device found`);
+        throw new Error(
+          `No connected Android device found. In CI, it should be started via the 'Use Android Emulator' action.`
+        );
       }
-      const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
-      await createMaestroFlowAsync({
+      const e2eDir = path.join(projectRoot, 'e2e');
+      await runCustomMaestroFlowsAsync(e2eDir, 'android', (maestroFlowFilePath) =>
+        testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir)
+      );
+
+      const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,
-        workflowFile: maestroFlowFilePath,
-        confirmFirstRunPrompt: true,
+        e2eDir,
+        confirmFirstRunPromptIOS: false,
       });
 
       await retryAsync((retryNumber) => {
         console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-        return testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath);
+        return testAsync(
+          maestroNativeModulesFlowFilePath,
+          deviceId,
+          appBinaryPath,
+          adbPath,
+          e2eDir
+        );
       }, NUM_OF_RETRIES);
     }
   } catch (e) {
@@ -80,7 +93,8 @@ async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
   appBinaryPath: string,
-  adbPath: string
+  adbPath: string,
+  maestroWorkspaceRoot: string
 ): Promise<void> {
   const stopLogCollectionController = new AbortController();
 
@@ -92,15 +106,19 @@ async function testAsync(
   );
   const getLogs = setupLogger(`adb logcat -e ${APP_ID}`, stopLogCollectionController.signal);
   try {
+    console.time(TEST_DURATION_LABEL);
     await spawnAsync('maestro', ['--platform', 'android', 'test', maestroFlowFilePath], {
       stdio: 'inherit',
+      cwd: maestroWorkspaceRoot,
       env: {
         ...process.env,
-        MAESTRO_DRIVER_STARTUP_TIMEOUT,
+        ...MAESTRO_ENV_VARS,
       },
     });
+    console.timeEnd(TEST_DURATION_LABEL);
   } catch {
     stopLogCollectionController.abort();
+    console.timeEnd(TEST_DURATION_LABEL);
     console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
     const logs = await getLogs();
     console.log(prettyPrintTestSuiteLogs(logs));
