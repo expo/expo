@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        api-level: [34]
+        api-level: [36]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
