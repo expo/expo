@@ -13,13 +13,14 @@ export const name = 'MediaLibrary@Next';
 
 const mp3Path = require('../assets/LLizard.mp3');
 const mp4Path = require('../assets/big_buck_bunny.mp4');
+const exifJpgPath = require('../assets/exif_data_image.jpg');
 const pngPath = require('../assets/icons/app.png');
 const jpgPath = require('../assets/qrcode_expo.jpg');
 
 export async function test(t) {
   let permissions;
   let files;
-  let jpgFile, pngFile, mp4File, mp3File;
+  let jpgFile, pngFile, mp4File, mp3File, exifJpgFile;
 
   const checkIfAllPermissionsWereGranted = () => {
     if (Platform.OS === 'ios') {
@@ -33,6 +34,7 @@ export async function test(t) {
     [pngFile] = await ExpoAsset.loadAsync(pngPath);
     [jpgFile] = await ExpoAsset.loadAsync(jpgPath);
     [mp4File] = await ExpoAsset.loadAsync(mp4Path);
+    [exifJpgFile] = await ExpoAsset.loadAsync(exifJpgPath);
     files = [pngFile, jpgFile, mp4File];
     permissions = await requestPermissionsAsync();
     if (!checkIfAllPermissionsWereGranted()) {
@@ -597,6 +599,41 @@ export async function test(t) {
       t.expect(firstAsset.id).toBe(videoAsset.id);
       t.expect(secondAsset.id).toBe(shorterAsset.id);
       t.expect(thirdAsset.id).toBe(tallerAsset.id);
+    });
+  });
+
+  t.describe('Exif interface', () => {
+    t.it('returns location for jpg image', async () => {
+      // given
+      const asset = await Asset.create(exifJpgFile.localUri);
+      assetsContainer.push(asset);
+      // when
+      const location = await asset.getLocation();
+      // then
+      t.expect(location).toBeDefined();
+      t.expect(location?.latitude).toBeGreaterThanOrEqual(-90);
+      t.expect(location?.latitude).toBeLessThanOrEqual(90);
+      t.expect(location?.longitude).toBeGreaterThanOrEqual(-180);
+      t.expect(location?.longitude).toBeLessThanOrEqual(180);
+    });
+
+    t.it('returns exif data for jpg image', async () => {
+      // given
+      const asset = await Asset.create(exifJpgFile.localUri);
+      assetsContainer.push(asset);
+      // when
+      const exif = await asset.getExif();
+      // then
+      const numberOfKeys = Object.keys(exif || {}).length;
+      if (Platform.OS === 'android') {
+        t.expect(exif['Make']).not.toBeUndefined();
+        t.expect(exif['Model']).not.toBeUndefined();
+      } else if (Platform.OS === 'ios') {
+        t.expect(exif['{TIFF}']['Make']).not.toBeUndefined();
+        t.expect(exif['{TIFF}']['Model']).not.toBeUndefined();
+      }
+      t.expect(numberOfKeys).toBeGreaterThan(0);
+      t.expect(exif).toBeDefined();
     });
   });
 
