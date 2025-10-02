@@ -141,15 +141,15 @@ export function AskPageAIChat({
         `The user is reading the Expo docs page titled "${contextLabel}" at ${origin || 'the latest Expo SDK docs'}.`,
         'You only have access to the content from this page. You do not have access to other pages, past answers, or external knowledge.',
         'Before responding, confirm that every sentence in your answer is directly supported by the provided context.',
-        'If you cannot confirm this support, respond exactly with: "I couldn\'t find that on this page." Do not explain or apologize.',
-        'If the question is unrelated to the provided context, respond exactly with: "I couldn\'t find that on this page."',
+        `If you cannot confirm this support, respond exactly with: "I can only answer questions about the current ${displayContextLabel} documentation." Do not explain or apologize.`,
+        `If the question is unrelated to the provided context, respond exactly with: "I can only answer questions about the current ${displayContextLabel} documentation."`,
         'Prefer concise explanations, reference relevant APIs or headings, and format instructions as short steps or bullet lists when helpful.',
         'Whenever you share code or configuration examples, return complete, ready-to-run snippets with all required imports and setup so the user can copy and paste them into their app without additional context.',
         'Mention the Expo SDK version when relevant (this context represents the "latest" docs).',
         '',
         `User question: ${text}`,
       ].join('\n');
-  }, [contextLabel]);
+  }, [contextLabel, displayContextLabel]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
