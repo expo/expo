@@ -7,16 +7,17 @@ import {
   blur,
   clickable,
   animateContentSize,
-  padding,
+  paddingAll,
+  Host,
 } from '@expo/ui/jetpack-compose';
-import { Container, Column, Row, Text, Box } from '@expo/ui/jetpack-compose-primitives';
+import { Column, Row, Box, Text } from '@expo/ui/jetpack-compose-primitives';
 import { useState } from 'react';
 import { Button, View, StyleSheet, Text as RNText } from 'react-native';
 
 export default function JetpackComposePrimitivesScreen() {
   const [checked, setChecked] = useState<boolean>(true);
   return (
-    <Container style={styles.container} modifiers={[testID('container')]}>
+    <Host style={styles.container} modifiers={[testID('container')]}>
       <Column verticalArrangement="spaceEvenly" horizontalAlignment="center">
         {/* Example 1: Row with Text and Switch */}
         <Row horizontalArrangement="spaceBetween" verticalAlignment="center" testID="leftTextRow">
@@ -98,10 +99,10 @@ export default function JetpackComposePrimitivesScreen() {
             blur(10),
             clickable(() => setChecked((c) => !c)),
           ]}>
-          <Box modifiers={[matchParentSize(), padding(30), background('#ddddff')]} />
+          <Box modifiers={[matchParentSize(), paddingAll(30), background('#ddddff')]} />
         </Box>
       </Column>
-    </Container>
+    </Host>
   );
 }
 

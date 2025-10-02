@@ -8,6 +8,8 @@ type PrimitiveBaseProps = {
    * Used to locate this view in end-to-end tests.
    */
   testID?: string;
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 export type HorizontalArrangement =
@@ -65,7 +67,7 @@ export function Row(props: RowProps) {
   return (
     <RowNativeView
       {...props}
-      // @ts-ignore
+      // @ts-expect-error
       modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
     />
   );
@@ -83,29 +85,29 @@ export function Column(props: ColumnProps) {
   return (
     <ColumnNativeView
       {...props}
-      // @ts-ignore
+      // @ts-expect-error
       modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
     />
   );
 }
 //#endregion
 
-//#region Container Component
-export type ContainerProps = {
+//#region Host Component
+export type HostProps = {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
-const ContainerNativeView: React.ComponentType<ColumnProps> | null =
-  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'ContainerView') : null;
-export function Container(props: ContainerProps) {
-  if (!ContainerNativeView) {
+const HostNativeView: React.ComponentType<ColumnProps> | null =
+  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'HostView') : null;
+export function Host(props: HostProps) {
+  if (!HostNativeView) {
     return null;
   }
   return (
-    <ContainerNativeView
+    <HostNativeView
       {...props}
-      // @ts-ignore
+      // @ts-expect-error
       modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
     />
   );
@@ -152,6 +154,12 @@ export function Text(props: TextProps) {
   if (!TextNativeView) {
     return null;
   }
-  return <TextNativeView {...transformTextProps(props)} />;
+  return (
+    <TextNativeView
+      {...transformTextProps(props)}
+      // @ts-expect-error
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+    />
+  );
 }
 //#endregion

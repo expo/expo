@@ -1,10 +1,13 @@
 import { requireNativeModule } from 'expo';
 
 import { ExpoModifier } from '../types';
+import { parseJSXShape, ShapeJSXElement } from './Shape';
 
 const nativeExpoUIModule = requireNativeModule('ExpoUI');
 
-export const padding: (all: number) => ExpoModifier = nativeExpoUIModule.padding;
+export const paddingAll: (all: number) => ExpoModifier = nativeExpoUIModule.paddingAll;
+export const padding: (start: number, top: number, end: number, bottom: number) => ExpoModifier =
+  nativeExpoUIModule.padding;
 export const size: (width: number, height: number) => ExpoModifier = nativeExpoUIModule.size;
 export const fillMaxSize: () => ExpoModifier = nativeExpoUIModule.fillMaxSize;
 export const offset: (x: number, y: number) => ExpoModifier = nativeExpoUIModule.offset;
@@ -22,3 +25,5 @@ export const testID: (tag: string) => ExpoModifier = nativeExpoUIModule.testID;
 export const matchParentSize: () => ExpoModifier = nativeExpoUIModule.matchParentSize;
 export const animateContentSize: (dampingRatio?: number, stiffness?: number) => ExpoModifier =
   nativeExpoUIModule.animateContentSize;
+export const clip: (shape: ShapeJSXElement) => ExpoModifier = (shape) =>
+  nativeExpoUIModule.clip(parseJSXShape(shape));

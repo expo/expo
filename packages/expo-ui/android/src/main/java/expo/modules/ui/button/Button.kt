@@ -39,6 +39,7 @@ import expo.modules.ui.compose
 import expo.modules.ui.fromExpoModifiers
 import expo.modules.ui.getImageVector
 import expo.modules.ui.pathFromShapeRecord
+import expo.modules.ui.shapeFromShapeRecord
 
 open class ButtonPressedEvent() : Record, Serializable
 
@@ -71,7 +72,7 @@ data class ButtonProps(
   val leadingIcon: MutableState<String?> = mutableStateOf(null),
   val trailingIcon: MutableState<String?> = mutableStateOf(null),
   val disabled: MutableState<Boolean> = mutableStateOf(false),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
+  val modifiers: MutableState<List<ExpoModifier>?> = mutableStateOf(emptyList()),
   val shape: MutableState<ShapeRecord?> = mutableStateOf(null)
 ) : ComposeProps
 
@@ -169,7 +170,7 @@ fun getShape(shapeRecord: ShapeRecord?): Shape? {
 }
 
 class Button(context: Context, appContext: AppContext) :
-  ExpoComposeView<ButtonProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<ButtonProps>(context, appContext) {
   override val props = ButtonProps()
   private val onButtonPressed by EventDispatcher<ButtonPressedEvent>()
 
@@ -193,9 +194,10 @@ class Button(context: Context, appContext: AppContext) :
         disabled,
         onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
         modifier = Modifier.fromExpoModifiers(props.modifiers.value),
-        shape = getShape(props.shape.value)
+        shape = shapeFromShapeRecord(props.shape.value)
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+          Children()
           leadingIcon?.let { iconName ->
             getImageVector(iconName)?.let {
               Icon(
