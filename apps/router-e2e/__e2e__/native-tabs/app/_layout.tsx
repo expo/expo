@@ -7,7 +7,7 @@ import { Appearance, Platform, useColorScheme } from 'react-native';
 import { ActiveTabsContext } from '../utils/active-tabs-context';
 
 if (process.env.EXPO_OS !== 'web') {
-  Appearance.setColorScheme(null);
+  Appearance.setColorScheme('unspecified');
 }
 
 export default function Layout() {
@@ -51,7 +51,11 @@ export default function Layout() {
             />
           </NativeTabs.Trigger>
           {activeTabs.map((tab, index) => (
-            <NativeTabs.Trigger key={tab} name={tab} role={index === 0 ? 'search' : undefined}>
+            <NativeTabs.Trigger
+              key={tab}
+              name={tab}
+              role={index === 0 ? 'search' : undefined}
+              addIOSSafeInsets>
               <Icon sf="plus" drawable="ic_search" />
               <Badge
               // selectedBackgroundColor="#ff0"

@@ -74,7 +74,7 @@ function NativeTabTriggerImpl(props) {
 exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     TabBar: NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar,
 });
-function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop }, isDynamic = false) {
+function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, disableAndroidSafeInsets, addIOSSafeInsets, }, isDynamic = false) {
     const initialOptions = isDynamic
         ? { ...options }
         : {
@@ -88,6 +88,12 @@ function convertTabPropsToOptions({ options, hidden, children, role, disablePopT
             },
             role: role ?? options?.role,
         };
+    if (disableAndroidSafeInsets !== undefined) {
+        initialOptions.disableAndroidSafeInsets = disableAndroidSafeInsets;
+    }
+    if (addIOSSafeInsets !== undefined) {
+        initialOptions.addIOSSafeInsets = addIOSSafeInsets;
+    }
     const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [
         elements_1.Badge,
         elements_1.Label,

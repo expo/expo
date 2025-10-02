@@ -95,7 +95,16 @@ export const NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
 });
 
 export function convertTabPropsToOptions(
-  { options, hidden, children, role, disablePopToTop, disableScrollToTop }: NativeTabTriggerProps,
+  {
+    options,
+    hidden,
+    children,
+    role,
+    disablePopToTop,
+    disableScrollToTop,
+    disableAndroidSafeInsets,
+    addIOSSafeInsets,
+  }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
   const initialOptions: ExtendedNativeTabOptions = isDynamic
@@ -111,6 +120,12 @@ export function convertTabPropsToOptions(
         },
         role: role ?? options?.role,
       };
+  if (disableAndroidSafeInsets !== undefined) {
+    initialOptions.disableAndroidSafeInsets = disableAndroidSafeInsets;
+  }
+  if (addIOSSafeInsets !== undefined) {
+    initialOptions.addIOSSafeInsets = addIOSSafeInsets;
+  }
   const allowedChildren = filterAllowedChildrenElements(children, [
     Badge,
     Label,
