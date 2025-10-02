@@ -106,7 +106,6 @@ export function AskPageAIChat({
     });
   }, [conversation, askedQuestions.length, extractUserQuestion]);
 
-  // Show a brief notice when the page context changes while the chat is open
   const [contextNotice, setContextNotice] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = useCallback(() => {
@@ -118,7 +117,6 @@ export function AskPageAIChat({
   const prevDisplayContextRef = useRef<string>(displayContextLabel);
   const prevBasePathRef = useRef<string | null>(null);
   const [pendingContextNotice, setPendingContextNotice] = useState(false);
-  // Detect route changes (ignore hash-only changes)
   const basePath = (router?.asPath ?? '').split('#')[0];
   useEffect(() => {
     const prevPath = prevBasePathRef.current;
@@ -171,8 +169,7 @@ export function AskPageAIChat({
     }
   }, [contextNotice, scrollToBottom]);
 
-  // Auto-scroll when a new message is added
-  const lastEntry = conversation[conversation.length - 1];
+  const lastEntry = conversation.at(-1);
   const lastEntryKey = `${conversation.length}-${lastEntry?.id ?? 'noid'}-${
     lastEntry?.answer?.length ?? 0
   }`;
@@ -407,13 +404,24 @@ export function AskPageAIChat({
           className={mergeClasses('text-secondary', className, '!text-[10px] !leading-[1.45]')}
         />
       ),
-      sup: ({ children, className, ...supProps }: any) => (
-        <span
-          {...supProps}
-          className={mergeClasses('align-baseline !text-[10px] text-secondary', className)}>
-          [{children}]
-        </span>
-      ),
+      sup: () => null,
+      section: ({ className, children, ...props }: any) => {
+        if (className?.includes('footnotes')) {
+          return null;
+        }
+        return (
+          <section className={className} {...props}>
+            {children}
+          </section>
+        );
+      },
+      hr: ({ className, ...props }: any) => {
+        if (className?.includes('footnotes-sep')) {
+          return null;
+        }
+        const HR = (docsMarkdownComponents.hr as ComponentType<any>) ?? 'hr';
+        return <HR className={className} {...props} />;
+      },
       a: ({
         href,
         children,
@@ -547,7 +555,9 @@ export function AskPageAIChat({
               const key = (qa.id as ConversationKey) ?? `${qa.question}-${index}`;
               const displayQuestion =
                 askedQuestions[index] ?? extractUserQuestion(qa.question, qa.question);
-              const normalizedAnswer = qa.answer?.replace(/<br\s*\/?>(\n)?/gi, '\n');
+              const normalizedAnswer = qa.answer
+                ?.replace(/<br\s*\/?>(\n)?/gi, '\n')
+                ?.replace(/<sup[^>]*>(.*?)<\/sup>/gi, '$1');
 
               return (
                 <div key={key} className="space-y-2">
@@ -556,7 +566,7 @@ export function AskPageAIChat({
                       {displayQuestion}
                     </div>
                   </div>
-                  <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
+                  <div className="px-0">
                     <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
                     <div className="mt-1 space-y-3 text-xs text-secondary">
                       {normalizedAnswer ? (
