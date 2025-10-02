@@ -40,7 +40,7 @@ cd e2e/_nested-flows && bun --watch --no-clear-screen ./image-comparison-server.
 
 You can run tests directly from the studio but there's a gotcha with screenshots — studio stores them at a wrong location (different from when you run from CLI). So for screenshots specifically, it's better to leave them to the end when you want to create them for a PR (just use the screenshot feature of the emulator).
 
-To run tests from CLI, use the following command which picks up whatever device you have running:
+To run tests from CLI, use the following command which picks up whatever device you have running (the `platform` param requires [this](https://github.com/mobile-dev-inc/Maestro/commit/12072a4782704dd4a8d2316625e3eb2df8db5bc5)):
 
 ```bash
 cd apps/bare-expo/e2e
@@ -49,11 +49,18 @@ maestro --platform=ios test expo-image/test.yaml
 
 Or use the [`--device` parameter](https://docs.maestro.dev/advanced/specify-a-device#obtain-the-device-identifier).
 
-You can also run tests in parallel on both iOS and Android emulators/simulators. For example, to run on 2 devices in parallel:
+You can also run tests in parallel on both iOS and Android emulators/simulators. For example, to run on two devices in parallel:
 
 ```bash
 maestro test expo-video/test.yaml --shard-all 2
 ```
+
+To run the tests the same way they'd run in CI, do `cd apps/bare-expo/scripts` and `./start-ios-e2e-test.ts --test` or `./start-android-e2e-test.ts --test`.
+
+### Comparing screen / view shots
+
+The way the comparing works is that there's always a base image commited in the repo (`.base.png` for cross-platform view shots, or `base.platform.png` for screenshots or per-platform view shots), and a corresponding shot is taken in CI. They are compared and based on the result, assertion fails or passes. See `_nested-flows/screenshot-comparison.yaml` and `_nested-flows/viewshot-comparison.yaml`.
+The shots, as well as diffs against the base images are stored as GH artifacts in CI, and so are the logs of the image comparison server.
 
 ### Troubleshooting
 

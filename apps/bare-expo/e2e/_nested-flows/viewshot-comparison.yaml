@@ -1,12 +1,14 @@
-# Screenshot comparison flow for expo-image
-# This flow can be reused across different image comparison tests
-# it fails if the images are too different
+# view shot comparison flow for maestro
+# This flow can be reused across different view shot comparison tests
+# it fails if the images are too different, optionally normalizing images so that only one view shot is used for both platforms
 
 # making changes? update apps/bare-expo/scripts/lib/pathUtils.test.ts
 
 # Parameters:
-#   - screenshotOutputPath: The folder path of the viewshot to take and compare
-#   - similarityThreshold: The percentage of similarity required to pass the comparison
+#   - screenshotOutputPath: The folder path of the viewshot to take and compare. The file name will be based on the testID
+#   - testID: The testID of the view to take shot of
+#   - mode: 'crossPlatform' or 'platformDependent'. When 'crossPlatform', the view shot will be normalized before compared with the base view shot
+#   - similarityThreshold: The percentage of similarity required to pass the comparison. Defaults to 5 and 15% for the platformDependent and crossPlatform modes, respectively
 
 appId: dev.expo.Payments
 ---
@@ -20,8 +22,8 @@ appId: dev.expo.Payments
       # needs to be in ~/.maestro/tests so that it's stored as GH action artifact
       outputPath: ~/.maestro/tests/${screenshotOutputPath}
       similarityThreshold: ${similarityThreshold}
-      mode: ${mode} #'crossPlatform' #, perPlatform
+      mode: ${mode}
 
 - assertTrue:
     condition: ${output.comparisonResult.success}
-    label: Viewshot comparison check. Is screenshot comparison server running (./image-comparison-server.ts)? See its terminal logs for details.)
+    label: Viewshot comparison check. Is the image comparison server running (./image-comparison-server.ts)? See its terminal logs for details.)

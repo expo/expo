@@ -1,4 +1,4 @@
-# Screenshot comparison flow for expo-image
+# Screenshot comparison flow for maestro
 # This flow can be reused across different image comparison tests
 # it fails if the images are too different
 
@@ -15,7 +15,6 @@ appId: dev.expo.Payments
     env:
       currentScreenshot: ${screenshotOutputPath}.${maestro.platform}
       platform: ${maestro.platform}
-      testID: ${testID}
       baseImage: ${screenshotOutputPath}.base.${maestro.platform}
       # needs to be in ~/.maestro/tests so that it's stored as GH action artifact
       outputPath: ~/.maestro/tests/${screenshotOutputPath}
@@ -23,4 +22,4 @@ appId: dev.expo.Payments
 
 - assertTrue:
     condition: ${output.comparisonResult.success}
-    label: Screenshot comparison check. Is screenshot comparison server running (./image-comparison-server.ts)? See its terminal logs for details.)
+    label: Screenshot comparison check. Is the image comparison server running (./image-comparison-server.ts)? See its terminal logs for details.)

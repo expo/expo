@@ -15,22 +15,16 @@ interface ElementProperties {
   resource_id: string;
   bounds: Bounds;
   text: string;
-  class?: string;
 }
 
-// iOS types
-interface IOSAttributes {
+interface Attributes {
   accessibilityText: string;
-  title: '';
-  value: '';
-  text: '';
-  hintText: '';
-  'resource-id': '';
+  text: string;
   bounds: string;
 }
 
 interface ViewNode {
-  attributes: IOSAttributes;
+  attributes: Attributes;
   children?: ViewNode[];
 }
 
@@ -40,13 +34,15 @@ export class ViewCropper {
     currentScreenshotPath,
     platform,
     viewShotPath,
+    displayScaleFactor,
   }: {
     testID: string;
     currentScreenshotPath: string;
     platform: 'ios' | 'android';
     viewShotPath: string;
+    displayScaleFactor: number; // always 1 for Android, but can vary for iOS
   }): Promise<{ viewShotPath: string }> {
-    const element = await this.findElementByTestID(testID, platform);
+    const element = await this.findElementByTestID(testID, platform, displayScaleFactor);
     const bounds = element.bounds;
 
     await this.cropImageAsync({
@@ -69,10 +65,11 @@ export class ViewCropper {
 
   private async findElementByTestID(
     testID: string,
-    platform: 'ios' | 'android'
+    platform: 'ios' | 'android',
+    displayScaleFactor: number
   ): Promise<ElementProperties> {
     const jsonViewHierarchy = await this.dumpViewHierarchy(platform);
-    const element = this.searchJsonNodes(jsonViewHierarchy, testID, platform);
+    const element = this.searchJsonNodes(jsonViewHierarchy, testID, displayScaleFactor);
 
     if (!element) {
       throw new Error(`Element with testID "${testID}" not found in ${platform} hierarchy`);
@@ -90,8 +87,7 @@ export class ViewCropper {
         MAESTRO_DRIVER_STARTUP_TIMEOUT,
       },
     });
-    const endTime = Date.now();
-    const duration = endTime - startTime;
+    const duration = Date.now() - startTime;
 
     console.log(`Maestro took ${duration}ms to capture the ${platform} view hierarchy`);
 
@@ -108,7 +104,7 @@ export class ViewCropper {
   private searchJsonNodes(
     node: ViewNode,
     resourceId: string,
-    platform: 'ios' | 'android'
+    displayScaleFactor: number
   ): ElementProperties | null {
     if (!node) {
       return null;
@@ -124,11 +120,15 @@ export class ViewCropper {
       const nodeResourceId = currentNode.attributes['resource-id'];
 
       if (nodeResourceId === resourceId) {
-        return this.parseJsonElementProperties(currentNode, platform);
+        return this.parseJsonElementProperties(currentNode, displayScaleFactor);
       }
 
       if (currentNode.children) {
-        const childResult = this.searchJsonNodes(currentNode.children as any, resourceId, platform);
+        const childResult = this.searchJsonNodes(
+          currentNode.children,
+          resourceId,
+          displayScaleFactor
+        );
         if (childResult) return childResult;
       }
     }
@@ -136,7 +136,10 @@ export class ViewCropper {
     return null;
   }
 
-  private parseJsonElementProperties(node: any, platform: 'ios' | 'android'): ElementProperties {
+  private parseJsonElementProperties(
+    node: ViewNode,
+    displayScaleFactor: number
+  ): ElementProperties {
     const attrs = node.attributes;
     const boundsStr = attrs.bounds || '[0,0][0,0]';
     const boundsMatch = boundsStr.match(/\[(\d+),(\d+)\]\[(\d+),(\d+)\]/);
@@ -145,31 +148,18 @@ export class ViewCropper {
     if (boundsMatch) {
       const [, x1, y1, x2, y2] = boundsMatch.map(Number);
 
-      if (platform === 'ios') {
-        // Apply pixel ratio for iOS
-        const pixelRatio = 3;
-        const scaledCoords = [x1, y1, x2, y2].map((coord) => coord * pixelRatio);
-        bounds = {
-          x: scaledCoords[0],
-          y: scaledCoords[1],
-          width: scaledCoords[2] - scaledCoords[0],
-          height: scaledCoords[3] - scaledCoords[1],
-        };
-      } else {
-        // Android - no scaling
-        bounds = {
-          x: x1,
-          y: y1,
-          width: x2 - x1,
-          height: y2 - y1,
-        };
-      }
+      const scaledCoords = [x1, y1, x2, y2].map((coord) => coord * displayScaleFactor);
+      bounds = {
+        x: scaledCoords[0],
+        y: scaledCoords[1],
+        width: scaledCoords[2] - scaledCoords[0],
+        height: scaledCoords[3] - scaledCoords[1],
+      };
     }
 
     return {
       resource_id: attrs['resource-id'] || '',
       bounds,
-      class: attrs.class || '',
       text: attrs.text || '',
     };
   }

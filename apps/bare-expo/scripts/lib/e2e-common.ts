@@ -24,11 +24,13 @@ export function getStartMode(programFilename: string): StartMode {
 export interface MaestroFlowParams {
   appId: string;
   e2eDir: string;
+  confirmFirstRunPromptIOS: boolean;
 }
 
 export async function createMaestroFlowAsync({
   appId,
   e2eDir,
+  confirmFirstRunPromptIOS,
 }: MaestroFlowParams): Promise<string> {
   const inputFile = await import('../../e2e/TestSuite-test.native.js');
   const testCases = inputFile.TESTS as string[];
@@ -42,6 +44,16 @@ appId: ${appId}
 - clearState
 `,
   ];
+  if (confirmFirstRunPromptIOS) {
+    contents.push(`\
+# Run once to approve the first time deeplinking prompt on iOS
+- openLink: bareexpo://test-suite/run
+- tapOn:
+    text: "Open"
+    optional: true
+- stopApp
+`);
+  }
 
   for (const testCase of testCases) {
     contents.push(`\

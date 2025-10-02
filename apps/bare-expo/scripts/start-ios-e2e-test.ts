@@ -52,6 +52,7 @@ const __dirname = dirname(__filename);
       const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,
         e2eDir,
+        confirmFirstRunPromptIOS: true,
       });
 
       await retryAsync((retryNumber) => {
@@ -193,11 +194,6 @@ async function testAsync(
     await startSimulatorAsync(deviceId);
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
-    console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
-    await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
-    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
-      stdio: 'inherit',
-    });
 
     const getTestSuiteLogs = setupLogger(
       '(subsystem == "com.facebook.react.log")',

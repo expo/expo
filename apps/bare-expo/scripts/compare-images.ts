@@ -83,7 +83,7 @@ export async function compareImages({
 
     // Handle cross-platform mode with different dimensions
     if (crossPlatformMode) {
-      similarityThreshold = 15; // Relax threshold for cross-platform comparisons
+      similarityThreshold = 15; // Relax the threshold for cross-platform comparisons
       const img1 = PNG.sync.read(fs.readFileSync(image1Path));
       const img2 = PNG.sync.read(fs.readFileSync(image2Path));
 

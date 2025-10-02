@@ -12,7 +12,6 @@ jsEngine: graaljs
       screenshotOutputPath: expo-image
       testID: 'header-Appearance'
       mode: 'crossPlatform'
-
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:

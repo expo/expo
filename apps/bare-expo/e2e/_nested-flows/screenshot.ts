@@ -1,4 +1,6 @@
-// taking screenshots with Maestro is not reliable, hence this module
+// taking screenshots with Maestro is not reliable (for example, taking one screenshot would work, but taking two in row would time out)
+// hence this module
+
 import { exec } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -17,7 +19,6 @@ export async function takeScreenshot({
   outputFilePath,
   copyAlsoTo,
 }: ScreenshotOptions): Promise<void> {
-  // Ensure the output directory exists
   const outputDir = path.dirname(outputFilePath);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });

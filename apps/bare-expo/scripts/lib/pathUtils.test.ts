@@ -1,7 +1,7 @@
 import { transformPaths } from './pathUtils';
 
 describe(transformPaths, () => {
-  test('view shots cross platform', () => {
+  test('view shots cross platform mode', () => {
     const parsedBody = transformPaths(
       '/Users/dev/expo/apps/bare-expo/e2e',
       {
@@ -51,7 +51,7 @@ describe(transformPaths, () => {
     });
   });
 
-  test('for screenshots', () => {
+  test('screenshot paths', () => {
     const parsedBody = transformPaths('/Users/dev/expo/apps/bare-expo/e2e', {
       baseImage: 'expo-image/comparison-with-core-image.base.android',
       currentScreenshot: 'expo-image/comparison-with-core-image.android',

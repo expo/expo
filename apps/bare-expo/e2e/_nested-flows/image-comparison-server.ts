@@ -43,11 +43,14 @@ Bun.serve({
 
         if (testID) {
           const viewCropper = new ViewCropper();
+          // TODO get scale factor from simctl
+          const displayScaleFactor = platform === 'android' ? 1 : 3;
           await viewCropper.cropViewByTestID({
             testID,
             currentScreenshotPath,
             viewShotPath: viewShotOutputPath,
             platform,
+            displayScaleFactor,
           });
         }
 

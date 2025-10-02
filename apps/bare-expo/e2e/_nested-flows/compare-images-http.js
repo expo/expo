@@ -13,6 +13,9 @@ const SERVER_URL = 'http://localhost:3000';
 function compareImagesHttp() {
   try {
     const testIDparam = typeof testID === 'string' && testID !== 'undefined' ? testID : undefined;
+    const similarityThresholdParam = Number.isFinite(similarityThreshold)
+      ? Number(similarityThreshold)
+      : undefined;
 
     const response = http.post(`${SERVER_URL}/process`, {
       headers: {
@@ -21,8 +24,8 @@ function compareImagesHttp() {
       body: JSON.stringify({
         baseImage,
         currentScreenshot,
+        similarityThreshold: similarityThresholdParam,
         diffOutputPath: outputPath,
-        similarityThreshold: thresholdParam,
         testID: testIDparam,
         platform,
         mode,
