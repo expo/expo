@@ -18,7 +18,8 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  * As a best practice, don't store the advertising ID. Instead, call this function each time your
  * app needs to use the advertising ID. Users can change whether they allow app tracking and can
  * reset their advertising ID at any time in their system settings. Check your app's authorization
- * using `getTrackingPermissionsAsync()` to determine the user's intent.
+ * using [`getTrackingPermissionsAsync()`](#gettrackingpermissionsasync) to determine the user's
+ * intent.
  *
  * On Android, this function returns the "Android Advertising ID"
  * ([AAID](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)).
@@ -31,12 +32,13 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  * On iOS, this function returns the "Identifier for Advertisers"
  * ([IDFA](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier)),
  * a string that's unique to each device. Your app must request tracking authorization using
- * `requestTrackingPermissionsAsync()` before it can get the advertising identifier.
+ * [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync) before it can get the
+ * advertising identifier.
  *
  * @return Returns either a UUID `string` or `null`. It returns null in the following cases:
  * - On Android, when `isLimitAdTrackingEnabled()` is `true`
  * - In the iOS simulator, regardless of any settings
- * - On iOS if you haven't received permission using `requestTrackingPermissionsAsync()`
+ * - On iOS if you haven't received permission using [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync)
  * - On iOS, if you've requested permission and the user declines
  * - On iOS, when a profile or configuration restricts access to the advertising identifier, such as
  *   when the user has turned off the system-wide "Allow Apps to Request to Track" setting
