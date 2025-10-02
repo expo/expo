@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `FOREGROUND_SERVICE_MEDIA_PLAYBACK` being always present in the manifest. ([#40074](https://github.com/expo/expo/pull/40074) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 3.0.11 — 2025-09-10
