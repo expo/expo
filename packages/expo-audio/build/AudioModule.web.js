@@ -68,7 +68,7 @@ function getStatusFromMedia(media, id) {
         didJustFinish: media.ended,
         isBuffering: false,
         playbackRate: media.playbackRate,
-        shouldCorrectPitch: false,
+        shouldCorrectPitch: true,
         mute: media.muted,
         loop: media.loop,
     };
