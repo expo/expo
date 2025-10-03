@@ -250,7 +250,7 @@ class FileDownloaderSpec : ExpoSpec {
         let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.protocolClasses = [MockURLProtocol.self]
 
-        let downloader = FileDownloader(config: config, urlSessionConfiguration: sessionConfig, logger: logger)
+        let downloader = FileDownloader(config: config, urlSessionConfiguration: sessionConfig, logger: logger, updatesDirectory: nil, database: nil)
 
         let responseBody = "hello world this is a test"
         let expectedHash = "-NfUrZcahFwJ6UrL_Vq0ZCh0dses8IUEv-0WS_d61uQ" // Corrected hash
@@ -277,6 +277,7 @@ class FileDownloaderSpec : ExpoSpec {
             verifyingHash: expectedHash,
             toPath: destinationURL.path,
             extraHeaders: [:],
+            allowPatch: false,
             progressBlock: progressBlock,
             successBlock: { _, _, _ in
               success = true
@@ -286,7 +287,6 @@ class FileDownloaderSpec : ExpoSpec {
               error = err
               done()
             },
-            allowPatch: false
           )
         }
 
