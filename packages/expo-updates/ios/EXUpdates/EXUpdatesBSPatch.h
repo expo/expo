@@ -1,16 +1,7 @@
-  #pragma once
-  #include <stddef.h>
+#pragma once
 
-  #ifdef __cplusplus
-  extern "C" {
-  #endif
+#import <Foundation/Foundation.h>
 
-  int EXUpdatesApplyBSDiffPatch(const char *oldFilePath,
-                                const char *newFilePath,
-                                const char *patchFilePath,
-                                char *errorBuffer,
-                                size_t errorBufferSize);
-
-  #ifdef __cplusplus
-  }
-  #endif
+int EXUpdatesApplyBSDiffPatch(const char * _Nonnull oldFilePath,
+                              const char * _Nonnull newFilePath,
+                              const char * _Nonnull patchFilePath);

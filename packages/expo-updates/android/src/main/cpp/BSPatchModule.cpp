@@ -1,40 +1,40 @@
 #include "BSPatch.h"
+#include <cstdlib>
+#include <cstring>
 
 namespace jni = facebook::jni;
 
-extern "C" int main(int argc, char *argv[]);
+extern "C" int bspatch_main(int argc, char *argv[]);
 
 namespace expo {
 
-// static
 void BSPatch::registerNatives() {
-  registerHybrid({
-    makeNativeMethod("initHybrid", BSPatch::initHybrid),
+  javaClassStatic()->registerNatives({
     makeNativeMethod("applyPatch", BSPatch::applyPatch),
   });
 }
 
-jint BSPatch::applyPatch(jni::alias_ref <jni::JClass>,
-  jni::alias_ref <jni::JString> oldFilePath,
-  jni::alias_ref <jni::JString> newFilePath,
-  jni::alias_ref <jni::JString> patchFilePath) {
+jint BSPatch::applyPatch(jni::alias_ref<jni::JClass>,
+  jni::alias_ref<jni::JString> oldFilePath,
+  jni::alias_ref<jni::JString> newFilePath,
+  jni::alias_ref<jni::JString> patchFilePath) {
   std::string oldFile = oldFilePath->toStdString();
   std::string newFile = newFilePath->toStdString();
   std::string patchFile = patchFilePath->toStdString();
 
-  char *argv[] = {
-    const_cast<char *>("bspatch"),
-    const_cast<char *>(oldFile.c_str()),
-    const_cast<char *>(newFile.c_str()),
-    const_cast<char *>(patchFile.c_str())
-  };
+  char *argv[4];
+  argv[0] = strdup("bspatch");
+  argv[1] = strdup(oldFile.c_str());
+  argv[2] = strdup(newFile.c_str());
+  argv[3] = strdup(patchFile.c_str());
 
-  return main(4, argv);
-}
+  int result = bspatch_main(4, argv);
 
-jni::local_ref <BSPatch::jhybriddata>
-BSPatch::initHybrid(jni::alias_ref <jhybridobject> jThis) {
-  return makeCxxInstance(jThis);
+  for (int i = 0; i < 4; ++i) {
+    free(argv[i]);
+  }
+
+  return result;
 }
 
 }
