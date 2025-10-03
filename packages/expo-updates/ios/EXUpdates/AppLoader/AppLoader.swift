@@ -207,6 +207,7 @@ open class AppLoader: NSObject {
         !assets.isEmpty {
         self.assetsToLoad = assets
         let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
+
         let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
           launchedUpdate: self.launchedUpdate,
           embeddedUpdate: embeddedUpdate,
@@ -392,9 +393,11 @@ open class AppLoader: NSObject {
         return
       }
 
+      let updateManifest = self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest
+
       if self.erroredAssets.isEmpty {
         do {
-          try self.database.markUpdateFinished(self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest)
+          try self.database.markUpdateFinished(updateManifest)
         } catch {
           self.arrayLock.unlock()
           self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))

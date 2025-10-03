@@ -60,6 +60,12 @@ public final class FileDownloader {
   private static let MultipartDirectivePartName = "directive"
   private static let MultipartExtensionsPartName = "extensions"
   private static let MultipartCertificateChainPartName = "certificate_chain"
+  private static let DiffContentType = "application/vnd.bsdiff"
+  private static let DiffAcceptHeaderValue = "application/vnd.bsdiff,*/*"
+  private static let PatchTempSuffix = ".patch"
+  private static let PatchedTempSuffix = ".patched"
+  private static let ExpoCurrentUpdateIdHeader = "Expo-Current-Update-ID"
+  private static let ExpoRequestedUpdateIdHeader = "Expo-Requested-Update-ID"
 
   // swiftlint:disable:next force_unwrapping
   private static let ParameterParserSemicolonDelimiter = ";".utf16.first!
@@ -69,15 +75,46 @@ public final class FileDownloader {
   private var sessionConfiguration: URLSessionConfiguration!
   private var config: UpdatesConfig!
   private var logger: UpdatesLogger!
+  private let updatesDirectory: URL?
+  private let database: UpdatesDatabase?
 
   public convenience init(config: UpdatesConfig, logger: UpdatesLogger) {
-    self.init(config: config, urlSessionConfiguration: URLSessionConfiguration.default, logger: logger)
+    self.init(
+      config: config,
+      urlSessionConfiguration: URLSessionConfiguration.default,
+      logger: logger,
+      updatesDirectory: nil,
+      database: nil
+    )
   }
 
-  required init(config: UpdatesConfig, urlSessionConfiguration: URLSessionConfiguration, logger: UpdatesLogger) {
+  public convenience init(
+    config: UpdatesConfig,
+    logger: UpdatesLogger,
+    updatesDirectory: URL?,
+    database: UpdatesDatabase?
+  ) {
+    self.init(
+      config: config,
+      urlSessionConfiguration: URLSessionConfiguration.default,
+      logger: logger,
+      updatesDirectory: updatesDirectory,
+      database: database
+    )
+  }
+
+  required init(
+    config: UpdatesConfig,
+    urlSessionConfiguration: URLSessionConfiguration,
+    logger: UpdatesLogger,
+    updatesDirectory: URL?,
+    database: UpdatesDatabase?
+  ) {
     self.sessionConfiguration = urlSessionConfiguration
     self.config = config
     self.logger = logger
+    self.updatesDirectory = updatesDirectory
+    self.database = database
     self.session = URLSession(configuration: sessionConfiguration)
   }
 
@@ -88,17 +125,20 @@ public final class FileDownloader {
   public static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
 
   public func downloadAsset(
+    asset: UpdateAsset,
     fromURL url: URL,
     verifyingHash expectedBase64URLEncodedSHA256Hash: String?,
     toPath destinationPath: String,
     extraHeaders: [String: Any],
+    allowPatch: Bool = true,
     progressBlock: FileDownloadProgressBlock? = nil,
     successBlock: @escaping HashSuccessBlock,
     errorBlock: @escaping ErrorBlock
   ) {
+    let headers = headersForPatch(extraHeaders, allowPatch: allowPatch)
     downloadData(
       fromURL: url,
-      extraHeaders: extraHeaders,
+      extraHeaders: headers,
       progressBlock: progressBlock
     ) { data, response in
       guard let data = data else {
@@ -108,8 +148,65 @@ public final class FileDownloader {
         return
       }
 
+      let httpResponse = response as? HTTPURLResponse
+      let isDiffResponse = httpResponse.map(Self.isDiffResponse) ?? false
+
+      if isDiffResponse && !allowPatch {
+        let underlyingError = NSError(
+          domain: "EXUpdatesFileDownloader",
+          code: 1001,
+          userInfo: [NSLocalizedDescriptionKey: "Received Hermes diff when diff support disabled"]
+        )
+        let cause = UpdatesError.fileDownloaderUnknownError(cause: underlyingError)
+        self.logger.warn(
+          message: "Received Hermes diff when diff support disabled for asset \(asset.key ?? asset.filename)",
+          code: UpdatesErrorCode.assetsFailedToLoad,
+          updateId: extraHeaders[Self.ExpoRequestedUpdateIdHeader] as? String,
+          assetId: asset.key ?? asset.filename
+        )
+        self.logger.error(cause: cause, code: UpdatesErrorCode.assetsFailedToLoad)
+        errorBlock(cause)
+        return
+      }
+
+      if allowPatch,
+        let response = httpResponse,
+        isDiffResponse {
+        do {
+          let (patchedData, hashBase64String) = try self.applyHermesDiff(
+            asset: asset,
+            diffData: data,
+            destinationPath: destinationPath,
+            extraHeaders: extraHeaders,
+            expectedBase64URLEncodedSHA256Hash: expectedBase64URLEncodedSHA256Hash
+          )
+          successBlock(patchedData, response, hashBase64String)
+          return
+        } catch {
+          let updatesError = UpdatesError.fileDownloaderUnknownError(cause: error)
+          self.logger.error(
+            cause: updatesError,
+            code: UpdatesErrorCode.assetsFailedToLoad,
+            updateId: extraHeaders[Self.ExpoRequestedUpdateIdHeader] as? String,
+            assetId: asset.key ?? asset.filename
+          )
+          self.downloadAsset(
+            asset: asset,
+            fromURL: url,
+            verifyingHash: expectedBase64URLEncodedSHA256Hash,
+            toPath: destinationPath,
+            extraHeaders: extraHeaders,
+            allowPatch: false,
+            progressBlock: progressBlock,
+            successBlock: successBlock,
+            errorBlock: errorBlock
+          )
+          return
+        }
+      }
+
       let hashBase64String = UpdatesUtils.base64UrlEncodedSHA256WithData(data)
-      if let expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
+      if let expectedBase64URLEncodedSHA256Hash,
         expectedBase64URLEncodedSHA256Hash != hashBase64String {
         let error = UpdatesError.fileDownloaderAssetMismatchedHash(
           url: url,
@@ -203,7 +300,7 @@ public final class FileDownloader {
       logger.error(cause: UpdatesError.fileDownloaderExtraParamFailure(cause: error))
     }
 
-    if let launchedUpdate = launchedUpdate {
+    if let launchedUpdate {
       extraHeaders["Expo-Current-Update-ID"] = launchedUpdate.updateId.uuidString.lowercased()
     }
 
@@ -235,7 +332,9 @@ public final class FileDownloader {
     requestedUpdate: Update?
   ) -> [String: Any] {
     var extraHeaders: [String: Any] = [:]
-    if let launchedUpdate {
+    if let launchedUpdate,
+      launchedUpdate.status == .StatusReady,
+      !launchedUpdate.isDevelopmentMode {
       extraHeaders["Expo-Current-Update-ID"] = launchedUpdate.updateId.uuidString.lowercased()
     }
 
@@ -324,6 +423,146 @@ public final class FileDownloader {
     )
     setManifestHTTPHeaderFields(request: &request, extraHeaders: extraHeaders)
     return request
+  }
+
+  private static func isDiffResponse(_ response: HTTPURLResponse) -> Bool {
+    guard let contentType = response.value(forHTTPHeaderField: "content-type")?.lowercased() else {
+      return false
+    }
+    return contentType.hasPrefix(FileDownloader.DiffContentType)
+  }
+
+  private func headersForPatch(_ headers: [String: Any], allowPatch: Bool) -> [String: Any] {
+    var newHeaders = headers
+    newHeaders["Accept"] = allowPatch ? FileDownloader.DiffAcceptHeaderValue : "*/*"
+    return newHeaders
+  }
+
+  private func applyHermesDiff(
+    asset: UpdateAsset,
+    diffData: Data,
+    destinationPath: String,
+    extraHeaders: [String: Any],
+    expectedBase64URLEncodedSHA256Hash: String?
+  ) throws -> (Data, String) {
+    guard asset.isLaunchAsset else {
+      throw DiffError.assetNotLaunch
+    }
+
+    guard let database else {
+      throw DiffError.databaseUnavailable
+    }
+
+    guard let updatesDirectory else {
+      throw DiffError.updatesDirectoryUnavailable
+    }
+
+    guard let currentUpdateIdString = extraHeaders[Self.ExpoCurrentUpdateIdHeader] as? String else {
+      throw DiffError.missingHeader(Self.ExpoCurrentUpdateIdHeader)
+    }
+
+    guard let currentUpdateId = UUID(uuidString: currentUpdateIdString) else {
+      throw DiffError.invalidHeader(Self.ExpoCurrentUpdateIdHeader)
+    }
+
+    var launchAsset: UpdateAsset?
+    var lookupError: Error?
+    database.databaseQueue.sync {
+      do {
+        let assets = try database.assets(withUpdateId: currentUpdateId)
+        launchAsset = assets.first(where: { $0.isLaunchAsset })
+      } catch {
+        lookupError = error
+      }
+    }
+
+    if let lookupError  {
+      throw lookupError
+    }
+
+    guard let baseAsset = launchAsset else {
+      throw DiffError.launchAssetNotFound
+    }
+
+    let baseFileUrl = updatesDirectory.appendingPathComponent(baseAsset.filename)
+    guard FileManager.default.fileExists(atPath: baseFileUrl.path) else {
+      throw DiffError.baseAssetMissing(path: baseFileUrl.path)
+    }
+
+    let baseData: Data
+    do {
+      baseData = try Data(contentsOf: baseFileUrl)
+    } catch {
+      throw DiffError.failedToReadBaseAsset(cause: error)
+    }
+
+    let actualBaseHash = UpdatesUtils.base64UrlEncodedSHA256WithData(baseData)
+    if let expectedBaseHash = baseAsset.expectedHash,
+      expectedBaseHash != actualBaseHash {
+      throw DiffError.baseHashMismatch(expected: expectedBaseHash, actual: actualBaseHash)
+    }
+
+    if baseAsset.expectedHash == nil,
+      let storedContentHash = baseAsset.contentHash,
+      !storedContentHash.isEmpty {
+      let actualBaseHexHash = UpdatesUtils.hexEncodedSHA256WithData(baseData)
+      if storedContentHash != actualBaseHexHash {
+        throw DiffError.baseHexHashMismatch(expected: storedContentHash, actual: actualBaseHexHash)
+      }
+    }
+
+    let patchUrl = URL(fileURLWithPath: destinationPath + FileDownloader.PatchTempSuffix)
+    let patchedTempUrl = URL(fileURLWithPath: destinationPath + FileDownloader.PatchedTempSuffix)
+
+    do {
+      try diffData.write(to: patchUrl, options: .atomic)
+    } catch {
+      throw DiffError.failedToWritePatch(cause: error, path: patchUrl.path)
+    }
+
+    defer {
+      try? FileManager.default.removeItem(at: patchUrl)
+      try? FileManager.default.removeItem(at: patchedTempUrl)
+    }
+
+    do {
+      try BSPatch.applyPatch(
+        oldPath: baseFileUrl.path,
+        newPath: patchedTempUrl.path,
+        patchPath: patchUrl.path
+      )
+    } catch {
+      throw DiffError.patchFailed(cause: error)
+    }
+
+    let patchedData: Data
+    do {
+      patchedData = try Data(contentsOf: patchedTempUrl)
+    } catch {
+      throw DiffError.failedToReadPatchedAsset(cause: error)
+    }
+
+    let patchedHashBase64 = UpdatesUtils.base64UrlEncodedSHA256WithData(patchedData)
+
+    if let expectedBase64URLEncodedSHA256Hash,
+      expectedBase64URLEncodedSHA256Hash != patchedHashBase64 {
+      throw DiffError.patchedHashMismatch(expected: expectedBase64URLEncodedSHA256Hash, actual: patchedHashBase64)
+    }
+
+    do {
+      try patchedData.write(to: URL(fileURLWithPath: destinationPath), options: .atomic)
+    } catch {
+      throw DiffError.failedToWritePatchedAsset(cause: error, path: destinationPath)
+    }
+
+    logger.info(
+      message: "Applied diff for asset \(asset.key ?? asset.filename)",
+      code: UpdatesErrorCode.none,
+      updateId: extraHeaders[Self.ExpoRequestedUpdateIdHeader] as? String,
+      assetId: asset.key ?? asset.filename
+    )
+
+    return (patchedData, patchedHashBase64)
   }
 
   func createGenericRequest(withURL url: URL, extraHeaders: [String: Any?]) -> URLRequest {
@@ -865,6 +1104,63 @@ public final class FileDownloader {
     }
     // Default to UTF-8
     return .utf8
+  }
+}
+
+extension FileDownloader {
+  enum DiffError: Error {
+    case assetNotLaunch
+    case databaseUnavailable
+    case updatesDirectoryUnavailable
+    case missingHeader(String)
+    case invalidHeader(String)
+    case launchAssetNotFound
+    case baseAssetMissing(path: String)
+    case failedToReadBaseAsset(cause: Error)
+    case failedToWritePatch(cause: Error, path: String)
+    case patchFailed(cause: Error)
+    case failedToReadPatchedAsset(cause: Error)
+    case failedToWritePatchedAsset(cause: Error, path: String)
+    case baseHashMismatch(expected: String, actual: String)
+    case patchedHashMismatch(expected: String, actual: String)
+    case baseHexHashMismatch(expected: String, actual: String)
+  }
+}
+
+extension FileDownloader.DiffError: CustomStringConvertible {
+  var description: String {
+    switch self {
+    case .assetNotLaunch:
+      return "Received Hermes diff for non-launch asset"
+    case .databaseUnavailable:
+      return "Cannot apply Hermes diff without database access"
+    case .updatesDirectoryUnavailable:
+      return "Cannot apply Hermes diff without updates directory"
+    case let .missingHeader(header):
+      return "Cannot apply Hermes diff without \(header) header"
+    case let .invalidHeader(header):
+      return "Invalid \(header) header"
+    case .launchAssetNotFound:
+      return "Launch asset not found for current update"
+    case let .baseAssetMissing(path):
+      return "Base asset is missing at path \(path)"
+    case let .failedToReadBaseAsset(cause):
+      return "Failed to read base asset: \(cause.localizedDescription)"
+    case let .failedToWritePatch(cause, path):
+      return "Failed to write diff to temporary file at \(path): \(cause.localizedDescription)"
+    case let .patchFailed(cause):
+      return "BSPatch failed: \(cause.localizedDescription)"
+    case let .failedToReadPatchedAsset(cause):
+      return "Failed to read patched asset: \(cause.localizedDescription)"
+    case let .failedToWritePatchedAsset(cause, path):
+      return "Failed to write patched asset to \(path): \(cause.localizedDescription)"
+    case let .baseHashMismatch(expected, actual):
+      return "Base launch asset hash mismatch; expected=\(expected) actual=\(actual)"
+    case let .baseHexHashMismatch(expected, actual):
+      return "Base launch asset hex hash mismatch; expected=\(expected) actual=\(actual)"
+    case let .patchedHashMismatch(expected, actual):
+      return "Patched asset hash mismatch; expected=\(expected) actual=\(actual)"
+    }
   }
 }
 

@@ -35,6 +35,7 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bspatch/bspatch.c,v 1.1 2005/08/06 01:59:
 #include <err.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/types.h>
 
 static off_t offtin(u_char *buf)
 {

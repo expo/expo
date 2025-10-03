@@ -1,33 +1,29 @@
 import Foundation
 
-@_silgen_name("main")
-func bspatch_main(_ argc: Int32, _ argv: UnsafeMutablePointer<UnsafeMutablePointer<CChar>?>) -> Int32
+enum BSPatchError: Error {
+  case failed(message: String)
+}
 
-internal class BSPatch {
-  static func applyPatch(oldFilePath: String, newFilePath: String, patchFilePath: String) -> Int32 {
-    return oldFilePath.withCString { oldFile in
-      newFilePath.withCString { newFile in
-        patchFilePath.withCString { patchFile in
-          let argv: [UnsafeMutablePointer<CChar>?] = [
-            strdup("bspatch"),
-            strdup(oldFile),
-            strdup(newFile),
-            strdup(patchFile),
-            nil
-          ]
+struct BSPatch {
+  static func applyPatch(oldPath: String,
+                  newPath: String,
+                  patchPath: String) throws {
+    var errorBuffer = [CChar](repeating: 0, count: 256)
 
-          defer {
-            for i in 0..<4 {
-              free(argv[i])
-            }
-          }
+    let result = EXUpdatesApplyBSDiffPatch(
+      oldPath.cString(using: .utf8),
+      newPath.cString(using: .utf8),
+      patchPath.cString(using: .utf8),
+      &errorBuffer,
+      256
+    )
 
-          return argv.withUnsafeBufferPointer { buffer in
-            guard let baseAddress = buffer.baseAddress else { return -1 }
-            return bspatch_main(4, UnsafeMutablePointer(mutating: baseAddress))
-          }
-        }
-      }
+    if result != 0 {
+      let message = String(cString: errorBuffer).isEmpty ?
+      "BSPatch failed with code \(result)"
+      : String(cString: errorBuffer)
+
+      throw BSPatchError.failed(message: message)
     }
   }
 }
