@@ -12,6 +12,8 @@ const jestConfig = {
     // note(simek): force Jest to use non ESM bundle
     '^@radix-ui/react-select$': '<rootDir>/node_modules/@radix-ui/react-select/dist/index.js',
     '^framer-motion$': '<rootDir>/node_modules/framer-motion/dist/cjs/index.js',
+    '^@fingerprintjs/fingerprintjs-pro-react$':
+      '<rootDir>/node_modules/@fingerprintjs/fingerprintjs-pro-react/dist/fp-pro-react.cjs.js',
   },
   transform: {},
   extensionsToTreatAsEsm: ['.ts', '.tsx'],

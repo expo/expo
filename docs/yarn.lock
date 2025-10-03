@@ -7130,6 +7130,7 @@ __metadata:
     "@expo/styleguide-base": "npm:^2.0.3"
     "@expo/styleguide-icons": "npm:^2.2.3"
     "@expo/styleguide-search-ui": "npm:^3.2.1"
+    "@kapaai/react-sdk": "npm:^0.5.1"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/mdx": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"
