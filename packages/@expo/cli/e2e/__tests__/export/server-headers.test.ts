@@ -30,7 +30,7 @@ describe('export server with custom headers', () => {
             EXPO_USE_STATIC: 'server',
             E2E_ROUTER_SRC: inputDir,
             E2E_ROUTER_HEADERS: JSON.stringify({
-              'X-Powered-By': 'expo-dev',
+              'X-Powered-By': 'expo-server',
               'Set-Cookie': ['hello=world', 'foo=bar'],
               'Content-Type': 'application/pdf',
             }),
@@ -59,7 +59,7 @@ describe('export server with custom headers', () => {
             EXPO_USE_STATIC: 'server',
             E2E_ROUTER_SRC: inputDir,
             E2E_ROUTER_HEADERS: JSON.stringify({
-              'X-Powered-By': 'expo-dev',
+              'X-Powered-By': 'expo-server',
               'Set-Cookie': ['hello=world', 'foo=bar'],
               'Content-Type': 'application/pdf',
             }),
@@ -127,7 +127,7 @@ describe('export server with custom headers', () => {
         fs.readFileSync(path.resolve(outputDir!, 'server/_expo/routes.json'), 'utf8')
       );
       expect(routesJson.headers).toEqual({
-        'X-Powered-By': 'expo-dev',
+        'X-Powered-By': 'expo-server',
         'Set-Cookie': ['hello=world', 'foo=bar'],
         'Content-Type': 'application/pdf',
       });
@@ -147,11 +147,11 @@ describe('export server with custom headers', () => {
 
       expect(response.status).toBe(200);
 
-      // Check that existing content-type header is not overridden
+      // Check that existing Content-Type header is not overridden
       expect(response.headers.get('Content-Type')).toBe(contentType);
 
       // Check single-value custom header
-      expect(response.headers.get('X-Powered-By')).toBe('expo-dev');
+      expect(response.headers.get('X-Powered-By')).toBe('expo-server');
 
       // Check array-value custom headers
       expect(response.headers.get('Set-Cookie')).toBe('hello=world, foo=bar');

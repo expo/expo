@@ -605,12 +605,12 @@ describe('headers', () => {
   it('applies custom headers to manifest', () => {
     const manifest = getServerManifest(getRoutesFor(['./home.js']), {
       headers: {
-        'X-Powered-By': 'expo-dev',
+        'X-Powered-By': 'expo-server',
         'Set-Cookie': ['hello=world', 'foo=bar'],
       },
     });
     expect(manifest.headers).toEqual({
-      'X-Powered-By': 'expo-dev',
+      'X-Powered-By': 'expo-server',
       'Set-Cookie': ['hello=world', 'foo=bar'],
     });
   });

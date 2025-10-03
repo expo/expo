@@ -11,7 +11,7 @@ describe('server headers', () => {
       EXPO_USE_STATIC: 'static',
       E2E_ROUTER_SRC: 'server-headers',
       E2E_ROUTER_HEADERS: JSON.stringify({
-        'X-Powered-By': 'expo-dev',
+        'X-Powered-By': 'expo-server',
         'Set-Cookie': ['hello=world', 'foo=bar'],
         'Content-Type': 'application/pdf',
       }),
@@ -40,11 +40,11 @@ describe('server headers', () => {
     const response = await expo.fetchAsync(path);
     expect(response.status).toBe(200);
 
-    // Check that existing content-type header is not overridden
+    // Check that existing Content-Type header is not overridden
     expect(response.headers.get('Content-Type')).toBe(contentType);
 
     // Check single-value custom header
-    expect(response.headers.get('X-Powered-By')).toBe('expo-dev');
+    expect(response.headers.get('X-Powered-By')).toBe('expo-server');
 
     // Check array-value custom headers
     expect(response.headers.get('Set-Cookie')).toBe('hello=world, foo=bar');

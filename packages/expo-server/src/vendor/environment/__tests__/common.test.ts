@@ -10,7 +10,7 @@ describe(createEnvironment, () => {
       redirects: [],
       rewrites: [],
       headers: {
-        'X-Powered-By': 'expo-dev',
+        'X-Powered-By': 'expo-server',
         'Set-Cookie': ['hello=world', 'foo=bar'],
         'Content-Type': 'application/pdf',
       },
@@ -24,11 +24,11 @@ describe(createEnvironment, () => {
     await env.getRoutesManifest();
     const result = env.beforeResponse(responseInit, {});
 
-    // Check that existing content-type header is not overridden
+    // Check that existing Content-Type header is not overridden
     expect(result.headers.get('Content-Type')).toBe('text/html');
 
     // Check single-value custom header
-    expect(result.headers.get('X-Powered-By')).toBe('expo-dev');
+    expect(result.headers.get('X-Powered-By')).toBe('expo-server');
 
     // Check array-value custom headers
     expect(result.headers.get('Set-Cookie')).toBe('hello=world, foo=bar');
