@@ -41,6 +41,7 @@ export function createRouteHandlerMiddleware(
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;
     config: ProjectConfig;
+    headers: Record<string, string | string[]>;
   } & import('expo-router/build/routes-manifest').Options
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {
@@ -52,6 +53,21 @@ export function createRouteHandlerMiddleware(
   return createRequestHandler(
     { build: '' },
     {
+      beforeResponse(responseInit, route) {
+        const userDefinedHeaders = options.headers ?? {};
+        for (const [key, value] of Object.entries(userDefinedHeaders)) {
+          if (Array.isArray(value)) {
+            // For arrays, append each value separately (important for Set-Cookie)
+            value.forEach((v) => responseInit.headers.append(key, v));
+          } else {
+            // Don't override existing headers
+            if (!responseInit.headers.has(key)) {
+              responseInit.headers.set(key, value);
+            }
+          }
+        }
+        return responseInit;
+      },
       async getRoutesManifest() {
         const manifest = await fetchManifest<RegExp>(projectRoot, options);
         debug('manifest', manifest);
