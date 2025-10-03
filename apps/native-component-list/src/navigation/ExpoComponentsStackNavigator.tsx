@@ -2,6 +2,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as React from 'react';
+import { getScreenId } from 'test-suite/constants/getScreenId';
 
 import getStackNavWithConfig from './StackConfig';
 import { optionalRequire } from './routeBuilder';
@@ -313,9 +314,9 @@ export const Screens: ScreenConfig[] = [
   ...MapsScreens,
 ];
 
-export const screenApiItems: ScreenApiItem[] = ScreensList.map(({ name, route }) => ({
-  name,
-  route: '/components/' + (route ?? name.toLowerCase()),
+export const screenApiItems: ScreenApiItem[] = ScreensList.map((config) => ({
+  name: config.name,
+  route: '/components/' + getScreenId(config),
   isAvailable: true,
 }));
 
