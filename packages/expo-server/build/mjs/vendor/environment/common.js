@@ -24,10 +24,29 @@ function initManifestRegExp(manifest) {
     };
 }
 export function createEnvironment(input) {
+    let manifest = null;
     return {
         async getRoutesManifest() {
             const json = await input.readJson('_expo/routes.json');
-            return initManifestRegExp(json);
+            manifest = initManifestRegExp(json);
+            return manifest;
+        },
+        beforeResponse(responseInit, route) {
+            if (manifest?.headers) {
+                for (const [key, value] of Object.entries(manifest.headers)) {
+                    if (Array.isArray(value)) {
+                        // For arrays, append each value separately (important for Set-Cookie)
+                        value.forEach((v) => responseInit.headers.append(key, v));
+                    }
+                    else {
+                        // Don't override existing headers
+                        if (!responseInit.headers.has(key)) {
+                            responseInit.headers.set(key, value);
+                        }
+                    }
+                }
+            }
+            return responseInit;
         },
         async getHtml(_request, route) {
             let html;
