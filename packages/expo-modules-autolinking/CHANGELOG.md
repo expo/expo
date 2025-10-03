@@ -16,6 +16,7 @@
 
 - [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
+- Check `react-native` and `react-native-tvos` for duplicates in the verify command explicitly ([#40180](https://github.com/expo/expo/pull/40180) by [@kitten](https://github.com/kitten))
 
 ## 3.0.14 - 2025-10-01
 
