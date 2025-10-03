@@ -226,7 +226,6 @@ type Icon = ComponentProps<typeof FontAwesome>['name'];
 
 export type TabButtonProps = TabTriggerSlotProps & {
   icon?: Icon;
-  ref: Ref<View>;
 };
 
 export function TabButton({ icon, children, isFocused, ...props }: TabButtonProps) {
