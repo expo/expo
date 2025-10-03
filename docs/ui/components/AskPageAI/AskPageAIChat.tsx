@@ -106,7 +106,9 @@ export function AskPageAIChat({
     });
   }, [conversation, askedQuestions.length, extractUserQuestion]);
 
-  const [contextNotice, setContextNotice] = useState<string | null>(null);
+  const [contextMarkers, setContextMarkers] = useState<{ id: string; at: number; label: string }[]>(
+    []
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = useCallback(() => {
     const el = scrollRef.current;
@@ -116,19 +118,21 @@ export function AskPageAIChat({
   }, []);
   const prevDisplayContextRef = useRef<string>(displayContextLabel);
   const prevBasePathRef = useRef<string | null>(null);
-  const [pendingContextNotice, setPendingContextNotice] = useState(false);
   const basePath = (router?.asPath ?? '').split('#')[0];
   useEffect(() => {
     const prevPath = prevBasePathRef.current;
     const prevLabel = prevDisplayContextRef.current;
     const pathChanged = Boolean(prevPath && prevPath !== basePath);
     const labelChanged = Boolean(prevLabel && prevLabel !== displayContextLabel);
-    if (pathChanged || labelChanged) {
-      if (conversation.length > 0) {
-        setContextNotice(displayContextLabel);
-      } else {
-        setPendingContextNotice(true);
-      }
+    if (conversation.length > 0 && (pathChanged || labelChanged)) {
+      setContextMarkers(prev => [
+        ...prev,
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          at: conversation.length,
+          label: displayContextLabel,
+        },
+      ]);
     }
     prevBasePathRef.current = basePath;
     prevDisplayContextRef.current = displayContextLabel;
@@ -139,35 +143,24 @@ export function AskPageAIChat({
       return;
     }
     const storedPath = window.sessionStorage.getItem('expo-docs-ask-ai-last-path');
-    if (storedPath && storedPath !== basePath) {
-      if (conversation.length > 0) {
-        setContextNotice(displayContextLabel);
-      } else {
-        setPendingContextNotice(true);
-      }
+    if (storedPath && storedPath !== basePath && conversation.length > 0) {
+      setContextMarkers(prev => [
+        ...prev,
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          at: conversation.length,
+          label: displayContextLabel,
+        },
+      ]);
     }
     window.sessionStorage.setItem('expo-docs-ask-ai-last-path', basePath);
   }, [basePath, displayContextLabel, conversation.length]);
 
   useEffect(() => {
-    if (pendingContextNotice && conversation.length > 0) {
-      setContextNotice(displayContextLabel);
-      setPendingContextNotice(false);
-    }
-  }, [pendingContextNotice, conversation.length, displayContextLabel]);
-  useEffect(() => {
-    if (question.length > 0) {
-      setContextNotice(null);
-    }
-  }, [question]);
-
-  useEffect(() => {
-    if (contextNotice) {
-      window.requestAnimationFrame(() => {
-        scrollToBottom();
-      });
-    }
-  }, [contextNotice, scrollToBottom]);
+    window.requestAnimationFrame(() => {
+      scrollToBottom();
+    });
+  }, [contextMarkers.length, scrollToBottom]);
 
   const lastEntry = conversation.at(-1);
   const lastEntryKey = `${conversation.length}-${lastEntry?.id ?? 'noid'}-${
@@ -178,6 +171,15 @@ export function AskPageAIChat({
       scrollToBottom();
     });
   }, [lastEntryKey, scrollToBottom]);
+
+  const markersByIndex = useMemo(() => {
+    const map: Record<number, { id: string; label: string }[]> = {};
+    for (const m of contextMarkers) {
+      if (!map[m.at]) map[m.at] = [];
+      map[m.at].push({ id: m.id, label: m.label });
+    }
+    return map;
+  }, [contextMarkers]);
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
   const closeButtonThemeOverrides = useMemo(
@@ -236,7 +238,6 @@ export function AskPageAIChat({
     submitQuery(buildPrompt(trimmed));
     setAskedQuestions(prev => [...prev, trimmed]);
     setQuestion('');
-    setContextNotice(null);
   };
 
   const handleClose = () => {
@@ -561,6 +562,15 @@ export function AskPageAIChat({
 
               return (
                 <div key={key} className="space-y-2">
+                  {markersByIndex[index]?.map(marker => (
+                    <div key={`marker-${marker.id}`} className="flex justify-center">
+                      <FOOTNOTE
+                        theme="secondary"
+                        className="inline-block rounded-md border border-default bg-subtle px-2 py-1">
+                        Switched to <span className="font-medium text-default">{marker.label}</span>
+                      </FOOTNOTE>
+                    </div>
+                  ))}
                   <div className="flex justify-end pr-1">
                     <div className="ml-auto max-w-[85%] rounded-md border border-default bg-subtle px-3 py-1.5 text-right text-sm leading-snug text-secondary shadow-xs">
                       {displayQuestion}
@@ -604,15 +614,15 @@ export function AskPageAIChat({
                 </div>
               );
             })}
-            {contextNotice ? (
-              <div className="flex justify-center">
+            {markersByIndex[conversation.length]?.map(marker => (
+              <div key={`marker-${marker.id}`} className="flex justify-center">
                 <FOOTNOTE
                   theme="secondary"
                   className="inline-block rounded-md border border-default bg-subtle px-2 py-1">
-                  Switched to <span className="font-medium text-default">{contextNotice}</span>
+                  Switched to <span className="font-medium text-default">{marker.label}</span>
                 </FOOTNOTE>
               </div>
-            ) : null}
+            ))}
           </div>
         ) : (
           <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
