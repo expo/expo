@@ -18,6 +18,9 @@ import {
   scanDependencyResolutionsForPlatform,
 } from '../dependencies';
 
+// NOTE(@kitten): These are excluded explicitly, but we want to include them for the verify command explicitly
+const INCLUDE_PACKAGES = ['react-native', 'react-native-tvos'];
+
 interface VerifyArguments extends AutolinkingCommonArguments {
   verbose?: boolean | null;
   json?: boolean | null;
@@ -40,7 +43,9 @@ export function verifyCommand(cli: commander.CommanderStatic) {
       const linker = makeCachedDependenciesLinker({ projectRoot: appRoot });
       const results = mergeResolutionResults(
         await Promise.all(
-          platforms.map((platform) => scanDependencyResolutionsForPlatform(linker, platform))
+          platforms.map((platform) =>
+            scanDependencyResolutionsForPlatform(linker, platform, INCLUDE_PACKAGES)
+          )
         )
       );
       await verifySearchResults(results, {

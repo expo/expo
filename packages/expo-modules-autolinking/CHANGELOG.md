@@ -10,7 +10,9 @@
 
 ### 💡 Others
 
-## 3.0.14 — 2025-10-01
+- Check `react-native` and `react-native-tvos` for duplicates in the verify command explicitly ([#40180](https://github.com/expo/expo/pull/40180) by [@kitten](https://github.com/kitten))
+
+## 3.0.14 - 2025-10-01
 
 ### 💡 Others
 
