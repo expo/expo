@@ -4,7 +4,9 @@
 
 #include "BSPatch.h"
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
+JNIEXPORT jint
+
+JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::jni::initialize(vm, [] {
     expo::BSPatch::registerNatives();
   });

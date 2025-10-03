@@ -13,9 +13,13 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import kotlinx.coroutines.test.runTest
-import okhttp3.*
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import okio.BufferedSource
@@ -28,8 +32,8 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.File
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
 class FileDownloaderTest {
@@ -126,6 +130,7 @@ class FileDownloaderTest {
     val actual = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
+    Assert.assertEquals("application/vnd.bsdiff,*/*", actual.header("Accept"))
   }
 
   @Test
@@ -156,6 +161,7 @@ class FileDownloaderTest {
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
     Assert.assertEquals("null", actual.header("expo-null"))
+    Assert.assertEquals("application/vnd.bsdiff,*/*", actual.header("Accept"))
   }
 
   @Test
@@ -230,17 +236,20 @@ class FileDownloaderTest {
 
     val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
-        every { execute() } returns mockk {
-          every { isSuccessful } returns true
-          every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
-        }
+        every { execute() } returns Response.Builder()
+          .request(Request.Builder().url("https://example.com").build())
+          .protocol(Protocol.HTTP_2)
+          .code(200)
+          .message("OK")
+          .body("hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
+          .build()
       }
     }
 
     try {
       FileDownloader(temporaryFolder.newFolder(), "eas-client-id-test", config, logger, client).downloadAsset(
         assetEntity,
-        File(temporaryFolder.newFolder(), "test"),
+        temporaryFolder.newFolder(),
         JSONObject("{}")
       )
       Assert.fail("Expected exception to be thrown")
@@ -265,16 +274,19 @@ class FileDownloaderTest {
 
     val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
-        every { execute() } returns mockk {
-          every { isSuccessful } returns true
-          every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
-        }
+        every { execute() } returns Response.Builder()
+          .request(Request.Builder().url("https://example.com").build())
+          .protocol(Protocol.HTTP_2)
+          .code(200)
+          .message("OK")
+          .body("hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
+          .build()
       }
     }
 
     val result = FileDownloader(temporaryFolder.newFolder(), "eas-test-client-id", config, logger, client).downloadAsset(
       assetEntity,
-      File(temporaryFolder.newFolder(), "test"),
+      temporaryFolder.newFolder(),
       JSONObject("{}")
     )
 
@@ -316,7 +328,7 @@ class FileDownloaderTest {
 
     fileDownloader.downloadAsset(
       assetEntity,
-      File(temporaryFolder.newFolder(), "test"),
+      temporaryFolder.newFolder(),
       JSONObject("{}"),
       assetLoadProgressListener
     )
@@ -370,7 +382,7 @@ class FileDownloaderTest {
 
     fileDownloader.downloadAsset(
       assetEntity,
-      File(temporaryFolder.newFolder(), "test"),
+      temporaryFolder.newFolder(),
       JSONObject("{}"),
       assetLoadProgressListener
     )
