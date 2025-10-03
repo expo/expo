@@ -144,6 +144,7 @@ describe('export server with custom headers', () => {
       },
     ])('applies custom headers to $path', async ({ path, contentType }) => {
       const response = await serverFetchAsync(path);
+
       expect(response.status).toBe(200);
 
       // Check that existing content-type header is not overridden

@@ -600,3 +600,18 @@ it(`matches top-level catch-all before +not-found route`, () => {
     ).toBe(page);
   }
 });
+
+describe('headers', () => {
+  it('applies custom headers to manifest', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']), {
+      headers: {
+        'X-Powered-By': 'expo-dev',
+        'Set-Cookie': ['hello=world', 'foo=bar'],
+      },
+    });
+    expect(manifest.headers).toEqual({
+      'X-Powered-By': 'expo-dev',
+      'Set-Cookie': ['hello=world', 'foo=bar'],
+    });
+  });
+});
