@@ -32,8 +32,8 @@
     "start:fast-refresh": "E2E_ROUTER_SRC=fast-refresh E2E_ROUTER_JS_ENGINE=hermes E2E_CANARY_ENABLED=1 EXPO_USE_METRO_REQUIRE=1 expo start -p web",
     "start:loader": "E2E_ROUTER_SRC=server-loader E2E_ROUTER_SERVER_LOADERS=true expo start",
     "export:loader": "EXPO_ATLAS=true E2E_ROUTER_SRC=server-loader E2E_ROUTER_SERVER_LOADERS=true expo export -p web",
-    "start:headers": "E2E_ROUTER_SRC=server-headers E2E_ROUTER_HEADERS='{\"X-Powered-By\":\"expo\",\"Set-Cookie\":[\"session=123\",\"token=xyz\"]}' EXPO_USE_STATIC=server expo start",
-    "export:headers": "E2E_ROUTER_SRC=server-headers E2E_ROUTER_HEADERS='{\"X-Powered-By\":\"expo\",\"Set-Cookie\":[\"session=123\",\"token=xyz\"]}' EXPO_USE_STATIC=server expo export -p web",
+    "start:headers": "E2E_ROUTER_SRC=server-headers E2E_ROUTER_HEADERS_PREDEFINED=true EXPO_USE_STATIC=server expo start",
+    "export:headers": "E2E_ROUTER_SRC=server-headers E2E_ROUTER_HEADERS_PREDEFINED=true EXPO_USE_STATIC=server expo export -p web",
     "lint": "expo lint __e2e__",
     "android": "expo run:android",
     "ios": "expo run:ios"
