@@ -94,7 +94,7 @@ Pod::Spec.new do |s|
     s.source_files = "#{s.name}/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = "#{s.name}/**/*.{h,m,swift}"
+    s.source_files = "#{s.name}/**/*.{h,m,swift}", "../vendor/bsdiff/*.{c,h}"
   end
 
   if $expo_updates_create_updates_resources != false
