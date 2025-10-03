@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix tab index out of bounds issue ([#40175](https://github.com/expo/expo/pull/40175) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 6.0.9 - 2025-10-01
