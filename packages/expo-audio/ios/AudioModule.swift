@@ -174,8 +174,10 @@ public class AudioModule: Module {
         }
 
         if player.shouldCorrectPitch {
-          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
+          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .timeDomain
           player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
+        } else {
+          player.ref.currentItem?.audioTimePitchAlgorithm = .varispeed
         }
       }
 
