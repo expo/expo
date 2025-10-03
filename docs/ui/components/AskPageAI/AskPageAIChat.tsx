@@ -175,7 +175,9 @@ export function AskPageAIChat({
   const markersByIndex = useMemo(() => {
     const map: Record<number, { id: string; label: string }[]> = {};
     for (const m of contextMarkers) {
-      if (!map[m.at]) map[m.at] = [];
+      if (!map[m.at]) {
+        map[m.at] = [];
+      }
       map[m.at].push({ id: m.id, label: m.label });
     }
     return map;

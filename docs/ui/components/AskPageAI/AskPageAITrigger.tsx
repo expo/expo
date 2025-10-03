@@ -17,8 +17,7 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
           type="button"
           theme="quaternary"
           className={mergeClasses(
-            'min-h-[48px] min-w-[60px] justify-center border border-palette-purple7 px-2 hover:border-palette-purple8 focus:border-palette-purple8 max-xl-gutters:min-h-[unset]',
-            isActive && 'border border-default bg-element'
+            'min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset]'
           )}
           onClick={onClick}
           aria-pressed={isActive}
@@ -29,7 +28,7 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
               'max-xl-gutters:flex-row max-xl-gutters:gap-1.5'
             )}>
             <Star06Icon className="mt-0.5 text-palette-purple11" />
-            <FOOTNOTE crawlable={false} theme="secondary">
+            <FOOTNOTE crawlable={false} className="text-palette-purple11">
               Ask AI
             </FOOTNOTE>
           </div>
@@ -49,16 +48,13 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
         <Button
           type="button"
           theme="quaternary"
-          className={mergeClasses(
-            'min-h-[36px] justify-center border border-palette-purple7 px-2.5 hover:border-palette-purple8 focus:border-palette-purple8',
-            isActive && 'border border-default bg-element'
-          )}
+          className={mergeClasses('min-h-[36px] justify-center px-2.5')}
           onClick={onClick}
           aria-pressed={isActive}
           aria-label="Ask about this configuration page with AI">
           <div className="flex items-center gap-2">
             <Star06Icon className="icon-sm text-palette-purple11" />
-            <FOOTNOTE crawlable={false} theme="secondary">
+            <FOOTNOTE crawlable={false} className="text-palette-purple11">
               Ask AI
             </FOOTNOTE>
           </div>
