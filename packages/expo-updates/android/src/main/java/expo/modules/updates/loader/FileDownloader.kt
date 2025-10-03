@@ -88,7 +88,8 @@ class FileDownloader(
   data class FileDownloadResult(val file: File, val hash: ByteArray)
   data class AssetDownloadResult(val assetEntity: AssetEntity, val isNew: Boolean)
 
-  private suspend fun downloadAssetAndVerifyHashAndWriteToPath(
+  @VisibleForTesting
+  internal suspend fun downloadAssetAndVerifyHashAndWriteToPath(
     asset: AssetEntity,
     request: Request,
     expectedBase64URLEncodedSHA256Hash: String?,
@@ -123,35 +124,7 @@ class FileDownloader(
               expectedBase64URLEncodedSHA256Hash
             )
           } catch (_: Exception) {
-            logger.warn(
-              "Hermes diff application failed for asset ${asset.key}; retrying with full asset download",
-              UpdatesErrorCode.AssetsFailedToLoad,
-              request.header("Expo-Requested-Update-ID"),
-              asset.key
-            )
-
-            responseBody.close()
-            val fallbackRequest = request.newBuilder()
-              .headers(request.headers)
-              .removeHeader("Accept")
-              .header("Accept", "application/javascript")
-              .build()
-
-            val fallbackResponse = downloadData(fallbackRequest, progressListener)
-
-            fallbackResponse.use { fallbackResp ->
-              val fallbackBody = fallbackResp.body
-                ?: throw IOException("Fallback asset download response from ${request.url} had no body")
-
-              if (!fallbackResp.isSuccessful) {
-                throw IOException(fallbackBody.string())
-              }
-
-              fallbackBody.byteStream().use { inputStream ->
-                val hash = UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, expectedBase64URLEncodedSHA256Hash)
-                return FileDownloadResult(destination, hash)
-              }
-            }
+            return fallbackBundleDownload(asset, request, responseBody, progressListener, destination, expectedBase64URLEncodedSHA256Hash)
           }
         } else {
           if (!allowPatch && isPatch) {
@@ -171,6 +144,38 @@ class FileDownloader(
       val message = "Failed to download asset from URL ${request.url}"
       logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
       throw IOException(message, e)
+    }
+  }
+
+  private suspend fun fallbackBundleDownload(asset: AssetEntity, request: Request, responseBody: ResponseBody, progressListener: FileDownloadProgressListener?, destination: File, expectedBase64URLEncodedSHA256Hash: String?): FileDownloadResult {
+    logger.warn(
+      "Hermes diff application failed for asset ${asset.key}; retrying with full asset download",
+      UpdatesErrorCode.AssetsFailedToLoad,
+      request.header("Expo-Requested-Update-ID"),
+      asset.key
+    )
+
+    responseBody.close()
+    val fallbackRequest = request.newBuilder()
+      .headers(request.headers)
+      .removeHeader("Accept")
+      .header("Accept", "*/*")
+      .build()
+
+    val fallbackResponse = downloadData(fallbackRequest, progressListener)
+
+    fallbackResponse.use { fallbackResp ->
+      val fallbackBody = fallbackResp.body
+        ?: throw IOException("Fallback asset download response from ${request.url} had no body")
+
+      if (!fallbackResp.isSuccessful) {
+        throw IOException(fallbackBody.string())
+      }
+
+      fallbackBody.byteStream().use { inputStream ->
+        val hash = UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, expectedBase64URLEncodedSHA256Hash)
+        return FileDownloadResult(destination, hash)
+      }
     }
   }
 
@@ -209,9 +214,10 @@ class FileDownloader(
     }
   }
 
-  private data class LaunchAssetContext(val baseFile: File)
+  internal data class LaunchAssetContext(val baseFile: File)
 
-  private fun prepareAssetForDiff(
+  @VisibleForTesting
+  internal fun prepareAssetForDiff(
     asset: AssetEntity,
     request: Request,
     responseBody: ResponseBody,
@@ -280,7 +286,14 @@ class FileDownloader(
     return LaunchAssetContext(baseFile)
   }
 
-  private fun applyHermesDiff(
+  // Allows us to skip the native layer in tests
+  @VisibleForTesting
+  internal var applyPatch: (String, String, String) -> Int = { baseFilePath, newFilePath, patchFilePath ->
+    BSPatch.applyPatch(baseFilePath, newFilePath, patchFilePath)
+  }
+
+  @VisibleForTesting
+  internal fun applyHermesDiff(
     baseFile: File,
     diffBody: ResponseBody,
     destination: File,
@@ -299,7 +312,7 @@ class FileDownloader(
         patchFile.outputStream().use { output -> input.copyTo(output) }
       }
 
-      val patchResult = BSPatch.applyPatch(
+      val patchResult = applyPatch(
         baseFile.absolutePath,
         patchedTempFile.absolutePath,
         patchFile.absolutePath
@@ -865,7 +878,7 @@ class FileDownloader(
   }
 }
 
-private fun interface FileDownloadProgressListener {
+internal fun interface FileDownloadProgressListener {
   fun update(bytesRead: Long, contentLength: Long) {
     // Only emit progress if content length is known
     if (contentLength > 0) {
