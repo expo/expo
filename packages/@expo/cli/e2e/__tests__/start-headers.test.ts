@@ -15,6 +15,12 @@ describe('server headers', () => {
         'Set-Cookie': ['hello=world', 'foo=bar'],
         'Content-Type': 'application/pdf',
       }),
+      E2E_ROUTER_REWRITES: JSON.stringify([
+        {
+          source: '/rewrite/api',
+          destination: '/api',
+        },
+      ]),
       CI: '0',
     },
   });
@@ -30,15 +36,28 @@ describe('server headers', () => {
   it.each([
     {
       path: '/',
+      status: 200,
       contentType: 'text/html',
     },
     {
       path: '/api',
+      status: 200,
       contentType: 'application/json',
     },
-  ])('applies custom headers to $path', async ({ path, contentType }) => {
+    {
+      path: '/rewrite/api',
+      status: 200,
+      contentType: 'application/json',
+    },
+    {
+      path: '/not-a-route',
+      status: 404,
+      contentType: 'text/html',
+    },
+  ])('applies custom headers to $path', async ({ path, status, contentType }) => {
     const response = await expo.fetchAsync(path);
-    expect(response.status).toBe(200);
+
+    expect(response.status).toBe(status);
 
     // Check that existing Content-Type header is not overridden
     expect(response.headers.get('Content-Type')).toBe(contentType);
