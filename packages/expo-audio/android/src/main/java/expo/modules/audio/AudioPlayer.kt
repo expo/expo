@@ -50,7 +50,7 @@ class AudioPlayer(
   appContext
 ) {
   val id = UUID.randomUUID().toString()
-  var preservesPitch = false
+  var preservesPitch = true
   var isPaused = false
   var isMuted = false
   var previousVolume = 1f
