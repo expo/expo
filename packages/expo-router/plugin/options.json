@@ -136,6 +136,23 @@
             }
           }
         },
+        "headers": {
+          "description": "A list of headers that are set on every route response from the server",
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
+        },
         "unstable_useServerMiddleware": {
           "description": "Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config.",
           "type": "boolean",

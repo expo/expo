@@ -31,6 +31,7 @@ export type Options = {
   platform?: string;
   redirects?: RedirectConfig[];
   rewrites?: RewriteConfig[];
+  headers?: Record<string, string | string[]>;
   /* Keep redirects as valid routes within the RouteConfig tree */
   preserveRedirectAndRewrites?: boolean;
 

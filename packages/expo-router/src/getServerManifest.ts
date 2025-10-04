@@ -50,6 +50,10 @@ export type ExpoRouterServerManifestV1<TRegex = string> = {
    */
   middleware?: ExpoRouterServerManifestV1Middleware;
   /**
+   * Headers to be applied to all responses from the server.
+   */
+  headers?: Record<string, string | string[]>;
+  /**
    * Rewrites. After middleware has processed and regular routing resumes, these occur first.
    */
   rewrites: ExpoRouterServerManifestV1Route<TRegex>[];
@@ -100,8 +104,15 @@ function uniqueBy<T>(arr: T[], key: (item: T) => string): T[] {
 // TODO(@hassankhan): ENG-16575
 type FlatNodeTuple = [contextKey: string, absoluteRoute: string, node: RouteNode];
 
+type GetServerManifestOptions = {
+  headers?: Record<string, string | string[]>;
+};
+
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 {
+export function getServerManifest(
+  route: RouteNode,
+  options?: GetServerManifestOptions
+): ExpoRouterServerManifestV1 {
   function getFlatNodes(route: RouteNode, parentRoute: string = ''): FlatNodeTuple[] {
     // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.
     const absoluteRoute = [parentRoute, route.route].filter(Boolean).join('/');
@@ -188,6 +199,10 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
     manifest.middleware = {
       file: route.middleware.contextKey,
     };
+  }
+
+  if (options?.headers) {
+    manifest.headers = options.headers;
   }
 
   return manifest;

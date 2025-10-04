@@ -25,6 +25,6 @@ function createRoutesManifest(paths, options) {
     if (!routeTree) {
         return null;
     }
-    return (0, getServerManifest_1.getServerManifest)(routeTree);
+    return (0, getServerManifest_1.getServerManifest)(routeTree, { headers: options.headers });
 }
 //# sourceMappingURL=routes-manifest.js.map
