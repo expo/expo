@@ -2,6 +2,8 @@ package expo.modules.calendar
 
 import android.provider.CalendarContract
 
+internal const val BEGIN_DATE_INDEX = 3
+internal const val END_DATE_INDEX = 4
 internal val findCalendarByIdQueryFields = arrayOf(
   CalendarContract.Calendars._ID,
   CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
