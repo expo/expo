@@ -47,7 +47,6 @@ const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
-const ModalContext_1 = require("./modal/ModalContext");
 const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
 const Sitemap_1 = require("./views/Sitemap");
@@ -145,9 +144,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
       <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <ModalContext_1.ModalContextProvider>
-              <Content />
-            </ModalContext_1.ModalContextProvider>
+            <Content />
           </WrapperComponent>
         </serverLocationContext_1.ServerContext.Provider>
       </NavigationContainer_1.NavigationContainer>
