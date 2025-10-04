@@ -64,10 +64,14 @@ jobs:
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
           ls -la ../updates-e2e
+      - name: Reinstall curl
+        run: |
+          brew install curl
+          echo 'export PATH="/opt/homebrew/opt/curl/bin:$PATH"' >> ~/.zshrc
       - name: Prepare E2E project
         id: prepare
         working_directory: ../../../updates-e2e
@@ -110,7 +114,7 @@ jobs:
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
           ls -la ../updates-e2e

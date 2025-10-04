@@ -1,0 +1,47 @@
+diff --git a/node_modules/react-native/sdks/hermes-engine/hermes-utils.rb b/node_modules/react-native/sdks/hermes-engine/hermes-utils.rb
+index 8283709..ad77bb2 100644
+--- a/node_modules/react-native/sdks/hermes-engine/hermes-utils.rb
++++ b/node_modules/react-native/sdks/hermes-engine/hermes-utils.rb
+@@ -42,6 +42,15 @@ end
+ 
+ # Returns: hermes-engine source type
+ def hermes_source_type(version, react_native_path)
++    puts "------------------------------------------------------"
++    puts "Determining Hermes source type..."
++    puts "Version: #{version}"
++    puts "React Native path: #{react_native_path}"
++    puts "Release artifact exists: #{release_artifact_exists(version)}"
++    puts "Release tarball URL: #{release_tarball_url(version, :debug)}"
++    puts "Maven URL: #{`curl -s -o /dev/null -w '%{url_effective}\\n' https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.82.0-rc.5/react-native-artifacts-0.82.0-rc.5-hermes-ios-debug.tar.gz`}"
++    puts "------------------------------------------------------"
++
+     if override_hermes_dir_envvar_defined()
+         return HermesEngineSourceType::BUILD_FROM_LOCAL_SOURCE_DIR
+     end
+@@ -251,7 +260,7 @@ def download_hermes_tarball(react_native_path, tarball_url, version, configurati
+     unless File.exist?(destination_path)
+       # Download to a temporary file first so we don't cache incomplete downloads.
+       tmp_file = "#{artifacts_dir()}/hermes-ios.download"
+-      `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
++      `mkdir -p "#{artifacts_dir()}" && /usr/bin/curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+     end
+     return destination_path
+ end
+@@ -285,7 +294,7 @@ def nightly_tarball_url(version)
+ end
+ 
+ def resolve_url_redirects(url)
+-    return (`curl -Ls -o /dev/null -w %{url_effective} \"#{url}\"`)
++    return (`/usr/bin/curl -Ls -o /dev/null -w %{url_effective} \"#{url}\"`)
+ end
+ 
+ # This function checks that Hermes artifact exists.
+@@ -297,7 +306,7 @@ end
+ def hermes_artifact_exists(tarball_url)
+     # -L is used to follow redirects, useful for the nightlies
+     # I also needed to wrap the url in quotes to avoid escaping & and ?.
+-    return (`curl -o /dev/null --silent -Iw '%{http_code}' -L "#{tarball_url}"` == "200")
++    return (`/usr/bin/curl -o /dev/null --silent -Iw '%{http_code}' -L "#{tarball_url}"` == "200")
+ end
+ 
+ def hermes_log(message, level = :warning)
