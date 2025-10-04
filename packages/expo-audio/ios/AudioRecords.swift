@@ -21,9 +21,9 @@ enum PitchCorrectionQuality: String, Enumerable {
   func toPitchAlgorithm() -> AVAudioTimePitchAlgorithm {
     switch self {
     case .low:
-      return .timeDomain
-    case .medium:
       return .varispeed
+    case .medium:
+      return .timeDomain
     case .high:
       return .spectral
     }

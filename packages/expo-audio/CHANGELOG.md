@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 1.0.15 — 2025-11-21

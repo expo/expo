@@ -9,8 +9,8 @@ private enum AudioConstants {
 public class AudioPlayer: SharedRef<AVPlayer> {
   let id = UUID().uuidString
   var isLooping = false
-  var shouldCorrectPitch = false
-  var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
+  var shouldCorrectPitch = true
+  var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .timeDomain
   var isActiveForLockScreen = false
   var metadata: Metadata?
   var currentRate: Float = 0.0
