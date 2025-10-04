@@ -1,8 +1,8 @@
 # expo-tracking-transparency
 
-A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, etc... This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied.
+A library for tracking app users and managing tracking permissions. Provides access to advertising identifiers and manages the required permissions for tracking. Examples of data used for tracking include email address, device ID, advertising ID, etc. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied.
 
-For more information on Apple's new App Tracking Transparency framework, please refer to their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
+For more information on Apple's App Tracking Transparency framework, please refer to their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
 
 ## API documentation
 
