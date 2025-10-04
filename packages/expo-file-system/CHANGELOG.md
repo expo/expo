@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [file-system] Fix package exports for Typescript projects ([#39543](https://github.com/expo/expo/pull/39543) by [@smoores-dev](https://github.com/smoores-dev))
+
 ### 💡 Others
 
 ## 19.0.16 - 2025-10-01
