@@ -14,6 +14,7 @@ import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
+import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import java.io.IOException
 import java.lang.ref.WeakReference
 
@@ -21,6 +22,7 @@ import java.lang.ref.WeakReference
 class AlbumModernFactory(
   private val assetFactory: AssetFactory,
   private val assetDeleter: AssetDeleter,
+  private val mediaStorePermissionsDelegate: MediaStorePermissionsDelegate,
   context: Context
 ) : AlbumFactory {
   private val contextRef = WeakReference(context)
@@ -61,6 +63,7 @@ class AlbumModernFactory(
 
   private suspend fun processAssetsLocation(assets: List<Asset>, relativePath: RelativePath, deleteOriginalAssets: Boolean) {
     if (deleteOriginalAssets) {
+      mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(assets.map { it.contentUri })
       assets.map { it.move(relativePath) }
     } else {
       assets.map { it.copy(relativePath) }
