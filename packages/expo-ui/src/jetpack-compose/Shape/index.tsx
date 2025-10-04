@@ -39,28 +39,30 @@ export type ShapeProps = {
 
 const ShapeNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'ShapeView');
 
-function Star(props: ShapeProps) {
-  return <ShapeNativeView {...props} style={props.style} type="star" />;
+export type ShapeJSXElement = React.JSX.Element & { __expo_shape_jsx_element_marker: true };
+
+function Star(props?: ShapeProps) {
+  return (<ShapeNativeView {...props} style={props?.style} type="star" />) as ShapeJSXElement;
 }
 
-function PillStar(props: ShapeProps) {
-  return <ShapeNativeView {...props} style={props.style} type="pillStar" />;
+function PillStar(props?: ShapeProps) {
+  return (<ShapeNativeView {...props} style={props?.style} type="pillStar" />) as ShapeJSXElement;
 }
 
-function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>) {
-  return <ShapeNativeView {...props} style={props.style} type="pill" />;
+function Pill(props?: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>) {
+  return (<ShapeNativeView {...props} style={props?.style} type="pill" />) as ShapeJSXElement;
 }
 
-function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>) {
-  return <ShapeNativeView {...props} style={props.style} type="circle" />;
+function Circle(props?: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>) {
+  return (<ShapeNativeView {...props} style={props?.style} type="circle" />) as ShapeJSXElement;
 }
 
-function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>) {
-  return <ShapeNativeView {...props} style={props.style} type="rectangle" />;
+function Rectangle(props?: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>) {
+  return (<ShapeNativeView {...props} style={props?.style} type="rectangle" />) as ShapeJSXElement;
 }
 
 function Polygon(
-  props: Pick<
+  props?: Pick<
     ShapeProps,
     'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color' | 'modifiers'
   >
@@ -70,10 +72,15 @@ function Polygon(
       {...props}
       // @ts-expect-error
       modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      style={props.style}
+      style={props?.style}
       type="polygon"
     />
-  );
+  ) as ShapeJSXElement;
+}
+
+export function parseJSXShape(shape?: ShapeJSXElement) {
+  if (!shape) return undefined;
+  return shape.props;
 }
 
 export const Shape = {
