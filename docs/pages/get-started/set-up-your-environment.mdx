@@ -1,32 +1,1052 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
-searchRank: 3
----
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
+import { 
+    getFirestore, doc, setDoc, collection, onSnapshot, updateDoc, 
+    query, addDoc, serverTimestamp, deleteDoc 
+} from 'firebase/firestore';
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+// --- Variáveis Globais de Configuração (Fornecidas pelo Ambiente) ---
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-fitness-app-id';
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+const apiKey = ""; // API Key para o Gemini
 
-Let's set up a local development environment for running your project on Android and iOS.
+// Configuração inicial de rotinas
+const initialRoutines = {
+    A: [{ name: 'Supino Reto', sets: 4, reps: 10 }, { name: 'Crucifixo', sets: 3, reps: 12 }],
+    B: [{ name: 'Remada Curvada', sets: 4, reps: 10 }, { name: 'Puxada Alta', sets: 3, reps: 12 }],
+    C: [{ name: 'Agachamento Livre', sets: 4, reps: 10 }, { name: 'Leg Press', sets: 3, reps: 15 }],
+    D: [{ name: 'Desenvolvimento Militar', sets: 4, reps: 10 }, { name: 'Elevação Lateral', sets: 3, reps: 15 }],
+};
 
-## Where would you like to develop?
+// --- Estrutura de Dados Fixa para a Nova Aba "Meus Treinos" (Solicitada) ---
+const fixedWeeklyWorkouts = {
+    A: {
+        title: 'Peito, Ombro, Tríceps, Abdominal e Cardio',
+        emoji: '🏋️‍♀️',
+        groups: [
+            {
+                name: 'Peito',
+                observations: 'Fazer antes de ombro pois ombro exige mais',
+                exercises: [
+                    { name: 'Supino na máquina', sets: '3', reps: '12' },
+                    { name: 'Crucifixo na máquina', sets: '3', reps: '12', obs: '(olhar vídeo)' },
+                    { name: 'Supino inclinado com halter', sets: '3', reps: '10', obs: '(banco 45°)' },
+                ]
+            },
+            {
+                name: 'Ombro',
+                observations: null,
+                exercises: [
+                    { name: 'Elevação lateral com halter', sets: '3', reps: '12' },
+                    { name: 'Elevação frontal com halter', sets: '3', reps: '12' },
+                ]
+            },
+            {
+                name: 'Tríceps (final)',
+                observations: null,
+                exercises: [
+                    { name: 'Tríceps corda polia', sets: '3', reps: '15' },
+                    { name: 'Tríceps francês com halter', sets: '3', reps: '12' },
+                ]
+            },
+            {
+                name: 'Abdominal (aquecimento)',
+                observations: null,
+                exercises: [
+                    { name: 'Supra curtinho', sets: '3x30s', reps: '' },
+                    { name: 'Oblíquo', sets: '3x30s', reps: '' },
+                ]
+            },
+            {
+                name: 'Cardio',
+                observations: null,
+                exercises: [
+                    { name: 'Esteira, elíptico ou bicicleta', sets: '20 minutos', reps: '' },
+                ]
+            },
+        ],
+    },
+    B: {
+        title: 'Pernas (Adutores, Quadríceps e Panturrilha)',
+        emoji: '🦵',
+        observations: 'Descanso entre séries: 1:30',
+        groups: [
+            {
+                name: 'Adutores',
+                observations: null,
+                exercises: [
+                    { name: 'Agachamento sumô com halter/anilha', sets: '3', reps: '15', obs: '(primeiro)' },
+                    { name: 'Cadeira adutora', sets: '2', reps: '15', obs: '(último)' },
+                ]
+            },
+            {
+                name: 'Quadríceps',
+                observations: null,
+                exercises: [
+                    { name: 'Leg Press 45°', sets: '4', reps: '12' },
+                    { name: 'Cadeira extensora', sets: '4', reps: '12' },
+                ]
+            },
+            {
+                name: 'Panturrilha',
+                observations: null,
+                exercises: [
+                    { name: 'Em pé na máquina ou Smith', sets: '4', reps: '12' },
+                ]
+            },
+            {
+                name: 'Cardio',
+                observations: null,
+                exercises: [
+                    { name: 'Esteira, elíptico ou bicicleta', sets: '20–30 minutos', reps: '' },
+                ]
+            },
+        ],
+    },
+    C: {
+        title: 'Costas, Bíceps e Cardio',
+        emoji: '💪',
+        groups: [
+            {
+                name: 'Costas',
+                observations: null,
+                exercises: [
+                    { name: 'Puxada alta', sets: '3', reps: '15' },
+                    { name: 'Puxada pronada', sets: '3', reps: '15' },
+                    { name: 'Remada triângulo/neutra', sets: '3', reps: '15' },
+                ]
+            },
+            {
+                name: 'Bíceps',
+                observations: null,
+                exercises: [
+                    { name: 'Rosca direta com barra W', sets: '2', reps: '15' },
+                    { name: 'Rosca unilateral banco Scott', sets: '2', reps: '15', obs: '(cada braço)' },
+                ]
+            },
+            {
+                name: 'Abdominal',
+                observations: null,
+                exercises: [
+                    { name: 'Prancha', sets: '4x15s', reps: '' },
+                ]
+            },
+            {
+                name: 'Cardio',
+                observations: null,
+                exercises: [
+                    { name: 'Esteira ou elíptico', sets: '30 minutos', reps: '' },
+                ]
+            },
+        ],
+    },
+    D: {
+        title: 'Glúteo, Posterior, Abdominal e Cardio',
+        emoji: '🍑',
+        groups: [
+            {
+                name: 'Glúteo',
+                observations: null,
+                exercises: [
+                    { name: 'Cadeira abdutora', sets: '4', reps: '20' },
+                    { name: 'Agachamento Smith', sets: '3', reps: '12' },
+                    { name: 'Elevação pélvica', sets: '3', reps: '12' },
+                ]
+            },
+            {
+                name: 'Posterior',
+                observations: null,
+                exercises: [
+                    { name: 'Mesa flexora', sets: '3', reps: '15' },
+                    { name: 'RDL', sets: '3', reps: '10', obs: '(olhar vídeo)' },
+                ]
+            },
+            {
+                name: 'Abdominal',
+                observations: null,
+                exercises: [
+                    { name: 'Abdominal sentada', sets: '3x20s', reps: '' },
+                ]
+            },
+            {
+                name: 'Cardio',
+                observations: null,
+                exercises: [
+                    { name: 'Esteira, elíptico ou bicicleta', sets: '20 minutos', reps: '' },
+                ]
+            },
+        ],
+    },
+};
 
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
+// --- Funções de Utilidade (LLM) ---
 
-<PlatformAndDeviceForm />
+const callGemini = async (payload, retries = 3) => {
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-## How would you like to develop?
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-Expo Go is a sandbox for trying out Expo quickly. A development build is a build of your own app that includes Expo's developer tools.
+            if (!response.ok) {
+                if (response.status === 429 && i < retries - 1) { // 429: Too Many Requests
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+                    continue;
+                }
+                throw new Error(`Gemini API returned status ${response.status}`);
+            }
 
-<DevelopmentModeForm />
+            const result = await response.json();
+            const candidate = result.candidates?.[0];
 
----
+            if (candidate && candidate.content?.parts?.[0]?.text) {
+                const text = candidate.content.parts[0].text;
+                let sources = [];
+                const groundingMetadata = candidate.groundingMetadata;
+                
+                if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                    sources = groundingMetadata.groundingAttributions
+                        .map(attribution => ({
+                            uri: attribution.web?.uri,
+                            title: attribution.web?.title,
+                        }))
+                        .filter(source => source.uri && source.title);
+                }
+                return { text, sources };
+            }
+            throw new Error("Resposta da API Gemini incompleta ou vazia.");
 
-<DevelopmentEnvironmentInstructions />
+        } catch (error) {
+            console.error(`Tentativa ${i + 1} falhou:`, error.message);
+            if (i === retries - 1) throw error;
+        }
+    }
+};
 
-## Next step
+// --- Componente de Alerta/Modal para Resultados da IA ---
+const LLMResultModal = ({ title, content, sources, onClose }) => {
+    return (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-2xl border border-gray-700">
+                <div className="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+                    <h2 className="text-2xl font-bold text-white flex items-center">
+                        <span className="mr-2">✨</span> {title}
+                    </h2>
+                    <button 
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-white transition"
+                        aria-label="Fechar"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
 
-You have a project and a development environment. Now it's time to start developing.
+                <div className="prose prose-invert max-w-none text-gray-300 space-y-3" dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br/>') }}>
+                </div>
+
+                {sources?.length > 0 && (
+                    <div className="mt-6 pt-4 border-t border-gray-700">
+                        <h3 className="text-md font-semibold text-gray-400 mb-2">Fontes Consultadas:</h3>
+                        <ul className="list-disc list-inside text-sm text-gray-500 space-y-1">
+                            {sources.map((src, index) => (
+                                <li key={index}>
+                                    <a href={src.uri} target="_blank" rel="noopener noreferrer" className="hover:text-white underline truncate block">
+                                        {src.title}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+
+// --- Componente de Item do Accordion (Treino A, B, C ou D) ---
+const WorkoutAccordionItem = ({ dayKey, workout, onGetTip, currentTipExercise, llmTipLoading, llmTipResult, llmTipSources, onCloseTip }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700">
+            {/* Cabeçalho do Cartão Expansível */}
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full flex justify-between items-center p-5 text-left transition duration-300 hover:bg-gray-700"
+                aria-expanded={isOpen}
+            >
+                <h3 className="text-xl font-bold text-white">
+                    <span className="mr-2">{workout.emoji}</span> Treino {dayKey} – {workout.title}
+                </h3>
+                <svg
+                    className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+
+            {/* Conteúdo Expansível */}
+            {isOpen && (
+                <div className="p-5 border-t border-gray-700 bg-gray-900/50">
+                    
+                    {/* Observação Geral do Treino (se houver) */}
+                    {workout.observations && (
+                        <p className="text-sm text-gray-400 italic mb-4 p-2 border-l-4 border-white bg-gray-800 rounded-r-md">
+                            * Observação Geral: {workout.observations}
+                        </p>
+                    )}
+
+                    {/* Detalhes dos Grupos Musculares e Exercícios */}
+                    <div className="space-y-6">
+                        {workout.groups.map((group, groupIndex) => (
+                            <div key={groupIndex} className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                                <h4 className="text-lg font-semibold text-white mb-3 border-b border-gray-600 pb-1">
+                                    {group.name}
+                                </h4>
+                                
+                                {group.observations && (
+                                    <p className="text-xs text-gray-500 mb-2 italic">
+                                        Obs. {group.observations}
+                                    </p>
+                                )}
+
+                                {/* Tabela de Exercícios */}
+                                <div className="space-y-3 text-sm text-gray-300">
+                                    {group.exercises.map((ex, exIndex) => (
+                                        <div key={exIndex} className="py-2 border-b border-gray-700 last:border-b-0">
+                                            <div className="flex flex-wrap justify-between items-center">
+                                                <div className="font-medium text-white text-base">{ex.name}</div>
+                                                <div className="flex items-center space-x-3 mt-1 sm:mt-0">
+                                                    <span className="text-gray-400">S:{ex.sets}</span>
+                                                    {ex.reps && <span className="text-gray-400">R:{ex.reps}</span>}
+                                                    
+                                                    {/* Botão de Dica do Coach (Gemini Feature 2) */}
+                                                    <button 
+                                                        onClick={() => onGetTip(ex.name)}
+                                                        className="flex items-center text-xs px-3 py-1 bg-gray-600 rounded-full hover:bg-gray-500 transition disabled:opacity-50"
+                                                        disabled={llmTipLoading}
+                                                    >
+                                                        {llmTipLoading && currentTipExercise === ex.name ? (
+                                                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                        ) : (
+                                                            'Dica Coach ✨'
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            {ex.obs && <p className="w-full text-xs text-gray-500 mt-1 italic">{ex.obs}</p>}
+                                            
+                                            {/* Exibe a dica do Coach (localmente) */}
+                                            {llmTipResult && currentTipExercise === ex.name && (
+                                                <div className="mt-3 p-3 bg-gray-700 border border-gray-600 rounded-lg text-xs text-gray-300 relative">
+                                                    <h5 className="font-bold text-white mb-1">Dica do Coach:</h5>
+                                                    <div dangerouslySetInnerHTML={{ __html: llmTipResult.replace(/\n/g, '<br/>') }}></div>
+                                                    <button onClick={onCloseTip} className="absolute top-1 right-2 text-gray-500 hover:text-gray-300" aria-label="Fechar dica">×</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+// --- Componente da Nova Visualização "Meus Treinos" ---
+const MyWorkoutsView = (props) => (
+    <div className="space-y-6 max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold text-white text-center mb-6">Minha Ficha de Treino Fixa</h2>
+        <p className="text-center text-gray-400">Clique em "Dica Coach ✨" ao lado de qualquer exercício para receber uma orientação de execução baseada em IA.</p>
+        
+        {Object.entries(fixedWeeklyWorkouts).map(([key, workout]) => (
+            <WorkoutAccordionItem 
+                key={key} 
+                dayKey={key} 
+                workout={workout}
+                // Passa os props de IA para o componente de item
+                onGetTip={props.onGetTip}
+                currentTipExercise={props.currentTipExercise}
+                llmTipLoading={props.llmTipLoading}
+                llmTipResult={props.llmTipResult}
+                llmTipSources={props.llmTipSources}
+                onCloseTip={props.onCloseTip}
+            />
+        ))}
+    </div>
+);
+
+
+// Componente principal do aplicativo
+const App = () => {
+    const [db, setDb] = useState(null);
+    const [auth, setAuth] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [isAuthReady, setIsAuthReady] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Estado para gerenciamento de visualização (aba)
+    const [currentView, setCurrentView] = useState('Tracker'); 
+
+    const [routines, setRoutines] = useState(initialRoutines);
+    const [logs, setLogs] = useState([]);
+    
+    // Estados do Formulário de Log
+    const [exerciseName, setExerciseName] = useState('');
+    const [weight, setWeight] = useState('');
+    const [reps, setReps] = useState('');
+    const [selectedRoutineKey, setSelectedRoutineKey] = useState('A');
+
+    // Estados para Edição (Modal)
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingRoutine, setEditingRoutine] = useState(null);
+    const [newExerciseName, setNewExerciseName] = useState('');
+    const [newExerciseSets, setNewExerciseSets] = useState(3);
+    const [newExerciseReps, setNewExerciseReps] = useState(10);
+
+    // --- Gemini API States (Feature 1: Análise de Desempenho) ---
+    const [llmAnalysisResult, setLlmAnalysisResult] = useState(null);
+    const [llmAnalysisSources, setLlmAnalysisSources] = useState([]);
+    const [llmAnalysisLoading, setLlmAnalysisLoading] = useState(false);
+
+    // --- Gemini API States (Feature 2: Dica de Forma/Foco) ---
+    const [llmTipResult, setLlmTipResult] = useState(null);
+    const [llmTipLoading, setLlmTipLoading] = useState(false);
+    const [currentTipExercise, setCurrentTipExercise] = useState(null);
+    const [llmTipSources, setLlmTipSources] = useState([]);
+
+
+    // --- 1. Inicialização do Firebase e Autenticação ---
+    useEffect(() => {
+        if (!firebaseConfig) {
+            setError("Configuração do Firebase não encontrada.");
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const firebaseApp = initializeApp(firebaseConfig);
+            const firestoreDb = getFirestore(firebaseApp);
+            const firebaseAuth = getAuth(firebaseApp);
+
+            setDb(firestoreDb);
+            setAuth(firebaseAuth);
+
+            const authenticate = async () => {
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(firebaseAuth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(firebaseAuth);
+                    }
+                } catch (e) {
+                    console.error("Erro na autenticação:", e);
+                    setError("Falha ao autenticar. Tente recarregar.");
+                }
+            };
+
+            onAuthStateChanged(firebaseAuth, (user) => {
+                if (user) {
+                    setUserId(user.uid);
+                    setIsAuthReady(true);
+                } else {
+                    authenticate();
+                }
+                setIsLoading(false);
+            });
+
+        } catch (e) {
+            console.error("Erro ao inicializar Firebase:", e);
+            setError("Falha ao inicializar o aplicativo. Verifique as configurações.");
+            setIsLoading(false);
+        }
+    }, []);
+
+    // --- 2. Listener do Firestore para Rotinas e Logs ---
+    useEffect(() => {
+        if (!db || !isAuthReady || !userId) return;
+
+        // Caminhos Firestore (Dados privados do usuário)
+        const routineDocRef = doc(db, 'artifacts', appId, 'users', userId, 'fitness_data', 'routines');
+        const logsCollectionRef = collection(db, 'artifacts', appId, 'users', userId, 'fitness_logs');
+
+        // Listener para Rotinas
+        const unsubscribeRoutines = onSnapshot(routineDocRef, (docSnap) => {
+            if (docSnap.exists() && docSnap.data().data) {
+                setRoutines(docSnap.data().data);
+            } else {
+                setDoc(routineDocRef, { data: initialRoutines, timestamp: serverTimestamp() }, { merge: true });
+            }
+        }, (e) => console.error("Erro ao ouvir rotinas:", e));
+
+        // Listener para Logs
+        const logsQuery = query(logsCollectionRef);
+        const unsubscribeLogs = onSnapshot(logsQuery, (snapshot) => {
+            const logsData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                weight: Number(doc.data().weight) || 0,
+                reps: Number(doc.data().reps) || 0,
+                timestamp: doc.data().timestamp,
+            }));
+            setLogs(logsData);
+        }, (e) => console.error("Erro ao ouvir logs:", e));
+
+        return () => {
+            unsubscribeRoutines();
+            unsubscribeLogs();
+        };
+    }, [db, isAuthReady, userId]);
+
+    // --- 3. Funções de Manipulação de Dados (Omitidas para brevidade, mas intactas) ---
+    // ... (saveRoutines, logExercise, deleteLog, startEditRoutine, addExerciseToRoutine, removeExerciseFromRoutine, finishEditRoutine)
+
+    const saveRoutines = useCallback(async (newRoutines) => {
+        if (!db || !userId) return;
+        try {
+            const routineDocRef = doc(db, 'artifacts', appId, 'users', userId, 'fitness_data', 'routines');
+            await updateDoc(routineDocRef, { data: newRoutines, timestamp: serverTimestamp() });
+            setRoutines(newRoutines);
+        } catch (e) {
+            console.error("Erro ao salvar rotinas:", e);
+            console.error("Erro ao salvar as rotinas. Verifique o console.");
+        }
+    }, [db, userId]);
+
+    const logExercise = useCallback(async (e) => {
+        e.preventDefault();
+        if (!db || !userId || !exerciseName || !weight || !reps) return;
+
+        const weightNum = Number(weight);
+        const repsNum = Number(reps);
+
+        if (isNaN(weightNum) || isNaN(repsNum) || weightNum <= 0 || repsNum <= 0) {
+            console.warn('Por favor, insira valores válidos para peso e repetições.');
+            return;
+        }
+
+        try {
+            const logsCollectionRef = collection(db, 'artifacts', appId, 'users', userId, 'fitness_logs');
+            await addDoc(logsCollectionRef, {
+                exercise: exerciseName.trim(),
+                weight: weightNum,
+                reps: repsNum,
+                volume: weightNum * repsNum,
+                routine: selectedRoutineKey,
+                timestamp: serverTimestamp(),
+            });
+            
+            setExerciseName('');
+            setWeight('');
+            setReps('');
+
+        } catch (err) {
+            console.error("Erro ao registrar exercício:", err);
+            console.error("Erro ao registrar o exercício. Verifique o console.");
+        }
+    }, [db, userId, exerciseName, weight, reps, selectedRoutineKey]);
+
+    const deleteLog = async (logId) => {
+        if (!db || !userId) return;
+        try {
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'fitness_logs', logId);
+            await deleteDoc(docRef);
+        } catch (e) {
+            console.error("Erro ao deletar log:", e);
+        }
+    };
+
+    const startEditRoutine = (key) => {
+        setEditingRoutine(key);
+        setIsEditing(true);
+    };
+
+    const addExerciseToRoutine = () => {
+        if (!editingRoutine || !newExerciseName.trim()) return;
+
+        const newRoutines = { ...routines };
+        const newEx = { 
+            name: newExerciseName.trim(), 
+            sets: Number(newExerciseSets), 
+            reps: Number(newExerciseReps) 
+        };
+
+        newRoutines[editingRoutine] = [...(newRoutines[editingRoutine] || []), newEx];
+        setRoutines(newRoutines);
+
+        setNewExerciseName('');
+        setNewExerciseSets(3);
+        setNewExerciseReps(10);
+    };
+
+    const removeExerciseFromRoutine = (index) => {
+        if (!editingRoutine) return;
+        const newRoutines = { ...routines };
+        newRoutines[editingRoutine] = newRoutines[editingRoutine].filter((_, i) => i !== index);
+        setRoutines(newRoutines);
+    };
+
+    const finishEditRoutine = () => {
+        saveRoutines(routines);
+        setIsEditing(false);
+        setEditingRoutine(null);
+    };
+
+    // --- 4. Funções da IA (Gemini) ---
+
+    // Feature 1: Análise de Desempenho Semanal (Tracker View)
+    const handleAnalyzePerformance = useCallback(async () => {
+        if (logs.length < 5) {
+            setLlmAnalysisResult({ text: 'Por favor, registre pelo menos 5 exercícios para que o Coach Gemini possa fazer uma análise significativa.' });
+            return;
+        }
+
+        setLlmAnalysisLoading(true);
+        setLlmAnalysisResult(null);
+
+        // Gera um resumo dos 10 logs mais recentes
+        const summary = logs
+            .sort((a, b) => b.timestamp.toDate().getTime() - a.timestamp.toDate().getTime())
+            .slice(0, 10)
+            .map(log => 
+                `[${new Date(log.timestamp.toDate()).toLocaleDateString('pt-BR')}] ${log.exercise} - ${log.weight}kg x ${log.reps} reps (Vol: ${log.volume})`
+            )
+            .join('\n');
+
+        const systemPrompt = "Você é um personal trainer virtual motivacional e conciso. Analise o histórico de treino fornecido. O foco é volume (kg x reps). Forneça uma análise de 2 parágrafos: 1. Uma saudação motivacional e o ponto mais forte. 2. Uma sugestão específica de melhoria para a próxima semana.";
+        const userQuery = `Analise este registro de treino recente:\n---\n${summary}\n---\nCom base nisso, ofereça uma análise e uma sugestão.`;
+
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+        };
+
+        try {
+            const { text } = await callGemini(payload);
+            setLlmAnalysisResult({ title: 'Análise de Desempenho Semanal ✨', content: text });
+        } catch (e) {
+            setLlmAnalysisResult({ title: 'Erro na Análise', content: 'Não foi possível completar a análise. Tente novamente mais tarde.' });
+        } finally {
+            setLlmAnalysisLoading(false);
+        }
+    }, [logs]);
+
+    // Feature 2: Dica de Forma e Foco (MyWorkouts View)
+    const handleGetExerciseTip = useCallback(async (exerciseName) => {
+        if (llmTipLoading) return;
+
+        setLlmTipLoading(true);
+        setCurrentTipExercise(exerciseName);
+        setLlmTipResult(null);
+
+        const systemPrompt = "Você é um Coach de Fitness focado em segurança e técnica. Para o exercício solicitado, forneça uma 'Dica de Forma' (como executar com segurança) e um 'Foco Muscular' (o que você deve sentir). Use linguagem clara, direta e em Português. Use emojis para destacar as dicas.";
+        const userQuery = `Qual é a melhor dica de forma e foco muscular para o exercício: ${exerciseName}?`;
+
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            tools: [{ "google_search": {} }], // Usar busca para garantir informações de forma seguras e atuais
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+        };
+
+        try {
+            const { text, sources } = await callGemini(payload);
+            setLlmTipResult(text);
+            setLlmTipSources(sources);
+        } catch (e) {
+            setLlmTipResult('❌ Erro ao buscar a dica. Tente novamente.');
+            setLlmTipSources([]);
+        } finally {
+            setLlmTipLoading(false);
+        }
+    }, [llmTipLoading]);
+
+    // Fecha a dica (Feature 2)
+    const handleCloseTip = () => {
+        setLlmTipResult(null);
+        setCurrentTipExercise(null);
+        setLlmTipSources([]);
+    };
+
+    // --- 5. Cálculo e Visualização do Gráfico (Volume Lifted) ---
+
+    // Calcula o volume total levantado por dia (memoizado para performance)
+    const dailyVolumeData = useMemo(() => {
+        const sortedLogs = logs
+            .filter(log => log.timestamp && log.timestamp.toDate)
+            .sort((a, b) => b.timestamp.toDate().getTime() - a.timestamp.toDate().getTime());
+
+        const volumeMap = sortedLogs.reduce((acc, log) => {
+            const date = log.timestamp.toDate().toLocaleDateString('pt-BR');
+            acc[date] = (acc[date] || 0) + (log.weight * log.reps);
+            return acc;
+        }, {});
+
+        const dateKeys = Object.keys(volumeMap).sort((a, b) => {
+            const parseDate = (dateStr) => {
+                const [d, m, y] = dateStr.split('/').map(Number);
+                return new Date(y, m - 1, d).getTime();
+            };
+            return parseDate(a) - parseDate(b);
+        });
+
+        const last7Days = dateKeys.slice(-7);
+        
+        return last7Days.map(date => ({
+            date,
+            volume: volumeMap[date],
+        }));
+    }, [logs]);
+
+    const maxVolume = useMemo(() => {
+        return Math.max(...dailyVolumeData.map(d => d.volume), 1);
+    }, [dailyVolumeData]);
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-50">
+                <p>Carregando aplicativo e autenticando...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-red-800 text-white p-4">
+                <p>Erro: {error}</p>
+            </div>
+        );
+    }
+
+    // --- 6. Renderização do UI ---
+    return (
+        <div className="min-h-screen bg-gray-900 text-gray-50 font-inter p-4 md:p-8">
+            <style>{`
+                .graph-bar {
+                    transition: height 0.5s ease-out;
+                    min-height: 4px;
+                }
+            `}</style>
+            
+            <header className="text-center mb-10">
+                <h1 className="text-4xl font-bold tracking-tight text-white">
+                    GYM TRACKER <span className="text-gray-400">| Coach IA Edition</span>
+                </h1>
+                <p className="text-sm text-gray-500 mt-2">ID do Usuário: {userId || 'N/A'}</p>
+            </header>
+
+            {/* Barra de Navegação (Tabs) */}
+            <nav className="max-w-6xl mx-auto mb-8 border-b border-gray-700">
+                <div className="flex space-x-6">
+                    <button
+                        onClick={() => setCurrentView('Tracker')}
+                        className={`py-3 px-1 text-lg font-medium transition duration-150 ${currentView === 'Tracker' ? 'text-white border-b-2 border-white' : 'text-gray-500 hover:text-gray-300'}`}
+                    >
+                        Registro & Evolução
+                    </button>
+                    <button
+                        onClick={() => setCurrentView('MyWorkouts')}
+                        className={`py-3 px-1 text-lg font-medium transition duration-150 ${currentView === 'MyWorkouts' ? 'text-white border-b-2 border-white' : 'text-gray-500 hover:text-gray-300'}`}
+                    >
+                        Meus Treinos
+                    </button>
+                </div>
+            </nav>
+
+            <main className="max-w-6xl mx-auto">
+                {currentView === 'Tracker' ? (
+                    /* Conteúdo da Aba "Registro & Evolução" */
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        
+                        {/* Painel de Rotinas (A, B, C, D) */}
+                        <section className="lg:col-span-1 p-6 bg-gray-800 rounded-lg shadow-xl border border-gray-700 h-fit">
+                            <h2 className="text-2xl font-semibold mb-4 text-white">Painel de Rotinas</h2>
+                            
+                            <div className="space-y-4">
+                                {Object.entries(routines).map(([key, exercises]) => (
+                                    <div key={key} className="p-4 bg-gray-700 rounded-md border border-gray-600">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <h3 className="text-xl font-bold text-gray-200">Treino {key}</h3>
+                                            <button 
+                                                onClick={() => startEditRoutine(key)}
+                                                className="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-500 rounded-full transition duration-150"
+                                            >
+                                                Editar
+                                            </button>
+                                        </div>
+                                        <ul className="text-gray-400 text-sm space-y-1">
+                                            {exercises.map((ex, index) => (
+                                                <li key={index}>
+                                                    <span className="font-medium text-white">{ex.name}:</span> {ex.sets} x {ex.reps}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* Registro de Exercícios, Gráfico e Análise IA */}
+                        <section className="lg:col-span-2 space-y-8">
+                            
+                            {/* Formulário de Registro de Exercício */}
+                            <div className="p-6 bg-gray-800 rounded-lg shadow-xl border border-gray-700">
+                                <h2 className="text-2xl font-semibold mb-4 text-white">Registro Rápido de Exercício</h2>
+                                <form onSubmit={logExercise} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div className="md:col-span-1">
+                                        <label htmlFor="routine-select" className="block text-sm font-medium text-gray-400">Rotina</label>
+                                        <select 
+                                            id="routine-select" 
+                                            value={selectedRoutineKey} 
+                                            onChange={(e) => setSelectedRoutineKey(e.target.value)}
+                                            className="mt-1 block w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-gray-500 focus:border-gray-500"
+                                        >
+                                            {Object.keys(routines).map(key => (
+                                                <option key={key} value={key}>Treino {key}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    
+                                    <div className="md:col-span-1">
+                                        <label htmlFor="exercise-name" className="block text-sm font-medium text-gray-400">Nome do Exercício</label>
+                                        <input 
+                                            id="exercise-name" 
+                                            type="text" 
+                                            placeholder="Ex: Supino Inclinado"
+                                            value={exerciseName} 
+                                            onChange={(e) => setExerciseName(e.target.value)}
+                                            className="mt-1 block w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-gray-500 focus:border-gray-500"
+                                            required 
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label htmlFor="weight" className="block text-sm font-medium text-gray-400">Peso (kg)</label>
+                                        <input 
+                                            id="weight" 
+                                            type="number" 
+                                            placeholder="100"
+                                            value={weight} 
+                                            onChange={(e) => setWeight(e.target.value)}
+                                            className="mt-1 block w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-gray-500 focus:border-gray-500"
+                                            required 
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label htmlFor="reps" className="block text-sm font-medium text-gray-400">Repetições</label>
+                                        <input 
+                                            id="reps" 
+                                            type="number" 
+                                            placeholder="12"
+                                            value={reps} 
+                                            onChange={(e) => setReps(e.target.value)}
+                                            className="mt-1 block w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-gray-500 focus:border-gray-500"
+                                            required 
+                                        />
+                                    </div>
+                                    
+                                    <div className="md:col-span-4 flex justify-end">
+                                        <button 
+                                            type="submit"
+                                            className="px-6 py-2 bg-white text-gray-900 font-bold rounded-md shadow-lg hover:bg-gray-200 transition duration-150"
+                                        >
+                                            Registrar Treino
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            {/* Botão de Análise de Desempenho (Gemini Feature 1) */}
+                            <div className="p-6 bg-gray-800 rounded-lg shadow-xl border border-gray-700">
+                                <h2 className="text-2xl font-semibold mb-4 text-white">Coach Gemini</h2>
+                                <p className="text-gray-400 mb-4">Analise seus 10 logs mais recentes e receba um feedback motivacional e uma sugestão de progresso.</p>
+                                <button
+                                    onClick={handleAnalyzePerformance}
+                                    disabled={llmAnalysisLoading || logs.length < 5}
+                                    className="w-full flex items-center justify-center px-6 py-3 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-500 transition disabled:opacity-50"
+                                >
+                                    {llmAnalysisLoading ? (
+                                        <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    ) : (
+                                        'Analisar Desempenho Semanal ✨'
+                                    )}
+                                </button>
+                                {logs.length < 5 && !llmAnalysisLoading && (
+                                    <p className="text-xs text-red-400 mt-2 text-center">Mínimo de 5 logs necessários para a análise.</p>
+                                )}
+                            </div>
+
+                            {/* Gráfico de Evolução (Volume Total) */}
+                            <div className="p-6 bg-gray-800 rounded-lg shadow-xl border border-gray-700">
+                                <h2 className="text-2xl font-semibold mb-4 text-white">Gráfico de Evolução (Volume Total em kg)</h2>
+                                <p className="text-sm text-gray-400 mb-4">Volume total levantado (Peso x Repetições) nos últimos 7 dias.</p>
+                                
+                                {dailyVolumeData.length === 0 ? (
+                                    <p className="text-gray-500 text-center py-8">
+                                        Nenhum log encontrado para gerar o gráfico. Registre seu primeiro treino!
+                                    </p>
+                                ) : (
+                                    <div className="h-64 flex items-end pt-4" aria-label="Gráfico de volume total diário">
+                                        {dailyVolumeData.map((data, index) => (
+                                            <div 
+                                                key={index}
+                                                className="flex flex-col items-center justify-end w-1/7 h-full px-1 sm:px-2"
+                                            >
+                                                <div 
+                                                    className="graph-bar w-full bg-white rounded-t-md"
+                                                    style={{ height: `${(data.volume / maxVolume) * 90}%` }}
+                                                ></div>
+                                                <span className="mt-1 text-xs text-gray-400 whitespace-nowrap">{data.date.substring(0, 5)}</span>
+                                                <span className="text-xs font-medium text-gray-300">
+                                                    {(data.volume / 1000).toFixed(1)}k
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Logs Recentes */}
+                            <div className="p-6 bg-gray-800 rounded-lg shadow-xl border border-gray-700">
+                                <h2 className="text-2xl font-semibold mb-4 text-white">Logs Recentes</h2>
+                                <div className="max-h-64 overflow-y-auto space-y-2">
+                                    {logs
+                                        .filter(log => log.timestamp && log.timestamp.toDate)
+                                        .sort((a, b) => b.timestamp.toDate().getTime() - a.timestamp.toDate().getTime())
+                                        .slice(0, 10).map(log => (
+                                        <div key={log.id} className="flex justify-between items-center p-3 bg-gray-700 rounded-md">
+                                            <div className="text-sm">
+                                                <span className="font-bold text-white">[{log.routine}] {log.exercise}</span> - {log.weight}kg x {log.reps} reps
+                                                <p className="text-xs text-gray-500">
+                                                    {log.timestamp?.toDate().toLocaleString('pt-BR')} (Vol: {log.volume})
+                                                </p>
+                                            </div>
+                                            <button 
+                                                onClick={() => deleteLog(log.id)}
+                                                className="text-gray-400 hover:text-red-500 text-sm p-1"
+                                                aria-label="Deletar log"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {logs.length === 0 && <p className="text-gray-500 text-center">Nenhum registro ainda. Comece a treinar!</p>}
+                                </div>
+                            </div>
+
+                        </section>
+                    </div>
+                ) : (
+                    /* Conteúdo da Nova Aba "Meus Treinos" */
+                    <MyWorkoutsView 
+                        onGetTip={handleGetExerciseTip}
+                        currentTipExercise={currentTipExercise}
+                        llmTipLoading={llmTipLoading}
+                        llmTipResult={llmTipResult}
+                        llmTipSources={llmTipSources}
+                        onCloseTip={handleCloseTip}
+                    />
+                )}
+            </main>
+
+            {/* Modal de Edição de Rotina */}
+            {isEditing && currentView === 'Tracker' && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-90 flex items-center justify-center p-4 z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-2xl w-full max-w-lg border border-gray-700">
+                        <h2 className="text-3xl font-bold text-white mb-4">Editar Treino {editingRoutine}</h2>
+                        <div className="mb-6 max-h-48 overflow-y-auto space-y-2 p-2 bg-gray-700 rounded-md">
+                            <h3 className="text-xl font-semibold text-gray-300">Exercícios:</h3>
+                            {routines[editingRoutine]?.map((ex, index) => (
+                                <div key={index} className="flex justify-between items-center bg-gray-600 p-3 rounded">
+                                    <span className="text-white">{ex.name} ({ex.sets}x{ex.reps})</span>
+                                    <button 
+                                        onClick={() => removeExerciseFromRoutine(index)}
+                                        className="text-red-400 hover:text-red-300 text-sm"
+                                        aria-label="Remover exercício"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            ))}
+                            {routines[editingRoutine]?.length === 0 && <p className="text-gray-500 text-center">Nenhum exercício na rotina.</p>}
+                        </div>
+
+                        <h3 className="text-xl font-semibold text-gray-300 mb-3">Adicionar Novo Exercício</h3>
+                        <div className="grid grid-cols-5 gap-3 mb-6">
+                            <input 
+                                type="text" 
+                                placeholder="Nome"
+                                value={newExerciseName}
+                                onChange={(e) => setNewExerciseName(e.target.value)}
+                                className="col-span-3 p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                            />
+                            <input 
+                                type="number" 
+                                placeholder="Séries"
+                                value={newExerciseSets}
+                                onChange={(e) => setNewExerciseSets(e.target.value)}
+                                min="1"
+                                className="col-span-1 p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                            />
+                            <input 
+                                type="number" 
+                                placeholder="Reps"
+                                value={newExerciseReps}
+                                onChange={(e) => setNewExerciseReps(e.target.value)}
+                                min="1"
+                                className="col-span-1 p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                            />
+                            <button 
+                                onClick={addExerciseToRoutine}
+                                disabled={!newExerciseName.trim()}
+                                className="col-span-5 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500 disabled:bg-gray-700 transition"
+                            >
+                                Adicionar
+                            </button>
+                        </div>
+                        
+                        <div className="flex justify-end">
+                            <button 
+                                onClick={finishEditRoutine}
+                                className="px-6 py-2 bg-white text-gray-900 font-bold rounded-md shadow-lg hover:bg-gray-200 transition duration-150"
+                            >
+                                Salvar e Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Análise de Desempenho (Feature 1) */}
+            {llmAnalysisResult && (
+                <LLMResultModal
+                    title={llmAnalysisResult.title}
+                    content={llmAnalysisResult.content}
+                    sources={llmAnalysisSources}
+                    onClose={() => setLlmAnalysisResult(null)}
+                />
+            )}
+        </div>
+    );
+};
+
+export default App;
