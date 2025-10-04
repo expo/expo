@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.GoogleMapOptions
+import expo.modules.kotlin.views.ComposableScope
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
@@ -81,7 +82,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private var manualCameraControl = false
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     cameraState = updateCameraState()
     val markerState = markerStateFromProps()
     val locationSource = locationSourceFromProps()
