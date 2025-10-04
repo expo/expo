@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove byte limit warning.
+
 ## 15.0.7 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

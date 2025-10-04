@@ -1,4 +1,4 @@
-export const VALUE_BYTES_LIMIT = 2048;
+export const VALUE_BYTES_LIMIT = 4096;
 // note this probably could be JS-engine dependent
 // inspired by https://stackoverflow.com/a/39488643
 export function byteCountOverLimit(value, limit) {

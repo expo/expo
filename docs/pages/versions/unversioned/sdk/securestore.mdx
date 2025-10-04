@@ -18,7 +18,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-secure-store` provides a way to encrypt and securely store key-value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects. This library requires a real device for testing since simulators do not require biometric authentication when retrieving secrets unlike real iOS devices.
 
-**Size limit for a value is 2048 bytes. An attempt to store larger values may fail. Currently, we print a warning when the limit is reached, however, in a future SDK version an error might be thrown.**
+** Large payloads can be rejected by the underlying platform. Historically, some iOS releases refused values above roughly 2048 bytes. Expo does not enforce a limit, so make sure to handle native errors if you plan to store very large strings.
 
 **The `requireAuthentication` option is not supported in Expo Go when biometric authentication is available due to a missing `NSFaceIDUsageDescription` key.**
 
@@ -90,6 +90,8 @@ On Android, values are stored in [`SharedPreferences`](https://developer.android
 > For iOS standalone apps, data stored with `expo-secure-store` can persist across app installs.
 
 On iOS, values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
+
+> While current iOS releases typically allow values well beyond 4 KB, older versions have rejected larger payloads. Always surface native errors when persisting especially large strings so you can adjust behaviour per device.
 
 ## Data persistence
 
