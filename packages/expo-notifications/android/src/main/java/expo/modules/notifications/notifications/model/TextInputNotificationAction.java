@@ -3,6 +3,8 @@ package expo.modules.notifications.notifications.model;
 import android.os.Parcel;
 
 /**
+ * @deprecated in favor of NotificationActionRecord
+ *
  * A class representing a single direct reply notification action.
  */
 public class TextInputNotificationAction extends NotificationAction {

@@ -54,6 +54,11 @@ open class CategoriesModule: Module {
       return filterAndSerializeCategories(categories)
     }
 
+    AsyncFunction("setNotificationCategoriesAsync") { (categories: [CategoryRecord]) in
+      let nativeCategoriesSet = Set(categories.map { $0.toUNNotificationCategory() })
+      UNUserNotificationCenter.current().setNotificationCategories(nativeCategoriesSet)
+    }
+
     AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) in
       return await setNotificationCategoryAsync(identifier: identifier, actions: actions, options: options)
     }
