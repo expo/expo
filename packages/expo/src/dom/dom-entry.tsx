@@ -9,7 +9,7 @@ import { addEventListener, getActionsObject } from './marshal';
 import registerRootComponent from '../launch/registerRootComponent';
 
 interface MarshalledProps {
-  name: string[];
+  names: string[];
   props: Record<string, JSONValue>;
   [key: string]: undefined | JSONValue;
 }
