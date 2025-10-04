@@ -45,7 +45,7 @@ function SecureStoreView() {
   const [value, setValue] = React.useState<string | undefined>();
   const [service, setService] = React.useState<string | undefined>();
   const [requireAuth, setRequireAuth] = React.useState<boolean>(false);
-  const [demoByteSize, setDemoByteSize] = React.useState<string>('4096');
+  const [byteSize, setByteSize] = React.useState<string>('4096');
 
   const storeOptions = React.useMemo<SecureStore.SecureStoreOptions>(
     () => ({
@@ -126,9 +126,9 @@ function SecureStoreView() {
   }
 
   async function runStorageSizeDemo() {
-    const parsedBytes = Number.parseInt(demoByteSize, 10);
+    const parsedBytes = Number.parseInt(byteSize, 10);
     if (!Number.isFinite(parsedBytes) || parsedBytes <= 0) {
-      Alert.alert('Invalid size', 'Enter a positive integer to generate the demo string.');
+      Alert.alert('Invalid size', 'Enter a positive number to generate the test string.');
       return;
     }
 
@@ -210,16 +210,15 @@ function SecureStoreView() {
       {key && <ListButton onPress={() => getValue(key)} title="Get value with key synchronously" />}
       {key && <ListButton onPress={() => deleteValue(key)} title="Delete value with key" />}
       <Text style={styles.demoDescription}>
-        Enter a byte length to probe the storage limit on this platform. The demo stores that size
-        and one byte more so you can capture the native behaviour.
+        Enter a byte length to test the storage limit on this platform.
       </Text>
       <TextInput
         style={styles.textInput}
         placeholder="Length in bytes (e.g. 4096)"
         placeholderTextColor={Colors.secondaryText}
         keyboardType="number-pad"
-        value={demoByteSize}
-        onChangeText={setDemoByteSize}
+        value={byteSize}
+        onChangeText={setByteSize}
       />
       <ListButton onPress={runStorageSizeDemo} title="Run storage size demo" />
     </ScrollView>
