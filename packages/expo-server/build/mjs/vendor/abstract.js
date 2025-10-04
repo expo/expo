@@ -144,6 +144,21 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
             callbackRoute = { type: null };
         }
         let modifiedResponseInit = responseInit;
+        // Apply user-defined headers, if provided
+        if (manifest?.headers) {
+            for (const [key, value] of Object.entries(manifest.headers)) {
+                if (Array.isArray(value)) {
+                    // For arrays, append each value separately (important for Set-Cookie)
+                    value.forEach((v) => modifiedResponseInit.headers.append(key, v));
+                }
+                else {
+                    // Don't override existing headers
+                    if (!modifiedResponseInit.headers.has(key)) {
+                        modifiedResponseInit.headers.set(key, value);
+                    }
+                }
+            }
+        }
         // Callback call order matters, general rule is to call more specific callbacks first.
         if (routeType === 'html') {
             modifiedResponseInit = beforeHTMLResponse(modifiedResponseInit, callbackRoute);

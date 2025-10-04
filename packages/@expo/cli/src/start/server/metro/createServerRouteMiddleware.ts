@@ -53,21 +53,6 @@ export function createRouteHandlerMiddleware(
   return createRequestHandler(
     { build: '' },
     {
-      beforeResponse(responseInit, route) {
-        const userDefinedHeaders = options.headers ?? {};
-        for (const [key, value] of Object.entries(userDefinedHeaders)) {
-          if (Array.isArray(value)) {
-            // For arrays, append each value separately (important for Set-Cookie)
-            value.forEach((v) => responseInit.headers.append(key, v));
-          } else {
-            // Don't override existing headers
-            if (!responseInit.headers.has(key)) {
-              responseInit.headers.set(key, value);
-            }
-          }
-        }
-        return responseInit;
-      },
       async getRoutesManifest() {
         const manifest = await fetchManifest<RegExp>(projectRoot, options);
         debug('manifest', manifest);

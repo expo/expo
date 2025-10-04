@@ -33,30 +33,10 @@ interface EnvironmentInput {
 }
 
 export function createEnvironment(input: EnvironmentInput) {
-  let manifest: Manifest | null = null;
-
   return {
     async getRoutesManifest(): Promise<Manifest> {
       const json = await input.readJson('_expo/routes.json');
-      manifest = initManifestRegExp(json as RawManifest);
-      return manifest;
-    },
-
-    beforeResponse(responseInit: any, route: any) {
-      if (manifest?.headers) {
-        for (const [key, value] of Object.entries(manifest.headers)) {
-          if (Array.isArray(value)) {
-            // For arrays, append each value separately (important for Set-Cookie)
-            value.forEach((v) => responseInit.headers.append(key, v));
-          } else {
-            // Don't override existing headers
-            if (!responseInit.headers.has(key)) {
-              responseInit.headers.set(key, value);
-            }
-          }
-        }
-      }
-      return responseInit;
+      return initManifestRegExp(json as RawManifest);
     },
 
     async getHtml(_request: Request, route: Route): Promise<string | Response | null> {

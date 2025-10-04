@@ -137,7 +137,7 @@
           }
         },
         "headers": {
-          "description": "A list of header values that are sent with every response from the server",
+          "description": "A list of headers that are set on every route response from the server",
           "type": "object",
           "additionalProperties": {
             "oneOf": [
