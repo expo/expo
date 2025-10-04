@@ -12,14 +12,25 @@ This directory contains only secrets that cannot cause significant damage or cre
 
 In the interest of defense in depth, we mitigate the consequences of these secrets being exposed. **Do not add especially sensitive or hard-to-revoke secret credentials, such as an Android keystore, to this repository or CI, even if they are encrypted.**
 
-We also require full-disk encryption (FileVault 2) to decrypt the secrets.
+Secrets are stored in Google Cloud Secret Manager and synced locally when needed.
 
 ### Unlocking the secrets
 
-The secrets are encrypted using [`git-crypt`](https://github.com/AGWA/git-crypt). Run `unlock` in this repo to decrypt the secrets. If you do not have a decryption key, `unlock` will print instructions for you. You also must have full-disk encryption (FileVault 2) enabled to decrypt the secrets.
+The secrets are stored in Google Cloud Secret Manager. Run `./bin/unlock` in this repo to fetch and decrypt the secrets to your local machine.
 
-The secrets will remain decrypted on your local computer but will automatically be encrypted when you push your changes to GitHub.
+**Prerequisites:**
+- Google Cloud SDK installed (`brew install google-cloud-sdk`)
+- Authenticated with gcloud (`gcloud auth login`)
+- Project set (`gcloud config set project exponentjs`)
+- Access to the `exponentjs` project with `services-secrets-accessor` rights ([request access](https://console.cloud.google.com/iam-admin/pam/entitlements/my?project=exponentjs))
+
+The unlocked secrets will remain on your local computer in the `secrets/` directory but are gitignored and will not be committed to the repository.
 
 ### Locking the secrets
 
-You can encrypt the secrets again by running `lock`. You should rarely need to lock the secrets, but if you encounter issues with `git-crypt` it may be useful. Locking the secrets does not protect them unless you securely delete the key and your ability to acquire another copy of the key, however.
+You can remove the secrets from your local directory by running `./bin/lock`. This replaces the secret files with placeholder templates that contain instructions for unlocking.
+
+### Secret files
+
+- **keys.json**: Configuration keys for various services (GCP secret: `expo-expo-keys-json`)
+- **expotools.env**: Environment variables for build tools (GCP secret: `expo-expotools-env`)
