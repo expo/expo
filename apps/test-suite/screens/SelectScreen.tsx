@@ -1,12 +1,22 @@
 import { Checkbox } from 'expo-checkbox';
 import Constants from 'expo-constants';
-import React from 'react';
-import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import * as React from 'react';
+import {
+  type EmitterSubscription,
+  Alert,
+  FlatList,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../common/ThemeProvider';
-import { getTestModules } from '../TestModules';
+import { getTestModules, Module } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
+import { getScreenId } from '../constants/getScreenId';
 
 function ListItem({ title, onPressItem, selected, id }) {
   const { theme } = useTheme();
@@ -24,22 +34,26 @@ function ListItem({ title, onPressItem, selected, id }) {
   );
 }
 
-function createQueryString(tests) {
+function createQueryString(tests: string[]): string {
   if (!Array.isArray(tests) || !tests.every((v) => typeof v === 'string')) {
     throw new Error(
       `test-suite: Cannot create query string for runner. Expected array of strings, instead got: ${tests}`
     );
   }
-  const uniqueTests = [...new Set(tests)];
+  const uniqueTests = Array.from(new Set(tests).values());
   // Skip encoding or React Navigation will encode twice
   return uniqueTests.join(' ');
 }
 
-export default class SelectScreen extends React.PureComponent {
+export default class SelectScreen extends React.PureComponent<
+  { navigation: any },
+  { selected: Set<string>; modules: Module[] }
+> {
   state = {
-    selected: new Set(),
+    selected: new Set<string>(),
     modules: [],
   };
+  _openUrlSubscription: EmitterSubscription = null;
 
   constructor(props) {
     super(props);
@@ -65,20 +79,18 @@ export default class SelectScreen extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    if (this._openUrlSubscription != null) {
-      this._openUrlSubscription.remove();
-      this._openUrlSubscription = null;
-    }
+    this._openUrlSubscription?.remove();
+    this._openUrlSubscription = null;
   }
 
-  checkLinking = (incomingTests) => {
+  checkLinking = (incomingTests: string) => {
     // TODO(Bacon): bare-expo should pass a space-separated string.
     const tests = incomingTests.split(',').map((v) => v.trim());
     const query = createQueryString(tests);
     this.props.navigation.navigate('run', { tests: query });
   };
 
-  _handleOpenURL = ({ url }) => {
+  _handleOpenURL = ({ url }: { url: string }) => {
     url = url || '';
     // TODO: Use Expo Linking library once parseURL is implemented for web
     if (url.includes('/select/')) {
@@ -130,44 +142,49 @@ export default class SelectScreen extends React.PureComponent {
     });
   };
 
-  _renderItem = ({ item: { name } }) => (
-    <ListItem
-      id={name}
-      onPressItem={this._onPressItem}
-      selected={this.state.selected.has(name)}
-      title={name}
-    />
-  );
+  _renderItem = ({ item }: { item: Module }) => {
+    const { name } = item;
+    const id = getScreenId(item);
+    return (
+      <ListItem
+        id={id}
+        onPressItem={this._onPressItem}
+        selected={this.state.selected.has(id)}
+        title={name}
+      />
+    );
+  };
 
   _selectAll = () => {
     this.setState((prevState) => {
       if (prevState.selected.size === prevState.modules.length) {
-        return { selected: new Set() };
+        return { selected: new Set<string>() };
       }
-      return { selected: new Set(prevState.modules.map((item) => item.name)) };
+      const selected = new Set<string>(prevState.modules.map(getScreenId));
+      return { selected };
     });
   };
 
   _navigateToTests = () => {
     const { selected } = this.state;
-    if (selected.length === 0) {
+    if (selected.size === 0) {
       Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
     } else {
-      const query = createQueryString([...selected]);
+      const query = createQueryString(Array.from(selected.values()));
 
       this.props.navigation.navigate('run', { tests: query });
     }
   };
 
   render() {
-    const { selected } = this.state;
-    const allSelected = selected.size === this.state.modules.length;
+    const { selected, modules } = this.state;
+    const allSelected = selected.size === modules.length;
     const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
 
     return (
       <>
-        <FlatList
-          data={this.state.modules}
+        <FlatList<Module>
+          data={modules}
           contentContainerStyle={{ backgroundColor: '#fff' }}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
@@ -186,7 +203,7 @@ export default class SelectScreen extends React.PureComponent {
 }
 
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
-  const { bottom, left, right } = useSafeArea();
+  const { bottom, left, right } = useSafeAreaInsets();
   const { theme } = useTheme();
 
   const isRunningInBareExpo = Constants.expoConfig.slug === 'bare-expo';
