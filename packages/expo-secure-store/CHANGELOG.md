@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Remove byte limit warning.
+- [iOS] Remove byte limit warning. ([#40187](https://github.com/expo/expo/pull/40187) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.7 — 2025-09-11
 
