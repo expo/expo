@@ -33,7 +33,7 @@ class UpdatesPackage : Package {
       }
 
       override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {
-        UpdatesController.initialize(context)
+        UpdatesController.initialize(context, useDeveloperSupport)
       }
 
       override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
@@ -62,7 +62,7 @@ class UpdatesPackage : Package {
         if (!useDeveloperSupport || isUsingNativeDebug) {
           return ReactActivityHandler.DelayLoadAppHandler { whenReadyRunnable ->
             CoroutineScope(Dispatchers.IO).launch {
-              startUpdatesController(context)
+              startUpdatesController(context, useDeveloperSupport)
               invokeReadyRunnable(whenReadyRunnable)
             }
           }
@@ -71,10 +71,10 @@ class UpdatesPackage : Package {
       }
 
       @WorkerThread
-      private suspend fun startUpdatesController(context: Context) {
+      private suspend fun startUpdatesController(context: Context, useDeveloperSupport: Boolean) {
         withContext(Dispatchers.IO) {
           if (!UpdatesPackage.isUsingCustomInit) {
-            UpdatesController.initialize(context)
+            UpdatesController.initialize(context, useDeveloperSupport)
             // Call the synchronous `launchAssetFile()` function to wait for updates ready
             UpdatesController.instance.launchAssetFile
           }

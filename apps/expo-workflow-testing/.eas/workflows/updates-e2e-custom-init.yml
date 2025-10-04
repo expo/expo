@@ -35,12 +35,16 @@ jobs:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
+      - name: Reinstall curl
+        run: |
+          brew install curl
+          echo 'export PATH="/opt/homebrew/opt/curl/bin:$PATH"' >> ~/.zshrc
       - name: Set up Updates E2E custom init project
         id: setup
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project-custom-init.ts
           ls -la ../updates-e2e
@@ -88,7 +92,7 @@ jobs:
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project-custom-init.ts
           ls -la ../updates-e2e

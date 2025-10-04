@@ -226,6 +226,13 @@ async function copyCommonFixturesToProject(
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
+  // Copy react-native patch
+  await fs.mkdir(path.join(projectRoot, 'patches'));
+  await fs.copyFile(
+    path.resolve(repoRoot, 'patches', 'react-native+0.82.0-rc.5.patch'),
+    path.join(projectRoot, 'patches', 'react-native+0.82.0-rc.5.patch')
+  );
+
   // Modify specific files for TV
   if (isTV) {
     // Add TV environment variable to EAS build config

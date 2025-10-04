@@ -40,14 +40,19 @@ jobs:
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-startup-eas-project.ts
           ls -la ../updates-e2e
+      - name: Reinstall curl
+        run: |
+          brew install curl
+          echo 'export PATH="/opt/homebrew/opt/curl/bin:$PATH"' >> ~/.zshrc
       - name: Prepare E2E project
         id: prepare
         working_directory: ../../../updates-e2e
         run: |
+          sudo ln -s /usr/bin/curl /usr/local/bin/curl
           yarn generate-test-update-bundles ios test-update-1
           yarn ios:pod-install
       - name: Build E2E test app (debug)
@@ -86,7 +91,7 @@ jobs:
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-startup-eas-project.ts
           ls -la ../updates-e2e
