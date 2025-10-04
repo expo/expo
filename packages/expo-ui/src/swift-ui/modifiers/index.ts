@@ -477,6 +477,18 @@ export const glassEffectId = (id: string, namespaceId: string) =>
     namespaceId,
   });
 
+/**
+ * Specifies the visibility of the background for scrollable views within this view.
+ */
+export const scrollContentBackground = (visible: 'automatic' | 'visible' | 'hidden') =>
+  createModifier('scrollContentBackground', { visible });
+
+/**
+ * Sets the background of a row.
+ * @param color - The row color (hex string, e.g., '#FF0000')
+ */
+export const listRowBackground = (color: string) => createModifier('listRowBackground', { color });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -527,7 +539,9 @@ export type BuiltInModifier =
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
   | ReturnType<typeof animation>
-  | ReturnType<typeof containerShape>;
+  | ReturnType<typeof containerShape>
+  | ReturnType<typeof scrollContentBackground>
+  | ReturnType<typeof listRowBackground>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
