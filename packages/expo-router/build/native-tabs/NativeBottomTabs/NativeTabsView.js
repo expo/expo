@@ -43,6 +43,7 @@ const utils_1 = require("./utils");
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
 const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
+// TODO(ubax): refactor this component, so that testing options passed to screen is easier
 function NativeTabsView(props) {
     const { builder, minimizeBehavior, disableIndicator, focusedIndex } = props;
     const { state, descriptors, navigation } = builder;
@@ -52,10 +53,12 @@ function NativeTabsView(props) {
         console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
         blurEffect = undefined;
     }
+    const defaultIconColor = (0, utils_1.convertIconColorPropToObject)(props.iconColor).default;
+    const defaultLabelStyle = (0, utils_1.convertLabelStylePropToObject)(props.labelStyle).default;
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     let standardAppearance = (0, appearance_1.convertStyleToAppearance)({
-        ...props.labelStyle,
-        iconColor: props.iconColor,
+        ...defaultLabelStyle,
+        iconColor: defaultIconColor,
         blurEffect,
         backgroundColor: props.backgroundColor,
         badgeBackgroundColor: props.badgeBackgroundColor,
@@ -64,8 +67,8 @@ function NativeTabsView(props) {
         standardAppearance = (0, appearance_1.appendSelectedStyleToAppearance)({ iconColor: props.tintColor, color: props.tintColor }, standardAppearance);
     }
     const scrollEdgeAppearance = (0, appearance_1.convertStyleToAppearance)({
-        ...props.labelStyle,
-        iconColor: props.iconColor,
+        ...defaultLabelStyle,
+        iconColor: defaultIconColor,
         blurEffect,
         backgroundColor: props.backgroundColor,
         badgeBackgroundColor: props.badgeBackgroundColor,
