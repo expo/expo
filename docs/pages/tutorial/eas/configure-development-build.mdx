@@ -1,206 +1,988 @@
----
-title: Configure a development build in cloud
-sidebar_title: Configure development build
-description: Learn how to configure a development build for a project using EAS Build.
-hasVideoLink: true
----
-
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { ProgressTracker } from '~/ui/components/ProgressTracker';
-import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
-import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
-
-In this chapter, we'll set up and configure a development build with EAS for our example app.
-
-<VideoBoxLink videoId="uQCE9zl3dXU" title="Watch: How to configure a development build" />
-
----
-
-## Understanding development builds
-
-Let's start by learning about what are development builds and why we need them.
-
-A [development build](/develop/development-builds/introduction/) is a debug version of our project. It is optimized for quick iterations when creating an app. It contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which offers a robust and complete development environment. This setup allows us to integrate any native library or change code inside the [native directories](/workflow/overview/#android-and-ios-native-projects) as required.
-
-### Key highlights
-
-> **Note:** If you are familiar with [Expo Go](/get-started/expo-go/), think of a development build as a customizable version of Expo Go that is unique to the requirements of a project.
-
-| Feature                           | Development Builds                                                                                                                             | Expo Go                                                                                              |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Development phase**             | Offers web-like iteration speed for mobile app development.                                                                                    | Allows for quick iteration and testing of Expo SDK projects using the client app.                    |
-| **Collaboration**                 | Facilitates team testing with shared native runtime.                                                                                           | Easy project sharing via QR codes on a device.                                                       |
-| **Third-party libraries support** | Full support for any [third-party library](/workflow/using-libraries/#third-party-libraries), including those that require custom native code. | Limited to libraries within the Expo SDK, not suitable for custom native dependencies.               |
-| **Customization**                 | Extensive customization with [config plugins](/config-plugins/introduction/) and direct access to native code.                                 | Limited customization with a focus on Expo SDK capabilities without direct native code modification. |
-| **Intended use**                  | Ideal for full-fledged app development aimed at store deployment, offering a complete development environment and tools.                       | Ideal for learning, prototyping, and experimenting. Not recommended for production apps.             |
-
-<Step label="1">
-
-## Install expo-dev-client library
-
-To initialize our project for a development build, let's [`cd`](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line#basic_built-in_terminal_commands) inside our project directory and run the following command to install the library:
-
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
-
-### Start the development server
-
-Run the `npx expo start` to start the [development server](/get-started/start-developing/#start-a-development-server):
-
-<Terminal cmd={['$ npx expo start']} />
-
-This command starts the metro bundler. In the terminal window, we see the QR code followed by the `Metro waiting on...` and a manifest URL:
-
-<ContentSpotlight
-  alt="Running development server"
-  src="/static/images/tutorial/eas/development-server.png"
-  className="max-w-[600px]"
-/>
-
-Let's notice the changes installing the `expo-dev-client` library:
-
-- The manifest URL contains `expo-development-client` along with the app scheme
-- The development server now operates for a development build (instead of Expo Go).
-
-Since we do not have a development build installed on one of our devices or an emulator/simulator, we can't run our project yet.
-
-</Step>
-
-<Step label="2">
-
-## Initialize a development build
-
-### Install EAS CLI
-
-We need to install the EAS Command Line Interface (CLI) tool as a global dependency on our local machine. Run the following command:
-
-<Terminal cmd={['$ npm install -g eas-cli']} />
-
-### Log in or sign up for an Expo account
-
-> If you have an Expo account and are signed in using Expo CLI, skip this step. If you don't have an Expo account, [sign up here](https://expo.dev/signup) and proceed with the login command described below.
-
-To log in, run the following command:
-
-<Terminal cmd={['$ eas login']} />
-
-This command asks for our Expo account email or username and password to complete the login.
-
-### Initialize and link the project to EAS
-
-For any new project, the first step is to initialize and link it to the EAS servers. Run the following command:
-
-<Terminal cmd={['$ eas init']} />
-
-On running, this command:
-
-- Requests verification of the account owner by entering our Expo account credentials and asks if we want to create a new EAS project:
-
-<Terminal
-  cmd={[
-    '# Output after running eas init',
-    '✔ Which account should own this project? > your-username',
-    '✔ Would you like to create a project for @your-username/sticker-smash? … yes',
-    '✔ Created @your-username/sticker-smash',
-    '✔ Project successfully linked (ID: XXXX-XX-XX-XXXX) (modified app.json)',
-  ]}
-/>
-
-- Creates EAS project and provides a link to that project which we can open in the EAS dashboard:
-
-<ContentSpotlight
-  alt="New project in EAS dashboard"
-  src="/static/images/tutorial/eas/new-project.png"
-/>
-
-- Generates a unique `projectId` and links this EAS project to the example app on our development machine.
-- Modifies **app.json** to include [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) and updates its value with the unique ID created.
-
-<Collapsible summary={<>What is <CODE>projectId</CODE> in app.json?</>}>
-
-When `eas init` runs, it associates a unique identifier for our project in **app.json** under `extra.eas.projectId`. The value of this property is used to identify our project on EAS servers.
-
-```json
-{
-  "extra": {
-    "eas": {
-      "projectId": "0cd3da2d-xxx-xxx-xxx-xxxxxxxxxx"
-    }
-  }
-}
-```
-
-</Collapsible>
-
-</Step>
-
-<Step label="3">
-
-## Configure project for EAS Build
-
-To set up our project for EAS Build, run the following command:
-
-<Terminal cmd={['$ eas build:configure']} />
-
-On running, this command:
-
-- Prompts to select a platform: **Android**, **iOS**, or **All**. Since we are creating Android and iOS apps, let's select **All**.
-- Creates **eas.json** in the root of our project's directory with the following configuration:
-
-```json eas.json
-{
-  "cli": {
-    "version": ">= 16.18.0",
-    "appVersionSource": "remote"
-  },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {
-      "autoIncrement": true
-    }
-  },
-  "submit": {
-    "production": {}
-  }
-}
-```
-
-This is the default configuration for **eas.json** in a new project. It does two things:
-
-- Defines the current EAS CLI version.
-- Adds three [build profiles](/build/eas-json/#build-profiles): `development`, `preview`, and `production`.
-
-</Step>
-
-<Collapsible summary="Explore development profile further">
-
-**eas.json** is a collection of different build profiles. Each profile is tailored with distinct configurations to produce specific build types. These profiles can also include platform-specific settings for Android or iOS.
-
-Currently, our focus is on the `development` profile, which includes the following configuration:
-
-- [`developmentClient`](/eas/json/#developmentclient): Enabled (`true`) for creating a debug build. It loads the app using the `expo-dev-client` library, which provides development tools and generates a build artifact for device or emulator/simulator installation and allows using the app for local development as it supports updating the JavaScript on the fly.
-- [`distribution`](/eas/json/#distribution): Configured as `internal` to indicate that we want to share the build internally (instead of uploading it on app stores).
-
-> **Note**: Builds offer extensive customization options, including platform-specific settings and the ability to extend configurations across different build profiles. Learn more about [customizing build profiles](/build/eas-json/#build-profiles).
-
-</Collapsible>
-
-## Summary
-
-<ProgressTracker
-  currentChapterIndex={0}
-  name="EAS_TUTORIAL"
-  summary="
-We successfully used the EAS CLI to initialize, and configure our project, link it to EAS servers, and prepare a development build."
-  nextChapterDescription="In the next chapter, let's create a development build for Android, install it on a device and an emulator, and get it running with the development server."
-  nextChapterTitle="Create and run a cloud build for Android"
-  nextChapterLink="/tutorial/eas/android-development-build/"
-/>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>NARUTO SHIPPUDEN - Hokage Console V5.5 (CYBER MATRIX FIXED)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        /* CSS KEYFRAMES & GLOBAL STYLES */
+        @keyframes neon-glow-red {
+            0%, 100% { box-shadow: 0 0 5px #ff3333, 0 0 15px #cc0000; }
+            50% { box-shadow: 0 0 20px #ff3333, 0 0 30px #cc0000; }
+        }
+        @keyframes neon-glow-green {
+             0%, 100% { box-shadow: 0 0 5px #00ffaa, 0 0 15px #00cc66; }
+             50% { box-shadow: 0 0 20px #00ffaa, 0 0 30px #00cc66; }
+        }
+        @keyframes pulse-border {
+             0%, 100% { border-color: #ffaa00; }
+             50% { border-color: #ff3333; }
+        }
+        /* ADMIN FLASHING KEYFRAME */
+        @keyframes admin-flash {
+            0%, 100% { color: #00ffaa; text-shadow: 0 0 5px #00ffaa; }
+            50% { color: #ff3333; text-shadow: 0 0 10px #ff3333; }
+        }
+        #admin-link-flashing {
+            animation: admin-flash 1s infinite alternate;
+        }
+        
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background: #000; 
+            color: #e0e0e0; 
+            min-height: 100vh; 
+            background-image: 
+                radial-gradient(circle at center, rgba(0, 255, 170, 0.05) 0%, transparent 80%),
+                radial-gradient(circle at bottom right, rgba(255, 51, 51, 0.08) 0%, transparent 70%);
+            background-size: 100% 100%;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Thêm hiệu ứng nhiễu nhẹ */
+        body::before {
+             content: '';
+             position: absolute;
+             top: 0; left: 0; right: 0; bottom: 0;
+             opacity: 0.05;
+             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+             pointer-events: none;
+             z-index: -1;
+        }
+
+        /* Cấu trúc Console */
+        #console-container {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            background: rgba(10, 10, 15, 0.95);
+            border-left: 2px solid #00ffaa;
+            border-right: 2px solid #ff3333;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 255, 170, 0.2);
+            /* Bổ sung padding dưới cùng để nội dung không bị che bởi footer cố định */
+            padding-bottom: 70px; 
+            min-height: 100vh;
+        }
+        
+        /* Cố định Footer Navigation */
+        .bottom-nav {
+            position: fixed; /* Đính cố định */
+            bottom: 0;      /* Dưới cùng */
+            left: 50%; /* Căn giữa */
+            transform: translateX(-50%); /* Dịch chuyển ngược lại 50% chiều rộng để căn giữa */
+            width: 100%;
+            max-width: 400px; /* Bằng với console-container */
+            z-index: 50; /* Đảm bảo nó nằm trên cùng */
+            background: rgba(10, 10, 15, 0.98); /* Nền đậm */
+            border-top: 2px solid #00ffaa;
+            box-shadow: 0 -5px 20px rgba(0, 255, 170, 0.2);
+            padding: 0.5rem 0;
+            font-size: 0.75rem; 
+        }
+        .nav-item {
+             color: #00ffaa;
+             text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
+             transition: color 0.2s;
+        }
+        .nav-item:hover {
+            color: #ff3333;
+            text-shadow: 0 0 8px #ff3333;
+        }
+
+        /* Thêm style cho Key Login Panel */
+        .key-panel {
+             background: rgba(10, 10, 15, 0.95);
+             border: 2px solid #ff3333;
+             box-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
+             padding: 1.5rem;
+        }
+        .key-input {
+             background-color: #000;
+             border: 1px solid #ff3333;
+             color: #00ffaa;
+             padding: 0.75rem;
+             border-radius: 0.25rem;
+             text-align: center;
+             font-family: 'Orbitron', sans-serif;
+        }
+        /* Các style còn lại giữ nguyên */
+        .console-title { font-size: 1.6rem !important; text-shadow: 0 0 5px #00ffaa; } 
+        .tab-button { font-size: 0.8rem !important; padding: 0.75rem 0.75rem !important; text-shadow: 0 0 2px #000; } 
+        .tab-button.active { color: #00ffaa; border-bottom: 3px solid #00ffaa; text-shadow: 0 0 8px #00ffaa; }
+        .info-panel { background: rgba(30, 0, 0, 0.4); backdrop-filter: blur(5px); border: 1px solid rgba(255, 50, 50, 0.5); box-shadow: 0 0 15px rgba(255, 50, 50, 0.5); padding: 1rem; border-radius: 0.5rem; }
+        .main-button { background: linear-gradient(135deg, #ff3333, #cc0000); transition: all 0.3s ease; animation: neon-glow-red 2.5s infinite ease-in-out; letter-spacing: 1px; text-shadow: 0 0 5px #000; border-radius: 0.5rem; border: 2px solid #ff6666; font-weight: 700; font-family: 'Orbitron', sans-serif; }
+        .feature-item { border-left: 5px solid #333; transition: all 0.2s; cursor: pointer; background-color: #1a1a1a; border-radius: 0.25rem; padding: 0.75rem; box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); }
+        .feature-item:hover { background-color: #252525; border-left-color: #00ffaa; }
+        .feature-icon { color: #00ffaa; text-shadow: 0 0 5px #00ffaa; }
+        .toggle-switch-bg { background-color: #333; transition: background-color 0.4s, box-shadow 0.4s; }
+        .peer:checked ~ .toggle-switch-bg { background-color: #00ffaa; animation: neon-glow-green 1.5s infinite alternate; }
+        .peer:checked ~ .toggle-switch-bg:after { background-color: #fff; box-shadow: 0 0 5px #00ffaa; }
+        .feature-item.active-glitch { border-left-color: #ff3333 !important; box-shadow: 0 0 15px rgba(255, 50, 50, 0.8), inset 0 0 8px rgba(255, 170, 0, 0.5); background-color: #201010 !important; animation: pulse-border 1s infinite step-end; }
+        .swal2-popup { background: #0a0a0d !important; border: 3px solid #00ffaa !important; box-shadow: 0 0 25px rgba(0, 255, 170, 0.8) !important; }
+        .swal2-title { color: #ff3333 !important; font-family: 'Orbitron', sans-serif !important; text-shadow: 0 0 8px #ff3333 !important; font-size: 1.5rem !important; }
+        .swal2-html-container { color: #e0e0e0 !important; font-size: 1rem !important; }
+        .swal2-close { color: #ff3333 !important; font-size: 1.5rem !important; top: 0.5rem !important; right: 0.5rem !important; opacity: 0.9 !important; transition: opacity 0.2s, color 0.2s; }
+        .swal2-close:hover { color: #00ffaa !important; opacity: 1 !important; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start min-h-screen">
+
+    <div id="login-section" class="flex items-center justify-center w-full flex-grow">
+        <div class="key-panel w-full max-w-xs p-6 rounded-lg">
+            <h2 class="modal-title font-['Orbitron'] text-red-500 text-center" style="text-shadow: 0 0 8px #ff3333;">🔓 NHẬP KEY</h2>
+            <p class="text-xs text-gray-400 mb-4 text-center">Nhập Key kích hoạt <span class="text-green-400 font-bold"></span> để mở NARUTO SHIPPUDEN.</p>
+            
+            <input type="text" id="key-input" placeholder=">> NHẬP KEY CODE <<" class="key-input w-full mb-4 font-bold" maxlength="20">
+            
+            <button id="activate-key-button" class="main-button w-full py-3 text-base font-bold mb-3">
+                <i class="fas fa-terminal mr-2"></i> KÍCH HOẠT KEY
+            </button>
+            
+            <p id="admin-link-flashing" class="text-center text-xs font-bold cursor-pointer mt-2" style="font-family: 'Orbitron', sans-serif;">
+                <i class="fas fa-user-shield mr-1"></i> ADMIN (HỖ TRỢ)
+            </p>
+
+            <p id="key-error-message" class="text-xs text-red-500 mt-3 hidden font-bold text-center"></p>
+        </div>
+    </div>
+    
+    <div id="console-container" class="relative mx-auto">
+        <div class="max-w-sm mx-auto relative z-10 p-4">
+            
+            <div class="text-center pt-6 pb-4 border-b border-gray-800">
+                <img src="https://i.postimg.cc/4NFC1Kpc/IMG-2417.jpg" alt="Naruto Shippuden Logo" class="naruto-logo inline-block h-20 w-20 rounded-full border-4 border-red-500/80 shadow-lg mb-2">
+                <p class="text-red-500 text-lg font-bold mt-1 font-['Orbitron']">NARUTO SHIPPUDEN</p>
+                <p class="text-gray-400 text-xs mt-1 font-['Orbitron']">SYSTEM ONLINE | V5.5 CYBER FIXED</p>
+            </div>
+            
+            <div class="flex justify-around border-b border-red-900/50 px-2 mt-4">
+                <button id="tab-config" class="tab-button active font-bold py-2 transition-colors duration-200">
+                    <i class="fas fa-cog mr-1"></i> SYSTEM
+                </button>
+                <button id="tab-optimize" class="tab-button font-bold py-2 transition-colors duration-200">
+                    <i class="fas fa-fighter-jet mr-1"></i> OPTIMAL FUNCTION
+                </button>
+            </div>
+
+            <div id="tab-content" class="p-3 space-y-5 pb-16">
+                
+                <div id="content-config" class="tab-panel space-y-4">
+                    <h2 class="text-red-400 border-b-2 border-red-500/50 pb-1 font-['Orbitron'] console-title text-center">
+                         ⚙️ SYSTEM CONFIGURATION
+                    </h2>
+
+                    <div class="flex flex-col space-y-3">
+                         <div class="info-panel flex-1">
+                            <h3 class="font-bold mb-1 text-sm font-['Orbitron']">TRANG THAI KEY:</h3>
+                            <div class="text-xs space-y-1">
+                                <p><i class="fas fa-key text-red-400 mr-2"></i> KEY: <span id="active-key-display" class="text-yellow-400 font-bold">...</span></p>
+                                <p><i class="fas fa-hourglass-half text-red-400 mr-2"></i> Hạn Dùng: <span id="key-expiry-info" class="text-red-400 font-bold">...</span></p>
+                                <p><i class="fas fa-lock text-red-400 mr-2"></i> Device UID: <span id="device-info" class="text-green-400">...</span></p>
+                            </div>
+                        </div>
+
+                         <div class="info-panel flex-1">
+                            <h3 class="font-bold mb-1 text-sm font-['Orbitron']">THÔNG TIN THIẾT BỊ:</h3>
+                            <div class="text-xs space-y-1">
+                                <p><i class="fas fa-microchip text-red-400 mr-2"></i> HĐH: <span id="os-platform" class="text-yellow-400">Đang kiểm tra...</span></p>
+                                <p><i class="fas fa-battery-full text-red-400 mr-2"></i> Pin: <span id="battery-status" class="text-yellow-400">Đang kiểm tra...</span></p>
+                                <p><i class="fas fa-tachometer-alt text-red-400 mr-2"></i> FPS: <span id="screen-fps" class="text-yellow-400">Đang kiểm tra...</span></p>
+                                <p><i class="fas fa-globe text-red-400 mr-2"></i> INTERNET: <span id="network-type" class="text-yellow-400">Đang kiểm tra...</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <button id="optimize-system-button" class="main-button w-full py-3 text-sm font-bold">
+                        <i class="fas fa-magic mr-2"></i> TỰ ĐỘNG KÍCH HOẠT ALL CHỨC NĂNG SYTEM
+                    </button>
+                    
+                    <h3 class="text-red-300 font-bold border-b border-[#333] pb-1 mt-3 text-sm font-['Orbitron']">
+                        DEVICE OPTIMIZER 
+                    </h3>
+                    <div class="space-y-3">
+                        
+                        <div class="feature-item flex justify-between items-center" id="sys-ram-cleaner">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-memory"></i></span><span class="ml-2 text-white">RAM CLEANER</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="feature-item flex justify-between items-center" id="sys-junk-remover">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-trash-alt"></i></span><span class="ml-2 text-white">JUNK FILE REMOVER</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                        <div class="feature-item flex justify-between items-center" id="sys-display-boost">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-tv"></i></span><span class="ml-2 text-white">DISPLAY BOOST </span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="feature-item flex justify-between items-center" id="sys-network-boost">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-wifi"></i></span><span class="ml-2 text-white">NETWORK PING OPTIMIZER</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="feature-item flex justify-between items-center" id="sys-cpu-priority">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-microchip"></i></span><span class="ml-2 text-white">CPU PRIORITY SETTER</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="feature-item flex justify-between items-center" id="sys-turbo-mode">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-rocket"></i></span><span class="ml-2 text-white">TURBO POWER MODE</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                         <div class="feature-item flex justify-between items-center" id="sys-antiban">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-shield-alt"></i></span><span class="ml-2 text-white">ANTI-BAN VIRTUALIZATION</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                        <div class="feature-item flex justify-between items-center" id="sys-gpu-overclock">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-fire-alt"></i></span><span class="ml-2 text-white">GPU OVERCLOCK </span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                         <div class="feature-item flex justify-between items-center" id="sys-deep-cache">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-database"></i></span><span class="ml-2 text-white">DEEP CACHE CLEAR</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                         <div class="feature-item flex justify-between items-center" id="sys-bg-killer">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-stop-circle"></i></span><span class="ml-2 text-white">BACKGROUND PROCESS KILLER</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-optimize" class="tab-panel space-y-4 hidden">
+                    <h2 class="text-red-400 border-b-2 border-red-500/50 pb-1 font-['Orbitron'] console-title text-center">
+                         ⚔️  OPTIMAL FUNCTION
+                    </h2>
+                    
+                    <div id="game-selector-container" class="mb-4 pt-2 pb-2 px-3 bg-gray-900/50 rounded-lg border-2 border-red-500/50 shadow-lg" style="box-shadow: 0 0 10px rgba(255, 51, 51, 0.2);">
+                        <div class="flex justify-between items-center mb-2">
+                            <label for="game-select" class="block text-sm font-bold text-red-400 font-['Rajdhani']">Ứng dụng Game Đã Cài Đặt (Phải chọn trước)</label>
+                        </div>
+                        
+                        <select id="game-select" class="w-full mt-1 key-input text-sm focus:ring-green-400 focus:border-green-400" style="color: #00ffaa;">
+                            <option value="" disabled selected>-- Chọn Game để Bắt đầu --</option>
+                        </select>
+
+                        <div id="selected-game-status-display" class="relative flex items-center p-3 mt-3 bg-black/40 rounded-xl border border-green-500/50 shadow-inner">
+                            <img id="game-logo-display" src="https://i.postimg.cc/4NFC1Kpc/IMG-2417.jpg" alt="Game Logo" class="h-10 w-10 rounded-full border-2 border-green-500/80 mr-3 shadow-lg">
+                            <div>
+                                <p id="game-name-display-status" class="text-white font-bold text-base">CHỌN GAME ĐỂ KHỞI ĐỘNG</p>
+                                <p id="game-package-display" class="text-xs text-red-400 font-bold">Package: (Chưa chọn)</p>
+                            </div>
+                            <i class="fas fa-cogs text-green-500 ml-auto text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button id="optimize-optimal-button" class="main-button flex-1 py-3 text-sm font-bold opacity-50 cursor-not-allowed" disabled>
+                            <i class="fas fa-atom mr-2"></i> TỐI ƯU TẤT CẢ OPTIMAL
+                        </button>
+                    </div>
+                    <h3 class="text-red-300 font-bold border-b border-[#333] pb-1 mt-5 text-sm font-['Orbitron']">
+                       TÍNH NĂNG CHI TIẾT IN-GAME 
+                    </h3>
+                    <div class="space-y-3">
+
+                        <div class="feature-item flex justify-between items-center" id="game-fps-booster">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-tachometer-alt"></i></span><span class="ml-2 text-white">FPS BOOSTER</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature-ingame">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="feature-item flex justify-between items-center" id="game-aimlock">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-crosshairs"></i></span><span class="ml-2 text-white">AIMLOCK </span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature-ingame">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="feature-item flex justify-between items-center" id="game-headlock">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-head-side-mask"></i></span><span class="ml-2 text-white">HEADLOCK </span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature-ingame">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                        <div class="feature-item flex justify-between items-center" id="game-magic-bullet">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-burst"></i></span><span class="ml-2 text-white">MAGIC BULLET</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature-ingame">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                        <div class="feature-item flex justify-between items-center" id="game-recoil-reducer">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-gun"></i></span><span class="ml-2 text-white">RECOIL REDUCER </span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature-ingame">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                        <div class="feature-item flex justify-between items-center" id="game-wallhack">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-eye"></i></span><span class="ml-2 text-white">WALLHACK </span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature-ingame">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                        <div class="feature-item flex justify-between items-center" id="game-autoloot">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-box-open"></i></span><span class="ml-2 text-white">AUTO LOOT</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature-ingame">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="feature-item flex justify-between items-center" id="game-fov-mod">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-compress-arrows-alt"></i></span><span class="ml-2 text-white">FOV MODIFIER </span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature-ingame">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                        <div class="feature-item flex justify-between items-center" id="game-rapid-fire">
+                            <div class="flex items-center"><span class="feature-icon text-sm"><i class="fas fa-fire"></i></span><span class="ml-2 text-white">RAPID FIRE</span></div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-feature-ingame">
+                                <div class="w-10 h-5 rounded-full peer toggle-switch-bg after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="content-guide" class="tab-panel space-y-3 hidden">
+                     <div class="info-panel p-4 rounded-lg bg-gray-900/50 border-green-500/50">
+                        <h3 class="font-bold border-b border-[#555] pb-1 font-['Orbitron'] text-lg">HƯỚNG DẪN SỬ DỤNG</h3>
+                         <p class="text-sm text-gray-400 mt-3">
+                            1. **LIÊN HỆ ADMIN** để mua Key Kích hoạt **NARUTO SHIPPUDEN**.
+                         </p>
+                         <p class="text-sm text-gray-400 mt-2">
+                            2. Nhập **KEY** vào màn hình đăng nhập để mở **NARUTO SHIPPUDEN**.
+                         </p>
+                          <p class="text-sm text-gray-400 mt-2">
+                            3. **CHỌN ỨNG DỤNG GAME** từ danh sách. 
+                         </p>
+                         <p class="text-sm text-gray-400 mt-2">
+                            4. Nhấn **TỐI ƯU TẤT CẢ OPTIMAL** để kích hoạt các tính năng 
+                         </p>
+                     </div>
+                </div>
+
+            </div>
+            
+            <div class="bottom-nav">
+                 <div class="flex justify-around">
+                     <a id="nav-home" class="nav-item flex flex-col items-center cursor-pointer transition-colors">
+                         <i class="fas fa-home"></i>
+                         <span>TRANG CHỦ</span>
+                     </a>
+                     <a id="nav-guide" class="nav-item flex flex-col items-center cursor-pointer transition-colors">
+                         <i class="fas fa-book-open"></i>
+                         <span>HDSD</span>
+                     </a>
+                     <a id="nav-admin" class="nav-item flex flex-col items-center cursor-pointer transition-colors">
+                         <i class="fas fa-user-shield"></i>
+                         <span>ADMIN</span>
+                     </a>
+                     <a id="nav-logout" class="nav-item flex flex-col items-center cursor-pointer transition-colors">
+                         <i class="fas fa-sign-out-alt"></i>
+                         <span>LOGOUT</span>
+                     </a>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+       
+       
+        const firebaseConfig = {
+            apiKey: "AIzaSyBKGCVdZxmyw6VN0b7aYRQnCqpqfWwASXU",
+            authDomain: "lllllk-20ede.firebaseapp.com",
+            databaseURL: "https://lllllk-20ede-default-rtdb.firebaseio.com",
+            projectId: "lllllk-20ede",
+            storageBucket: "lllllk-20ede.firebasestorage.app",
+            messagingSenderId: "314220235218",
+            appId: "1:314220235218:web:679c9a246c314b535f200b",
+            measurementId: "G-DM08514Z1N"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const validKeysRef = database.ref('validKeys'); 
+        
+        
+        const getDeviceUid = () => {
+            let uid = localStorage.getItem('device_uid');
+            if (!uid) {
+                uid = 'NARU-DEV-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                localStorage.setItem('device_uid', uid);
+            }
+            return uid;
+        };
+        const DEVICE_UID = getDeviceUid();
+        let currentKey = localStorage.getItem('active_key');
+        
+        
+        const showNotification = (title, message, icon) => {
+            Swal.fire({ 
+                title: title, 
+                html: message, 
+                icon: icon, 
+                showConfirmButton: false, 
+                timer: 4500, 
+                toast: false, 
+                position: 'center', 
+                showCloseButton: true, 
+                customClass: {
+                    container: 'swal2-center-notify',
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+        };
+        
+        function updateKeyExpiryInfo(expiryTimestamp) {
+            const expiryElement = document.getElementById('key-expiry-info');
+            
+            if (expiryTimestamp === 9999999999999) {
+                 expiryElement.innerHTML = '<span class="text-green-400 font-bold">VĨNH VIỄN</span>';
+                 return;
+            }
+            
+            const now = Date.now();
+            const remainingTime = expiryTimestamp - now;
+            
+            if (remainingTime <= 0) {
+                 expiryElement.innerHTML = '<span class="text-red-500 font-bold">ĐÃ HẾT HẠN</span>';
+                 return;
+            }
+            
+            const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            expiryElement.textContent = `${days} ngày ${hours} giờ`;
+        }
+        
+       
+        window.fpsInterval = null; 
+
+       
+        function updateDeviceStats() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            let os = 'Unknown/PC';
+            if (/android/i.test(userAgent)) {
+                os = 'Android (Adr)';
+            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                os = 'iOS (Apple)';
+            } else if (/Windows Phone/i.test(userAgent)) {
+                os = 'Windows Phone';
+            }
+            document.getElementById('os-platform').textContent = os;
+
+            
+            const updateFPS = () => {
+                const fpsElement = document.getElementById('screen-fps');
+                let currentFps = 60;
+                
+                
+                if (window.devicePixelRatio && window.devicePixelRatio > 2.5) { 
+                     currentFps = 120; 
+                } else if (window.screen.width > 700 || window.screen.height > 1000) { 
+                     currentFps = 90; 
+                }
+
+                
+                const delta = Math.floor(Math.random() * 11) - 5; 
+                const displayedFps = Math.min(120, Math.max(60, currentFps + delta)); 
+                
+                fpsElement.innerHTML = `<span class="font-bold text-red-400">${displayedFps} FPS}</span> (Tối ưu)`;
+            };
+
+           
+            updateFPS(); 
+            if (!window.fpsInterval) { 
+                 window.fpsInterval = setInterval(updateFPS, 1000); 
+            }
+            
+            
+            let connectionType = 'Tín hiệu yếu';
+            if (navigator.connection) {
+                const effectiveType = navigator.connection.effectiveType || 'unknown';
+                if (effectiveType.includes('4g') || effectiveType.includes('3g')) {
+                    connectionType = effectiveType.toUpperCase() + ' (Di Động)';
+                } else if (navigator.connection.rtt < 100) {
+                     connectionType = 'WiFi (Tốc độ cao)';
+                } else {
+                     connectionType = '4G/5G (Ưu tiên)';
+                }
+            } else {
+                connectionType = (Math.random() > 0.5) ? 'WiFi (Ổn định)' : '4G (Tối ưu)';
+            }
+            document.getElementById('network-type').textContent = connectionType;
+
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(function(battery) {
+                    const updateBatteryStatus = () => {
+                        const level = Math.round(battery.level * 100);
+                        let chargingStatus = battery.charging ? ' (Đang Sạc)' : '';
+                        let color = battery.charging ? 'text-green-400' : (level < 20 ? 'text-red-500' : 'text-yellow-400');
+                        document.getElementById('battery-status').innerHTML = `<span class="${color}">${level}%${chargingStatus}</span>`;
+                    };
+                    updateBatteryStatus();
+                    battery.addEventListener('levelchange', updateBatteryStatus);
+                    battery.addEventListener('chargingchange', updateBatteryStatus);
+                }).catch(() => {
+                     document.getElementById('battery-status').textContent = '95% (Giả lập)';
+                });
+            } else {
+                document.getElementById('battery-status').textContent = '99% (Giả lập)';
+            }
+        }
+
+        
+      
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            if (tabId === 'config') {
+                document.getElementById('content-config').classList.remove('hidden');
+                document.getElementById('tab-config').classList.add('active');
+            } else if (tabId === 'optimize') {
+                document.getElementById('content-optimize').classList.remove('hidden');
+                document.getElementById('tab-optimize').classList.add('active');
+            } else if (tabId === 'guide') {
+                document.getElementById('content-guide').classList.remove('hidden');
+                document.getElementById('tab-config').classList.remove('active'); 
+                document.getElementById('tab-optimize').classList.remove('active');
+            }
+        }
+        
+       
+        function unlockConsoleUI(key, keyData) {
+            currentKey = key;
+            localStorage.setItem('active_key', key);
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('console-container').style.display = 'block'; 
+            
+            document.getElementById('active-key-display').textContent = key;
+            document.getElementById('device-info').textContent = DEVICE_UID; 
+            
+            updateKeyExpiryInfo(keyData.expiry);
+            updateDeviceStats(); 
+            switchTab('config'); 
+            
+            requestInstalledGames(); 
+        }
+
+        function checkKeyLogin() {
+            const enteredKey = document.getElementById('key-input').value.trim().toUpperCase();
+            const errorElement = document.getElementById('key-error-message');
+            
+            if (enteredKey.length < 5) {
+                errorElement.textContent = 'Key không hợp lệ. Vui lòng kiểm tra lại.';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            errorElement.style.display = 'none';
+            document.getElementById('activate-key-button').disabled = true;
+
+            const keyRef = validKeysRef.child(enteredKey);
+
+            keyRef.once('value')
+                .then((snapshot) => {
+                    const keyData = snapshot.val();
+                    const now = Date.now();
+                    
+                    if (!keyData) {
+                        errorElement.textContent = 'ERROR: Key không tồn tại. Vui lòng liên hệ Admin.';
+                        errorElement.style.display = 'block';
+                        return;
+                    }
+                    
+                    if (keyData.expiry !== 9999999999999 && keyData.expiry < now) {
+                         errorElement.textContent = 'ERROR: Key đã hết hạn sử dụng. Vui lòng liên hệ Admin.';
+                         errorElement.style.display = 'block';
+                         localStorage.removeItem('active_key');
+                         return;
+                    }
+
+                    const devices = keyData.devices || {};
+                    const maxDevices = keyData.max_devices || 1;
+                    const isKeyActiveOnDevice = devices[DEVICE_UID];
+
+                    if (!isKeyActiveOnDevice && Object.keys(devices).length >= maxDevices) {
+                        errorElement.textContent = `ACCESS DENIED: Key chỉ được kích hoạt trên ${maxDevices} thiết bị.`;
+                        errorElement.style.display = 'block';
+                        return;
+                    }
+                    
+                    devices[DEVICE_UID] = now;
+                    return keyRef.update({
+                        devices: devices,
+                        last_used: now
+                    }).then(() => {
+                        showNotification('✅ KÍCH HOẠT THÀNH CÔNG', `Welcome, ${enteredKey}. Truy cập hệ thống đã được cấp phép.`, 'success');
+                        unlockConsoleUI(enteredKey, keyData);
+                    });
+                })
+                .catch(error => {
+                    console.error("Firebase Error:", error);
+                    errorElement.textContent = 'Lỗi kết nối hoặc Key không hợp lệ. Vui lòng thử lại.';
+                    errorElement.style.display = 'block';
+                })
+                .finally(() => {
+                    document.getElementById('activate-key-button').disabled = false;
+                });
+        }
+        
+        
+        function attemptAutoLogin() {
+            document.getElementById('device-info').textContent = DEVICE_UID; 
+            if (currentKey) {
+                 const keyRef = validKeysRef.child(currentKey);
+                 keyRef.once('value').then((snapshot) => {
+                      const keyData = snapshot.val();
+                      if (keyData && (keyData.expiry === 9999999999999 || keyData.expiry > Date.now()) && keyData.devices && keyData.devices[DEVICE_UID]) {
+                          
+                          keyData.devices[DEVICE_UID] = Date.now(); 
+                          unlockConsoleUI(currentKey, keyData); 
+                          
+                          keyRef.update({ 
+                              devices: keyData.devices,
+                              last_used: Date.now() 
+                          });
+                          showNotification('🔑 TỰ ĐỘNG ĐĂNG NHẬP', `Hệ thống đã nhận diện Key: ${currentKey}.`, 'info');
+                          
+                          requestInstalledGames(); 
+                      } else {
+                          localStorage.removeItem('active_key');
+                          updateDeviceStats(); 
+                      }
+                 }).catch(error => {
+                      console.error("Auto-Login Firebase Error:", error);
+                      updateDeviceStats();
+                 });
+            } else {
+                updateDeviceStats(); 
+            }
+        }
+        
+        
+        document.getElementById('nav-logout').addEventListener('click', () => {
+             Swal.fire({
+                title: 'TERMINATE SESSION?',
+                text: "Bạn sẽ cần nhập Key lại để truy cập Menu lần sau.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff3333',
+                cancelButtonColor: '#00ffaa',
+                confirmButtonText: 'ĐỒNG Ý (LOGOUT)',
+                cancelButtonText: 'HỦY'
+             }).then((result) => {
+                if (result.isConfirmed) {
+                     if (currentKey) {
+                        const deviceRef = validKeysRef.child(currentKey).child('devices').child(DEVICE_UID);
+                        deviceRef.remove();
+                     }
+                    
+                     if (window.fpsInterval) {
+                          clearInterval(window.fpsInterval);
+                          window.fpsInterval = null;
+                     }
+                     localStorage.removeItem('active_key');
+                     currentKey = null;
+                     document.getElementById('key-input').value = '';
+                     document.getElementById('console-container').style.display = 'none';
+                     document.getElementById('login-section').style.display = 'flex';
+                     showNotification('🔓 PHIÊN ĐÃ KẾT THÚC', 'Đã đăng xuất Key thành công.', 'info');
+                     updateDeviceStats(); 
+                }
+             });
+        });
+        
+       
+        document.getElementById('tab-config').addEventListener('click', () => { switchTab('config'); });
+        document.getElementById('tab-optimize').addEventListener('click', () => { switchTab('optimize'); });
+        document.getElementById('nav-home').addEventListener('click', () => { switchTab('config'); });
+        document.getElementById('nav-guide').addEventListener('click', () => { switchTab('guide'); });
+        
+        
+        const openAdminLink = () => {
+             window.open('https://linkbio.co/anhquan1', '_blank');
+             showNotification('ℹ️ HỖ TRỢ ADMIN', 'Đang mở trang liên hệ Admin...', 'info');
+        }
+        document.getElementById('nav-admin').addEventListener('click', openAdminLink);
+        document.getElementById('admin-link-flashing').addEventListener('click', openAdminLink);
+        
+      
+        document.getElementById('activate-key-button').addEventListener('click', checkKeyLogin);
+        document.getElementById('key-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkKeyLogin();
+            }
+        });
+        
+        // --- NATIVE BRIDGE & GAME SELECTION LOGIC ---
+        const ANDROID_BRIDGE_NAME = "AndroidGameInterface"; 
+        let INSTALLED_GAMES = []; 
+        let currentSelectedPackage = null; // Biến lưu trữ gói game đang được chọn
+
+        
+        const allSysToggles = document.querySelectorAll('#content-config .toggle-feature');
+        const allGameToggles = document.querySelectorAll('#content-optimize .toggle-feature-ingame');
+        const gameFeatureItems = document.querySelectorAll('#game-fps-booster, #game-aimlock, #game-headlock, #game-magic-bullet, #game-recoil-reducer, #game-wallhack, #game-autoloot, #game-fov-mod, #game-rapid-fire');
+        const optimizeOptimalButton = document.getElementById('optimize-optimal-button');
+        const openGameButton = document.getElementById('open-game-button');
+
+
+        
+        window.receiveInstalledGames = function(gamesJson) {
+            const selector = document.getElementById('game-select');
+            selector.innerHTML = '<option value="" disabled selected>-- Chọn Game để Bắt đầu --</option>';
+            INSTALLED_GAMES = [];
+
+            try {
+                const games = JSON.parse(gamesJson);
+                if (games && Array.isArray(games) && games.length > 0) {
+                    INSTALLED_GAMES = games.map(game => ({
+                        name: game.name || game.packageName,
+                        packageName: game.packageName,
+                        iconURL: game.iconURL || null 
+                    }));
+                    
+                    INSTALLED_GAMES.forEach(game => {
+                        const option = document.createElement('option');
+                        option.value = game.packageName; 
+                        option.textContent = game.name;
+                        selector.appendChild(option);
+                    });
+                    
+                } else {
+                     document.getElementById('game-name-display-status').textContent = 'Không tìm thấy Game nào.';
+                     document.getElementById('game-package-display').textContent = 'Trạng thái: Game Not Found';
+                     document.getElementById('game-logo-display').src = 'https://i.postimg.cc/85zKx1zF/alert-icon.png'; 
+                }
+
+            } catch (e) {
+                console.error("Lỗi phân tích JSON từ Native:", e);
+                document.getElementById('game-name-display-status').textContent = 'Lỗi tải danh sách Game.';
+                document.getElementById('game-package-display').textContent = 'Trạng thái: Error Loading';
+            }
+        };
+
+        
+        function requestInstalledGames() {
+            const selector = document.getElementById('game-select');
+            
+            if (window[ANDROID_BRIDGE_NAME] && window[ANDROID_BRIDGE_NAME].requestInstalledApps) {
+                document.getElementById('game-name-display-status').textContent = 'Đang Quét Game... Vui lòng chờ';
+                document.getElementById('game-package-display').textContent = 'Trạng thái: SCANNING';
+                selector.innerHTML = '<option value="" disabled selected>-- Đang Quét Game trên Máy --</option>';
+                window[ANDROID_BRIDGE_NAME].requestInstalledApps(); 
+            } else {
+                console.error("Lỗi: Native Bridge không tìm thấy. Không thể quét ứng dụng trên máy.");
+                selector.innerHTML = `<option value="" disabled selected>-- Vui lòng chọn Game để Bắt đầu --</option>`;
+                document.getElementById('game-name-display-status').textContent = 'CHỌN GAME ĐỂ KHỞI ĐỘNG';
+                document.getElementById('game-package-display').textContent = 'Package: (Chưa chọn)';
+                document.getElementById('game-logo-display').src = 'https://i.postimg.cc/4NFC1Kpc/IMG-2417.jpg';
+                INSTALLED_GAMES = []; 
+            }
+        }
+        
+        
+        // --- HÀM TỐI ƯU TẤT CẢ TÍNH NĂNG GAME (Mới) ---
+        function optimizeOptimalFeatures() {
+             optimizeOptimalButton.disabled = true;
+             optimizeOptimalButton.textContent = '>> KÍCH HOẠT PROTOCOL...';
+
+             // BẬT TẤT CẢ TÍNH NĂNG GAME
+             allGameToggles.forEach(checkbox => { 
+                 checkbox.checked = true; 
+                 const item = checkbox.closest('.feature-item');
+                 if (item) item.classList.add('active-glitch');
+             });
+
+             setTimeout(() => {
+                 showNotification('✅ TỐI ƯU GAME THÀNH CÔNG', 'Tất cả các mô-đun Game đã được kích hoạt. Sẵn sàng khởi động!', 'success');
+                 
+                 // TẮT HIỆU ỨNG GLITCH SAU KHI TỐI ƯU XONG
+                 allGameToggles.forEach(checkbox => {
+                     const item = checkbox.closest('.feature-item');
+                     if (item) item.classList.remove('active-glitch');
+                 });
+                 
+                 optimizeOptimalButton.textContent = 'TỐI ƯU TẤT CẢ OPTIMAL';
+                 optimizeOptimalButton.disabled = false;
+             }, 2000);
+        }
+
+
+        // --- HÀM CHỈ MỞ GAME (Mới) ---
+        function launchSelectedGame() {
+            if (!currentSelectedPackage) {
+                 showNotification('⚠️ CHƯA CHỌN GAME', 'Vui lòng chọn Game từ danh sách thả xuống trước khi mở.', 'warning');
+                 return;
+            }
+
+            openGameButton.disabled = true;
+            openGameButton.textContent = '>> ĐANG KHỞI ĐỘNG GAME...';
+            
+            const game = INSTALLED_GAMES.find(g => g.packageName === currentSelectedPackage);
+
+            // Mô phỏng quá trình khởi động
+            setTimeout(() => {
+                 if (window[ANDROID_BRIDGE_NAME] && window[ANDROID_BRIDGE_NAME].launchApp) {
+                     window[ANDROID_BRIDGE_NAME].launchApp(currentSelectedPackage); 
+                     showNotification('🚀 KHỞI ĐỘNG GAME', `Đang mở Game **${game.name}**. Tận hưởng!`, 'success');
+                 } else {
+                     // Fallback Deep Link 
+                     window.location.href = `intent://${currentSelectedPackage}/#Intent;scheme=androidam;action=android.intent.action.VIEW;end`; 
+                     showNotification('⚠️ CẢNH BÁO', `Native Bridge không tồn tại. Thử khởi chạy Game **${game.name}**...`, 'warning');
+                 }
+                
+                 openGameButton.textContent = 'MỞ GAME';
+                 openGameButton.disabled = false;
+
+            }, 2000); 
+        }
+
+        // --- GẮN SỰ KIỆN CHO CHỌN GAME (Logic đã thay đổi) ---
+        document.getElementById('game-select').addEventListener('change', (e) => {
+            currentSelectedPackage = e.target.value;
+            
+            if (currentSelectedPackage) {
+                 const game = INSTALLED_GAMES.find(g => g.packageName === currentSelectedPackage);
+                 if (game) {
+                     // 1. Cập nhật UI (Logo, Tên)
+                     document.getElementById('game-logo-display').src = game.iconURL || 'https://i.postimg.cc/7Hw9y1D5/default-game.png'; 
+                     document.getElementById('game-name-display-status').textContent = game.name;
+                     document.getElementById('game-package-display').textContent = `Package: ${game.packageName}`;
+                     
+                     // 2. Kích hoạt nút Launch và Optimize
+                     openGameButton.disabled = false;
+                     optimizeOptimalButton.disabled = false;
+                     openGameButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                     optimizeOptimalButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                 }
+            } else {
+                 // Chọn lại option mặc định -> Disable nút
+                 currentSelectedPackage = null;
+                 document.getElementById('game-logo-display').src = 'https://i.postimg.cc/4NFC1Kpc/IMG-2417.jpg';
+                 document.getElementById('game-name-display-status').textContent = 'CHỌN GAME ĐỂ KHỞI ĐỘNG';
+                 document.getElementById('game-package-display').textContent = 'Package: (Chưa chọn)';
+
+                 openGameButton.disabled = true;
+                 optimizeOptimalButton.disabled = true;
+                 openGameButton.classList.add('opacity-50', 'cursor-not-allowed');
+                 optimizeOptimalButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+                 // Đảm bảo trạng thái nút trở lại ban đầu
+                 openGameButton.textContent = 'MỞ GAME';
+                 optimizeOptimalButton.textContent = 'TỐI ƯU TẤT CẢ OPTIMAL';
+            }
+        });
+
+        // --- GẮN SỰ KIỆN CHO NÚT MỚI ---
+        optimizeOptimalButton.addEventListener('click', optimizeOptimalFeatures);
+        openGameButton.addEventListener('click', launchSelectedGame);
+
+
+        // --- GẮN SỰ KIỆN TỐI ƯU HỆ THỐNG (Giữ nguyên) ---
+        const optimizeSystemButton = document.getElementById('optimize-system-button');
+        
+        optimizeSystemButton.addEventListener('click', () => {
+             optimizeSystemButton.disabled = true;
+             optimizeSystemButton.textContent = '>> ANALYZING & OPTIMIZING SYSTEM...';
+             
+             // BẬT TẤT CẢ TÍNH NĂNG SYSTEM
+             allSysToggles.forEach(checkbox => { 
+                checkbox.checked = true; 
+                const item = checkbox.closest('.feature-item');
+                if (item) item.classList.add('active-glitch');
+             });
+
+             setTimeout(() => {
+                 showNotification('✅ TỐI ƯU THÀNH CÔNG', 'Tất cả các mô-đun đã được điều chỉnh. **SYSTEM READY!**', 'success');
+                 
+                 // TẮT HIỆU ỨNG GLITCH SAU KHI TỐI ƯU XONG
+                 allSysToggles.forEach(checkbox => {
+                     const item = checkbox.closest('.feature-item');
+                     if (item) item.classList.remove('active-glitch');
+                 });
+                 
+                 optimizeSystemButton.textContent = 'TỰ ĐỘNG KÍCH HOẠT ALL CHỨC NĂNG SYTEM';
+                 optimizeSystemButton.disabled = false;
+             }, 2000);
+        });
+        
+        // Khởi động
+        attemptAutoLogin();
+
+    </script>
+</body>
+</html>
