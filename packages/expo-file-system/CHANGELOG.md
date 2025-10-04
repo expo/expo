@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed getting content uri for external files on Android. ([#23739](https://github.com/expo/expo/pull/23739) by [@G-Ray](https://github.com/G-Ray))
+
 ### 💡 Others
 
 ## 19.0.16 - 2025-10-01
