@@ -83,6 +83,7 @@ import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware
 import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
+import { InstallDevPackageMiddleware } from '../middleware/InstallDevPackageMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
@@ -1133,7 +1134,27 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Maybe put behind a flag for now?
       middleware.use(domComponentRenderer);
 
+      // TODO: Disable both of these when tunneling to prevent security issues
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
+      // TODO: Disable both of these when tunneling to prevent security issues
+      middleware.use(new InstallDevPackageMiddleware(this.projectRoot).getHandler());
+
+      // For providing info to the error overlay.
+      middleware.use((req, res, next) => {
+        if (req.url?.startsWith('/_expo/error-overlay-meta')) {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(
+            JSON.stringify({
+              projectRoot: this.projectRoot,
+              serverRoot,
+              sdkVersion: exp.sdkVersion,
+            })
+          );
+          return;
+        }
+        return next();
+      });
 
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {

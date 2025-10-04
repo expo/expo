@@ -6,11 +6,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import type { GestureResponderEvent } from 'react-native';
-type Props = {
+import { GestureResponderEvent } from 'react-native';
+export declare function LogBoxInspectorSourceMapStatus(props: {
     onPress?: ((event: GestureResponderEvent) => void) | null;
     status: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
-};
-export declare function LogBoxInspectorSourceMapStatus(props: Props): React.JSX.Element | null;
-export {};
+}): React.JSX.Element | null;
 //# sourceMappingURL=LogBoxInspectorSourceMapStatus.d.ts.map

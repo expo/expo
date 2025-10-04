@@ -1,0 +1,1 @@
+{"version":3,"file":"devServerEndpoints.d.ts","sourceRoot":"","sources":["../src/devServerEndpoints.ts"],"names":[],"mappings":"AAAA,OAAO,EAAS,KAAK,UAAU,IAAI,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEjF,MAAM,MAAM,eAAe,GAAG,kBAAkB,GAAG;IAAE,QAAQ,CAAC,EAAE,OAAO,CAAA;CAAE,CAAC;AAE1E,wBAAgB,eAAe,CAAC,KAAK,CAAC,EAAE,MAAM,GAAG,eAAe,EAAE,CAejE"}
