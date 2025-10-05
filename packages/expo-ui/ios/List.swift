@@ -16,6 +16,7 @@ final class ListProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var selectEnabled: Bool = true
   @Field var scrollEnabled: Bool = true
   @Field var editModeEnabled: Bool = false
+  @Field var scrollDismissesKeyboard: String = "automatic"
   var onDeleteItem = EventDispatcher()
   var onMoveItem = EventDispatcher()
   var onSelectionChange = EventDispatcher()
@@ -41,6 +42,7 @@ struct ListView: ExpoSwiftUI.View {
     }
       .modifier(ListStyleModifer(style: props.listStyle))
       .modifier(CommonViewModifiers(props: props))
+      .modifier(ScrollDismissesKeyboardModifier(mode: props.scrollDismissesKeyboard))
       .onAppear {
         editModeEnabled = props.editModeEnabled ? .active : .inactive
       }
@@ -119,6 +121,27 @@ struct ScrollDisabledModifier: ViewModifier {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       content.scrollDisabled(!scrollEnabled)
+    } else {
+      content
+    }
+  }
+}
+
+struct ScrollDismissesKeyboardModifier: ViewModifier {
+  let mode: String
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      switch mode {
+      case "interactively":
+        content.scrollDismissesKeyboard(.interactively)
+      case "immediately":
+        content.scrollDismissesKeyboard(.immediately)
+      case "never":
+        content.scrollDismissesKeyboard(.never)
+      default:
+        content.scrollDismissesKeyboard(.automatic)
+      }
     } else {
       content
     }
