@@ -1,5 +1,6 @@
 import { type CommonViewModifierProps } from '../types';
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
+export type ScrollDismissesKeyboardMode = 'automatic' | 'never' | 'interactively' | 'immediately';
 export interface ListProps extends CommonViewModifierProps {
     /**
      * One of the predefined ListStyle types in SwiftUI.
@@ -32,6 +33,12 @@ export interface ListProps extends CommonViewModifierProps {
      * @default false
      */
     editModeEnabled?: boolean;
+    /**
+     * Controls how the keyboard is dismissed when scrolling.
+     * @default 'automatic'
+     * @platform ios 16.0+
+     */
+    scrollDismissesKeyboard?: ScrollDismissesKeyboardMode;
     /**
      * The children elements to be rendered inside the list.
      */
