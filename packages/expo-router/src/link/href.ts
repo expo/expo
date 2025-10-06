@@ -20,7 +20,12 @@ export const resolveHref = (href: Href): string => {
 
 export function resolveHrefStringWithSegments(
   href: string,
-  { segments = [], params = {} }: Partial<UrlObject> = {},
+  { 
+    segments = [], 
+    params = {},
+    pathname,      // Optional: current pathname for enhanced index detection
+    isIndex        // Optional: whether current route is an index route
+  }: Partial<UrlObject & { pathname?: string; isIndex?: boolean }> = {},
   { relativeToDirectory }: LinkToOptions = {}
 ) {
   if (href.startsWith('.')) {
@@ -46,7 +51,22 @@ export function resolveHrefStringWithSegments(
         .filter(Boolean)
         .join('/') ?? '/';
 
-    if (relativeToDirectory) {
+    // Enhanced detection of whether we should treat current location as a directory:
+    // 1. relativeToDirectory flag (original behavior)
+    // 2. pathname ends with '/index' (NativeTabs case)
+    // 3. isIndex is true (explicit flag from routeInfo)
+    // 4. pathname matches segments pattern (additional safety check)
+    const pathnameSegments = pathname ? pathname.split('/').filter(Boolean) : [];
+    const pathnameMatchesSegments = pathname && 
+                                    pathnameSegments.length === segments.length &&
+                                    pathnameSegments.every((seg, i) => seg === segments[i]);
+    
+    const shouldTreatAsDirectory = relativeToDirectory ||
+                                  (pathname && pathname.endsWith('/index')) ||
+                                  isIndex ||
+                                  pathnameMatchesSegments;
+
+    if (shouldTreatAsDirectory) {
       base = `${base}/`;
     }
 
