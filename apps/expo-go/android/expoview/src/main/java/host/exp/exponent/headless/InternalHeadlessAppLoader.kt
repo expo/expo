@@ -10,7 +10,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
-import expo.modules.ReactNativeHostWrapper
+import expo.modules.ExpoReactHostFactory
 import expo.modules.apploader.AppLoaderProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
@@ -246,11 +246,16 @@ class InternalHeadlessAppLoader(private val context: Context) :
       Exponent.enableDeveloperSupport(debuggerHost, mainModuleName, host)
     }
 
-    val wrapper = ReactNativeHostWrapper(context, host)
-    val reactHost = ReactHostFactory.createFromReactNativeHost(context, wrapper)
+    val reactHost = ReactHostFactory.getDefaultReactHost(
+      context = context,
+      packageList = host.packages,
+      jsMainModulePath = host.jsMainModuleName,
+      jsBundleFilePath = host.jsBundleFile,
+      useDevSupport = host.useDeveloperSupport,
+    )
 
     val devSupportManager = reactHost.devSupportManager
-    val devSettings = devSupportManager.devSettings as? DevInternalSettings
+    val devSettings = devSupportManager?.devSettings as? DevInternalSettings
     devSettings?.setExponentActivityId(activityId)
 
     // keep a reference in app record, so it can be invalidated through AppRecord.invalidate()

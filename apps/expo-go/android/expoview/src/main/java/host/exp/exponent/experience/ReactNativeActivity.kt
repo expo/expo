@@ -32,7 +32,6 @@ import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import com.facebook.react.runtime.ReactSurfaceImpl
 import de.greenrobot.event.EventBus
-import expo.modules.ReactNativeHostWrapper
 import expo.modules.core.interfaces.Package
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.ExponentManifest
@@ -83,7 +82,6 @@ abstract class ReactNativeActivity :
   // Will be called after waitForDrawOverOtherAppPermission
   protected open fun startReactInstance() {}
 
-  var reactNativeHost: ReactNativeHost? = null
   var reactHost: ReactHost? = null
   var reactSurface: ReactSurface? = null
 
@@ -382,7 +380,6 @@ abstract class ReactNativeActivity :
     )
 
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
-    val hostWrapper = ReactNativeHostWrapper(application, nativeHost)
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
@@ -392,8 +389,14 @@ abstract class ReactNativeActivity :
       waitForReactAndFinishLoading()
     }
 
-    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper, devBundleDownloadListener)
-    reactNativeHost = nativeHost
+    val reactHost = ReactHostFactory.getDefaultReactHost(
+      context = application,
+      packageList = nativeHost.packages,
+      jsMainModulePath = nativeHost.jsMainModuleName,
+      jsBundleFilePath = nativeHost.jsBundleFile,
+      useDevSupport = nativeHost.useDeveloperSupport,
+      devBundleDownloadListener = devBundleDownloadListener
+    )
 
     val bundle = Bundle()
     val exponentProps = JSONObject()
@@ -442,7 +445,7 @@ abstract class ReactNativeActivity :
       return reactHost
     }
 
-    val devSettings = reactHost.devSupportManager.devSettings as? DevInternalSettings
+    val devSettings = reactHost.devSupportManager?.devSettings as? DevInternalSettings
     devSettings?.setExponentActivityId(activityId)
 
     val appKey = manifest!!.getAppKey()
@@ -459,7 +462,7 @@ abstract class ReactNativeActivity :
     val buildProps = (manifest!!.getPluginProperties("expo-build-properties")?.get("android") as? Map<*, *>)
       ?.mapKeys { it.key.toString() }
     val enableNetworkInspector = buildProps?.get("networkInspector") as? Boolean ?: true
-    if (enableNetworkInspector && reactHost.devSupportManager.devSupportEnabled) {
+    if (enableNetworkInspector && reactHost.devSupportManager?.devSupportEnabled == true) {
       networkInterceptor = ExpoNetworkInterceptor(Uri.parse(manifest!!.getBundleURL()))
     }
     return reactHost
