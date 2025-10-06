@@ -4,13 +4,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useModalContext = exports.ModalContextProvider = void 0;
 const react_1 = require("react");
 const ModalsRenderer_1 = require("./ModalsRenderer");
-const ALLOWED_EVENT_TYPE_LISTENERS = ['close', 'show'];
+const ALLOWED_EVENT_TYPE_LISTENERS = ['close', 'show', 'detentChange'];
 const ModalContext = (0, react_1.createContext)(undefined);
 const ModalContextProvider = ({ children }) => {
     const [modalConfigs, setModalConfigs] = (0, react_1.useState)([]);
+    // Use a more flexible type for event listeners
     const eventListeners = (0, react_1.useRef)({
         close: new Set(),
         show: new Set(),
+        detentChange: new Set(),
     });
     const prevModalConfigs = (0, react_1.useRef)([]);
     (0, react_1.useEffect)(() => {
@@ -43,6 +45,9 @@ const ModalContextProvider = ({ children }) => {
     const emitShowEvent = (0, react_1.useCallback)((id) => {
         eventListeners.current.show.forEach((callback) => callback(id));
     }, []);
+    const emitDetentChangeEvent = (0, react_1.useCallback)((id, data) => {
+        eventListeners.current.detentChange.forEach((callback) => callback(id, data));
+    }, []);
     const closeModal = (0, react_1.useCallback)((id) => {
         setModalConfigs((prev) => {
             const modalIndex = prev.findIndex((config) => config.uniqueId === id);
@@ -73,7 +78,7 @@ const ModalContextProvider = ({ children }) => {
         }}>
       <ModalsRenderer_1.ModalsRenderer modalConfigs={modalConfigs} onDismissed={(id) => {
             closeModal(id);
-        }} onShow={emitShowEvent}>
+        }} onShow={emitShowEvent} onDetentChange={emitDetentChangeEvent}>
         {children}
       </ModalsRenderer_1.ModalsRenderer>
     </ModalContext.Provider>);

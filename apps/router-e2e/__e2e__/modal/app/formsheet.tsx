@@ -124,6 +124,13 @@ function FormsheetFitToContentsDemo() {
 
 function FormsheetDetentsDemo() {
   const [isOpen, setIsOpen] = useState(false);
+  const [detentIndex, setDetentIndex] = useState(0);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setDetentIndex(0);
+  }
+
   const [shouldCloseOnNavigation, setShouldCloseOnNavigation] = useState(false);
   return (
     <>
@@ -131,11 +138,13 @@ function FormsheetDetentsDemo() {
       <Modal
         visible={isOpen}
         detents={[0.25, 0.5, 0.75, 1]}
-        onClose={() => setIsOpen(false)}
+        onDetentChange={(data) => setDetentIndex(data.index)}
+        onClose={handleClose}
         closeOnNavigation={shouldCloseOnNavigation}
         presentationStyle="formSheet">
         <View style={{ padding: 20 }}>
           <Text>This is a Formsheet Modal with detents 0.25, 0.5, 0.75, 1</Text>
+          <Text>Current Detent Index: {detentIndex}</Text>
           <TextInput
             placeholder="Type something..."
             style={{
