@@ -146,13 +146,18 @@ describe('ScreenStackItem props', () => {
 
   it('correct props are passed to ScreenStackItem based on Modal props', async () => {
     const detents = [0.25, 0.5, 0.75, 1];
+    const largestUndimmedDetentIndex = 1;
 
     const CustomComponentWithModal = (props?: { onModalClose: () => void }) => {
       const [isOpen, setIsOpen] = useState(false);
       return (
         <View testID="CustomComponentWithModal">
           <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
-          <Modal visible={isOpen} onClose={props.onModalClose} detents={detents}>
+          <Modal
+            visible={isOpen}
+            onClose={props.onModalClose}
+            detents={detents}
+            largestUndimmedDetentIndex={largestUndimmedDetentIndex}>
             <View testID="modal-content" />
           </Modal>
         </View>
@@ -176,6 +181,7 @@ describe('ScreenStackItem props', () => {
           hidden: true,
         },
         sheetAllowedDetents: detents,
+        sheetLargestUndimmedDetentIndex: largestUndimmedDetentIndex,
       })
     );
   });
