@@ -1,4 +1,58 @@
----
+---// App.js
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
+// Импорт экранов
+import HomeScreen from './screens/HomeScreen';
+import EquipmentScreen from './screens/EquipmentScreen';
+import PricingScreen from './screens/PricingScreen';
+import ChemicalsScreen from './screens/ChemicalsScreen';
+import ContractsScreen from './screens/ContractsScreen';
+import CartScreen from './screens/CartScreen';
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+function HomeStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Equipment" component={EquipmentScreen} />
+      <Stack.Screen name="Cart" component={CartScreen} />
+    </Stack.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+            if (route.name === 'Главная') iconName = focused ? 'home' : 'home-outline';
+            else if (route.name === 'Оборудование') iconName = focused ? 'hardware-chip' : 'hardware-chip-outline';
+            else if (route.name === 'Прайс') iconName = focused ? 'pricetag' : 'pricetag-outline';
+            else if (route.name === 'Химия') iconName = focused ? 'flask' : 'flask-outline';
+            else if (route.name === 'Договора') iconName = focused ? 'document-text' : 'document-text-outline';
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: '#2E8B57',
+          tabBarInactiveTintColor: 'gray',
+        })}
+      >
+        <Tab.Screen name="Главная" component={HomeStack} />
+        <Tab.Screen name="Оборудование" component={EquipmentScreen} />
+        <Tab.Screen name="Прайс" component={PricingScreen} />
+        <Tab.Screen name="Химия" component={ChemicalsScreen} />
+        <Tab.Screen name="Договора" component={ContractsScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
 title: Next steps
 description: Develop, review, and submit your project.
 hideTOC: true
