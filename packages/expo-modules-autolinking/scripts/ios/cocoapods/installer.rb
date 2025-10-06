@@ -41,7 +41,7 @@ module Pod
       if react_codegen_native_target
         # Check if the build phase already exists
         already_exists = react_codegen_native_target.build_phases.any? do |phase|
-          phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase) && phase.name == '[Expo] Resolve Codegen paths'
+          phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase) && phase.name == '[Expo] Run Codegen with autolinking'
         end
 
         if !already_exists
