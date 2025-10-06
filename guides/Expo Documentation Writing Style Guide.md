@@ -284,13 +284,14 @@ When offering guidance for projects that require manually editing native code/di
 
 Any numbered list should start with `1` instead of `0`. This avoids inconsistency across all areas in the documentation.
 
-### SDK availability callouts
+### SDK version range callouts
 
 In Expo and Expo SDK documentation, use _later_ and/or _earlier_ to describe a range of version numbers.
 
-- Correct: **info** Available in **SDK 52 and later**.
-- Correct: **info** Available in **SDK 53 and earlier**.
-- Incorrect: **info** Available in **SDK 52 and above**.
+- Correct: **info** Available in **SDK 54 and later**.
+- Correct: **info** Available in **SDK 54 and earlier**.
+- Incorrect: **info** Available in **SDK 54 and above**.
+- Incorrect: **info** Available in **SDK 54 and below**.
 
 ## Tools to use when using visualization or interactivity to communicate
 
