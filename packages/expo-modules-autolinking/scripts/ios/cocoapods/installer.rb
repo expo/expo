@@ -48,7 +48,7 @@ module Pod
           Pod::UI.puts "[Expo] ".blue + "Adding '[Expo Autolinking] Resolve Codegen paths' build phase to ReactCodegen"
 
           # Create the new shell script build phase
-          phase = react_codegen_native_target.new_shell_script_build_phase('[Expo Autolinking] Resolve Codegen paths')
+          phase = react_codegen_native_target.new_shell_script_build_phase('[Expo Autolinking] Run Codegen with autolinking')
           phase.shell_path = '/bin/sh'
           phase.shell_script = <<~SH
             pushd "$PODS_ROOT/../" > /dev/null
