@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Added build phase script for a workaround to autolinking-generated react-native-config output not being used in ReactCodegen script phase due to temp output directory
+- [iOS] Added build phase script for a workaround to autolinking-generated react-native-config output not being used in ReactCodegen script phase due to temp output directory. ([#40219](https://github.com/expo/expo/pull/40219) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fix passing exclude options. ([#40014](https://github.com/expo/expo/pull/40014) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
