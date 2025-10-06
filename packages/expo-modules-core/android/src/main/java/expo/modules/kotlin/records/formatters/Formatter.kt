@@ -38,8 +38,9 @@ class Formatter<RecordType : Record>(
   operator fun invoke(record: RecordType) = FormattedRecord(record, formatter = this)
   fun format(record: RecordType) = FormattedRecord(record, formatter = this)
 
-  internal fun getAction(property: KProperty1<Record, *>) =
-    selectors.find { it.selector(property) }?.action
+  @Suppress("UNCHECKED_CAST")
+  internal fun getAction(property: KProperty1<Record, *>): ((Record, Any?) -> Any?)? =
+    selectors.find { it.selector(property) }?.action as ((Record, Any?) -> Any?)?
 }
 
 fun <RecordType : Record> formatter(

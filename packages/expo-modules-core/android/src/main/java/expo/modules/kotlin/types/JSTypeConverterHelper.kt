@@ -55,7 +55,7 @@ fun FormattedRecord<*>.toJSValueExperimental(): Map<String, Any?> {
       val action = formatter.getAction(property)
 
       val rawProperty = property.get(record)
-      val value = action?.apply(record, rawProperty) ?: rawProperty
+      val value = action?.invoke(record, rawProperty) ?: rawProperty
 
       val unwrappedValue = if (value is ValueOrSkip<*>) {
         when (value) {

@@ -6,32 +6,37 @@ import kotlin.reflect.KProperty1
 class PropertySelector<RecordType : Record, PropertyType>(
   internal val selector: (property: KProperty1<in RecordType, *>) -> Boolean
 ) {
-  internal var action: ActionChain<in RecordType, in PropertyType, *>? = null
-  internal var lastAction: ActionChain<in RecordType, *, *>? = null
+  internal var action: ((RecordType, Any?) -> Any?)? = null
 
   open inner class ActionBuilder<InputType> {
     private fun <T, R> nextAction(
-      nextBuilder: ActionBuilder<T>,
-      nextAction: ActionChain<RecordType, InputType, R>
+      nextBuilder: ActionBuilder<T> = ActionBuilder(),
+      nextAction: (RecordType, InputType) -> Any?
     ): PropertySelector<RecordType, PropertyType>.ActionBuilder<T> {
-      if (action == null) {
-        @Suppress("UNCHECKED_CAST")
-        action = nextAction as ActionChain<in RecordType, in PropertyType, *>?
-      } else {
-        @Suppress("UNCHECKED_CAST")
-        lastAction?.nextAction = nextAction as ActionChain<in Record, in Any?, *>?
-      }
+      @Suppress("UNCHECKED_CAST")
+      val nextAction = nextAction as (RecordType, Any?) -> Any?
 
-      lastAction = nextAction
+      val currentAction = action
+      action = (
+        if (currentAction == null) {
+          nextAction
+        } else {
+          { record, value ->
+            val nextValue = currentAction(record, value)
+            if (nextValue is ValueOrSkip<*>) {
+              when (nextValue) {
+                is ValueOrSkip.Value<*> -> nextAction(record, nextValue.value)
+                ValueOrSkip.Skip -> ValueOrSkip.Skip
+              }
+            } else {
+              nextAction(record, nextValue)
+            }
+          }
+        }
+        )
+
       return nextBuilder
     }
-
-    private fun <ResultType> nextAction(
-      block: (RecordType, InputType) -> ResultType
-    ): PropertySelector<RecordType, PropertyType>.ActionBuilder<ResultType> = nextAction(
-      nextBuilder = ActionBuilder(),
-      nextAction = ActionChain(action = block)
-    )
 
     private fun defaultSkipAction(
       shouldSkip: (RecordType, InputType) -> Boolean
@@ -44,16 +49,15 @@ class PropertySelector<RecordType : Record, PropertyType>(
         }
       }
 
-      val action = ActionChain(block)
       val nextBuilder = ActionBuilder<InputType>()
-      return nextAction(nextBuilder, action)
+      return nextAction<InputType, InputType>(nextBuilder, block)
     }
 
     fun <ResultType> map(mapper: (InputType) -> ResultType) =
-      nextAction { _, value -> mapper(value) }
+      nextAction<InputType, ResultType> { _, value -> mapper(value) }
 
     fun <ResultType> map(mapper: (RecordType, InputType) -> ResultType) =
-      nextAction { record, value -> mapper(record, value) }
+      nextAction<InputType, ResultType> { record, value -> mapper(record, value) }
 
     fun skip(valueSelector: (value: InputType) -> Boolean = { true }) =
       defaultSkipAction { _, value -> valueSelector(value) }

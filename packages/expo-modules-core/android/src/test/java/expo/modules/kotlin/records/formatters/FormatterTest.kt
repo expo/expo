@@ -38,9 +38,9 @@ class FormatterTest {
 
       property(MyRecord::b)
         .map { value -> value ?: "b" }
-        .map { value -> value.uppercase() }
+        .map { value -> value?.uppercase() }
         .map { value ->
-          value.replace("B", "E")
+          value?.replace("B", "E")
         }
       property(MyRecord::c).skip()
     }
