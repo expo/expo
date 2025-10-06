@@ -77,60 +77,6 @@ object ExpoReactHostFactory {
 
   @OptIn(UnstableReactNativeAPI::class)
   @JvmStatic
-  fun createFromReactNativeHost(
-    context: Context,
-    reactNativeHost: ReactNativeHost
-  ): ReactHost {
-    require(reactNativeHost is ReactNativeHostWrapper) {
-      "You can call createFromReactNativeHost only with instances of ReactNativeHostWrapper"
-    }
-    if (reactHost == null) {
-      val useDeveloperSupport = reactNativeHost.useDeveloperSupport
-      val componentFactory = ComponentFactory()
-      DefaultComponentsRegistry.register(componentFactory)
-
-      reactNativeHost.reactNativeHostHandlers.forEach { handler ->
-        handler.onWillCreateReactInstance(useDeveloperSupport)
-      }
-
-      val reactHostDelegate = ExpoReactHostDelegate(
-        WeakReference(context),
-        reactNativeHost.packages,
-        reactNativeHost.jsMainModuleName,
-        reactNativeHost.bundleAssetName,
-        reactNativeHost.jsBundleFile,
-        reactNativeHost.useDeveloperSupport,
-        hostHandlers = reactNativeHost.reactNativeHostHandlers
-      )
-
-      val reactHostImpl =
-        ReactHostImpl(
-          context,
-          reactHostDelegate,
-          componentFactory,
-          true,
-          useDeveloperSupport
-        )
-
-      reactNativeHost.reactNativeHostHandlers.forEach { handler ->
-        handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
-      }
-
-      reactHostImpl.addReactInstanceEventListener(object : ReactInstanceEventListener {
-        override fun onReactContextInitialized(context: ReactContext) {
-          reactNativeHost.reactNativeHostHandlers.forEach { handler ->
-            handler.onDidCreateReactInstance(useDeveloperSupport, context)
-          }
-        }
-      })
-
-      reactHost = reactHostImpl
-    }
-    return reactHost as ReactHost
-  }
-
-  @OptIn(UnstableReactNativeAPI::class)
-  @JvmStatic
   fun getDefaultReactHost(
     context: Context,
     packageList: List<ReactPackage>,
