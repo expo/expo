@@ -21,7 +21,15 @@ function FormsheetBaseDemo() {
   return (
     <>
       <Button title="Base Formsheet Modal" onPress={() => setIsOpen(true)} />
-      <Modal visible={isOpen} onClose={() => setIsOpen(false)} presentationStyle="formSheet">
+      <Modal
+        visible={isOpen}
+        onClose={() => setIsOpen(false)}
+        // unstable_footer={() => (
+        //   <View style={{ height: 50, backgroundColor: 'red' }}>
+        //     <Text>This is footer</Text>
+        //   </View>
+        // )}
+        presentationStyle="formSheet">
         <View style={{ padding: 20 }}>
           <Text>This is a Base Formsheet Modal</Text>
           <Button title="Close" onPress={() => setIsOpen(false)} />
