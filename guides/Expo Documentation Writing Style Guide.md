@@ -280,9 +280,17 @@ To avoid using the term "managed workflow", use "using Expo" to represent the cu
 
 When offering guidance for projects that require manually editing native code/directories, put those instructions in a dropdown saying "manual setup", or "usage in bare React Native projects", or "usage in existing React Native projects".
 
-### Numbered Lists
+### Numbered lists
 
 Any numbered list should start with `1` instead of `0`. This avoids inconsistency across all areas in the documentation.
+
+### SDK availability callouts
+
+In Expo and Expo SDK documentation, use _later_ and/or _earlier_ to describe a range of version numbers.
+
+- Correct: **info** Available in **SDK 52 and later**.
+- Correct: **info** Available in **SDK 53 and earlier**.
+- Incorrect: **info** Available in **SDK 52 and above**.
 
 ## Tools to use when using visualization or interactivity to communicate
 
