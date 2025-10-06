@@ -21,20 +21,16 @@ import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class CalendarModule : Module() {
-  private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
   private val contentResolver
     get() = (appContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
 
@@ -57,149 +53,106 @@ class CalendarModule : Module() {
       )
     }
 
-    OnDestroy {
+    AsyncFunction("getCalendarsAsync") Coroutine { type: String? ->
+      checkPermissions()
+      if (type != null && type == "reminder") {
+        throw CodedException("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android", null)
+      }
       try {
-        moduleCoroutineScope.cancel(ModuleDestroyedException())
-      } catch (e: IllegalStateException) {
-        Log.e(TAG, "The scope does not have a job in it")
+        val calendars = findCalendars()
+        return@Coroutine calendars
+      } catch (e: Exception) {
+        throw CodedException("E_CALENDARS_NOT_FOUND", "Calendars could not be found", e)
       }
     }
 
-    AsyncFunction("getCalendarsAsync") { type: String?, promise: Promise ->
-      withPermissions(promise) {
-        if (type != null && type == "reminder") {
-          promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android", null)
-          return@withPermissions
-        }
-        launchAsyncWithModuleScope(promise) {
-          try {
-            val calendars = findCalendars()
-            promise.resolve(calendars)
-          } catch (e: Exception) {
-            promise.reject("E_CALENDARS_NOT_FOUND", "Calendars could not be found", e)
-          }
-        }
+    AsyncFunction("saveCalendarAsync") Coroutine { details: ReadableArguments ->
+      checkPermissions()
+      try {
+        val calendarID = saveCalendar(details)
+        return@Coroutine calendarID.toString()
+      } catch (e: Exception) {
+        throw CodedException("E_CALENDAR_NOT_SAVED", "Calendar could not be saved: " + e.message, e)
       }
     }
 
-    AsyncFunction("saveCalendarAsync") { details: ReadableArguments, promise: Promise ->
-      withPermissions(promise) {
-        launchAsyncWithModuleScope(promise) {
-          try {
-            val calendarID = saveCalendar(details)
-            promise.resolve(calendarID.toString())
-          } catch (e: Exception) {
-            promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved: " + e.message, e)
-          }
-        }
+    AsyncFunction("deleteCalendarAsync") Coroutine { calendarID: String ->
+      checkPermissions()
+      val successful = deleteCalendar(calendarID)
+      if (successful) {
+        return@Coroutine
+      } else {
+        throw CodedException("E_CALENDAR_NOT_DELETED", "Calendar with id $calendarID could not be deleted", null)
       }
     }
 
-    AsyncFunction("deleteCalendarAsync") { calendarID: String, promise: Promise ->
-      withPermissions(promise) {
-        launchAsyncWithModuleScope(promise) {
-          val successful = deleteCalendar(calendarID)
-          if (successful) {
-            promise.resolve(null)
-          } else {
-            promise.reject("E_CALENDAR_NOT_DELETED", "Calendar with id $calendarID could not be deleted", null)
-          }
-        }
+    AsyncFunction("getEventsAsync") Coroutine { startDate: Any, endDate: Any, calendars: List<String> ->
+      checkPermissions()
+      try {
+        val results = findEvents(startDate, endDate, calendars)
+        return@Coroutine results
+      } catch (e: Exception) {
+        throw CodedException("E_EVENTS_NOT_FOUND", "Events could not be found", e)
       }
     }
 
-    AsyncFunction("getEventsAsync") { startDate: Any, endDate: Any, calendars: List<String>, promise: Promise ->
-      withPermissions(promise) {
-        launchAsyncWithModuleScope(promise) {
-          try {
-            val results = findEvents(startDate, endDate, calendars)
-            promise.resolve(results)
-          } catch (e: Exception) {
-            promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
-          }
-        }
+    AsyncFunction("getEventByIdAsync") Coroutine { eventID: String ->
+      checkPermissions()
+      val results = findEventById(eventID)
+      if (results != null) {
+        return@Coroutine results
+      } else {
+        throw CodedException("E_EVENT_NOT_FOUND", "Event with id $eventID could not be found", null)
       }
     }
 
-    AsyncFunction("getEventByIdAsync") { eventID: String, promise: Promise ->
-      withPermissions(promise) {
-        launchAsyncWithModuleScope(promise) {
-          val results = findEventById(eventID)
-          if (results != null) {
-            promise.resolve(results)
-          } else {
-            promise.reject("E_EVENT_NOT_FOUND", "Event with id $eventID could not be found", null)
-          }
-        }
+    AsyncFunction("saveEventAsync") Coroutine { details: ReadableArguments, _: ReadableArguments? ->
+      checkPermissions()
+      try {
+        val eventID = saveEvent(details)
+        return@Coroutine eventID.toString()
+      } catch (e: ParseException) {
+        throw CodedException("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+      } catch (e: EventNotSavedException) {
+        throw CodedException("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+      } catch (e: InvalidArgumentException) {
+        throw CodedException("E_EVENT_NOT_SAVED", "Event could not be saved", e)
       }
     }
 
-    AsyncFunction("saveEventAsync") { details: ReadableArguments, _: ReadableArguments?, promise: Promise ->
-      withPermissions(promise) {
-        launchAsyncWithModuleScope(promise) {
-          try {
-            val eventID = saveEvent(details)
-            promise.resolve(eventID.toString())
-          } catch (e: ParseException) {
-            promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
-          } catch (e: EventNotSavedException) {
-            promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
-          } catch (e: InvalidArgumentException) {
-            promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
-          }
+    AsyncFunction("deleteEventAsync") Coroutine { details: ReadableArguments, _: ReadableArguments? ->
+      checkPermissions()
+      try {
+        val successful = removeEvent(details)
+        if (!successful) {
+          throw CodedException("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", null)
         }
+      } catch (e: Exception) {
+        throw CodedException("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", e)
       }
     }
 
-    AsyncFunction("deleteEventAsync") { details: ReadableArguments, _: ReadableArguments?, promise: Promise ->
-      withPermissions(promise) {
-        launchAsyncWithModuleScope(promise) {
-          try {
-            val successful = removeEvent(details)
-            if (successful) {
-              promise.resolve(null)
-            } else {
-              promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", null)
-            }
-          } catch (e: Exception) {
-            promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", e)
-          }
-        }
+    AsyncFunction("getAttendeesForEventAsync") Coroutine { eventID: String ->
+      checkPermissions()
+      val results = findAttendeesByEventId(eventID)
+      return@Coroutine results
+    }
+
+    AsyncFunction("saveAttendeeForEventAsync") Coroutine { details: ReadableArguments, eventID: String? ->
+      checkPermissions()
+      try {
+        val attendeeID = saveAttendeeForEvent(details, eventID)
+        return@Coroutine attendeeID.toString()
+      } catch (e: Exception) {
+        throw CodedException("E_ATTENDEE_NOT_SAVED", "Attendees for event with id $eventID could not be saved", e)
       }
     }
 
-    AsyncFunction("getAttendeesForEventAsync") { eventID: String, promise: Promise ->
-      withPermissions(promise) {
-        launchAsyncWithModuleScope(promise) {
-          val results = findAttendeesByEventId(eventID)
-          promise.resolve(results)
-        }
-      }
-    }
-
-    AsyncFunction("saveAttendeeForEventAsync") { details: ReadableArguments, eventID: String?, promise: Promise ->
-      withPermissions(promise) {
-        launchAsyncWithModuleScope(promise) {
-          try {
-            val attendeeID = saveAttendeeForEvent(details, eventID)
-            promise.resolve(attendeeID.toString())
-          } catch (e: Exception) {
-            promise.reject("E_ATTENDEE_NOT_SAVED", "Attendees for event with id $eventID could not be saved", e)
-          }
-        }
-      }
-    }
-
-    AsyncFunction("deleteAttendeeAsync") { attendeeID: String, promise: Promise ->
-      withPermissions(promise) {
-        launchAsyncWithModuleScope(promise) {
-          val successful = deleteAttendee(attendeeID)
-          if (successful) {
-            promise.resolve(null)
-          } else {
-            promise.reject("E_ATTENDEE_NOT_DELETED", "Attendee with id $attendeeID could not be deleted", null)
-          }
-        }
+    AsyncFunction("deleteAttendeeAsync") Coroutine { attendeeID: String ->
+      checkPermissions()
+      val successful = deleteAttendee(attendeeID)
+      if (!successful) {
+        throw CodedException("E_ATTENDEE_NOT_DELETED", "Attendee with id $attendeeID could not be deleted", null)
       }
     }
 
@@ -238,23 +191,6 @@ class CalendarModule : Module() {
     AsyncFunction("getCalendarPermissionsAsync") { promise: Promise ->
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
     }
-  }
-
-  private inline fun launchAsyncWithModuleScope(promise: Promise, crossinline block: () -> Unit) {
-    moduleCoroutineScope.launch {
-      try {
-        block()
-      } catch (e: ModuleDestroyedException) {
-        promise.reject("E_CALENDAR_MODULE_DESTROYED", "Module destroyed, promise canceled", null)
-      }
-    }
-  }
-
-  private inline fun withPermissions(promise: Promise, block: () -> Unit) {
-    if (!checkPermissions(promise)) {
-      return
-    }
-    block()
   }
 
   //endregion
@@ -846,12 +782,10 @@ class CalendarModule : Module() {
     }
   }
 
-  private fun checkPermissions(promise: Promise): Boolean {
+  private fun checkPermissions() {
     if (appContext.permissions?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR) != true) {
-      promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.", null)
-      return false
+      throw CodedException("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.", null)
     }
-    return true
   }
 
   private fun setDateInCalendar(calendar: Calendar, date: Any) {
