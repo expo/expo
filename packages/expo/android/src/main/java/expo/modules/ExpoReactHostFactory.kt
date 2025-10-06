@@ -5,7 +5,6 @@ package expo.modules
 import android.content.Context
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader

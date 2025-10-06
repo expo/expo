@@ -249,7 +249,7 @@ class Kernel : KernelInterface() {
             packageList = nativeHost.packages,
             jsMainModulePath = nativeHost.jsMainModuleName,
             jsBundleFilePath = nativeHost.jsBundleFile,
-            useDevSupport = nativeHost.useDeveloperSupport,
+            useDevSupport = nativeHost.useDeveloperSupport
           )
 
           reactNativeHost = nativeHost

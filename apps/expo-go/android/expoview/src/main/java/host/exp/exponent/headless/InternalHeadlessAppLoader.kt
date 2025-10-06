@@ -10,7 +10,6 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
-import expo.modules.ExpoReactHostFactory
 import expo.modules.apploader.AppLoaderProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
@@ -251,7 +250,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
       packageList = host.packages,
       jsMainModulePath = host.jsMainModuleName,
       jsBundleFilePath = host.jsBundleFile,
-      useDevSupport = host.useDeveloperSupport,
+      useDevSupport = host.useDeveloperSupport
     )
 
     val devSupportManager = reactHost.devSupportManager

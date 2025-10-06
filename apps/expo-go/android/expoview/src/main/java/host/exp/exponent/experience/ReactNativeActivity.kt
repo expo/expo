@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.contains
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
 import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation
 import com.facebook.react.devsupport.DevInternalSettings

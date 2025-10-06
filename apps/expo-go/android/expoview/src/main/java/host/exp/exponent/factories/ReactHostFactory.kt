@@ -84,15 +84,15 @@ object ReactHostFactory {
       .flatMap { it.createReactNativeHostHandlers(context) }
 
     val reactHostDelegate = ExpoReactHostDelegate(
-        WeakReference(context),
-        packageList,
-        jsMainModulePath,
-        jsBundleAssetPath,
-        jsBundleFilePath,
-        useDevSupport,
-        bindingsInstaller,
-        hostHandlers = hostHandlers
-      )
+      WeakReference(context),
+      packageList,
+      jsMainModulePath,
+      jsBundleAssetPath,
+      jsBundleFilePath,
+      useDevSupport,
+      bindingsInstaller,
+      hostHandlers = hostHandlers
+    )
     val componentFactory = ComponentFactory()
     DefaultComponentsRegistry.register(componentFactory)
 
