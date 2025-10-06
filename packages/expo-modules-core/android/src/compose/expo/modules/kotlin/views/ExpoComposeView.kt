@@ -13,9 +13,9 @@ import androidx.core.view.size
 import expo.modules.kotlin.AppContext
 
 data class ComposableScope(
-  var rowScope: RowScope? = null,
-  var columnScope: ColumnScope? = null,
-  var boxScope: BoxScope? = null
+  val rowScope: RowScope? = null,
+  val columnScope: ColumnScope? = null,
+  val boxScope: BoxScope? = null
 )
 
 fun ComposableScope.with(rowScope: RowScope?): ComposableScope {
@@ -41,7 +41,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   open val props: T? = null
 
   @Composable
-  abstract fun Content(composableScope: ComposableScope = ComposableScope())
+  abstract fun ComposableScope.Content()
 
   override val shouldUseAndroidLayout = withHostingView
 
@@ -57,13 +57,19 @@ abstract class ExpoComposeView<T : ComposeProps>(
   @Composable
   protected fun Children(composableScope: ComposableScope) {
     if (withHostingView) {
-      Content(composableScope)
+      with(composableScope) {
+        Content()
+      }
       return
     }
 
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      child.Content(composableScope)
+      with(composableScope) {
+        with(child) {
+          Content()
+        }
+      }
     }
   }
 

@@ -179,7 +179,7 @@ class Button(context: Context, appContext: AppContext) :
   }
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     val (variant) = props.variant
     val (text) = props.text
     val (colors) = props.elementColors

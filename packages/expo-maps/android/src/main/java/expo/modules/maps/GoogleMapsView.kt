@@ -82,7 +82,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private var manualCameraControl = false
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     cameraState = updateCameraState()
     val markerState = markerStateFromProps()
     val locationSource = locationSourceFromProps()

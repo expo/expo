@@ -43,7 +43,7 @@ class ProgressView(context: Context, appContext: AppContext) :
   override val props = ProgressProps()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     val (variant) = props.variant
     val (progress) = props.progress
     val (color) = props.color

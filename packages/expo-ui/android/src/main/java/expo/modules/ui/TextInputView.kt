@@ -77,7 +77,7 @@ class TextInputView(context: Context, appContext: AppContext) :
     }
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
       TextField(
         value = requireNotNull(textState.value),

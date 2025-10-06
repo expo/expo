@@ -104,13 +104,13 @@ class RowView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
   override val props = LayoutProps()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     Row(
       horizontalArrangement = props.horizontalArrangement.value.toComposeArrangement(),
       verticalAlignment = props.verticalAlignment.value.toComposeAlignment(),
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this)
     ) {
-      Children(composableScope.with(rowScope = this))
+      Children(this@Content.with(rowScope = this))
     }
   }
 }
@@ -119,13 +119,13 @@ class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<Lay
   override val props = LayoutProps()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     Column(
       verticalArrangement = props.verticalArrangement.value.toComposeArrangement(),
       horizontalAlignment = props.horizontalAlignment.value.toComposeAlignment(),
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this)
     ) {
-      Children(composableScope.with(columnScope = this))
+      Children(this@Content.with(columnScope = this))
     }
   }
 }
@@ -134,11 +134,11 @@ class BoxView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
   override val props = LayoutProps()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     Box(
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this)
     ) {
-      Children(composableScope.with(boxScope = this))
+      Children(this@Content.with(boxScope = this))
     }
   }
 }
@@ -185,7 +185,7 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
   override val props = TextProps()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     Text(
       text = props.text.value,
       modifier = Modifier.fromExpoModifiers(props.modifiers.value),
@@ -201,10 +201,14 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
 class ContainerView(context: Context, appContext: AppContext) :
   ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
   @Composable
-  override fun Content(composableScope: ComposableScope) {
-    for (index in 0..<this.size) {
+  override fun ComposableScope.Content() {
+    for (index in 0..<this@ContainerView.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      child.Content(composableScope = composableScope)
+      with(this) {
+        with(child) {
+          Content()
+        }
+      }
     }
   }
 }

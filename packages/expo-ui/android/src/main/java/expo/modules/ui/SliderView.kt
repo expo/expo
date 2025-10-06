@@ -50,7 +50,7 @@ class SliderView(context: Context, appContext: AppContext) :
   private val onValueChanged by EventDispatcher()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     val (value) = props.value
     val (min) = props.min
     val (max) = props.max

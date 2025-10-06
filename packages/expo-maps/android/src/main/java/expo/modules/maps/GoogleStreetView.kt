@@ -31,7 +31,7 @@ class GoogleStreetView(
   override val props = GoogleStreetViewProps()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     key(props.position.value.coordinates.toString()) {
       StreetView(
         streetViewPanoramaOptionsFactory = {

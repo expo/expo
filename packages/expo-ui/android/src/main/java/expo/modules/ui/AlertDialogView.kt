@@ -34,7 +34,7 @@ class AlertDialogView(context: Context, appContext: AppContext) :
   private val onConfirmPressed by EventDispatcher<AlertDialogButtonPressedEvent>()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     val (title) = props.title
     val (text) = props.text
     val (confirmButtonText) = props.confirmButtonText

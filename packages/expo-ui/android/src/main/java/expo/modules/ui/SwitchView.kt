@@ -122,7 +122,7 @@ class SwitchView(context: Context, appContext: AppContext) :
   private val onValueChange by EventDispatcher<ValueChangeEvent>()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     val (checked) = props.value
     val (variant) = props.variant
     val (colors) = props.elementColors

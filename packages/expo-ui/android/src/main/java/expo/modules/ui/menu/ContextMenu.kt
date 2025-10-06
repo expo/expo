@@ -171,7 +171,7 @@ class ContextMenu(context: Context, appContext: AppContext) :
   }
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     var elements by remember { props.elements }
     val color by remember { props.color }
 

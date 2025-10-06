@@ -51,7 +51,7 @@ class MeshGradientView(context: Context, appContext: AppContext) : ExpoComposeVi
   private val paint = Paint()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     val pointData = pointsFromProps()
 
     Canvas(modifier = Modifier.fillMaxSize()) {

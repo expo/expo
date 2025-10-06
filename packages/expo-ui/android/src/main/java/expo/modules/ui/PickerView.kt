@@ -84,7 +84,7 @@ class PickerView(context: Context, appContext: AppContext) :
   private val onOptionSelected by EventDispatcher()
 
   @Composable
-  override fun Content(composableScope: ComposableScope) {
+  override fun ComposableScope.Content() {
     val (selectedIndex) = props.selectedIndex
     val (options) = props.options
     val (colors) = props.elementColors
