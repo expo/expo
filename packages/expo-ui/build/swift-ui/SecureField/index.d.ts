@@ -20,7 +20,11 @@ export type SecureFieldProps = {
     /**
      * A callback triggered when user types in text into the SecureField.
      */
-    onChangeText: (value: string) => void;
+    onChangeText?: (value: string) => void;
+    /**
+     * A callback triggered when user focuses or blurs the SecureField.
+     */
+    onChangeFocus?: (focused: boolean) => void;
     keyboardType?: TextFieldKeyboardType;
 } & CommonViewModifierProps;
 /**

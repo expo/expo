@@ -174,8 +174,10 @@ public class AudioModule: Module {
         }
 
         if player.shouldCorrectPitch {
-          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
+          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .timeDomain
           player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
+        } else {
+          player.ref.currentItem?.audioTimePitchAlgorithm = .varispeed
         }
       }
 
@@ -197,6 +199,25 @@ public class AudioModule: Module {
       Function("setAudioSamplingEnabled") { (player, enabled: Bool) in
         if player.samplingEnabled != enabled {
           player.setSamplingEnabled(enabled: enabled)
+        }
+      }
+
+      Function("setActiveForLockScreen") { (player: AudioPlayer, active: Bool, metadata: Metadata?, options: LockScreenOptions?) in
+        player.setActiveForLockScreen(active, metadata: metadata, options: options)
+      }
+
+      Function("updateLockScreenMetadata") { (player: AudioPlayer, metadata: Metadata?) in
+        if player.isActiveForLockScreen {
+          player.metadata = metadata
+          MediaController.shared.updateNowPlayingInfo(for: player)
+        }
+      }
+
+      Function("clearLockScreenControls") { (player: AudioPlayer) in
+        if player.isActiveForLockScreen {
+          player.metadata = nil
+          player.isActiveForLockScreen = false
+          MediaController.shared.setActivePlayer(nil)
         }
       }
 
@@ -509,7 +530,7 @@ public class AudioModule: Module {
       }
 
 #if !os(tvOS)
-      if category == .playAndRecord {
+      if category == .playAndRecord || category == .playback {
         categoryOptions.insert(.allowBluetooth)
       }
 #endif
@@ -517,7 +538,11 @@ public class AudioModule: Module {
       sessionOptions = categoryOptions
     }
 
-    try session.setCategory(category, options: sessionOptions)
+    if sessionOptions.isEmpty {
+      try session.setCategory(category, mode: .default)
+    } else {
+      try session.setCategory(category, options: sessionOptions)
+    }
   }
 
   private func activateSession() throws {

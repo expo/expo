@@ -5,6 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRscWithImportsAsync = renderRscWithImportsAsync;
 exports.renderRscAsync = renderRscAsync;
+/**
+ * Copyright © 2024 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+// This module is bundled with Metro in web/react-server mode and redirects to platform specific renderers.
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const node_path_1 = __importDefault(require("node:path"));
 const rsc_renderer_1 = require("./rsc-renderer");

@@ -51,7 +51,7 @@ class RuntimeContext(
   internal val coreModule = run {
     val module = CoreModule()
     module._runtimeContext = this
-    ModuleHolder(module)
+    ModuleHolder(module, null)
   }
 
   val jniDeallocator: JNIDeallocator = JNIDeallocator()

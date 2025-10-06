@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.UiThread
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -107,6 +109,10 @@ class DevLauncherController private constructor() :
 
   private var appIsLoading = false
 
+  private val _isLoadingToBundler = mutableStateOf(false)
+  val isLoadingToBundler: State<Boolean>
+    get() = _isLoadingToBundler
+
   private var networkInterceptor: DevLauncherNetworkInterceptor? = null
   private var pendingIntentExtras: Bundle? = null
 
@@ -130,6 +136,7 @@ class DevLauncherController private constructor() :
         return
       }
       appIsLoading = true
+      _isLoadingToBundler.value = true
     }
 
     try {
@@ -163,6 +170,7 @@ class DevLauncherController private constructor() :
       lifecycle.addListener(appLoaderListener)
       mode = Mode.APP
 
+      _isLoadingToBundler.value = false
       // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
       if (appLoader.launch(appIntent)) {
         recentlyOpedAppsRegistry.appWasOpened(parsedUrl.toString(), devLauncherUrl.queryParams, manifest)
@@ -179,6 +187,7 @@ class DevLauncherController private constructor() :
     } catch (e: Exception) {
       synchronized(this) {
         appIsLoading = false
+        _isLoadingToBundler.value = false
       }
       throw e
     }
@@ -234,7 +243,7 @@ class DevLauncherController private constructor() :
         // used by appetize for snack
         if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
           canLaunchDevMenuOnStart = false
-          this.devMenuManager.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
+          this.devMenuManager.setCanLaunchDevMenuOnStart(false)
         }
 
         if (!isDevLauncherUrl(uri)) {
@@ -462,7 +471,7 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
-      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, { reactApplication.reactHost }))
+      initialize(reactApplication as Context, ReactHostWrapper(null, { reactApplication.reactHost }))
       sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }

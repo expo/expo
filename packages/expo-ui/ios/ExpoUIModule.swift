@@ -37,6 +37,12 @@ public final class ExpoUIModule: Module {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
       }
+      AsyncFunction("blur") { (view: SecureFieldView) in
+        view.blur()
+      }
+      AsyncFunction("focus") { (view: SecureFieldView) in
+        view.focus()
+      }
     }
     View(ShareLinkView.self)
     View(SliderView.self)
@@ -47,11 +53,24 @@ public final class ExpoUIModule: Module {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
       }
+      AsyncFunction("blur") { (view: TextFieldView) in
+        view.blur()
+      }
+      AsyncFunction("focus") { (view: TextFieldView) in
+        view.focus()
+      }
     }
     View(VStackView.self)
     View(ZStackView.self)
     View(NamespaceView.self)
     View(GlassEffectContainerView.self)
     View(LabeledContentView.self)
+    View(RectangleView.self)
+    View(RoundedRectangleView.self)
+    View(EllipseView.self)
+    View(UnevenRoundedRectangleView.self)
+    View(CapsuleView.self)
+    View(CircleView.self)
+    View(ConcentricRectangleView.self)
   }
 }

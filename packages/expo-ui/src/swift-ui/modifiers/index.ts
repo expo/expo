@@ -6,6 +6,7 @@
 import { ColorValue } from 'react-native';
 
 import { animation } from './animation/index';
+import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 
 /**
@@ -116,6 +117,16 @@ export const fixedSize = (params?: { horizontal?: boolean; vertical?: boolean })
   createModifier('fixedSize', params);
 
 /**
+ * Allows a view to ignore safe area constraints.
+ * @param regions - The safe area regions to ignore ('all', 'container', 'keyboard')
+ * @param edges - The edges to expand into ('all', 'top', 'bottom', 'leading', 'trailing', 'horizontal', 'vertical')
+ */
+export const ignoreSafeArea = (params?: {
+  regions?: 'all' | 'container' | 'keyboard';
+  edges?: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical';
+}) => createModifier('ignoreSafeArea', params);
+
+/**
  * Adds a tap gesture recognizer.
  * @param handler - Function to call when tapped
  */
@@ -131,6 +142,20 @@ export const onLongPressGesture = (handler: () => void, minimumDuration?: number
   createModifierWithEventListener('onLongPressGesture', handler, {
     minimumDuration: minimumDuration ?? 0.5,
   });
+
+/**
+ * Adds an onAppear modifier that calls a function when the view appears.
+ * @param handler - Function to call when the view appears
+ */
+export const onAppear = (handler: () => void) =>
+  createModifierWithEventListener('onAppear', handler);
+
+/**
+ * Adds an onDisappear modifier that calls a function when the view disappears.
+ * @param handler - Function to call when the view disappears
+ */
+export const onDisappear = (handler: () => void) =>
+  createModifierWithEventListener('onDisappear', handler);
 
 // Note: Complex gesture modifiers like onDragGesture are not available
 // in the modifier system. Use component-level props instead.
@@ -309,6 +334,12 @@ export const tint = (color: Color) => createModifier('tint', { color });
 export const hidden = (hidden: boolean = true) => createModifier('hidden', { hidden });
 
 /**
+ * Disables or enables a view.
+ * @param disabled - Whether the view should be disabled
+ */
+export const disabled = (disabled: boolean = true) => createModifier('disabled', { disabled });
+
+/**
  * Sets the z-index (display order) of a view.
  * @param index - The z-index value
  */
@@ -356,6 +387,20 @@ export const colorInvert = (inverted: boolean = true) =>
  * @param amount - Grayscale amount (0 to 1)
  */
 export const grayscale = (amount: number) => createModifier('grayscale', { amount });
+
+/**
+ * Sets the button style for button views.
+ */
+export const buttonStyle = (
+  style:
+    | 'automatic'
+    | 'bordered'
+    | 'borderedProminent'
+    | 'borderless'
+    | 'glass'
+    | 'glassProminent'
+    | 'plain'
+) => createModifier('buttonStyle', { style });
 
 /**
  * Sets accessibility label for the view.
@@ -461,8 +506,11 @@ export type BuiltInModifier =
   | ReturnType<typeof frame>
   | ReturnType<typeof padding>
   | ReturnType<typeof fixedSize>
+  | ReturnType<typeof ignoreSafeArea>
   | ReturnType<typeof onTapGesture>
   | ReturnType<typeof onLongPressGesture>
+  | ReturnType<typeof onAppear>
+  | ReturnType<typeof onDisappear>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>
@@ -473,6 +521,7 @@ export type BuiltInModifier =
   | ReturnType<typeof foregroundStyle>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
+  | ReturnType<typeof disabled>
   | ReturnType<typeof zIndex>
   | ReturnType<typeof blur>
   | ReturnType<typeof brightness>
@@ -481,6 +530,7 @@ export type BuiltInModifier =
   | ReturnType<typeof hueRotation>
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
+  | ReturnType<typeof buttonStyle>
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
@@ -492,7 +542,8 @@ export type BuiltInModifier =
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
-  | ReturnType<typeof animation>;
+  | ReturnType<typeof animation>
+  | ReturnType<typeof containerShape>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -532,3 +583,4 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 };
 
 export * from './animation/index';
+export * from './containerShape';

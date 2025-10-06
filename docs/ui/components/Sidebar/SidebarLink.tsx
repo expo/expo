@@ -105,6 +105,28 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
           ALPHA
         </div>
       )}
+      {info.isBeta && (
+        <div
+          className={mergeClasses(
+            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-purple10 px-[5px] text-[10px] font-semibold leading-none text-palette-white',
+            isSelected
+              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
+              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
+          )}>
+          BETA
+        </div>
+      )}
+      {info.isPreview && (
+        <div
+          className={mergeClasses(
+            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-purple10 px-[5px] text-[10px] font-semibold leading-none text-palette-white',
+            isSelected
+              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
+              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
+          )}>
+          PREVIEW
+        </div>
+      )}
       {isExternal && (
         <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary group-hover:text-icon-info" />
       )}

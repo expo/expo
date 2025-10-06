@@ -92,7 +92,7 @@ function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
     didJustFinish: media.ended,
     isBuffering: false,
     playbackRate: media.playbackRate,
-    shouldCorrectPitch: false,
+    shouldCorrectPitch: true,
     mute: media.muted,
     loop: media.loop,
   };
@@ -234,7 +234,11 @@ export class AudioPlayerWeb
     getStatusFromMedia(this.media, this.id);
   }
 
-  _createMediaElement() {
+  setActiveForLockScreen(active: boolean, metadata: Record<string, any>): void {}
+  updateLockScreenMetadata(metadata: Record<string, any>): void {}
+  clearLockScreenControls(): void {}
+
+  _createMediaElement(): HTMLAudioElement {
     const newSource = getSourceUri(this.src);
     const media = new Audio(newSource);
     if (this.crossOrigin !== undefined) {

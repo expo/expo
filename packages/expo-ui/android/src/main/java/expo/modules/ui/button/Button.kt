@@ -172,9 +172,9 @@ class Button(context: Context, appContext: AppContext) :
               )
             }
           }
-          
+
           Text(text)
-          
+
           trailingIcon?.let { iconName ->
             getImageVector(iconName)?.let {
               Icon(

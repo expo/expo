@@ -377,7 +377,7 @@ export function refreshAsync(config, discovery) {
  *
  * @param config Configuration used to revoke a refresh or access token.
  * @param discovery The `revocationEndpoint` for a provider.
- * @return Returns a discovery document with a valid `revocationEndpoint` URL. Many providers do not support this feature.
+ * @returns Resolves to `true` when the revocation request completes. Rejects with an error if the provider does not expose a `revocationEndpoint` or the request fails. Many providers do not support this feature.
  */
 export function revokeAsync(config, discovery) {
     const request = new RevokeTokenRequest(config);

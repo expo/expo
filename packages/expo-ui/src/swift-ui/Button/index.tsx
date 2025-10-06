@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { type ViewEvent } from '../../types';
+import { getTextFromChildren } from '../../utils';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -12,6 +13,16 @@ import { type CommonViewModifierProps } from '../types';
  * - `destructive` - A button that deletes data or performs a destructive action.
  */
 export type ButtonRole = 'default' | 'cancel' | 'destructive';
+
+/**
+ * Sets the size for controls within this view.
+ * - `mini` - A control version that is minimally sized.
+ * - `small` - A control version that is proportionally smaller size for space-constrained views.
+ * - `regular` - A control version that is the default size.
+ * - `large` - A control version that is prominently sized.
+ * - `extraLarge` - A control version that is substantially sized. The largest control size. Resolves to ControlSize.large on platforms other than visionOS.
+ */
+export type ButtonControlSize = 'mini' | 'small' | 'regular' | 'large' | 'extraLarge';
 
 /**
  * The built-in button styles available on iOS.
@@ -62,6 +73,10 @@ export type ButtonProps = {
    */
   role?: ButtonRole;
   /**
+   * The size for controls within this view.
+   */
+  controlSize?: ButtonControlSize;
+  /**
    * The button variant.
    */
   variant?: ButtonVariant;
@@ -85,7 +100,7 @@ export type ButtonProps = {
  */
 export type NativeButtonProps = Omit<
   ButtonProps,
-  'role' | 'onPress' | 'children' | 'systemImage'
+  'role' | 'onPress' | 'children' | 'systemImage' | 'controlSize'
 > & {
   buttonRole?: ButtonRole;
   text: string | undefined;
@@ -128,7 +143,7 @@ export function Button(props: ButtonProps) {
     throw new Error('Button without systemImage prop should have React children');
   }
 
-  const text = typeof children === 'string' ? children : undefined;
+  const text = getTextFromChildren(children);
 
   const transformedProps = transformButtonProps(restProps, text);
 

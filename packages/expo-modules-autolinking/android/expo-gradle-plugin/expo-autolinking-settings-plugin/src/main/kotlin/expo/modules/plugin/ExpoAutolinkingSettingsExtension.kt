@@ -41,11 +41,6 @@ open class ExpoAutolinkingSettingsExtension(
   var searchPaths: List<String>? = null
 
   /**
-   * Paths to ignore when looking up for modules.
-   */
-  var ignorePaths: List<String>? = null
-
-  /**
    * Package names to exclude when looking up for modules.
    */
   var exclude: List<String>? = null
@@ -82,7 +77,6 @@ open class ExpoAutolinkingSettingsExtension(
       settings,
       projectRoot,
       searchPaths,
-      ignorePaths,
       exclude
     ).useExpoModules()
   }

@@ -1,4 +1,16 @@
-import { Host, Section, Text, Form, VStack, HStack, ColorPicker } from '@expo/ui/swift-ui';
+import {
+  DisclosureGroup,
+  Host,
+  Section,
+  Text,
+  Form,
+  VStack,
+  HStack,
+  ColorPicker,
+  Picker,
+  Switch,
+  Rectangle,
+} from '@expo/ui/swift-ui';
 import {
   background,
   cornerRadius,
@@ -16,6 +28,8 @@ import {
   border,
   onTapGesture,
   onLongPressGesture,
+  onAppear,
+  onDisappear,
   accessibilityLabel,
   aspectRatio,
   grayscale,
@@ -24,6 +38,7 @@ import {
   glassEffect,
   foregroundStyle,
   fixedSize,
+  disabled,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -31,6 +46,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ModifiersScreen() {
   const [playSounds, setPlaySounds] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(false);
   const dimensions = useWindowDimensions();
   const safeAreaInsets = useSafeAreaInsets();
   const [color, setColor] = useState<string | null>('blue');
@@ -236,90 +252,140 @@ export default function ModifiersScreen() {
               ]}>
               {playSounds ? '🔊 Sounds ON (tap to toggle)' : '🔇 Sounds OFF (tap to toggle)'}
             </Text>
+
+            {/* Disabled Modifier Demo */}
+            <VStack spacing={8}>
+              <Switch
+                value={!isDisabled}
+                onValueChange={(value) => setIsDisabled(!value)}
+                label="Enable Picker"
+              />
+              <Picker
+                options={['Option 1', 'Option 2', 'Option 3', 'Option 4']}
+                selectedIndex={1}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  console.log('Picker option selected:', index);
+                }}
+                variant="segmented"
+                modifiers={[
+                  disabled(isDisabled),
+                  background(isDisabled ? '#BDC3C7' : '#3498DB'),
+                  cornerRadius(8),
+                  padding({ all: 4 }),
+                  shadow({ radius: 2, y: 1, color: isDisabled ? '#BDC3C740' : '#3498DB40' }),
+                ]}
+              />
+            </VStack>
+          </Section>
+
+          <AppearSection />
+
+          <Section title="Misc">
+            <VStack
+              spacing={20}
+              modifiers={[
+                frame({ height: 500 }),
+                padding({ all: 16 }),
+                background('#F8F9FA'),
+                cornerRadius(16),
+              ]}>
+              {/* Styled HStack with modifiers */}
+              <HStack
+                spacing={20}
+                modifiers={[
+                  background('#667eea'),
+                  cornerRadius(12),
+                  padding({ all: 12 }),
+                  shadow({ radius: 4, y: 2, color: '#667eea30' }),
+                ]}>
+                <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H0V0</Text>
+                <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H1V0</Text>
+              </HStack>
+
+              {/* Nested styled layout */}
+              <HStack modifiers={[padding({ horizontal: 10 })]}>
+                <HStack
+                  spacing={20}
+                  modifiers={[
+                    background('#f093fb'),
+                    cornerRadius(10),
+                    padding({ all: 10 }),
+                    scaleEffect(0.95),
+                    shadow({ radius: 3, y: 1 }),
+                  ]}>
+                  <Text modifiers={[foregroundColor('#FFFFFF')]}>H0V1</Text>
+                  <Text modifiers={[foregroundColor('#FFFFFF')]}>H1V1</Text>
+                </HStack>
+              </HStack>
+
+              {/* UIView with modifier styling around it */}
+              <HStack
+                modifiers={[
+                  frame({ width: 300, height: 100 }),
+                  background('#4facfe'),
+                  cornerRadius(20),
+                  padding({ all: 8 }),
+                  shadow({ radius: 8, x: 0, y: 4, color: '#4facfe40' }),
+                ]}>
+                <View style={[styles.uiView, { width: 280, height: 80 }]}>
+                  <RNText style={styles.uiViewText}>UIView in styled HStack</RNText>
+                </View>
+              </HStack>
+
+              {/* Interactive modifier demo */}
+              <Text
+                modifiers={[
+                  background('#ff9a9e'),
+                  cornerRadius(25),
+                  padding({ horizontal: 20, vertical: 12 }),
+                  shadow({ radius: 5, y: 3 }),
+                  foregroundColor('#FFFFFF'),
+                  scaleEffect(1.05),
+                  onTapGesture(() => alert('Layout section modifier demo!')),
+                ]}>
+                🚀 Tap this layout demo!
+              </Text>
+              <HStack
+                modifiers={[
+                  padding({ all: 16 }),
+                  glassEffect({
+                    glass: {
+                      variant: 'regular',
+                      interactive: true,
+                    },
+                  }),
+                ]}>
+                <Text modifiers={[foregroundColor('#000000')]}>Hello world</Text>
+              </HStack>
+            </VStack>
           </Section>
         </Form>
       </Host>
-
-      <Host style={{ height: 500 }}>
-        <VStack
-          spacing={20}
-          modifiers={[
-            frame({ height: 500 }),
-            padding({ all: 16 }),
-            background('#F8F9FA'),
-            cornerRadius(16),
-          ]}>
-          {/* Styled HStack with modifiers */}
-          <HStack
-            spacing={20}
-            modifiers={[
-              background('#667eea'),
-              cornerRadius(12),
-              padding({ all: 12 }),
-              shadow({ radius: 4, y: 2, color: '#667eea30' }),
-            ]}>
-            <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H0V0</Text>
-            <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H1V0</Text>
-          </HStack>
-
-          {/* Nested styled layout */}
-          <HStack modifiers={[padding({ horizontal: 10 })]}>
-            <HStack
-              spacing={20}
-              modifiers={[
-                background('#f093fb'),
-                cornerRadius(10),
-                padding({ all: 10 }),
-                scaleEffect(0.95),
-                shadow({ radius: 3, y: 1 }),
-              ]}>
-              <Text modifiers={[foregroundColor('#FFFFFF')]}>H0V1</Text>
-              <Text modifiers={[foregroundColor('#FFFFFF')]}>H1V1</Text>
-            </HStack>
-          </HStack>
-
-          {/* UIView with modifier styling around it */}
-          <HStack
-            modifiers={[
-              frame({ width: 300, height: 100 }),
-              background('#4facfe'),
-              cornerRadius(20),
-              padding({ all: 8 }),
-              shadow({ radius: 8, x: 0, y: 4, color: '#4facfe40' }),
-            ]}>
-            <View style={[styles.uiView, { width: 280, height: 80 }]}>
-              <RNText style={styles.uiViewText}>UIView in styled HStack</RNText>
-            </View>
-          </HStack>
-
-          {/* Interactive modifier demo */}
-          <Text
-            modifiers={[
-              background('#ff9a9e'),
-              cornerRadius(25),
-              padding({ horizontal: 20, vertical: 12 }),
-              shadow({ radius: 5, y: 3 }),
-              foregroundColor('#FFFFFF'),
-              scaleEffect(1.05),
-              onTapGesture(() => alert('Layout section modifier demo!')),
-            ]}>
-            🚀 Tap this layout demo!
-          </Text>
-          <HStack
-            modifiers={[
-              padding({ all: 16 }),
-              glassEffect({
-                glass: {
-                  variant: 'regular',
-                  interactive: true,
-                },
-              }),
-            ]}>
-            <Text modifiers={[foregroundColor('#000000')]}>Hello world</Text>
-          </HStack>
-        </VStack>
-      </Host>
     </ScrollView>
+  );
+}
+
+function AppearSection() {
+  const [appearCount, setAppearCount] = useState(0);
+  const [disappearCount, setDisappearCount] = useState(0);
+  const [disclosureGroupExpanded, setDisclosureGroupExpanded] = useState(false);
+
+  return (
+    <Section title={`Appear(${appearCount}) Disappear(${disappearCount})`}>
+      <DisclosureGroup
+        onStateChange={setDisclosureGroupExpanded}
+        isExpanded={disclosureGroupExpanded}
+        label="Show rectangle">
+        <Rectangle
+          modifiers={[
+            foregroundStyle('#9B59B6'),
+            cornerRadius(8),
+            onAppear(() => setAppearCount((prev) => prev + 1)),
+            onDisappear(() => setDisappearCount((prev) => prev + 1)),
+          ]}
+        />
+      </DisclosureGroup>
+    </Section>
   );
 }
 

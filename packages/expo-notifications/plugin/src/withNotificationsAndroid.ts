@@ -6,9 +6,10 @@ import {
   withDangerousMod,
   withAndroidColors,
   withAndroidManifest,
+  assertValidAndroidAssetName,
 } from 'expo/config-plugins';
 import { writeFileSync, unlinkSync, copyFileSync, existsSync, mkdirSync } from 'fs';
-import { basename, resolve } from 'path';
+import { basename, resolve, parse } from 'path';
 
 import { NotificationsPluginProps } from './withNotifications';
 
@@ -230,7 +231,6 @@ function removeNotificationIconImageFiles(projectRoot: string) {
     }
   });
 }
-
 /**
  * Save sound files to `<project-root>/android/app/src/main/res/raw`
  */
@@ -241,6 +241,7 @@ export function setNotificationSounds(projectRoot: string, sounds: string[]) {
         `Must provide an array of sound files in your app config, found ${typeof sounds}.`
     );
   }
+
   for (const soundFileRelativePath of sounds) {
     writeNotificationSoundFile(soundFileRelativePath, projectRoot);
   }
@@ -251,10 +252,13 @@ export function setNotificationSounds(projectRoot: string, sounds: string[]) {
  * there isn't already an existing file under that name.
  */
 function writeNotificationSoundFile(soundFileRelativePath: string, projectRoot: string) {
-  const rawResourcesPath = resolve(projectRoot, ANDROID_RES_PATH, 'raw');
   const inputFilename = basename(soundFileRelativePath);
 
   if (inputFilename) {
+    const nameWithoutExt = parse(inputFilename).name;
+    assertValidAndroidAssetName(nameWithoutExt, 'expo-notifications');
+    const rawResourcesPath = resolve(projectRoot, ANDROID_RES_PATH, 'raw');
+
     try {
       const sourceFilepath = resolve(projectRoot, soundFileRelativePath);
       const destinationFilepath = resolve(rawResourcesPath, inputFilename);

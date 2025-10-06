@@ -12,6 +12,8 @@ import {
   getStartMode,
   retryAsync,
   getMaestroFlowFilePath,
+  prettyPrintTestSuiteLogs,
+  setupLogger,
 } from './lib/e2e-common';
 
 const APP_ID = 'dev.expo.payments';
@@ -64,7 +66,7 @@ const __dirname = dirname(__filename);
 
 async function buildAsync(projectRoot: string): Promise<void> {
   console.log('\n💿 Building App');
-  await spawnAsync('./gradlew', ['assembleRelease'], {
+  await spawnAsync('./gradlew', ['--build-cache', 'assembleRelease'], {
     stdio: 'inherit',
     cwd: path.join(projectRoot, 'android'),
   });
@@ -76,19 +78,55 @@ async function testAsync(
   appBinaryPath: string,
   adbPath: string
 ): Promise<void> {
+  const stopLogCollectionController = new AbortController();
+
   console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
   await spawnAsync(adbPath, ['-s', deviceId, 'install', '-r', appBinaryPath]);
 
   console.log(
     `\n📷 Starting Maestro tests - deviceId[${deviceId}] maestroFlowFilePath[${maestroFlowFilePath}]`
   );
-  await spawnAsync('maestro', ['--platform', 'android', 'test', maestroFlowFilePath], {
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      MAESTRO_DRIVER_STARTUP_TIMEOUT,
-    },
-  });
+  const getLogs = setupLogger(`adb logcat -e ${APP_ID}`, stopLogCollectionController.signal);
+  try {
+    await spawnAsync('maestro', ['--platform', 'android', 'test', maestroFlowFilePath], {
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        MAESTRO_DRIVER_STARTUP_TIMEOUT,
+      },
+    });
+  } catch {
+    stopLogCollectionController.abort();
+    console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
+    const logs = await getLogs();
+    console.log(prettyPrintTestSuiteLogs(logs));
+    if (!(await isAppRunning())) {
+      if (logs.length > 0) {
+        console.warn(
+          '\n\n  ❌ The runner app has probably crashed, here are the recent native error logs:\n\n'
+        );
+        console.log(logs.slice(-30).join('\n'));
+      } else {
+        console.warn(
+          '\n\n  ❌ The runner app has probably crashed, but no native logs were captured.\n\n'
+        );
+      }
+    }
+    console.log('\n\n');
+    throw new Error('e2e tests have failed.');
+  } finally {
+    stopLogCollectionController.abort();
+  }
+}
+
+async function isAppRunning() {
+  const adbPath = await findAdbAsync();
+  try {
+    await spawnAsync(adbPath, ['shell', 'pidof', APP_ID]);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 async function findAdbAsync(): Promise<string | null> {

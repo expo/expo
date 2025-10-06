@@ -13,13 +13,14 @@ export const name = 'MediaLibrary@Next';
 
 const mp3Path = require('../assets/LLizard.mp3');
 const mp4Path = require('../assets/big_buck_bunny.mp4');
+const exifJpgPath = require('../assets/exif_data_image.jpg');
 const pngPath = require('../assets/icons/app.png');
 const jpgPath = require('../assets/qrcode_expo.jpg');
 
 export async function test(t) {
   let permissions;
   let files;
-  let jpgFile, pngFile, mp4File, mp3File;
+  let jpgFile, pngFile, mp4File, mp3File, exifJpgFile;
 
   const checkIfAllPermissionsWereGranted = () => {
     if (Platform.OS === 'ios') {
@@ -33,6 +34,7 @@ export async function test(t) {
     [pngFile] = await ExpoAsset.loadAsync(pngPath);
     [jpgFile] = await ExpoAsset.loadAsync(jpgPath);
     [mp4File] = await ExpoAsset.loadAsync(mp4Path);
+    [exifJpgFile] = await ExpoAsset.loadAsync(exifJpgPath);
     files = [pngFile, jpgFile, mp4File];
     permissions = await requestPermissionsAsync();
     if (!checkIfAllPermissionsWereGranted()) {
@@ -44,10 +46,14 @@ export async function test(t) {
   let assetsContainer = [];
 
   t.afterAll(async () => {
-    await Album.delete(albumsContainer.flat(), true);
-    await Asset.delete(assetsContainer.flat());
-    albumsContainer = [];
-    assetsContainer = [];
+    try {
+      await Asset.delete(assetsContainer.flat());
+      await Album.delete(albumsContainer.flat(), true);
+      albumsContainer = [];
+      assetsContainer = [];
+    } catch (error) {
+      console.error('Error cleaning up test assets:', error);
+    }
   });
 
   t.describe('Album creation', () => {
@@ -63,7 +69,6 @@ export async function test(t) {
       t.expect(assets.length).toBe(files.length);
       t.expect(await album.getTitle()).toBe(albumName);
     });
-
     t.it('creates an album from a list of assets', async () => {
       // given
       const assets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
@@ -78,7 +83,7 @@ export async function test(t) {
       t.expect(assets.length).toBe(files.length);
       t.expect(await album.getTitle()).toBe(albumName);
       const fetchedAssets = await album.getAssets();
-      if (Platform.OS === 'android' && Platform.Version >= 29) {
+      if (Platform.OS === 'android' && Platform.Version >= 30) {
         for (const asset of assets) {
           t.expect(
             fetchedAssets.findIndex((fetchedAsset) => fetchedAsset.id === asset.id)
@@ -118,7 +123,7 @@ export async function test(t) {
         // then
         const newAssetUris = await Promise.all(assets.map((asset) => asset.getUri()));
         albumsContainer.push(album);
-        if (Platform.OS === 'android' && Platform.Version >= 29) {
+        if (Platform.OS === 'android' && Platform.Version >= 30) {
           for (const oldAssetUri of oldAssetUris) {
             t.expect(newAssetUris.findIndex((uri) => uri === oldAssetUri)).not.toBe(-1);
           }
@@ -181,6 +186,19 @@ export async function test(t) {
       const assetIds = assets.map((a) => a.id);
       t.expect(assetIds).toContain(newAsset.id);
     });
+
+    if (Platform.OS === 'android') {
+      t.it('creates two different assets with different uri from the same source', async () => {
+        const firstAsset = await Asset.create(jpgFile.localUri);
+        const secondAsset = await Asset.create(jpgFile.localUri);
+        assetsContainer.push([firstAsset, secondAsset]);
+        const firstUri = await firstAsset.getUri();
+        const secondUri = await secondAsset.getUri();
+
+        t.expect(firstUri).not.toBe(secondUri);
+        t.expect(firstAsset.id).not.toBe(secondAsset.id);
+      });
+    }
   });
 
   t.describe('Album get', () => {
@@ -220,7 +238,7 @@ export async function test(t) {
       const album = await Album.create(albumName, [jpgFile.localUri], true);
       albumsContainer.push(album);
 
-      const newAsset = await Asset.create(files[1].localUri);
+      const newAsset = await Asset.create(pngFile.localUri);
       const oldUri = await newAsset.getUri();
       assetsContainer.push(newAsset);
       await album.add(newAsset);
@@ -581,6 +599,41 @@ export async function test(t) {
       t.expect(firstAsset.id).toBe(videoAsset.id);
       t.expect(secondAsset.id).toBe(shorterAsset.id);
       t.expect(thirdAsset.id).toBe(tallerAsset.id);
+    });
+  });
+
+  t.describe('Exif interface', () => {
+    t.it('returns location for jpg image', async () => {
+      // given
+      const asset = await Asset.create(exifJpgFile.localUri);
+      assetsContainer.push(asset);
+      // when
+      const location = await asset.getLocation();
+      // then
+      t.expect(location).toBeDefined();
+      t.expect(location?.latitude).toBeGreaterThanOrEqual(-90);
+      t.expect(location?.latitude).toBeLessThanOrEqual(90);
+      t.expect(location?.longitude).toBeGreaterThanOrEqual(-180);
+      t.expect(location?.longitude).toBeLessThanOrEqual(180);
+    });
+
+    t.it('returns exif data for jpg image', async () => {
+      // given
+      const asset = await Asset.create(exifJpgFile.localUri);
+      assetsContainer.push(asset);
+      // when
+      const exif = await asset.getExif();
+      // then
+      const numberOfKeys = Object.keys(exif || {}).length;
+      if (Platform.OS === 'android') {
+        t.expect(exif['Make']).not.toBeUndefined();
+        t.expect(exif['Model']).not.toBeUndefined();
+      } else if (Platform.OS === 'ios') {
+        t.expect(exif['{TIFF}']['Make']).not.toBeUndefined();
+        t.expect(exif['{TIFF}']['Model']).not.toBeUndefined();
+      }
+      t.expect(numberOfKeys).toBeGreaterThan(0);
+      t.expect(exif).toBeDefined();
     });
   });
 

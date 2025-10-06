@@ -1,1 +1,1 @@
-export { getConfiguration, generatePackageListAsync, resolveModuleAsync, resolveExtraBuildDependenciesAsync, } from './android';
+export { getConfiguration, resolveModuleAsync, resolveExtraBuildDependenciesAsync, } from './android';

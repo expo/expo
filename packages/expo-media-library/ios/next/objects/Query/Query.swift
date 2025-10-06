@@ -95,7 +95,7 @@ class Query: SharedObject {
       from: phFetchResult,
       fetchLimit: fetchOptions.fetchLimit
     )
-    return phAssets.map { Asset(id: $0.localIdentifier) }
+    return phAssets.map { Asset(localIdentifier: $0.localIdentifier) }
   }
 
   private func constructFetchOptions() -> PHFetchOptions {
@@ -118,11 +118,11 @@ class Query: SharedObject {
 
   private func getExactNumberOfPHAssets(
     from phFetchResult: PHFetchResult<PHAsset>,
-    fetchLimit: Int?
+    fetchLimit: Int
   ) -> [PHAsset] {
     let start = offset ?? 0
     let end: Int
-    if let fetchLimit {
+    if fetchLimit > 0 {
       end = min(start + fetchLimit - 1, phFetchResult.count - 1)
     } else {
       end = phFetchResult.count - 1

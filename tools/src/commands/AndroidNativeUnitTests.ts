@@ -123,7 +123,7 @@ async function runGradlew(packages: Packages.Package[], testCommand: string, cwd
   try {
     await spawnAsync(
       './gradlew',
-      packages.map((pkg) => `:${pkg.packageSlug}:${testCommand}`),
+      ['--build-cache', ...packages.map((pkg) => `:${pkg.packageSlug}:${testCommand}`)],
       {
         cwd,
         stdio: 'inherit',

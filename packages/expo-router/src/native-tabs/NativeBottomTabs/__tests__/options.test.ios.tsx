@@ -24,11 +24,11 @@ const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _Bottom
 it('can pass options via options prop', () => {
   const indexOptions: NativeTabOptions = {
     title: 'Test Title',
-    tabBarItemIconColor: 'blue',
+    iconColor: 'blue',
   };
   const secondOptions: NativeTabOptions = {
     title: 'Second Title',
-    tabBarItemIconColor: 'red',
+    iconColor: 'red',
   };
   renderRouter({
     _layout: () => (
@@ -879,6 +879,13 @@ describe(appendIconOptions, () => {
     [
       { src: { default: 'xxx', selected: 'yyy' } },
       { icon: { src: 'xxx' }, selectedIcon: { src: 'yyy' } },
+    ],
+    [
+      {
+        sf: '0.circle',
+        androidSrc: <VectorIcon family={ICON_FAMILY} name="a" />,
+      },
+      { icon: { sf: '0.circle' }, selectedIcon: undefined },
     ],
   ] as [IconProps, NativeTabOptions][])(
     'should append icon props %p to options correctly',

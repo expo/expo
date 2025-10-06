@@ -235,6 +235,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     val currentReactInstance = currentReactInstance.get() ?: return
     val appInfo = AppInfo.getAppInfo(currentReactInstance)
     bindingView.viewModel.updateAppInfo(appInfo)
+    bindingView.viewModel.updateCustomItems(registeredCallbacks)
   }
 
   inline fun withBindingView(
@@ -410,6 +411,14 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     val newReactInstance = requireNotNull(delegate).reactHost()
     if (newReactInstance != currentReactInstance.get()) {
       setUpReactInstance(newReactInstance)
+    }
+  }
+
+  fun refreshCustomItems() {
+    delegateActivity?.let { activity ->
+      withBindingView(activity) { bindingView ->
+        bindingView.viewModel.updateCustomItems(registeredCallbacks)
+      }
     }
   }
 //endregion

@@ -117,4 +117,7 @@ object DevMenuManager : DevMenuManagerInterface {
   fun toggleFab() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+  fun refreshCustomItems() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
 }
