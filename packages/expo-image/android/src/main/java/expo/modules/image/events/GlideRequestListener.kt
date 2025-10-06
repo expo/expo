@@ -13,6 +13,7 @@ import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageSource
 import expo.modules.image.svg.SVGPictureDrawable
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.util.Locale
 
@@ -49,20 +50,27 @@ class GlideRequestListener(
     dataSource: DataSource,
     isFirstResource: Boolean
   ): Boolean {
-    val intrinsicWidth = (resource as? SVGPictureDrawable)?.svgIntrinsicWidth ?: resource.intrinsicWidth
-    val intrinsicHeight = (resource as? SVGPictureDrawable)?.svgIntrinsicHeight ?: resource.intrinsicHeight
-    expoImageViewWrapper.get()?.onLoad?.invoke(
-      ImageLoadEvent(
-        cacheType = ImageCacheType.fromNativeValue(dataSource).name.lowercase(Locale.getDefault()),
-        source = ImageSource(
-          url = model.toString(),
-          width = intrinsicWidth,
-          height = intrinsicHeight,
-          mediaType = null, // TODO(@lukmccall): add mediaType
-          isAnimated = resource is Animatable
+    val intrinsicWidth = (resource as? SVGPictureDrawable)?.svgIntrinsicWidth
+      ?: resource.intrinsicWidth
+    val intrinsicHeight = (resource as? SVGPictureDrawable)?.svgIntrinsicHeight
+      ?: resource.intrinsicHeight
+
+    val imageWrapper = expoImageViewWrapper.get() ?: return false
+    val appContext = imageWrapper.appContext
+    appContext.mainQueue.launch {
+      imageWrapper.onLoad.invoke(
+        ImageLoadEvent(
+          cacheType = ImageCacheType.fromNativeValue(dataSource).name.lowercase(Locale.getDefault()),
+          source = ImageSource(
+            url = model.toString(),
+            width = intrinsicWidth,
+            height = intrinsicHeight,
+            mediaType = null, // TODO(@lukmccall): add mediaType
+            isAnimated = resource is Animatable
+          )
         )
       )
-    )
+    }
 
     return false
   }
