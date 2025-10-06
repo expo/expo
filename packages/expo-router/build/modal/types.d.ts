@@ -9,6 +9,7 @@ export interface ModalConfig {
     transparent?: boolean;
     viewProps?: ViewProps;
     detents?: number[] | 'fitToContents';
+    cornerRadius?: number;
 }
 export interface ModalsRendererProps {
     children?: React.ReactNode;
