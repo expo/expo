@@ -68,7 +68,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
           if (uri.isContentUri) {
             SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), child.uri).delete()
           } else {
-            JavaFile(child.uri).delete()
+            FileSystemPath(child.uri).delete()
           }
         } else {
           if (!child.delete()) {
