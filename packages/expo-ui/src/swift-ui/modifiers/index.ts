@@ -143,6 +143,20 @@ export const onLongPressGesture = (handler: () => void, minimumDuration?: number
     minimumDuration: minimumDuration ?? 0.5,
   });
 
+/**
+ * Adds an onAppear modifier that calls a function when the view appears.
+ * @param handler - Function to call when the view appears
+ */
+export const onAppear = (handler: () => void) =>
+  createModifierWithEventListener('onAppear', handler);
+
+/**
+ * Adds an onDisappear modifier that calls a function when the view disappears.
+ * @param handler - Function to call when the view disappears
+ */
+export const onDisappear = (handler: () => void) =>
+  createModifierWithEventListener('onDisappear', handler);
+
 // Note: Complex gesture modifiers like onDragGesture are not available
 // in the modifier system. Use component-level props instead.
 
@@ -495,6 +509,8 @@ export type BuiltInModifier =
   | ReturnType<typeof ignoreSafeArea>
   | ReturnType<typeof onTapGesture>
   | ReturnType<typeof onLongPressGesture>
+  | ReturnType<typeof onAppear>
+  | ReturnType<typeof onDisappear>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>

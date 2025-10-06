@@ -381,6 +381,40 @@ internal struct OnLongPressGestureModifier: ViewModifier, Record {
   }
 }
 
+internal struct OnAppearModifier: ViewModifier, Record {
+  var eventDispatcher: EventDispatcher?
+
+  init() {}
+
+  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    try self = .init(from: params, appContext: appContext)
+    self.eventDispatcher = eventDispatcher
+  }
+
+  func body(content: Content) -> some View {
+    content.onAppear {
+      eventDispatcher?(["onAppear": [:]])
+    }
+  }
+}
+
+internal struct OnDisappearModifier: ViewModifier, Record {
+  var eventDispatcher: EventDispatcher?
+
+  init() {}
+
+  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    try self = .init(from: params, appContext: appContext)
+    self.eventDispatcher = eventDispatcher
+  }
+
+  func body(content: Content) -> some View {
+    content.onDisappear {
+      eventDispatcher?(["onDisappear": [:]])
+    }
+  }
+}
+
 internal struct HueRotationModifier: ViewModifier, Record {
   @Field var angle: Double = 0
 
@@ -982,6 +1016,14 @@ extension ViewModifierRegistry {
 
     register("onLongPressGesture") { params, appContext, eventDispatcher in
       return try OnLongPressGestureModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("onAppear") { params, appContext, eventDispatcher in
+      return try OnAppearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("onDisappear") { params, appContext, eventDispatcher in
+      return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
     register("hueRotation") { params, appContext, _ in
