@@ -10,6 +10,11 @@
 
 ### 💡 Others
 
+## 19.0.17 - 2025-10-06
+### 🐛 Bug fixes
+
+- [Android] Fix recursive deletion of directories ([#40210](https://github.com/expo/expo/pull/40210) by [@totoluto](https://github.com/totoluto))
+
 ## 19.0.16 - 2025-10-01
 
 ### 🎉 New features
