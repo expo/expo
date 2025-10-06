@@ -8,7 +8,7 @@ describe('server headers', () => {
     cwd: projectRoot,
     env: {
       NODE_ENV: 'development',
-      EXPO_USE_STATIC: 'static',
+      EXPO_USE_STATIC: 'server',
       E2E_ROUTER_SRC: 'server-headers',
       E2E_ROUTER_HEADERS: JSON.stringify({
         'X-Powered-By': 'expo-server',

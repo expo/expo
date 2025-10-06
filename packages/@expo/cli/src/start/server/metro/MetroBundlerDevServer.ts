@@ -1053,6 +1053,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
     }
 
+    if (routerOptions.headers && exp.web?.output !== 'server') {
+      throw new CommandError(
+        `Header support requires 'web.output: server' to be set in the project's app config`
+      );
+    }
+
     const instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
