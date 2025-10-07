@@ -498,7 +498,7 @@ public final class ImageView: ExpoView {
     )
 
     // Decode to HDR if the `preferHighDynamicRange` prop is on (in this case `preferredImageDynamicRange` is set to high).
-    if #available(iOS 17.0, *) {
+    if #available(iOS 17.0, macCatalyst 17.0, tvOS 17.0, *) {
       context[.imageDecodeToHDR] = sdImageView.preferredImageDynamicRange == .constrainedHigh || sdImageView.preferredImageDynamicRange == .high
     }
 

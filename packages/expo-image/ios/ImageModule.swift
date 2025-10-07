@@ -116,7 +116,7 @@ public final class ImageModule: Module {
       }
 
       Prop("preferHighDynamicRange", false) { (view, preferHighDynamicRange: Bool) in
-        if #available(iOS 17.0, *) {
+        if #available(iOS 17.0, macCatalyst 17.0, tvOS 17.0, *) {
           view.sdImageView.preferredImageDynamicRange = preferHighDynamicRange ? .constrainedHigh : .unspecified
         }
       }
