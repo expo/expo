@@ -55,7 +55,7 @@
     "expo-build-properties": "~0.14.8",
     "expo-camera": "~16.1.11",
     "expo-dev-client": "~5.2.4",
-    "expo-image": "~2.4.0",
+    "expo-image": "~2.4.1",
     "expo-insights": "~0.9.3",
     "expo-network-addons": "~0.9.3",
     "expo-notifications": "~0.31.4",

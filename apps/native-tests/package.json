@@ -12,7 +12,7 @@
     "expo": "~53.0.23",
     "expo-camera": "~16.1.11",
     "expo-dev-client": "~5.2.4",
-    "expo-image": "~2.4.0",
+    "expo-image": "~2.4.1",
     "expo-notifications": "~0.31.4",
     "expo-splash-screen": "~0.30.10",
     "native-component-list": "*",

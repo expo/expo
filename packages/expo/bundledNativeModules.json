@@ -44,7 +44,7 @@
   "expo-gl": "~15.1.7",
   "expo-google-app-auth": "~8.3.0",
   "expo-haptics": "~14.1.4",
-  "expo-image": "~2.4.0",
+  "expo-image": "~2.4.1",
   "expo-image-loader": "~5.1.0",
   "expo-image-manipulator": "~13.1.7",
   "expo-image-picker": "~16.1.4",
