@@ -9,7 +9,6 @@ import android.media.MediaRecorder
 import android.media.MediaRecorder.MEDIA_ERROR_SERVER_DIED
 import android.media.MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN
 import android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
