@@ -96,7 +96,7 @@ it('should return correct pathname for nested stack with initialRouteName, after
   expect(innerARenderCount).toHaveBeenCalledTimes(0);
 });
 
-it('should not render generated screens', async () => {
+it('can navigate during first render', async () => {
   expect(() =>
     renderRouter({
       _layout: function Layout() {
@@ -110,12 +110,9 @@ it('should not render generated screens', async () => {
         return <Stack />;
       },
       index: function Index() {
-        const isFocused = useIsFocused();
         useEffect(() => {
-          if (isFocused) {
-            router.push('/second');
-          }
-        }, [isFocused]);
+          router.push('/second');
+        }, []);
         return <Text testID="index">Index</Text>;
       },
       second: () => <Text testID="second">Second</Text>,
@@ -125,25 +122,24 @@ it('should not render generated screens', async () => {
   );
 
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(screen.queryByTestId('inner-index')).toBeNull();
-  expect(screen.queryByTestId('inner-second')).toBeNull();
+  expect(screen.queryByTestId('index')).toBeNull();
+
+  act(() => router.back());
+
+  await waitFor(() => expect(screen.getByTestId('index')).toBeVisible());
+  expect(screen.queryByTestId('second')).toBeNull();
 });
 
-it('should not render generated screens', async () => {
+it('can navigate during first render of nested navigator', async () => {
   const layoutMount = jest.fn();
   const innerLayoutMount = jest.fn();
   const innerIndexMount = jest.fn();
   const innerSecondMount = jest.fn();
   renderRouter({
     _layout: function Layout() {
-      const [ready, setReady] = useState(false);
       useEffect(() => {
         layoutMount();
-        setReady(true);
       }, []);
-      if (!ready) {
-        return null;
-      }
       return <Stack />;
     },
     index: () => <Text testID="index">Index</Text>,
@@ -176,76 +172,18 @@ it('should not render generated screens', async () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.queryByTestId('inner-index')).toBeNull();
   expect(screen.queryByTestId('inner-second')).toBeNull();
+  expect(layoutMount).toHaveBeenCalledTimes(1);
+  expect(innerLayoutMount).toHaveBeenCalledTimes(0);
+  expect(innerIndexMount).toHaveBeenCalledTimes(0);
+  expect(innerSecondMount).toHaveBeenCalledTimes(0);
 
-  expect(() => {
-    act(() => {
-      router.push('/inner');
-    });
-  }).toThrow(
-    'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
-  );
-});
-
-it('should not render generated screens', async () => {
-  const layoutMount = jest.fn();
-  const innerLayoutMount = jest.fn();
-  const innerIndexMount = jest.fn();
-  const innerSecondMount = jest.fn();
-  renderRouter({
-    _layout: function Layout() {
-      const [ready, setReady] = useState(false);
-      useEffect(() => {
-        layoutMount();
-        setReady(true);
-      }, []);
-      if (!ready) {
-        return null;
-      }
-      return <Stack />;
-    },
-    index: () => <Text testID="index">Index</Text>,
-    'inner/_layout': function InnerLayout() {
-      useEffect(() => {
-        innerLayoutMount();
-      }, []);
-      return <Stack />;
-    },
-    'inner/index': function Index() {
-      const isFocused = useIsFocused();
-      const [ready, setReady] = useState(false);
-      useEffect(() => {
-        innerIndexMount();
-        setReady(true);
-      }, []);
-      useEffect(() => {
-        if (ready && isFocused) {
-          router.push('/inner/second');
-        }
-      }, [isFocused, ready]);
-      return <Text testID="inner-index">Inner Index</Text>;
-    },
-    'inner/second': function Second() {
-      useEffect(() => {
-        innerSecondMount();
-      }, []);
-      return <Text testID="inner-second">Inner Second</Text>;
-    },
+  act(() => {
+    router.push('/inner');
   });
 
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen.queryByTestId('inner-index')).toBeNull();
-  expect(screen.queryByTestId('inner-second')).toBeNull();
-
-  expect(() => {
-    act(() => {
-      router.push('/inner');
-    });
-  }).not.toThrow();
-
-  await waitFor(() => expect(screen.getByTestId('inner-second')).toBeVisible());
   expect(screen.queryByTestId('index')).toBeNull();
   expect(screen.queryByTestId('inner-index')).toBeNull();
-
+  expect(screen.getByTestId('inner-second')).toBeVisible();
   expect(layoutMount).toHaveBeenCalledTimes(1);
   expect(innerLayoutMount).toHaveBeenCalledTimes(1);
   expect(innerIndexMount).toHaveBeenCalledTimes(1);

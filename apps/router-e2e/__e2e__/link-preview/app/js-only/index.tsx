@@ -1,13 +1,10 @@
-import { Link, router, usePathname } from 'expo-router';
+import { Link, usePathname } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, useWindowDimensions, TouchableOpacity, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const HomeIndex = () => {
   const pathname = usePathname();
-  useEffect(() => {
-    router.push('/js-only/modal');
-  }, []);
 
   return (
     <ScrollView
@@ -16,8 +13,8 @@ const HomeIndex = () => {
       <Text>JS Only cases</Text>
       <Text>Current Path: {pathname}</Text>
       <Spacer />
-      <Link href="/js-only/modal">
-        <Link.Trigger>Link.Preview: /js-only/modal</Link.Trigger>
+      <Link href="/js-only/slot">
+        <Link.Trigger>Link.Preview: /js-only/slot</Link.Trigger>
         <Link.Preview />
       </Link>
     </ScrollView>

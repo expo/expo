@@ -1,9 +1,5 @@
-import { Slot, Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 
 export default function Layout() {
-  return (
-    <Stack>
-      <Stack.Screen name="modal" options={{ presentation: 'pageSheet', headerShown: false }} />
-    </Stack>
-  );
+  return <Slot />;
 }

@@ -59,20 +59,8 @@ const href_1 = require("../link/href");
 const matchers_1 = require("../matchers");
 const navigationParams_1 = require("../navigationParams");
 const url_1 = require("../utils/url");
-function isCurrentNavigatorReady() {
-    let state = router_store_1.store.navigationRef.getRootState();
-    while (state) {
-        const index = state.index ?? 0;
-        const route = state.routes[index];
-        if (route.params && 'screen' in route.params && !route.state) {
-            return false;
-        }
-        state = route.state;
-    }
-    return true;
-}
 function assertIsReady() {
-    if (!router_store_1.store.navigationRef.isReady() || !isCurrentNavigatorReady()) {
+    if (!router_store_1.store.navigationRef.isReady()) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
@@ -101,7 +89,16 @@ exports.routingQueue = {
         let action;
         while ((action = events.shift())) {
             if (ref.current) {
-                ref.current.dispatch(action);
+                if (action.type === 'ROUTER_LINK') {
+                    const { payload: { href, options }, } = action;
+                    action = getNavigateAction(href, options, options.event, options.withAnchor, options.dangerouslySingular, !!options.__internal__PreviewKey);
+                    if (action) {
+                        ref.current.dispatch(action);
+                    }
+                }
+                else {
+                    ref.current.dispatch(action);
+                }
             }
         }
     },
@@ -194,6 +191,29 @@ function linkTo(originalHref, options = {}) {
         Linking.openURL(href);
         return;
     }
+    if (href === '..' || href === '../') {
+        assertIsReady();
+        const navigationRef = router_store_1.store.navigationRef.current;
+        if (navigationRef == null) {
+            throw new Error("Couldn't find a navigation object. Is your component inside NavigationContainer?");
+        }
+        if (!router_store_1.store.linking) {
+            throw new Error('Attempted to link to route when no routes are present');
+        }
+        navigationRef.goBack();
+        return;
+    }
+    const linkAction = {
+        type: 'ROUTER_LINK',
+        payload: {
+            href,
+            options,
+        },
+    };
+    exports.routingQueue.add(linkAction);
+}
+function getNavigateAction(baseHref, options, type = 'NAVIGATE', withAnchor, singular, isPreviewNavigation) {
+    let href = baseHref;
     assertIsReady();
     const navigationRef = router_store_1.store.navigationRef.current;
     if (navigationRef == null) {
@@ -202,13 +222,9 @@ function linkTo(originalHref, options = {}) {
     if (!router_store_1.store.linking) {
         throw new Error('Attempted to link to route when no routes are present');
     }
-    if (href === '..' || href === '../') {
-        navigationRef.goBack();
-        return;
-    }
     const rootState = navigationRef.getRootState();
     href = (0, href_1.resolveHrefStringWithSegments)(href, router_store_1.store.getRouteInfo(), options);
-    href = (0, getRoutesRedirects_1.applyRedirects)(href, router_store_1.store.redirects);
+    href = (0, getRoutesRedirects_1.applyRedirects)(href, router_store_1.store.redirects) ?? undefined;
     // If the href is undefined, it means that the redirect has already been handled the navigation
     if (!href) {
         return;
@@ -218,9 +234,6 @@ function linkTo(originalHref, options = {}) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    exports.routingQueue.add(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular, !!options.__internal__PreviewKey));
-}
-function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', withAnchor, singular, isPreviewNavigation) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -235,7 +248,7 @@ function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', wi
      *
      * Other parameters such as search params and hash are not evaluated.
      */
-    const { actionStateRoute, navigationState } = findDivergentState(_actionState, _navigationState, type === 'PRELOAD');
+    const { actionStateRoute, navigationState } = findDivergentState(state, rootState, type === 'PRELOAD');
     /*
      * We found the target navigator, but the payload is in the incorrect format
      * We need to convert the action state to a payload that can be dispatched
