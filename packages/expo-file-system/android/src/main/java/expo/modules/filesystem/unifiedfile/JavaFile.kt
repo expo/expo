@@ -32,7 +32,7 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
   }
 
   override fun deleteRecursively(): Boolean {
-    if(isDirectory) {
+    if (isDirectory) {
       listFiles()?.forEach { it.deleteRecursively() }
     }
     return super<File>.delete()

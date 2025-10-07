@@ -3,7 +3,6 @@ package expo.modules.filesystem.unifiedfile
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -93,7 +92,7 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
 }
 
 fun DocumentFile.deleteRecursively(): Boolean {
-  if(isDirectory) {
+  if (isDirectory) {
     listFiles().forEach { it.deleteRecursively() }
   }
   return delete()
