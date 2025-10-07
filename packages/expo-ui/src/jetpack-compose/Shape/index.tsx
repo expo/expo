@@ -65,7 +65,7 @@ function PillStar(props: ShapeProps) {
   ) as ShapeJSXElement;
 }
 
-function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>) {
+function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color' | 'modifiers'>) {
   return (
     <ShapeNativeView
       {...props}
@@ -77,7 +77,9 @@ function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>) {
   ) as ShapeJSXElement;
 }
 
-function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>) {
+function Circle(
+  props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color' | 'modifiers'>
+) {
   return (
     <ShapeNativeView
       {...props}
@@ -89,7 +91,9 @@ function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | '
   ) as ShapeJSXElement;
 }
 
-function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>) {
+function Rectangle(
+  props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color' | 'modifiers'>
+) {
   return (
     <ShapeNativeView
       {...props}

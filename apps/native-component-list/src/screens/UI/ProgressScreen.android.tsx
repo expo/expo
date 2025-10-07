@@ -1,7 +1,8 @@
-import { CircularProgress, LinearProgress } from '@expo/ui/jetpack-compose';
+import { CircularProgress, LinearProgress, Host } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 
 import { Page, Section } from '../../components/Page';
+import { Column } from '@expo/ui/jetpack-compose-primitives';
 
 export default function ProgressScreen() {
   const [progress, setProgress] = React.useState(0);
@@ -18,20 +19,36 @@ export default function ProgressScreen() {
   return (
     <Page>
       <Section title="Indeterminate progress" gap={16}>
-        <CircularProgress />
-        <LinearProgress />
+        <Host style={{ width: 30, height: 30 }}>
+          <CircularProgress />
+        </Host>
+        <Host>
+          <LinearProgress />
+        </Host>
       </Section>
       <Section title="Determinate progress" gap={16}>
-        <CircularProgress progress={progress} />
-        <LinearProgress progress={progress} />
+        <Host style={{ width: 30, height: 30 }}>
+          <CircularProgress progress={progress} />
+        </Host>
+        <Host>
+          <LinearProgress progress={progress} />
+        </Host>
       </Section>
       <Section title="Color" gap={16}>
-        <CircularProgress progress={progress} color="red" />
-        <LinearProgress progress={progress} color="red" />
+        <Host style={{ width: 30, height: 30 }}>
+          <CircularProgress progress={progress} color="red" />
+        </Host>
+        <Host>
+          <LinearProgress progress={progress} color="red" />
+        </Host>
       </Section>
       <Section title="Track color" gap={16}>
-        <CircularProgress elementColors={{ trackColor: '#cccccc' }} />
-        <LinearProgress elementColors={{ trackColor: '#cccccc' }} />
+        <Host style={{ width: 30, height: 30 }}>
+          <CircularProgress elementColors={{ trackColor: '#cccccc' }} />
+        </Host>
+        <Host>
+          <LinearProgress elementColors={{ trackColor: '#cccccc' }} />
+        </Host>
       </Section>
     </Page>
   );

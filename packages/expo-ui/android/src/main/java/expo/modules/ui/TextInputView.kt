@@ -63,7 +63,7 @@ private fun String.autoCapitalize(): KeyboardCapitalization {
 }
 
 class TextInputView(context: Context, appContext: AppContext) :
-  ExpoComposeView<TextInputProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<TextInputProps>(context, appContext) {
   override val props = TextInputProps()
   private val onValueChanged by EventDispatcher()
 

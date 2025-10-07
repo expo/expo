@@ -31,7 +31,7 @@ data class ChipProps(
 ) : ComposeProps
 
 class ChipView(context: Context, appContext: AppContext) :
-  ExpoComposeView<ChipProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<ChipProps>(context, appContext) {
 
   override val props = ChipProps()
 

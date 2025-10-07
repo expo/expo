@@ -1,8 +1,16 @@
-import { Button, Shape } from '@expo/ui/jetpack-compose';
+import { Button as JetpackButton, Host, Shape } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
+
+function Button(props: React.ComponentProps<typeof JetpackButton>) {
+  return (
+    <Host>
+      <JetpackButton {...props} />
+    </Host>
+  );
+}
 
 export default function UIScreen() {
   return (
@@ -12,9 +20,6 @@ export default function UIScreen() {
           <Button style={styles.button}>Test</Button>
         </Section>
         <Section title="System Styles">
-          <Button style={styles.button} variant="default">
-            Default
-          </Button>
           <Button style={styles.button} variant="bordered">
             Bordered
           </Button>
@@ -82,7 +87,7 @@ export default function UIScreen() {
         <Section title="Custom shapes">
           <Button
             style={{ aspectRatio: 2, width: 200 }}
-            shape={Shape.PillStar({ innerRadius: 0.5, radius: 1, verticesCount: 20 })}
+            shape={Shape.PillStar({ innerRadius: 0.5, radius: 1, verticesCount: 20, smoothing: 1 })}
             leadingIcon="rounded.Check"
           />
         </Section>
