@@ -16,6 +16,7 @@
 - [iOS] Fix NSURL to JSIString conversion returning nil. ([#39567](https://github.com/expo/expo/pull/39567) by [@behenate](https://github.com/behenate))
 - Fix SharedObject created with `useReleasingSharedObject` getting destroyed after a fast refresh caused by a change in its dependencies. ([#39753](https://github.com/expo/expo/pull/39753) by [@behenate](https://github.com/behenate))
 - [Android] Restore `register` overload in `ModuleRegistry`. ([#40149](https://github.com/expo/expo/pull/40149) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Add `invalidate` callback to SwiftUIVirtualView. ([#40237](https://github.com/expo/expo/pull/40237) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
@@ -23,7 +24,6 @@
 - [iOS] Add explicit CallInvoker and CallbackWrapper imports to EXJSIUtils ([#39818](https://github.com/expo/expo/pull/39818) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Refactor getDelayLoadAppHandler to use ReactHost ([#40084](https://github.com/expo/expo/pull/40084) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
-- [iOS] Add `invalidate` callback to SwiftUIVirtualView. ([#40237](https://github.com/facebook/react-native/pull/40237) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 3.0.19 - 2025-10-01
 
