@@ -26,6 +26,10 @@ defaults:
     node: 22.14.0
     yarn: 1.22.22
 
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
 jobs:
   ios:
     runs_on: macos-large
@@ -40,7 +44,7 @@ jobs:
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project-custom-init.ts
           ls -la ../updates-e2e
@@ -88,7 +92,7 @@ jobs:
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project-custom-init.ts
           ls -la ../updates-e2e

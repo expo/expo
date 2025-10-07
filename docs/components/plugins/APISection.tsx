@@ -44,10 +44,7 @@ const filterDataByKind = (
       additionalCondition(entry)
   );
 
-const isHook = ({ name }: { name: string }) =>
-  name.startsWith('use') &&
-  // note(simek): hardcode this exception until the method will be renamed
-  name !== 'useSystemBrightnessAsync';
+const isHook = ({ name }: { name: string }) => name.startsWith('use');
 
 const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
