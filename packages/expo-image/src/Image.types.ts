@@ -379,6 +379,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    *
    * @default false
    * @platform ios 17.0+
+   * @platform tvos 17.0+
    */
   preferHighDynamicRange?: boolean;
 }
