@@ -21,6 +21,10 @@ on:
   schedule:
     - cron: '0 18 * * SUN' # 18:00 UTC every Sunday
 
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
 defaults:
   tools:
     node: 22.14.0
@@ -40,7 +44,7 @@ jobs:
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-bricking-measures-disabled-eas-project.ts
           ls -la ../updates-e2e
@@ -76,7 +80,7 @@ jobs:
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-bricking-measures-disabled-eas-project.ts
           ls -la ../updates-e2e
@@ -98,4 +102,3 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-bricking-measures-disabled.yml android release
-
