@@ -654,6 +654,7 @@ class FileDownloader(
       return AssetDownloadResult(asset, false)
     } else {
       try {
+        val allowPatch = asset.isLaunchAsset && configuration.enablePatchSupport
         val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
           asset,
           extraHeaders,
@@ -661,13 +662,13 @@ class FileDownloader(
             asset,
             extraHeaders,
             configuration,
-            allowPatch = asset.isLaunchAsset
+            allowPatch = allowPatch
           ),
           asset.expectedHash,
           path,
           updatesDir,
           assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
-          allowPatch = asset.isLaunchAsset
+          allowPatch = allowPatch
         )
 
         asset.downloadTime = Date()
@@ -739,7 +740,7 @@ class FileDownloader(
       configuration.requestHeaders.containsKey("Accept")
 
     if (!hasAcceptOverride) {
-      val patchEnabled = allowPatch && assetEntity.isLaunchAsset
+      val patchEnabled = allowPatch && assetEntity.isLaunchAsset && configuration.enablePatchSupport
       builder.header("Accept", if (patchEnabled) "$PATCH_CONTENT_TYPE,*/*" else "*/*")
     }
 

@@ -52,6 +52,7 @@ class UpdatesUtilsTest : TestCase() {
       codeSigningAllowUnsignedManifests = true,
       enableExpoUpdatesProtocolV0CompatibilityMode = true,
       disableAntiBrickingMeasures = false,
+      enablePatchSupport = false,
       hasUpdatesOverride = false,
       cachedOverrideMap = emptyMap()
     )

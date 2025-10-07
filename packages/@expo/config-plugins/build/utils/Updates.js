@@ -17,6 +17,7 @@ exports.getUpdatesCodeSigningCertificate = getUpdatesCodeSigningCertificate;
 exports.getUpdatesCodeSigningMetadata = getUpdatesCodeSigningMetadata;
 exports.getUpdatesCodeSigningMetadataStringified = getUpdatesCodeSigningMetadataStringified;
 exports.getUpdatesEnabled = getUpdatesEnabled;
+exports.getUpdatesPatchSupportEnabled = getUpdatesPatchSupportEnabled;
 exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
@@ -171,6 +172,12 @@ function getUpdatesEnabled(config) {
 function getUpdatesUseEmbeddedUpdate(config) {
   if (config.updates?.useEmbeddedUpdate !== undefined) {
     return config.updates.useEmbeddedUpdate;
+  }
+  return true;
+}
+function getUpdatesPatchSupportEnabled(config) {
+  if (config.updates?.enablePatchSupport !== undefined) {
+    return config.updates.enablePatchSupport;
   }
   return true;
 }
