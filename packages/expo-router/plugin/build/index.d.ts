@@ -17,6 +17,8 @@ declare const withRouter: ConfigPlugin<{
     sitemap?: boolean;
     /** Generate partial typed routes */
     partialTypedGroups?: boolean;
+    /** A list of headers that are set on every route response from the server */
+    headers: Record<string, string | string[]>;
     /** Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config. */
     unstable_useServerMiddleware?: boolean;
 } | void>;
