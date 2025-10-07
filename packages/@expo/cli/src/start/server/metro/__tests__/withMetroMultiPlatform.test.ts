@@ -800,6 +800,12 @@ describe(withExtendedResolver, () => {
             'inline-style-prefixer/index.js',
           ].forEach((name) => {
             it(`externs ${name} to virtual node shim`, () => {
+              jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+                return context.originModulePath === '/root/package.json'
+                  ? { type: 'sourceFile', filePath: `mock:${moduleName}` }
+                  : { type: 'empty' };
+              });
+
               const result = config.resolver.resolveRequest!(
                 // Context
                 getNodeResolverContext(),
@@ -815,11 +821,17 @@ describe(withExtendedResolver, () => {
                 `\0node:${name}`
               );
 
-              expect(getResolveFunc()).toHaveBeenCalledTimes(0);
+              expect(getResolveFunc()).toHaveBeenCalledTimes(1);
             });
           });
 
           it(`externs @babel/runtime/xxx subpaths `, () => {
+            jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+              return context.originModulePath === '/root/package.json'
+                ? { type: 'sourceFile', filePath: `mock:${moduleName}` }
+                : { type: 'empty' };
+            });
+
             const result = config.resolver.resolveRequest!(
               getNodeResolverContext(),
               '@babel/runtime/xxx/foo.js',
@@ -832,7 +844,7 @@ describe(withExtendedResolver, () => {
               '\0node:@babel/runtime/xxx/foo.js'
             );
 
-            expect(getResolveFunc()).toHaveBeenCalledTimes(0);
+            expect(getResolveFunc()).toHaveBeenCalledTimes(1);
           });
         });
       });
