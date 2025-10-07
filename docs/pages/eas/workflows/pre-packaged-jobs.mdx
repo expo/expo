@@ -23,6 +23,7 @@ To successfully use the build job, you'll need to complete a build with EAS CLI 
 jobs:
   build_app:
     type: build
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       platform: android | ios # required
       profile: string # optional - default: production
@@ -459,6 +460,7 @@ Submission jobs require additional configuration to run within a CI/CD process. 
 jobs:
   submit_to_store:
     type: submit
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       build_id: string # required
       profile: string # optional - default: production
@@ -553,6 +555,7 @@ TestFlight jobs require an iOS build created with `distribution: store`. You'll 
 jobs:
   testflight_distribution:
     type: testflight
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       build_id: string # required
       profile: string # optional - default: production
@@ -652,6 +655,7 @@ To publish update previews and to send over-the-air updates, you'll need to run 
 jobs:
   publish_update:
     type: update
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       message: string # optional
       platform: string # optional - android | ios | all, defaults to all
@@ -1527,6 +1531,7 @@ Repackages an app from an existing build. This job repackages the app's metadata
 jobs:
   repack:
     type: repack
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       build_id: string # required
       profile: string # optional
