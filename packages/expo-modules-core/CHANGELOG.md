@@ -7,16 +7,37 @@
 ### 🎉 New features
 
 - [Android] Adds support for `ArrayBuffer`. ([#39943](https://github.com/expo/expo/pull/39943) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Introduce ExpoAppDelegateSubscriberManager class ([#40008](https://github.com/expo/expo/pull/40008) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add `AppContext` to views environment so it can be accessed if needed. ([#39207](https://github.com/expo/expo/pull/39207) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix NSURL to JSIString conversion returning nil. ([#39567](https://github.com/expo/expo/pull/39567) by [@behenate](https://github.com/behenate))
-- [iOS] Return EXJavaScriptValue from null/undefined in arrays. ([#39872](https://github.com/expo/expo/pull/39872) by [@jakex7](https://github.com/jakex7))
+- Fix SharedObject created with `useReleasingSharedObject` getting destroyed after a fast refresh caused by a change in its dependencies. ([#39753](https://github.com/expo/expo/pull/39753) by [@behenate](https://github.com/behenate))
+- [Android] Restore `register` overload in `ModuleRegistry`. ([#40149](https://github.com/expo/expo/pull/40149) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
 - [iOS] Add explicit CallInvoker and CallbackWrapper imports to EXJSIUtils ([#39818](https://github.com/expo/expo/pull/39818) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Refactor getDelayLoadAppHandler to use ReactHost ([#40084](https://github.com/expo/expo/pull/40084) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
+
+## 3.0.19 - 2025-10-01
+
+### 💡 Others
+
+- [ios] - Set host dimension synchronously on native ([#40017](https://github.com/expo/expo/pull/40017) by [@nishan](https://github.com/intergalacticspacehighway)) ([#40017](https://github.com/expo/expo/pull/40017) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 3.0.18 - 2025-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Return EXJavaScriptValue from null/undefined in arrays. ([#39872](https://github.com/expo/expo/pull/39872) by [@jakex7](https://github.com/jakex7))
+
+## 3.0.17 - 2025-09-18
+
+_This version does not introduce any user-facing changes._
 
 ## 3.0.16 — 2025-09-16
 

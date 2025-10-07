@@ -40,6 +40,12 @@ exports[`server-output express server requests has expected routes manifest entr
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/api/runtime+api.js",
+      "namedRegex": "^/api/runtime(?:/)?$",
+      "page": "/api/runtime",
+      "routeKeys": {},
+    },
+    {
       "file": "_expo/functions/api/env-vars+api.js",
       "namedRegex": "^/api/env\\-vars(?:/)?$",
       "page": "/api/env-vars",
@@ -205,6 +211,12 @@ exports[`server-output workerd server requests has expected routes manifest entr
       "file": "_expo/functions/api/headers+api.js",
       "namedRegex": "^/api/headers(?:/)?$",
       "page": "/api/headers",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/runtime+api.js",
+      "namedRegex": "^/api/runtime(?:/)?$",
+      "page": "/api/runtime",
       "routeKeys": {},
     },
     {

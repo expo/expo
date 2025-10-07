@@ -6,11 +6,20 @@
 
 ### 🎉 New features
 
+- [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
+
+### 🐛 Bug fixes
+
+- [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Fix issue where after replacing the media source, events are emitted twice. ([#40133](https://github.com/expo/expo/pull/40133) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 1.0.13 - 2025-09-18
+
 ### 🐛 Bug fixes
 
 - [Android] Fix zero-byte audio recordings after calling `audioRecorder.stop()` ([#39788](https://github.com/expo/expo/pull/39788) by [@hirbod](https://github.com/hirbod))
-
-### 💡 Others
 
 ## 1.0.12 — 2025-09-16
 

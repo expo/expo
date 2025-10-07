@@ -44,7 +44,7 @@ class DevMenuPackage : Package, ReactPackage {
           if (!DevMenuManager.isInitialized()) {
             DevMenuManager.initializeWithReactHost(
               ReactHostWrapper(
-                reactNativeHost = (activity.application as ReactApplication).reactNativeHost,
+                reactNativeHost = null,
                 reactHostProvider = { (activity.application as ReactApplication).reactHost }
               )
             )

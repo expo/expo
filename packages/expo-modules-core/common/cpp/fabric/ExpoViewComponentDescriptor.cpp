@@ -44,6 +44,34 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
 
     snode->setSize({width, height});
   }
+  
+  // handle layout style prop update
+  auto styleWidth = state._styleWidth;
+  auto styleHeight = state._styleHeight;
+
+  if (!isnan(styleWidth) || !isnan(styleHeight)) {
+    auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(snode->getProps());
+    
+    auto& style = const_cast<facebook::yoga::Style&>(props.yogaStyle);
+    bool changedStyle = false;
+    
+    if (!isnan(styleWidth)) {
+      style.setDimension(facebook::yoga::Dimension::Width, facebook::yoga::StyleSizeLength::points(styleWidth));
+      changedStyle = true;
+    }
+    
+    if (!isnan(styleHeight)) {
+      style.setDimension(facebook::yoga::Dimension::Height, facebook::yoga::StyleSizeLength::points(styleHeight));
+      changedStyle = true;
+    }
+    
+    // Update yoga props and dirty layout if we changed the style
+    if (changedStyle) {
+      auto* expoNode = const_cast<ExpoViewShadowNode*>(snode);
+      expoNode->updateYogaProps();
+      expoNode->dirtyLayout();
+    }
+  }
   ConcreteComponentDescriptor::adopt(shadowNode);
 }
 

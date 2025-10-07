@@ -37,6 +37,12 @@ public final class ExpoUIModule: Module {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
       }
+      AsyncFunction("blur") { (view: SecureFieldView) in
+        view.blur()
+      }
+      AsyncFunction("focus") { (view: SecureFieldView) in
+        view.focus()
+      }
     }
     View(ShareLinkView.self)
     View(SliderView.self)
@@ -47,6 +53,12 @@ public final class ExpoUIModule: Module {
     View(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("blur") { (view: TextFieldView) in
+        view.blur()
+      }
+      AsyncFunction("focus") { (view: TextFieldView) in
+        view.focus()
       }
     }
     View(VStackView.self)

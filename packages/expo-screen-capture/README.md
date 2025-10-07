@@ -7,8 +7,6 @@
 
 This is especially important on Android, since the [`android.media.projection`](https://developer.android.com/about/versions/android-5.0.html#ScreenCapture) API allows third-party apps to perform screen capture or screen sharing (even if the app is backgrounded).
 
-> Currently, taking screenshots on iOS cannot be prevented. This is due to underlying OS limitations.
-
 ## API documentation
 
 ## Installation in managed Expo projects
