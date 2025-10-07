@@ -501,7 +501,7 @@ export const scrollContentBackground = (visible: 'automatic' | 'visible' | 'hidd
  * Sets the background of a row.
  * @param color - The row color (hex string, e.g., '#FF0000')
  */
-export const listRowBackground = (color: string) => createModifier('listRowBackground', { color });
+export const listRowBackground = (color: Color) => createModifier('listRowBackground', { color });
 
 // =============================================================================
 // Type Definitions

@@ -789,7 +789,10 @@ internal struct ScrollContentBackground: ViewModifier, Record {
   @Field var visible: ScrollContentBackgroundTypes = .visible
 
     func body(content: Content) -> some View {
-        if #available(iOS 16.0, *) {
+        #if os(tvOS)
+          content
+        #else
+          if #available(iOS 16.0, *) {
           switch visible {
             case .visible:
               content.scrollContentBackground(.visible)

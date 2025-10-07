@@ -394,7 +394,7 @@ export declare const scrollContentBackground: (visible: "automatic" | "visible" 
  * Sets the background of a row.
  * @param color - The row color (hex string, e.g., '#FF0000')
  */
-export declare const listRowBackground: (color: string) => ModifierConfig;
+export declare const listRowBackground: (color: Color) => ModifierConfig;
 /**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
