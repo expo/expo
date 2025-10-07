@@ -787,24 +787,25 @@ internal enum ScrollContentBackgroundTypes: String, Enumerable {
 
 internal struct ScrollContentBackground: ViewModifier, Record {
   @Field var visible: ScrollContentBackgroundTypes = .visible
-
-    func body(content: Content) -> some View {
-        #if os(tvOS)
-          content
-        #else
-          if #available(iOS 16.0, *) {
-          switch visible {
-            case .visible:
-              content.scrollContentBackground(.visible)
-            case .hidden:
-              content.scrollContentBackground(.hidden)
-            case .automatic:
-              content.scrollContentBackground(.automatic)
-          }
-        } else {
-          content
+  
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if #available(iOS 16.0, *) {
+        switch visible {
+        case .visible:
+          content.scrollContentBackground(.visible)
+        case .hidden:
+          content.scrollContentBackground(.hidden)
+        case .automatic:
+          content.scrollContentBackground(.automatic)
         }
-    }
+      } else {
+        content
+      }
+    #endif
+  }
 }
 
 internal struct ListRowBackground: ViewModifier, Record {
