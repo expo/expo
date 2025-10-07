@@ -164,13 +164,22 @@ export const ImageScreens = [
 ];
 
 if (Platform.OS === 'ios') {
-  ImageScreens.push({
-    name: 'Live Text Interaction',
-    route: 'image/live-text-interaction',
-    getComponent() {
-      return optionalRequire(() => require('./ImageLiveTextInteractionScreen'));
+  ImageScreens.push(
+    {
+      name: 'Live Text Interaction',
+      route: 'image/live-text-interaction',
+      getComponent() {
+        return optionalRequire(() => require('./ImageLiveTextInteractionScreen'));
+      },
     },
-  });
+    {
+      name: 'High Dynamic Range',
+      route: 'image/hdr',
+      getComponent() {
+        return optionalRequire(() => require('./ImageHDRScreen'));
+      },
+    }
+  );
 }
 
 export default function ImageScreen() {

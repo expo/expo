@@ -115,6 +115,12 @@ public final class ImageModule: Module {
         view.enforceEarlyResizing = enforceEarlyResizing
       }
 
+      Prop("preferHighDynamicRange", false) { (view, preferHighDynamicRange: Bool) in
+        if #available(iOS 17.0, *) {
+          view.sdImageView.preferredImageDynamicRange = preferHighDynamicRange ? .constrainedHigh : .unspecified
+        }
+      }
+
       AsyncFunction("startAnimating") { (view: ImageView) in
         view.sdImageView.startAnimating()
       }

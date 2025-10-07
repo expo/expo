@@ -372,6 +372,15 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * @platform ios
    */
   enforceEarlyResizing?: boolean;
+
+  /**
+   * Controls whether the image view can leverage the extended dynamic range (EDR). Use this prop if you want to support HDR images,
+   * otherwise all images are rendered as SDR.
+   *
+   * @default false
+   * @platform ios 17.0+
+   */
+  preferHighDynamicRange?: boolean;
 }
 
 /**
