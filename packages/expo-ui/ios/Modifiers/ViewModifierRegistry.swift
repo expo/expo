@@ -779,6 +779,47 @@ internal struct AnimationModifier: ViewModifier, Record {
   }
 }
 
+internal enum ScrollContentBackgroundTypes: String, Enumerable {
+  case automatic
+  case hidden
+  case visible
+}
+
+internal struct ScrollContentBackground: ViewModifier, Record {
+  @Field var visible: ScrollContentBackgroundTypes = .visible
+  
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if #available(iOS 16.0, *) {
+        switch visible {
+        case .visible:
+          content.scrollContentBackground(.visible)
+        case .hidden:
+          content.scrollContentBackground(.hidden)
+        case .automatic:
+          content.scrollContentBackground(.automatic)
+        }
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
+internal struct ListRowBackground: ViewModifier, Record {
+  @Field var color: Color?
+
+  func body(content: Content) -> some View {
+    if let color = color {
+      content.listRowBackground(color)
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Registry
 
 /**
@@ -1096,6 +1137,14 @@ extension ViewModifierRegistry {
 
     register("buttonStyle") { params, appContext, _ in
       return try ButtonStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollContentBackground") { params, appContext, _ in
+      return try ScrollContentBackground(from: params, appContext: appContext)
+    }
+
+    register("listRowBackground") { params, appContext, _ in
+      return try ListRowBackground(from: params, appContext: appContext)
     }
   }
 }

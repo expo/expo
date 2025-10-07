@@ -39,6 +39,8 @@ import {
   foregroundStyle,
   fixedSize,
   disabled,
+  scrollContentBackground,
+  listRowBackground,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -50,16 +52,45 @@ export default function ModifiersScreen() {
   const dimensions = useWindowDimensions();
   const safeAreaInsets = useSafeAreaInsets();
   const [color, setColor] = useState<string | null>('blue');
+
+  const [hideScrollBackground, setHideScrollBackground] = useState(false);
+
+  const [rowColor, setRowColor] = useState<string>('white');
+  const [backgroundFormColor, setBackgroundFormColor] = useState<string>('#EAEAEAFF');
+
   return (
     <ScrollView>
       <Host matchContents>
         <Form
           modifiers={[
+            scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),
+            background(backgroundFormColor),
             frame({
               height: dimensions.height - safeAreaInsets.top - safeAreaInsets.bottom,
               width: dimensions.width,
             }),
           ]}>
+          {/* Modifier usingscrollContentBackground and listRowBackground */}
+          <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>
+            <Switch
+              value={hideScrollBackground}
+              label="Hide form background"
+              onValueChange={setHideScrollBackground}
+            />
+            <ColorPicker
+              label="Select a row color"
+              selection={rowColor}
+              supportsOpacity
+              onValueChanged={setRowColor}
+            />
+            <ColorPicker
+              label="Select a background color"
+              selection={backgroundFormColor}
+              supportsOpacity
+              onValueChanged={setBackgroundFormColor}
+            />
+          </Section>
+
           {/* Basic  Modifier using foregroundStyle */}
 
           <Section
