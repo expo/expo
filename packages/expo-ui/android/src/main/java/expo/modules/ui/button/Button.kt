@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
@@ -37,8 +36,8 @@ import expo.modules.ui.ExpoModifier
 import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
 import expo.modules.ui.fromExpoModifiers
-import expo.modules.ui.fromShapeRecord
 import expo.modules.ui.getImageVector
+import expo.modules.ui.pathFromShapeRecord
 
 open class ButtonPressedEvent() : Record, Serializable
 
@@ -76,7 +75,15 @@ data class ButtonProps(
 ) : ComposeProps
 
 @Composable
-fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, onPress: () -> Unit, modifier: Modifier = Modifier, shape: Shape?, content: @Composable (RowScope.() -> Unit)) {
+fun StyledButton(
+  variant: ButtonVariant,
+  colors: ButtonColors,
+  disabled: Boolean,
+  onPress: () -> Unit,
+  modifier: Modifier = Modifier,
+  shape: Shape?,
+  content: @Composable (RowScope.() -> Unit)
+) {
   when (variant) {
     ButtonVariant.BORDERED -> FilledTonalButton(
       onPress,
@@ -154,7 +161,7 @@ fun getShape(shapeRecord: ShapeRecord?): Shape? {
   if (shapeRecord == null) return null
   return object : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-      val path = Path.fromShapeRecord(shapeRecord, size)
+      val path = pathFromShapeRecord(shapeRecord, size)
       return Outline.Generic(path)
     }
   }
