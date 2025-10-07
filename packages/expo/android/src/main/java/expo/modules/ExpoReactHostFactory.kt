@@ -40,21 +40,21 @@ object ExpoReactHostFactory {
   ) : ReactHostDelegate {
 
     val hostDelegateJsBundleFilePath: String? by lazy {
-        hostHandlers.asSequence()
-            .mapNotNull { it.getJSBundleFile(useDevSupport) }
-            .firstOrNull() ?: jsBundleFilePath
+      hostHandlers.asSequence()
+        .mapNotNull { it.getJSBundleFile(useDevSupport) }
+        .firstOrNull() ?: jsBundleFilePath
     }
 
     val hostDelegateJSBundleAssetPath: String? by lazy {
-        hostHandlers.asSequence()
-            .mapNotNull { it.getBundleAssetName(useDevSupport) }
-            .firstOrNull() ?: jsBundleAssetPath
+      hostHandlers.asSequence()
+        .mapNotNull { it.getBundleAssetName(useDevSupport) }
+        .firstOrNull() ?: jsBundleAssetPath
     }
 
     val hostDelegateUseDeveloperSupport: Boolean by lazy {
-        hostHandlers.asSequence()
-            .mapNotNull { it.useDeveloperSupport }
-            .firstOrNull() ?: useDevSupport
+      hostHandlers.asSequence()
+        .mapNotNull { it.useDeveloperSupport }
+        .firstOrNull() ?: useDevSupport
     }
 
     // Keeps this `_jsBundleLoader` backing property for DevLauncher to replace its internal value
