@@ -9,7 +9,7 @@
 - [Android] Adds support for `ArrayBuffer`. ([#39943](https://github.com/expo/expo/pull/39943) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Introduce ExpoAppDelegateSubscriberManager class ([#40008](https://github.com/expo/expo/pull/40008) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Add `AppContext` to views environment so it can be accessed if needed. ([#39207](https://github.com/expo/expo/pull/39207) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Add experimental formatters API.
+- [Android] Add experimental formatters API. ([#38946](https://github.com/expo/expo/pull/38946) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
