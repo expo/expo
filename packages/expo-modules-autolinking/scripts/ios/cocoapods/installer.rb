@@ -24,6 +24,7 @@ module Pod
 
     _original_run_podfile_post_install_hooks = instance_method(:run_podfile_post_install_hooks)
     _original_run_podfile_pre_install_hooks = instance_method(:run_podfile_pre_install_hooks)
+    _script_phase_name = '[Expo Autolinking] Run Codegen with autolinking'
 
     public
 
@@ -41,14 +42,14 @@ module Pod
       if react_codegen_native_target
         # Check if the build phase already exists
         already_exists = react_codegen_native_target.build_phases.any? do |phase|
-          phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase) && phase.name == '[Expo] Run Codegen with autolinking'
+          phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase) && phase.name == _script_phase_name
         end
 
         if !already_exists
-          Pod::UI.puts "[Expo] ".blue + "Adding '[Expo Autolinking] Resolve Codegen paths' build phase to ReactCodegen"
+          Pod::UI.puts "[Expo] ".blue + "Adding '#{_script_phase_name}' build phase to ReactCodegen"
 
           # Create the new shell script build phase
-          phase = react_codegen_native_target.new_shell_script_build_phase('[Expo Autolinking] Run Codegen with autolinking')
+          phase = react_codegen_native_target.new_shell_script_build_phase(_script_phase_name)
           phase.shell_path = '/bin/sh'
           phase.shell_script = <<~SH
             pushd "$PODS_ROOT/../" > /dev/null
@@ -82,7 +83,6 @@ module Pod
             react_codegen_native_target.build_phases.delete(phase)
             # Insert it before the "Compile Sources" phase
             react_codegen_native_target.build_phases.insert(compile_sources_index, phase)
-            Pod::UI.puts "[Expo] ".blue + "Positioned build phase before 'Compile Sources'"
           else
             Pod::UI.puts "[Expo] ".yellow + "Could not find 'Compile Sources' phase, build phase added at default position"
           end
