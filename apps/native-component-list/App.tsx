@@ -1,43 +1,71 @@
-import { ThemeProvider } from 'ThemeProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { Platform, StatusBar } from 'react-native';
+import { TextInput } from 'react-native';
+import { dispatchCommand } from 'react-native-reanimated';
+import { setNativeProps } from 'react-native-reanimated';
 
-import RootNavigation from './src/navigation/RootNavigation';
-import loadAssetsAsync from './src/utilities/loadAssetsAsync';
+import Animated, { useAnimatedRef, useHandler } from 'react-native-reanimated';
 
-SplashScreen.preventAutoHideAsync();
+import { useEvent } from 'react-native-reanimated';
 
-function useSplashScreen(loadingFunction: () => Promise<void>) {
-  const [isLoadingCompleted, setLoadingComplete] = React.useState(false);
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-  // Load any resources or data that we need prior to rendering the app
-  React.useEffect(() => {
-    async function loadAsync() {
-      try {
-        await loadingFunction();
-      } catch (e) {
-        // We might want to provide this error information to an error reporting service
-        console.warn(e);
-      } finally {
-        setLoadingComplete(true);
-        await SplashScreen.hide();
-      }
-    }
-
-    loadAsync();
-  }, []);
-
-  return isLoadingCompleted;
-}
+SplashScreen.hide();
 
 export default function App() {
-  const isLoadingCompleted = useSplashScreen(async () => {
-    if (Platform.OS === 'ios') {
-      StatusBar.setBarStyle('dark-content', false);
-    }
-    await loadAssetsAsync();
-  });
+  const animatedRef = useAnimatedRef();
 
-  return <ThemeProvider>{isLoadingCompleted ? <RootNavigation /> : null}</ThemeProvider>;
+  const handlers = {
+    onChange: (event: any) => {
+      'worklet';
+      console.log('event', event);
+    },
+  };
+  const { context, doDependenciesDiffer } = useHandler(handlers);
+
+  const textInputHandler = useEvent(
+    (event: any) => {
+      'worklet';
+      const { onChange } = handlers;
+      if (onChange) {
+        console.log('event', event);
+        // Remove all non-digit characters
+        const digitsOnly = event.text.replace(/\D/g, '');
+
+        // Limit to 10 digits for US phone number
+        const limitedDigits = digitsOnly.slice(0, 10);
+
+        // Format as (XXX) XXX-XXXX
+        let formattedText = limitedDigits;
+        if (limitedDigits.length >= 6) {
+          formattedText = `(${limitedDigits.slice(0, 3)}) ${limitedDigits.slice(3, 6)}-${limitedDigits.slice(6)}`;
+        } else if (limitedDigits.length >= 3) {
+          formattedText = `(${limitedDigits.slice(0, 3)}) ${limitedDigits.slice(3)}`;
+        } else if (limitedDigits.length > 0) {
+          formattedText = `(${limitedDigits}`;
+        }
+
+        // Update the text input if formatting was applied
+        if (formattedText !== event.text) {
+          dispatchCommand(animatedRef, 'setTextAndSelection', [
+            event.eventCount,
+            formattedText,
+            -1,
+            -1,
+          ]);
+        }
+        onChange(event);
+      }
+    },
+    ['onChange'],
+    doDependenciesDiffer
+  );
+
+  return (
+    <AnimatedTextInput
+      style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginTop: 100 }}
+      onChange={textInputHandler}
+      ref={animatedRef}
+    />
+  );
 }
