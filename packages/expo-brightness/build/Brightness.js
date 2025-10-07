@@ -93,13 +93,6 @@ export async function setSystemBrightnessAsync(brightnessValue) {
     }
     return await ExpoBrightness.setSystemBrightnessAsync(clampedBrightnessValue);
 }
-/**
- * @deprecated Use [`restoreSystemBrightnessAsync`](#brightnessrestoresystembrightnessasync) method instead.
- * @platform android
- */
-export async function useSystemBrightnessAsync() {
-    return restoreSystemBrightnessAsync();
-}
 // @needsAudit
 /**
  * Resets the brightness setting of the current activity to use the system-wide

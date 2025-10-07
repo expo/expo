@@ -88,6 +88,16 @@ export declare const onTapGesture: (handler: () => void) => ModifierConfig;
  */
 export declare const onLongPressGesture: (handler: () => void, minimumDuration?: number) => ModifierConfig;
 /**
+ * Adds an onAppear modifier that calls a function when the view appears.
+ * @param handler - Function to call when the view appears
+ */
+export declare const onAppear: (handler: () => void) => ModifierConfig;
+/**
+ * Adds an onDisappear modifier that calls a function when the view disappears.
+ * @param handler - Function to call when the view disappears
+ */
+export declare const onDisappear: (handler: () => void) => ModifierConfig;
+/**
  * Sets the opacity of a view.
  * @param value - Opacity value between 0 and 1
  */

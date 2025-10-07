@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-> **info** Available in **SDK 52 and above**.
+> **info** Available in **SDK 52 and later**.
 
 Expo offers a novel approach to work with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app by moving on a per-component basis.
 
@@ -209,9 +209,9 @@ export default function App() {
 
 <Tabs>
 
-<Tab label="SDK 53 and above">
+<Tab label="SDK 53 and later">
 
-Expo SDK 53 and above use React 19. This means that the `ref` prop is passed to the component as a prop, and you can use it directly in the component.
+Expo SDK 53 and later use React 19. This means that the `ref` prop is passed to the component as a prop, and you can use it directly in the component.
 
 ```tsx my-component.tsx (web)
 'use dom';
@@ -245,9 +245,9 @@ export default function MyComponent(props: {
 
 </Tab>
 
-<Tab label="SDK 52 and below">
+<Tab label="SDK 52 and earlier">
 
-In Expo SDK 52 and below (React 18), use the legacy `forwardRef` function to access the `ref` handle.
+In Expo SDK 52 and earlier (React 18), use the legacy `forwardRef` function to access the `ref` handle.
 
 ```tsx my-component.tsx (web)
 'use dom';

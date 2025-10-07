@@ -569,7 +569,7 @@ export async function GET(req: Request) {
 new Worker(new URL('./worker', window.location.href));
 ```
 
-Expo Metro has experimental web worker support in SDK 53 and above. This feature is currently web-only and does not work on native, usage on native will trigger an error "Property 'Worker' doesn't exist".
+Expo Metro has experimental web worker support in SDK 53 and later. This feature is currently web-only and does not work on native, usage on native will trigger an error "Property 'Worker' doesn't exist".
 
 Web workers can be used to offload work to a separate thread on web, allowing the main thread to remain responsive. This is useful for computationally expensive tasks, such as image processing, cryptography, or other tasks that would otherwise block the main thread.
 
