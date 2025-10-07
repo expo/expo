@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Remove unnecessary ModalContextProvider ([#40179](https://github.com/expo/expo/pull/40179) by [@Ubax](https://github.com/Ubax))
+
 ## 6.0.10 — 2025-10-01
 
 ### 💡 Others
