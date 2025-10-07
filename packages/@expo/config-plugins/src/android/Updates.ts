@@ -26,6 +26,7 @@ import {
   getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
+  getUpdatesBsdiffPatchSupportEnabled,
   getUpdatesUseEmbeddedUpdate,
 } from '../utils/Updates';
 import { addWarningAndroid } from '../utils/warnings';
@@ -41,6 +42,7 @@ export enum Config {
   CODE_SIGNING_CERTIFICATE = 'expo.modules.updates.CODE_SIGNING_CERTIFICATE',
   CODE_SIGNING_METADATA = 'expo.modules.updates.CODE_SIGNING_METADATA',
   DISABLE_ANTI_BRICKING_MEASURES = 'expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES',
+  BSDIFF_PATCH_SUPPORT = 'expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -194,6 +196,13 @@ export async function setUpdatesConfigAsync(
     );
   } else {
     removeMetaDataItemFromMainApplication(mainApplication, Config.DISABLE_ANTI_BRICKING_MEASURES);
+  }
+
+  const bsPatchSupport = getUpdatesBsdiffPatchSupportEnabled(config);
+  if (!bsPatchSupport) {
+    addMetaDataItemToMainApplication(mainApplication, Config.BSDIFF_PATCH_SUPPORT, 'false');
+  } else {
+    removeMetaDataItemFromMainApplication(mainApplication, Config.BSDIFF_PATCH_SUPPORT);
   }
 
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);

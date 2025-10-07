@@ -152,7 +152,7 @@ public final class FileDownloader {
 
       if !skipPatchProcessing && isPatch && !canAttemptPatch {
         self.logger.warn(
-          message: "Received Hermes diff when diff support disabled for asset \(asset.key ?? asset.filename)",
+          message: "Received patch when patch support disabled for asset \(asset.key ?? asset.filename)",
           code: UpdatesErrorCode.assetsFailedToLoad,
           updateId: requestedUpdate?.updateId.uuidString,
           assetId: asset.key ?? asset.filename
@@ -188,17 +188,17 @@ public final class FileDownloader {
           self.downloadAsset(
             asset: asset,
             fromURL: url,
-          verifyingHash: expectedBase64URLEncodedSHA256Hash,
-          toPath: destinationPath,
-          extraHeaders: extraHeaders,
-          allowPatch: false,
-          launchedUpdate: launchedUpdate,
-          requestedUpdate: requestedUpdate,
-          skipPatchProcessing: true,
-          progressBlock: progressBlock,
-          successBlock: successBlock,
-          errorBlock: errorBlock
-        )
+            verifyingHash: expectedBase64URLEncodedSHA256Hash,
+            toPath: destinationPath,
+            extraHeaders: extraHeaders,
+            allowPatch: false,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: requestedUpdate,
+            skipPatchProcessing: true,
+            progressBlock: progressBlock,
+            successBlock: successBlock,
+            errorBlock: errorBlock
+          )
           return
         }
         do {

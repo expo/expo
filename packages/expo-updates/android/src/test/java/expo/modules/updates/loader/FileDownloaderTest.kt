@@ -230,6 +230,26 @@ class FileDownloaderTest {
   }
 
   @Test
+  fun testCreateRequestForAsset_PatchDisabledConfiguration() {
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0",
+      "enableBsdiffPatchSupport" to false
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val assetEntity = AssetEntity("launch", "hbc").apply {
+      url = Uri.parse("https://example.com")
+      isLaunchAsset = true
+    }
+
+    val fileDownloader = createFileDownloader(config)
+    val request = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
+    Assert.assertEquals("*/*", request.header("Accept"))
+  }
+
+  @Test
   fun testGetExtraHeaders() {
     mockkObject(ManifestMetadata)
     every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
