@@ -34,7 +34,7 @@ class PropertyDefinitionSpec: ExpoSpec {
       let runtime = try! appContext.runtime
 
       beforeSuite {
-        appContext.moduleRegistry.register(moduleType: PropertyTestModule.self)
+        appContext.moduleRegistry.register(moduleType: PropertyTestModule.self, name: "PropertyTest")
       }
 
       it("gets read-only property") {
@@ -75,7 +75,7 @@ class PropertyDefinitionSpec: ExpoSpec {
       let runtime = try! appContext.runtime
 
       beforeSuite {
-        appContext.moduleRegistry.register(moduleType: PropertyTestModule.self)
+        appContext.moduleRegistry.register(moduleType: PropertyTestModule.self, name: "PropertyTest")
       }
 
       it("gets the value") {
