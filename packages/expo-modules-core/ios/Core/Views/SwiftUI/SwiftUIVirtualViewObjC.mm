@@ -375,7 +375,7 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
 - (void)invalidate
 {
   // Default implementation does nothing.
-  _eventEmitter.reset();
+  [self prepareForRecycle];
 }
 
 @end
