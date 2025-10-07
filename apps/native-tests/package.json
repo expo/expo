@@ -12,7 +12,7 @@
     "expo": "~54.0.12",
     "expo-clipboard": "8.0.7",
     "expo-dev-client": "~6.0.13",
-    "expo-image": "~3.0.8",
+    "expo-image": "~3.0.9",
     "expo-media-library": "18.2.0",
     "expo-notifications": "~0.32.12",
     "expo-splash-screen": "~31.0.10",
