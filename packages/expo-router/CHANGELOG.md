@@ -16,6 +16,7 @@
 
 - support usePreventRemove in web modal ([#40262](https://github.com/expo/expo/pull/40262) by [@Ubax](https://github.com/Ubax))
 - Fix tab index out of bounds issue ([#40175](https://github.com/expo/expo/pull/40175) by [@Ubax](https://github.com/Ubax))
+- Wrap native tabs navigator with NavigationContent ([#40229](https://github.com/expo/expo/pull/40229) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 

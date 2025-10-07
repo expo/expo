@@ -57,7 +57,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...
             disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
         },
     });
-    const { state, descriptors } = builder;
+    const { state, descriptors, NavigationContent } = builder;
     const { routes } = state;
     let focusedIndex = state.index;
     const isAnyRouteFocused = routes[focusedIndex].key &&
@@ -70,9 +70,11 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...
         // Set focusedIndex to the first visible tab
         focusedIndex = routes.findIndex((route) => (0, utils_1.shouldTabBeVisible)(descriptors[route.key].options));
     }
-    return (<exports.NativeTabsContext value>
-      <NativeTabsView_1.NativeTabsView builder={builder} {...rest} focusedIndex={focusedIndex}/>
-    </exports.NativeTabsContext>);
+    return (<NavigationContent>
+      <exports.NativeTabsContext value>
+        <NativeTabsView_1.NativeTabsView builder={builder} {...rest} focusedIndex={focusedIndex}/>
+      </exports.NativeTabsContext>
+    </NavigationContent>);
 }
 const createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
 exports.NativeTabsNavigatorWithContext = (0, __1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);
