@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added build phase script for a workaround to autolinking-generated react-native-config output not being used in ReactCodegen script phase due to temp output directory. ([#40219](https://github.com/expo/expo/pull/40219) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 - Check `react-native` and `react-native-tvos` for duplicates in the verify command explicitly ([#40180](https://github.com/expo/expo/pull/40180) by [@kitten](https://github.com/kitten))
