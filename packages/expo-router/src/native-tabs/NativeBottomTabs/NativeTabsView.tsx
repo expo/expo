@@ -191,11 +191,6 @@ function Screen(props: {
     scrollEdgeAppearance,
     badgeTextColor,
   } = props;
-  const role = descriptor.options.role;
-  // To align with apple documentation and prevent untested cases,
-  // title and icon cannot be changed when role is defined
-  const shouldResetTitleAndIcon = !!role && process.env.EXPO_OS === 'ios';
-
   const title = descriptor.options.title ?? name;
 
   const icon = useAwaitedScreensIcon(descriptor.options.icon);
@@ -212,11 +207,9 @@ function Screen(props: {
       scrollEdgeAppearance={scrollEdgeAppearance}
       iconResourceName={getAndroidIconResourceName(icon)}
       iconResource={getAndroidIconResource(icon)}
-      icon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(icon)}
-      selectedIcon={
-        shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(selectedIcon)
-      }
-      title={shouldResetTitleAndIcon ? undefined : title}
+      icon={convertOptionsIconToPropsIcon(icon)}
+      selectedIcon={convertOptionsIconToPropsIcon(selectedIcon)}
+      title={title}
       freezeContents={false}
       tabKey={routeKey}
       systemItem={descriptor.options.role}

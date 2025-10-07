@@ -217,7 +217,7 @@ Route handlers are executed in a sandboxed environment that is isolated from the
 
 ## Deployment
 
-When you're ready to deploy to production, run [`npx expo export --platform web`](/more/expo-cli#exporting) to create the server bundle in the **dist** directory. This server can be tested locally with `npx expo serve` (available in Expo SDK 52 and higher), visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
+When you're ready to deploy to production, run [`npx expo export --platform web`](/more/expo-cli#exporting) to create the server bundle in the **dist** directory. This server can be tested locally with `npx expo serve` (available in Expo SDK 52 and later), visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
 You can deploy the server for production using [EAS Hosting](/eas/hosting/get-started) or another third-party service.
 
 <BoxLink
@@ -229,7 +229,7 @@ You can deploy the server for production using [EAS Hosting](/eas/hosting/get-st
 
 ### Native deployment
 
-> **important** This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
+> **important** This is an experimental feature starting in SDK 52 and later. The process will be more automated and have better support in future versions.
 
 Server features (API routes, and React Server Components) in Expo Router are centered around native implementations of `window.location` and `fetch` which point to the remote server. In development, we automatically point to the dev server running with `npx expo start`, but for production native builds to work you'll need to deploy the server to a secure host and set the `origin` property of the Expo Router Config Plugin.
 
@@ -360,8 +360,8 @@ Before deploying to these providers, it may be good to be familiar with the basi
 
 - **dist** is the default export directory for Expo CLI.
 - Files in **public** directory are copied to **dist** on export.
-- The `@expo/server` package is included with `expo` and delegates requests to the server routes.
-- `@expo/server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
+- The `expo-server` package is a server-side runtime for exported Expo web and API route artifacts.
+- `expo-server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
 
 ### Bun
@@ -379,7 +379,7 @@ Export the website for production:
 Write a server entry file that serves the static files and delegates requests to the server routes:
 
 ```ts server.ts
-import { createRequestHandler } from '@expo/server/adapter/bun';
+import { createRequestHandler } from 'expo-server/adapter/bun';
 
 const CLIENT_BUILD_DIR = `${process.cwd()}/dist/client`;
 const SERVER_BUILD_DIR = `${process.cwd()}/dist/server`;
@@ -442,7 +442,7 @@ Write a server entry file that serves the static files and delegates requests to
 #!/usr/bin/env node
 
 const path = require('path');
-const { createRequestHandler } = require('@expo/server/adapter/express');
+const { createRequestHandler } = require('expo-server/adapter/express');
 
 const express = require('express');
 const compression = require('compression');
@@ -501,15 +501,14 @@ Start the server with `node` command:
 Create a server entry file. All requests will be delegated through this middleware. The exact file location is important.
 
 ```ts netlify/functions/server.ts
-const { createRequestHandler } = require('@expo/server/adapter/netlify');
+import path from 'node:path';
+import { createRequestHandler } from 'expo-server/adapter/netlify';
 
-const handler = createRequestHandler({
+export default createRequestHandler({
   /* @info Points to the root <CODE>dist/</CODE> (output) directory */
-  build: require('path').join(__dirname, '../../dist/server'),
+  build: path.join(__dirname, '../../dist/server'),
   /* @end */
 });
-
-module.exports = { handler };
 ```
 
 </Step>
@@ -582,7 +581,7 @@ If you're using any environment variables or **.env** files, add them to Netlify
 Create a server entry file. All requests will be delegated through this middleware. The exact file location is important.
 
 ```ts api/index.ts
-const { createRequestHandler } = require('@expo/server/adapter/vercel');
+const { createRequestHandler } = require('expo-server/adapter/vercel');
 
 module.exports = createRequestHandler({
   /* @info Points to the root <CODE>dist/</CODE> (output) directory */

@@ -18,11 +18,18 @@ function arrayize<T>(value: T[] | T | undefined): T[] {
   return value != null ? [value] : [];
 }
 
+export class ExpoAndroidModuleConfig {
+  constructor(
+    public classifier: string,
+    public name: string | null
+  ) {}
+}
+
 export class ExpoAndroidProjectConfig {
   constructor(
     public name: string,
     public path: string,
-    public modules?: string[],
+    public modules?: ExpoAndroidModuleConfig[],
     public publication?: AndroidPublication,
     public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
     public shouldUsePublicationScriptPath?: string,
@@ -126,7 +133,11 @@ export class ExpoModuleConfig {
       new ExpoAndroidProjectConfig(
         this.rawConfig.android?.name ?? defaultProjectName,
         this.rawConfig.android?.path ?? 'android',
-        this.rawConfig.android?.modules,
+        this.rawConfig.android?.modules?.map((module) =>
+          typeof module === 'string'
+            ? new ExpoAndroidModuleConfig(module, null)
+            : new ExpoAndroidModuleConfig(module.class, module.name)
+        ),
         this.rawConfig.android?.publication,
         this.rawConfig.android?.gradleAarProjects,
         this.rawConfig.android?.shouldUsePublicationScriptPath,
@@ -139,7 +150,11 @@ export class ExpoModuleConfig {
         new ExpoAndroidProjectConfig(
           project.name,
           project.path,
-          project.modules,
+          project.modules?.map((module) =>
+            typeof module === 'string'
+              ? new ExpoAndroidModuleConfig(module, null)
+              : new ExpoAndroidModuleConfig(module.class, module.name)
+          ),
           project.publication,
           project.gradleAarProjects,
           project.shouldUsePublicationScriptPath

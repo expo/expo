@@ -158,7 +158,7 @@ export async function test(t) {
         }
       );
 
-      describeWithPermissions(`Brightness.useSystemBrightnessAsync`, () => {
+      describeWithPermissions(`Brightness.restoreSystemBrightnessAsync`, () => {
         t.beforeAll(async () => {
           await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
             return Brightness.requestPermissionsAsync();
@@ -178,7 +178,7 @@ export async function test(t) {
           try {
             await Brightness.setSystemBrightnessAsync(systemValue);
             await Brightness.setBrightnessAsync(appValue);
-            await Brightness.useSystemBrightnessAsync();
+            await Brightness.restoreSystemBrightnessAsync();
           } catch {
             wasRejected = true;
           }
@@ -193,7 +193,7 @@ export async function test(t) {
           let wasRejected = false;
           try {
             await Brightness.setSystemBrightnessAsync(systemValue);
-            await Brightness.useSystemBrightnessAsync();
+            await Brightness.restoreSystemBrightnessAsync();
             await Brightness.setBrightnessAsync(appValue);
           } catch {
             wasRejected = true;
@@ -223,7 +223,7 @@ export async function test(t) {
             let wasRejected = false;
             const beforeValue = await Brightness.isUsingSystemBrightnessAsync();
             try {
-              await Brightness.useSystemBrightnessAsync();
+              await Brightness.restoreSystemBrightnessAsync();
             } catch {
               wasRejected = true;
             }

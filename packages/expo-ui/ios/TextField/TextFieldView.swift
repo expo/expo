@@ -31,6 +31,7 @@ final class TextFieldProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var autocorrection: Bool = true
   @Field var allowNewlines: Bool = true
   var onValueChanged = EventDispatcher()
+  var onFocusChanged = EventDispatcher()
 }
 
 func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
@@ -67,9 +68,11 @@ func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
 
 class TextFieldManager: ObservableObject {
   @Published var text: String
+  @Published var isFocused: Bool
 
   init(initialText: String = "") {
     self.text = initialText
+    self.isFocused = false
   }
 }
 
@@ -92,6 +95,14 @@ struct TextFieldView: ExpoSwiftUI.View {
 
   func setText(_ text: String) {
     textManager.text = text
+  }
+
+  func focus() {
+    textManager.isFocused = true
+  }
+
+  func blur() {
+    textManager.isFocused = false
   }
 
   var text: some View {
@@ -127,6 +138,13 @@ struct TextFieldView: ExpoSwiftUI.View {
       .onAppear { textManager.text = props.defaultValue }
       .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])
+      }
+      .onChange(of: textManager.isFocused) { newValue in
+        isFocused = newValue
+      }
+      .onChange(of: isFocused) { newValue in
+        textManager.isFocused = newValue
+        props.onFocusChanged(["value": newValue])
       }
   }
 }

@@ -13,15 +13,25 @@
 
 ### 🐛 Bug fixes
 
-- Bump to `@expo/metro@~54.0.0` fixing `metro-runtime` resolution error when `unstable_enablePackageExports` is forcefully disabled ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
+### 💡 Others
+
+- [android] Add getDefaultReactHost to ExpoReactHostFactory ([#40086](https://github.com/expo/expo/pull/40086) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.10 - 2025-09-22
 
 ### 💡 Others
 
 - Updated `expo/tsconfig.base` to resolve `exclude` paths relative to the extending tsconfig ([#39816](https://github.com/expo/expo/pull/39816) by [@kraenhansen](https://github.com/kraenhansen))
 
-### ⚠️ Notices
+## 54.0.9 - 2025-09-18
 
-- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+### 🐛 Bug fixes
+
+- Bump to `@expo/metro@~54.0.0` fixing `metro-runtime` resolution error when `unstable_enablePackageExports` is forcefully disabled ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
 
 ## 54.0.8 — 2025-09-16
 

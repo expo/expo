@@ -10,6 +10,8 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const autolinkingOptions_1 = require("./autolinkingOptions");
 const dependencies_1 = require("../dependencies");
+// NOTE(@kitten): These are excluded explicitly, but we want to include them for the verify command explicitly
+const INCLUDE_PACKAGES = ['react-native', 'react-native-tvos'];
 function verifyCommand(cli) {
     return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('verify'))
         .option('-v, --verbose', 'Output all results instead of just warnings.', () => true, false)
@@ -20,7 +22,7 @@ function verifyCommand(cli) {
         const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)(commandArguments);
         const appRoot = await autolinkingOptionsLoader.getAppRoot();
         const linker = (0, dependencies_1.makeCachedDependenciesLinker)({ projectRoot: appRoot });
-        const results = (0, dependencies_1.mergeResolutionResults)(await Promise.all(platforms.map((platform) => (0, dependencies_1.scanDependencyResolutionsForPlatform)(linker, platform))));
+        const results = (0, dependencies_1.mergeResolutionResults)(await Promise.all(platforms.map((platform) => (0, dependencies_1.scanDependencyResolutionsForPlatform)(linker, platform, INCLUDE_PACKAGES))));
         await verifySearchResults(results, {
             appRoot,
             verbose: !!commandArguments.verbose,

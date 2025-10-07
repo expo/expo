@@ -6,16 +6,36 @@
 
 ### 🎉 New features
 
-- Use app root to generate modules provider ([#39728](https://github.com/expo/expo/pull/39728) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for cli command extensions in the interactive devtools menu ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
+
+- [Android] Fix passing exclude options. ([#40014](https://github.com/expo/expo/pull/40014) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
+- [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
+- Check `react-native` and `react-native-tvos` for duplicates in the verify command explicitly ([#40180](https://github.com/expo/expo/pull/40180) by [@kitten](https://github.com/kitten))
+
+## 3.0.14 - 2025-10-01
+
+### 💡 Others
+
+- Always include autolinking for top-level `devDependencies` and memoize intermediate config loading. ([#39955](https://github.com/expo/expo/pull/39955) by [@kitten](https://github.com/kitten))
+
+## 3.0.13 - 2025-09-22
+
+### 🎉 New features
+
+- Use app root to generate modules provider ([#39728](https://github.com/expo/expo/pull/39728) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.0.12 - 2025-09-18
 
 ### 💡 Others
 
 - [iOS] Added support for passing pod targets that should be statically linked and not built as frameworks. ([#39742](https://github.com/expo/expo/pull/39742) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
-- [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
-- Always include autolinking for top-level `devDependencies` and memoize intermediate config loading. ([#39955](https://github.com/expo/expo/pull/39955) by [@kitten](https://github.com/kitten))
 
 ## 3.0.11 — 2025-09-16
 

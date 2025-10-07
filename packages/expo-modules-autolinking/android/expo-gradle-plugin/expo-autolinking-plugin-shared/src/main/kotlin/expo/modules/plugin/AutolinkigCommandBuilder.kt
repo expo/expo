@@ -22,7 +22,7 @@ class AutolinkingCommandBuilder {
 
   private var autolinkingCommand = emptyList<String>()
   private var useJson = emptyList<String>()
-  private val optionsMap = mutableMapOf<String, String>()
+  private val optionsMap = mutableSetOf<Pair<String, String>>()
   private var searchPaths = emptyList<String>()
 
   /**
@@ -36,14 +36,14 @@ class AutolinkingCommandBuilder {
    * Add an option to the command.
    */
   fun option(key: String, value: String) = apply {
-    optionsMap[key] = value
+    optionsMap.add(key to value)
   }
 
   /**
    * Add a list of values as an option to the command.
    */
   fun option(key: String, value: List<String>) = apply {
-    optionsMap[key] = value.joinToString(" ")
+    value.forEach { optionsMap.add(key to it) }
   }
 
   /**
@@ -61,7 +61,6 @@ class AutolinkingCommandBuilder {
   }
 
   fun useAutolinkingOptions(autolinkingOptions: AutolinkingOptions) = apply {
-    autolinkingOptions.ignorePaths?.let { option(IGNORE_PATHS_KEY, it) }
     autolinkingOptions.exclude?.let { option(EXCLUDE_KEY, it) }
     autolinkingOptions.searchPaths?.let { searchPaths(it) }
   }
@@ -77,7 +76,6 @@ class AutolinkingCommandBuilder {
   }
 
   companion object {
-    const val IGNORE_PATHS_KEY = "ignore-paths"
     const val EXCLUDE_KEY = "exclude"
   }
 }

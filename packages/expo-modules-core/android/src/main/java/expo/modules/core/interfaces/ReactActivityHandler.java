@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactHost;
 
 import androidx.annotation.Nullable;
 
@@ -78,7 +78,7 @@ public interface ReactActivityHandler {
    * Right now it is for expo-updates only.
    */
   @Nullable
-  default DelayLoadAppHandler getDelayLoadAppHandler(ReactActivity activity, ReactNativeHost reactNativeHost) {
+  default DelayLoadAppHandler getDelayLoadAppHandler(ReactActivity activity, ReactHost reactHost) {
     return null;
   }
 

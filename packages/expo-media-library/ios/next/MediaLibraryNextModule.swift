@@ -22,6 +22,10 @@ public final class MediaLibraryNextModule: Module {
         try await this.getDuration()
       }
 
+      AsyncFunction("getExif") { (this: Asset) in
+        try await this.getExif()
+      }
+
       AsyncFunction("getFilename") { (this: Asset) in
         try await this.getFilename()
       }
@@ -36,6 +40,10 @@ public final class MediaLibraryNextModule: Module {
 
       AsyncFunction("getModificationTime") { (this: Asset) in
         try await this.getModificationTime()
+      }
+
+      AsyncFunction("getLocation") { (this: Asset) in
+        try await this.getLocation()
       }
 
       AsyncFunction("getUri") { (this: Asset) in
@@ -150,7 +158,7 @@ public final class MediaLibraryNextModule: Module {
 
     AsyncFunction("deleteAssets") { (assets: [Asset]) async throws in
       try await checkIfPermissionGranted()
-      let assetIds = assets.map { $0.id }
+      let assetIds = assets.map { $0.localIdentifier }
       try await AssetRepository.shared.delete(by: assetIds)
     }
 
@@ -169,7 +177,7 @@ public final class MediaLibraryNextModule: Module {
         }
         try await AssetCollectionRepository.shared.add(assets: [asset], to: guardedAlbum.id)
       }
-      return Asset(id: newAssetId)
+      return Asset(localIdentifier: newAssetId)
     }
 
     AsyncFunction("createAlbum") { (name: String, assetRefs: Either<[Asset], [URL]>) async throws -> Album in
@@ -203,16 +211,16 @@ public final class MediaLibraryNextModule: Module {
   }
 
   private func getAssetIdsFromAssetRefs(from assetRefs: Either<[Asset], [URL]>) async throws -> [String] {
-    var ids: [String] = []
+    var localIdentifiers: [String] = []
     if assetRefs.is([Asset].self) {
       let assets = try assetRefs.as([Asset].self)
-      ids = assets.map { $0.id }
-      return ids
+      localIdentifiers = assets.map { $0.localIdentifier }
+      return localIdentifiers
     }
     if assetRefs.is([URL].self) {
       let filePaths = try assetRefs.as([URL].self)
-      ids = try await AssetRepository.shared.add(from: filePaths)
-      return ids
+      localIdentifiers = try await AssetRepository.shared.add(from: filePaths)
+      return localIdentifiers
     }
     throw FailedToCreateAlbumException("Unsupported assetRefs type")
   }

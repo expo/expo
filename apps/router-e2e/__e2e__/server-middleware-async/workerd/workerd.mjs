@@ -1,12 +1,12 @@
-import { createRequestHandler } from '@expo/server/build/vendor/workerd';
+import { createRequestHandler } from 'expo-server/build/vendor/workerd';
 
 console.log('Workerd server listening on configured port');
 
 export default {
-  async fetch(request) {
+  async fetch(request, env, ctx) {
     const requestHandler = createRequestHandler({
       build: '.',
     });
-    return await requestHandler(request);
+    return await requestHandler(request, env, ctx);
   },
 };

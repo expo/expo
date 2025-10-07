@@ -18,10 +18,13 @@ import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
-class ModuleHolder<T : Module>(val module: T) {
+class ModuleHolder<T : Module>(
+  val module: T,
+  private val _name: String?
+) {
   val definition = module.definition()
 
-  val name get() = definition.name
+  val name get() = _name ?: definition.name
 
   private var wasInitialized = false
 
@@ -126,7 +129,7 @@ class ModuleHolder<T : Module>(val module: T) {
    * Invokes a function with promise. Is used in the bridge implementation of the Sweet API.
    */
   fun call(methodName: String, args: Array<Any?>, promise: Promise) = exceptionDecorator({
-    FunctionCallException(methodName, definition.name, it)
+    FunctionCallException(methodName, name, it)
   }) {
     val method = definition.asyncFunctions[methodName]
       ?: throw MethodNotFoundException()

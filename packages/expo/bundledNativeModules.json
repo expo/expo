@@ -93,7 +93,7 @@
   "lottie-react-native": "~7.3.1",
   "react": "19.1.1",
   "react-dom": "19.1.1",
-  "react-native": "0.82.0-rc.4",
+  "react-native": "0.82.0-rc.5",
   "react-native-web": "~0.21.0",
   "react-native-gesture-handler": "~2.28.0",
   "react-native-get-random-values": "~1.11.0",
@@ -112,6 +112,6 @@
   "unimodules-image-loader-interface": "~6.1.0",
   "@shopify/react-native-skia": "2.2.12",
   "@shopify/flash-list": "2.0.2",
-  "@sentry/react-native": "~7.1.0",
+  "@sentry/react-native": "~7.2.0",
   "react-native-bootsplash": "^6.3.10"
 }
