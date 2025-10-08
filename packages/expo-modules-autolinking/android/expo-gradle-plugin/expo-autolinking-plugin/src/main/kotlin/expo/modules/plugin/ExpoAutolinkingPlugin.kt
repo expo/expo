@@ -118,11 +118,9 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     appProject: Project
   ) {
     val appAndroid = appProject.extensions.findByName("android") as? BaseExtension ?: run {
-      project.logger.quiet("App project '${appProject.path}' has no Android extension.")
       return
     }
     val consumerAndroid = project.extensions.findByName("android") as? BaseExtension ?: run {
-      project.logger.quiet("Consumer project '${project.path}' has no Android extension.")
       return
     }
 
@@ -163,7 +161,6 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     appDimensions: List<String>
   ) {
     val appFlavors = appAndroid.productFlavors ?: run {
-      project.logger.quiet("  -> App has no productFlavors — nothing to copy.")
       return
     }
 
