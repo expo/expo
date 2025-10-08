@@ -11,4 +11,5 @@ export * from './Switch';
 export * from './TextInput';
 export * from './Shape';
 export * from './modifiers';
+export * from './BottomSheet';
 //# sourceMappingURL=index.d.ts.map
