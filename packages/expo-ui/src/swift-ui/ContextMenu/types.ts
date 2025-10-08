@@ -1,15 +1,7 @@
 import { ReactElement, ReactNode } from 'react';
-import { NativeSyntheticEvent } from 'react-native';
 
 import { type ButtonProps } from '../Button';
 import { type CommonViewModifierProps } from '../types';
-
-export type EventHandlers = Record<
-  string,
-  Record<string, (event: NativeSyntheticEvent<any>) => void>
->;
-
-export type ContextMenuElementBase = { contextMenuElementID: string };
 
 /**
  * Activation method of the context menu.

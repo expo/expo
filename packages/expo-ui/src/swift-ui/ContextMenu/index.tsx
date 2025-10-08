@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { ComponentType } from 'react';
 
-import { SubmenuProps, type ContextMenuProps } from './types';
+import { type SubmenuProps, type ContextMenuProps } from './types';
 
 export { type ActivationMethod, type ContextMenuProps } from './types';
 
