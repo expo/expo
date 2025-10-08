@@ -3,6 +3,7 @@ const { getBareExtensions } = require('@expo/config/paths');
 
 const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');
+const { resolveBabelConfig } = require('../src/resolveBabelConfig');
 
 function getUpstreamBabelJest(transform) {
   const upstreamBabelJest = Object.keys(transform).find((key) =>
@@ -45,25 +46,29 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     displayOptions.name = `rsc/${extensions[0]}`;
   }
 
+  // transform
+  const babelOpts = {
+    caller: {
+      name: 'metro',
+      bundler: 'metro',
+      // Add support for the `platform` babel transforms and inlines such as
+      // Platform.OS and `process.env.EXPO_OS`.
+      platform,
+      // Add support for removing server related code from the bundle.
+      isServer,
+      // Bundle in React Server Component mode.
+      isReactServer,
+    },
+  };
+  const babelConfigFile = resolveBabelConfig(process.cwd());
+  if (babelConfigFile) {
+    babelOpts.configFile = babelConfigFile;
+  }
+
   const preset = withWatchPlugins({
     transform: {
       ...expoPreset.transform,
-      [upstreamBabelJest]: [
-        'babel-jest',
-        {
-          caller: {
-            name: 'metro',
-            bundler: 'metro',
-            // Add support for the `platform` babel transforms and inlines such as
-            // Platform.OS and `process.env.EXPO_OS`.
-            platform,
-            // Add support for removing server related code from the bundle.
-            isServer,
-            // Bundle in React Server Component mode.
-            isReactServer,
-          },
-        },
-      ],
+      [upstreamBabelJest]: ['babel-jest', babelOpts],
     },
 
     displayName: displayOptions,
