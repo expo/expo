@@ -77,11 +77,11 @@ open class InternalModuleDefinitionBuilder(
 
   @PublishedApi
   internal fun registerViewDefinition(definition: ViewManagerDefinition) {
+    require(!viewManagerDefinitions.contains(definition.name)) { "The module definition defines more than one view with name ${definition.name}." }
+
+    viewManagerDefinitions[definition.name] = definition
+
     // For backwards compatibility, the first View is also added to viewManagerDefinitions under the `DEFAULT` key
-    if (definition.name != null) {
-      require(!viewManagerDefinitions.contains(definition.name)) { "The module definition defines more than one view with name ${definition.name}." }
-      viewManagerDefinitions[definition.name] = definition
-    }
     if (!viewManagerDefinitions.contains(DEFAULT_MODULE_VIEW)) {
       viewManagerDefinitions[DEFAULT_MODULE_VIEW] = definition
     }
