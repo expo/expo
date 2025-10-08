@@ -15,9 +15,14 @@ export function ExpoAppAwardsBanner() {
 
   useEffect(function didMount() {
     setIsLoaded(true);
-    requestAnimationFrame(() => {
+    // we need to wait for the next frame to ensure the banner is rendered to the DOM
+    const raf = requestAnimationFrame(() => {
       setIsAnimated(true);
     });
+
+    return function cleanup() {
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   if (lastDismissDate || !isLoaded) {
