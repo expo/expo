@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- [Android] Move all `jetpack-compose-primitives` components to `jetpack-compose` namespace.
+- [Android] Move all `jetpack-compose-primitives` components to `jetpack-compose` namespace. ([#40272](https://github.com/expo/expo/pull/40272) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🎉 New features
 
