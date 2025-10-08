@@ -22,7 +22,6 @@ import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.PermissionListener
@@ -56,9 +55,6 @@ class ReactActivityDelegateWrapper(
   private val reactActivityHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
-  private val _reactNativeHost: ReactNativeHost by lazy {
-    invokeDelegateMethod("getReactNativeHost")
-  }
   private val _reactHost: ReactHost? by lazy {
     delegate.reactHost
   }
@@ -101,10 +97,6 @@ class ReactActivityDelegateWrapper(
 
   override fun getReactDelegate(): ReactDelegate? {
     return invokeDelegateMethod("getReactDelegate")
-  }
-
-  override fun getReactNativeHost(): ReactNativeHost {
-    return _reactNativeHost
   }
 
   override fun getReactHost(): ReactHost? {

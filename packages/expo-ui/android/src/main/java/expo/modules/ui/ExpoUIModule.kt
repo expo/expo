@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.jni.JavaScriptFunction
@@ -95,7 +95,7 @@ class ExpoUIModule : Module() {
     View(BoxView::class)
     View(RowView::class)
     View(ColumnView::class)
-    View(ContainerView::class)
+    View(HostView::class)
     View(TextView::class)
 
     View(AlertDialogView::class) {
@@ -112,8 +112,12 @@ class ExpoUIModule : Module() {
       )
     }
 
-    Function("padding") { all: Int ->
-      return@Function ExpoModifier(Modifier.padding(Dp(all.toFloat())))
+    Function("paddingAll") { all: Int ->
+      return@Function ExpoModifier(Modifier.padding(all.dp))
+    }
+
+    Function("padding") { start: Int, top: Int, end: Int, bottom: Int ->
+      return@Function ExpoModifier(Modifier.padding(start.dp, top.dp, end.dp, bottom.dp))
     }
 
     Function("size") { width: Int, height: Int ->
@@ -198,6 +202,12 @@ class ExpoUIModule : Module() {
 
     Function("testID") { testID: String ->
       return@Function ExpoModifier(Modifier.applyTestTag(testID))
+    }
+
+    Function("clip") { shapeRecord: ShapeRecord ->
+      val shape = shapeFromShapeRecord(shapeRecord)
+        ?: return@Function Modifier
+      return@Function ExpoModifier(Modifier.clip(shape))
     }
 
     // TODO: Consider implementing semantics, layoutId, clip, navigationBarsPadding, systemBarsPadding
