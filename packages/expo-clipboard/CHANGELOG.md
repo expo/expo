@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Add exception handling when user denies paste permission ([#40259](https://github.com/expo/expo/pull/40259) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- [iOS] Update documentation regarding the edge case when the user denies paste permission ([#40259](https://github.com/expo/expo/pull/40259) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ## 8.0.7 — 2025-09-11
 
