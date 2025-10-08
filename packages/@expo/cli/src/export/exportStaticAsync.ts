@@ -477,6 +477,7 @@ export async function exportApiRoutesStandaloneAsync(
     // TODO: Export an HTML entry for each file. This is a temporary solution until we have SSR/SSG for RSC.
     await getFilesToExportFromServerAsync(devServer.projectRoot, {
       manifest: htmlManifest,
+      serverManifest,
       exportServer: true,
       files,
       renderAsync: async ({ pathname, filePath }) => {
