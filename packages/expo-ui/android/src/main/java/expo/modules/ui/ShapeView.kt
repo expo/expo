@@ -146,8 +146,8 @@ fun pathFromShapeRecord(record: ShapeRecord, size: Size): Path {
   val radius = record.radius
   val shapeType = record.type
   val verticesCount = record.verticesCount
-  try {
-    val path = when (shapeType) {
+  return runCatching {
+    when (shapeType) {
       ShapeType.STAR -> createStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, radius = radius, verticesCount = verticesCount)
       ShapeType.PILL_STAR -> createPillStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, verticesCount = verticesCount)
       ShapeType.PILL -> createPillPath(size = size, smoothing = smoothing)
@@ -155,10 +155,7 @@ fun pathFromShapeRecord(record: ShapeRecord, size: Size): Path {
       ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = cornerRounding, smoothing = smoothing)
       ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, verticesCount = verticesCount)
     }
-    return path
-  } catch (e: Exception) {
-    return Path()
-  }
+  }.getOrNull() ?: Path()
 }
 
 fun shapeFromShapeRecord(shapeRecord: ShapeRecord?): Shape? {

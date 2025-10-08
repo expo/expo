@@ -202,9 +202,7 @@ class ExpoUIModule : Module() {
 
     Function("clip") { shapeRecord: ShapeRecord ->
       val shape = shapeFromShapeRecord(shapeRecord)
-      if (shape == null) {
-        return@Function Modifier
-      }
+        ?: return@Function Modifier
       return@Function ExpoModifier(Modifier.clip(shape))
     }
 
