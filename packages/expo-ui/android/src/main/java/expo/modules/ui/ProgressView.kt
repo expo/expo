@@ -39,7 +39,7 @@ data class ProgressProps(
 ) : ComposeProps
 
 class ProgressView(context: Context, appContext: AppContext) :
-  ExpoComposeView<ProgressProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<ProgressProps>(context, appContext) {
   override val props = ProgressProps()
 
   @Composable

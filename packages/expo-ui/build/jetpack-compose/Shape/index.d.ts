@@ -38,9 +38,9 @@ export type ShapeJSXElement = React.JSX.Element & {
 };
 declare function Star(props: ShapeProps): ShapeJSXElement;
 declare function PillStar(props: ShapeProps): ShapeJSXElement;
-declare function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>): ShapeJSXElement;
-declare function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>): ShapeJSXElement;
-declare function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>): ShapeJSXElement;
+declare function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color' | 'modifiers'>): ShapeJSXElement;
+declare function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color' | 'modifiers'>): ShapeJSXElement;
+declare function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color' | 'modifiers'>): ShapeJSXElement;
 declare function Polygon(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color' | 'modifiers'>): ShapeJSXElement;
 export declare function parseJSXShape(shape?: ShapeJSXElement): any;
 export declare const Shape: {

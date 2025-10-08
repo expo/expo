@@ -19,11 +19,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
@@ -38,7 +34,6 @@ import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
 import expo.modules.ui.fromExpoModifiers
 import expo.modules.ui.getImageVector
-import expo.modules.ui.pathFromShapeRecord
 import expo.modules.ui.shapeFromShapeRecord
 
 open class ButtonPressedEvent() : Record, Serializable
@@ -71,7 +66,7 @@ data class ButtonProps(
   val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors()),
   val leadingIcon: MutableState<String?> = mutableStateOf(null),
   val trailingIcon: MutableState<String?> = mutableStateOf(null),
-  val disabled: MutableState<Boolean> = mutableStateOf(false),
+  val disabled: MutableState<Boolean?> = mutableStateOf(false),
   val modifiers: MutableState<List<ExpoModifier>?> = mutableStateOf(emptyList()),
   val shape: MutableState<ShapeRecord?> = mutableStateOf(null)
 ) : ComposeProps
@@ -159,16 +154,6 @@ fun StyledButton(
   }
 }
 
-fun getShape(shapeRecord: ShapeRecord?): Shape? {
-  if (shapeRecord == null) return null
-  return object : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-      val path = pathFromShapeRecord(shapeRecord, size)
-      return Outline.Generic(path)
-    }
-  }
-}
-
 class Button(context: Context, appContext: AppContext) :
   ExpoComposeView<ButtonProps>(context, appContext) {
   override val props = ButtonProps()
@@ -187,11 +172,12 @@ class Button(context: Context, appContext: AppContext) :
     val (leadingIcon) = props.leadingIcon
     val (trailingIcon) = props.trailingIcon
     val (disabled) = props.disabled
+
     DynamicTheme {
       StyledButton(
         variant ?: ButtonVariant.DEFAULT,
         colors,
-        disabled,
+        disabled ?: false,
         onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
         modifier = Modifier.fromExpoModifiers(props.modifiers.value),
         shape = shapeFromShapeRecord(props.shape.value)
