@@ -1,5 +1,4 @@
 import { CircularProgress, LinearProgress, Host } from '@expo/ui/jetpack-compose';
-import { Column } from '@expo/ui/jetpack-compose-primitives';
 import * as React from 'react';
 
 import { Page, Section } from '../../components/Page';

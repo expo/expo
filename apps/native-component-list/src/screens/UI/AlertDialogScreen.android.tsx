@@ -1,5 +1,4 @@
 import { AlertDialog, Button, Host } from '@expo/ui/jetpack-compose';
-import { Column } from '@expo/ui/jetpack-compose-primitives';
 import * as React from 'react';
 
 import { ScrollPage, Section } from '../../components/Page';
