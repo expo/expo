@@ -9,8 +9,11 @@ import {
   animateContentSize,
   paddingAll,
   Host,
+  Column,
+  Row,
+  Box,
+  Text,
 } from '@expo/ui/jetpack-compose';
-import { Column, Row, Box, Text } from '@expo/ui/jetpack-compose-primitives';
 import { useState } from 'react';
 import { Button, View, StyleSheet, Text as RNText } from 'react-native';
 

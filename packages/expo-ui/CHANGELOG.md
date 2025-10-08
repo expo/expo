@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Move all `jetpack-compose-primitives` components to `jetpack-compose` namespace.
+
 ### 🎉 New features
 
 - [Android] Add Android BottomSheet ([#37553](https://github.com/expo/expo/pull/37553) by [@Jeroen-G](https://github.com/Jeroen-G))

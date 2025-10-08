@@ -12,4 +12,4 @@ export * from './TextInput';
 export * from './Shape';
 export * from './modifiers';
 export * from './BottomSheet';
-//# sourceMappingURL=index.js.map
+export * from './layout';
