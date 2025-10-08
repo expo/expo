@@ -45,11 +45,9 @@ it('should protect routes during the initial load', () => {
               path: '/a',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
@@ -239,11 +237,9 @@ it('should default to anchor during initial load', () => {
               path: '/a',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   expect(screen.getByTestId('b')).toBeVisible();

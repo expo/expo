@@ -510,11 +510,9 @@ describe('singular', () => {
                 path: '/apple',
               },
             ],
-            stale: true,
           },
         },
       ],
-      stale: true,
     });
 
     // Normally pushing would add a new route, but since we have singular set to true
