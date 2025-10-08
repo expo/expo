@@ -12,6 +12,11 @@ public class ClipboardModule: Module {
     // MARK: - Strings
 
     AsyncFunction("getStringAsync") { (options: GetStringOptions) -> String in
+      // Check for permission denial first
+      if UIPasteboard.general.string == nil && UIPasteboard.general.html == nil {
+        throw PastePermissionDeniedException()
+      }
+      
       switch options.preferredFormat {
       case .plainText:
         return UIPasteboard.general.string ?? ""
@@ -38,6 +43,9 @@ public class ClipboardModule: Module {
     // MARK: - URLs
 
     AsyncFunction("getUrlAsync") { () -> String? in
+      if UIPasteboard.general.url == nil {
+        throw PastePermissionDeniedException()
+      }
       return UIPasteboard.general.url?.absoluteString
     }
 
@@ -65,7 +73,7 @@ public class ClipboardModule: Module {
 
     AsyncFunction("getImageAsync") { (options: GetImageOptions) -> [String: Any]? in
       guard let image = UIPasteboard.general.image else {
-        return nil
+        throw PastePermissionDeniedException()
       }
       guard let data = imageToData(image, options: options) else {
         throw PasteFailureException()

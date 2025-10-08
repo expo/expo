@@ -13,3 +13,9 @@ internal final class PasteFailureException: Exception {
     "Failed to get item from clipboard"
   }
 }
+
+internal final class PastePermissionDeniedException: Exception {
+  override var reason: String {
+    "Paste permission was denied by the user"
+  }
+}

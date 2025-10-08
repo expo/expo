@@ -18,6 +18,7 @@ export { EventSubscription as Subscription, ClipboardEvent };
  *
  * @param options Options for the clipboard content to be retrieved.
  * @returns A promise that resolves to the content of the clipboard.
+ * @throws `PastePermissionDeniedException` When the user denies paste permission on iOS 16+.
  */
 export declare function getStringAsync(options?: GetStringOptions): Promise<string>;
 /**
@@ -49,6 +50,7 @@ export declare function hasStringAsync(): Promise<boolean>;
  * Gets the URL from the user's clipboard.
  *
  * @returns A promise that fulfills to the URL in the clipboard.
+ * @throws `PastePermissionDeniedException` When the user denies paste permission on iOS 16+.
  * @platform ios
  */
 export declare function getUrlAsync(): Promise<string | null>;
@@ -79,6 +81,7 @@ export declare function hasUrlAsync(): Promise<boolean>;
  * @returns If there was an image in the clipboard, the promise resolves to
  * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
  * Otherwise, it resolves to `null`.
+ * @throws `PastePermissionDeniedException` When the user denies paste permission on iOS 16+.
  *
  * @example
  * ```tsx
