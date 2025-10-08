@@ -1,8 +1,8 @@
 import { CircularProgress, LinearProgress, Host } from '@expo/ui/jetpack-compose';
+import { Column } from '@expo/ui/jetpack-compose-primitives';
 import * as React from 'react';
 
 import { Page, Section } from '../../components/Page';
-import { Column } from '@expo/ui/jetpack-compose-primitives';
 
 export default function ProgressScreen() {
   const [progress, setProgress] = React.useState(0);

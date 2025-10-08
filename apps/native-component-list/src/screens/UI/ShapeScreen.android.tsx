@@ -1,4 +1,5 @@
 import { Host, rotate, Shape, size } from '@expo/ui/jetpack-compose';
+import { Column, Row } from '@expo/ui/jetpack-compose-primitives';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -10,7 +11,6 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Page } from '../../components/Page';
-import { Column, Row } from '@expo/ui/jetpack-compose-primitives';
 
 const AnimatedPolygon = Animated.createAnimatedComponent(Shape.Polygon);
 const AnimatedRectangle = Animated.createAnimatedComponent(Shape.Rectangle);
