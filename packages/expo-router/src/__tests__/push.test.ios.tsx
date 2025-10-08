@@ -24,8 +24,7 @@ it('stacks should always push a new route', () => {
 
   // Initial stale state
   expect(store.state).toStrictEqual({
-    routes: [{ name: '__root', state: { routes: [{ name: 'index', path: '/' }], stale: true } }],
-    stale: true,
+    routes: [{ name: '__root', state: { routes: [{ name: 'index', path: '/' }] } }],
   });
 
   /**
@@ -84,6 +83,24 @@ it('stacks should always push a new route', () => {
                       screen: 'index',
                     },
                     path: undefined,
+                    state: {
+                      index: 0,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {
+                            id: '1',
+                          },
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
                   },
                   {
                     key: expect.any(String),
@@ -96,6 +113,24 @@ it('stacks should always push a new route', () => {
                       screen: 'index',
                     },
                     path: undefined,
+                    state: {
+                      index: 0,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {
+                            id: '1',
+                          },
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
                   },
                   {
                     key: expect.any(String),
@@ -108,6 +143,24 @@ it('stacks should always push a new route', () => {
                       screen: 'index',
                     },
                     path: undefined,
+                    state: {
+                      index: 0,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {
+                            id: '2',
+                          },
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
                   },
                   {
                     key: expect.any(String),
@@ -507,11 +560,9 @@ it('push should also add anchor routes', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => router.push('/orange', { withAnchor: true }));
