@@ -5,30 +5,6 @@ struct MenuItems: View {
   let fromElements: [ContextMenuElement]?
   let props: ContextMenuProps?
 
-  init(fromElements: [ContextMenuElement]?, props: ContextMenuProps?) {
-    self.fromElements = fromElements
-    self.props = props
-
-    fromElements?.forEach { element in
-      let id = element.contextMenuElementID
-      if let button = element.button {
-        button.onButtonPressed.onEventSent = { _ in
-          props?.onContextMenuButtonPressed(addId(id, toMap: nil))
-        }
-      }
-      if let `switch` = element.switch {
-        `switch`.onValueChange.onEventSent = { map in
-          props?.onContextMenuSwitchCheckedChanged(addId(id, toMap: map))
-        }
-      }
-      if let picker = element.picker {
-        picker.onOptionSelected.onEventSent = { map in
-          props?.onContextMenuPickerOptionSelected(addId(id, toMap: map))
-        }
-      }
-    }
-  }
-
   var body: some View {
     ForEach(fromElements ?? []) { elem in
       if let button = elem.button {
