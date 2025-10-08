@@ -1,7 +1,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct LongPressContextMenu<ActivationElement: View, MenuContent: View>: View {
+internal struct LongPressContextMenu<ActivationElement: View, MenuContent: View>: View {
   let activationElement: ActivationElement
   let menuContent: MenuContent
 
@@ -12,7 +12,7 @@ struct LongPressContextMenu<ActivationElement: View, MenuContent: View>: View {
   }
 }
 
-struct ContextMenuPreview: ExpoSwiftUI.View {
+internal struct ContextMenuPreview: ExpoSwiftUI.View {
   @ObservedObject var props: ContextMenuPreviewProps
 
   var body: some View {
@@ -20,7 +20,7 @@ struct ContextMenuPreview: ExpoSwiftUI.View {
   }
 }
 
-struct ContextMenuContent: ExpoSwiftUI.View {
+internal struct ContextMenuContent: ExpoSwiftUI.View {
   @ObservedObject var props: ContextMenuContentProps
 
   var body: some View {
@@ -28,7 +28,7 @@ struct ContextMenuContent: ExpoSwiftUI.View {
   }
 }
 
-struct ContextMenuActivationElement: ExpoSwiftUI.View {
+internal struct ContextMenuActivationElement: ExpoSwiftUI.View {
   @ObservedObject var props: ContextMenuActivationElementProps
 
   var body: some View {
