@@ -1,5 +1,5 @@
-import { SubmenuProps, type ContextMenuProps } from './types';
-export { type ActivationMethod, type ContextMenuProps, type ContextMenuContentProps, } from './types';
+import { type SubmenuProps, type ContextMenuProps } from './types';
+export { type ActivationMethod, type ContextMenuProps } from './types';
 /**
  * Items visible inside the context menu. Pass input components as immidiate children of the tag.
  * `Button`, `Switch` and `Submenu` components are supported on both Android and iOS.

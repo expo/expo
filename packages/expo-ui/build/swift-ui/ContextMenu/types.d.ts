@@ -1,14 +1,6 @@
 import { ReactElement, ReactNode } from 'react';
-import { NativeSyntheticEvent } from 'react-native';
 import { type ButtonProps } from '../Button';
 import { type CommonViewModifierProps } from '../types';
-export type EventHandlers = Record<string, Record<string, (event: NativeSyntheticEvent<any>) => void>>;
-export type ContextMenuElementBase = {
-    contextMenuElementID: string;
-};
-export type ContextMenuContentProps = {
-    children: ReactNode;
-};
 /**
  * Activation method of the context menu.
  * - `singlePress`: The context menu is opened with a single tap. Does not isolate the content.
