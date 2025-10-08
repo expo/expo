@@ -17,7 +17,7 @@ class ExpoModifier(ref: Modifier?) : SharedRef<Modifier?>(ref) {
 }
 
 fun Modifier.fromExpoModifiers(
-  modifiers: List<ExpoModifier>,
+  modifiers: List<ExpoModifier>?,
   composableScope: ComposableScope? = null
 ): Modifier {
   return modifiers?.fold(this) { acc, modifier ->
@@ -26,8 +26,8 @@ fun Modifier.fromExpoModifiers(
         return@fold it.then(acc)
       }
     }
-    modifier.ref?.let { it.then(acc) } ?: acc
-  }
+    modifier.ref?.then(acc) ?: acc
+  } ?: Modifier
 }
 
 /**

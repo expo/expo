@@ -202,7 +202,7 @@ class HostView(context: Context, appContext: AppContext) :
   ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
   @Composable
   override fun ComposableScope.Content() {
-    for (index in 0..<this@ContainerView.size) {
+    for (index in 0..<this@HostView.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
       with(this) {
         with(child) {

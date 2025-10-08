@@ -65,7 +65,6 @@ abstract class ExpoComposeView<T : ComposeProps>(
       }
     }
   }
-    
 
   init {
     if (withHostingView) {
@@ -81,7 +80,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       it.setContent {
-        Content()
+        with(ComposableScope()) {
+          Content()
+        }
       }
       it.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) {

@@ -197,7 +197,7 @@ class Button(context: Context, appContext: AppContext) :
         shape = shapeFromShapeRecord(props.shape.value)
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-          Children()
+          Children(ComposableScope(rowScope = this))
           leadingIcon?.let { iconName ->
             getImageVector(iconName)?.let {
               Icon(
