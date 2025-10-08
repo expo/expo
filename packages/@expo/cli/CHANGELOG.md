@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent externals logic from being applied to unreachable Node modules ([#40247](https://github.com/expo/expo/pull/40247) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 54.0.10 — 2025-10-01
