@@ -1,8 +1,7 @@
 import { requireNativeView } from 'expo';
 import { ComponentType, Children, useMemo } from 'react';
-import { NativeSyntheticEvent } from 'react-native';
 
-import { type ContextMenuProps, type EventHandlers } from './types';
+import { type ContextMenuProps } from './types';
 import { MenuElement, transformChildrenToElementArray } from './utils';
 
 export * from './Submenu';
@@ -26,22 +25,6 @@ const MenuNativePreviewView: ComponentType<object> = requireNativeView(
 
 type NativeMenuProps = ContextMenuProps & {
   elements: MenuElement[];
-  onContextMenuButtonPressed: (
-    event: NativeSyntheticEvent<{ contextMenuElementID: string }>
-  ) => void;
-  onContextMenuSwitchValueChanged: (
-    event: NativeSyntheticEvent<{
-      contextMenuElementID: string;
-      value: boolean;
-    }>
-  ) => void;
-  onContextMenuPickerOptionSelected: (
-    event: NativeSyntheticEvent<{
-      index: number;
-      label: string;
-      contextMenuElementID: string;
-    }>
-  ) => void;
 };
 
 /**
@@ -84,32 +67,17 @@ export function Preview(props: { children: React.ReactNode }) {
  * - Android does not support showing a `Picker` element in the context menu.
  */
 function ContextMenu(props: ContextMenuProps) {
-  const eventHandlersMap: EventHandlers = {};
   const initialChildren = Children.map(
     props.children as any,
     (c: { type: { tag: string }; props: { children: React.ReactNode } }) =>
       c.type.tag === Items.tag ? c.props.children : null
   );
   const processedElements = useMemo(
-    () => transformChildrenToElementArray(initialChildren, eventHandlersMap),
+    () => transformChildrenToElementArray(initialChildren, {}),
     [initialChildren]
   );
 
-  const createEventHandler =
-    (handlerType: string) => (event: NativeSyntheticEvent<{ contextMenuElementID: string }>) => {
-      const handler = eventHandlersMap[event.nativeEvent.contextMenuElementID]?.[handlerType];
-      handler?.(event);
-    };
-
-  return (
-    <MenuNativeView
-      elements={processedElements}
-      onContextMenuButtonPressed={createEventHandler('onPress')}
-      onContextMenuSwitchValueChanged={createEventHandler('onValueChange')}
-      onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')}
-      {...props}
-    />
-  );
+  return <MenuNativeView elements={processedElements} {...props} />;
 }
 
 ContextMenu.Trigger = Trigger;

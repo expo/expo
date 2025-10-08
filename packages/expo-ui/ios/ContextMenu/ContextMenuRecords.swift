@@ -28,9 +28,6 @@ internal final class ContextMenuProps: ExpoSwiftUI.ViewProps, CommonViewModifier
   @Field var modifiers: ModifierArray?
 
   @Field var elements: [ContextMenuElement]
-  var onContextMenuButtonPressed = EventDispatcher()
-  var onContextMenuPickerOptionSelected = EventDispatcher()
-  var onContextMenuSwitchCheckedChanged = EventDispatcher()
   @Field var activationMethod: ActivationMethod? = .singlePress
 }
 
