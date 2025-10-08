@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.loadUpdate
 import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
@@ -36,7 +35,7 @@ internal class DevLauncherAppLoaderFactoryTest {
 
   @Before
   fun setup() {
-    val reactHost = mockk<ReactHostWrapper>(relaxed = true)
+    val reactHost = mockk<ReactHost>(relaxed = true)
     val devLauncherController = mockk<DevLauncherControllerInterface>(relaxed = true)
     DevLauncherKoinContext.app.koin.loadModules(
       listOf(

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.children
 import com.facebook.react.ReactActivity
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
@@ -18,7 +19,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.compose.BindingView
 import expo.modules.devmenu.compose.DevMenuAction
@@ -47,7 +47,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var preferences: DevMenuPreferencesInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
   private var shouldLaunchDevMenuOnStart: Boolean = false
-  private var currentReactInstance: WeakReference<ReactHostWrapper?> = WeakReference(null)
+  private var currentReactInstance: WeakReference<ReactHost?> = WeakReference(null)
   private var canLaunchDevMenuOnStart = true
 
   private var goToHomeAction: () -> Unit = {}
@@ -58,7 +58,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   //region helpers
 
-  fun getReactHost(): ReactHostWrapper? {
+  fun getReactHost(): ReactHost? {
     return delegate?.reactHost()
   }
 
@@ -77,7 +77,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   //region init
 
-  private fun setUpReactInstance(reactHost: ReactHostWrapper) {
+  private fun setUpReactInstance(reactHost: ReactHost) {
     currentReactInstance = WeakReference(reactHost)
 
     val handlers = DevMenuCommandHandlersProvider(this, reactHost)
@@ -385,7 +385,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     goToHomeAction = action
   }
 
-  override fun initializeWithReactHost(reactHost: ReactHostWrapper) {
+  override fun initializeWithReactHost(reactHost: ReactHost) {
     setDelegate(DevMenuDefaultDelegate(reactHost))
   }
 

@@ -11,7 +11,6 @@ import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.runtime.ReactHostImpl
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.getProtectedFieldValue
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
@@ -23,39 +22,7 @@ import org.koin.core.component.inject
 internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
 
-  fun swapDevSupportManagerImpl(reactHost: ReactHostWrapper) {
-    if (reactHost.isBridgelessMode) {
-      swapDevSupportManagerImpl(reactHost.reactHost)
-    } else {
-      swapDevSupportManagerImpl(reactHost.reactNativeHost)
-    }
-  }
-
-  private fun swapDevSupportManagerImpl(reactNativeHost: ReactNativeHost) {
-    val reactInstanceManager = reactNativeHost.reactInstanceManager
-    val currentDevSupportManager = reactInstanceManager.devSupportManager
-    if (currentDevSupportManager is DevLauncherBridgeDevSupportManager) {
-      // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
-      return
-    }
-    if (currentDevSupportManager is ReleaseDevSupportManager) {
-      Log.i("DevLauncher", "DevSupportManager is disabled. So we don't want to override it.")
-      return
-    }
-
-    try {
-      val devManagerClass = DevSupportManagerBase::class.java
-      val newDevSupportManager = createDevLauncherBridgeDevSupportManager(devManagerClass, currentDevSupportManager)
-
-      ReactInstanceManager::class.java.setProtectedDeclaredField(reactInstanceManager, "devSupportManager", newDevSupportManager)
-
-      closeExistingConnection(devManagerClass, currentDevSupportManager)
-    } catch (e: Exception) {
-      Log.i("DevLauncher", "Couldn't inject `DevLauncherDevSupportManager`.", e)
-    }
-  }
-
-  private fun swapDevSupportManagerImpl(reactHost: ReactHost) {
+  fun swapDevSupportManagerImpl(reactHost: ReactHost) {
     val currentDevSupportManager = requireNotNull(reactHost.devSupportManager)
     if (currentDevSupportManager is DevLauncherBridgelessDevSupportManager) {
       // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
