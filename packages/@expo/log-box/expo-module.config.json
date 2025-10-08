@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "podspecPath": "ExpoLogBox.podspec"
+  },
+  "android": {
+    "modules": []
+  }
+}

@@ -56,6 +56,7 @@
     "@expo/package-manager": "^1.9.8",
     "@expo/plist": "^0.4.7",
     "@expo/prebuild-config": "^54.0.3",
+    "@expo/log-box": "0.0.13-canary-20251008-6acbc1c",
     "@expo/schema-utils": "^0.1.7",
     "@expo/spawn-async": "^1.7.2",
     "@expo/ws-tunnel": "^1.0.1",

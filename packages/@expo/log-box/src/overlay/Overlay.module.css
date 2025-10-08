@@ -1,0 +1,192 @@
+/* Using :host to ensure styles only apply in Shadow DOM */
+:host {
+  /* To stretch over the safe area in iOS */
+  height: 100vh;
+}
+
+.overlayIos {
+  top: 0;
+}
+
+.overlayAndroid {
+  top: var(--android-safe-area-inset-top, env(safe-area-inset-top));
+}
+
+.overlayWeb {
+  /* Add top safe area for web */
+  top: calc(10vh + env(safe-area-inset-top, 2vh));
+}
+
+.overlay {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9900;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+.containerTopRadius {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.container {
+  --expo-log-max-width: 960px;
+
+  margin: 0 auto;
+  max-width: var(--expo-log-max-width);
+  width: 100%;
+
+  overflow-x: hidden;
+  background-color: var(--expo-log-color-background);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 200ms ease-out forwards;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  animation: fadeInUp 200ms ease-out forwards;
+  background-color: var(--expo-log-color-background);
+}
+
+.scroll {
+  /* Padding added to give the progressive blur some room to animate in. */
+  padding-top: 16px;
+
+
+  gap: 0.5rem;
+  
+  overflow-y: auto;
+  background-color: var(--expo-log-color-background);
+  /* Wrap horizontal contents */
+  overflow-x: hidden;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: calc(var(--expo-log-footer-height) + 1rem);
+}
+
+.bg {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  pointer-events: all;
+  z-index: -1;
+
+  opacity: 0;
+  animation: data-expo-log-backdrop-fade-in 150ms ease-out forwards;
+}
+
+.bgExit {
+  opacity: 1;
+  animation: fadeOut 150ms ease-in forwards;
+}
+
+.containerExit {
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeOutUp 150ms ease-in forwards;
+}
+
+@keyframes data-expo-log-backdrop-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOutUp {
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  min-height: var(--expo-log-footer-height);
+  overflow: hidden;
+  padding-bottom: var(--android-safe-area-inset-bottom, env(safe-area-inset-bottom));
+  background-color: var(--expo-log-secondary-system-background);
+}
+
+.headerBlur {
+  background: linear-gradient(to top, transparent, var(--expo-log-color-background));
+  mask-image: linear-gradient(to bottom, var(--expo-log-color-background) 50%, transparent);
+  backdrop-filter: blur(4px);
+  height: 48px;
+  min-height: 48px;
+  position: absolute;
+  top: 47px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* Fade manually */
+  opacity: 0;
+}
+
+
+/* md-visible */
+@media screen and (min-width: 576px) {
+  .overlay {
+    top: 10vh;
+    bottom: 10vh;
+  }
+  .container {
+    border: 1px solid var(--expo-log-color-border);
+    border-radius: 10px;
+  }
+}
+
+@media (min-width: 576px) {
+  .container {
+    --expo-log-max-width: 540px;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    --expo-log-max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    --expo-log-max-width: 960px;
+  }
+}

@@ -722,6 +722,18 @@ export function withExtendedResolver(
           }
         }
 
+        if (normal.endsWith('react-native/Libraries/LogBox/LogBoxInspectorContainer.js')) {
+          if (env.EXPO_UNSTABLE_LOG_BOX) {
+            debug('Using Expo LogBox implementation.');
+            return {
+              ...result,
+              filePath: require.resolve('@expo/log-box/swap-rn-logbox.js'),
+            };
+          } else {
+            debug('Using React Native LogBox implementation.');
+          }
+        }
+
         // When server components are enabled, redirect React Native's renderer to the canary build
         // this will enable the use hook and other requisite features from React 19.
         if (isReactCanaryEnabled && result.filePath.includes('node_modules')) {

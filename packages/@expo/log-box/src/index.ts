@@ -1,0 +1,1 @@
+export { setupLogBox } from './setupLogBox';

@@ -87,6 +87,7 @@ Pod::Spec.new do |s|
       # [end] transitive dependencies of React-RCTAppDelegate that are not defined modules
     ])
   end
+
   s.pod_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
