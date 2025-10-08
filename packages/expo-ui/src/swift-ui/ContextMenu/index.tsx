@@ -3,11 +3,7 @@ import { ComponentType } from 'react';
 
 import { SubmenuProps, type ContextMenuProps } from './types';
 
-export {
-  type ActivationMethod,
-  type ContextMenuProps,
-  type ContextMenuContentProps,
-} from './types';
+export { type ActivationMethod, type ContextMenuProps } from './types';
 
 const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'ContextMenu');
 

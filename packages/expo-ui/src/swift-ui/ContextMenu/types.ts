@@ -11,10 +11,6 @@ export type EventHandlers = Record<
 
 export type ContextMenuElementBase = { contextMenuElementID: string };
 
-export type ContextMenuContentProps = {
-  children: ReactNode;
-};
-
 /**
  * Activation method of the context menu.
  * - `singlePress`: The context menu is opened with a single tap. Does not isolate the content.
