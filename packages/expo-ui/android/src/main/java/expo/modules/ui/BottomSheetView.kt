@@ -15,6 +15,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import java.io.Serializable
@@ -45,12 +46,12 @@ fun BottomSheetComposable(skipPartiallyExpanded: Boolean, isOpened: Boolean, onI
 }
 
 class BottomSheetView(context: Context, appContext: AppContext) :
-  ExpoComposeView<BottomSheetProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<BottomSheetProps>(context, appContext) {
   override val props = BottomSheetProps()
   private val onIsOpenedChange by EventDispatcher<IsOpenedChangeEvent>()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val (isOpened) = props.isOpened
     val (skipPartiallyExpanded) = props.skipPartiallyExpanded
 
@@ -60,7 +61,7 @@ class BottomSheetView(context: Context, appContext: AppContext) :
         isOpened,
         onIsOpenedChange = { value -> onIsOpenedChange(IsOpenedChangeEvent(value)) },
       ) {
-        ComposeChildren()
+        Children(ComposableScope())
       }
     }
   }
