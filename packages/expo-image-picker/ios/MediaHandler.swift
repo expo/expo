@@ -393,7 +393,20 @@ internal struct MediaHandler {
           // Stream the resource into our cache directory. This API is asynchronous but doesn't require
           // a temporary file like `loadFileRepresentation` and forces iCloud downloads.
           let resourceOptions = PHAssetResourceRequestOptions()
-          resourceOptions.isNetworkAccessAllowed = true
+          
+          // Only enable network access if the asset is not available locally
+          let imageManager = PHImageManager.default()
+          let requestOptions = PHVideoRequestOptions()
+          requestOptions.isNetworkAccessAllowed = false
+          
+          // Check local availability without triggering iCloud download
+          let isLocallyAvailable = await withCheckedContinuation { continuation in
+            imageManager.requestAVAsset(forVideo: asset, options: requestOptions) { avAsset, _, _ in
+              continuation.resume(returning: avAsset != nil)
+            }
+          }
+          
+          resourceOptions.isNetworkAccessAllowed = !isLocallyAvailable
           try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: resourceOptions)
 
           // Build and return the result using the helper.
