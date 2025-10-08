@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix recursive file deletion. ([#40248](https://github.com/expo/expo/pull/40248) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 19.0.16 - 2025-10-01
@@ -18,7 +20,6 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix recursive file deletion. ([#40248](https://github.com/expo/expo/pull/40248) by [@aleqsio](https://github.com/aleqsio))
 - Fix typedoc in the File class. ([#40064](https://github.com/expo/expo/pull/40064) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Fix getContentUri. ([#40001](https://github.com/expo/expo/pull/40001) by [@aleqsio](https://github.com/aleqsio))
 
