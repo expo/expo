@@ -19,11 +19,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
@@ -38,7 +34,6 @@ import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
 import expo.modules.ui.fromExpoModifiers
 import expo.modules.ui.getImageVector
-import expo.modules.ui.pathFromShapeRecord
 import expo.modules.ui.shapeFromShapeRecord
 
 open class ButtonPressedEvent() : Record, Serializable
@@ -156,16 +151,6 @@ fun StyledButton(
       shape = shape ?: ButtonDefaults.shape,
       modifier = modifier
     )
-  }
-}
-
-fun getShape(shapeRecord: ShapeRecord?): Shape? {
-  if (shapeRecord == null) return null
-  return object : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-      val path = pathFromShapeRecord(shapeRecord, size)
-      return Outline.Generic(path)
-    }
   }
 }
 
