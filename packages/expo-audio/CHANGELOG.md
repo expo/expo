@@ -13,6 +13,7 @@
 - [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fix issue where after replacing the media source, events are emitted twice. ([#40133](https://github.com/expo/expo/pull/40133) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix issue where if `prepare` fails on android there was no error and the user would receive an empty file. ([#40239](https://github.com/expo/expo/pull/40239) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix incorrect volume read.
 
 ### 💡 Others
 
