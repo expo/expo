@@ -31,7 +31,6 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     var appProject: Project? = null
     appProject = findAppProject(project.rootProject) { found ->
       appProject = found
-      project.logger.quiet("Found Android application module: ${found.path}")
     }
 
     appProject?.let { copyAppDimensionsAndFlavorsToProject(project, it) }
