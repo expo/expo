@@ -86,19 +86,18 @@ internal inline fun withJSIInterop(
   repeat(numberOfReloads) {
     val coreModule = run {
       val module = CoreModule()
-      module._runtimeContext = runtimeContext
+      module._appContextHolder = appContextMock.weak()
       ModuleHolder(module, "CoreModule")
     }
     every { runtimeContext.coreModule } answers { coreModule }
 
-    val registry = ModuleRegistry(appContextMock.hostingRuntimeContext.weak()).apply {
+    val registry = ModuleRegistry(appContextMock.weak()).apply {
       modules.forEach {
         register(it, null)
       }
     }
     val sharedObjectRegistry = SharedObjectRegistry(appContextMock.hostingRuntimeContext)
     every { appContextMock.registry } answers { registry }
-    every { runtimeContext.registry } answers { registry }
     every { runtimeContext.sharedObjectRegistry } answers { sharedObjectRegistry }
 
     // We aim to closely replicate the lifecycle of each part as it functions in the real app.
