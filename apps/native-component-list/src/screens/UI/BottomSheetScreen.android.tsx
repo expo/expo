@@ -1,4 +1,4 @@
-import { Button, BottomSheet } from '@expo/ui/jetpack-compose';
+import { Button, BottomSheet, Host } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -13,13 +13,18 @@ export default function BottomSheetScreen() {
         alignItems: 'flex-start',
         padding: 8,
       }}>
-      <Button onPress={() => setIsOpened((h) => !h)}>Toggle</Button>
+      <Host>
+        <Button onPress={() => setIsOpened((h) => !h)}>Toggle</Button>
+      </Host>
+
       <Text>isOpened: {isOpened ? 'yes' : 'no'}</Text>
-      <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
-        <View style={{ padding: 20 }}>
-          <Text>Hello world</Text>
-        </View>
-      </BottomSheet>
+      <Host>
+        <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
+          <View style={{ padding: 20 }}>
+            <Text>Hello world</Text>
+          </View>
+        </BottomSheet>
+      </Host>
     </ScrollView>
   );
 }
