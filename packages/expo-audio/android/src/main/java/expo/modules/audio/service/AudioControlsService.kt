@@ -27,7 +27,6 @@ import expo.modules.audio.AudioLockScreenOptions
 import expo.modules.audio.AudioPlayer
 import expo.modules.audio.Metadata
 import expo.modules.audio.R
-import expo.modules.audio.playbackService.AudioMediaSessionCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -40,6 +39,7 @@ class AudioControlsService : MediaSessionService() {
   private var mediaSession: MediaSession? = null
   private var currentMetadata: Metadata? = null
   private var currentPlayer: AudioPlayer? = null
+  private var currentOptions: AudioLockScreenOptions? = null
   private val scope = CoroutineScope(Dispatchers.IO)
   private var currentArtworkUrl: URL? = null
   private var currentArtwork: Bitmap? = null
@@ -47,20 +47,6 @@ class AudioControlsService : MediaSessionService() {
     get() = currentPlayer?.hashCode() ?: CHANNEL_ID.hashCode()
 
   private var playbackListener: Player.Listener? = null
-
-  private val seekBackwardButton = CommandButton.Builder(R.drawable.seek_forwards_10s)
-    .setDisplayName("rewind")
-    .setCustomIconResId(R.drawable.seek_backwards_10s)
-    .setSessionCommand(SessionCommand(ACTION_SEEK_BACKWARD, Bundle.EMPTY))
-    .build()
-
-  private val seekForwardButton = CommandButton.Builder(R.drawable.seek_backwards_10s)
-    .setDisplayName("forward")
-    .setCustomIconResId(R.drawable.seek_forwards_10s)
-    .setSessionCommand(SessionCommand(ACTION_SEEK_FORWARD, Bundle.EMPTY))
-    .build()
-
-  // Notification helper removed; logic inlined here
 
   inner class AudioControlsBinder : Binder() {
     fun getService(): AudioControlsService = this@AudioControlsService
@@ -73,6 +59,12 @@ class AudioControlsService : MediaSessionService() {
       ACTION_PAUSE -> withPlayerOnAppThread { it.pause() }
       ACTION_TOGGLE -> withPlayerOnAppThread { player ->
         if (player.isPlaying) player.pause() else player.play()
+      }
+      ACTION_SEEK_FORWARD -> withPlayerOnAppThread { player ->
+        player.seekTo(player.currentPosition + SEEK_INTERVAL_MS)
+      }
+      ACTION_SEEK_BACKWARD -> withPlayerOnAppThread { player ->
+        player.seekTo(player.currentPosition - SEEK_INTERVAL_MS)
       }
     }
 
@@ -112,10 +104,27 @@ class AudioControlsService : MediaSessionService() {
     )
   }
 
-  private fun buildNotification(isPlaying: Boolean): Notification? {
+  private fun buildNotification(): Notification? {
     val session = mediaSession ?: return null
 
-    val notificationCompat = NotificationCompat.Builder(this, CHANNEL_ID)
+    // Build list of action indices to show in compact view
+    val compactViewIndices = mutableListOf<Int>()
+    var currentIndex = 0
+
+    // Map the same order as updateSessionCustomLayout
+    if (currentOptions?.showSeekBackward == true) {
+      compactViewIndices.add(currentIndex)
+      currentIndex++
+    }
+    // Always show play/pause in compact view
+    compactViewIndices.add(currentIndex)
+    currentIndex++
+
+    if (currentOptions?.showSeekForward == true) {
+      compactViewIndices.add(currentIndex)
+    }
+
+    val builder = NotificationCompat.Builder(this, CHANNEL_ID)
       .setSmallIcon(androidx.media3.session.R.drawable.media3_icon_circular_play)
       .setContentTitle(currentMetadata?.title ?: "\u200E")
       .setContentText(currentMetadata?.artist)
@@ -124,30 +133,60 @@ class AudioControlsService : MediaSessionService() {
       .setContentIntent(buildContentIntent())
       .setAutoCancel(false)
       .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
-      .setStyle(MediaStyleNotificationHelper.MediaStyle(session))
+      .setStyle(
+        MediaStyleNotificationHelper.MediaStyle(session)
+          .setShowActionsInCompactView(*compactViewIndices.toIntArray())
+      )
 
-    return notificationCompat.build()
+    return builder.build()
+  }
+
+  private fun updateSessionCustomLayout(isPlaying: Boolean) {
+    val session = mediaSession ?: return
+    val customLayout = mutableListOf<CommandButton>()
+
+    // Add seek backward button if enabled
+    if (currentOptions?.showSeekBackward == true) {
+      customLayout.add(
+        CommandButton.Builder(CommandButton.ICON_SKIP_BACK)
+          .setDisplayName("Seek Backward")
+          .setEnabled(true)
+          .setSessionCommand(SessionCommand(ACTION_SEEK_BACKWARD, Bundle.EMPTY))
+          .build()
+      )
+    }
+
+    // Add play/pause button (always present)
+    customLayout.add(
+      CommandButton.Builder(if (isPlaying) CommandButton.ICON_PAUSE else CommandButton.ICON_PLAY)
+        .setDisplayName(if (isPlaying) "Pause" else "Play")
+        .setEnabled(true)
+        .setPlayerCommand(Player.COMMAND_PLAY_PAUSE)
+        .build()
+    )
+
+    // Add seek forward button if enabled
+    if (currentOptions?.showSeekForward == true) {
+      customLayout.add(
+        CommandButton.Builder(CommandButton.ICON_SKIP_FORWARD)
+          .setDisplayName("Seek Forward")
+          .setEnabled(true)
+          .setSessionCommand(SessionCommand(ACTION_SEEK_FORWARD, Bundle.EMPTY))
+          .build()
+      )
+    }
+
+    session.setCustomLayout(customLayout)
   }
 
   private fun postOrStartForegroundNotification(startInForeground: Boolean) {
     val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    val player = currentPlayer?.ref
-    if (player != null) {
-      withPlayerOnAppThread { p ->
-        val notification = buildNotification(isPlaying = p.isPlaying) ?: return@withPlayerOnAppThread
-        if (startInForeground) {
-          startForeground(notificationId, notification)
-        } else {
-          notificationManager.notify(notificationId, notification)
-        }
-      }
+    val notification = buildNotification() ?: return
+
+    if (startInForeground) {
+      startForeground(notificationId, notification)
     } else {
-      val notification = buildNotification(isPlaying = false) ?: return
-      if (startInForeground) {
-        startForeground(notificationId, notification)
-      } else {
-        notificationManager.notify(notificationId, notification)
-      }
+      notificationManager.notify(notificationId, notification)
     }
   }
 
@@ -167,6 +206,7 @@ class AudioControlsService : MediaSessionService() {
 
     currentPlayer = player
     currentMetadata = metadata
+    currentOptions = options
 
     metadata?.artworkUrl?.let {
       loadArtworkFromUrl(it) { bitmap ->
@@ -179,27 +219,22 @@ class AudioControlsService : MediaSessionService() {
     if (player != null) {
       mediaSession?.release()
 
-      // Create a list that is populated depending on the options.showSeekForward and options.showSeekBackward fields:
-      val buttons = mutableListOf<CommandButton>()
-      if (options?.showSeekBackward == true) {
-        buttons.add(seekBackwardButton)
-      }
-      if (options?.showSeekForward == true) {
-        buttons.add(seekForwardButton)
-      }
       val session = MediaSession.Builder(this, player.ref)
         .setCallback(AudioMediaSessionCallback())
-        .setCustomLayout(buttons)
         .build()
 
       addSession(session)
       mediaSession = session
 
+      // Set initial custom layout
+      updateSessionCustomLayout(player.ref.isPlaying)
+
       postOrStartForegroundNotification(startInForeground = true)
 
-      // Listen for playback state changes to refresh actions/UI
+      // Listen for playback state changes to refresh notification and update custom layout
       val listener = object : Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
+          updateSessionCustomLayout(isPlaying)
           postOrStartForegroundNotification(startInForeground = false)
         }
 
