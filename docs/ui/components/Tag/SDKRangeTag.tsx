@@ -7,18 +7,28 @@ import * as Tooltip from '~/ui/components/Tooltip';
 type SDKRangeTagProps = {
   // Minimum SDK version (e.g., 54 renders "SDK 54+")
   min?: number | string;
+  // Maximum SDK version (e.g., 53 renders "SDK <=53")
+  max?: number | string;
   // Render an exact SDK version without the trailing plus
   exact?: number | string;
 } & HTMLAttributes<HTMLDivElement>;
 
-export const SDKRangeTag = ({ min, exact, className, ...rest }: SDKRangeTagProps) => {
-  const value = exact ?? min;
-  const label = value ? `SDK ${value}${exact ? '' : '+'}` : 'SDK';
-  const tooltip = exact
-    ? `Available in SDK ${value} only`
-    : value
-      ? `Available in SDK ${value} and later`
-      : undefined;
+export const SDKRangeTag = ({ min, max, exact, className, ...rest }: SDKRangeTagProps) => {
+  const has = (v?: number | string) => v !== undefined && v !== null && `${v}`.length > 0;
+
+  let label = 'SDK';
+  let tooltip: string | undefined;
+
+  if (has(exact)) {
+    label = `SDK ${exact}`;
+    tooltip = `Available in SDK ${exact} only`;
+  } else if (has(min)) {
+    label = `SDK ${min}+`;
+    tooltip = `Available in SDK ${min} and later`;
+  } else if (has(max)) {
+    label = `SDK <=${max}`;
+    tooltip = `Available in SDK ${max} and earlier`;
+  }
 
   return (
     <Tooltip.Root>
