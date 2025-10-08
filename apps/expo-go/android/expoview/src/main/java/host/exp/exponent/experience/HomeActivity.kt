@@ -113,7 +113,6 @@ open class HomeActivity : BaseExperienceActivity() {
 
   fun onEventMainThread(event: KernelStartedRunningEvent?) {
     reactHost = kernel.reactHost
-    reactNativeHost = kernel.reactNativeHost
     reactSurface = kernel.surface
 
     reactHost?.onHostResume(this, this)

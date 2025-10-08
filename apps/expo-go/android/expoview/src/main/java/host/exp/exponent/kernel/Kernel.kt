@@ -27,7 +27,6 @@ import com.facebook.react.runtime.ReactSurfaceImpl
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
-import expo.modules.ReactNativeHostWrapper
 import expo.modules.jsonutils.require
 import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.manifests.core.Manifest
@@ -245,8 +244,13 @@ class Kernel : KernelInterface() {
             )
           }
 
-          val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
-          reactHost = ReactHostFactory.createFromReactNativeHost(applicationContext, hostWrapper)
+          reactHost = ReactHostFactory.getDefaultReactHost(
+            context = applicationContext,
+            packageList = nativeHost.packages,
+            jsMainModulePath = nativeHost.jsMainModuleName,
+            jsBundleFilePath = nativeHost.jsBundleFile,
+            useDevSupport = nativeHost.useDeveloperSupport
+          )
 
           reactNativeHost = nativeHost
           reactHost?.onHostResume(activityContext, null)
@@ -867,10 +871,8 @@ class Kernel : KernelInterface() {
     if (activity is ExperienceActivity) {
       // Invalidate the experience that is not longer needed.
       activity.reactHost?.invalidate()
-      activity.reactNativeHost?.clear()
 
       activity.reactHost = null
-      activity.reactNativeHost = null
     }
   }
 
