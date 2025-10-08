@@ -1,5 +1,4 @@
-import { DateTimePicker, DateTimePickerProps, Picker } from '@expo/ui/jetpack-compose';
-import { Column } from '@expo/ui/jetpack-compose-primitives';
+import { DateTimePicker, DateTimePickerProps, Picker, Column } from '@expo/ui/jetpack-compose';
 import { Host } from '@expo/ui/swift-ui';
 import * as React from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';
