@@ -45,7 +45,7 @@ data class SliderProps(
 ) : ComposeProps
 
 class SliderView(context: Context, appContext: AppContext) :
-  ExpoComposeView<SliderProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<SliderProps>(context, appContext) {
   override val props = SliderProps()
   private val onValueChanged by EventDispatcher()
 

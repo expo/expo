@@ -17,17 +17,17 @@ class ExpoModifier(ref: Modifier?) : SharedRef<Modifier?>(ref) {
 }
 
 fun Modifier.fromExpoModifiers(
-  modifiers: List<ExpoModifier>,
+  modifiers: List<ExpoModifier>?,
   composableScope: ComposableScope? = null
 ): Modifier {
-  return modifiers.fold(this) { acc, modifier ->
+  return modifiers?.fold(this) { acc, modifier ->
     composableScope?.let { holder ->
       modifier.getFromScope?.invoke(holder)?.let {
-        return@fold acc.then(it)
+        return@fold it.then(acc)
       }
     }
-    modifier.ref?.let { acc.then(it) } ?: acc
-  }
+    modifier.ref?.then(acc) ?: acc
+  } ?: Modifier
 }
 
 /**
