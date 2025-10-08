@@ -22,6 +22,7 @@ public final class ExpoUIModule: Module {
     View(ExpoUI.ContextMenu.self)
     View(ExpoUI.ContextMenuActivationElement.self)
     View(ExpoUI.ContextMenuPreview.self)
+    View(ExpoUI.ContextMenuContent.self)
     View(FormView.self)
     View(GaugeView.self)
     View(GroupView.self)
