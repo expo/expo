@@ -23,9 +23,7 @@ const MenuNativePreviewView: ComponentType<object> = requireNativeView(
   'ContextMenuPreview'
 );
 
-type NativeMenuProps = ContextMenuProps & {
-  elements: MenuElement[];
-};
+type NativeMenuProps = ContextMenuProps;
 
 /**
  * Items visible inside the context menu. Pass input components as immidiate children of the tag.
@@ -33,7 +31,7 @@ type NativeMenuProps = ContextMenuProps & {
  * The `Picker` component is supported only on iOS. Remember to use components from the `@expo/ui` library.
  */
 export function Items(props: { children: React.ReactNode }) {
-  return <></>;
+  return props.children;
 }
 Items.tag = 'Items';
 
@@ -67,17 +65,13 @@ export function Preview(props: { children: React.ReactNode }) {
  * - Android does not support showing a `Picker` element in the context menu.
  */
 function ContextMenu(props: ContextMenuProps) {
-  const initialChildren = Children.map(
-    props.children as any,
-    (c: { type: { tag: string }; props: { children: React.ReactNode } }) =>
-      c.type.tag === Items.tag ? c.props.children : null
-  );
-  const processedElements = useMemo(
-    () => transformChildrenToElementArray(initialChildren, {}),
-    [initialChildren]
-  );
+  // const initialChildren = Children.map(
+  //   props.children as any,
+  //   (c: { type: { tag: string }; props: { children: React.ReactNode } }) =>
+  //     c.type.tag === Items.tag ? c.props.children : null
+  // );
 
-  return <MenuNativeView elements={processedElements} {...props} />;
+  return <MenuNativeView {...props} />;
 }
 
 ContextMenu.Trigger = Trigger;

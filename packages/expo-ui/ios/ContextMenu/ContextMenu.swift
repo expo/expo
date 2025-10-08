@@ -1,44 +1,14 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct MenuItems: View {
-  let fromElements: [ContextMenuElement]?
-  let props: ContextMenuProps?
-
-  var body: some View {
-    ForEach(fromElements ?? []) { elem in
-      if let button = elem.button {
-        ExpoUI.Button(props: button)
-      }
-
-      if let picker = elem.picker {
-        ExpoUI.PickerView(props: picker)
-      }
-
-      if let `switch` = elem.switch {
-        ExpoUI.SwitchView(props: `switch`)
-      }
-
-      if let submenu = elem.submenu {
-        SinglePressContextMenu(
-          elements: submenu.elements,
-          activationElement: ExpoUI.Button(props: submenu.button),
-          props: props
-        )
-      }
-    }
-  }
-}
-
-struct SinglePressContextMenu<ActivationElement: View>: View {
-  let elements: [ContextMenuElement]?
+struct SinglePressContextMenu<ActivationElement: View, MenuContent: View>: View {
   let activationElement: ActivationElement
-  let props: ContextMenuProps?
-
+  let menuContent: MenuContent
+  
   var body: some View {
     #if !os(tvOS)
     SwiftUI.Menu {
-      MenuItems(fromElements: elements, props: props)
+      menuContent
     } label: {
       activationElement
     }
@@ -48,14 +18,13 @@ struct SinglePressContextMenu<ActivationElement: View>: View {
   }
 }
 
-struct LongPressContextMenu<ActivationElement: View>: View {
-  let elements: [ContextMenuElement]?
+struct LongPressContextMenu<ActivationElement: View, MenuContent: View>: View {
   let activationElement: ActivationElement
-  let props: ContextMenuProps?
+  let menuContent: MenuContent
 
   var body: some View {
     activationElement.contextMenu(menuItems: {
-      MenuItems(fromElements: elements, props: props)
+      menuContent
     })
   }
 }
@@ -69,13 +38,13 @@ struct LongPressContextMenuWithPreview<ActivationElement: View, Preview: View>: 
   var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       activationElement.contextMenu(menuItems: {
-        MenuItems(fromElements: elements, props: props)
+//        MenuItems(fromElements: elements, props: props)
       }, preview: {
         preview
       })
     } else {
       activationElement.contextMenu(menuItems: {
-        MenuItems(fromElements: elements, props: props)
+//        MenuItems(fromElements: elements, props: props)
       })
     }
   }
@@ -103,24 +72,22 @@ struct ContextMenu: ExpoSwiftUI.View {
   @ObservedObject var props: ContextMenuProps
 
   var body: some View {
+    let activationElement = (props.children?
+      .compactMap { $0.childView as? ContextMenuActivationElement }
+      .first) ?? ContextMenuActivationElement(props: ContextMenuActivationElementProps())
+
     if props.activationMethod == .singlePress {
-      let activationElement = props.children?
-        .compactMap { $0.childView as? ContextMenuActivationElement }
-        .first
       SinglePressContextMenu(
-        elements: props.elements,
         activationElement: activationElement,
-        props: props
+        menuContent: Children()
       )
       .modifier(CommonViewModifiers(props: props))
     } else {
       let preview = props.children?
         .compactMap { $0.childView as? ContextMenuPreview }
         .first
-      let activationElement = props.children?
-        .compactMap { $0.childView as? ContextMenuActivationElement }
-        .first
-      if preview != nil {
+      
+      if let preview {
         LongPressContextMenuWithPreview(
           elements: props.elements,
           activationElement: activationElement,
@@ -130,9 +97,8 @@ struct ContextMenu: ExpoSwiftUI.View {
         .modifier(CommonViewModifiers(props: props))
       } else {
         LongPressContextMenu(
-          elements: props.elements,
           activationElement: activationElement,
-          props: props
+          menuContent: Children()
         )
         .modifier(CommonViewModifiers(props: props))
       }

@@ -8,7 +8,7 @@ export { type ActivationMethod, type ContextMenuProps, type ContextMenuContentPr
  */
 export declare function Items(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react").ReactNode;
 export declare namespace Items {
     var tag: string;
 }
