@@ -194,10 +194,8 @@ private:
 /**
  * We are binding the JSIContext to the runtime using a thread-local map.
  * This is a simplification of how we're accessing the JSIContext from different places.
- * We're using a thread-local map to prevent from accessing the wrong JSIContext from a different thread.
- * It's much safer than passing around the JSIContext as a parameter.
  */
-extern thread_local std::unordered_map<uintptr_t, JSIContext *> jsiContexts;
+extern std::unordered_map<uintptr_t, JSIContext *> jsiContexts;
 
 /**
  * Binds the JSIContext to the runtime.
