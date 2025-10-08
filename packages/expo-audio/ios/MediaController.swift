@@ -11,11 +11,7 @@ class MediaController {
 
   private var currentArtworkUrl: URL?
   private var cachedArtwork: MPMediaItemArtwork?
-
-  private init() {
-    setupRemoteCommands()
-  }
-
+  
   func setActivePlayer(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
     if let previous = activePlayer, previous.id != player?.id {
       previous.isActiveForLockScreen = false
@@ -24,12 +20,14 @@ class MediaController {
     activePlayer = player
     player?.isActiveForLockScreen = true
 
-    if let player {
-      enableRemoteCommands(options: options)
-      updateNowPlayingInfo(for: player)
-    } else {
-      disableRemoteCommands()
-      clearNowPlayingInfo()
+    DispatchQueue.main.async {
+      if let player {
+        self.enableRemoteCommands(options: options)
+        self.updateNowPlayingInfo(for: player)
+      } else {
+        self.disableRemoteCommands()
+        self.clearNowPlayingInfo()
+      }
     }
   }
 
@@ -112,6 +110,13 @@ class MediaController {
   }
 
   private func setupRemoteCommands() {
+    remoteCommandCenter.playCommand.removeTarget(self);
+    remoteCommandCenter.pauseCommand.removeTarget(self);
+    remoteCommandCenter.togglePlayPauseCommand.removeTarget(self);
+    remoteCommandCenter.changePlaybackPositionCommand.removeTarget(self);
+    remoteCommandCenter.skipForwardCommand.removeTarget(self);
+    remoteCommandCenter.skipBackwardCommand.removeTarget(self);
+    
     remoteCommandCenter.playCommand.addTarget { [weak self] _ in
       guard let player = self?.activePlayer else {
         return .commandFailed
@@ -205,6 +210,8 @@ class MediaController {
   }
 
   private func enableRemoteCommands(options: LockScreenOptions?) {
+    setupRemoteCommands()
+    
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
     remoteCommandCenter.togglePlayPauseCommand.isEnabled = true
