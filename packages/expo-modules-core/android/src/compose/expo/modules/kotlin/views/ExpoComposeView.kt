@@ -62,6 +62,15 @@ abstract class ExpoComposeView<T : ComposeProps>(
       }
       return
     }
+
+    for (index in 0..<this.size) {
+      val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
+      with(composableScope) {
+        with(child) {
+          Content()
+        }
+      }
+    }
   }
 
   init {
