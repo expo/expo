@@ -1,4 +1,4 @@
-import { Button, Host, Picker, Switch, ContextMenu, Submenu, Text } from '@expo/ui/swift-ui';
+import { Button, Host, Picker, Switch, ContextMenu, Text } from '@expo/ui/swift-ui';
 import { buttonStyle, fixedSize } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
@@ -92,14 +92,24 @@ export default function ContextMenuScreen() {
               <Button role="destructive" systemImage="hand.thumbsdown">
                 I don't like doggos 😡
               </Button>
-              <Submenu button={<Button systemImage="heart.slash">Evil submenu</Button>}>
-                <Button>I hate</Button>
-                <Button>doggos</Button>
-                <Submenu button={<Button>👹Very evil submenu 👺</Button>}>
-                  <Button>I KILL</Button>
-                  <Button>DOGGOS</Button>
-                </Submenu>
-              </Submenu>
+              <ContextMenu>
+                <ContextMenu.Items>
+                  <Button>I hate</Button>
+                  <Button>doggos</Button>
+                  <ContextMenu>
+                    <ContextMenu.Items>
+                      <Button>I KILL</Button>
+                      <Button>DOGGOS</Button>
+                    </ContextMenu.Items>
+                    <ContextMenu.Trigger>
+                      <Button>👹Very evil submenu 👺</Button>
+                    </ContextMenu.Trigger>
+                  </ContextMenu>
+                </ContextMenu.Items>
+                <ContextMenu.Trigger>
+                  <Button systemImage="heart.slash">Evil submenu</Button>
+                </ContextMenu.Trigger>
+              </ContextMenu>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
               <View style={styles.longPressMenu}>

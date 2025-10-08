@@ -20,6 +20,8 @@
 
 ### 💡 Others
 
+- [iOS] Make `ContextMenu` more composable. ([#40254](https://github.com/expo/expo/pull/40254) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 0.2.0-beta.5 - 2025-10-01
 
 ### 🎉 New features
