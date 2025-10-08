@@ -1,4 +1,4 @@
-import { Picker } from '@expo/ui/jetpack-compose';
+import { Picker, Host } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 import { ScrollView, Text } from 'react-native';
 
@@ -14,34 +14,40 @@ export default function PickerScreen() {
           <Text>{[...options, 'unset'][selectedIndex ?? options.length]}</Text>
         </Section>
         <Section title="Segmented picker">
-          <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="segmented"
-          />
+          <Host>
+            <Picker
+              options={options}
+              selectedIndex={selectedIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => {
+                setSelectedIndex(index);
+              }}
+              variant="segmented"
+            />
+          </Host>
         </Section>
         <Section title="Tinted picker">
-          <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            color="#ff5500"
-          />
+          <Host>
+            <Picker
+              options={options}
+              selectedIndex={selectedIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => {
+                setSelectedIndex(index);
+              }}
+              color="#ff5500"
+            />
+          </Host>
         </Section>
         <Section title="Radio picker">
-          <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="radio"
-          />
+          <Host>
+            <Picker
+              options={options}
+              selectedIndex={selectedIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => {
+                setSelectedIndex(index);
+              }}
+              variant="radio"
+            />
+          </Host>
         </Section>
       </Page>
     </ScrollView>
