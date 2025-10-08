@@ -522,7 +522,7 @@ export function withExtendedResolver(
 
     // Custom externals support
     function requestCustomExternals(
-      immutableContext: ResolutionContext,
+      context: ResolutionContext,
       moduleName: string,
       platform: string | null
     ) {
@@ -531,23 +531,9 @@ export function withExtendedResolver(
         return null;
       }
       // Skip applying JS externals for CSS files.
-      if (/\.(s?css|sass)$/.test(immutableContext.originModulePath)) {
+      if (/\.(s?css|sass)$/.test(context.originModulePath)) {
         return null;
       }
-
-      // TODO(@kitten): Temporary workaround. Our externals logic here isn't generic and only works
-      // for development and not exports. We never intend to use it in exported production bundles,
-      // however, this is still a dangerous implementation. To protect us from externalizing modules
-      // that aren't available to the app, we force any resolution to happen via the project root
-      const context: ResolutionContext = {
-        ...immutableContext,
-        nodeModulesPaths: [],
-        originModulePath: projectRootOriginPath,
-        disableHierarchicalLookup: false,
-      };
-
-      const environment = context.customResolverOptions?.environment;
-      const strictResolve = getStrictResolver(context, platform);
 
       for (const external of externals) {
         if (external.match(context, moduleName, platform)) {
@@ -558,15 +544,11 @@ export function withExtendedResolver(
             };
           } else if (external.replace === 'weak') {
             // TODO: Make this use require.resolveWeak again. Previously this was just resolving to the same path.
-            const realModule = strictResolve(moduleName);
-            const realPath = realModule.type === 'sourceFile' ? realModule.filePath : null;
-            if (!realPath) {
-              return null;
-            }
-
+            const realModule = getStrictResolver(context, platform)(moduleName);
+            const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
             const opaqueId = idFactory(realPath, {
               platform: platform!,
-              environment,
+              environment: context.customResolverOptions?.environment,
             });
             const contents =
               typeof opaqueId === 'number'
@@ -585,7 +567,17 @@ export function withExtendedResolver(
               filePath: virtualModuleId,
             };
           } else if (external.replace === 'node') {
-            const externModule = strictResolve(moduleName);
+            // TODO(@kitten): Temporary workaround. Our externals logic here isn't generic and only works
+            // for development and not exports. We never intend to use it in exported production bundles,
+            // however, this is still a dangerous implementation. To protect us from externalizing modules
+            // that aren't available to the app, we force any resolution to happen via the project root
+            const projectRootContext: ResolutionContext = {
+              ...context,
+              nodeModulesPaths: [],
+              originModulePath: projectRootOriginPath,
+              disableHierarchicalLookup: false,
+            };
+            const externModule = getStrictResolver(projectRootContext, platform)(moduleName);
             if (externModule.type !== 'sourceFile') {
               return null;
             }
