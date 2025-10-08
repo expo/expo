@@ -151,7 +151,9 @@ function appendLabelOptions(options: ExtendedNativeTabOptions, props: LabelProps
     options.title = '';
   } else {
     options.title = props.children;
-    options.selectedLabelStyle = props.selectedStyle;
+    if (props.selectedStyle) {
+      options.selectedLabelStyle = props.selectedStyle;
+    }
   }
 }
 
@@ -188,7 +190,9 @@ export function appendIconOptions(options: ExtendedNativeTabOptions, props: Icon
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
   }
-  options.selectedIconColor = props.selectedColor;
+  if (props.selectedColor) {
+    options.selectedIconColor = props.selectedColor;
+  }
 }
 
 function convertIconSrcToIconOption(
