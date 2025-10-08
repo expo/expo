@@ -794,7 +794,7 @@ jobs:
     type: maestro
     # @end #
     environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    image: string # optional. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on  for a list of available images.
     params:
       build_id: string # required
       flow_path: string | string[] # required
@@ -822,7 +822,7 @@ jobs:
     type: maestro-cloud
     # @end #
     environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    image: string # optional. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on  for a list of available images.
     params:
       build_id: string # required. ID of the build to test.
       maestro_project_id: string # required. Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
@@ -1330,16 +1330,16 @@ jobs:
     steps:
       - uses: eas/download_artifact
         with:
-          artifact_id: string # Required if name is not provided. ID of the artifact to download.
           name: string # Required if artifact_id is not provided. Name of the artifact to download.
+          artifact_id: string # Required if artifact_name is not provided. ID of the artifact to download.
 ```
 
 ##### Properties
 
 | Property      | Type   | Required | Description                                                                      |
 | ------------- | ------ | -------- | -------------------------------------------------------------------------------- |
-| `artifact_id` | string | No       | The ID of the artifact to download. Required if `name` is not provided.          |
 | `name`        | string | No       | The name of the artifact to download. Required if `artifact_id` is not provided. |
+| `artifact_id` | string | No       | The ID of the artifact to download. Required if `name` is not provided.          |
 
 ##### Outputs
 
