@@ -56,13 +56,6 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   @Composable
   protected fun Children(composableScope: ComposableScope) {
-    if (withHostingView) {
-      with(composableScope) {
-        Content()
-      }
-      return
-    }
-
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
       with(composableScope) {
@@ -87,7 +80,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       it.setContent {
-        Children(ComposableScope())
+        with(ComposableScope()) {
+          Content()
+        }
       }
       it.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) {
