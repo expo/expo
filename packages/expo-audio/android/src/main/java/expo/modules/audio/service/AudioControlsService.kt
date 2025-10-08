@@ -26,7 +26,6 @@ import androidx.media3.session.SessionCommand
 import expo.modules.audio.AudioLockScreenOptions
 import expo.modules.audio.AudioPlayer
 import expo.modules.audio.Metadata
-import expo.modules.audio.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
