@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Add `invalidate` callback to SwiftUIVirtualView. ([#40237](https://github.com/expo/expo/pull/40237) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 3.0.20 — 2025-10-01
 
 ### 🐛 Bug fixes
