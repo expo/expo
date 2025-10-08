@@ -28,6 +28,7 @@ export type ContextMenuProps = {
 
 /**
  * Props of the `Submenu` component.
+ * @deprecated Use `ContextMenu` component as Submenu instead.
  */
 export type SubmenuProps = {
   /**
