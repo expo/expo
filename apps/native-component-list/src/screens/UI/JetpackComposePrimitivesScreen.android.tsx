@@ -1,11 +1,22 @@
-import { Container, Column, Row, Text } from '@expo/ui/jetpack-compose-primitives';
+import {
+  background,
+  size,
+  weight,
+  testID,
+  matchParentSize,
+  blur,
+  clickable,
+  animateContentSize,
+  padding,
+} from '@expo/ui/jetpack-compose';
+import { Container, Column, Row, Text, Box } from '@expo/ui/jetpack-compose-primitives';
 import { useState } from 'react';
 import { Button, View, StyleSheet, Text as RNText } from 'react-native';
 
 export default function JetpackComposePrimitivesScreen() {
   const [checked, setChecked] = useState<boolean>(true);
   return (
-    <Container style={styles.container} testID="container">
+    <Container style={styles.container} modifiers={[testID('container')]}>
       <Column verticalArrangement="spaceEvenly" horizontalAlignment="center">
         {/* Example 1: Row with Text and Switch */}
         <Row horizontalArrangement="spaceBetween" verticalAlignment="center" testID="leftTextRow">
@@ -32,8 +43,16 @@ export default function JetpackComposePrimitivesScreen() {
         </Column>
 
         {/* Example 3: Nested Row and Column with Text */}
-        <Row horizontalArrangement="spaceAround" verticalAlignment="center" testID="rowParent">
-          <Column verticalArrangement="center" horizontalAlignment="center" testID="nestedColumn1">
+        <Row
+          horizontalArrangement="spaceAround"
+          verticalAlignment="center"
+          testID="rowParent"
+          modifiers={[size(300, 300), background('#ffdddd')]}>
+          <Column
+            modifiers={[background('#ff0000'), weight(2)]}
+            verticalArrangement="center"
+            horizontalAlignment="center"
+            testID="nestedColumn1">
             <Text fontSize={16} fontWeight="500" testID="nestedColumn1Text">
               Nested
             </Text>
@@ -49,7 +68,38 @@ export default function JetpackComposePrimitivesScreen() {
               Column 2
             </Text>
           </Column>
+          <Column
+            modifiers={[background('#ff0000'), weight(4)]}
+            verticalArrangement="center"
+            horizontalAlignment="center"
+            testID="nestedColumn2">
+            <Text fontSize={16} fontWeight="500" testID="nestedColumn2Text">
+              Nested
+            </Text>
+            <Text fontSize={14} color="#333333">
+              Column 3
+            </Text>
+          </Column>
+          <Column verticalArrangement="center" horizontalAlignment="center" testID="nestedColumn2">
+            <Text fontSize={16} fontWeight="500" testID="nestedColumn2Text">
+              Nested
+            </Text>
+            <Text fontSize={14} color="#333333">
+              Column 4
+            </Text>
+          </Column>
         </Row>
+        {/* Example 3: Two nested boxes */}
+        <Box
+          modifiers={[
+            animateContentSize(0.5, 100),
+            size(200, checked ? 100 : 200),
+            background('#ffdddd'),
+            blur(10),
+            clickable(() => setChecked((c) => !c)),
+          ]}>
+          <Box modifiers={[matchParentSize(), padding(30), background('#ddddff')]} />
+        </Box>
       </Column>
     </Container>
   );

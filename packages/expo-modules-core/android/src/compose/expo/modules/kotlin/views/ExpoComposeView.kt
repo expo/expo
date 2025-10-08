@@ -3,27 +3,32 @@ package expo.modules.kotlin.views
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.view.size
 import expo.modules.kotlin.AppContext
 
-/**
- * Applies a test tag to a modifier if a testID is provided.
- */
-@OptIn(ExperimentalComposeUiApi::class)
-private fun Modifier.applyTestTag(testID: String?): Modifier =
-  if (!testID.isNullOrEmpty()) {
-    this.semantics { testTagsAsResourceId = true }.testTag(testID)
-  } else {
-    this
-  }
+data class ComposableScope(
+  val rowScope: RowScope? = null,
+  val columnScope: ColumnScope? = null,
+  val boxScope: BoxScope? = null
+)
+
+fun ComposableScope.with(rowScope: RowScope?): ComposableScope {
+  return this.copy(rowScope = rowScope)
+}
+
+fun ComposableScope.with(columnScope: ColumnScope?): ComposableScope {
+  return this.copy(columnScope = columnScope)
+}
+
+fun ComposableScope.with(boxScope: BoxScope?): ComposableScope {
+  return this.copy(boxScope = boxScope)
+}
 
 /**
  * A base class that should be used by compose views.
@@ -35,10 +40,8 @@ abstract class ExpoComposeView<T : ComposeProps>(
 ) : ExpoView(context, appContext) {
   open val props: T? = null
 
-  var testID: String? = null
-
   @Composable
-  abstract fun Content(modifier: Modifier)
+  abstract fun ComposableScope.Content()
 
   override val shouldUseAndroidLayout = withHostingView
 
@@ -52,15 +55,21 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   @Composable
-  protected fun Children() {
+  protected fun Children(composableScope: ComposableScope) {
     if (withHostingView) {
-      Content(modifier = Modifier.applyTestTag(testID))
+      with(composableScope) {
+        Content()
+      }
       return
     }
 
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      child.Content(modifier = Modifier.applyTestTag(child.testID))
+      with(composableScope) {
+        with(child) {
+          Content()
+        }
+      }
     }
   }
 
@@ -78,7 +87,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       it.setContent {
-        Children()
+        Children(ComposableScope())
       }
       it.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) {

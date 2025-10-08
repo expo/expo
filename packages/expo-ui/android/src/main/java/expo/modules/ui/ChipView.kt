@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import java.io.Serializable
@@ -39,7 +40,7 @@ class ChipView(context: Context, appContext: AppContext) :
 
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val variant by props.variant
     val label by props.label
     val leadingIcon by props.leadingIcon
@@ -49,7 +50,7 @@ class ChipView(context: Context, appContext: AppContext) :
     val enabled by props.enabled
     val selected by props.selected
 
-    val chipModifier = modifier
+    val chipModifier = Modifier
       .padding(4.dp)
       .wrapContentSize(Alignment.Center)
 
