@@ -1,8 +1,10 @@
 'use client';
 import {
   createNavigatorFactory,
+  EventArg,
   ParamListBase,
   StackActionHelpers,
+  StackActions,
   StackNavigationState,
   StackRouter,
   StackRouterOptions,
@@ -14,7 +16,7 @@ import {
   NativeStackNavigationOptions,
   NativeStackView,
 } from '@react-navigation/native-stack';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
 import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
@@ -44,6 +46,22 @@ function ModalStackNavigator({
     initialRouteName,
   });
 
+  useEffect(
+    () =>
+      // @ts-expect-error: there may not be a tab navigator in parent
+      navigation?.addListener?.('tabPress', (e: EventArg<'tabPress', true>) => {
+        requestAnimationFrame(() => {
+          if (navigation.isFocused() && !e.defaultPrevented) {
+            navigation.dispatch({
+              ...StackActions.popToTop(),
+              target: state.key,
+            });
+          }
+        });
+      }),
+    [navigation, state.key]
+  );
+
   return (
     <NavigationContent>
       <ModalStackView
@@ -66,7 +84,11 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
     isWeb
   );
 
-  const newStackState = { ...state, routes: filteredRoutes, index: nonModalIndex };
+  const newStackState = {
+    ...state,
+    routes: filteredRoutes,
+    index: nonModalIndex,
+  };
 
   const dismiss = useCallback(() => {
     navigation.goBack();

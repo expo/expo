@@ -48,6 +48,18 @@ function ModalStackNavigator({ initialRouteName, children, screenOptions, }) {
         screenOptions,
         initialRouteName,
     });
+    (0, react_1.useEffect)(() => 
+    // @ts-expect-error: there may not be a tab navigator in parent
+    navigation?.addListener?.('tabPress', (e) => {
+        requestAnimationFrame(() => {
+            if (navigation.isFocused() && !e.defaultPrevented) {
+                navigation.dispatch({
+                    ...native_1.StackActions.popToTop(),
+                    target: state.key,
+                });
+            }
+        });
+    }), [navigation, state.key]);
     return (<NavigationContent>
       <ModalStackView state={state} navigation={navigation} descriptors={descriptors} describe={describe}/>
     </NavigationContent>);
@@ -56,7 +68,11 @@ const ModalStackView = ({ state, navigation, descriptors, describe }) => {
     const isWeb = process.env.EXPO_OS === 'web';
     const { colors } = (0, native_1.useTheme)();
     const { routes: filteredRoutes, index: nonModalIndex } = (0, utils_1.convertStackStateToNonModalState)(state, descriptors, isWeb);
-    const newStackState = { ...state, routes: filteredRoutes, index: nonModalIndex };
+    const newStackState = {
+        ...state,
+        routes: filteredRoutes,
+        index: nonModalIndex,
+    };
     const dismiss = (0, react_1.useCallback)(() => {
         navigation.goBack();
     }, [navigation]);
