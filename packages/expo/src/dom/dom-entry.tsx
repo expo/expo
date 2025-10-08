@@ -9,7 +9,7 @@ import { addEventListener, getActionsObject } from './marshal';
 import registerRootComponent from '../launch/registerRootComponent';
 
 interface MarshalledProps {
-  name: string[];
+  names: string[];
   props: Record<string, JSONValue>;
   [key: string]: undefined | JSONValue;
 }
@@ -92,7 +92,7 @@ export function registerDOMComponent(AppModule: any) {
       // Create a named map { [name: string]: ProxyFunction }
       // TODO(@kitten): Unclear how this is typed or shaped
       return Object.fromEntries(
-        (marshalledProps.names as string[]).map((key: string) => {
+        marshalledProps.names.map((key: string) => {
           return [key, ACTIONS[key]];
         })
       );
