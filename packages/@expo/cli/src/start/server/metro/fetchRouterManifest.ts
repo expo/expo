@@ -27,6 +27,7 @@ export type ExpoRouterServerManifestV1Middleware = {
 
 export type ExpoRouterServerManifestV1<TRegex = string> = {
   middleware?: ExpoRouterServerManifestV1Middleware;
+  headers?: Record<string, string | string[]>;
   apiRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
   htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
   notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];

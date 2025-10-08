@@ -12,6 +12,7 @@ import android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED
 import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.Job
@@ -21,7 +22,6 @@ import java.io.File
 import java.io.IOException
 import java.util.UUID
 import kotlin.math.log10
-import androidx.core.net.toUri
 
 private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
 
@@ -43,6 +43,9 @@ class AudioRecorder(
   var isRecording = false
   var isPaused = false
   private var recordingTimerJob: Job? = null
+
+  private fun currentFileUrl(): String? =
+    filePath?.let(::File)?.toUri()?.toString()
 
   private fun getAudioRecorderLevels(): Double? {
     if (!meteringEnabled || recorder == null || !isRecording) {
@@ -66,14 +69,20 @@ class AudioRecorder(
   }
 
   fun prepareRecording(options: RecordingOptions?) {
-    recorder = options?.let { createRecorder(it) } ?: createRecorder(this.options)
+    if (recorder != null || isPrepared || isRecording || isPaused) {
+      throw AudioRecorderAlreadyPreparedException()
+    }
+    val recordingOptions = options ?: this.options
+    val mediaRecorder = createRecorder(recordingOptions)
+    recorder = mediaRecorder
     try {
-      recorder?.prepare()
+      mediaRecorder.prepare()
       isPrepared = true
-    } catch (_: Exception) {
-      recorder?.release()
+    } catch (cause: Exception) {
+      mediaRecorder.release()
       recorder = null
       isPrepared = false
+      throw AudioRecorderPrepareException(cause)
     }
   }
 
@@ -125,10 +134,21 @@ class AudioRecorder(
   }
 
   fun stopRecording(): Bundle {
+    val url = currentFileUrl()
+    var durationMillis: Long
+
     try {
       recorder?.stop()
+      durationMillis = getAudioRecorderDurationMillis()
     } finally {
       reset()
+    }
+
+    val status = Bundle().apply {
+      putBoolean("canRecord", false)
+      putBoolean("isRecording", false)
+      putLong("durationMillis", durationMillis)
+      url?.let { putString("url", it) }
     }
 
     // Emit completion event on the main thread
@@ -140,12 +160,12 @@ class AudioRecorder(
           "isFinished" to true,
           "hasError" to false,
           "error" to null,
-          "url" to filePath?.toUri().toString()
+          "url" to url
         )
       )
     }
 
-    return getAudioRecorderStatus()
+    return status
   }
 
   private fun reset() {
@@ -229,9 +249,7 @@ class AudioRecorder(
       getAudioRecorderLevels()?.let {
         putDouble("metering", it)
       }
-      filePath?.let {
-        putString("url", it.toUri().toString())
-      }
+      currentFileUrl()?.let { putString("url", it) }
     }
   } else {
     Bundle().apply {
@@ -277,7 +295,7 @@ class AudioRecorder(
             "isFinished" to true,
             "hasError" to true,
             "error" to null,
-            "url" to filePath?.toUri().toString()
+            "url" to currentFileUrl()
           )
         )
       }

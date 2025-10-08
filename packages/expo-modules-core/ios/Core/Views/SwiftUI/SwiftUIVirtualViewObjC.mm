@@ -372,4 +372,10 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
   return NO;
 }
 
+- (void)invalidate
+{
+  // Default implementation does nothing.
+  [self prepareForRecycle];
+}
+
 @end

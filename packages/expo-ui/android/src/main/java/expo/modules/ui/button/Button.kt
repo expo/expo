@@ -19,6 +19,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
@@ -26,11 +31,14 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import java.io.Serializable
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.ui.DynamicTheme
 import expo.modules.ui.ExpoModifier
+import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
 import expo.modules.ui.fromExpoModifiers
 import expo.modules.ui.getImageVector
+import expo.modules.ui.pathFromShapeRecord
 
 open class ButtonPressedEvent() : Record, Serializable
 
@@ -63,11 +71,20 @@ data class ButtonProps(
   val leadingIcon: MutableState<String?> = mutableStateOf(null),
   val trailingIcon: MutableState<String?> = mutableStateOf(null),
   val disabled: MutableState<Boolean> = mutableStateOf(false),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
+  val shape: MutableState<ShapeRecord?> = mutableStateOf(null)
 ) : ComposeProps
 
 @Composable
-fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, onPress: () -> Unit, modifier: Modifier = Modifier, content: @Composable (RowScope.() -> Unit)) {
+fun StyledButton(
+  variant: ButtonVariant,
+  colors: ButtonColors,
+  disabled: Boolean,
+  onPress: () -> Unit,
+  modifier: Modifier = Modifier,
+  shape: Shape?,
+  content: @Composable (RowScope.() -> Unit)
+) {
   when (variant) {
     ButtonVariant.BORDERED -> FilledTonalButton(
       onPress,
@@ -79,6 +96,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
       ),
+      shape = shape ?: ButtonDefaults.filledTonalShape,
       modifier = modifier
     )
 
@@ -92,6 +110,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
       ),
+      shape = shape ?: ButtonDefaults.textShape,
       modifier = modifier
     )
 
@@ -105,6 +124,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
       ),
+      shape = shape ?: ButtonDefaults.outlinedShape,
       modifier = modifier
     )
 
@@ -118,6 +138,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
       ),
+      shape = shape ?: ButtonDefaults.elevatedShape,
       modifier = modifier
     )
 
@@ -131,8 +152,19 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
       ),
+      shape = shape ?: ButtonDefaults.shape,
       modifier = modifier
     )
+  }
+}
+
+fun getShape(shapeRecord: ShapeRecord?): Shape? {
+  if (shapeRecord == null) return null
+  return object : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+      val path = pathFromShapeRecord(shapeRecord, size)
+      return Outline.Generic(path)
+    }
   }
 }
 
@@ -147,7 +179,7 @@ class Button(context: Context, appContext: AppContext) :
   }
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val (variant) = props.variant
     val (text) = props.text
     val (colors) = props.elementColors
@@ -160,7 +192,8 @@ class Button(context: Context, appContext: AppContext) :
         colors,
         disabled,
         onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
-        modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+        modifier = Modifier.fromExpoModifiers(props.modifiers.value),
+        shape = getShape(props.shape.value)
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           leadingIcon?.let { iconName ->

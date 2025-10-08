@@ -29,6 +29,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ComposableScope
 
 class PickerColors : Record {
   @Field
@@ -83,7 +84,7 @@ class PickerView(context: Context, appContext: AppContext) :
   private val onOptionSelected by EventDispatcher()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val (selectedIndex) = props.selectedIndex
     val (options) = props.options
     val (colors) = props.elementColors

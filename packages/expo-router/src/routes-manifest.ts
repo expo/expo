@@ -60,5 +60,5 @@ export function createRoutesManifest(
   if (!routeTree) {
     return null;
   }
-  return getServerManifest(routeTree);
+  return getServerManifest(routeTree, { headers: options.headers });
 }

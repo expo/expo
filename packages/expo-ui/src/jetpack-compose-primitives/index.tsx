@@ -1,6 +1,8 @@
 import { requireNativeView } from 'expo';
 import { ColorValue, Platform, StyleProp, ViewStyle } from 'react-native';
 
+import { ExpoModifier } from '../types';
+
 type PrimitiveBaseProps = {
   /**
    * Used to locate this view in end-to-end tests.
@@ -31,7 +33,26 @@ type LayoutBaseProps = {
   verticalArrangement?: VerticalArrangement;
   horizontalAlignment?: HorizontalAlignment;
   verticalAlignment?: VerticalAlignment;
+  modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
+
+//#region Box Component
+export type BoxProps = Pick<LayoutBaseProps, 'children' | 'modifiers'>;
+const BoxNativeView: React.ComponentType<BoxProps> | null =
+  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'BoxView') : null;
+export function Box(props: BoxProps) {
+  if (!BoxNativeView) {
+    return null;
+  }
+  return (
+    <BoxNativeView
+      {...props}
+      // @ts-ignore
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+    />
+  );
+}
+//#endregion
 
 //#region Row Component
 export type RowProps = LayoutBaseProps;
@@ -41,7 +62,13 @@ export function Row(props: RowProps) {
   if (!RowNativeView) {
     return null;
   }
-  return <RowNativeView {...props} />;
+  return (
+    <RowNativeView
+      {...props}
+      // @ts-ignore
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+    />
+  );
 }
 //#endregion
 
@@ -53,7 +80,13 @@ export function Column(props: ColumnProps) {
   if (!ColumnNativeView) {
     return null;
   }
-  return <ColumnNativeView {...props} />;
+  return (
+    <ColumnNativeView
+      {...props}
+      // @ts-ignore
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+    />
+  );
 }
 //#endregion
 
@@ -61,6 +94,7 @@ export function Column(props: ColumnProps) {
 export type ContainerProps = {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
 const ContainerNativeView: React.ComponentType<ColumnProps> | null =
   Platform.OS === 'android' ? requireNativeView('ExpoUI', 'ContainerView') : null;
@@ -68,7 +102,13 @@ export function Container(props: ContainerProps) {
   if (!ContainerNativeView) {
     return null;
   }
-  return <ContainerNativeView {...props} />;
+  return (
+    <ContainerNativeView
+      {...props}
+      // @ts-ignore
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+    />
+  );
 }
 //#endregion
 
@@ -104,6 +144,8 @@ function transformTextProps(props: TextProps): NativeTextProps {
   return {
     ...restProps,
     text: children ?? '',
+    // @ts-ignore
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 export function Text(props: TextProps) {

@@ -143,6 +143,20 @@ export const onLongPressGesture = (handler: () => void, minimumDuration?: number
     minimumDuration: minimumDuration ?? 0.5,
   });
 
+/**
+ * Adds an onAppear modifier that calls a function when the view appears.
+ * @param handler - Function to call when the view appears
+ */
+export const onAppear = (handler: () => void) =>
+  createModifierWithEventListener('onAppear', handler);
+
+/**
+ * Adds an onDisappear modifier that calls a function when the view disappears.
+ * @param handler - Function to call when the view disappears
+ */
+export const onDisappear = (handler: () => void) =>
+  createModifierWithEventListener('onDisappear', handler);
+
 // Note: Complex gesture modifiers like onDragGesture are not available
 // in the modifier system. Use component-level props instead.
 
@@ -477,6 +491,18 @@ export const glassEffectId = (id: string, namespaceId: string) =>
     namespaceId,
   });
 
+/**
+ * Specifies the visibility of the background for scrollable views within this view.
+ */
+export const scrollContentBackground = (visible: 'automatic' | 'visible' | 'hidden') =>
+  createModifier('scrollContentBackground', { visible });
+
+/**
+ * Sets the background of a row.
+ * @param color - The row color (hex string, e.g., '#FF0000')
+ */
+export const listRowBackground = (color: Color) => createModifier('listRowBackground', { color });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -495,6 +521,8 @@ export type BuiltInModifier =
   | ReturnType<typeof ignoreSafeArea>
   | ReturnType<typeof onTapGesture>
   | ReturnType<typeof onLongPressGesture>
+  | ReturnType<typeof onAppear>
+  | ReturnType<typeof onDisappear>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>
@@ -527,7 +555,9 @@ export type BuiltInModifier =
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
   | ReturnType<typeof animation>
-  | ReturnType<typeof containerShape>;
+  | ReturnType<typeof containerShape>
+  | ReturnType<typeof scrollContentBackground>
+  | ReturnType<typeof listRowBackground>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

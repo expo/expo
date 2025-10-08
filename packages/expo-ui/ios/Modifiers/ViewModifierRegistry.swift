@@ -381,6 +381,40 @@ internal struct OnLongPressGestureModifier: ViewModifier, Record {
   }
 }
 
+internal struct OnAppearModifier: ViewModifier, Record {
+  var eventDispatcher: EventDispatcher?
+
+  init() {}
+
+  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    try self = .init(from: params, appContext: appContext)
+    self.eventDispatcher = eventDispatcher
+  }
+
+  func body(content: Content) -> some View {
+    content.onAppear {
+      eventDispatcher?(["onAppear": [:]])
+    }
+  }
+}
+
+internal struct OnDisappearModifier: ViewModifier, Record {
+  var eventDispatcher: EventDispatcher?
+
+  init() {}
+
+  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    try self = .init(from: params, appContext: appContext)
+    self.eventDispatcher = eventDispatcher
+  }
+
+  func body(content: Content) -> some View {
+    content.onDisappear {
+      eventDispatcher?(["onDisappear": [:]])
+    }
+  }
+}
+
 internal struct HueRotationModifier: ViewModifier, Record {
   @Field var angle: Double = 0
 
@@ -745,6 +779,47 @@ internal struct AnimationModifier: ViewModifier, Record {
   }
 }
 
+internal enum ScrollContentBackgroundTypes: String, Enumerable {
+  case automatic
+  case hidden
+  case visible
+}
+
+internal struct ScrollContentBackground: ViewModifier, Record {
+  @Field var visible: ScrollContentBackgroundTypes = .visible
+  
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if #available(iOS 16.0, *) {
+        switch visible {
+        case .visible:
+          content.scrollContentBackground(.visible)
+        case .hidden:
+          content.scrollContentBackground(.hidden)
+        case .automatic:
+          content.scrollContentBackground(.automatic)
+        }
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
+internal struct ListRowBackground: ViewModifier, Record {
+  @Field var color: Color?
+
+  func body(content: Content) -> some View {
+    if let color = color {
+      content.listRowBackground(color)
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Registry
 
 /**
@@ -984,6 +1059,14 @@ extension ViewModifierRegistry {
       return try OnLongPressGestureModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
+    register("onAppear") { params, appContext, eventDispatcher in
+      return try OnAppearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("onDisappear") { params, appContext, eventDispatcher in
+      return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
     register("hueRotation") { params, appContext, _ in
       return try HueRotationModifier(from: params, appContext: appContext)
     }
@@ -1054,6 +1137,14 @@ extension ViewModifierRegistry {
 
     register("buttonStyle") { params, appContext, _ in
       return try ButtonStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollContentBackground") { params, appContext, _ in
+      return try ScrollContentBackground(from: params, appContext: appContext)
+    }
+
+    register("listRowBackground") { params, appContext, _ in
+      return try ListRowBackground(from: params, appContext: appContext)
     }
   }
 }

@@ -25,6 +25,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ComposableScope
 import java.util.Calendar
 import java.util.Date
 import android.graphics.Color as AndroidColor
@@ -73,7 +74,7 @@ class DateTimePickerView(context: Context, appContext: AppContext) :
   private val onDateSelected by EventDispatcher<DatePickerResult>()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
       ExpoTimePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value)) {
         onDateSelected(it)

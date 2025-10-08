@@ -6,7 +6,6 @@ import expo.modules.kotlin.modules.InternalModuleDefinitionBuilder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.LazyKType
-import expo.modules.kotlin.views.decorators.UseCommonProps
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
@@ -29,7 +28,6 @@ open class ModuleDefinitionBuilderWithCompose(
       }
     }
 
-    viewDefinitionBuilder.UseCommonProps()
     viewDefinitionBuilder.UseCSSProps()
     body.invoke(viewDefinitionBuilder)
     registerViewDefinition(viewDefinitionBuilder.build())

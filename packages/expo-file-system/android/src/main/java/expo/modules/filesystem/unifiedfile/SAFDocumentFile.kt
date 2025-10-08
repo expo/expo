@@ -45,6 +45,8 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
 
   override fun delete(): Boolean = documentFile?.delete() == true
 
+  override fun deleteRecursively(): Boolean = documentFile?.deleteRecursively() == true
+
   override fun listFilesAsUnified(): List<UnifiedFileInterface> =
     documentFile?.listFiles()?.map { SAFDocumentFile(context, it.uri) } ?: emptyList()
 
@@ -87,4 +89,11 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
       }
     }
   }
+}
+
+fun DocumentFile.deleteRecursively(): Boolean {
+  if (isDirectory) {
+    listFiles().forEach { it.deleteRecursively() }
+  }
+  return delete()
 }

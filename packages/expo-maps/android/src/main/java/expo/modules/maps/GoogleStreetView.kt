@@ -13,6 +13,7 @@ import com.google.maps.android.ktx.MapsExperimentalFeature
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ComposableScope
 
 data class GoogleStreetViewProps(
   val position: MutableState<CameraPositionStreetViewRecord> = mutableStateOf(CameraPositionStreetViewRecord()),
@@ -30,7 +31,7 @@ class GoogleStreetView(
   override val props = GoogleStreetViewProps()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     key(props.position.value.coordinates.toString()) {
       StreetView(
         streetViewPanoramaOptionsFactory = {

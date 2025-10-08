@@ -33,12 +33,16 @@ export type ShapeProps = {
     /** Modifiers for the component */
     modifiers?: ExpoModifier[];
 };
-declare function Star(props: ShapeProps): import("react").JSX.Element;
-declare function PillStar(props: ShapeProps): import("react").JSX.Element;
-declare function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>): import("react").JSX.Element;
-declare function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>): import("react").JSX.Element;
-declare function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>): import("react").JSX.Element;
-declare function Polygon(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color' | 'modifiers'>): import("react").JSX.Element;
+export type ShapeJSXElement = React.JSX.Element & {
+    __expo_shape_jsx_element_marker: true;
+};
+declare function Star(props: ShapeProps): ShapeJSXElement;
+declare function PillStar(props: ShapeProps): ShapeJSXElement;
+declare function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>): ShapeJSXElement;
+declare function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>): ShapeJSXElement;
+declare function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>): ShapeJSXElement;
+declare function Polygon(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color' | 'modifiers'>): ShapeJSXElement;
+export declare function parseJSXShape(shape?: ShapeJSXElement): any;
 export declare const Shape: {
     Star: typeof Star;
     PillStar: typeof PillStar;
