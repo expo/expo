@@ -25,7 +25,7 @@ open class IsOpenedChangeEvent(
 
 data class BottomSheetProps(
   val isOpened: MutableState<Boolean> = mutableStateOf(false),
-  val skipPartiallyExpanded: MutableState<Boolean> = mutableStateOf(false),
+  val skipPartiallyExpanded: MutableState<Boolean> = mutableStateOf(false)
 ) : ComposeProps
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +37,7 @@ fun BottomSheetComposable(skipPartiallyExpanded: Boolean, isOpened: Boolean, onI
     ModalBottomSheet(
       sheetState = sheetState,
       modifier = Modifier.fillMaxHeight(),
-      onDismissRequest = { onIsOpenedChange(false) },
+      onDismissRequest = { onIsOpenedChange(false) }
     ) {
       content()
     }
@@ -58,7 +58,7 @@ class BottomSheetView(context: Context, appContext: AppContext) :
       BottomSheetComposable(
         skipPartiallyExpanded,
         isOpened,
-        onIsOpenedChange = { value -> onIsOpenedChange(IsOpenedChangeEvent(value)) },
+        onIsOpenedChange = { value -> onIsOpenedChange(IsOpenedChangeEvent(value)) }
       ) {
         Children(ComposableScope())
       }
