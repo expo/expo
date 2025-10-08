@@ -4,7 +4,7 @@ import ExpoModulesCore
 struct SinglePressContextMenu<ActivationElement: View, MenuContent: View>: View {
   let activationElement: ActivationElement
   let menuContent: MenuContent
-  
+
   var body: some View {
     #if !os(tvOS)
     SwiftUI.Menu {
@@ -15,17 +15,6 @@ struct SinglePressContextMenu<ActivationElement: View, MenuContent: View>: View 
     #else
     Text("SinglePressContextMenu is not supported on this platform")
     #endif
-  }
-}
-
-struct LongPressContextMenu<ActivationElement: View, MenuContent: View>: View {
-  let activationElement: ActivationElement
-  let menuContent: MenuContent
-
-  var body: some View {
-    activationElement.contextMenu(menuItems: {
-      menuContent
-    })
   }
 }
 
@@ -49,31 +38,6 @@ struct LongPressContextMenuWithPreview<ActivationElement: View, Preview: View, M
   }
 }
 
-struct ContextMenuPreview: ExpoSwiftUI.View {
-  @ObservedObject var props: ContextMenuPreviewProps
-
-  var body: some View {
-    Children()
-  }
-}
-
-struct ContextMenuActivationElement: ExpoSwiftUI.View {
-  @ObservedObject var props: ContextMenuActivationElementProps
-
-  var body: some View {
-    Children()
-  }
-}
-
-struct ContextMenuContent: ExpoSwiftUI.View {
-  @ObservedObject var props: ContextMenuContentProps
-
-  var body: some View {
-    Children()
-  }
-}
-
-
 struct ContextMenu: ExpoSwiftUI.View {
   @ObservedObject var props: ContextMenuProps
 
@@ -81,7 +45,7 @@ struct ContextMenu: ExpoSwiftUI.View {
     let activationElement = (props.children?
       .compactMap { $0.childView as? ContextMenuActivationElement }
       .first) ?? ContextMenuActivationElement(props: ContextMenuActivationElementProps())
-    
+
     let menuContent = (props.children?
       .compactMap { $0.childView as? ContextMenuContent }
       .first) ?? ContextMenuContent(props: ContextMenuContentProps())
@@ -114,4 +78,3 @@ struct ContextMenu: ExpoSwiftUI.View {
     }
   }
 }
-

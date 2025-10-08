@@ -5,7 +5,6 @@ internal enum ActivationMethod: String, Enumerable {
   case longPress
 }
 
-
 internal final class ContextMenuProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
