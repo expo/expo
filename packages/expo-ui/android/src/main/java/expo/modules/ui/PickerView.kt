@@ -79,7 +79,7 @@ data class PickerProps(
 ) : ComposeProps
 
 class PickerView(context: Context, appContext: AppContext) :
-  ExpoComposeView<PickerProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<PickerProps>(context, appContext) {
   override val props = PickerProps()
   private val onOptionSelected by EventDispatcher()
 

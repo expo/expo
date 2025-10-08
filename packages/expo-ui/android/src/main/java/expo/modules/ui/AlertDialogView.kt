@@ -28,7 +28,7 @@ data class AlertDialogProps(
 ) : ComposeProps
 
 class AlertDialogView(context: Context, appContext: AppContext) :
-  ExpoComposeView<AlertDialogProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<AlertDialogProps>(context, appContext) {
   override val props = AlertDialogProps()
   private val onDismissPressed by EventDispatcher<AlertDialogButtonPressedEvent>()
   private val onConfirmPressed by EventDispatcher<AlertDialogButtonPressedEvent>()
