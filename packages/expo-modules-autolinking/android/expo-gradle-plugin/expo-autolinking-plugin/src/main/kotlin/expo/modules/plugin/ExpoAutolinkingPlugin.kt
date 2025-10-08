@@ -28,11 +28,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     project.logger.quiet("")
     project.logger.quiet("Using expo modules")
 
-    var appProject: Project? = null
-    appProject = findAppProject(project.rootProject) { found ->
-      appProject = found
-    }
-
+    val appProject = findAppProject(project.rootProject)
     appProject?.let { copyAppDimensionsAndFlavorsToProject(project, it) }
 
     val (prebuiltProjects, projects) = config.allProjects.partition { project ->
@@ -97,19 +93,8 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     }
   }
 
-  private fun findAppProject(root: Project, onFound: (Project) -> Unit): Project? {
-    val immediate = root.allprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
-    if (immediate != null) {
-      onFound(immediate)
-      return immediate
-    }
-
-    root.allprojects.forEach { p ->
-      p.pluginManager.withPlugin("com.android.application") {
-        onFound(p)
-      }
-    }
-    return null
+  private fun findAppProject(root: Project): Project? {
+    return root.allprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
   }
 
   private fun copyAppDimensionsAndFlavorsToProject(
@@ -132,10 +117,12 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     consumerAndroid: BaseExtension,
     appAndroid: BaseExtension
   ): List<String> {
-    val appDimensions = appAndroid.flavorDimensionList ?: emptyList()
-    if (appDimensions.isEmpty()) return emptyList()
+    val appDimensions = appAndroid
+      .flavorDimensionList
+      .takeIf { it.isNotEmpty() }
+      ?: return emptyList()
 
-    val consumerDimensions = (consumerAndroid.flavorDimensionList ?: emptyList()).toMutableList()
+    val consumerDimensions = (consumerAndroid.flavorDimensionList).toMutableList()
     val dimensionsAdded = appDimensions.any { dimension ->
       if (dimension !in consumerDimensions) {
         consumerDimensions.add(dimension)
@@ -145,7 +132,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
       }
     }
 
-    if (dimensionsAdded || consumerAndroid.flavorDimensionList.isNullOrEmpty()) {
+    if (dimensionsAdded) {
       consumerAndroid.flavorDimensions(*consumerDimensions.toTypedArray())
       project.logger.quiet("  -> Copied/merged flavorDimensions: ${consumerDimensions.joinToString()}")
     }
@@ -159,17 +146,14 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     appAndroid: BaseExtension,
     appDimensions: List<String>
   ) {
-    val appFlavors = appAndroid.productFlavors ?: run {
-      return
-    }
-
+    val appFlavors = appAndroid.productFlavors
     val consumerFlavors = consumerAndroid.productFlavors
-    val existingFlavorNames = consumerFlavors?.map { it.name }?.toSet() ?: emptySet()
+    val existingFlavorNames = consumerFlavors.map { it.name }.toSet()
 
     appFlavors.forEach { appFlavor ->
       if (appFlavor.name !in existingFlavorNames) {
         val dimension = appFlavor.dimension ?: appDimensions.singleOrNull()
-        
+
         consumerFlavors.create(appFlavor.name).apply {
           this.dimension = dimension
           appFlavor.applicationIdSuffix?.let { this.applicationIdSuffix = it }
@@ -178,7 +162,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
             this.manifestPlaceholders.putAll(appFlavor.manifestPlaceholders)
           }
         }
-        
+
         project.logger.quiet("  -> Created flavor '${appFlavor.name}' (dimension='$dimension') in :${project.path}")
       }
     }
