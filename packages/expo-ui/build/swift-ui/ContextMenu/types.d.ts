@@ -1,17 +1,13 @@
 import { ReactElement, ReactNode } from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 import { type ButtonProps } from '../Button';
-import { type PickerProps } from '../Picker';
-import { type SwitchProps } from '../Switch';
-import { type SubmenuProps } from './Submenu';
 import { type CommonViewModifierProps } from '../types';
 export type EventHandlers = Record<string, Record<string, (event: NativeSyntheticEvent<any>) => void>>;
 export type ContextMenuElementBase = {
     contextMenuElementID: string;
 };
-type SubmenuElement = ReactElement<ButtonProps> | ReactElement<SwitchProps> | ReactElement<PickerProps> | ReactElement<SubmenuProps>;
 export type ContextMenuContentProps = {
-    children: SubmenuElement | SubmenuElement[];
+    children: ReactNode;
 };
 /**
  * Activation method of the context menu.
@@ -33,5 +29,17 @@ export type ContextMenuProps = {
      */
     children: ReactNode;
 } & CommonViewModifierProps;
-export {};
+/**
+ * Props of the `Submenu` component.
+ */
+export type SubmenuProps = {
+    /**
+     * The button that will be used to expand the submenu. On Android the `text` prop of the `Button` will be used as a section title.
+     */
+    button: ReactElement<ButtonProps>;
+    /**
+     * Children of the submenu. Only `Button`, `Switch`, `Picker` and `Submenu` elements should be used.
+     */
+    children: ReactNode;
+};
 //# sourceMappingURL=types.d.ts.map

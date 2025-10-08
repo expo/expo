@@ -1,10 +1,8 @@
 import { requireNativeView } from 'expo';
-import { ComponentType, Children, useMemo } from 'react';
+import { ComponentType } from 'react';
 
-import { type ContextMenuProps } from './types';
-import { MenuElement, transformChildrenToElementArray } from './utils';
+import { SubmenuProps, type ContextMenuProps } from './types';
 
-export * from './Submenu';
 export {
   type ActivationMethod,
   type ContextMenuProps,
@@ -23,6 +21,11 @@ const MenuNativePreviewView: ComponentType<object> = requireNativeView(
   'ContextMenuPreview'
 );
 
+const MenuNativeItemsView: ComponentType<object> = requireNativeView(
+  'ExpoUI',
+  'ContextMenuContent'
+);
+
 type NativeMenuProps = ContextMenuProps;
 
 /**
@@ -31,9 +34,8 @@ type NativeMenuProps = ContextMenuProps;
  * The `Picker` component is supported only on iOS. Remember to use components from the `@expo/ui` library.
  */
 export function Items(props: { children: React.ReactNode }) {
-  return props.children;
+  return <MenuNativeItemsView {...props} />;
 }
-Items.tag = 'Items';
 
 /**
  * The component visible all the time that triggers the menu when tapped or long-pressed.
@@ -65,12 +67,6 @@ export function Preview(props: { children: React.ReactNode }) {
  * - Android does not support showing a `Picker` element in the context menu.
  */
 function ContextMenu(props: ContextMenuProps) {
-  // const initialChildren = Children.map(
-  //   props.children as any,
-  //   (c: { type: { tag: string }; props: { children: React.ReactNode } }) =>
-  //     c.type.tag === Items.tag ? c.props.children : null
-  // );
-
   return <MenuNativeView {...props} />;
 }
 
@@ -78,4 +74,17 @@ ContextMenu.Trigger = Trigger;
 ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
 
-export { ContextMenu };
+/**
+ * @deprecated Use `ContextMenu` component as Submenu instead.
+ */
+const Submenu = (props: SubmenuProps) => {
+  const { button, children, ...rest } = props;
+  return (
+    <ContextMenu {...rest}>
+      <ContextMenu.Items>{children}</ContextMenu.Items>
+      <ContextMenu.Trigger>{button}</ContextMenu.Trigger>
+    </ContextMenu>
+  );
+};
+
+export { ContextMenu, Submenu };
