@@ -56,10 +56,10 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
     if (!needsCreation(options)) {
       return
     }
-    validateCanCreate(options)
     if (uri.isContentUri) {
       throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
     }
+    validateCanCreate(options)
     if (options.overwrite && file.exists()) {
       file.delete()
     }

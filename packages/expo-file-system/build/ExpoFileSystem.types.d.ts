@@ -204,7 +204,7 @@ export declare class File {
      * Writes content to the file.
      * @param content The content to write into the file.
      */
-    write(content: string | Uint8Array, options: FileWriteOptions): void;
+    write(content: string | Uint8Array, options?: FileWriteOptions): void;
     /**
      * Deletes a file.
      *
