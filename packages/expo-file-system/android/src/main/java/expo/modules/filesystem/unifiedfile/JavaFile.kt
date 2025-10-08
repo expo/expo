@@ -31,6 +31,13 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
     return JavaFile(childFile.toUri())
   }
 
+  override fun deleteRecursively(): Boolean {
+    if (isDirectory) {
+      listFiles()?.forEach { it.deleteRecursively() }
+    }
+    return super<File>.delete()
+  }
+
   override fun listFilesAsUnified(): List<UnifiedFileInterface> =
     super<File>.listFiles()?.map { JavaFile(it.toUri()) } ?: emptyList()
 
