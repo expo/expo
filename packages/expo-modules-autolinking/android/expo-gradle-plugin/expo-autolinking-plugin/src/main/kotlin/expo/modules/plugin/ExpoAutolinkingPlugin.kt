@@ -1,6 +1,7 @@
 package expo.modules.plugin
 
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
@@ -26,6 +27,9 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
 
     project.logger.quiet("")
     project.logger.quiet("Using expo modules")
+
+    val appProject = findAppProject(project.rootProject)
+    appProject?.let { copyAppDimensionsAndFlavorsToProject(project, it) }
 
     val (prebuiltProjects, projects) = config.allProjects.partition { project ->
       project.usePublication
@@ -89,6 +93,81 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
       // Serializes the autolinking options to JSON to pass them to the task.
       // The types supported as a task input are limited to primitives, strings, and files.
       it.options.set(options.toJson())
+    }
+  }
+
+  private fun findAppProject(root: Project): Project? {
+    return root.allprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
+  }
+
+  private fun copyAppDimensionsAndFlavorsToProject(
+    project: Project,
+    appProject: Project
+  ) {
+    val appAndroid = appProject.extensions.findByName("android") as? BaseExtension ?: run {
+      return
+    }
+    val consumerAndroid = project.extensions.findByName("android") as? BaseExtension ?: run {
+      return
+    }
+
+    val appDimensions = syncFlavorDimensions(project, consumerAndroid, appAndroid)
+    copyMissingProductFlavors(project, consumerAndroid, appAndroid, appDimensions)
+  }
+
+  private fun syncFlavorDimensions(
+    project: Project,
+    consumerAndroid: BaseExtension,
+    appAndroid: BaseExtension
+  ): List<String> {
+    val appDimensions = appAndroid
+      .flavorDimensionList
+      .takeIf { it.isNotEmpty() }
+      ?: return emptyList()
+
+    val consumerDimensions = (consumerAndroid.flavorDimensionList).toMutableList()
+    val dimensionsAdded = appDimensions.any { dimension ->
+      if (dimension !in consumerDimensions) {
+        consumerDimensions.add(dimension)
+        true
+      } else {
+        false
+      }
+    }
+
+    if (dimensionsAdded) {
+      consumerAndroid.flavorDimensions(*consumerDimensions.toTypedArray())
+      project.logger.quiet("  -> Copied/merged flavorDimensions: ${consumerDimensions.joinToString()}")
+    }
+
+    return appDimensions
+  }
+
+  private fun copyMissingProductFlavors(
+    project: Project,
+    consumerAndroid: BaseExtension,
+    appAndroid: BaseExtension,
+    appDimensions: List<String>
+  ) {
+    val appFlavors = appAndroid.productFlavors
+    val consumerFlavors = consumerAndroid.productFlavors
+    val existingFlavorNames = consumerFlavors.map { it.name }.toSet()
+
+    appFlavors.forEach { appFlavor ->
+      if (appFlavor.name !in existingFlavorNames) {
+        val dimension = appFlavor.dimension ?: appDimensions.singleOrNull()
+
+        consumerFlavors.create(appFlavor.name).apply {
+          this.dimension = dimension
+          appFlavor.applicationIdSuffix?.let { this.applicationIdSuffix = it }
+          appFlavor.versionNameSuffix?.let { this.versionNameSuffix = it }
+          if (appFlavor.manifestPlaceholders.isNotEmpty()) {
+            this.manifestPlaceholders.putAll(appFlavor.manifestPlaceholders)
+          }
+        }
+
+        project.logger.quiet("  -> Created flavor '${appFlavor.name}' (dimension='$dimension') in :${project.path}")
+      }
     }
   }
 }
