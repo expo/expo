@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'bun:test';
 import { schema } from './schema';
 
 describe('Zod schema validation', () => {

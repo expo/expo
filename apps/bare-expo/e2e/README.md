@@ -1,4 +1,4 @@
-# e2e tests
+# E2E tests
 
 ### Prerequisites
 
@@ -14,7 +14,7 @@ avdmanager create avd --force -n pixel_7_pro --package 'system-images;android-36
 
 1. A good way to start is with Maestro Studio: https://maestro.mobile.dev/studio, a tool for creating maestro flows. This is a good [intro video](https://www.youtube.com/watch?v=E7qwFwo_nu0&list=TLGG53BUjw5zwMAwODA5MjAyNQ).
 
-2. Create a yaml file, or a folder with the yaml file in `apps/bare-expo/e2e`. This is where all tests live. Name your file with the `.android.yaml` / `.ios.yaml` suffix to have the CI run the test only on the given platform. Currently, **iOS is a bit unstable in GH actions**, especially when view shots are involved. This seems to depend on how lucky you are with the assigned GH actions runner.
+2. Create a yaml file, or a folder with the yaml file in `apps/bare-expo/e2e`. This is where all tests live. Name your file with the `.android.yaml` / `.ios.yaml` suffix to have the CI run the test only on the given platform. Currently, **iOS is a bit unstable in GH actions**, especially when view shots are involved.
 
 3. Take a screen in NCL, adjust it for your e2e test needs (you can use `KeyValueBox` component to render values you want to test and use the "copy maestro assertions" button to get yaml that you can paste into your test file).
 
@@ -26,7 +26,7 @@ cd e2e/_nested-flows && bun --watch --no-clear-screen ./image-comparison-server.
 
 5. In Maestro Studio, deep link into the screen and write your test. Here are the available [selectors](https://docs.maestro.dev/api-reference/selectors) and [commands](https://docs.maestro.dev/api-reference/commands). Studio will offer some guidance on the yaml syntax.
 
-#### The dos and don'ts of authoring e2e tests
+#### Do's and don'ts of authoring E2E tests
 
 - Don't use too specific assertions. Example: don't assert that video resolution is exactly 1920x1080 — player could choose a different resolution based on network conditions or hardware. When in doubt, maybe assert on a different parameter entirely or use conservative ranges.
 - Don't assert on looong visible text. Example: when you're using `assertVisible` with a multiline string, that assertion will be hard to maintain.
@@ -59,7 +59,7 @@ To run the tests the same way they'd run in CI, do `cd apps/bare-expo/scripts` a
 
 ### Comparing screen / view shots
 
-The way the comparing works is that there's always a base image commited in the repo (`.base.png` for cross-platform view shots, or `base.platform.png` for screenshots or per-platform view shots), and a corresponding shot is taken in CI. They are compared and based on the result, assertion fails or passes. See `_nested-flows/screenshot-comparison.yaml` and `_nested-flows/viewshot-comparison.yaml`.
+Comparison works by always keeping a base image committed in the repository (`.base.png` for cross-platform view shots, or `.base.platform.png` for platform-specific screenshots or view shots). During CI, a new screenshot is taken and compared to the base image. Based on the comparison result, the test assertion will either pass or fail. For examples, see `_nested-flows/screenshot-comparison.yaml` and `_nested-flows/viewshot-comparison.yaml`.
 The shots, as well as diffs against the base images are stored as GH artifacts in CI, and so are the logs of the image comparison server.
 
 ### Troubleshooting

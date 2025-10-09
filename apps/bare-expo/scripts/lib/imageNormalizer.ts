@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 // this was done by claude
 
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { PNG } from 'pngjs';
 
 export interface NormalizationOptions {

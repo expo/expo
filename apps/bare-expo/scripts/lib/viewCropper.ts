@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import * as fs from 'fs';
+import fs from 'node:fs';
 import Jimp from 'jimp-compact';
 
 import { MAESTRO_ENV_VARS } from './e2e-common';

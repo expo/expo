@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { schema } from './schema';
 import { takeScreenshot } from './screenshot';

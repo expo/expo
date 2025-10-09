@@ -1,10 +1,10 @@
 // taking screenshots with Maestro is not reliable (for example, taking one screenshot would work, but taking two in row would time out)
 // hence this module
 
-import { exec } from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import { promisify } from 'util';
+import { exec } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { promisify } from 'node:util';
 
 const execAsync = promisify(exec);
 

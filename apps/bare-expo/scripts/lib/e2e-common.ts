@@ -178,7 +178,6 @@ const getCustomMaestroFlowsAsync = async (
 
   const yamlFiles = await glob.glob('**/*.yaml', {
     cwd: e2eDir,
-    maxDepth: 2, // e2e root + one level deep
     ignore,
   });
 
