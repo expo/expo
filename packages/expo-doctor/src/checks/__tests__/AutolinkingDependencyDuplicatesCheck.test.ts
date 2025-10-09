@@ -155,8 +155,9 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
     `);
     expect(result.advice).toMatchInlineSnapshot(`
       [
-        "Multiple copies of the same version exist for: expo-constants.
-      - Try deleting your node_modules folders and reinstall your dependencies after.",
+        "Your node_modules folder may be corrupted. Multiple copies of the same version exist for: expo-constants.
+      - Try deleting your node_modules folders and reinstall your dependencies after.
+      - If this error persists, delete your node_modules as well as your lockfile and reinstall.",
         "Resolve your dependency issues and deduplicate your dependencies. Learn more: https://expo.fyi/resolving-dependency-issues",
       ]
     `);
