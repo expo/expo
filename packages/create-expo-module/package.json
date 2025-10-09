@@ -13,6 +13,10 @@
   "bin": {
     "create-expo-module": "./bin/create-expo-module"
   },
+  "files": [
+    "bin",
+    "build"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
