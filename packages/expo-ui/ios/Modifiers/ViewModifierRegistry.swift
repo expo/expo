@@ -830,17 +830,13 @@ internal struct TextTruncationMode: ViewModifier, Record {
   @Field var mode: TextTruncationModeTypes = .tail
 
   func body(content: Content) -> some View {
-    if #available(iOS 13.0, macOS 10.15, tvOS 13.0, *) {
-      switch mode {
-        case .head:
-          content.truncationMode(.head)
-        case .middle:
-          content.truncationMode(.middle)
-        case .tail:
-          content.truncationMode(.tail)
-      }
-    } else {
-      content
+    switch mode {
+      case .head:
+        content.truncationMode(.head)
+      case .middle:
+        content.truncationMode(.middle)
+      case .tail:
+        content.truncationMode(.tail)
     }
   }
 }
@@ -878,16 +874,12 @@ internal struct TextCase: ViewModifier, Record {
   @Field var value: TextCaseTypes = .lowercase
 
   func body(content: Content) -> some View {
-    if #available(iOS 14.0, macOS 11.0, tvOS 14.0, *) {
-      switch value {
-        case .lowercase:
-          content.textCase(.lowercase)
-        case .uppercase:
-          content.textCase(.uppercase)
-        }
-    } else {
-      content
-    }
+     switch value {
+      case .lowercase:
+        content.textCase(.lowercase)
+      case .uppercase:
+        content.textCase(.uppercase)
+      }
   }
 }
 
@@ -959,17 +951,13 @@ internal struct MultilineTextAlignment: ViewModifier, Record {
   @Field var alignment: TextAligment = .leading
 
   func body(content: Content) -> some View {
-    if #available(iOS 13.0, macOS 10.15, tvOS 13.0, *) {
-      switch alignment {
-        case .center: 
-          content.multilineTextAlignment(.center)
-        case .leading: 
-          content.multilineTextAlignment(.leading)
-        case .trailing:
-          content.multilineTextAlignment(.trailing)
-      }
-    } else {
-      content
+    switch alignment {
+      case .center: 
+        content.multilineTextAlignment(.center)
+      case .leading: 
+        content.multilineTextAlignment(.leading)
+      case .trailing:
+        content.multilineTextAlignment(.trailing)
     }
   }
 }
