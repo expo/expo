@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix relative navigation in NativeTabs index routes. ([#40225](https://github.com/expo/expo/pull/40225) by [@mensonones](https://github.com/mensonones))
+
 ### 💡 Others
 
 - Remove unnecessary ModalContextProvider ([#40179](https://github.com/expo/expo/pull/40179) by [@Ubax](https://github.com/Ubax))
