@@ -41,9 +41,11 @@ class DevMenuPackage : Package, ReactPackage {
       object : ReactActivityLifecycleListener {
         override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
           if (!DevMenuManager.isInitialized()) {
-            DevMenuManager.initializeWithReactHost(
-              (activity.application as ReactApplication).reactHost!!
-            )
+            val reactHost = (activity.application as ReactApplication).reactHost
+            checkNotNull(reactHost) {
+              "DevMenuManager.initializeWithReactHost() was called before reactHost was initialized"
+            }
+            DevMenuManager.initializeWithReactHost(reactHost)
           } else {
             DevMenuManager.synchronizeDelegate()
           }
