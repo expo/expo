@@ -1,28 +1,8 @@
 {
   "name": "create-expo-module",
-  "version": "1.0.10",
+  "version": "2.0.0",
   "description": "The script to create the Expo module",
-  "main": "build/create-expo-module.js",
-  "types": "build/create-expo-module.d.ts",
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "expo-module": "expo-module"
-  },
-  "bin": {
-    "create-expo-module": "./bin/create-expo-module"
-  },
-  "files": [
-    "bin",
-    "build"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/create-expo-module"
-  },
-  "keywords": [
+   "keywords": [
     "expo",
     "module",
     "modules",
@@ -30,31 +10,54 @@
     "react",
     "native"
   ],
-  "author": "Expo",
   "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/create-expo-module"
+  },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
-  "dependencies": {
+  "author": "Expo",
+  "bin": "build/index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "bin",
+    "build"
+  ],
+  "engines": {
+    "node": ">=18.13.0"
+  },
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "prepare": "expo-module clean && yarn run build:prod",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "typecheck": "expo-module typecheck",
+    "watch": "yarn run build --watch"
+  },
+  "devDependencies": {
     "@expo/json-file": "^10.0.7",
     "@expo/rudder-sdk-node": "^1.1.1",
     "@expo/spawn-async": "^1.7.2",
+    "@octokit/types": "^15.0.0",
+    "@types/ejs": "^3.1.5",
+    "@types/prompts": "^2.4.9",
+    "@vercel/ncc": "^0.38.4",
     "chalk": "^4.1.2",
     "commander": "^8.3.0",
     "cross-spawn": "^7.0.5",
     "debug": "^4.3.4",
     "ejs": "^3.1.10",
+    "expo-module-scripts": "^5.0.7",
     "getenv": "^2.0.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
     "tar": "^7.5.1",
     "validate-npm-package-name": "^6.0.2"
-  },
-  "devDependencies": {
-    "@octokit/types": "^15.0.0",
-    "@types/ejs": "^3.1.5",
-    "@types/prompts": "^2.4.9",
-    "expo-module-scripts": "^5.0.7"
   }
 }
