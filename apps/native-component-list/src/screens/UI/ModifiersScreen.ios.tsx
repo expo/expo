@@ -10,6 +10,7 @@ import {
   Picker,
   Switch,
   Rectangle,
+  Slider,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -41,6 +42,15 @@ import {
   disabled,
   scrollContentBackground,
   listRowBackground,
+  allowsTightening,
+  truncationMode,
+  kerning,
+  textCase,
+  underline,
+  strikethrough,
+  multilineTextAlignment,
+  textSelection,
+  lineSpacing,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -58,6 +68,19 @@ export default function ModifiersScreen() {
   const [rowColor, setRowColor] = useState<string>('white');
   const [backgroundFormColor, setBackgroundFormColor] = useState<string>('#EAEAEAFF');
 
+  const truncationModeOptions = ['head', 'middle', 'tail'];
+  const [truncationModeIndex, setTruncationMode] = useState(0);
+
+  const [allowTightening, setAllowsTightening] = useState(false);
+
+  const [kerningValue, setKerning] = useState(0);
+
+  const multilineTextAlignmentOptions = ['center', 'leading', 'trailing'];
+  const [multilineTextAlignmentIndex, setMultilineTextAlignment] = useState(0);
+
+  const [enabledSelection, setEnabledSelection] = useState(false);
+
+  const [lineSpacingValue, setLineSpaceingValue] = useState(0);
   return (
     <ScrollView>
       <Host matchContents>
@@ -70,6 +93,164 @@ export default function ModifiersScreen() {
               width: dimensions.width,
             }),
           ]}>
+          {/* Text modifiers */}
+          <Section title="Text modifier">
+            <Text
+              color={color ?? 'primary'}
+              size={16}
+              lineLimit={1}
+              modifiers={[
+                allowsTightening(allowTightening),
+                truncationMode(
+                  truncationModeOptions[truncationModeIndex] as 'head' | 'middle' | 'tail'
+                ),
+                frame({ width: 160, height: 50, alignment: 'leading' }),
+              ]}>
+              This is a wide text element
+            </Text>
+            <Picker
+              label="Select mode"
+              options={truncationModeOptions}
+              selectedIndex={truncationModeIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => {
+                setTruncationMode(index);
+              }}
+              variant="menu"
+            />
+            <Switch
+              label="Allow Tightening"
+              value={allowTightening}
+              onValueChange={setAllowsTightening}
+            />
+            <Text size={14} modifiers={[kerning(kerningValue)]}>
+              Kerning Text
+            </Text>
+            <Slider min={0} max={10} onValueChange={setKerning} />
+
+            <HStack spacing={20}>
+              <Text size={14} modifiers={[textCase('lowercase')]}>
+                lowercase
+              </Text>
+              <Text size={14} modifiers={[textCase('uppercase')]}>
+                uppercase
+              </Text>
+            </HStack>
+
+            <HStack alignment="center" spacing={80}>
+              <VStack spacing={15}>
+                <Text size={16}>Underline text</Text>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'solid', color: 'red' })]}>
+                  Text 1
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'dash', color: 'green' })]}>
+                  Text 2
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'dot', color: 'blue' })]}>
+                  Text 3
+                </Text>
+                <Text size={14} modifiers={[underline({ isActive: true, pattern: 'dashDot' })]}>
+                  Text 4
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'dashDotDot', color: 'pink' })]}>
+                  Text 5
+                </Text>
+              </VStack>
+              <VStack spacing={15}>
+                <Text size={16}>Strikethrough text</Text>
+                <Text
+                  size={14}
+                  modifiers={[strikethrough({ isActive: true, pattern: 'solid', color: 'red' })]}>
+                  Text 1
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[strikethrough({ isActive: true, pattern: 'dot', color: 'green' })]}>
+                  Text 2
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[strikethrough({ isActive: true, pattern: 'dash', color: 'blue' })]}>
+                  Text 3
+                </Text>
+                <Text size={14} modifiers={[strikethrough({ isActive: true, pattern: 'dashDot' })]}>
+                  Text 4
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[
+                    strikethrough({ isActive: true, pattern: 'dashDotDot', color: 'pink' }),
+                  ]}>
+                  Text 5
+                </Text>
+              </VStack>
+            </HStack>
+
+            <VStack spacing={15}>
+              <Picker
+                label="Select alignment"
+                options={multilineTextAlignmentOptions}
+                selectedIndex={multilineTextAlignmentIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setMultilineTextAlignment(index);
+                }}
+                variant="menu"
+              />
+              <Text
+                size={14}
+                modifiers={[
+                  multilineTextAlignment(
+                    multilineTextAlignmentOptions[multilineTextAlignmentIndex] as
+                      | 'center'
+                      | 'leading'
+                      | 'trailing'
+                  ),
+                ]}>
+                {`This is a block of text that shows up in a text element as multiple lines.\nHere we have chosen to center this text.`}
+              </Text>
+            </VStack>
+
+            <VStack spacing={25}>
+              <Switch
+                label="Enable selection"
+                value={enabledSelection}
+                onValueChange={setEnabledSelection}
+              />
+              <Text
+                size={14}
+                color={enabledSelection ? 'black' : 'gray'}
+                modifiers={[textSelection(enabledSelection)]}>
+                This is selected text
+              </Text>
+            </VStack>
+
+            <HStack spacing={30}>
+              <VStack alignment="center">
+                <Text size={14}>Default</Text>
+                <Text size={12} modifiers={[frame({ width: 150, height: 120 })]}>
+                  This is a string with default spacing between the bottom of one line and the top
+                  of the next.
+                </Text>
+              </VStack>
+              <VStack alignment="center">
+                <Text size={14}>Spacing</Text>
+                <Text
+                  size={12}
+                  modifiers={[frame({ width: 150, height: 120 }), lineSpacing(lineSpacingValue)]}>
+                  This is a string with 20 point spacing between the bottom of one line and the top
+                  of the next.
+                </Text>
+              </VStack>
+            </HStack>
+            <Slider min={0} max={20} onValueChange={setLineSpaceingValue} />
+          </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
           <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>
             <Switch
