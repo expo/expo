@@ -902,9 +902,9 @@ internal struct TextUnderLine: ViewModifier, Record {
         case .solid:  
           content.underline(isActive, pattern: .solid, color: color)
         case .dash:  
-        content.underline(isActive, pattern: .dash, color: color)
+          content.underline(isActive, pattern: .dash, color: color)
         case .dot:  
-         content.underline(isActive, pattern: .dot, color: color)
+          content.underline(isActive, pattern: .dot, color: color)
         case .dashDot:  
           content.underline(isActive, pattern: .dashDot, color: color)
         case .dashDotDot:  
@@ -990,6 +990,7 @@ internal struct LineSpacing: ViewModifier, Record {
     }
   }
 }
+
 // MARK: - Registry
 
 /**
