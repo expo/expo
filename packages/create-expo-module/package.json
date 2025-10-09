@@ -37,7 +37,6 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
-    "@expo/config": "~12.0.9",
     "@expo/json-file": "^10.0.7",
     "@expo/rudder-sdk-node": "^1.1.1",
     "@expo/spawn-async": "^1.7.2",
