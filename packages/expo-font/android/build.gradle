@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.0.8'
+version = '14.0.9'
 
 android {
   namespace "expo.modules.font"
   defaultConfig {
     versionCode 29
-    versionName "14.0.8"
+    versionName "14.0.9"
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-font",
-  "version": "14.0.8",
+  "version": "14.0.9",
   "description": "Load fonts at runtime and use them in React Native components.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

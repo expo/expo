@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Update autolinking messages to be clearer about isolated dependencies and add note on corrupted installations ([#40279](https://github.com/expo/expo/pull/40279) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.17.10 — 2025-10-09
+
+### 🎉 New features
+
+- Update autolinking messages to be clearer about isolated dependencies and add note on corrupted installations ([#40279](https://github.com/expo/expo/pull/40279) by [@kitten](https://github.com/kitten))
 
 ## 1.17.9 — 2025-10-01
 

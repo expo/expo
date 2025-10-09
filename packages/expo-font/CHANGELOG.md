@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- fix android image scaling in `renderToImageAsync` ([#40113](https://github.com/expo/expo/pull/40113) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 14.0.9 — 2025-10-09
+
+### 🐛 Bug fixes
+
+- fix android image scaling in `renderToImageAsync` ([#40113](https://github.com/expo/expo/pull/40113) by [@vonovak](https://github.com/vonovak))
 
 ## 14.0.8 — 2025-09-11
 

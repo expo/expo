@@ -49,7 +49,7 @@ PODS:
   - EXNotifications/Tests (0.32.12):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.12):
+  - Expo (54.0.13):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -374,9 +374,9 @@ PODS:
     - ExpoModulesCore
   - ExpoDomWebView (0.2.7):
     - ExpoModulesCore
-  - ExpoFileSystem (19.0.16):
+  - ExpoFileSystem (19.0.17):
     - ExpoModulesCore
-  - ExpoFont (14.0.8):
+  - ExpoFont (14.0.9):
     - ExpoModulesCore
   - ExpoGL (16.0.7):
     - ExpoModulesCore
@@ -385,14 +385,14 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (15.0.7):
     - ExpoModulesCore
-  - ExpoImage (3.0.8):
+  - ExpoImage (3.0.9):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImage/Tests (3.0.8):
+  - ExpoImage/Tests (3.0.9):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -457,7 +457,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (0.4.7):
     - ExpoModulesCore
-  - ExpoModulesCore (3.0.20):
+  - ExpoModulesCore (3.0.21):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -480,7 +480,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesCore/Tests (3.0.20):
+  - ExpoModulesCore/Tests (3.0.21):
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -560,7 +560,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (6.0.7):
     - ExpoModulesCore
-  - ExpoUI (0.2.0-beta.6):
+  - ExpoUI (0.2.0-beta.7):
     - ExpoModulesCore
   - ExpoVideo (3.0.11):
     - ExpoModulesCore
@@ -3558,7 +3558,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: 7aab54f0e5f3023122bc95699eaff7c52bacb559
-  Expo: dddfac8aa1ebd553785b02b5e6631c800313ec48
+  Expo: 31753d0721fff50684ffccad30e73dc19acb52be
   expo-dev-client: 3d3eccb2814f0fe1ab7551efbaf13ba52e8feabf
   expo-dev-launcher: 098354a1ca11a4155e685fe6b070b6cdfcedc4b9
   expo-dev-menu: 593d1bf6d01144b23988ed4dd6b66dff5745f634
@@ -3582,12 +3582,12 @@ SPEC CHECKSUMS:
   ExpoDevice: d85d332b903b658a596f166b01fee12ca1e443ff
   ExpoDocumentPicker: dbe4eeeb771891209fee044a6b0bafbd1fdcc4fa
   ExpoDomWebView: f8d74b970eede6e02ca2f215742812472f046817
-  ExpoFileSystem: 86f029bfb474f194ce861ba697364f661b578d64
-  ExpoFont: d3e56c7cc03d9fd113b90a5513ad32b4bf46b0ff
+  ExpoFileSystem: 56f081328f5b48a6dcc8302eee51d4f2d9d0049b
+  ExpoFont: b881d43057dceb7b31ff767b24f612609e80f60f
   ExpoGL: 39262a8c3d4c36d48a28bc412e3392c25c5391c9
   ExpoGlassEffect: 11f4ae0db0d49a6e96ecd81ef524ba3124a39fdc
   ExpoHaptics: b48d913e7e5f23816c6f130e525c9a6501b160b5
-  ExpoImage: 306dd755c842dba9f3ee654c51834a9cc657e6ca
+  ExpoImage: 790e6eb3e154dd6075107536caaebb03f0f24184
   ExpoImageManipulator: dbf5b8fc805b55463811cb3da96ab60c532faae8
   ExpoImagePicker: bd0a5c81d7734548f6908a480609257e85d19ea8
   ExpoInsights: fa66f3e1c5b612e08641eae42140a9d42af385ed
@@ -3602,7 +3602,7 @@ SPEC CHECKSUMS:
   ExpoMaps: 62bba038bb8c2af73ccdf16cb765acd593fe3eab
   ExpoMediaLibrary: 648cee3f5dcba13410ec9cc8ac9a426e89a61a31
   ExpoMeshGradient: 763087d3b1e6e9a0974e9700ea24cb598816d93c
-  ExpoModulesCore: b9c17ef5c208549022fef93618c84385dca8e47a
+  ExpoModulesCore: 4a96f8ae1f6caa63eea03d7a2406de1a87b1e961
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   ExpoNetwork: 97073786edfe405aba5d0987a544617ed0671ad1
   ExpoPrint: ad836bb90da10793509651c0ea1f39e120db001e
@@ -3619,7 +3619,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: ef7b8ac77ac2d496b1bc3f0f7daf5e19c3a9933a
   ExpoSystemUI: 5e7fbe4b716edb9e3a7bc0441e4a3b6b1f9eb1ea
   ExpoTrackingTransparency: fee2dc0cea16d12aeffde2f388671b029c563ed3
-  ExpoUI: 95b6c98443c9de40e4f864782010862ef6a85502
+  ExpoUI: 821b058da921ea4aa6172b36d080991ea6fb2fae
   ExpoVideo: 7e39a5933892dc640b1b83013f3f9d9d37072151
   ExpoVideoThumbnails: c951ae8c6ed9974dd3ae5f79b2dd1d9b6e8ab266
   ExpoWebBrowser: 51218ce6ef35ea769e33409aac87fea3df4b919d

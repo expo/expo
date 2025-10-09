@@ -39,10 +39,10 @@
   "dependencies": {
     "@expo/dom-webview": "0.2.7",
     "@expo/vector-icons": "^15.0.2",
-    "expo": "~54.0.12",
+    "expo": "~54.0.13",
     "expo-haptics": "~15.0.7",
     "expo-linking": "~8.0.8",
-    "expo-router": "^6.0.10",
+    "expo-router": "^6.0.11",
     "expo-speech": "~14.0.7",
     "expo-sqlite": "~16.0.8",
     "jose": "^5",

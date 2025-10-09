@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "3.0.20",
+  "version": "3.0.21",
   "description": "The core of Expo Modules architecture",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
