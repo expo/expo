@@ -1,4 +1,13 @@
-import { Button, Host, Picker, Switch, ContextMenu, Text } from '@expo/ui/swift-ui';
+import {
+  Button,
+  Host,
+  Picker,
+  Switch,
+  ContextMenu,
+  Text,
+  Section as SwiftUISection,
+  Divider,
+} from '@expo/ui/swift-ui';
 import { buttonStyle, fixedSize } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
@@ -121,6 +130,24 @@ export default function ContextMenuScreen() {
                 <RNText>This is a preview</RNText>
               </View>
             </ContextMenu.Preview>
+          </ContextMenu>
+        </Host>
+      </Section>
+      <Section title="SwiftUI Section and Divider Components" row>
+        <Host matchContents>
+          <ContextMenu modifiers={[fixedSize(), buttonStyle('glass')]}>
+            <ContextMenu.Items>
+              <Button role="destructive">Delete</Button>
+              <Divider />
+              <Button onPress={() => console.log('Pressed3')}>Add to favorites</Button>
+              <SwiftUISection title="Primary actions">
+                <Button onPress={() => console.log('Pressed1')}>First</Button>
+                <Button onPress={() => console.log('Pressed2')}>Second</Button>
+              </SwiftUISection>
+            </ContextMenu.Items>
+            <ContextMenu.Trigger>
+              <Text color="accentColor">Show menu</Text>
+            </ContextMenu.Trigger>
           </ContextMenu>
         </Host>
       </Section>
