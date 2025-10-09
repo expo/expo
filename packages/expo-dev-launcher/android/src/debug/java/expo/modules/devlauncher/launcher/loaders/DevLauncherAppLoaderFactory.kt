@@ -2,8 +2,8 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.net.Uri
+import com.facebook.react.ReactHost
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.createUpdatesConfigurationWithUrl
 import expo.modules.devlauncher.helpers.loadUpdate
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
@@ -22,7 +22,7 @@ interface DevLauncherAppLoaderFactoryInterface {
 
 class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoaderFactoryInterface {
   private val context: Context by inject()
-  private val appHost: ReactHostWrapper by inject()
+  private val appHost: ReactHost by inject()
   private val updatesInterface: UpdatesInterface? by optInject()
   private val controller: DevLauncherControllerInterface by inject()
   private val installationIDHelper: DevLauncherInstallationIDHelper by inject()

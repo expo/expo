@@ -1,12 +1,12 @@
 package expo.modules.devmenu.react
 
 import android.util.Log
+import com.facebook.react.ReactHost
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.packagerconnection.RequestHandler
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class DevMenuPackagerCommandHandlersSwapper {
   fun swapPackagerCommandHandlers(
-    reactHost: ReactHostWrapper,
+    reactHost: ReactHost,
     handlers: Map<String, RequestHandler>
   ) {
     try {
@@ -60,7 +60,7 @@ class DevMenuPackagerCommandHandlersSwapper {
    * The final solution is to spin a background task that monitors if the client is present.
    */
   private fun swapCurrentCommandHandlers(
-    reactHost: ReactHostWrapper,
+    reactHost: ReactHost,
     handlers: Map<String, RequestHandler>
   ) {
     DevMenuManager.coroutineScope.launch {
