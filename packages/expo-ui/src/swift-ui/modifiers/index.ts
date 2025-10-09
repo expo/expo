@@ -83,15 +83,15 @@ export const frame = (params: {
   idealWidth?: number;
   idealHeight?: number;
   alignment?:
-  | 'center'
-  | 'leading'
-  | 'trailing'
-  | 'top'
-  | 'bottom'
-  | 'topLeading'
-  | 'topTrailing'
-  | 'bottomLeading'
-  | 'bottomTrailing';
+    | 'center'
+    | 'leading'
+    | 'trailing'
+    | 'top'
+    | 'bottom'
+    | 'topLeading'
+    | 'topTrailing'
+    | 'bottomLeading'
+    | 'bottomTrailing';
 }) => createModifier('frame', params);
 
 /**
@@ -293,27 +293,27 @@ export const foregroundStyle = (
     | string // Simple color (hex string, color name, or Apple system color name)
     | { type: 'color'; color: string }
     | {
-      type: 'hierarchical';
-      style: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
-    }
+        type: 'hierarchical';
+        style: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
+      }
     | {
-      type: 'linearGradient';
-      colors: string[];
-      startPoint: { x: number; y: number };
-      endPoint: { x: number; y: number };
-    }
+        type: 'linearGradient';
+        colors: string[];
+        startPoint: { x: number; y: number };
+        endPoint: { x: number; y: number };
+      }
     | {
-      type: 'radialGradient';
-      colors: string[];
-      center: { x: number; y: number };
-      startRadius: number;
-      endRadius: number;
-    }
+        type: 'radialGradient';
+        colors: string[];
+        center: { x: number; y: number };
+        startRadius: number;
+        endRadius: number;
+      }
     | {
-      type: 'angularGradient';
-      colors: string[];
-      center: { x: number; y: number };
-    }
+        type: 'angularGradient';
+        colors: string[];
+        center: { x: number; y: number };
+      }
 ) => {
   if (typeof style === 'string') {
     return createModifier('foregroundStyle', { styleType: 'color', color: style });
