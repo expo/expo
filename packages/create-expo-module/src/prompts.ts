@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { Answers, PromptObject } from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 

@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
-import fs from 'fs';
 import getenv from 'getenv';
-import os from 'os';
-import path from 'path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import { installDependencies } from './packageManager';
 import { PackageManagerName } from './resolvePackageManager';

@@ -3,9 +3,9 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
-import fs from 'fs';
 import { boolish } from 'getenv';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import prompts from 'prompts';
 
 import { createExampleApp } from './createExampleApp';

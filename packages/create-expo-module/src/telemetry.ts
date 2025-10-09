@@ -1,9 +1,9 @@
 import JsonFile from '@expo/json-file';
 import TelemetryClient from '@expo/rudder-sdk-node';
-import crypto from 'crypto';
 import { boolish } from 'getenv';
-import os, { homedir } from 'os';
-import * as path from 'path';
+import crypto from 'node:crypto';
+import os, { homedir } from 'node:os';
+import path from 'node:path';
 
 import { CommandOptions } from './types';
 
