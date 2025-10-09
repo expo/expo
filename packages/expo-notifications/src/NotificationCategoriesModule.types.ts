@@ -4,6 +4,9 @@ import { NotificationCategory, NotificationAction } from './Notifications.types'
 
 export interface NotificationCategoriesModule extends ProxyNativeModule {
   getNotificationCategoriesAsync: () => Promise<NotificationCategory[]>;
+  setNotificationCategoriesAsync: (
+    categories: NotificationCategory[]
+  ) => Promise<NotificationCategory[]>;
   setNotificationCategoryAsync: (
     identifier: string,
     actions: NotificationAction[],

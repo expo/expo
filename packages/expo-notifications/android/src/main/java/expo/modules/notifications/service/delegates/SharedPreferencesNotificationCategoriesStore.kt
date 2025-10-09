@@ -99,6 +99,17 @@ class SharedPreferencesNotificationCategoriesStore(context: Context) {
   }
 
   /**
+   * Removes all notification categories from storage.
+   */
+  fun deleteAllNotificationCategories() {
+    val editor = sharedPreferences.edit()
+    sharedPreferences.all
+      .filter { it.key.startsWith(NOTIFICATION_CATEGORY_KEY_PREFIX) }
+      .forEach { (key, _) -> editor.remove(key) }
+    editor.commit()
+  }
+
+  /**
    * @param identifier Category identifier
    * @return Key under which the notification category will be persisted in storage.
    */
