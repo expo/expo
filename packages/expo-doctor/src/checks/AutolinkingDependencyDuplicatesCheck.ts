@@ -65,10 +65,7 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
 
     function getDependencyVersion(dependency: BaseDependencyResolution): string | null {
       if (!dependency.version) {
-        const pkgContents = fs.readFileSync(
-          path.join(dependency.path, 'package.json'),
-          'utf8'
-        );
+        const pkgContents = fs.readFileSync(path.join(dependency.path, 'package.json'), 'utf8');
         try {
           const pkg: unknown = JSON.parse(pkgContents);
           if (
@@ -147,12 +144,11 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
     const advice: string[] = [];
     if (issues.length) {
       if (corruptedInstallations.length) {
-        let message = `Your node_modules folder may be corrupted. Multiple copies of the same version exist for: ${corruptedInstallations.map((x) => x.name).join(', ')}.\n` +
-          '- Try deleting your node_modules folders and reinstall your dependencies after.';
-        if (corruptedInstallations.some((value) => value.path.includes('.bun'))) {
-          message += '\n- If the issue persists, try disabling Bun\'s auto-installing peer dependencies or use its hoisted installs instead.';
-        }
-        advice.push(message);
+        advice.push(
+          `Your node_modules folder may be corrupted. Multiple copies of the same version exist for: ${corruptedInstallations.map((x) => x.name).join(', ')}.\n` +
+            '- Try deleting your node_modules folders and reinstall your dependencies after.\n' +
+            '- If this error persists, delete your node_modules as well as your lockfile and reinstall.'
+        );
       }
       advice.push(
         `Resolve your dependency issues and deduplicate your dependencies. ${learnMore('https://expo.fyi/resolving-dependency-issues')}`
