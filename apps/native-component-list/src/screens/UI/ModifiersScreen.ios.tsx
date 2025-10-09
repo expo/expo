@@ -49,6 +49,7 @@ import {
   underline,
   strikethrough,
   multilineTextAlignment,
+  textSelection,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -75,6 +76,8 @@ export default function ModifiersScreen() {
 
   const multilineTextAlignmentOptions = ['center', 'leading', 'trailing'];
   const [multilineTextAlignmentIndex, setMultilineTextAlignment] = useState(0);
+
+  const [enabledSelection, setEnabledSelection] = useState(false);
 
   return (
     <ScrollView>
@@ -209,6 +212,20 @@ export default function ModifiersScreen() {
                   ),
                 ]}>
                 {`This is a block of text that shows up in a text element as multiple lines.\nHere we have chosen to center this text.`}
+              </Text>
+            </VStack>
+
+            <VStack spacing={25}>
+              <Switch
+                label="Enable selection"
+                value={enabledSelection}
+                onValueChange={setEnabledSelection}
+              />
+              <Text
+                size={14}
+                color={enabledSelection ? 'black' : 'gray'}
+                modifiers={[textSelection(enabledSelection)]}>
+                This is selected text
               </Text>
             </VStack>
           </Section>

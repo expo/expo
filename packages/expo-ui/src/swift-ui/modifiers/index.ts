@@ -555,6 +555,12 @@ export const strikethrough = (params: { isActive: boolean; pattern: LinePattern;
 export const multilineTextAlignment = (alignment: 'center' | 'leading' | 'trailing') =>
   createModifier('multilineTextAlignment', { alignment });
 
+/**
+ * Controls whether people can select text within this view.
+ * @param value - Enable selection
+ */
+export const textSelection = (value: boolean) => createModifier('textSelection', { value });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -616,7 +622,8 @@ export type BuiltInModifier =
   | ReturnType<typeof textCase>
   | ReturnType<typeof underline>
   | ReturnType<typeof strikethrough>
-  | ReturnType<typeof multilineTextAlignment>;
+  | ReturnType<typeof multilineTextAlignment>
+  | ReturnType<typeof textSelection>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

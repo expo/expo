@@ -961,6 +961,23 @@ internal struct MultilineTextAlignment: ViewModifier, Record {
     }
   }
 }
+
+internal struct TextSelection: ViewModifier, Record {
+  @Field var value: Bool = true
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      switch value {
+        case true: 
+          content.textSelection(.enabled)
+        case false: 
+          content.textSelection(.disabled)
+      }
+    #endif
+  }
+}
 // MARK: - Registry
 
 /**
@@ -1313,6 +1330,10 @@ extension ViewModifierRegistry {
 
     register("multilineTextAlignment") { params, appContext, _ in
       return try MultilineTextAlignment(from: params, appContext: appContext)
+    }
+
+    register("textSelection") { params, appContext, _ in
+      return try TextSelection(from: params, appContext: appContext)
     }
   }
 }
