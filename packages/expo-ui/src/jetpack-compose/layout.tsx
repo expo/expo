@@ -1,13 +1,9 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, Platform, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue, Platform } from 'react-native';
 
 import { ExpoModifier } from '../types';
 
-type PrimitiveBaseProps = {
-  /**
-   * Used to locate this view in end-to-end tests.
-   */
-  testID?: string;
+export type PrimitiveBaseProps = {
   /** Modifiers for the component */
   modifiers?: ExpoModifier[];
 };
@@ -84,28 +80,6 @@ export function Column(props: ColumnProps) {
   }
   return (
     <ColumnNativeView
-      {...props}
-      // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-    />
-  );
-}
-//#endregion
-
-//#region Host Component
-export type HostProps = {
-  children: React.ReactNode;
-  style?: StyleProp<ViewStyle>;
-  modifiers?: ExpoModifier[];
-} & PrimitiveBaseProps;
-const HostNativeView: React.ComponentType<ColumnProps> | null =
-  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'HostView') : null;
-export function Host(props: HostProps) {
-  if (!HostNativeView) {
-    return null;
-  }
-  return (
-    <HostNativeView
       {...props}
       // @ts-expect-error
       modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}

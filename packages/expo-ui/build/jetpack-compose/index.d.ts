@@ -12,4 +12,5 @@ export * from './TextInput';
 export * from './Shape';
 export * from './modifiers';
 export * from './BottomSheet';
+export * from './layout';
 //# sourceMappingURL=index.d.ts.map

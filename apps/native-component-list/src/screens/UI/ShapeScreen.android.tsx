@@ -1,5 +1,4 @@
-import { Host, rotate, Shape, size } from '@expo/ui/jetpack-compose';
-import { Row } from '@expo/ui/jetpack-compose-primitives';
+import { Host, rotate, Shape, size, Row } from '@expo/ui/jetpack-compose';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {

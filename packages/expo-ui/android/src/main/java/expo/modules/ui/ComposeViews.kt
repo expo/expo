@@ -108,9 +108,9 @@ class RowView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
     Row(
       horizontalArrangement = props.horizontalArrangement.value.toComposeArrangement(),
       verticalAlignment = props.verticalAlignment.value.toComposeAlignment(),
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this)
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
     ) {
-      Children(this@Content.with(rowScope = this))
+      Children(this@Content.with(rowScope = this@Row))
     }
   }
 }
@@ -123,9 +123,9 @@ class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<Lay
     Column(
       verticalArrangement = props.verticalArrangement.value.toComposeArrangement(),
       horizontalAlignment = props.horizontalAlignment.value.toComposeAlignment(),
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this)
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
     ) {
-      Children(this@Content.with(columnScope = this))
+      Children(this@Content.with(columnScope = this@Column))
     }
   }
 }
@@ -136,9 +136,9 @@ class BoxView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
   @Composable
   override fun ComposableScope.Content() {
     Box(
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this)
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
     ) {
-      Children(this@Content.with(boxScope = this))
+      Children(this@Content.with(boxScope = this@Box))
     }
   }
 }

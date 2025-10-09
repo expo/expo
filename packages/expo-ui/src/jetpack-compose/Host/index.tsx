@@ -1,12 +1,25 @@
 import { requireNativeView } from 'expo';
-import React from 'react';
+import { Platform, StyleProp, ViewStyle } from 'react-native';
 
-// Native component declaration using the same pattern as Button
-const HostView: React.ComponentType<any> = requireNativeView('ExpoUI', 'HostView');
+import { PrimitiveBaseProps } from '../layout';
 
-/**
- * Displays a native chip component.
- */
-export function Host(props: any): React.JSX.Element {
-  return <HostView {...props} />;
+//#region Host Component
+export type HostProps = {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+} & PrimitiveBaseProps;
+const HostNativeView: React.ComponentType<PrimitiveBaseProps> | null =
+  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'HostView') : null;
+export function Host(props: HostProps) {
+  if (!HostNativeView) {
+    return null;
+  }
+  return (
+    <HostNativeView
+      {...props}
+      // @ts-expect-error
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+    />
+  );
 }
+//#endregion
