@@ -24,7 +24,7 @@ function StandardErrorView({ error }) {
     </react_native_1.View>);
 }
 function ErrorBoundary({ error, retry }) {
-    const inTabBar = (0, react_1.useContext)(bottom_tabs_1.BottomTabBarHeightContext);
+    const inTabBar = (0, react_1.use)(bottom_tabs_1.BottomTabBarHeightContext);
     const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
     const isServerError = error instanceof errors_1.ReactServerError;
     return (<react_native_1.View style={styles.container}>

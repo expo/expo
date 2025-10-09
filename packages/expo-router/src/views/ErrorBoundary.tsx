@@ -1,7 +1,7 @@
 'use client';
 
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
-import { useContext } from 'react';
+import { use } from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -29,7 +29,7 @@ function StandardErrorView({ error }: { error: Error }) {
 }
 
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
-  const inTabBar = useContext(BottomTabBarHeightContext);
+  const inTabBar = use(BottomTabBarHeightContext);
   const Wrapper = inTabBar ? View : SafeAreaView;
 
   const isServerError = error instanceof ReactServerError;
