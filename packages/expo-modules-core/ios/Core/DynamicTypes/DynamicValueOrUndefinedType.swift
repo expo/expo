@@ -28,6 +28,21 @@ internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicT
     return ValueOrUndefined<InnerType>.value(unwrapped: try dynamicInnerType.cast(value, appContext: appContext) as! InnerType)
   }
 
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    let value = result as! ValueOrUndefined<InnerType>
+    if case .undefined = value {
+      return JavaScriptValue.undefined
+    }
+    return try dynamicInnerType.convertResult(value.optional, appContext: appContext)
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if let jaValue = value as? JavaScriptValue {
+      return jaValue
+    }
+    return try dynamicInnerType.castToJS(value, appContext: appContext)
+  }
+
   var description: String {
     return "ValueOrUndefined<\(dynamicInnerType)>"
   }
