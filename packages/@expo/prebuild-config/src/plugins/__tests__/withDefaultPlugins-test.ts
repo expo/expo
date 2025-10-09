@@ -61,13 +61,6 @@ function getLargeConfig(): ExportedConfig {
     backgroundColor: 'orange',
     primaryColor: '#fff000',
     // icon: './icons/icon.png',
-    notification: {
-      icon: './icons/notification-icon.png',
-      color: 'green',
-      iosDisplayInForeground: true,
-      androidMode: 'collapse',
-      androidCollapsedTitle: '#{unread_notifications} new interactions',
-    },
     androidStatusBar: {
       barStyle: 'light-content',
       backgroundColor: '#000FFF',
