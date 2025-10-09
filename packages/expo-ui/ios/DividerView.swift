@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class DividerProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+internal class DividerProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
   @Field var padding: PaddingOptions?
