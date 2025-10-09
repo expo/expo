@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { Answers, PromptObject } from 'prompts';
+import type { Answers, PromptObject } from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 
 import { findGitHubEmail, findMyName } from './utils/git';

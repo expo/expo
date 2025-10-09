@@ -3,33 +3,30 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
-import { boolish } from 'getenv';
 import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
 
 import { createExampleApp } from './createExampleApp';
-import { installDependencies } from './packageManager';
+import {
+  installDependencies,
+  formatRunCommand,
+  resolvePackageManager,
+  type PackageManagerName,
+} from './packageManager';
 import {
   getLocalFolderNamePrompt,
   getLocalSubstitutionDataPrompts,
   getSlugPrompt,
   getSubstitutionDataPrompts,
 } from './prompts';
-import {
-  formatRunCommand,
-  PackageManagerName,
-  resolvePackageManager,
-} from './resolvePackageManager';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
-import { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
+import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
+import { env } from './utils/env';
 import { newStep } from './utils/ora';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
-
-// Opt in to using beta versions
-const EXPO_BETA = boolish('EXPO_BETA', false);
 
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
@@ -231,7 +228,7 @@ async function getLocalSdkMajorVersion(): Promise<string | null> {
  * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
  */
 async function getTemplateVersion(isLocal: boolean) {
-  if (EXPO_BETA) {
+  if (env.EXPO_BETA) {
     return 'next';
   }
   if (!isLocal) {
