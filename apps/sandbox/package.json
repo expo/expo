@@ -20,7 +20,7 @@
     "react-native-screens": "4.11.1-nightly-20250611-8b82e081e"
   },
   "devDependencies": {
-    "babel-preset-expo": "~54.0.3"
+    "babel-preset-expo": "~54.0.4"
   },
   "private": true
 }

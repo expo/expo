@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.14 — 2025-10-09
+
+### 💡 Others
+
 - [Android] Prevented the app from crashing during the initialization of the `ErrorViewModel`. ([#40148](https://github.com/expo/expo/pull/40148) by [@lukmccall](https://github.com/lukmccall))
 
 ## 6.0.13 — 2025-10-01
