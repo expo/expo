@@ -725,10 +725,19 @@ export function withExtendedResolver(
         if (normal.endsWith('react-native/Libraries/LogBox/LogBoxInspectorContainer.js')) {
           if (env.EXPO_UNSTABLE_LOG_BOX) {
             debug('Using Expo LogBox implementation.');
-            return {
-              ...result,
-              filePath: require.resolve('@expo/log-box/swap-rn-logbox.js'),
-            };
+
+            try {
+              const logBoxPath = require.resolve('@expo/log-box/swap-rn-logbox.js');
+              return {
+                ...result,
+                filePath: logBoxPath,
+              };
+            } catch {
+              console.warn(
+                'Failed to resolve `@expo/log-box`, falling back to React Native LogBox.'
+              );
+              return result;
+            }
           } else {
             debug('Using React Native LogBox implementation.');
           }
