@@ -530,8 +530,12 @@ public class AudioModule: Module {
       }
 
 #if !os(tvOS)
-      if category == .playAndRecord || category == .playback {
+      if category == .playAndRecord {
+#if compiler(>=6.0)
+        categoryOptions.insert(.allowBluetoothHFP)
+#else
         categoryOptions.insert(.allowBluetooth)
+#endif
       }
 #endif
 
