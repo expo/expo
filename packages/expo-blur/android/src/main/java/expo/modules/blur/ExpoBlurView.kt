@@ -10,8 +10,13 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 
 private enum class BlurViewConfiguration {
+  // BlurView is yet to be configured.
   UNCONFIGURED,
+
+  // BlurView has been configured to use the `NONE` blur method
   NONE,
+
+  // Blur View has been configured to use the `DIMEZIS_BLUR_VIEW` method
   DIMEZIS
 }
 
@@ -36,10 +41,10 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     }
 
     if (blurTargetId == null) {
-      this.blurTarget = null
+      blurTarget = null
     } else {
       val blurTargetView = appContext.findView<ExpoBlurTargetView>(blurTargetId)
-      this.blurTarget = blurTargetView
+      blurTarget = blurTargetView
     }
 
     this.blurTargetId = blurTargetId
@@ -86,7 +91,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
 
       BlurMethod.DIMEZIS_BLUR_VIEW -> {
         blurView.setBlurEnabled(true)
-        this.setBackgroundColor(Color.TRANSPARENT)
+        setBackgroundColor(Color.TRANSPARENT)
       }
     }
     // Update of the blur to the current blurRadius value
@@ -124,7 +129,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   }
 
   private fun configureBlurView() {
-    if (this.blurTarget == null || this.blurMethod == BlurMethod.NONE) {
+    if (blurTarget == null || blurMethod == BlurMethod.NONE) {
       blurView.setBlurEnabled(false)
       blurConfiguration == BlurViewConfiguration.NONE
       return
@@ -133,7 +138,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     val decorView = appContext.throwingActivity.window?.decorView
       ?: throw BlurViewConfigurationException("Failed to find a decor view associated with the blur view")
 
-    val dimezisBlurTarget = this.blurTarget?.blurTargetView
+    val dimezisBlurTarget = blurTarget?.blurTargetView
       ?: throw BlurViewConfigurationException("The BlurView targeting blur target with id: $blurTargetId couldn't find the target")
 
     blurView.setupWith(dimezisBlurTarget)
@@ -162,7 +167,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
         blurView.invalidate()
       }
     } else {
-      this.setBackgroundColor(tint.toBlurEffect(radius))
+      setBackgroundColor(tint.toBlurEffect(radius))
     }
   }
 
@@ -170,7 +175,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     if (useBlurView && blurTarget != null) {
       blurView.setOverlayColor(tint.toBlurEffect(blurRadius))
     } else {
-      this.setBackgroundColor(tint.toBlurEffect(blurRadius))
+      setBackgroundColor(tint.toBlurEffect(blurRadius))
     }
   }
 }

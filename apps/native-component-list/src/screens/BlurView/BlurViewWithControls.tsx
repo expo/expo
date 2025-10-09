@@ -9,9 +9,10 @@ import useResettingState from '../../utilities/useResettingState';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
+const backgroundImage = require('../../../assets/images/large-example.jpg');
+const expoImage = require('../../../assets/images/logo-wordmark.png');
+
 export default memo((props: { tint: BlurTint; blurMethod: ExperimentalBlurMethod }) => {
-  const expoImage = require('../../../assets/images/logo-wordmark.png');
-  const backgroundImage = require('../../../assets/images/large-example.jpg');
   const animatedIntensity = useSharedValue<number | undefined>(100);
   const manualIntensity = useSharedValue<number | undefined>(0);
   const [manualIntensityIsActive, setManualIntensityIsActive] = useResettingState(false, 3000);
