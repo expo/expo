@@ -1,3 +1,5 @@
+#if EXPO_UNSTABLE_LOG_BOX
+
 import UIKit
 import WebKit
 import React
@@ -197,3 +199,5 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
         }
     }
 }
+
+#endif
