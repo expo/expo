@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- support usePreventRemove in web modal ([#40262](https://github.com/expo/expo/pull/40262) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 - Remove unnecessary ModalContextProvider ([#40179](https://github.com/expo/expo/pull/40179) by [@Ubax](https://github.com/Ubax))

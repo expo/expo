@@ -67,6 +67,7 @@ function ModalStackNavigator({ initialRouteName, children, screenOptions, }) {
 const ModalStackView = ({ state, navigation, descriptors, describe }) => {
     const isWeb = process.env.EXPO_OS === 'web';
     const { colors } = (0, native_1.useTheme)();
+    const { preventedRoutes } = (0, native_1.usePreventRemoveContext)();
     const { routes: filteredRoutes, index: nonModalIndex } = (0, utils_1.convertStackStateToNonModalState)(state, descriptors, isWeb);
     const newStackState = {
         ...state,
@@ -87,10 +88,11 @@ const ModalStackView = ({ state, navigation, descriptors, describe }) => {
       {isWeb &&
             overlayRoutes.map((route) => {
                 const isTransparentModal = (0, utils_1.isTransparentModalPresentation)(descriptors[route.key].options);
+                const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
                 const ModalComponent = isTransparentModal
                     ? TransparentModalStackRouteDrawer_1.TransparentModalStackRouteDrawer
                     : ModalStackRouteDrawer_1.ModalStackRouteDrawer;
-                return (<ModalComponent key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} themeColors={colors}/>);
+                return (<ModalComponent key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} dismissible={isRemovePrevented ? false : undefined} themeColors={colors}/>);
             })}
     </div>);
 };
