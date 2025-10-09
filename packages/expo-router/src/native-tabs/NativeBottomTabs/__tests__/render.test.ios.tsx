@@ -1,3 +1,4 @@
+import { usePreventRemove } from '@react-navigation/core';
 import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
@@ -8,6 +9,7 @@ import {
 
 import { usePathname } from '../../../hooks';
 import { router } from '../../../imperative-api';
+import { Stack } from '../../../layouts/Stack';
 import { Redirect } from '../../../link/Redirect';
 import { act, fireEvent, renderRouter } from '../../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -532,5 +534,29 @@ describe('Native props validation', () => {
     );
     expect(BottomTabs).toHaveBeenCalledTimes(1);
     expect(BottomTabs.mock.calls[0][0].tabBarMinimizeBehavior).toBe(undefined);
+  });
+});
+
+describe('Misc', () => {
+  it('usePreventRemove can be used inside the stack nested in tabs', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="stack" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      'stack/_layout': () => {
+        return <Stack />;
+      },
+      'stack/index': function InnerIndex() {
+        usePreventRemove(true, () => {});
+        return <View testID="stack-index" />;
+      },
+    });
+
+    router.navigate('/stack');
+    expect(screen.getByTestId('stack-index')).toBeVisible();
   });
 });
