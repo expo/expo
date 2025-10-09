@@ -143,10 +143,12 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
     const advice: string[] = [];
     if (issues.length) {
       if (corruptedInstallations.length) {
-        advice.push(
-          `Multiple copies of the same version exist for: ${corruptedInstallations.map((x) => x.name).join(', ')}.\n` +
-            '- Try deleting your node_modules folders and reinstall your dependencies after.'
-        );
+        let message = `Your node_modules folder may be corrupted. Multiple copies of the same version exist for: ${corruptedInstallations.map((x) => x.name).join(', ')}.\n` +
+          '- Try deleting your node_modules folders and reinstall your dependencies after.';
+        if (corruptedInstallations.some((value) => value.path.includes('.bun'))) {
+          message += '\n- If the issue persists, try disabling Bun\'s auto-installing peer dependencies or use its hoisted installs instead.';
+        }
+        advice.push(message);
       }
       advice.push(
         `Resolve your dependency issues and deduplicate your dependencies. ${learnMore('https://expo.fyi/resolving-dependency-issues')}`
