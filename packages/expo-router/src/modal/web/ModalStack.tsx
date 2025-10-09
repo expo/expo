@@ -9,6 +9,7 @@ import {
   StackRouter,
   StackRouterOptions,
   useNavigationBuilder,
+  usePreventRemoveContext,
   useTheme,
 } from '@react-navigation/native';
 import {
@@ -77,6 +78,7 @@ function ModalStackNavigator({
 const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStackViewProps) => {
   const isWeb = process.env.EXPO_OS === 'web';
   const { colors } = useTheme();
+  const { preventedRoutes } = usePreventRemoveContext();
 
   const { routes: filteredRoutes, index: nonModalIndex } = convertStackStateToNonModalState(
     state,
@@ -112,6 +114,8 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
         overlayRoutes.map((route) => {
           const isTransparentModal = isTransparentModalPresentation(descriptors[route.key].options);
 
+          const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
+
           const ModalComponent = isTransparentModal
             ? TransparentModalStackRouteDrawer
             : ModalStackRouteDrawer;
@@ -123,6 +127,7 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
               options={descriptors[route.key].options as ExtendedStackNavigationOptions}
               renderScreen={descriptors[route.key].render}
               onDismiss={dismiss}
+              dismissible={isRemovePrevented ? false : undefined}
               themeColors={colors}
             />
           );

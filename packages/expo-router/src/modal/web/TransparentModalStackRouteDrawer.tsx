@@ -8,6 +8,7 @@ import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 function TransparentModalStackRouteDrawer({
   routeKey,
   options,
+  dismissible,
   renderScreen,
   onDismiss,
 }: {
@@ -15,6 +16,7 @@ function TransparentModalStackRouteDrawer({
   options: ExtendedStackNavigationOptions;
   renderScreen: () => React.ReactNode;
   onDismiss: () => void;
+  dismissible?: boolean;
 }) {
   const handleOpenChange = (open: boolean) => {
     if (!open) onDismiss();
@@ -25,7 +27,7 @@ function TransparentModalStackRouteDrawer({
       defaultOpen
       autoFocus
       key={`${routeKey}-transparent`}
-      dismissible={options.gestureEnabled ?? false}
+      dismissible={dismissible ?? options.gestureEnabled ?? false}
       onAnimationEnd={handleOpenChange}>
       <Drawer.Portal>
         <Drawer.Content className={modalStyles.transparentDrawerContent}>
