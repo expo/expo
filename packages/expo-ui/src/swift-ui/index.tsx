@@ -5,6 +5,7 @@ export * from './ColorPicker';
 export * from './ContentUnavailableView';
 export * from './ContextMenu';
 export * from './DatePicker';
+export * from './Divider';
 export * from './DisclosureGroup';
 export * from './Form';
 export * from './Gauge';
