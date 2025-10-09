@@ -62,16 +62,13 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
       );
     }
 
-    async function getHumanReadableDependency(
-      dependency: BaseDependencyResolution
-    ): Promise<string> {
-      let version = dependency.version || null;
-      if (!version) {
+    function getDependencyVersion(dependency: BaseDependencyResolution): string | null {
+      if (!dependency.version) {
+        const pkgContents = fs.readFileSync(
+          path.join(dependency.path, 'package.json'),
+          'utf8'
+        );
         try {
-          const pkgContents = await fs.promises.readFile(
-            path.join(dependency.path, 'package.json'),
-            'utf8'
-          );
           const pkg: unknown = JSON.parse(pkgContents);
           if (
             pkg &&
@@ -79,12 +76,19 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
             'version' in pkg &&
             typeof pkg.version === 'string'
           ) {
-            version = pkg.version;
+            dependency.version = pkg.version;
           }
-        } catch (error) {
-          version = null;
+        } catch {
+          dependency.version = '';
         }
       }
+      return dependency.version || null;
+    }
+
+    async function getHumanReadableDependency(
+      dependency: BaseDependencyResolution
+    ): Promise<string> {
+      const version = getDependencyVersion(dependency);
       const relative = path.relative(projectRoot, dependency.originPath);
       return version
         ? `${dependency.name}@${version} (at: ${relative})`
@@ -126,7 +130,7 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
           const areVersionsIdentical = dependency.duplicates.every((duplicate) => {
             return (
               duplicate.version &&
-              duplicate.version === dependency.version &&
+              getDependencyVersion(duplicate) === getDependencyVersion(dependency) &&
               /* NOTE(@kitten): We shouldn't have to compare here, but this is just in case there are weirder corruptions I can't think of */
               duplicate.originPath !== dependency.originPath
             );
