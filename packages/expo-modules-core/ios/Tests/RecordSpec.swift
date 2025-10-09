@@ -45,6 +45,21 @@ class RecordSpec: ExpoSpec {
       expect(record.toDictionary()["b"] as? Int).to(equal(dict["b"]! as! Int))
     }
 
+    it("works back and forth with ValueOrUndefined") {
+      struct TestRecord: Record {
+        @Field var a: ValueOrUndefined<Double> = .value(unwrapped: 1.0)
+        @Field var b: ValueOrUndefined<Double> = .undefined
+      }
+      let record = try TestRecord(from: [:], appContext: appContext)
+
+      expect(record.a.optional).to(equal(1.0))
+      expect(record.b.isUndefined).to(beTrue())
+
+      let asDict = record.toDictionary(appContext: appContext)
+      expect(asDict["a"] as? Double).to(equal(1.0))
+      expect((asDict["b"] as? JavaScriptValue)?.kind).to(equal(.undefined))
+    }
+
     it("works back and forth with a keyed field") {
       struct TestRecord: Record {
         @Field("key") var a: String?
