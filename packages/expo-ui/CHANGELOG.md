@@ -24,6 +24,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Add `buttonStyle` modifier. ([#40119](https://github.com/expo/expo/pull/40119) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] remove empty section header spacing when no title provided ([#40296](https://github.com/expo/expo/pull/40296) by [@dylancom](https://github.com/dylancom))
 
 ### 💡 Others
 
