@@ -15,6 +15,7 @@
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
 - [android] Make reactNativeHost optional in ReactHostWrapper ([#40085](https://github.com/expo/expo/pull/40085) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Prevented the app from crashing during the initialization of the `ErrorViewModel`. ([#40148](https://github.com/expo/expo/pull/40148) by [@lukmccall](https://github.com/lukmccall))
+- [android] Remove ReactHostWrapper ([#40295](https://github.com/expo/expo/pull/40295) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 6.0.13 - 2025-10-01
 

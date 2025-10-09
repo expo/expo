@@ -6,6 +6,7 @@ import android.net.Uri
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
@@ -107,7 +108,7 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<*>? = null, launcherClass: Class<*>? = null) {
-      initialize(reactApplication as Context, reactApplication.reactHost)
+      initialize(reactApplication as Context, reactApplication.reactHost!!)
     }
 
     @JvmStatic
