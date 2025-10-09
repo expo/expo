@@ -503,6 +503,58 @@ export const scrollContentBackground = (visible: 'automatic' | 'visible' | 'hidd
  */
 export const listRowBackground = (color: Color) => createModifier('listRowBackground', { color });
 
+/**
+ * Sets the truncation mode for lines of text that are too long to fit in the available space.
+ * @param mode - The truncation mode that specifies where to truncate the text within the text view, if needed.
+ * You can truncate at the beginning, middle, or end of the text view.
+ */
+export const truncationMode = (mode: 'head' | 'middle' | 'tail') =>
+  createModifier('truncationMode', { mode });
+/**
+ * Sets whether text in this view can compress the space between characters when necessary to fit text in a line
+ * @default true
+ */
+export const allowsTightening = (value: boolean) => createModifier('allowsTightening', { value });
+/**
+ * Sets the spacing, or kerning, between characters for the text in this view.
+ * @default 0
+ */
+export const kerning = (value?: number) => createModifier('kerning', { value });
+/**
+ * Sets a transform for the case of the text contained in this view when displayed.
+ * @default "lowercase"
+ */
+export const textCase = (value: 'lowercase' | 'uppercase') => createModifier('textCase', { value });
+
+type LinePattern = 'solid' | 'dash' | 'dot' | 'dashDot' | 'dashDotDot';
+
+/**
+ * Applies an underline to the text.
+ *
+ * @param isActive - Controls whether the underline is visible (`true` to show, false to hide).
+ * @param pattern - Defines the underline style or pattern. Default - 'solid'
+ * @param color - Sets the color of the underline. If not provided, the system default text color is used.
+ */
+export const underline = (params: { isActive: boolean; pattern: LinePattern; color?: Color }) =>
+  createModifier('underline', params);
+/**
+ * Applies a strikethrough to the text.
+ *
+ * @param isActive - Controls whether the strikethrough is visible (`true` to show, false to hide).
+ * @param pattern - Defines the strikethrough style or pattern. Default - 'solid'
+ * @param color - Sets the color of the strikethrough. If not provided, the system default text color is used.
+ */
+export const strikethrough = (params: { isActive: boolean; pattern: LinePattern; color?: Color }) =>
+  createModifier('strikethrough', params);
+
+/**
+ * An alignment position for text along the horizontal axis.
+ *
+ * @param alignment - A value that you use to align multiple lines of text within a view.
+ */
+export const multilineTextAlignment = (alignment: 'center' | 'leading' | 'trailing') =>
+  createModifier('multilineTextAlignment', { alignment });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -557,7 +609,14 @@ export type BuiltInModifier =
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
   | ReturnType<typeof scrollContentBackground>
-  | ReturnType<typeof listRowBackground>;
+  | ReturnType<typeof listRowBackground>
+  | ReturnType<typeof truncationMode>
+  | ReturnType<typeof allowsTightening>
+  | ReturnType<typeof kerning>
+  | ReturnType<typeof textCase>
+  | ReturnType<typeof underline>
+  | ReturnType<typeof strikethrough>
+  | ReturnType<typeof multilineTextAlignment>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

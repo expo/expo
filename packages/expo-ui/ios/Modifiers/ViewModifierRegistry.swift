@@ -820,6 +820,159 @@ internal struct ListRowBackground: ViewModifier, Record {
   }
 }
 
+internal enum TextTruncationModeTypes: String, Enumerable {
+  case head
+  case middle
+  case tail
+}
+
+internal struct TextTruncationMode: ViewModifier, Record {
+  @Field var mode: TextTruncationModeTypes = .tail
+
+  func body(content: Content) -> some View {
+    if #available(iOS 13.0, macOS 10.15, tvOS 13.0, *) {
+      switch mode {
+        case .head:
+          content.truncationMode(.head)
+        case .middle:
+          content.truncationMode(.middle)
+        case .tail:
+          content.truncationMode(.tail)
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal struct TextKerning: ViewModifier, Record {
+  @Field var value: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      content.kerning(value)
+    } else {
+      content
+    }
+  }
+}
+
+internal struct TextAllowsTightening: ViewModifier, Record {
+  @Field var value: Bool = true
+
+  func body(content: Content) -> some View {
+    if #available(iOS 13.0, macOS 10.15, tvOS 16.0, *) {
+      content.allowsTightening(value)
+    } else {
+      content
+    }
+  }
+}
+
+internal enum TextCaseTypes: String, Enumerable {
+  case lowercase
+  case uppercase
+}
+
+internal struct TextCase: ViewModifier, Record {
+  @Field var value: TextCaseTypes = .lowercase
+
+  func body(content: Content) -> some View {
+    if #available(iOS 14.0, macOS 11.0, tvOS 14.0, *) {
+      switch value {
+        case .lowercase:
+          content.textCase(.lowercase)
+        case .uppercase:
+          content.textCase(.uppercase)
+        }
+    } else {
+      content
+    }
+  }
+}
+
+internal enum TextLinePattern: String, Enumerable {
+    case solid
+    case dash
+    case dot
+    case dashDot
+    case dashDotDot
+}
+
+internal struct TextUnderLine: ViewModifier, Record {
+  @Field var isActive: Bool = false
+  @Field var pattern: TextLinePattern = .solid
+  @Field var color: Color?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      switch pattern {
+        case .solid:  
+          content.underline(isActive, pattern: .solid, color: color)
+        case .dash:  
+        content.underline(isActive, pattern: .dash, color: color)
+        case .dot:  
+         content.underline(isActive, pattern: .dot, color: color)
+        case .dashDot:  
+          content.underline(isActive, pattern: .dashDot, color: color)
+        case .dashDotDot:  
+          content.underline(isActive, pattern: .dashDotDot, color: color)
+        }
+      } else {
+        content
+    }
+  }
+}
+
+internal struct TextStrikeThrough: ViewModifier, Record {
+  @Field var isActive: Bool = false
+  @Field var pattern: TextLinePattern = .solid
+  @Field var color: Color?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      switch pattern {
+        case .solid: 
+          content.strikethrough(isActive, pattern: .solid, color: color)
+        case .dash:
+          content.strikethrough(isActive, pattern: .dash, color: color)
+        case .dot:  
+          content.strikethrough(isActive, pattern: .dot, color: color)
+        case .dashDot: 
+          content.strikethrough(isActive, pattern: .dashDot, color: color)
+        case .dashDotDot:  
+          content.strikethrough(isActive, pattern: .dashDotDot, color: color)
+        }
+      } else {
+        content
+    }
+  }
+}
+
+internal enum TextAligment: String, Enumerable {
+  case center
+  case leading
+  case trailing
+}
+
+internal struct MultilineTextAlignment: ViewModifier, Record {
+  @Field var alignment: TextAligment = .leading
+
+  func body(content: Content) -> some View {
+    if #available(iOS 13.0, macOS 10.15, tvOS 13.0, *) {
+      switch alignment {
+        case .center: 
+          content.multilineTextAlignment(.center)
+        case .leading: 
+          content.multilineTextAlignment(.leading)
+        case .trailing:
+          content.multilineTextAlignment(.trailing)
+      }
+    } else {
+      content
+    }
+  }
+}
 // MARK: - Registry
 
 /**
@@ -1145,6 +1298,33 @@ extension ViewModifierRegistry {
 
     register("listRowBackground") { params, appContext, _ in
       return try ListRowBackground(from: params, appContext: appContext)
+    }
+    register("truncationMode") { params, appContext, _ in
+      return try TextTruncationMode(from: params, appContext: appContext)
+    }
+
+    register("kerning") { params, appContext, _ in
+      return try TextKerning(from: params, appContext: appContext)
+    }
+
+    register("allowsTightening") { params, appContext, _ in
+      return try TextAllowsTightening(from: params, appContext: appContext)
+    }
+
+    register("textCase") { params, appContext, _ in
+      return try TextCase(from: params, appContext: appContext)
+    }
+
+    register("underline") { params, appContext, _ in
+      return try TextUnderLine(from: params, appContext: appContext)
+    }
+
+    register("strikethrough") { params, appContext, _ in
+      return try TextStrikeThrough(from: params, appContext: appContext)
+    }
+
+    register("multilineTextAlignment") { params, appContext, _ in
+      return try MultilineTextAlignment(from: params, appContext: appContext)
     }
   }
 }
