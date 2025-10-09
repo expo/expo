@@ -74,7 +74,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (6.0.13):
+  - expo-dev-client (6.0.14):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -207,9 +207,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu (7.0.13):
-    - expo-dev-menu/Main (= 7.0.13)
-    - expo-dev-menu/ReactNativeCompatibles (= 7.0.13)
+  - expo-dev-menu (7.0.14):
+    - expo-dev-menu/Main (= 7.0.14)
+    - expo-dev-menu/ReactNativeCompatibles (= 7.0.14)
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -232,7 +232,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - expo-dev-menu-interface (2.0.0)
-  - expo-dev-menu/Main (7.0.13):
+  - expo-dev-menu/Main (7.0.14):
     - EXManifests
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -258,7 +258,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (7.0.13):
+  - expo-dev-menu/ReactNativeCompatibles (7.0.14):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -280,7 +280,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/Tests (7.0.13):
+  - expo-dev-menu/Tests (7.0.14):
     - ExpoModulesTestCore
     - hermes-engine
     - Nimble
@@ -306,7 +306,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/UITests (7.0.13):
+  - expo-dev-menu/UITests (7.0.14):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3559,9 +3559,9 @@ SPEC CHECKSUMS:
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: 7aab54f0e5f3023122bc95699eaff7c52bacb559
   Expo: 31753d0721fff50684ffccad30e73dc19acb52be
-  expo-dev-client: 3d3eccb2814f0fe1ab7551efbaf13ba52e8feabf
+  expo-dev-client: f7d11c6a3c04a710a3b165066aaddaa6f18fb138
   expo-dev-launcher: ccf311897b4567b43cbf0dd29341afbc933ebeab
-  expo-dev-menu: 593d1bf6d01144b23988ed4dd6b66dff5745f634
+  expo-dev-menu: 84200bf9c4c0966228d7c43255923bed1ba682f7
   expo-dev-menu-interface: 600df12ea01efecdd822daaf13cc0ac091775533
   ExpoAppIntegrity: 87ada85f87f6680628e422dad5fa0c25cc248e56
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
