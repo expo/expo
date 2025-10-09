@@ -109,14 +109,27 @@ class MediaController {
     activePlayer = nil
   }
 
-  private func setupRemoteCommands() {
-    remoteCommandCenter.playCommand.removeTarget(self);
-    remoteCommandCenter.pauseCommand.removeTarget(self);
-    remoteCommandCenter.togglePlayPauseCommand.removeTarget(self);
-    remoteCommandCenter.changePlaybackPositionCommand.removeTarget(self);
-    remoteCommandCenter.skipForwardCommand.removeTarget(self);
-    remoteCommandCenter.skipBackwardCommand.removeTarget(self);
-    
+  private func loadArtworkFromURL(url: URL, completion: @escaping (MPMediaItemArtwork?) -> Void) {
+    URLSession.shared.dataTask(with: url) { data, _, error in
+      if error != nil {
+        completion(nil)
+        return
+      }
+
+      guard let data, let image = UIImage(data: data) else {
+        completion(nil)
+        return
+      }
+
+      let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+      DispatchQueue.main.async {
+        completion(artwork)
+      }
+    }
+    .resume()
+  }
+
+  private func enableRemoteCommands(options: LockScreenOptions?) {
     remoteCommandCenter.playCommand.addTarget { [weak self] _ in
       guard let player = self?.activePlayer else {
         return .commandFailed
@@ -186,31 +199,7 @@ class MediaController {
       player.ref.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
 
       return .success
-    }    
-  }
-
-  private func loadArtworkFromURL(url: URL, completion: @escaping (MPMediaItemArtwork?) -> Void) {
-    URLSession.shared.dataTask(with: url) { data, _, error in
-      if error != nil {
-        completion(nil)
-        return
-      }
-
-      guard let data, let image = UIImage(data: data) else {
-        completion(nil)
-        return
-      }
-
-      let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
-      DispatchQueue.main.async {
-        completion(artwork)
-      }
     }
-    .resume()
-  }
-
-  private func enableRemoteCommands(options: LockScreenOptions?) {
-    setupRemoteCommands()
     
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
@@ -227,5 +216,13 @@ class MediaController {
     remoteCommandCenter.changePlaybackPositionCommand.isEnabled = false
     remoteCommandCenter.skipForwardCommand.isEnabled = false
     remoteCommandCenter.skipBackwardCommand.isEnabled = false
+    
+    // Remove event targets
+    remoteCommandCenter.playCommand.removeTarget(self);
+    remoteCommandCenter.pauseCommand.removeTarget(self);
+    remoteCommandCenter.togglePlayPauseCommand.removeTarget(self);
+    remoteCommandCenter.changePlaybackPositionCommand.removeTarget(self);
+    remoteCommandCenter.skipForwardCommand.removeTarget(self);
+    remoteCommandCenter.skipBackwardCommand.removeTarget(self);
   }
 }
