@@ -17,6 +17,7 @@
 - [iOS] Add `scrollContentBackground` and `listRowBackground` modifier. ([#40195](https://github.com/expo/expo/pull/40195) by [@doombladeoff](https://github.com/doombladeoff))
 - Added `onAppear` and `onDisappear` modifiers to `swift-ui`. ([#40056](https://github.com/expo/expo/pull/40056) by [@kudo](https://github.com/kudo))
 - [iOS] Add Stepper component. ([#39813](https://github.com/expo/expo/pull/39813) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- [iOS] Add `truncationMode`, `kerning`, `allowsTightening`, `textCase`, `underline`, `strikethrough` and `multilineTextAlignment` text modifier. ([#40280]() by [@doombladeoff](https://github.com/doombladeoff))
 
 ### 🐛 Bug fixes
 
