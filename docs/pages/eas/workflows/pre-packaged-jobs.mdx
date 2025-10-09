@@ -23,6 +23,7 @@ To successfully use the build job, you'll need to complete a build with EAS CLI 
 jobs:
   build_app:
     type: build
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       platform: android | ios # required
       profile: string # optional - default: production
@@ -459,6 +460,7 @@ Submission jobs require additional configuration to run within a CI/CD process. 
 jobs:
   submit_to_store:
     type: submit
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       build_id: string # required
       profile: string # optional - default: production
@@ -553,6 +555,7 @@ TestFlight jobs require an iOS build created with `distribution: store`. You'll 
 jobs:
   testflight_distribution:
     type: testflight
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       build_id: string # required
       profile: string # optional - default: production
@@ -652,6 +655,7 @@ To publish update previews and to send over-the-air updates, you'll need to run 
 jobs:
   publish_update:
     type: update
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       message: string # optional
       platform: string # optional - android | ios | all, defaults to all
@@ -791,15 +795,17 @@ You can pass the following parameters into the `params` list:
 | Parameter                    | Type                                                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ---------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | build_id                     | string                                                | Required. The ID of the build to test.                                                                                                                                                                                                                                                                                                                                                                                                |
-| flow_path                    | string                                                | Required. The path to the Maestro flow file(s) to run.                                                                                                                                                                                                                                                                                                                                                                                |
+| flow_path                    | string or string[]                                    | Required. The path to the Maestro flow file(s) or directory to run.                                                                                                                                                                                                                                                                                                                                                                   |
 | shards                       | number                                                | Optional and experimental. The number of shards to split the tests into. Defaults to 1.                                                                                                                                                                                                                                                                                                                                               |
 | retries                      | number                                                | Optional. The number of times to retry failed tests. Defaults to 1.                                                                                                                                                                                                                                                                                                                                                                   |
 | record_screen                | boolean                                               | Optional. Whether to record the screen. Defaults to false. Note: recording screen may impact emulator performance. You may want to use large runners when recording screen.                                                                                                                                                                                                                                                           |
-| include_tags                 | string                                                | Optional. Flow tags to include in the tests. Will be passed to Maestro as `--include-tags`.                                                                                                                                                                                                                                                                                                                                           |
-| exclude_tags                 | string                                                | Optional. Flow tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.                                                                                                                                                                                                                                                                                                                                         |
+| include_tags                 | string or string[]                                    | Optional. Flow tags to include in the tests. Will be passed to Maestro as `--include-tags`.                                                                                                                                                                                                                                                                                                                                           |
+| exclude_tags                 | string or string[]                                    | Optional. Flow tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.                                                                                                                                                                                                                                                                                                                                         |
 | maestro_version              | string                                                | Optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.                                                                                                                                                                                                                                                                                                                                  |
+| output_format                | string                                                | Optional. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.                                                                                                                                                                                                                                                                                                             |
 | android_system_image_package | string                                                | Optional. Android Emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`. Note that newer images require more computing resources, for which you may want to use large runners.                                                 |
 | device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
+| skip_build_check             | boolean                                               | Optional. Skip validation of the build (whether an iOS build is a simulator build). Defaults to false.                                                                                                                                                                                                                                                                                                                                |
 
 ### Examples
 
@@ -1524,6 +1530,7 @@ Repackages an app from an existing build. This job repackages the app's metadata
 jobs:
   repack:
     type: repack
+    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       build_id: string # required
       profile: string # optional
