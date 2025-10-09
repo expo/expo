@@ -978,6 +978,18 @@ internal struct TextSelection: ViewModifier, Record {
     #endif
   }
 }
+
+internal struct LineSpacing: ViewModifier, Record {
+  @Field var value: CGFloat?
+
+  func body(content: Content) -> some View {
+    if let value {
+      content.lineSpacing(value)
+    } else {
+      content
+    }
+  }
+}
 // MARK: - Registry
 
 /**
@@ -1334,6 +1346,10 @@ extension ViewModifierRegistry {
 
     register("textSelection") { params, appContext, _ in
       return try TextSelection(from: params, appContext: appContext)
+    }
+
+    register("lineSpacing") { params, appContext, _ in
+      return try LineSpacing(from: params, appContext: appContext)
     }
   }
 }

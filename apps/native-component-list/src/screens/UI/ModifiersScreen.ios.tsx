@@ -50,6 +50,7 @@ import {
   strikethrough,
   multilineTextAlignment,
   textSelection,
+  lineSpacing,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -79,6 +80,7 @@ export default function ModifiersScreen() {
 
   const [enabledSelection, setEnabledSelection] = useState(false);
 
+  const [lineSpacingValue, setLineSpaceingValue] = useState(0);
   return (
     <ScrollView>
       <Host matchContents>
@@ -228,6 +230,26 @@ export default function ModifiersScreen() {
                 This is selected text
               </Text>
             </VStack>
+
+            <HStack spacing={30}>
+              <VStack alignment="center">
+                <Text size={14}>Default</Text>
+                <Text size={12} modifiers={[frame({ width: 150, height: 120 })]}>
+                  This is a string with default spacing between the bottom of one line and the top
+                  of the next.
+                </Text>
+              </VStack>
+              <VStack alignment="center">
+                <Text size={14}>Spacing</Text>
+                <Text
+                  size={12}
+                  modifiers={[frame({ width: 150, height: 120 }), lineSpacing(lineSpacingValue)]}>
+                  This is a string with 20 point spacing between the bottom of one line and the top
+                  of the next.
+                </Text>
+              </VStack>
+            </HStack>
+            <Slider min={0} max={20} onValueChange={setLineSpaceingValue} />
           </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
           <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>

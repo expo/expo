@@ -83,15 +83,15 @@ export const frame = (params: {
   idealWidth?: number;
   idealHeight?: number;
   alignment?:
-    | 'center'
-    | 'leading'
-    | 'trailing'
-    | 'top'
-    | 'bottom'
-    | 'topLeading'
-    | 'topTrailing'
-    | 'bottomLeading'
-    | 'bottomTrailing';
+  | 'center'
+  | 'leading'
+  | 'trailing'
+  | 'top'
+  | 'bottom'
+  | 'topLeading'
+  | 'topTrailing'
+  | 'bottomLeading'
+  | 'bottomTrailing';
 }) => createModifier('frame', params);
 
 /**
@@ -293,27 +293,27 @@ export const foregroundStyle = (
     | string // Simple color (hex string, color name, or Apple system color name)
     | { type: 'color'; color: string }
     | {
-        type: 'hierarchical';
-        style: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
-      }
+      type: 'hierarchical';
+      style: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
+    }
     | {
-        type: 'linearGradient';
-        colors: string[];
-        startPoint: { x: number; y: number };
-        endPoint: { x: number; y: number };
-      }
+      type: 'linearGradient';
+      colors: string[];
+      startPoint: { x: number; y: number };
+      endPoint: { x: number; y: number };
+    }
     | {
-        type: 'radialGradient';
-        colors: string[];
-        center: { x: number; y: number };
-        startRadius: number;
-        endRadius: number;
-      }
+      type: 'radialGradient';
+      colors: string[];
+      center: { x: number; y: number };
+      startRadius: number;
+      endRadius: number;
+    }
     | {
-        type: 'angularGradient';
-        colors: string[];
-        center: { x: number; y: number };
-      }
+      type: 'angularGradient';
+      colors: string[];
+      center: { x: number; y: number };
+    }
 ) => {
   if (typeof style === 'string') {
     return createModifier('foregroundStyle', { styleType: 'color', color: style });
@@ -560,6 +560,12 @@ export const multilineTextAlignment = (alignment: 'center' | 'leading' | 'traili
  * @param value - Enable selection
  */
 export const textSelection = (value: boolean) => createModifier('textSelection', { value });
+/**
+ * The distance in points between the bottom of one line fragment and the top of the next.
+ * @param value - The amount of space between the bottom of one line and the top of the next line in points.
+ * @description This value is always nonnegative. Otherwise, the default value will be used.
+ */
+export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
 
 // =============================================================================
 // Type Definitions
@@ -623,7 +629,8 @@ export type BuiltInModifier =
   | ReturnType<typeof underline>
   | ReturnType<typeof strikethrough>
   | ReturnType<typeof multilineTextAlignment>
-  | ReturnType<typeof textSelection>;
+  | ReturnType<typeof textSelection>
+  | ReturnType<typeof lineSpacing>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
