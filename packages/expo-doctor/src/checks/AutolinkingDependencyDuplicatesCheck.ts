@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import type {
   BaseDependencyResolution,
   DependencyResolution,
@@ -109,11 +110,14 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
           // of the non store paths to assure the user that this check is aware of isolated dependencies
           if (
             hasStorePaths &&
-            !STORE_PATH.test(duplicate.originPath) &&
+            duplicate.originPath !== duplicate.path &&
             STORE_PATH.test(duplicate.path)
           ) {
-            const relative = path.relative(projectRoot, dependency.path);
-            line.push(`  │  └─ linked to: ${relative}`);
+            const linkedOutput = !STORE_PATH.test(duplicate.originPath)
+              ? `linked to: ${path.relative(projectRoot, dependency.path)}`
+              : 'linked to a different installation';
+            const prefix = idx !== versions.length - 1 ? '│' : ' ';
+            line.push(`  ${prefix}  ` + chalk.grey(`└─ ${linkedOutput}`));
           }
         }
         issues.push(line.join('\n'));
