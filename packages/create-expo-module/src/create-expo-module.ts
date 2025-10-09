@@ -1,7 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { Command } from 'commander';
-import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -24,6 +23,7 @@ import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './tele
 import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
 import { env } from './utils/env';
 import { newStep } from './utils/ora';
+import { downloadAndExtractTarball } from './utils/tar';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
@@ -257,7 +257,7 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
     const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
 
     try {
-      await downloadTarball({
+      await downloadAndExtractTarball({
         url: await getNpmTarballUrl(packageName, templateVersion),
         dir: targetDir,
       });
@@ -268,7 +268,7 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
           "Couldn't download the versioned template from npm, falling back to the latest version."
         )
       );
-      await downloadTarball({
+      await downloadAndExtractTarball({
         url: await getNpmTarballUrl(packageName, 'latest'),
         dir: targetDir,
       });

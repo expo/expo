@@ -45,11 +45,11 @@
     "commander": "^8.3.0",
     "cross-spawn": "^7.0.5",
     "debug": "^4.3.4",
-    "download-tarball": "^2.0.0",
     "ejs": "^3.1.10",
     "getenv": "^2.0.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
+    "tar": "^7.5.1",
     "validate-npm-package-name": "^5.0.1"
   },
   "devDependencies": {
