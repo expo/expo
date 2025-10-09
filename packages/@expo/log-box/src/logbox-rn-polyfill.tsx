@@ -87,6 +87,7 @@ function LogBoxRNPolyfill(props: {
           platform={process.env.EXPO_OS}
           devServerUrl={getBaseUrl()}
           dom={{
+            useExpoDOMWebView: true,
             sourceOverride: bundledLogBoxUrl ? { uri: bundledLogBoxUrl } : undefined,
             contentInsetAdjustmentBehavior: 'never',
             containerStyle: {

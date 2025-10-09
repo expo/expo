@@ -91,6 +91,7 @@ function LogBoxRNPolyfill(props) {
                 flex: 1,
             }, collapsable: false },
             react_1.default.createElement(logbox_dom_polyfill_1.default, { platform: process.env.EXPO_OS, devServerUrl: (0, devServerEndpoints_1.getBaseUrl)(), dom: {
+                    useExpoDOMWebView: true,
                     sourceOverride: bundledLogBoxUrl ? { uri: bundledLogBoxUrl } : undefined,
                     contentInsetAdjustmentBehavior: 'never',
                     containerStyle: {

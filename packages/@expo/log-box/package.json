@@ -19,6 +19,7 @@
     "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
+    "@expo/dom-webview": "*",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10"
   },
@@ -37,7 +38,8 @@
     "react": "*",
     "react-dom": "*",
     "react-native": "*",
-    "react-native-web": "*"
+    "react-native-web": "*",
+    "@expo/dom-webview": "*"
   },
   "license": "MIT",
   "author": "Expo",
