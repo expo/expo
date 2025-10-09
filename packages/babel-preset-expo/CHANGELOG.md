@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update to `babel-plugin-react-compiler@^1.0.0` ([#40281](https://github.com/expo/expo/pull/40281) by [@kitten](https://github.com/kitten))
+
 ## 54.0.3 — 2025-09-22
 
 ### 💡 Others
