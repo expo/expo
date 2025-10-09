@@ -73,7 +73,7 @@ export default function ModifiersScreen() {
 
   const [kerningValue, setKerning] = useState(0);
 
-  const multilineTextAlignmentOptions = ["center", "leading", "trailing"];
+  const multilineTextAlignmentOptions = ['center', 'leading', 'trailing'];
   const [multilineTextAlignmentIndex, setMultilineTextAlignment] = useState(0);
 
   return (
@@ -89,16 +89,22 @@ export default function ModifiersScreen() {
             }),
           ]}>
           {/* Text modifiers */}
-          <Section title='Text modifier'>
-            <Text color={color ?? 'primary'} size={16} lineLimit={1} modifiers={[
-              allowsTightening(allowTightening),
-              truncationMode(truncationModeOptions[truncationModeIndex] as "head" | "middle" | "tail"),
-              frame({ width: 160, height: 50, alignment: "leading" })
-            ]}>
+          <Section title="Text modifier">
+            <Text
+              color={color ?? 'primary'}
+              size={16}
+              lineLimit={1}
+              modifiers={[
+                allowsTightening(allowTightening),
+                truncationMode(
+                  truncationModeOptions[truncationModeIndex] as 'head' | 'middle' | 'tail'
+                ),
+                frame({ width: 160, height: 50, alignment: 'leading' }),
+              ]}>
               This is a wide text element
             </Text>
             <Picker
-              label='Select mode'
+              label="Select mode"
               options={truncationModeOptions}
               selectedIndex={truncationModeIndex}
               onOptionSelected={({ nativeEvent: { index } }) => {
@@ -106,51 +112,77 @@ export default function ModifiersScreen() {
               }}
               variant="menu"
             />
-            <Switch label='Allow Tightening' value={allowTightening} onValueChange={setAllowsTightening} />
+            <Switch
+              label="Allow Tightening"
+              value={allowTightening}
+              onValueChange={setAllowsTightening}
+            />
             <Text size={14} modifiers={[kerning(kerningValue)]}>
               Kerning Text
             </Text>
             <Slider min={0} max={10} onValueChange={setKerning} />
 
             <HStack spacing={20}>
-              <Text size={14} modifiers={[textCase('lowercase')]}>lowercase</Text>
-              <Text size={14} modifiers={[textCase('uppercase')]}>uppercase</Text>
+              <Text size={14} modifiers={[textCase('lowercase')]}>
+                lowercase
+              </Text>
+              <Text size={14} modifiers={[textCase('uppercase')]}>
+                uppercase
+              </Text>
             </HStack>
 
-            <HStack alignment='center' spacing={80}>
+            <HStack alignment="center" spacing={80}>
               <VStack spacing={15}>
                 <Text size={16}>Underline text</Text>
-                <Text size={14} modifiers={[underline({ isActive: true, pattern: 'solid', color: 'red' })]}>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'solid', color: 'red' })]}>
                   Text 1
                 </Text>
-                <Text size={14} modifiers={[underline({ isActive: true, pattern: 'dash', color: 'green' })]}>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'dash', color: 'green' })]}>
                   Text 2
                 </Text>
-                <Text size={14} modifiers={[underline({ isActive: true, pattern: 'dot', color: 'blue' })]}>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'dot', color: 'blue' })]}>
                   Text 3
                 </Text>
                 <Text size={14} modifiers={[underline({ isActive: true, pattern: 'dashDot' })]}>
                   Text 4
                 </Text>
-                <Text size={14} modifiers={[underline({ isActive: true, pattern: 'dashDotDot', color: 'pink' })]}>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'dashDotDot', color: 'pink' })]}>
                   Text 5
                 </Text>
               </VStack>
               <VStack spacing={15}>
                 <Text size={16}>Strikethrough text</Text>
-                <Text size={14} modifiers={[strikethrough({ isActive: true, pattern: 'solid', color: 'red' })]}>
+                <Text
+                  size={14}
+                  modifiers={[strikethrough({ isActive: true, pattern: 'solid', color: 'red' })]}>
                   Text 1
                 </Text>
-                <Text size={14} modifiers={[strikethrough({ isActive: true, pattern: 'dot', color: 'green' })]}>
+                <Text
+                  size={14}
+                  modifiers={[strikethrough({ isActive: true, pattern: 'dot', color: 'green' })]}>
                   Text 2
                 </Text>
-                <Text size={14} modifiers={[strikethrough({ isActive: true, pattern: 'dash', color: 'blue' })]}>
+                <Text
+                  size={14}
+                  modifiers={[strikethrough({ isActive: true, pattern: 'dash', color: 'blue' })]}>
                   Text 3
                 </Text>
                 <Text size={14} modifiers={[strikethrough({ isActive: true, pattern: 'dashDot' })]}>
                   Text 4
                 </Text>
-                <Text size={14} modifiers={[strikethrough({ isActive: true, pattern: 'dashDotDot', color: 'pink' })]}>
+                <Text
+                  size={14}
+                  modifiers={[
+                    strikethrough({ isActive: true, pattern: 'dashDotDot', color: 'pink' }),
+                  ]}>
                   Text 5
                 </Text>
               </VStack>
@@ -158,7 +190,7 @@ export default function ModifiersScreen() {
 
             <VStack spacing={15}>
               <Picker
-                label='Select alignment'
+                label="Select alignment"
                 options={multilineTextAlignmentOptions}
                 selectedIndex={multilineTextAlignmentIndex}
                 onOptionSelected={({ nativeEvent: { index } }) => {
@@ -166,7 +198,16 @@ export default function ModifiersScreen() {
                 }}
                 variant="menu"
               />
-              <Text size={14} modifiers={[multilineTextAlignment(multilineTextAlignmentOptions[multilineTextAlignmentIndex] as "center" | "leading" | "trailing")]}>
+              <Text
+                size={14}
+                modifiers={[
+                  multilineTextAlignment(
+                    multilineTextAlignmentOptions[multilineTextAlignmentIndex] as
+                      | 'center'
+                      | 'leading'
+                      | 'trailing'
+                  ),
+                ]}>
                 {`This is a block of text that shows up in a text element as multiple lines.\nHere we have chosen to center this text.`}
               </Text>
             </VStack>
