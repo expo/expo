@@ -51,7 +51,7 @@ class VideoPlayerSeeker {
     isWaitingForOptimizedSeek = true
     let seekTimeInProgress = chaseTime
 
-    playerRef.seek(to: seekTimeInProgress, seekTolerance: seekTolerance) { [weak self] finished in
+    playerRef.seek(to: seekTimeInProgress, seekTolerance: seekTolerance) { [weak self] _ in
       guard let self else {
         return
       }

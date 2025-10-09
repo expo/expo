@@ -1,15 +1,14 @@
 import { B } from '@expo/html-elements';
 import Slider from '@react-native-community/slider';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { localVideoSource, seekOptimizedSource } from './videoSources';
 import TitledSwitch from '../../components/TitledSwitch';
 
 export default function VideoScrubbingScreen() {
-  const videoViewRef = React.useRef(null);
+  const videoViewRef = useRef(null);
   const [scrubbingModeEnabled, setScrubbingModeEnabled] = useState(true);
   const [useOptimizedSource, setUseOptimizedSource] = useState(true);
   const [toleranceBefore, setToleranceBefore] = useState(1);

@@ -323,14 +323,14 @@ public final class VideoModule: Module {
       Property("seekTolerance") { player -> SeekTolerance in
         return player.seeker.seekTolerance
       }
-      .set{ player, seekTolerance in
+      .set { player, seekTolerance in
         player.seeker.seekTolerance = seekTolerance
       }
 
       Property("scrubbingModeOptions") { player -> ScrubbingModeOptions in
         return player.seeker.scrubbingModeOptions
       }
-      .set {player, options in
+      .set { player, options in
         player.seeker.scrubbingModeOptions = options
       }
 
