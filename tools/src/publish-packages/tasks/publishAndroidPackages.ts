@@ -78,10 +78,14 @@ export const publishAndroidArtifacts = new Task<TaskArgs>(
 
     logger.log('  ', 'Publishing Android artifacts...');
     // Run Gradle tasks in one batch to speed up the process.
-    await spawnAsync('./gradlew', gradleTasks, {
-      cwd: path.join(EXPO_DIR, 'apps/bare-expo/android'),
-      stdio: 'inherit',
-    });
+    await spawnAsync(
+      './gradlew',
+      [...gradleTasks, '--no-build-cache', '--no-configuration-cache'],
+      {
+        cwd: path.join(EXPO_DIR, 'apps/bare-expo/android'),
+        stdio: 'inherit',
+      }
+    );
     logger.success('  ', 'Done!');
   }
 );
