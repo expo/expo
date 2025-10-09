@@ -13,6 +13,8 @@ import {
   scanNativeModuleResolutions,
 } from '../utils/autolinkingResolutions';
 
+const STORE_PATH = /node_modules[\\/]\.(?:bun|pnpm)[\\/]/;
+
 type DoctorCache = AutolinkingResolutionsCache;
 
 export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorCache> {
@@ -94,10 +96,21 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
       if (dependency.duplicates?.length) {
         const line = [`Found duplicates for ${dependency.name}:`];
         const versions = [dependency, ...dependency.duplicates];
+        const hasStorePaths = versions.some((version) => STORE_PATH.test(version.originPath));
         for (let idx = 0; idx < versions.length; idx++) {
           const prefix = idx !== versions.length - 1 ? '├─' : '└─';
           const duplicate = versions[idx];
           line.push(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
+          // If some duplicates are isolated store paths, but not all, we display the real path
+          // of the non store paths to assure the user that this check is aware of isolated dependencies
+          if (
+            hasStorePaths &&
+            !STORE_PATH.test(duplicate.originPath) &&
+            STORE_PATH.test(duplicate.path)
+          ) {
+            const relative = path.relative(projectRoot, dependency.path);
+            line.push(`  │  └─ linked to: ${relative}`);
+          }
         }
         issues.push(line.join('\n'));
 
