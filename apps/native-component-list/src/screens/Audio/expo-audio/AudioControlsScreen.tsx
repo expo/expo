@@ -39,8 +39,9 @@ export default function AudioControlsScreen(props: any) {
       interruptionMode: 'doNotMix',
       playsInSilentMode: true,
       allowsRecording: false,
-    });
-    AudioModule.setIsAudioActiveAsync(true);
+    }).catch((error: unknown) =>
+      console.warn(`Error calling setAudioModeAsync: ${JSON.stringify(error)}`)
+    );
     props.navigation.setOptions({
       title: 'Audio Controls',
     });
