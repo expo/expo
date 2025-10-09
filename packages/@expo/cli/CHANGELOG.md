@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Export `_expo/.routes.json` metadata file for `static` outputs ([#40243](https://github.com/expo/expo/pull/40243) by [@kitten](https://github.com/kitten))
+
 ## 54.0.10 — 2025-10-01
 
 ### 💡 Others
