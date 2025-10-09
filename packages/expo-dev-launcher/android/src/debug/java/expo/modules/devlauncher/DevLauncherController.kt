@@ -471,7 +471,12 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
-      initialize(reactApplication as Context, reactApplication.reactHost!!)
+      val reactHost = reactApplication.reactHost
+      checkNotNull(reactHost) {
+        "DevLauncherController.initialize() was called before reactHost was initialized"
+      }
+
+      initialize(reactApplication as Context, reactHost)
       sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }
