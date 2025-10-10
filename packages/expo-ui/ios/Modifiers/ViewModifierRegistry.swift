@@ -1061,21 +1061,24 @@ internal struct ListSectionMargins: ViewModifier, Record {
   @Field var edges: EdgeOptions?
 
   func body(content: Content) -> some View {
-
-    #if compiler(>=6.2) // Xcode 26
-      if #available(iOS 26.0, *) {
-        if let edges, let length {
-          content.listSectionMargins(edges.toEdge(), length)
-        } else if let edges {
-          content.listSectionMargins(edges.toEdge(), 0)
+    #if os(tvOS)
+      content
+    #else
+      #if compiler(>=6.2) // Xcode 26
+        if #available(iOS 26.0, *) {
+          if let edges, let length {
+            content.listSectionMargins(edges.toEdge(), length)
+          } else if let edges {
+            content.listSectionMargins(edges.toEdge(), 0)
+          } else {
+            content
+          }
         } else {
           content
         }
-      } else {
+      #else 
         content
-      }
-    #else 
-      content
+      #endif
     #endif
   }
 }
