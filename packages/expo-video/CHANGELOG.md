@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android][iOS] Add `seek tolerance` and `scrubbingModeOptions` properties to the player. ([#40203](https://github.com/expo/expo/pull/40203) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 - Fix `FOREGROUND_SERVICE_MEDIA_PLAYBACK` being always present in the manifest. ([#40074](https://github.com/expo/expo/pull/40074) by [@behenate](https://github.com/behenate))

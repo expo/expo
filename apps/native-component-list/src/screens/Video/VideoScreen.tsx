@@ -117,6 +117,14 @@ export const VideoScreens = [
       return optionalRequire(() => require('./VideoThumbnailsScreen'));
     },
   },
+  {
+    name: 'Video scrubbing options',
+    route: 'video/scrubbing',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoScrubbingScreen'));
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {
