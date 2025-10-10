@@ -526,4 +526,9 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After changing brownfield docs
   '/brownfield/installing-expo-modules/': '/brownfield/get-started/',
+
+  // After removing Navigation section from Home and adding a Navigation page
+  '/develop/file-based-routing/': '/develop/app-navigation/',
+  '/develop/dynamic-routes/': '/develop/app-navigation/',
+  '/develop/next-steps/': '/develop/app-navigation/',
 };
