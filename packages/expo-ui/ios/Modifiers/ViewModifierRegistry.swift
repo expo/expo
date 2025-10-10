@@ -423,19 +423,26 @@ internal struct HueRotationModifier: ViewModifier, Record {
   }
 }
 
+internal enum ScrollDismissesKeyboardMode: String, Enumerable {
+  case automatic
+  case never
+  case interactively
+  case immediately
+}
+
 internal struct ScrollDismissesKeyboardModifier: ViewModifier, Record {
-  @Field var mode: String = "automatic"
+  @Field var mode: ScrollDismissesKeyboardMode = .automatic
 
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       switch mode {
-      case "interactively":
+      case .interactively:
         content.scrollDismissesKeyboard(.interactively)
-      case "immediately":
+      case .immediately:
         content.scrollDismissesKeyboard(.immediately)
-      case "never":
+      case .never:
         content.scrollDismissesKeyboard(.never)
-      default:
+      case .automatic:
         content.scrollDismissesKeyboard(.automatic)
       }
     } else {
