@@ -56,7 +56,7 @@ export type ButtonVariant =
   | 'card'
   | 'link';
 
-export type ButtonProps = {
+export interface ButtonProps extends CommonViewModifierProps {
   /**
    * A callback that is called when the button is pressed.
    */
@@ -92,7 +92,7 @@ export type ButtonProps = {
    * Disabled state of the button.
    */
   disabled?: boolean;
-} & CommonViewModifierProps;
+}
 
 /**
  * exposed for ContextMenu

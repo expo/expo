@@ -802,7 +802,7 @@ function pagesFromDir(dir) {
   const entities = fs.readdirSync(dirPath, { withFileTypes: true });
 
   const files = entities
-    .filter(entity => entity.isFile())
+    .filter(entity => entity.isFile() && entity.name !== 'metadata.json')
     .map(file => makePage(path.join(dir, file.name)));
 
   const folders = entities
@@ -821,9 +821,29 @@ function pagesFromDir(dir) {
         // otherwise sort by name (title)
         return a.name.localeCompare(b.name);
       });
-      return folderPages.length > 0
-        ? makeGroup(folder.name.toUpperCase(), sortedFolderPages, { expanded: true })
-        : null;
+
+      if (folderPages.length === 0) {
+        return null;
+      }
+
+      // Check for metadata.json file in the folder
+      const metaJsonPath = path.join(dirPath, folder.name, 'metadata.json');
+      let sidebarTitle = folder.name.toUpperCase();
+
+      if (fs.existsSync(metaJsonPath)) {
+        try {
+          const metaContent = fs.readFileSync(metaJsonPath, 'utf-8');
+          const meta = JSON.parse(metaContent);
+          if (meta.sidebarTitle) {
+            sidebarTitle = meta.sidebarTitle;
+          }
+        } catch (error) {
+          // If metadata.json is invalid, fall back to default behavior
+          console.warn(`Invalid metadata.json in ${metaJsonPath}:`, error.message);
+        }
+      }
+
+      return makeGroup(sidebarTitle, sortedFolderPages, { expanded: true });
     })
     .filter(Boolean);
 
