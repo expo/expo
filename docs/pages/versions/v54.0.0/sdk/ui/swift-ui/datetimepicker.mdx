@@ -1,0 +1,84 @@
+---
+title: DateTimePicker
+description: A SwiftUI DateTimePicker component for selecting dates and times.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+> **Warning** This component is not available on Apple TV.
+
+A date and time picker component that allows users to select dates, times, or both.
+
+## Installation
+
+<APIInstallSection />
+
+## Date time picker
+
+<Tabs>
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="DateTimePicker (date) component on iOS."
+      src="/static/images/expo-ui/datetimepicker/date/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker, Host } from '@expo/ui/swift-ui';
+
+    <Host matchContents>
+      <DateTimePicker
+        onDateSelected={date => {
+          setSelectedDate(date);
+        }}
+        displayedComponents='date'
+        initialDate={selectedDate.toISOString()}
+        variant='wheel'
+      />
+    </Host>
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/datepicker)*
+
+  </Tab>
+</Tabs>
+
+## Time picker
+
+<Tabs>
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="DateTimePicker (time) component on iOS."
+      src="/static/images/expo-ui/datetimepicker/time/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker, Host } from '@expo/ui/swift-ui';
+
+    <Host matchContents>
+      <DateTimePicker
+        onDateSelected={date => {
+          setSelectedDate(date);
+        }}
+        displayedComponents='hourAndMinute'
+        initialDate={selectedDate.toISOString()}
+        variant='wheel'
+      />
+    </Host>
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/datepicker)*
+
+  </Tab>
+</Tabs>
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/datetimepicker" apiName="DateTimePicker" />

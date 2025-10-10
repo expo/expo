@@ -1,0 +1,61 @@
+---
+title: Host
+description: A SwiftUI Host component that enables SwiftUI components in React Native.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which underlying uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render the SwiftUI views in UIKit.
+
+Since the `Host` component is a React Native [`View`](https://reactnative.dev/docs/view), you can pass the [`style`](https://reactnative.dev/docs/style) prop to it or `matchContents` prop to make the `Host` component match the contents' size.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+```tsx Wrapping Button in Host
+import { Button, Host } from '@expo/ui/swift-ui';
+
+function Example() {
+  return (
+    <Host matchContents>
+      <Button
+        onPress={() => {
+          console.log('Pressed');
+        }}>
+        Click
+      </Button>
+    </Host>
+  );
+}
+```
+
+```tsx Host with flexbox and VStack
+import { Button, Host, VStack, Text } from '@expo/ui/swift-ui';
+
+function Example() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={8}>
+        <Text>Hello, world!</Text>
+        <Button
+          onPress={() => {
+            console.log('Pressed');
+          }}>
+          Click
+        </Button>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/host" apiName="Host" />
