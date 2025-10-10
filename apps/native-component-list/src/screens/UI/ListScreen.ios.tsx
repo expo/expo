@@ -109,15 +109,13 @@ export default function ListScreen() {
         </Section>
         <Section title="Data">
           {data.map((item, index) => (
-            <HStack key={index}>
-              <Label
-                modifiers={[frame({ height: 24 })]}
-                title={item.text}
-                systemImage={item.systemImage}
-                color={color}
-              />
-              <Text>{item.text}</Text>
-            </HStack>
+            <Label
+              key={index}
+              modifiers={[frame({ height: 24 })]}
+              title={item.text}
+              systemImage={item.systemImage}
+              color={color}
+            />
           ))}
         </Section>
       </List>
