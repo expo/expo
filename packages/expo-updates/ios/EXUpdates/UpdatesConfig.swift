@@ -80,6 +80,7 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey = "EXUpdatesConfigCodeSigningAllowUnsignedManifests"
   public static let EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey = "EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityMode"
   public static let EXUpdatesConfigDisableAntiBrickingMeasures = "EXUpdatesDisableAntiBrickingMeasures"
+  public static let EXUpdatesConfigEnablePatchSupportKey = "EXUpdatesEnablePatchSupport"
 
   public static let EXUpdatesConfigCheckOnLaunchValueAlways = "ALWAYS"
   public static let EXUpdatesConfigCheckOnLaunchValueWifiOnly = "WIFI_ONLY"
@@ -98,6 +99,7 @@ public final class UpdatesConfig: NSObject {
   public let codeSigningConfiguration: CodeSigningConfiguration?
   // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
   public let enableExpoUpdatesProtocolV0CompatibilityMode: Bool
+  public let enablePatchSupport: Bool
   public let runtimeVersion: String
   public let hasEmbeddedUpdate: Bool
   public let originalHasEmbeddedUpdate: Bool
@@ -120,6 +122,7 @@ public final class UpdatesConfig: NSObject {
     hasEmbeddedUpdate: Bool,
     originalHasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool,
+    enablePatchSupport: Bool,
     disableAntiBrickingMeasures: Bool,
     hasUpdatesOverride: Bool
   ) {
@@ -136,6 +139,7 @@ public final class UpdatesConfig: NSObject {
     self.hasEmbeddedUpdate = hasEmbeddedUpdate
     self.originalHasEmbeddedUpdate = originalHasEmbeddedUpdate
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
+    self.enablePatchSupport = enablePatchSupport
     self.disableAntiBrickingMeasures = disableAntiBrickingMeasures
     self.hasUpdatesOverride = hasUpdatesOverride
   }
@@ -286,6 +290,7 @@ public final class UpdatesConfig: NSObject {
     }
 
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
+    let enablePatchSupport = config.optionalValue(forKey: EXUpdatesConfigEnablePatchSupportKey) ?? true
 
     return UpdatesConfig(
       cachedConfigDictionary: config,
@@ -301,6 +306,7 @@ public final class UpdatesConfig: NSObject {
       hasEmbeddedUpdate: hasEmbeddedUpdate,
       originalHasEmbeddedUpdate: originalHasEmbeddedUpdate,
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode,
+      enablePatchSupport: enablePatchSupport,
       disableAntiBrickingMeasures: getDisableAntiBrickingMeasures(fromDictionary: config),
       hasUpdatesOverride: configOverride != nil
     )

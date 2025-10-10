@@ -135,7 +135,8 @@ public final class FileDownloader {
     successBlock: @escaping HashSuccessBlock,
     errorBlock: @escaping ErrorBlock
   ) {
-    let headers = headersForPatch(extraHeaders, allowPatch: allowPatch)
+    let patchEnabled = allowPatch && config.enablePatchSupport && asset.isLaunchAsset
+    let headers = headersForPatch(extraHeaders, allowPatch: patchEnabled)
     downloadData(
       fromURL: url,
       extraHeaders: headers,
@@ -151,15 +152,15 @@ public final class FileDownloader {
       let httpResponse = response as? HTTPURLResponse
       let isDiffResponse = httpResponse.map(Self.isDiffResponse) ?? false
 
-      if isDiffResponse && !allowPatch {
+      if isDiffResponse && !patchEnabled {
         let underlyingError = NSError(
           domain: "EXUpdatesFileDownloader",
           code: 1001,
-          userInfo: [NSLocalizedDescriptionKey: "Received Hermes diff when diff support disabled"]
+          userInfo: [NSLocalizedDescriptionKey: "Received patch response when patch support disabled"]
         )
         let cause = UpdatesError.fileDownloaderUnknownError(cause: underlyingError)
         self.logger.warn(
-          message: "Received Hermes diff when diff support disabled for asset \(asset.key ?? asset.filename)",
+          message: "Received patch when patch support disabled for asset \(asset.key ?? asset.filename)",
           code: UpdatesErrorCode.assetsFailedToLoad,
           updateId: extraHeaders[Self.ExpoRequestedUpdateIdHeader] as? String,
           assetId: asset.key ?? asset.filename
@@ -169,7 +170,7 @@ public final class FileDownloader {
         return
       }
 
-      if allowPatch,
+      if patchEnabled,
         let response = httpResponse,
         isDiffResponse {
         do {

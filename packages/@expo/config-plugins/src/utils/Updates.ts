@@ -146,6 +146,13 @@ export function getUpdatesUseEmbeddedUpdate(config: Pick<ExpoConfigUpdates, 'upd
   return true;
 }
 
+export function getUpdatesPatchSupportEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
+  if (config.updates?.enablePatchSupport !== undefined) {
+    return config.updates.enablePatchSupport;
+  }
+  return true;
+}
+
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {
   return config.updates?.fallbackToCacheTimeout ?? 0;
 }
