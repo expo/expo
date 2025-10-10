@@ -5,6 +5,40 @@ import SwiftUI
 
 // MARK: - Individual ViewModifier Structs
 
+internal enum ListSectionSpacingType: String, Enumerable {
+  case `default`
+  case compact
+  case custom
+}
+
+#if os(iOS) || os(watchOS)
+internal struct ListSectionSpacingModifier: ViewModifier, Record {
+  @Field var spacing: ListSectionSpacingType = .default
+  @Field var value: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, watchOS 10.0, *) {
+      switch spacing {
+      case .compact:
+        content.listSectionSpacing(.compact)
+      case .custom:
+        content.listSectionSpacing(value)
+      default:
+        content.listSectionSpacing(.default)
+      }
+    } else {
+      content
+    }
+  }
+}
+#else
+internal struct ListSectionSpacingModifier: ViewModifier, Record {
+  @Field var spacing: ListSectionSpacingType = .default
+  @Field var value: CGFloat = 0
+  func body(content: Content) -> some View { content }
+}
+#endif
+
 internal struct BackgroundModifier: ViewModifier, Record {
   @Field var color: Color?
 
@@ -1130,6 +1164,10 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
 // swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
+    register("listSectionSpacing") { params, appContext, _ in
+      return try ListSectionSpacingModifier(from: params, appContext: appContext)
+    }
+
     register("background") { params, appContext, _ in
       return try BackgroundModifier(from: params, appContext: appContext)
     }
