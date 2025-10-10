@@ -37,8 +37,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LogBoxInspectorContainer = LogBoxInspectorContainer;
-exports.LogBoxInspector = LogBoxInspector;
-exports.LogBoxContent = LogBoxContent;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -61,6 +59,7 @@ const LogBoxLog_1 = require("../Data/LogBoxLog");
 const classNames_1 = require("../utils/classNames");
 const devServerEndpoints_1 = require("../utils/devServerEndpoints");
 require("../Global.css");
+const ContextDevServer_1 = require("../ContextDevServer");
 const HEADER_TITLE_MAP = {
     error: 'Console Error',
     fatal: 'Uncaught Error',
@@ -74,18 +73,8 @@ function LogBoxInspectorContainer() {
     if (log == null) {
         return null;
     }
-    return react_1.default.createElement(LogBoxInspector, { log: log, selectedLogIndex: selectedLogIndex, logs: logs });
-}
-function useDevServerMeta() {
-    const [meta, setMeta] = (0, react_1.useState)(null);
-    (0, react_1.useEffect)(() => {
-        (0, devServerEndpoints_1.fetchProjectMetadataAsync)()
-            .then(setMeta)
-            .catch((error) => {
-            console.log(`Failed to fetch project metadata. Some debugging features may not work as expected: ${error}`);
-        });
-    }, []);
-    return meta;
+    return (react_1.default.createElement(ContextDevServer_1.DevServerProvider, null,
+        react_1.default.createElement(LogBoxInspector, { log: log, selectedLogIndex: selectedLogIndex, logs: logs })));
 }
 function LogBoxInspector({ log, selectedLogIndex, logs, }) {
     const { platform, isNative } = (0, ContextPlatform_1.useRuntimePlatform)();
@@ -128,8 +117,7 @@ function LogBoxInspector({ log, selectedLogIndex, logs, }) {
             react_1.default.createElement(LogBoxContent, { log: log, selectedLogIndex: selectedLogIndex, logs: logs, isDismissable: isDismissable, onMinimize: onMinimize }))));
 }
 function LogBoxContent({ log, selectedLogIndex, logs, isDismissable, onMinimize, }) {
-    const meta = useDevServerMeta();
-    const projectRoot = meta?.projectRoot;
+    const { projectRoot, sdkVersion } = (0, ContextDevServer_1.useDevServer)();
     const onDismiss = () => {
         // Here we handle the cases when the log is dismissed and it
         // was either the last log, or when the current index
@@ -233,21 +221,21 @@ function LogBoxContent({ log, selectedLogIndex, logs, isDismissable, onMinimize,
                 zIndex: 1,
                 backgroundColor: 'var(--expo-log-color-background)',
             } },
-            react_1.default.createElement(Header_1.ErrorOverlayHeader, { sdkVersion: meta?.sdkVersion, selectedIndex: selectedLogIndex, total: logs.length, isDismissable: isDismissable, onDismiss: onDismiss, onMinimize: () => onMinimize(), onSelectIndex: onChangeSelectedIndex, level: log.level, onCopy: onCopy, onReload: onReload })),
+            react_1.default.createElement(Header_1.ErrorOverlayHeader, { sdkVersion: sdkVersion, selectedIndex: selectedLogIndex, total: logs.length, isDismissable: isDismissable, onDismiss: onDismiss, onMinimize: () => onMinimize(), onSelectIndex: onChangeSelectedIndex, level: log.level, onCopy: onCopy, onReload: onReload })),
         react_1.default.createElement("div", { className: Overlay_module_css_1.default.scroll, ref: scrollRef },
             react_1.default.createElement(ErrorMessageHeader, { collapsed: collapsed, onPress: () => setCollapsed(!collapsed), message: log.message, level: log.level, title: headerTitle }),
             react_1.default.createElement("div", { style: { padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' } },
                 codeFrames.map(([key, codeFrame]) => (react_1.default.createElement(CodeFrame_1.ErrorCodeFrame, { key: key, projectRoot: projectRoot, codeFrame: codeFrame }))),
-                log.isMissingModuleError && (react_1.default.createElement(InstallMissingModule, { moduleName: log.isMissingModuleError, projectRoot: projectRoot ?? '' })),
-                !!log?.componentStack?.length && (react_1.default.createElement(StackTraceList_1.StackTraceList, { key: selectedLogIndex + '-component-stack', type: "component", projectRoot: projectRoot ?? '', stack: log.getAvailableStack('component'), symbolicationStatus: log.getStackStatus('component'), 
+                log.isMissingModuleError && (react_1.default.createElement(InstallMissingModuleTerminal, { moduleName: log.isMissingModuleError })),
+                !!log?.componentStack?.length && (react_1.default.createElement(StackTraceList_1.StackTraceList, { key: selectedLogIndex + '-component-stack', type: "component", stack: log.getAvailableStack('component'), symbolicationStatus: log.getStackStatus('component'), 
                     // eslint-disable-next-line react/jsx-no-bind
                     onRetry: _handleRetry.bind(_handleRetry, 'component') })),
-                react_1.default.createElement(StackTraceList_1.StackTraceList, { key: selectedLogIndex + '-stack', type: "stack", projectRoot: projectRoot ?? '', stack: log.getAvailableStack('stack'), symbolicationStatus: log.getStackStatus('stack'), 
+                react_1.default.createElement(StackTraceList_1.StackTraceList, { key: selectedLogIndex + '-stack', type: "stack", stack: log.getAvailableStack('stack'), symbolicationStatus: log.getStackStatus('stack'), 
                     // eslint-disable-next-line react/jsx-no-bind
                     onRetry: _handleRetry.bind(_handleRetry, 'stack') })),
             !isDismissable && (react_1.default.createElement(ErrorOverlayFooter, { message: "Build-time errors can only be dismissed by fixing the issue." })))));
 }
-function InstallMissingModule({ moduleName, projectRoot, }) {
+function InstallMissingModuleTerminal({ moduleName, }) {
     return react_1.default.createElement(CodeFrame_1.Terminal, { moduleName: moduleName, content: `$ npx expo install ${moduleName}` });
 }
 function uniqueBy(array, key) {

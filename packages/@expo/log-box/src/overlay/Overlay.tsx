@@ -20,9 +20,10 @@ import * as LogBoxData from '../Data/LogBoxData';
 import { LogBoxLog, useLogs } from '../Data/LogBoxLog';
 import type { Message, LogLevel, StackType } from '../Data/Types';
 import { classNames } from '../utils/classNames';
-import { fetchProjectMetadataAsync, getFormattedStackTrace } from '../utils/devServerEndpoints';
+import { getFormattedStackTrace } from '../utils/devServerEndpoints';
 
 import '../Global.css';
+import { DevServerProvider, useDevServer } from '../ContextDevServer';
 
 const HEADER_TITLE_MAP: Record<LogLevel, string> = {
   error: 'Console Error',
@@ -38,29 +39,14 @@ export function LogBoxInspectorContainer() {
   if (log == null) {
     return null;
   }
-  return <LogBoxInspector log={log} selectedLogIndex={selectedLogIndex} logs={logs} />;
+  return (
+    <DevServerProvider>
+      <LogBoxInspector log={log} selectedLogIndex={selectedLogIndex} logs={logs} />
+    </DevServerProvider>
+  );
 }
 
-function useDevServerMeta() {
-  const [meta, setMeta] = useState<{
-    projectRoot: string;
-    serverRoot: string;
-    sdkVersion: string;
-  } | null>(null);
-  useEffect(() => {
-    fetchProjectMetadataAsync()
-      .then(setMeta)
-      .catch((error) => {
-        console.log(
-          `Failed to fetch project metadata. Some debugging features may not work as expected: ${error}`
-        );
-      });
-  }, []);
-
-  return meta;
-}
-
-export function LogBoxInspector({
+function LogBoxInspector({
   log,
   selectedLogIndex,
   logs,
@@ -134,7 +120,7 @@ export function LogBoxInspector({
   );
 }
 
-export function LogBoxContent({
+function LogBoxContent({
   log,
   selectedLogIndex,
   logs,
@@ -147,9 +133,7 @@ export function LogBoxContent({
   isDismissable: boolean;
   onMinimize: (cb?: () => void) => void;
 }) {
-  const meta = useDevServerMeta();
-
-  const projectRoot = meta?.projectRoot;
+  const { projectRoot, sdkVersion } = useDevServer();
 
   const onDismiss = (): void => {
     // Here we handle the cases when the log is dismissed and it
@@ -282,7 +266,7 @@ export function LogBoxContent({
           backgroundColor: 'var(--expo-log-color-background)',
         }}>
         <ErrorOverlayHeader
-          sdkVersion={meta?.sdkVersion}
+          sdkVersion={sdkVersion}
           selectedIndex={selectedLogIndex}
           total={logs.length}
           isDismissable={isDismissable}
@@ -311,9 +295,8 @@ export function LogBoxContent({
             ))}
 
             {log.isMissingModuleError && (
-              <InstallMissingModule
+              <InstallMissingModuleTerminal
                 moduleName={log.isMissingModuleError}
-                projectRoot={projectRoot ?? ''}
               />
             )}
 
@@ -321,7 +304,6 @@ export function LogBoxContent({
               <StackTraceList
                 key={selectedLogIndex + '-component-stack'}
                 type="component"
-                projectRoot={projectRoot ?? ''}
                 stack={log.getAvailableStack('component')}
                 symbolicationStatus={log.getStackStatus('component')}
                 // eslint-disable-next-line react/jsx-no-bind
@@ -331,7 +313,6 @@ export function LogBoxContent({
             <StackTraceList
               key={selectedLogIndex + '-stack'}
               type="stack"
-              projectRoot={projectRoot ?? ''}
               stack={log.getAvailableStack('stack')}
               symbolicationStatus={log.getStackStatus('stack')}
               // eslint-disable-next-line react/jsx-no-bind
@@ -348,12 +329,10 @@ export function LogBoxContent({
   );
 }
 
-function InstallMissingModule({
+function InstallMissingModuleTerminal({
   moduleName,
-  projectRoot,
 }: {
   moduleName: string;
-  projectRoot: string;
 }) {
   return <Terminal moduleName={moduleName} content={`$ npx expo install ${moduleName}`} />;
 }

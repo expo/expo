@@ -6,9 +6,8 @@
  */
 import React from 'react';
 import type { StackType, MetroStackFrame } from '../Data/Types';
-export declare function StackTraceList({ onRetry, type, stack, symbolicationStatus, projectRoot, }: {
+export declare function StackTraceList({ onRetry, type, stack, symbolicationStatus, }: {
     type: StackType;
-    projectRoot: string;
     onRetry: () => void;
     stack: MetroStackFrame[] | null;
     symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';

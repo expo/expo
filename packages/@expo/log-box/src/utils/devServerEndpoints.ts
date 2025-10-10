@@ -116,7 +116,10 @@ async function symbolicateStackTrace(stack: MetroStackFrame[]): Promise<Symbolic
   return await response.json();
 }
 
-export function formatProjectFilePath(projectRoot: string, file?: string | null): string {
+export function formatProjectFilePath(
+  projectRoot: string = '',
+  file: string | null = null
+): string {
   if (file == null) {
     return '<unknown>';
   }
@@ -159,7 +162,7 @@ export function isStackFileAnonymous(
 }
 
 export function getStackFormattedLocation(
-  projectRoot: string,
+  projectRoot: string | undefined,
   frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>
 ): string {
   const column = frame.column != null && parseInt(String(frame.column), 10);

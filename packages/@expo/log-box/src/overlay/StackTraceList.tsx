@@ -15,6 +15,7 @@ import {
   isStackFileAnonymous,
   openFileInEditor,
 } from '../utils/devServerEndpoints';
+import { useDevServer } from '../ContextDevServer';
 
 function Transition({
   children,
@@ -179,10 +180,8 @@ export function StackTraceList({
   type,
   stack,
   symbolicationStatus,
-  projectRoot,
 }: {
   type: StackType;
-  projectRoot: string;
   onRetry: () => void;
   stack: MetroStackFrame[] | null;
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
@@ -386,7 +385,6 @@ export function StackTraceList({
                 <StackTraceItem
                   key={index}
                   isLaunchable={isLaunchable}
-                  projectRoot={projectRoot}
                   frame={frame}
                   onPress={isLaunchable ? () => openFileInEditor(file, lineNumber) : undefined}
                 />
@@ -405,14 +403,13 @@ export function StackTraceList({
 function StackTraceItem({
   frame,
   onPress,
-  projectRoot,
   isLaunchable,
 }: {
   isLaunchable: boolean;
   frame: MetroStackFrame;
-  projectRoot: string;
   onPress?: () => void;
 }) {
+  const { projectRoot } = useDevServer();
   const fileName = getStackFormattedLocation(projectRoot, frame);
   return (
     <div

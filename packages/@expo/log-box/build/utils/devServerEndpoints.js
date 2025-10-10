@@ -90,7 +90,7 @@ async function symbolicateStackTrace(stack) {
     });
     return await response.json();
 }
-function formatProjectFilePath(projectRoot, file) {
+function formatProjectFilePath(projectRoot = '', file = null) {
     if (file == null) {
         return '<unknown>';
     }

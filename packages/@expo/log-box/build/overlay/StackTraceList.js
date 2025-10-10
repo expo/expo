@@ -48,6 +48,7 @@ const react_native_1 = require("react-native");
 const LogBoxInspectorSourceMapStatus_1 = require("./LogBoxInspectorSourceMapStatus");
 const StackTraceList_module_css_1 = __importDefault(require("./StackTraceList.module.css"));
 const devServerEndpoints_1 = require("../utils/devServerEndpoints");
+const ContextDevServer_1 = require("../ContextDevServer");
 function Transition({ children, status, onExitComplete, isInitial, index, initialDelay = 50, }) {
     const ref = react_1.default.useRef(null);
     react_1.default.useLayoutEffect(() => {
@@ -145,7 +146,7 @@ function useContainerWidth() {
     }, [ref]);
     return { width, ref };
 }
-function StackTraceList({ onRetry, type, stack, symbolicationStatus, projectRoot, }) {
+function StackTraceList({ onRetry, type, stack, symbolicationStatus, }) {
     const [collapsed, setCollapsed] = (0, react_1.useState)(true);
     const stackCount = stack?.length;
     const [isInitial, setIsInitial] = react_1.default.useState(true);
@@ -257,12 +258,13 @@ function StackTraceList({ onRetry, type, stack, symbolicationStatus, projectRoot
                         lineNumber != null;
                     return {
                         id: String(index),
-                        content: (react_1.default.createElement(StackTraceItem, { key: index, isLaunchable: isLaunchable, projectRoot: projectRoot, frame: frame, onPress: isLaunchable ? () => (0, devServerEndpoints_1.openFileInEditor)(file, lineNumber) : undefined })),
+                        content: (react_1.default.createElement(StackTraceItem, { key: index, isLaunchable: isLaunchable, frame: frame, onPress: isLaunchable ? () => (0, devServerEndpoints_1.openFileInEditor)(file, lineNumber) : undefined })),
                         isCollapsed: !!frame.collapse,
                     };
                 }), showCollapsed: !collapsed, isInitial: isInitial }))));
 }
-function StackTraceItem({ frame, onPress, projectRoot, isLaunchable, }) {
+function StackTraceItem({ frame, onPress, isLaunchable, }) {
+    const { projectRoot } = (0, ContextDevServer_1.useDevServer)();
     const fileName = (0, devServerEndpoints_1.getStackFormattedLocation)(projectRoot, frame);
     return (react_1.default.createElement("div", { "aria-disabled": !isLaunchable ? true : undefined, onClick: onPress, className: StackTraceList_module_css_1.default.stackFrame, style: {
             opacity: frame.collapse === true ? 0.4 : 1,
