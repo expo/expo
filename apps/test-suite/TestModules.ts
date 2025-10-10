@@ -1,5 +1,3 @@
-'use strict';
-
 import Constants from 'expo-constants';
 import { Platform } from 'expo-modules-core';
 
@@ -39,10 +37,11 @@ const TaskManagerTestScreen = optionalRequire(() => require('./tests/TaskManager
 // caused by missing native module.
 const CameraTestScreen = optionalRequire(() => require('./tests/Camera'));
 
+export type Module = { name: string; route?: string; test: Function };
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export function getTestModules() {
-  const modules = [
+  const modules: Module[] = [
     // Sanity
     require('./tests/Basic'),
   ];
@@ -139,9 +138,7 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/MediaLibraryNext')));
 
     modules.push(optionalRequire(() => require('./tests/Battery')));
-    if (Constants.isDevice) {
-      modules.push(optionalRequire(() => require('./tests/Brightness')));
-    }
+    modules.push(optionalRequire(() => require('./tests/Brightness')));
     // Crashes app when mounting component
     modules.push(optionalRequire(() => require('./tests/Video')));
     // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
@@ -151,10 +148,12 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Audio')));
 
     // The Camera tests are flaky on iOS, i.e. they fail randomly
+    // TODO vonovak don't hide it
     if (Constants.isDevice) {
       modules.push(CameraTestScreen);
     }
   }
+  // TODO vonovak don't hide it
   if (Constants.isDevice) {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
   }
