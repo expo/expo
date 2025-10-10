@@ -1,0 +1,78 @@
+---
+title: Picker
+description: A Jetpack Compose Picker component for selecting options from a list.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A picker component that allows users to select from a list of options with different display styles.
+
+## Installation
+
+<APIInstallSection />
+
+## Radio Picker
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Picker component (radio) on Android."
+      src="/static/images/expo-ui/radioPicker/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Picker } from '@expo/ui/jetpack-compose';
+
+    <Picker
+      options={['$', '$$', '$$$', '$$$$']}
+      selectedIndex={selectedIndex}
+      onOptionSelected={({ nativeEvent: { index } }) => {
+        setSelectedIndex(index);
+      }}
+      variant="radio"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/radio-button)*
+
+  </Tab>
+</Tabs>
+
+## Segmented Picker
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Picker component on Android."
+      src="/static/images/expo-ui/segmentedPicker/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Picker } from '@expo/ui/jetpack-compose';
+
+    <Picker
+      options={['$', '$$', '$$$', '$$$$']}
+      selectedIndex={selectedIndex}
+      onOptionSelected={({ nativeEvent: { index } }) => {
+        setSelectedIndex(index);
+      }}
+      variant="segmented"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/segmented-button)*
+
+  </Tab>
+</Tabs>
+
+## API
+
+<APISection packageName="expo-ui/jetpack-compose/picker" apiName="Picker" />
