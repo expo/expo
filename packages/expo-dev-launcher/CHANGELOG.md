@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixes updates not being viewable on first launch. ([#40324](https://github.com/expo/expo/pull/40324) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 6.0.14 — 2025-10-09
