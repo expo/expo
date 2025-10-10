@@ -1,22 +1,19 @@
 import {
   Button,
-  Image,
   ColorPicker,
-  Text,
   Host,
   HStack,
   Label,
   List,
-  ListStyle,
+  type ListStyle,
   Picker,
-  Switch,
-  TextField,
-  VStack,
   Section,
+  Switch,
+  Text,
 } from '@expo/ui/swift-ui';
-import { scrollDismissesKeyboard, frame } from '@expo/ui/swift-ui/modifiers';
+import { frame, scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
-import { type SFSymbol } from 'expo-symbols';
+import type { SFSymbol } from 'expo-symbols';
 import * as React from 'react';
 import { useLayoutEffect } from 'react';
 
