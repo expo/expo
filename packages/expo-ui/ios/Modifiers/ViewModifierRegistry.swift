@@ -389,27 +389,6 @@ internal struct HueRotationModifier: ViewModifier, Record {
   }
 }
 
-internal struct ScrollDismissesKeyboardModifier: ViewModifier, Record {
-  @Field var mode: String = "automatic"
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      switch mode {
-      case "interactively":
-        content.scrollDismissesKeyboard(.interactively)
-      case "immediately":
-        content.scrollDismissesKeyboard(.immediately)
-      case "never":
-        content.scrollDismissesKeyboard(.never)
-      default:
-        content.scrollDismissesKeyboard(.automatic)
-      }
-    } else {
-      content
-    }
-  }
-}
-
 internal struct AccessibilityLabelModifier: ViewModifier, Record {
   @Field var label: String?
 
@@ -1075,10 +1054,6 @@ extension ViewModifierRegistry {
 
     register("buttonStyle") { params, appContext, _ in
       return try ButtonStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("scrollDismissesKeyboard") { params, appContext, _ in
-      return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
     }
   }
 }
