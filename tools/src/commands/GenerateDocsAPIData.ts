@@ -20,6 +20,22 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 
 const MINIFY_JSON = true;
 
+const uiPackagesMapping = {
+  'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/button': ['jetpack-compose/Button/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/circular-progress': ['swift-ui/CircularProgress/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/circular-progress': [
+    'jetpack-compose/CircularProgress/index.tsx',
+    'expo-ui',
+  ],
+  'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/picker': ['jetpack-compose/Picker/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/slider': ['jetpack-compose/Slider/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/switch': ['swift-ui/Switch/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
+};
+
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   expo: ['Expo.ts'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
@@ -107,7 +123,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-system-ui': ['SystemUI.ts'],
   'expo-task-manager': ['TaskManager.ts'],
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
-  'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-updates': ['index.ts'],
   'expo-video': ['index.ts'],
   'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
@@ -116,6 +131,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   '@expo/fingerprint': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
+  ...uiPackagesMapping,
 };
 
 const executeCommand = async (

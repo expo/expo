@@ -826,9 +826,9 @@ function pagesFromDir(dir) {
         return null;
       }
 
-      // Check for metadata.json file in the folder
       const metaJsonPath = path.join(dirPath, folder.name, 'metadata.json');
       let sidebarTitle = folder.name.toUpperCase();
+      let expanded = true;
 
       if (fs.existsSync(metaJsonPath)) {
         try {
@@ -837,13 +837,16 @@ function pagesFromDir(dir) {
           if (meta.sidebarTitle) {
             sidebarTitle = meta.sidebarTitle;
           }
+          if (typeof meta.expanded === 'boolean') {
+            expanded = meta.expanded;
+          }
         } catch (error) {
-          // If metadata.json is invalid, fall back to default behavior
+          // fallback to default behavior
           console.warn(`Invalid metadata.json in ${metaJsonPath}:`, error.message);
         }
       }
 
-      return makeGroup(sidebarTitle, sortedFolderPages, { expanded: true });
+      return makeGroup(sidebarTitle, sortedFolderPages, { expanded });
     })
     .filter(Boolean);
 
