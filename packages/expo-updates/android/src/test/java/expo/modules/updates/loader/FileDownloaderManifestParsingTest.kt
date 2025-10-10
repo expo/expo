@@ -10,7 +10,9 @@ import expo.modules.updates.codesigning.TestUtils.asJSONResponse
 import expo.modules.updates.codesigning.TestUtils.asResponse
 import expo.modules.updates.codesigning.getTestCertificate
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.manifest.Update
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.MediaType.Companion.toMediaType
@@ -26,12 +28,19 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
+import org.junit.Before
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class FileDownloaderManifestParsingTest {
   @get:Rule
   val temporaryFolder = TemporaryFolder()
+  private lateinit var database: UpdatesDatabase
+
+  @Before
+  fun setup() {
+    database = mockk(relaxed = true)
+  }
 
   @Test
   fun testManifestParsing_JSONBody() = runTest {
@@ -77,7 +86,7 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    val resultUpdateResponse = FileDownloader(filesDirectory, "", configuration, UpdatesLogger(logDirectory)).parseRemoteUpdateResponse(response)
+    val resultUpdateResponse = FileDownloader(filesDirectory, "", configuration, UpdatesLogger(logDirectory), database).parseRemoteUpdateResponse(response)
 
     Assert.assertNotNull(resultUpdateResponse)
     Assert.assertNotNull(resultUpdateResponse.manifestUpdateResponsePart)
@@ -585,7 +594,8 @@ class FileDownloaderManifestParsingTest {
       filesDirectory,
       easClientID = "test-eas-client-id",
       configuration = config,
-      logger = UpdatesLogger(loggerDirectory)
+      logger = UpdatesLogger(loggerDirectory),
+      database = database
     )
   }
 }
