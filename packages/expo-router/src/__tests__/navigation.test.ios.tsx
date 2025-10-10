@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { act, fireEvent, screen } from '@testing-library/react-native';
+import { act, fireEvent } from '@testing-library/react-native';
+import { useLayoutEffect } from 'react';
 import React, { Text, View } from 'react-native';
 
 import {
@@ -14,7 +15,7 @@ import {
 } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
-import { renderRouter } from '../testing-library';
+import { renderRouter, screen } from '../testing-library';
 
 it('should respect `unstable_settings', () => {
   const render = (options: any = {}) =>
@@ -115,29 +116,21 @@ describe('hooks only', () => {
 });
 
 describe('imperative only', () => {
-  it('will throw if navigation is attempted before navigation is ready', async () => {
+  // The navigation action is offloaded until the navigation tree is ready.
+  it('can navigate before navigation is ready', async () => {
     renderRouter({
       index: function MyIndexRoute() {
-        return <Text>Press me</Text>;
+        router.push('/profile/test-name');
+        return <Text testID="index">Press me</Text>;
       },
       '/profile/[name]': function MyRoute() {
         const { name } = useGlobalSearchParams();
-        return <Text>{name}</Text>;
-      },
-      '+native-intent': {
-        redirectSystemPath() {
-          return new Promise(() => {}); // This never resolves
-        },
+        return <Text testID="profile-name">{name}</Text>;
       },
     });
 
-    expect(() => {
-      act(() => {
-        router.push('/profile/test-name');
-      });
-    }).toThrow(
-      'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
-    );
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.getByTestId('profile-name')).toBeOnTheScreen();
   });
 
   it('can handle navigation between routes', async () => {
