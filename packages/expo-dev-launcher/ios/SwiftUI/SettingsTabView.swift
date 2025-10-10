@@ -14,7 +14,7 @@ struct SettingsTabView: View {
   private func createBuildInfoJSON() -> String {
     let buildInfoDict: [String: Any] = [
       "runtimeVersion": viewModel.buildInfo["runtimeVersion"] as? String ?? "",
-      "sdkVersion": "53.0.0",
+      "sdkVersion": viewModel.structuredBuildInfo.sdkVersion ?? "",
       "appName": viewModel.buildInfo["appName"] as? String ?? "",
       "appVersion": viewModel.buildInfo["appVersion"] as? String ?? ""
     ]
