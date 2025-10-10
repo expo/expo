@@ -37,7 +37,6 @@ jobs:
         uses: actions/checkout@v5
         with:
           submodules: true
-          fetch-depth: 100
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -73,6 +72,11 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
+      - name: 👀 Checkout main branch
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 100
       - name: 🔎 Get the base commit
         id: base-commit
         run: |
@@ -197,7 +201,6 @@ jobs:
         uses: actions/checkout@v5
         with:
           submodules: true
-          fetch-depth: 100
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
@@ -227,6 +230,11 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
+      - name: 👀 Checkout main branch
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 100
       - name: 🔎 Get the base commit
         id: base-commit
         run: |
