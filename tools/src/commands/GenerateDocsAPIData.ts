@@ -20,16 +20,13 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 
 const MINIFY_JSON = true;
 
-const uiPackagesMapping = {
+const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/bottomsheet': ['jetpack-compose/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/button': ['jetpack-compose/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/circularprogress': [
-    'jetpack-compose/Progress/index.tsx',
-    'expo-ui',
-  ],
+  'expo-ui/jetpack-compose/circularprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/colorpicker': ['swift-ui/ColorPicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/contextmenu': ['swift-ui/ContextMenu/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/contextmenu': ['jetpack-compose/ContextMenu/index.tsx', 'expo-ui'],
@@ -39,10 +36,7 @@ const uiPackagesMapping = {
   'expo-ui/swift-ui/host': ['swift-ui/Host/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/linearprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/linearprogress': [
-    'jetpack-compose/Progress/index.tsx',
-    'expo-ui',
-  ],
+  'expo-ui/jetpack-compose/linearprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/list': ['swift-ui/List/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/picker': ['jetpack-compose/Picker/index.tsx', 'expo-ui'],
