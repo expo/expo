@@ -20,7 +20,12 @@ public final class RemoteAppLoader: AppLoader {
     launchedUpdate: Update?,
     completionQueue: DispatchQueue
   ) {
-    self.downloader = FileDownloader(config: config, logger: logger)
+    self.downloader = FileDownloader(
+      config: config,
+      logger: logger,
+      updatesDirectory: directory,
+      database: database
+    )
     self.completionQueue = completionQueue
     super.init(config: config, logger: logger, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
   }
@@ -123,6 +128,7 @@ public final class RemoteAppLoader: AppLoader {
           return
         }
         self.downloader.downloadAsset(
+          asset: asset,
           fromURL: assetUrl,
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,
