@@ -1,0 +1,1 @@
+{"version":3,"file":"BaseStack.js","sourceRoot":"","sources":["../../src/layouts/BaseStack.tsx"],"names":[],"mappings":";;;;;AAAA,gEAAkC;AAElC,kBAAe,qBAAK,CAAC","sourcesContent":["import Stack from './StackClient';\n\nexport default Stack;\n"]}

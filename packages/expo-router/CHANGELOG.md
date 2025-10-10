@@ -11,6 +11,7 @@
 - Add icon component to declare sf and androidSrc at the same time ([#40151](https://github.com/expo/expo/pull/40151) by [@Ubax](https://github.com/Ubax))
 - Allow specifying user-defined headers for all routes ([#40173](https://github.com/expo/expo/pull/40173) by [@hassankhan](https://github.com/hassankhan))
 - popToTop when tapping active bottom tab on web ([#40174](https://github.com/expo/expo/pull/40174) by [@juliesaia](https://github.com/juliesaia))
+- Add environmental variable to enable experimental web modal implementation ([#40231](https://github.com/expo/expo/pull/40231) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
