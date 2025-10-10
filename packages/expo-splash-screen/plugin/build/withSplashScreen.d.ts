@@ -1,7 +1,7 @@
 import { AndroidSplashConfig } from '@expo/prebuild-config/build/plugins/unversioned/expo-splash-screen/getAndroidSplashConfig';
 import { IOSSplashConfig } from '@expo/prebuild-config/build/plugins/unversioned/expo-splash-screen/getIosSplashConfig';
 import { ConfigPlugin } from 'expo/config-plugins';
-type PluginConfig = {
+export type PluginConfig = {
     backgroundColor: string;
     imageWidth?: number;
     enableFullScreenImage_legacy?: boolean;
