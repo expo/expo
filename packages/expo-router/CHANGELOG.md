@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix options not being passed on when creating build-time server manifest (Fixes [#40173](https://github.com/expo/expo/pull/40173)) ([#40326](https://github.com/expo/expo/pull/40326) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 6.0.11 — 2025-10-09
