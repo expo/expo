@@ -1,0 +1,67 @@
+---
+title: Navigation in Expo and React Native apps
+description: Learn about the recommended approach for integrating navigation in an Expo and React Native project.
+sidebar_title: Navigation
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+Navigation is a core part of every app, but React Native doesn't come with a built-in navigator. You need to use a navigation library. In Expo and React Native apps, you can use [Expo Router](https://docs.expo.dev/router/introduction/) or [React Navigation](https://reactnavigation.org/).
+
+This page provides a brief overview of both libraries, so you can evaluate how they differ, and decide which library to use in your project.
+
+## Why React Native apps needs a navigation library
+
+React Native bundles primitives such as views, gestures, and more, but leaves navigation to community-based libraries. While building an app with complex UI, you need functionality to push and pop screens, manage header and tab bars, persist navigation state across app launches, and more.
+
+Expo projects default to Expo Router because it layers features such as dynamic routes, lazy bundling, typed routes, universal links, and so on, on top of React Navigation without additional setup. However, React Navigation stays available as a choice for projects where you need a different architecture than Expo Router's file-based routing model.
+
+> **Note**: Projects created with `npx create-expo-app@latest` include Expo Router by default.
+
+## Expo Router (recommended)
+
+Expo Router is a file-based routing library for Expo and React Native projects. It is built on top of React Navigation. It allows you to manage navigation between screens in your project by automatically turning files inside the **app** directory (special convention) into routes that work on all platforms.
+
+**It is the recommended approach** and has the following **features**:
+
+- **Native**: Built on top of our powerful [React Navigation suite](https://reactnavigation.org/), Expo Router navigation is truly native and platform-optimized by default.
+- **Shareable**: Every screen in your app is automatically deep linkable. Making any route in your app shareable with links.
+- **Offline-first**: Apps are cached and run offline-first, with automatic updates when you publish a new version. Handles all incoming native URLs without a network connection or server.
+- **Optimized**: Routes are automatically optimized with lazy-evaluation in production, and deferred bundling in development.
+- **Iteration**: Universal Fast Refresh across Android, iOS, and web, along with artifact memoization in the bundler to keep you moving fast at scale.
+- **Universal**: Android, iOS, and web share a unified navigation structure, with the ability to drop-down to platform-specific APIs at the route level.
+- **Discoverable**: Expo Router enables build-time static rendering on web, and universal linking to native. Meaning your app content can be indexed by search engines.
+
+<BoxLink
+  title="Introduction to Expo Router"
+  description="Expo Router is an open-source routing library for Universal React Native applications built with Expo."
+  Icon={BookOpen02Icon}
+  href="/router/introduction/"
+/>
+
+<BoxLink
+  title="Installation"
+  description="Learn how to quickly get started by creating a new project with Expo Router or adding the library to an existing project."
+  Icon={BookOpen02Icon}
+  href="/router/installation/"
+/>
+
+<BoxLink
+  title="Core concepts"
+  description="Learn about the core concepts of file-based routing in Expo."
+  Icon={BookOpen02Icon}
+  href="/router/basics/core-concepts/"
+/>
+
+## React Navigation
+
+React Navigation is a component based library that allows you to compose stack, tab, and drawer navigators in your project's code. Using this library is useful when you want prefer explicit control or need patterns to implement that do not align with file-based routing. Do note that you might have to implement your own strategies for some of the benefits described in Expo Router, such as shareable links or handling web and native navigation in the same project.
+
+<BoxLink
+  title="React Navigation: Getting started"
+  description="Learn how to get started with React Navigation."
+  Icon={BookOpen02Icon}
+  href="https://reactnavigation.org/docs/getting-started"
+/>
