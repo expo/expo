@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixes updates not being viewable on first launch.
+- [iOS] Fixes updates not being viewable on first launch. ([#40324](https://github.com/expo/expo/pull/40324) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
