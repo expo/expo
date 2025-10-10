@@ -2,6 +2,7 @@
 package expo.modules.sensors.modules
 
 import android.Manifest
+import android.content.Context
 import android.hardware.Sensor
 import android.os.Build
 import android.os.Bundle
@@ -25,10 +26,11 @@ import expo.modules.sensors.createSensorProxy
 private const val EventName = "Exponent.pedometerUpdate"
 
 class NotSupportedException(message: String) : CodedException(message)
-class MissingPermissionException(permission: String) : CodedException("Missing $permission permission")
-
 class PedometerModule : Module() {
   private var stepsAtTheBeginning: Int? = null
+
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private val sensorProxy by lazy {
     createSensorProxy(EventName, Sensor.TYPE_STEP_COUNTER, appContext) { sensorEvent ->
@@ -71,32 +73,29 @@ class PedometerModule : Module() {
 
     AsyncFunction("isRecordingAvailableAsync") {
       GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-        appContext.reactContext ?: throw Exceptions.ReactContextLost(),
+        context,
         LocalRecordingClient.LOCAL_RECORDING_CLIENT_MIN_VERSION_CODE
       ) == ConnectionResult.SUCCESS
     }
 
     AsyncFunction("subscribeRecording") {
-      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       // The recording client is only available on Oreo (API 26) and above.
       // `isRecordingAvailable` can be used to check for support, otherwise we throw here.
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
       try {
         Tasks.await(localRecordingClient.subscribe(LocalDataType.TYPE_STEP_COUNT_DELTA))
       } catch (e: SecurityException) {
-        throw MissingPermissionException("ACTIVITY_RECOGNITION")
+        throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
       }
       true
     }
 
     AsyncFunction("unsubscribeRecording") {
-      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
       Tasks.await(localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA))
     }
 
     AsyncFunction("getStepCountAsync") { startTime: Long, endTime: Long ->
-      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
       val readRequest = LocalDataReadRequest.Builder()
         .aggregate(LocalDataType.TYPE_STEP_COUNT_DELTA)
