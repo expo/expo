@@ -22,10 +22,7 @@ internal struct DynamicConvertibleType: AnyDynamicType {
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
-    if let record = result as? Record {
-      return record.toDictionary(appContext: appContext)
-    }
-    return result
+    return try innerType.convertResult(result, appContext: appContext)
   }
 
   var description: String {

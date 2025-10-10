@@ -66,6 +66,13 @@ public extension Record {
       }
     }
   }
+
+  static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
+    if let value = result as? Record {
+      return value.toDictionary(appContext: appContext)
+    }
+    return result
+  }
 }
 
 /**
