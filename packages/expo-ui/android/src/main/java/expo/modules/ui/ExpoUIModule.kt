@@ -97,6 +97,7 @@ class ExpoUIModule : Module() {
     View(ColumnView::class)
     View(HostView::class)
     View(TextView::class)
+    View(CarouselView::class)
 
     View(AlertDialogView::class) {
       Events(
