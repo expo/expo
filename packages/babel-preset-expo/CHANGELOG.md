@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update to `babel-plugin-react-compiler@^1.0.0` ([#40281](https://github.com/expo/expo/pull/40281) by [@kitten](https://github.com/kitten))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
