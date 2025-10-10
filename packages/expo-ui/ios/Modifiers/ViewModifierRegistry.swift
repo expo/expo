@@ -434,7 +434,7 @@ internal struct ScrollDismissesKeyboardModifier: ViewModifier, Record {
   @Field var mode: ScrollDismissesKeyboardMode = .automatic
 
   func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       switch mode {
       case .interactively:
         content.scrollDismissesKeyboard(.interactively)
