@@ -3,14 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import rimraf from 'rimraf';
 
-import getFingerprintHashFromCLIAsync from './utils/CLIUtils';
-import {
-  createFingerprintAsync,
-  createProjectHashAsync,
-  diffFingerprintChangesAsync,
-} from '../../src/Fingerprint';
-import { normalizeOptionsAsync } from '../../src/Options';
-import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
+import { createFingerprintAsync } from '../../src/Fingerprint';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
@@ -62,5 +55,27 @@ describe('default template ignore paths', () => {
       }
       expect(moduleName).toMatch(/^(react-native-)/);
     }
+  });
+
+  it('should not include the whole project package.json from ExpoConfigLoader', async () => {
+    const appConfigPath = path.join(projectRoot, 'app.config.js');
+    const appConfigContent = `\
+const { version } = require('./package.json');
+
+export default ({ config }) => {
+  config.version = version;
+  return config;
+};
+`;
+    await fs.writeFile(appConfigPath, appConfigContent);
+    const fingerprint = await createFingerprintAsync(projectRoot);
+    const packageJsonSource = fingerprint.sources.find(
+      (source) =>
+        source.type === 'file' &&
+        source.filePath === 'package.json' &&
+        source.reasons.includes('expoConfigPlugins')
+    );
+    expect(packageJsonSource).toBeUndefined();
+    await fs.rm(appConfigPath, { force: true });
   });
 });
