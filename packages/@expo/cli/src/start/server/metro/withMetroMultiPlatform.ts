@@ -248,6 +248,9 @@ export function withExtendedResolver(
     return _universalAliases;
   }
 
+  // used to resolve externals in `requestCustomExternals` from the project root
+  const projectRootOriginPath = path.join(config.projectRoot, 'package.json');
+
   const preferredMainFields: { [key: string]: string[] } = {
     // Defaults from Expo Webpack. Most packages using `react-native` don't support web
     // in the `react-native` field, so we should prefer the `browser` field.
@@ -532,10 +535,6 @@ export function withExtendedResolver(
         return null;
       }
 
-      const environment = context.customResolverOptions?.environment;
-
-      const strictResolve = getStrictResolver(context, platform);
-
       for (const external of externals) {
         if (external.match(context, moduleName, platform)) {
           if (external.replace === 'empty') {
@@ -545,13 +544,12 @@ export function withExtendedResolver(
             };
           } else if (external.replace === 'weak') {
             // TODO: Make this use require.resolveWeak again. Previously this was just resolving to the same path.
-            const realModule = strictResolve(moduleName);
+            const realModule = getStrictResolver(context, platform)(moduleName);
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
             const opaqueId = idFactory(realPath, {
               platform: platform!,
-              environment,
+              environment: context.customResolverOptions?.environment,
             });
-
             const contents =
               typeof opaqueId === 'number'
                 ? `module.exports=/*${moduleName}*/__r(${opaqueId})`
@@ -569,6 +567,20 @@ export function withExtendedResolver(
               filePath: virtualModuleId,
             };
           } else if (external.replace === 'node') {
+            // TODO(@kitten): Temporary workaround. Our externals logic here isn't generic and only works
+            // for development and not exports. We never intend to use it in exported production bundles,
+            // however, this is still a dangerous implementation. To protect us from externalizing modules
+            // that aren't available to the app, we force any resolution to happen via the project root
+            const projectRootContext: ResolutionContext = {
+              ...context,
+              nodeModulesPaths: [],
+              originModulePath: projectRootOriginPath,
+              disableHierarchicalLookup: false,
+            };
+            const externModule = getStrictResolver(projectRootContext, platform)(moduleName);
+            if (externModule.type !== 'sourceFile') {
+              return null;
+            }
             const contents = `module.exports=$$require_external('${moduleName}')`;
             const virtualModuleId = `\0node:${moduleName}`;
             debug('Virtualizing Node.js (custom):', moduleName, '->', virtualModuleId);
@@ -581,9 +593,7 @@ export function withExtendedResolver(
               filePath: virtualModuleId,
             };
           } else {
-            throw new CommandError(
-              `Invalid external alias type: "${external.replace}" for module "${moduleName}" (platform: ${platform}, originModulePath: ${context.originModulePath})`
-            );
+            external.replace satisfies never;
           }
         }
       }

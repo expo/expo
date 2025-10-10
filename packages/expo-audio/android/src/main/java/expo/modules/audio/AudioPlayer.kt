@@ -89,7 +89,8 @@ class AudioPlayer(
       }
       ref.volume = 0f
     } else {
-      ref.volume = if (boundedVolume > 0) boundedVolume else previousVolume
+      previousVolume = boundedVolume
+      ref.volume = boundedVolume
     }
   }
 

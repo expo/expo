@@ -16,3 +16,9 @@ internal class DeviceInfoNotFoundException :
 
 internal class PreferredInputNotFoundException :
   CodedException("Could not set preferred device input")
+
+internal class AudioRecorderPrepareException(cause: Throwable) :
+  CodedException("Failed to prepare the AudioRecorder", cause)
+
+internal class AudioRecorderAlreadyPreparedException :
+  CodedException("AudioRecorder has already been prepared. Stop or release the current session before preparing again.")

@@ -3,7 +3,6 @@ package expo.modules.devlauncher
 import android.content.Intent
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
 import expo.modules.devmenu.DevMenuManager
@@ -23,7 +22,7 @@ class DevLauncherControllerTest {
 
   @Before
   fun setup() {
-    val reactHost = mockk<ReactHostWrapper>(relaxed = true)
+    val reactHost = mockk<ReactHost>(relaxed = true)
     DevLauncherKoinContext.reinitialize()
     DevLauncherKoinContext.app.koin.declare(DevLauncherTestInterceptorAllowReinitialization())
     DevLauncherController.initialize(ApplicationProvider.getApplicationContext(), reactHost)

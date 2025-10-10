@@ -16,6 +16,7 @@ export interface RouteInfo<TRegex = RegExp | string> {
 }
 export interface RoutesManifest<TRegex = RegExp | string> {
     middleware?: MiddlewareInfo;
+    headers?: Record<string, string | string[]>;
     apiRoutes: RouteInfo<TRegex>[];
     htmlRoutes: RouteInfo<TRegex>[];
     notFoundRoutes: RouteInfo<TRegex>[];

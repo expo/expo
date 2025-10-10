@@ -227,7 +227,7 @@ const { View, Image } = require('react-native-web');
 
 ## Remove unused imports and exports
 
-> Experimentally available in SDK 52 and above.
+> Experimentally available in SDK 52 and later.
 
 You can experimentally enable support for automatically removing unused imports and exports across modules. This is useful for speeding up native OTA downloads and optimizing web performance where JavaScript must be parsed and executed using a standard JavaScript engine.
 
@@ -277,13 +277,13 @@ This system scales up to automatically optimize all `import` and `export` syntax
 
 ## Enabling tree shaking
 
-> Experimentally available in SDK 52 and above.
+> Experimentally available in SDK 52 and later.
 
 <Step label="1">
 
 Ensure `experimentalImportSupport` and ensure your app builds and runs as expected.
 
-> **info** **Note**: Enabled by default in SDK 54 and above.
+> **info** **Note**: Enabled by default in SDK 54 and later.
 
 <Collapsible summary="How to enable import support in older SDK versions?">
 
@@ -343,7 +343,7 @@ This feature is very experimental because it changes the fundamental structure o
 
 ## Barrel files
 
-> Experimentally available in SDK 52 and above.
+> Experimentally available in SDK 52 and later.
 
 With Expo tree shaking, star exports will automatically be expanded and shaken based on usage. For example, consider the following code snippet:
 
@@ -365,7 +365,7 @@ You can use this strategy with libraries like `lucide-react` to remove all icons
 
 ## Recursive optimizations
 
-> Experimentally available in SDK 52 and above.
+> Experimentally available in SDK 52 and later.
 
 Expo optimizes a module by recursing through the graph exhaustively to find unused imports. Consider the following code snippet:
 
