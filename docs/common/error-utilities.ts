@@ -28,6 +28,12 @@ export function getRedirectPath(redirectPath: string): string {
     redirectPath = RENAMED_PAGES[redirectPath];
   }
 
+  // Move ui pages to the top level
+  if (redirectPath.includes('/sdk/ui/')) {
+    redirectPath = redirectPath.replace('/sdk/ui/', '/ui/');
+    return redirectPath;
+  }
+
   // Catch any unversioned paths which are also renamed
   if (isVersionedPath(redirectPath)) {
     const unversionedPath = removeVersionFromPath(redirectPath);
