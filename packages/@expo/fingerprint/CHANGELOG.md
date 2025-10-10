@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ensure aar file paths in expo fingerprint are relative. ([#40319](https://github.com/expo/expo/pull/40319) by [@jonemilnik](https://github.com/jonemilnik))
+
 ### 💡 Others
 
 ## 0.15.1 — 2025-09-16

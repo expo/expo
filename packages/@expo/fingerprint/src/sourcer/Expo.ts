@@ -257,6 +257,15 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
       for (const project of module.projects) {
         const filePath = toPosixPath(path.relative(projectRoot, project.sourceDir));
         project.sourceDir = filePath; // use relative path for the dir
+
+        if (project.aarProjects) {
+          for (const aarProject of project.aarProjects) {
+            // use relative path for aarProject fields
+            aarProject.aarFilePath = toPosixPath(path.relative(projectRoot, aarProject.aarFilePath));
+            aarProject.projectDir = toPosixPath(path.relative(projectRoot, aarProject.projectDir));
+          }
+        }
+        
         debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
         results.push({ type: 'dir', filePath, reasons });
       }
