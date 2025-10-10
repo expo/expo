@@ -103,7 +103,7 @@ _This version does not introduce any user-facing changes._
 - Fix incorrect event emitting tests. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Remove usage of deprecated internal modules API. ([#28715](https://github.com/expo/expo/pull/28715) by [@lukmccall](https://github.com/lukmccall))
-- [iOS] Fix pedometer sensor when app goes to background then foreground. ([#29957]<https://github.com/expo/expo/pull/29957>) by [@rlods](https://github.com/rlods))
+- [iOS] Fix pedometer sensor when app goes to background then foreground. ([#29957](https://github.com/expo/expo/pull/29957) by [@rlods](https://github.com/rlods))
 
 ### ⚠️ Notices
 
