@@ -673,7 +673,6 @@ const versionsReference = VERSIONS.reduce(
         ),
         { expanded: true }
       ),
-      makeUISection(version),
       makeSection(
         'Third-party libraries',
         shiftEntryToFront(
@@ -881,15 +880,4 @@ function pageUrl(file) {
 
 function shiftEntryToFront(array, findFunction) {
   return [...array.filter(findFunction), ...array.filter(item => !findFunction(item))];
-}
-
-function makeUISection(version) {
-  const uiDir = path.resolve(PAGES_DIR, `versions/${version}/ui`);
-  if (fs.existsSync(uiDir)) {
-    const uiPages = pagesFromDir(`versions/${version}/ui`);
-    if (uiPages.length > 0) {
-      return makeSection('Expo UI', uiPages, { expanded: true });
-    }
-  }
-  return null;
 }
