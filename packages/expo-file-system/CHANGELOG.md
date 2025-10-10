@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix recursive file deletion. ([#40248](https://github.com/expo/expo/pull/40248) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add missing `createFile` and `createDirectory` methods.
 
 ### 💡 Others
 
