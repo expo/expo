@@ -2,14 +2,12 @@ import {
   Button,
   ColorPicker,
   Host,
-  HStack,
   Label,
   List,
   type ListStyle,
   Picker,
   Section,
   Switch,
-  Text,
 } from '@expo/ui/swift-ui';
 import { frame, scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
