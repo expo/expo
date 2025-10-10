@@ -104,10 +104,7 @@ extension CGVector: Convertible {
     }
     throw Conversions.ConvertingException<CGVector>(value)
   }
-  
-  public static func convertSadas(_ result: Self, appContext: AppContext) throws -> Any {
-    return ["dx": result.dx, "dy": result.dy]
-  }
+
   public static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
     if let value = result as? CGVector {
       return ["dx": value.dx, "dy": value.dy]
