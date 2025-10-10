@@ -436,7 +436,7 @@ public final class FileDownloader {
     return newHeaders
   }
 
-  private func applyHermesDiff(
+  internal func applyHermesDiff(
     asset: UpdateAsset,
     diffData: Data,
     destinationPath: String,
@@ -461,7 +461,7 @@ public final class FileDownloader {
     )
   }
 
-  private func resolveLaunchAsset(extraHeaders: [String: Any]) throws -> UpdateAsset {
+  internal func resolveLaunchAsset(extraHeaders: [String: Any]) throws -> UpdateAsset {
     guard let database else {
       throw DiffError.databaseUnavailable
     }
@@ -496,7 +496,7 @@ public final class FileDownloader {
     return baseAsset
   }
 
-  private func loadAndVerifyAsset(_ baseAsset: UpdateAsset) throws -> URL {
+  internal func loadAndVerifyAsset(_ baseAsset: UpdateAsset) throws -> URL {
     guard let updatesDirectory else {
       throw DiffError.updatesDirectoryUnavailable
     }
@@ -531,7 +531,7 @@ public final class FileDownloader {
     return baseFileUrl
   }
 
-  private func createPatchedAsset(
+  internal func createPatchedAsset(
     asset: UpdateAsset,
     baseFileURL: URL,
     diffData: Data,
