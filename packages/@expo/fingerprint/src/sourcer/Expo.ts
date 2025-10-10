@@ -259,6 +259,16 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
         project.sourceDir = filePath; // use relative path for the dir
         debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
         results.push({ type: 'dir', filePath, reasons });
+        // `aarProjects` is present in project starting from SDK 53+.
+        if (project.aarProjects) {
+          for (const aarProject of project.aarProjects) {
+            // use relative path for aarProject fields
+            aarProject.aarFilePath = toPosixPath(
+              path.relative(projectRoot, aarProject.aarFilePath)
+            );
+            aarProject.projectDir = toPosixPath(path.relative(projectRoot, aarProject.projectDir));
+          }
+        }
       }
       if (module.plugins) {
         for (const plugin of module.plugins) {
@@ -268,6 +278,7 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
           results.push({ type: 'dir', filePath, reasons });
         }
       }
+      // Backward compatibility for SDK versions earlier than 53
       if (module.aarProjects) {
         for (const aarProject of module.aarProjects) {
           // use relative path for aarProject fields

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ensure AAR file paths in expo fingerprint are relative for SDK 53 and later. ([#40319](https://github.com/expo/expo/pull/40319) by [@jonemilnik](https://github.com/jonemilnik))
+
 ### 💡 Others
 
 ## 0.15.1 — 2025-09-16
