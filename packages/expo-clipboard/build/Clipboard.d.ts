@@ -16,8 +16,11 @@ export { EventSubscription as Subscription, ClipboardEvent };
  * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
  *
+ * Note: On iOS 16+, if the user denies paste permission, this method will return an empty string.
+ * Due to iOS platform limitations, there is no way to distinguish between an empty clipboard and denied permission.
+ *
  * @param options Options for the clipboard content to be retrieved.
- * @returns A promise that resolves to the content of the clipboard.
+ * @returns A promise that resolves to the content of the clipboard, or an empty string if clipboard is empty or permission was denied.
  */
 export declare function getStringAsync(options?: GetStringOptions): Promise<string>;
 /**
@@ -48,7 +51,10 @@ export declare function hasStringAsync(): Promise<boolean>;
 /**
  * Gets the URL from the user's clipboard.
  *
- * @returns A promise that fulfills to the URL in the clipboard.
+ * Note: On iOS 16+, if the user denies paste permission, this method will return null.
+ * Due to iOS platform limitations, there is no way to distinguish between no URL in clipboard and denied permission.
+ *
+ * @returns A promise that fulfills to the URL in the clipboard, or null if no URL is present or permission was denied.
  * @platform ios
  */
 export declare function getUrlAsync(): Promise<string | null>;
@@ -75,10 +81,13 @@ export declare function hasUrlAsync(): Promise<boolean>;
  * format. Calling this method on web will prompt the user to grant your app
  * permission to "see text and images copied to the clipboard."
  *
+ * Note: On iOS 16+, if the user denies paste permission, this method will return null.
+ * Due to iOS platform limitations, there is no way to distinguish between no image in clipboard and denied permission.
+ *
  * @param options A `GetImageOptions` object to specify the desired format of the image.
  * @returns If there was an image in the clipboard, the promise resolves to
  * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
- * Otherwise, it resolves to `null`.
+ * Otherwise, it resolves to `null` (this includes cases where permission was denied).
  *
  * @example
  * ```tsx
