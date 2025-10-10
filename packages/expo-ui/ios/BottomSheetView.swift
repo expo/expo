@@ -33,6 +33,8 @@ final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var presentationDragIndicator: PresentationDragIndicatorVisibility = .automatic
   var onIsOpenedChange = EventDispatcher()
   @Field var interactiveDismissDisabled: Bool = false
+  @Field var largestUndimmedDetent: Double?
+  @Field var largestUndimmedDetentIndex: Int?
 }
 
 struct HeightPreferenceKey: PreferenceKey {
@@ -55,6 +57,73 @@ private struct ReadHeightModifier: ViewModifier {
 
   func body(content: Content) -> some View {
     content.background(sizeView)
+  }
+}
+
+@available(iOS 16.4, tvOS 16.4, *)
+private struct BackgroundInteractionModifier: ViewModifier {
+  let props: BottomSheetProps
+
+  private func getLargestUndimmedDetent() -> PresentationDetent? {
+    // Priority 1: Check largestUndimmedDetent (explicit value)
+    if let detentValue = props.largestUndimmedDetent {
+      // Handle special cases for medium (0.5) and large (1.0)
+      if abs(detentValue - 0.5) < 0.01 {
+        return .medium
+      } else if detentValue >= 1.0 {
+        return .large
+      } else {
+        return .fraction(CGFloat(detentValue))
+      }
+    }
+
+    // Priority 2: Check largestUndimmedDetentIndex (array index)
+    if let index = props.largestUndimmedDetentIndex,
+       let detentArray = props.presentationDetents,
+       index >= 0 && index < detentArray.count {
+      let detent = detentArray[index]
+      if let str = detent as? String {
+        switch str {
+        case "medium":
+          return .medium
+        case "large":
+          return .large
+        default:
+          return nil
+        }
+      } else if let value = detent as? Double {
+        // Same special case handling as above
+        if abs(value - 0.5) < 0.01 {
+          return .medium
+        } else if value >= 1.0 {
+          return .large
+        } else {
+          return .fraction(CGFloat(value))
+        }
+      }
+    }
+
+    return nil
+  }
+
+  func body(content: Content) -> some View {
+    if let detent = getLargestUndimmedDetent() {
+      content.presentationBackgroundInteraction(.enabled(upThrough: detent))
+    } else {
+      content
+    }
+  }
+}
+
+@available(iOS 16.0, tvOS 16.0, *)
+private extension View {
+  @ViewBuilder
+  func applyBackgroundInteraction(props: BottomSheetProps) -> some View {
+    if #available(iOS 16.4, tvOS 16.4, *) {
+      self.modifier(BackgroundInteractionModifier(props: props))
+    } else {
+      self
+    }
   }
 }
 
@@ -127,6 +196,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
             .presentationDetents(getDetents())
             .interactiveDismissDisabled(props.interactiveDismissDisabled)
             .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
+            .applyBackgroundInteraction(props: props)
         }
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
