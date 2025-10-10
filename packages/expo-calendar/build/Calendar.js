@@ -1,6 +1,7 @@
 import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
+import { stringifyDateValues, stringifyIfDate } from './utils';
 export { PermissionStatus, } from 'expo-modules-core';
 // @docsMissing
 /**
@@ -893,22 +894,4 @@ export var ReminderStatus;
     ReminderStatus["COMPLETED"] = "completed";
     ReminderStatus["INCOMPLETE"] = "incomplete";
 })(ReminderStatus || (ReminderStatus = {}));
-function stringifyIfDate(date) {
-    return date instanceof Date ? date.toISOString() : date;
-}
-function stringifyDateValues(obj) {
-    if (typeof obj !== 'object' || obj === null)
-        return obj;
-    return Object.keys(obj).reduce((acc, key) => {
-        const value = obj[key];
-        if (value != null && typeof value === 'object' && !(value instanceof Date)) {
-            if (Array.isArray(value)) {
-                return { ...acc, [key]: value.map(stringifyDateValues) };
-            }
-            return { ...acc, [key]: stringifyDateValues(value) };
-        }
-        acc[key] = stringifyIfDate(value);
-        return acc;
-    }, {});
-}
 //# sourceMappingURL=Calendar.js.map
