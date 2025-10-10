@@ -21,11 +21,4 @@ internal class ExpoComposeAndroidView(private val view: View, appContext: AppCon
       modifier = Modifier.size(view.width.toFloat().pxToDp().dp, view.height.toFloat().pxToDp().dp)
     )
   }
-
-  override fun removeViewAt(index: Int) {
-    if(index >= size) {
-      return
-    }
-    super.removeViewAt(index)
-  }
 }
