@@ -17,10 +17,10 @@ import {
 } from '../utils/devServerEndpoints';
 
 export function ErrorCodeFrame({
-  projectRoot,
+  showPathsRelativeTo,
   codeFrame,
 }: {
-  projectRoot?: string;
+  showPathsRelativeTo?: string;
   codeFrame?: CodeFrameData;
 }) {
   if (codeFrame == null) {
@@ -28,7 +28,7 @@ export function ErrorCodeFrame({
   }
 
   function getFileName() {
-    return formatProjectFilePath(projectRoot ?? '', codeFrame?.fileName);
+    return formatProjectFilePath(showPathsRelativeTo, codeFrame?.fileName);
   }
 
   function getLocation() {
@@ -97,7 +97,7 @@ export function Terminal({ content, moduleName }: { content?: string; moduleName
   );
 }
 
-export function CodeFrame({
+function CodeFrame({
   content,
   headerIcon,
   headerAction,
@@ -254,6 +254,7 @@ export function FileIcon() {
     </svg>
   );
 }
+
 export function TerminalIcon() {
   return (
     <svg

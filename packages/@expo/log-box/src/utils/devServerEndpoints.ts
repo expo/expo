@@ -130,7 +130,7 @@ export function formatProjectFilePath(
   );
 }
 
-export function getFormattedStackTrace(projectRoot: string, stack: MetroStackFrame[]) {
+export function getFormattedStackTrace(stack: MetroStackFrame[], projectRoot: string = '') {
   return stack
     .map((frame) => {
       let stack = `  at `;

@@ -409,8 +409,8 @@ function StackTraceItem({
   frame: MetroStackFrame;
   onPress?: () => void;
 }) {
-  const { projectRoot } = useDevServer();
-  const fileName = getStackFormattedLocation(projectRoot, frame);
+  const { serverRoot } = useDevServer();
+  const fileName = getStackFormattedLocation(serverRoot, frame);
   return (
     <div
       aria-disabled={!isLaunchable ? true : undefined}

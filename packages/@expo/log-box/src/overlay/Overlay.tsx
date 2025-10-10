@@ -133,7 +133,7 @@ function LogBoxContent({
   isDismissable: boolean;
   onMinimize: (cb?: () => void) => void;
 }) {
-  const { projectRoot, sdkVersion } = useDevServer();
+  const { serverRoot, sdkVersion } = useDevServer();
 
   const onDismiss = (): void => {
     // Here we handle the cases when the log is dismissed and it
@@ -195,13 +195,13 @@ function LogBoxContent({
       errContents.push(
         '',
         'Component Stack',
-        getFormattedStackTrace(projectRoot ?? '', componentStack)
+        getFormattedStackTrace(componentStack, serverRoot)
       );
     }
     const stackTrace = log.getAvailableStack('stack');
 
     if (stackTrace?.length) {
-      errContents.push('', 'Call Stack', getFormattedStackTrace(projectRoot ?? '', stackTrace));
+      errContents.push('', 'Call Stack', getFormattedStackTrace(stackTrace, serverRoot));
     }
 
     // @ts-ignore
@@ -291,7 +291,7 @@ function LogBoxContent({
         {
           <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
             {codeFrames.map(([key, codeFrame]) => (
-              <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
+              <ErrorCodeFrame key={key} showPathsRelativeTo={serverRoot} codeFrame={codeFrame} />
             ))}
 
             {log.isMissingModuleError && (
