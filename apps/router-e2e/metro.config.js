@@ -69,4 +69,13 @@ config.resolver.blockList = [
   /node_modules\/pretty-format\/node_modules\/react-is/,
 ];
 
+const originalCustomizeFrame = config.symbolicator.customizeFrame;
+config.symbolicator.customizeFrame = (frame) => {
+  const newFrame = originalCustomizeFrame(frame);
+  // This will make frames collapsed the same as in use apps, where expo/packages are in node_modules
+  // and thus collapsed by default.
+  newFrame.collapse ||= new RegExp('expo/packages/.+').test(frame.file);
+  return newFrame;
+};
+
 module.exports = config;

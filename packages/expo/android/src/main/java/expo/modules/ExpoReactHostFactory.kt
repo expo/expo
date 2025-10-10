@@ -20,7 +20,10 @@ import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
 import expo.modules.core.interfaces.ReactNativeHostHandler
+import com.facebook.react.runtime.internal.bolts.Task
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executors
+import expo.modules.logbox.ExpoLogBoxBuildConfig
 
 object ExpoReactHostFactory {
   private var reactHost: ReactHost? = null
@@ -125,14 +128,25 @@ object ExpoReactHostFactory {
         handler.onWillCreateReactInstance(useDevSupport)
       }
 
-      val reactHostImpl =
-        ReactHostImpl(
+      val reactHostImpl = when {
+        ExpoLogBoxBuildConfig.UNSTABLE_IS_ENABLED && useDevSupport -> ReactHostImpl(
+          context,
+          reactHostDelegate,
+          componentFactory,
+          Executors.newSingleThreadExecutor(),
+          Task.UI_THREAD_EXECUTOR,
+          allowPackagerServerAccess = true,
+          useDevSupport = true,
+          devSupportManagerFactory = ExpoDefaultDevSupportManagerFactory()
+        )
+        else -> ReactHostImpl(
           context,
           reactHostDelegate,
           componentFactory,
           true,
           useDevSupport
         )
+      }
 
       hostHandlers.forEach { handler ->
         handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
