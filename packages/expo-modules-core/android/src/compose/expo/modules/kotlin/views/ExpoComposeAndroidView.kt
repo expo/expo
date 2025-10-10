@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.size
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import expo.modules.kotlin.AppContext
 
@@ -19,5 +20,12 @@ internal class ExpoComposeAndroidView(private val view: View, appContext: AppCon
       factory = { view },
       modifier = Modifier.size(view.width.toFloat().pxToDp().dp, view.height.toFloat().pxToDp().dp)
     )
+  }
+
+  override fun removeViewAt(index: Int) {
+    if(index >= size) {
+      return
+    }
+    super.removeViewAt(index)
   }
 }
