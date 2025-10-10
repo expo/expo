@@ -10,7 +10,7 @@ on:
       - apps/test-suite/**
       - packages/**
       - yarn.lock
-      # Adding new paths should also update the following "Get the base commit" step's paths
+      # When adding new paths, also update the paths of the "Get the base commit" step below
   pull_request:
     paths:
       - .github/workflows/test-suite.yml
@@ -30,7 +30,7 @@ jobs:
   ios-build:
     runs-on: macos-15
     permissions:
-      # REQUIRED: Allow updating fingerprint in acton caches
+      # REQUIRED: Allow updating fingerprint in action caches
       actions: write
     steps:
       - name: 👀 Checkout
@@ -186,7 +186,7 @@ jobs:
   android-build:
     runs-on: ubuntu-24.04
     permissions:
-      # REQUIRED: Allow updating fingerprint in acton caches
+      # REQUIRED: Allow updating fingerprint in action caches
       actions: write
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
