@@ -8,13 +8,13 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
-Navigation is a core part of every app, but React Native doesn't come with a built-in navigator. You need to use a navigation library. In Expo and React Native apps, you can use [Expo Router](https://docs.expo.dev/router/introduction/) or [React Navigation](https://reactnavigation.org/).
+The core React Native library does not include a built-in navigation solution, so you can choose a navigation library that best fits your needs. For Expo and React Native apps, it is generally a choice between [Expo Router](/router/introduction/) or [React Navigation](https://reactnavigation.org/).
 
 This page provides a brief overview of both libraries, so you can evaluate how they differ, and decide which library to use in your project.
 
 ## Why React Native apps needs a navigation library
 
-React Native bundles primitives such as views, gestures, and more, but leaves navigation to community-based libraries. While building an app with complex UI, you need functionality to push and pop screens, manage header and tab bars, persist navigation state across app launches, and more.
+React Native core includes basic UI components, touch handling, device APIs and networking, but excludes among other things storage, navigation, camera, maps, most device sensors and navigation, leaving these to community-based libraries.
 
 Expo projects default to Expo Router because it layers features such as dynamic routes, lazy bundling, typed routes, universal links, and so on, on top of React Navigation without additional setup. However, React Navigation stays available as a choice for projects where you need a different architecture than Expo Router's file-based routing model.
 
@@ -57,7 +57,9 @@ Expo Router is a file-based routing library for Expo and React Native projects. 
 
 ## React Navigation
 
-React Navigation is a component based library that allows you to compose stack, tab, and drawer navigators in your project's code. Using this library is useful when you want prefer explicit control or need patterns to implement that do not align with file-based routing. Do note that you might have to implement your own strategies for some of the benefits described in Expo Router, such as shareable links or handling web and native navigation in the same project.
+React Navigation is a component based library that lets you compose stack, tab, and drawer navigators programmatically in your code. It excels when you need explicit, fine-grained control over navigation flow, complex conditional routing logic, or patterns that don't map well to file structures.
+
+Do note that when opting for programmatic over file-based routing, you'll need to manually implement things such as deep linking, type-safe navigation, and unified web/native routing.
 
 <BoxLink
   title="React Navigation: Getting started"
