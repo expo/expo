@@ -1,6 +1,5 @@
 package expo.modules.medialibrary.next.permissions
 
-import android.Manifest
 import android.Manifest.permission.ACCESS_MEDIA_LOCATION
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_MEDIA_AUDIO
@@ -15,7 +14,6 @@ import expo.modules.interfaces.permissions.Permissions.getPermissionsWithPermiss
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.R
 import expo.modules.medialibrary.next.exceptions.PermissionException
 import expo.modules.medialibrary.next.permissions.enums.GranularPermission
@@ -24,30 +22,6 @@ import java.lang.ref.WeakReference
 class SystemPermissionsDelegate(private val appContext: AppContext) {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
-  /**
-   * On Android the system for media library permissions changed in 4 main stages:
-   * - Until API 29: WRITE_EXTERNAL_STORAGE and READ_EXTERNAL_STORAGE were required for all operations on assets.
-   * - API 30: WRITE_EXTERNAL_STORAGE deprecated; write operations use MediaStore requests.
-   * - API 33: READ_EXTERNAL_STORAGE deprecated; replaced by granular permissions (READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO).
-   * - API 34: Selective media access introduced (READ_MEDIA_VISUAL_USER_SELECTED) allowing apps to access only user-chosen media.
-   */
-  fun requireSystemPermissions(isWritePermissionNeeded: Boolean) {
-    val permissions = when {
-      isWriteExternalStorageNotDeprecated() && isWritePermissionNeeded -> listOf(WRITE_EXTERNAL_STORAGE)
-      isGranularPermissionsIntroduced() -> buildList {
-        addAll(allowedPermissionsList.map { it.toManifestPermission() })
-        if (isSelectivePermissionsIntroduced()) add(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
-      }
-      else -> listOf(READ_EXTERNAL_STORAGE)
-    }
-    val missing = permissions.any {
-      appContext.permissions?.hasGrantedPermissions(it) != true
-    }
-    if (missing) {
-      throw PermissionException("Missing required system permissions")
-    }
-  }
 
   fun requestPermissions(writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise) {
     val granularPermissions = permissions ?: allowedPermissionsList
@@ -69,9 +43,19 @@ class SystemPermissionsDelegate(private val appContext: AppContext) {
     )
   }
 
-  private fun isWriteExternalStorageNotDeprecated() = Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
-  private fun isGranularPermissionsIntroduced() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-  private fun isSelectivePermissionsIntroduced() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+  fun requireReadPermissions() {
+    val granted = appContext.permissions?.hasGrantedPermissions(READ_EXTERNAL_STORAGE)
+    if (granted != true) {
+      throw PermissionException("Missing READ_EXTERNAL_STORAGE permission")
+    }
+  }
+
+  fun requireWritePermissions() {
+    val granted = appContext.permissions?.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE)
+    if (granted != true) {
+      throw PermissionException("Missing WRITE_EXTERNAL_STORAGE permission")
+    }
+  }
 
   private val isExpoGo by lazy {
     context.resources.getString(R.string.is_expo_go).toBoolean()
@@ -106,13 +90,6 @@ class SystemPermissionsDelegate(private val appContext: AppContext) {
     return granularPermissions
   }
 
-  /**
-   * Checks, whenever an application represented by [context] contains specific [permission]
-   * in `AndroidManifest.xml`:
-   * ```xml
-   *  <uses-permission android:name="<<PERMISSION STRING HERE>>" />
-   *  ```
-   */
   private fun hasManifestPermission(context: Context, permission: String): Boolean =
     getManifestPermissions(context).contains(permission)
 
@@ -121,7 +98,7 @@ class SystemPermissionsDelegate(private val appContext: AppContext) {
       val packageInfo = context.packageManager
         .getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
       packageInfo.requestedPermissions?.toSet() ?: emptySet()
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
       emptySet()
     }
   }
@@ -134,7 +111,7 @@ class SystemPermissionsDelegate(private val appContext: AppContext) {
     // If only audio permission is requested, we don't need to request media location permissions
     val shouldAddMediaLocationAccess =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-        MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION) &&
+        hasManifestPermission(context, ACCESS_MEDIA_LOCATION) &&
         !(
           Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             granularPermissions.count() == 1 && granularPermissions.contains(
@@ -144,7 +121,7 @@ class SystemPermissionsDelegate(private val appContext: AppContext) {
 
     val shouldAddWriteExternalStorage =
       Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
-        MediaLibraryUtils.hasManifestPermission(context, WRITE_EXTERNAL_STORAGE)
+        hasManifestPermission(context, WRITE_EXTERNAL_STORAGE)
 
     val shouldAddGranularPermissions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     val shouldIncludeGranular = shouldAddGranularPermissions && !writeOnly

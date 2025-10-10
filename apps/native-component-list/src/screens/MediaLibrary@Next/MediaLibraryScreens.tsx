@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
@@ -24,6 +26,16 @@ export const MediaLibraryScreens = [
     },
   },
 ];
+
+if (Platform.OS === 'android' && Platform.Version >= 33) {
+  MediaLibraryScreens.push({
+    name: 'Granular Permissions',
+    route: 'medialibrary@next/granular-permissions',
+    getComponent() {
+      return optionalRequire(() => require('./GranularPermissionsScreen'));
+    },
+  });
+}
 
 export default function MediaLibraryScreen() {
   const apis: ListElement[] = MediaLibraryScreens.map((screen) => {
