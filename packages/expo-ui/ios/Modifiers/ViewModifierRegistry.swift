@@ -49,7 +49,11 @@ internal struct FrameModifier: ViewModifier, Record {
 
     func body(content: Content) -> some View {
         if width != nil || height != nil {
-            content.frame(width: width, height: height, alignment: alignment.toAlignment())
+            content.frame(
+                width: width,
+                height: height,
+                alignment: alignment.toAlignment()
+            )
         } else {
             content.frame(
                 minWidth: minWidth,
@@ -80,17 +84,39 @@ internal struct PaddingModifier: ViewModifier, Record {
         } else if let horizontal, let vertical {
             content.padding(
                 EdgeInsets(
-                    top: vertical, leading: horizontal, bottom: vertical, trailing: horizontal))
+                    top: vertical,
+                    leading: horizontal,
+                    bottom: vertical,
+                    trailing: horizontal
+                )
+            )
         } else if let horizontal {
             content.padding(
-                EdgeInsets(top: 0, leading: horizontal, bottom: 0, trailing: horizontal))
+                EdgeInsets(
+                    top: 0,
+                    leading: horizontal,
+                    bottom: 0,
+                    trailing: horizontal
+                )
+            )
         } else if let vertical {
-            content.padding(EdgeInsets(top: vertical, leading: 0, bottom: vertical, trailing: 0))
+            content.padding(
+                EdgeInsets(
+                    top: vertical,
+                    leading: 0,
+                    bottom: vertical,
+                    trailing: 0
+                )
+            )
         } else {
             content.padding(
                 EdgeInsets(
-                    top: top ?? 0, leading: leading ?? 0, bottom: bottom ?? 0,
-                    trailing: trailing ?? 0))
+                    top: top ?? 0,
+                    leading: leading ?? 0,
+                    bottom: bottom ?? 0,
+                    trailing: trailing ?? 0
+                )
+            )
         }
     }
 }
@@ -355,7 +381,11 @@ internal struct OnTapGestureModifier: ViewModifier, Record {
 
     init() {}
 
-    init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    init(
+        from params: Dict,
+        appContext: AppContext,
+        eventDispatcher: EventDispatcher
+    ) throws {
         try self = .init(from: params, appContext: appContext)
         self.eventDispatcher = eventDispatcher
     }
@@ -375,7 +405,11 @@ internal struct OnLongPressGestureModifier: ViewModifier, Record {
 
     init() {}
 
-    init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    init(
+        from params: Dict,
+        appContext: AppContext,
+        eventDispatcher: EventDispatcher
+    ) throws {
         try self = .init(from: params, appContext: appContext)
         self.eventDispatcher = eventDispatcher
     }
@@ -388,37 +422,45 @@ internal struct OnLongPressGestureModifier: ViewModifier, Record {
 }
 
 internal struct OnAppearModifier: ViewModifier, Record {
-  var eventDispatcher: EventDispatcher?
+    var eventDispatcher: EventDispatcher?
 
-  init() {}
+    init() {}
 
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
-
-  func body(content: Content) -> some View {
-    content.onAppear {
-      eventDispatcher?(["onAppear": [:]])
+    init(
+        from params: Dict,
+        appContext: AppContext,
+        eventDispatcher: EventDispatcher
+    ) throws {
+        try self = .init(from: params, appContext: appContext)
+        self.eventDispatcher = eventDispatcher
     }
-  }
+
+    func body(content: Content) -> some View {
+        content.onAppear {
+            eventDispatcher?(["onAppear": [:]])
+        }
+    }
 }
 
 internal struct OnDisappearModifier: ViewModifier, Record {
-  var eventDispatcher: EventDispatcher?
+    var eventDispatcher: EventDispatcher?
 
-  init() {}
+    init() {}
 
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
-
-  func body(content: Content) -> some View {
-    content.onDisappear {
-      eventDispatcher?(["onDisappear": [:]])
+    init(
+        from params: Dict,
+        appContext: AppContext,
+        eventDispatcher: EventDispatcher
+    ) throws {
+        try self = .init(from: params, appContext: appContext)
+        self.eventDispatcher = eventDispatcher
     }
-  }
+
+    func body(content: Content) -> some View {
+        content.onDisappear {
+            eventDispatcher?(["onDisappear": [:]])
+        }
+    }
 }
 
 internal struct HueRotationModifier: ViewModifier, Record {
@@ -478,7 +520,10 @@ internal struct AspectRatioModifier: ViewModifier, Record {
     @Field var contentMode: String = "fit"
 
     func body(content: Content) -> some View {
-        content.aspectRatio(ratio, contentMode: contentMode == "fill" ? .fill : .fit)
+        content.aspectRatio(
+            ratio,
+            contentMode: contentMode == "fill" ? .fill : .fit
+        )
     }
 }
 
@@ -559,7 +604,10 @@ internal struct IgnoreSafeAreaModifier: ViewModifier, Record {
 
     func body(content: Content) -> some View {
         if let regions, let edges {
-            content.ignoresSafeArea(regions.toSafeAreaRegions(), edges: edges.toEdge())
+            content.ignoresSafeArea(
+                regions.toSafeAreaRegions(),
+                edges: edges.toEdge()
+            )
         } else if let regions {
             content.ignoresSafeArea(regions.toSafeAreaRegions())
         } else if let edges {
@@ -604,13 +652,25 @@ internal struct GlassEffectModifier: ViewModifier, Record {
                 let glass = parseGlassVariant(glass?.variant ?? "regular")
                 switch shape {
                 case "capsule":
-                    content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
+                    content.glassEffect(
+                        glass.interactive(interactive).tint(tint),
+                        in: Capsule()
+                    )
                 case "circle":
-                    content.glassEffect(glass.interactive(interactive).tint(tint), in: Circle())
+                    content.glassEffect(
+                        glass.interactive(interactive).tint(tint),
+                        in: Circle()
+                    )
                 case "ellipse":
-                    content.glassEffect(glass.interactive(interactive).tint(tint), in: Ellipse())
+                    content.glassEffect(
+                        glass.interactive(interactive).tint(tint),
+                        in: Ellipse()
+                    )
                 default:
-                    content.glassEffect(glass.interactive(interactive).tint(tint), in: Rectangle())
+                    content.glassEffect(
+                        glass.interactive(interactive).tint(tint),
+                        in: Rectangle()
+                    )
                 }
             #else
                 content
@@ -643,7 +703,9 @@ internal struct GlassEffectIdModifier: ViewModifier, Record {
         if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
             #if compiler(>=6.2)  // Xcode 26
                 if let namespaceId,
-                    let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId)
+                    let namespace = NamespaceRegistry.shared.namespace(
+                        forKey: namespaceId
+                    )
                 {
                     content.glassEffectID(id, in: namespace)
                 } else {
@@ -743,13 +805,17 @@ internal struct AnimationModifier: ViewModifier, Record {
             if response != nil || dampingFraction != nil {
                 // default values are 0.5, 0.825, 0.0
                 animation = .spring(
-                    response: response ?? 0.5, dampingFraction: dampingFraction ?? 0.825,
-                    blendDuration: blendDuration ?? 0.0)
+                    response: response ?? 0.5,
+                    dampingFraction: dampingFraction ?? 0.825,
+                    blendDuration: blendDuration ?? 0.0
+                )
             } else if duration != nil || bounce != nil {
                 // default values are 0.5, 0.0, 0.0
                 animation = .spring(
-                    duration: duration ?? 0.5, bounce: bounce ?? 0.0,
-                    blendDuration: blendDuration ?? 0.0)
+                    duration: duration ?? 0.5,
+                    bounce: bounce ?? 0.0,
+                    blendDuration: blendDuration ?? 0.0
+                )
             } else if let blendDuration = blendDuration {
                 animation = .spring(blendDuration: blendDuration)
             } else {
@@ -766,12 +832,17 @@ internal struct AnimationModifier: ViewModifier, Record {
 
             if duration != nil || bounce != nil {
                 animation = .interpolatingSpring(
-                    duration: duration ?? 0.5, bounce: bounce ?? 0.0,
-                    initialVelocity: initialVelocity ?? 0.0)
+                    duration: duration ?? 0.5,
+                    bounce: bounce ?? 0.0,
+                    initialVelocity: initialVelocity ?? 0.0
+                )
             } else if let stiffness = stiffness, let damping = damping {
                 animation = .interpolatingSpring(
-                    mass: mass ?? 1.0, stiffness: stiffness, damping: damping,
-                    initialVelocity: initialVelocity ?? 0.0)
+                    mass: mass ?? 1.0,
+                    stiffness: stiffness,
+                    damping: damping,
+                    initialVelocity: initialVelocity ?? 0.0
+                )
             } else {
                 animation = .interpolatingSpring
             }
@@ -786,7 +857,10 @@ internal struct AnimationModifier: ViewModifier, Record {
 
         if let repeatCount = config.repeatCount {
             let autoreverses = config.autoreverses ?? false
-            animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
+            animation = animation.repeatCount(
+                repeatCount,
+                autoreverses: autoreverses
+            )
         }
 
         return animation
@@ -794,107 +868,107 @@ internal struct AnimationModifier: ViewModifier, Record {
 }
 
 internal enum ScrollContentBackgroundTypes: String, Enumerable {
-  case automatic
-  case hidden
-  case visible
+    case automatic
+    case hidden
+    case visible
 }
 
 internal struct ScrollContentBackground: ViewModifier, Record {
-  @Field var visible: ScrollContentBackgroundTypes = .visible
-  
-  func body(content: Content) -> some View {
-    #if os(tvOS)
-      content
-    #else
-      if #available(iOS 16.0, *) {
-        switch visible {
-        case .visible:
-          content.scrollContentBackground(.visible)
-        case .hidden:
-          content.scrollContentBackground(.hidden)
-        case .automatic:
-          content.scrollContentBackground(.automatic)
-        }
-      } else {
-        content
-      }
-    #endif
-  }
+    @Field var visible: ScrollContentBackgroundTypes = .visible
+
+    func body(content: Content) -> some View {
+        #if os(tvOS)
+            content
+        #else
+            if #available(iOS 16.0, *) {
+                switch visible {
+                case .visible:
+                    content.scrollContentBackground(.visible)
+                case .hidden:
+                    content.scrollContentBackground(.hidden)
+                case .automatic:
+                    content.scrollContentBackground(.automatic)
+                }
+            } else {
+                content
+            }
+        #endif
+    }
 }
 
 internal struct ListRowBackground: ViewModifier, Record {
-  @Field var color: Color?
+    @Field var color: Color?
 
-  func body(content: Content) -> some View {
-    if let color = color {
-      content.listRowBackground(color)
-    } else {
-      content
+    func body(content: Content) -> some View {
+        if let color = color {
+            content.listRowBackground(color)
+        } else {
+            content
+        }
     }
-  }
 }
 
 internal enum TextTruncationModeTypes: String, Enumerable {
-  case head
-  case middle
-  case tail
+    case head
+    case middle
+    case tail
 }
 
 internal struct TextTruncationMode: ViewModifier, Record {
-  @Field var mode: TextTruncationModeTypes = .tail
+    @Field var mode: TextTruncationModeTypes = .tail
 
-  func body(content: Content) -> some View {
-    switch mode {
-      case .head:
-        content.truncationMode(.head)
-      case .middle:
-        content.truncationMode(.middle)
-      case .tail:
-        content.truncationMode(.tail)
+    func body(content: Content) -> some View {
+        switch mode {
+        case .head:
+            content.truncationMode(.head)
+        case .middle:
+            content.truncationMode(.middle)
+        case .tail:
+            content.truncationMode(.tail)
+        }
     }
-  }
 }
 
 internal struct TextKerning: ViewModifier, Record {
-  @Field var value: CGFloat = 0
+    @Field var value: CGFloat = 0
 
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
-      content.kerning(value)
-    } else {
-      content
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+            content.kerning(value)
+        } else {
+            content
+        }
     }
-  }
 }
 
 internal struct TextAllowsTightening: ViewModifier, Record {
-  @Field var value: Bool = true
+    @Field var value: Bool = true
 
-  func body(content: Content) -> some View {
-    if #available(iOS 13.0, macOS 10.15, tvOS 16.0, *) {
-      content.allowsTightening(value)
-    } else {
-      content
+    func body(content: Content) -> some View {
+        if #available(iOS 13.0, macOS 10.15, tvOS 16.0, *) {
+            content.allowsTightening(value)
+        } else {
+            content
+        }
     }
-  }
 }
 
 internal enum TextCaseTypes: String, Enumerable {
-  case lowercase
-  case uppercase
+    case lowercase
+    case uppercase
 }
 
 internal struct TextCase: ViewModifier, Record {
-  @Field var value: TextCaseTypes = .lowercase
+    @Field var value: TextCaseTypes = .lowercase
 
-  func body(content: Content) -> some View {
-     switch value {
-      case .lowercase:
-        content.textCase(.lowercase)
-      case .uppercase:
-        content.textCase(.uppercase)
-      }
-  }
+    func body(content: Content) -> some View {
+        switch value {
+        case .lowercase:
+            content.textCase(.lowercase)
+        case .uppercase:
+            content.textCase(.uppercase)
+        }
+    }
 }
 
 internal enum TextLinePattern: String, Enumerable {
@@ -906,103 +980,107 @@ internal enum TextLinePattern: String, Enumerable {
 }
 
 internal struct TextUnderLine: ViewModifier, Record {
-  @Field var isActive: Bool = false
-  @Field var pattern: TextLinePattern = .solid
-  @Field var color: Color?
+    @Field var isActive: Bool = false
+    @Field var pattern: TextLinePattern = .solid
+    @Field var color: Color?
 
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
-      switch pattern {
-        case .solid:  
-          content.underline(isActive, pattern: .solid, color: color)
-        case .dash:  
-          content.underline(isActive, pattern: .dash, color: color)
-        case .dot:  
-          content.underline(isActive, pattern: .dot, color: color)
-        case .dashDot:  
-          content.underline(isActive, pattern: .dashDot, color: color)
-        case .dashDotDot:  
-          content.underline(isActive, pattern: .dashDotDot, color: color)
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+            switch pattern {
+            case .solid:
+                content.underline(isActive, pattern: .solid, color: color)
+            case .dash:
+                content.underline(isActive, pattern: .dash, color: color)
+            case .dot:
+                content.underline(isActive, pattern: .dot, color: color)
+            case .dashDot:
+                content.underline(isActive, pattern: .dashDot, color: color)
+            case .dashDotDot:
+                content.underline(isActive, pattern: .dashDotDot, color: color)
+            }
+        } else {
+            content
         }
-      } else {
-        content
     }
-  }
 }
 
 internal struct TextStrikeThrough: ViewModifier, Record {
-  @Field var isActive: Bool = false
-  @Field var pattern: TextLinePattern = .solid
-  @Field var color: Color?
+    @Field var isActive: Bool = false
+    @Field var pattern: TextLinePattern = .solid
+    @Field var color: Color?
 
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
-      switch pattern {
-        case .solid: 
-          content.strikethrough(isActive, pattern: .solid, color: color)
-        case .dash:
-          content.strikethrough(isActive, pattern: .dash, color: color)
-        case .dot:  
-          content.strikethrough(isActive, pattern: .dot, color: color)
-        case .dashDot: 
-          content.strikethrough(isActive, pattern: .dashDot, color: color)
-        case .dashDotDot:  
-          content.strikethrough(isActive, pattern: .dashDotDot, color: color)
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+            switch pattern {
+            case .solid:
+                content.strikethrough(isActive, pattern: .solid, color: color)
+            case .dash:
+                content.strikethrough(isActive, pattern: .dash, color: color)
+            case .dot:
+                content.strikethrough(isActive, pattern: .dot, color: color)
+            case .dashDot:
+                content.strikethrough(isActive, pattern: .dashDot, color: color)
+            case .dashDotDot:
+                content.strikethrough(
+                    isActive,
+                    pattern: .dashDotDot,
+                    color: color
+                )
+            }
+        } else {
+            content
         }
-      } else {
-        content
     }
-  }
 }
 
 internal enum TextAligment: String, Enumerable {
-  case center
-  case leading
-  case trailing
+    case center
+    case leading
+    case trailing
 }
 
 internal struct MultilineTextAlignment: ViewModifier, Record {
-  @Field var alignment: TextAligment = .leading
+    @Field var alignment: TextAligment = .leading
 
-  func body(content: Content) -> some View {
-    switch alignment {
-      case .center: 
-        content.multilineTextAlignment(.center)
-      case .leading: 
-        content.multilineTextAlignment(.leading)
-      case .trailing:
-        content.multilineTextAlignment(.trailing)
+    func body(content: Content) -> some View {
+        switch alignment {
+        case .center:
+            content.multilineTextAlignment(.center)
+        case .leading:
+            content.multilineTextAlignment(.leading)
+        case .trailing:
+            content.multilineTextAlignment(.trailing)
+        }
     }
-  }
 }
 
 internal struct TextSelection: ViewModifier, Record {
-  @Field var value: Bool = true
+    @Field var value: Bool = true
 
-  func body(content: Content) -> some View {
-    #if os(tvOS)
-      content
-    #else
-      switch value {
-        case true: 
-          content.textSelection(.enabled)
-        case false: 
-          content.textSelection(.disabled)
-      }
-    #endif
-  }
+    func body(content: Content) -> some View {
+        #if os(tvOS)
+            content
+        #else
+            switch value {
+            case true:
+                content.textSelection(.enabled)
+            case false:
+                content.textSelection(.disabled)
+            }
+        #endif
+    }
 }
 
 internal struct LineSpacing: ViewModifier, Record {
-  @Field var value: CGFloat?
+    @Field var value: CGFloat?
 
-  func body(content: Content) -> some View {
-    if let value {
-      content.lineSpacing(value)
-    } else {
-      content
+    func body(content: Content) -> some View {
+        if let value {
+            content.lineSpacing(value)
+        } else {
+            content
+        }
     }
-  }
 }
 
 // MARK: - Registry
@@ -1012,7 +1090,9 @@ internal struct LineSpacing: ViewModifier, Record {
 internal class ViewModifierRegistry {
     static let shared = ViewModifierRegistry()
 
-    internal typealias ModiferFactory = ([String: Any], AppContext, EventDispatcher) throws ->
+    internal typealias ModiferFactory = (
+        [String: Any], AppContext, EventDispatcher
+    ) throws ->
         any ViewModifier
     private(set) internal var modifierFactories: [String: ModiferFactory] = [:]
 
@@ -1045,7 +1125,10 @@ internal class ViewModifierRegistry {
     ) -> AnyView {
         guard
             let viewModifier = try? modifierFactories[type]?(
-                params, appContext, globalEventDispatcher)
+                params,
+                appContext,
+                globalEventDispatcher
+            )
         else {
             return view
         }
@@ -1072,7 +1155,10 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
     @Field var namespaceId: String?
 
     func body(content: Content) -> some View {
-        if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId)
+        if let namespaceId,
+            let namespace = NamespaceRegistry.shared.namespace(
+                forKey: namespaceId
+            )
         {
             content.matchedGeometryEffect(id: id, in: namespace)
         } else {
@@ -1173,7 +1259,10 @@ extension ViewModifierRegistry {
         }
 
         register("cornerRadius") { params, appContext, _ in
-            return try CornerRadiusModifier(from: params, appContext: appContext)
+            return try CornerRadiusModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("shadow") { params, appContext, _ in
@@ -1197,7 +1286,10 @@ extension ViewModifierRegistry {
         }
 
         register("rotationEffect") { params, appContext, _ in
-            return try RotationEffectModifier(from: params, appContext: appContext)
+            return try RotationEffectModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("offset") { params, appContext, _ in
@@ -1205,11 +1297,17 @@ extension ViewModifierRegistry {
         }
 
         register("foregroundColor") { params, appContext, _ in
-            return try ForegroundColorModifier(from: params, appContext: appContext)
+            return try ForegroundColorModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("foregroundStyle") { params, appContext, _ in
-            return try ForegroundStyleModifier(from: params, appContext: appContext)
+            return try ForegroundStyleModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("tint") { params, appContext, _ in
@@ -1262,40 +1360,66 @@ extension ViewModifierRegistry {
 
         register("onTapGesture") { params, appContext, eventDispatcher in
             return try OnTapGestureModifier(
-                from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+                from: params,
+                appContext: appContext,
+                eventDispatcher: eventDispatcher
+            )
         }
 
         register("onLongPressGesture") { params, appContext, eventDispatcher in
             return try OnLongPressGestureModifier(
-                from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+                from: params,
+                appContext: appContext,
+                eventDispatcher: eventDispatcher
+            )
         }
 
-    register("onAppear") { params, appContext, eventDispatcher in
-      return try OnAppearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
+        register("onAppear") { params, appContext, eventDispatcher in
+            return try OnAppearModifier(
+                from: params,
+                appContext: appContext,
+                eventDispatcher: eventDispatcher
+            )
+        }
 
-    register("onDisappear") { params, appContext, eventDispatcher in
-      return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
+        register("onDisappear") { params, appContext, eventDispatcher in
+            return try OnDisappearModifier(
+                from: params,
+                appContext: appContext,
+                eventDispatcher: eventDispatcher
+            )
+        }
 
-    register("hueRotation") { params, appContext, _ in
-      return try HueRotationModifier(from: params, appContext: appContext)
-    }
+        register("hueRotation") { params, appContext, _ in
+            return try HueRotationModifier(from: params, appContext: appContext)
+        }
 
         register("accessibilityLabel") { params, appContext, _ in
-            return try AccessibilityLabelModifier(from: params, appContext: appContext)
+            return try AccessibilityLabelModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("accessibilityHint") { params, appContext, _ in
-            return try AccessibilityHintModifier(from: params, appContext: appContext)
+            return try AccessibilityHintModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("accessibilityValue") { params, appContext, _ in
-            return try AccessibilityValueModifier(from: params, appContext: appContext)
+            return try AccessibilityValueModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("layoutPriority") { params, appContext, _ in
-            return try LayoutPriorityModifier(from: params, appContext: appContext)
+            return try LayoutPriorityModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("aspectRatio") { params, appContext, _ in
@@ -1315,7 +1439,10 @@ extension ViewModifierRegistry {
         }
 
         register("backgroundOverlay") { params, appContext, _ in
-            return try BackgroundOverlayModifier(from: params, appContext: appContext)
+            return try BackgroundOverlayModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("glassEffect") { params, appContext, _ in
@@ -1323,15 +1450,24 @@ extension ViewModifierRegistry {
         }
 
         register("animation") { params, appContext, _ in
-            return try AnimationModifier.init(from: params, appContext: appContext)
+            return try AnimationModifier.init(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("glassEffectId") { params, appContext, _ in
-            return try GlassEffectIdModifier.init(from: params, appContext: appContext)
+            return try GlassEffectIdModifier.init(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("matchedGeometryEffect") { params, appContext, _ in
-            return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
+            return try MatchedGeometryEffectModifier.init(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("fixedSize") { params, appContext, _ in
@@ -1339,11 +1475,17 @@ extension ViewModifierRegistry {
         }
 
         register("ignoreSafeArea") { params, appContext, _ in
-            return try IgnoreSafeAreaModifier(from: params, appContext: appContext)
+            return try IgnoreSafeAreaModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("containerShape") { params, appContext, _ in
-            return try ContainerShapeModifier(from: params, appContext: appContext)
+            return try ContainerShapeModifier(
+                from: params,
+                appContext: appContext
+            )
         }
 
         register("buttonStyle") { params, appContext, _ in
@@ -1351,51 +1493,62 @@ extension ViewModifierRegistry {
         }
 
         register("scrollDismissesKeyboard") { params, appContext, _ in
-            return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
+            return try ScrollDismissesKeyboardModifier(
+                from: params,
+                appContext: appContext
+            )
+        }
+
+        register("scrollContentBackground") { params, appContext, _ in
+            return try ScrollContentBackground(
+                from: params,
+                appContext: appContext
+            )
+        }
+
+        register("listRowBackground") { params, appContext, _ in
+            return try ListRowBackground(from: params, appContext: appContext)
+        }
+        register("truncationMode") { params, appContext, _ in
+            return try TextTruncationMode(from: params, appContext: appContext)
+        }
+
+        register("kerning") { params, appContext, _ in
+            return try TextKerning(from: params, appContext: appContext)
+        }
+
+        register("allowsTightening") { params, appContext, _ in
+            return try TextAllowsTightening(
+                from: params,
+                appContext: appContext
+            )
+        }
+
+        register("textCase") { params, appContext, _ in
+            return try TextCase(from: params, appContext: appContext)
+        }
+
+        register("underline") { params, appContext, _ in
+            return try TextUnderLine(from: params, appContext: appContext)
+        }
+
+        register("strikethrough") { params, appContext, _ in
+            return try TextStrikeThrough(from: params, appContext: appContext)
+        }
+
+        register("multilineTextAlignment") { params, appContext, _ in
+            return try MultilineTextAlignment(
+                from: params,
+                appContext: appContext
+            )
+        }
+
+        register("textSelection") { params, appContext, _ in
+            return try TextSelection(from: params, appContext: appContext)
+        }
+
+        register("lineSpacing") { params, appContext, _ in
+            return try LineSpacing(from: params, appContext: appContext)
         }
     }
-
-    register("scrollContentBackground") { params, appContext, _ in
-      return try ScrollContentBackground(from: params, appContext: appContext)
-    }
-
-    register("listRowBackground") { params, appContext, _ in
-      return try ListRowBackground(from: params, appContext: appContext)
-    }
-    register("truncationMode") { params, appContext, _ in
-      return try TextTruncationMode(from: params, appContext: appContext)
-    }
-
-    register("kerning") { params, appContext, _ in
-      return try TextKerning(from: params, appContext: appContext)
-    }
-
-    register("allowsTightening") { params, appContext, _ in
-      return try TextAllowsTightening(from: params, appContext: appContext)
-    }
-
-    register("textCase") { params, appContext, _ in
-      return try TextCase(from: params, appContext: appContext)
-    }
-
-    register("underline") { params, appContext, _ in
-      return try TextUnderLine(from: params, appContext: appContext)
-    }
-
-    register("strikethrough") { params, appContext, _ in
-      return try TextStrikeThrough(from: params, appContext: appContext)
-    }
-
-    register("multilineTextAlignment") { params, appContext, _ in
-      return try MultilineTextAlignment(from: params, appContext: appContext)
-    }
-
-    register("textSelection") { params, appContext, _ in
-      return try TextSelection(from: params, appContext: appContext)
-    }
-
-    register("lineSpacing") { params, appContext, _ in
-      return try LineSpacing(from: params, appContext: appContext)
-    }
-  }
 }
