@@ -9,7 +9,44 @@ platforms: ['ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **Warning** The borderless variant is not available on Apple TV.
 
 <APIInstallSection />
+
+### Example
+
+### Button
+
+<Tabs>
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="Button component on iOS."
+      src="/static/images/expo-ui/button/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Button, Host } from '@expo/ui/swift-ui';
+
+    <Host style={{ flex: 1 }}>
+      <Button
+        variant="default"
+        onPress={() => {
+          setEditingProfile(true);
+        }}>
+        Edit profile
+      </Button>
+    </Host>
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/button)*
+
+  </Tab>
+</Tabs>
+
+_See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/button)_
 
 <APISection packageName="expo-ui/swift-ui/button" apiName="Button" />
