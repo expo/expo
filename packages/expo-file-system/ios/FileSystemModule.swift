@@ -335,6 +335,18 @@ public final class FileSystemModule: Module {
         try directory.listAsRecords()
       }
 
+      Function("createFile") { (directory, name: String, content: String?) in
+        let file = FileSystemFile(url: directory.url.appendingPathComponent(name))
+        try file.create(CreateOptions())
+        return file
+      }
+
+      Function("createDirectory") { (directory, name: String) in
+        let newDirectory = FileSystemDirectory(url: directory.url.appendingPathComponent(name))
+        try newDirectory.create(CreateOptions())
+        return newDirectory
+      }
+
       Property("uri") { directory in
         return directory.url.absoluteString
       }
