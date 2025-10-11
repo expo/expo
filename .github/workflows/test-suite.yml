@@ -40,7 +40,6 @@ jobs:
           path: |
             ${{ runner.tool_cache }}/fingerprint-storage/fingerprint.db
           key: fingerprint-db
-          restore-keys: fingerprint-db
       - uses: actions/upload-artifact@v4
         with:
           name: fingerprint-db
@@ -210,7 +209,6 @@ jobs:
           path: |
             ${{ runner.tool_cache }}/fingerprint-storage/fingerprint.db
           key: fingerprint-db
-          restore-keys: fingerprint-db
       - uses: actions/upload-artifact@v4
         with:
           name: fingerprint-db
