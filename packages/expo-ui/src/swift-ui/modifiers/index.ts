@@ -403,6 +403,15 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Controls how the keyboard is dismissed when scrolling.
+ * @param mode - The keyboard dismiss mode
+ * @platform ios 16.0+
+ */
+export const scrollDismissesKeyboard = (
+  mode: 'automatic' | 'never' | 'interactively' | 'immediately'
+) => createModifier('scrollDismissesKeyboard', { mode });
+
+/**
  * Sets accessibility label for the view.
  * @param label - The accessibility label
  */
@@ -607,6 +616,7 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof scrollDismissesKeyboard>
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
