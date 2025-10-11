@@ -212,7 +212,7 @@ jobs:
         with:
           # ${{ runner.tool_cache }}/fingerprint-storage/fingerprint.db
           path: |
-            ../../../../../opt/hostedtoolcache/fingerprint-storage
+            /opt/hostedtoolcache/fingerprint-storage
           key: fingerprint-db
           # key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
           # enableCrossOsArchive: true
