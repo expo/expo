@@ -38,7 +38,7 @@ export declare class ExpoModuleConfig {
     /**
      * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
      */
-    appleModules(): string[];
+    appleModules(): (string | import("./types").RawAppleModuleConfig)[];
     /**
      * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
      */

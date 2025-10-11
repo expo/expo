@@ -63,7 +63,7 @@ class ClassDefinitionSpec: ExpoSpec {
             }
           }
         }
-        appContext.moduleRegistry.register(moduleType: ClassTestModule.self)
+        appContext.moduleRegistry.register(moduleType: ClassTestModule.self, name: "ClassTest")
       }
 
       it("is a function") {
@@ -112,7 +112,7 @@ class ClassDefinitionSpec: ExpoSpec {
       let runtime = try! appContext.runtime
 
       beforeSuite {
-        appContext.moduleRegistry.register(moduleType: ModuleWithCounterClass.self)
+        appContext.moduleRegistry.register(moduleType: ModuleWithCounterClass.self, name: "TestModule")
       }
       it("is defined") {
         let isDefined = try runtime.eval("'Counter' in expo.modules.TestModule")
@@ -213,7 +213,7 @@ class ClassDefinitionSpec: ExpoSpec {
             }
           }
         }
-        appContext.moduleRegistry.register(moduleType: ErrorTestModule.self)
+        appContext.moduleRegistry.register(moduleType: ErrorTestModule.self, name: "ErrorTest")
       }
 
       it("exceptions are in the correct format") {

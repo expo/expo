@@ -8,7 +8,7 @@ final class SharedObjectSpec: ExpoSpec {
     let runtime = try! appContext.runtime
 
     beforeSuite {
-      appContext.moduleRegistry.register(moduleType: SharedObjectModule.self)
+      appContext.moduleRegistry.register(moduleType: SharedObjectModule.self, name: nil)
     }
 
     describe("Base JS class") {

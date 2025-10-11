@@ -8,8 +8,8 @@ final class SharedRefSpec: ExpoSpec {
     let runtime = try! appContext.runtime
 
     beforeSuite {
-      appContext.moduleRegistry.register(moduleType: FirstModule.self)
-      appContext.moduleRegistry.register(moduleType: SecondModule.self)
+      appContext.moduleRegistry.register(moduleType: FirstModule.self, name: nil)
+      appContext.moduleRegistry.register(moduleType: SecondModule.self, name: nil)
     }
 
     it("is a shared object") {

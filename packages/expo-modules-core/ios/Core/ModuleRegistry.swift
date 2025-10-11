@@ -31,31 +31,31 @@ public final class ModuleRegistry: Sequence {
   /**
    Registers an instance of the module.
    */
-  public func register(module: AnyModule, preventModuleOverriding: Bool = false) {
+  public func register(module: AnyModule, name: String?, preventModuleOverriding: Bool = false) {
     guard let appContext else {
       log.error("Unable to register a module '\(module)', the app context is unavailable")
       return
     }
-    register(holder: ModuleHolder(appContext: appContext, module: module), preventModuleOverriding: preventModuleOverriding)
+    register(holder: ModuleHolder(appContext: appContext, module: module, name: name), preventModuleOverriding: preventModuleOverriding)
   }
 
   /**
    Registers a module by its type.
    */
-  public func register(moduleType: AnyModule.Type, preventModuleOverriding: Bool = false) {
+  public func register(moduleType: AnyModule.Type, name: String?,preventModuleOverriding: Bool = false) {
     guard let appContext else {
       log.error("Unable to register a module '\(moduleType)', the app context is unavailable")
       return
     }
-    register(module: moduleType.init(appContext: appContext), preventModuleOverriding: preventModuleOverriding)
+    register(module: moduleType.init(appContext: appContext), name: name, preventModuleOverriding: preventModuleOverriding)
   }
 
   /**
    Registers modules exported by given modules provider.
    */
   public func register(fromProvider provider: ModulesProviderProtocol) {
-    provider.getModuleClasses().forEach { moduleType in
-      register(moduleType: moduleType)
+    provider.getModuleClasses().forEach { (module, name) in
+      register(moduleType: module, name: name)
     }
   }
 

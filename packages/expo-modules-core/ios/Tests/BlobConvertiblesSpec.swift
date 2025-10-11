@@ -10,7 +10,7 @@ final class DataUint8ArrayConvertiblesSpec: ExpoSpec {
     let runtime = try! appContext.runtime
 
     beforeSuite {
-      appContext.moduleRegistry.register(moduleType: BlobModule.self)
+      appContext.moduleRegistry.register(moduleType: BlobModule.self, name: nil)
     }
 
     it("should support sync function") {
