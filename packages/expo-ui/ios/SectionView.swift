@@ -16,10 +16,21 @@ final class SectionProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
 internal struct SectionView: ExpoSwiftUI.View {
   @ObservedObject var props: SectionProps
 
-  var body: some View {
-    Section(header: Text(props.title ?? "").textCase(nil)) {
-      Children()
+  @ViewBuilder
+  private var section: some View {
+    if let title = props.title, !title.isEmpty {
+      Section(header: Text(title).textCase(nil)) {
+        Children()
+      }
+    } else {
+      Section {
+        Children()
+      }
     }
-    .modifier(CommonViewModifiers(props: props))
+  }
+
+  var body: some View {
+    section
+      .modifier(CommonViewModifiers(props: props))
   }
 }
