@@ -2,17 +2,14 @@ import MIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { Badge, Icon, Label, NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
-import { Appearance, Platform, useColorScheme } from 'react-native';
+import { Platform, useColorScheme } from 'react-native';
 
 import { ActiveTabsContext } from '../utils/active-tabs-context';
-
-if (process.env.EXPO_OS !== 'web') {
-  Appearance.setColorScheme('unspecified');
-}
 
 export default function Layout() {
   const [activeTabs, setActiveTabs] = useState<string[]>([]);
   const scheme = useColorScheme();
+
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ActiveTabsContext.Provider value={{ activeTabs, setActiveTabs }}>
@@ -25,7 +22,7 @@ export default function Layout() {
         //   // fontFamily: 'Courier New',
         //   color: Platform.OS === 'android' ? '#888' : undefined,
         // }}
-        // backgroundColor={Platform.OS === 'android' ? 'black' : undefined}
+        // backgroundColor={Material3DynamicColor('SurfaceContainer')}
         // badgeBackgroundColor="green"
         // tintColor="orange"
         // iconColor={Platform.OS === 'android' ? '#888' : undefined}
