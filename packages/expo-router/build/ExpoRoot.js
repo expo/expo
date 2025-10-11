@@ -141,7 +141,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
     }
     return (<storeContext_1.StoreContext.Provider value={store}>
-      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
+      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} onStateChange={store.onStateChange} documentTitle={documentTitle} onReady={store.onReady}>
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
             <Content />

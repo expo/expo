@@ -46,6 +46,7 @@ export declare const store: {
     readonly linking: ExpoLinkingOptions | undefined;
     setFocusedState(state: FocusedRouteState): void;
     onReady(): void;
+    onStateChange(newState: ReactNavigationState | undefined): void;
     assertIsReady(): void;
 };
 export declare function useStore(context: RequireContext, linkingConfigOptions: LinkingConfigOptions, serverUrl?: string): {
@@ -84,6 +85,7 @@ export declare function useStore(context: RequireContext, linkingConfigOptions: 
     readonly linking: ExpoLinkingOptions | undefined;
     setFocusedState(state: FocusedRouteState): void;
     onReady(): void;
+    onStateChange(newState: ReactNavigationState | undefined): void;
     assertIsReady(): void;
 };
 export declare function useRouteInfo(): UrlObject;
