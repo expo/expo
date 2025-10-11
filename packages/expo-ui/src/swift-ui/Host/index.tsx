@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
+import { type ColorSchemeName, I18nManager, StyleProp, ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -30,6 +30,12 @@ export type HostProps = {
    */
   colorScheme?: ColorSchemeName;
 
+  /**
+   * The layout direction for the SwiftUI content.
+   * Defaults to the current locale direction from I18nManager.
+   */
+  layoutDirection?: 'leftToRight' | 'rightToLeft';
+
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
 } & CommonViewModifierProps;
@@ -42,7 +48,7 @@ const HostNativeView: React.ComponentType<
  * A hosting component for SwiftUI views.
  */
 export function Host(props: HostProps) {
-  const { matchContents, onLayoutContent, modifiers, ...restProps } = props;
+  const { matchContents, onLayoutContent, modifiers, layoutDirection, ...restProps } = props;
 
   return (
     <HostNativeView
@@ -55,6 +61,9 @@ export function Host(props: HostProps) {
         typeof matchContents === 'object' ? matchContents.horizontal : matchContents
       }
       onLayoutContent={onLayoutContent}
+      layoutDirection={
+        layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
+      }
       {...restProps}
     />
   );
