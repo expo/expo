@@ -1,72 +1,20 @@
-import { ThemeProvider } from 'ThemeProvider';
-import * as Splashscreen from 'expo-splash-screen';
-import React from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 
-import MainNavigator, { optionalRequire } from './MainNavigator';
-
-let Notifications;
-try {
-  Notifications = require('expo-notifications');
-} catch {
-  // do nothing
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text>Open up App.tsx to start working on your app!</Text>
+      <StatusBar style="auto" />
+    </View>
+  );
 }
 
-Splashscreen.setOptions({ fade: true, duration: 800 });
-
-// Require the `BackgroundTaskScreen` component from `native-component-list` if it's available
-// so that we load the module and register its background task on startup.
-optionalRequire(() => require('native-component-list/src/screens/BackgroundTaskScreen'));
-
-// Require the `BackgroundFetchScreen` component from `native-component-list` if it's available
-// so that we load the module and register its background task on startup.
-optionalRequire(() => require('native-component-list/src/screens/BackgroundFetchScreen'));
-
-const loadAssetsAsync =
-  optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??
-  (async () => null);
-
-function useLoaded() {
-  const [isLoaded, setLoaded] = React.useState(false);
-  React.useEffect(() => {
-    let isMounted = true;
-    // @ts-ignore
-    loadAssetsAsync()
-      .then(() => {
-        if (isMounted) setLoaded(true);
-        Splashscreen.hide();
-      })
-      .catch((e) => {
-        console.warn('Error loading assets: ' + e.message);
-        if (isMounted) setLoaded(true);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-  return isLoaded;
-}
-
-export default function Main() {
-  React.useEffect(() => {
-    try {
-      const subscription = Notifications.addNotificationResponseReceivedListener(
-        ({ notification, actionIdentifier }) => {
-          console.info(
-            `User interacted with a notification (action = ${actionIdentifier}): ${JSON.stringify(
-              notification,
-              null,
-              2
-            )}`
-          );
-        }
-      );
-      return () => subscription?.remove();
-    } catch (e) {
-      console.debug('Could not have added a listener for received notification responses.', e);
-    }
-  }, []);
-
-  const isLoaded = useLoaded();
-
-  return <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>;
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
