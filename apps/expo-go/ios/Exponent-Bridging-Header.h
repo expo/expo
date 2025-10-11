@@ -29,6 +29,3 @@
 #import "EXUtil.h"
 #import "EXReactAppManager.h"
 #import "EXProgressHUD.h"
-
-#import "EXScopedNotificationsUtils.h"
-#import "EXScopedNotificationSerializer.h"

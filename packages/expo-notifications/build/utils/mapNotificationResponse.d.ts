@@ -20,7 +20,7 @@ export declare const mapNotificationResponse: (response: NotificationResponse) =
                     [key: string]: unknown;
                 };
                 categoryIdentifier: string | null;
-                sound: "default" | "defaultCritical" | "custom" | null;
+                sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
             } & import("..").NotificationContentIos) | ({
                 title: string | null;
                 subtitle: string | null;
@@ -29,7 +29,7 @@ export declare const mapNotificationResponse: (response: NotificationResponse) =
                     [key: string]: unknown;
                 };
                 categoryIdentifier: string | null;
-                sound: "default" | "defaultCritical" | "custom" | null;
+                sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
             } & import("..").NotificationContentAndroid);
             identifier: string;
             trigger: import("..").NotificationTrigger;
@@ -58,7 +58,7 @@ export declare const mapNotification: (notification: Notification) => {
                 [key: string]: unknown;
             };
             categoryIdentifier: string | null;
-            sound: "default" | "defaultCritical" | "custom" | null;
+            sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
         } & import("..").NotificationContentIos) | ({
             title: string | null;
             subtitle: string | null;
@@ -67,7 +67,7 @@ export declare const mapNotification: (notification: Notification) => {
                 [key: string]: unknown;
             };
             categoryIdentifier: string | null;
-            sound: "default" | "defaultCritical" | "custom" | null;
+            sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
         } & import("..").NotificationContentAndroid);
         identifier: string;
         trigger: import("..").NotificationTrigger;
@@ -92,7 +92,7 @@ export declare const mapNotificationRequest: (request: NotificationRequest) => {
             [key: string]: unknown;
         };
         categoryIdentifier: string | null;
-        sound: "default" | "defaultCritical" | "custom" | null;
+        sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
     } & import("..").NotificationContentIos) | ({
         title: string | null;
         subtitle: string | null;
@@ -101,7 +101,7 @@ export declare const mapNotificationRequest: (request: NotificationRequest) => {
             [key: string]: unknown;
         };
         categoryIdentifier: string | null;
-        sound: "default" | "defaultCritical" | "custom" | null;
+        sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
     } & import("..").NotificationContentAndroid);
     identifier: string;
     trigger: import("..").NotificationTrigger;
@@ -122,7 +122,7 @@ export declare const mapNotificationContent: (content: NotificationContent) => (
         [key: string]: unknown;
     };
     categoryIdentifier: string | null;
-    sound: "default" | "defaultCritical" | "custom" | null;
+    sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
 } & import("..").NotificationContentIos) | ({
     title: string | null;
     subtitle: string | null;
@@ -131,6 +131,6 @@ export declare const mapNotificationContent: (content: NotificationContent) => (
         [key: string]: unknown;
     };
     categoryIdentifier: string | null;
-    sound: "default" | "defaultCritical" | "custom" | null;
+    sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
 } & import("..").NotificationContentAndroid);
 //# sourceMappingURL=mapNotificationResponse.d.ts.map

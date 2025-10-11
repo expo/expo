@@ -16,7 +16,7 @@ public final class ExpoGoNotificationsPresentationModule: PresentationModule {
     super.init(appContext: appContext)
   }
 
-  public override func serializeNotifications(_ notifications: [UNNotification]) -> [[String: Any]] {
+  public override func serializeNotifications(_ notifications: [UNNotification]) -> [NotificationRecord] {
     return notifications
       .filter { notification in
         EXScopedNotificationsUtils.shouldNotification(notification, beHandledByExperience: self.scopeKey)
