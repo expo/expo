@@ -211,12 +211,12 @@ jobs:
           path: |
             ${{ runner.tool_cache }}/fingerprint-storage/fingerprint.db
           key: fingerprint-db
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
       - uses: actions/upload-artifact@v4
         with:
           name: fingerprint-db
           path: fingerprint-db
-          enableCrossOsArchive: true
-          fail-on-cache-miss: true
   #
   #     - name: 🧹 Cleanup GitHub Linux runner disk space
   #       uses: ./.github/actions/cleanup-linux-disk-space
