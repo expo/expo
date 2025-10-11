@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add `largestUndimmedDetent` and `largestUndimmedDetentIndex` props to `BottomSheet` to control background dimming behavior. ([#40330](https://github.com/expo/expo/pull/40330) by [@panzacoder](https://github.com/panzacoder))
 - [iOS] Add `scrollDismissesKeyboard` modifier. ([#40201](https://github.com/expo/expo/pull/40201) by [@christianwooldridge](https://github.com/christianwooldridge))
 - [Android] Add Android BottomSheet ([#37553](https://github.com/expo/expo/pull/37553) by [@Jeroen-G](https://github.com/Jeroen-G))
 - [Android] Move all components to use Host ([#40244](https://github.com/expo/expo/pull/40244) by [@aleqsio](https://github.com/aleqsio))
