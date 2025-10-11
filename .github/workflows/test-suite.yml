@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v5
       - uses: actions/cache/restore@v4
         with:
-          path: fingerprint-db
+          path: ${{ env.RUNNER_TOOL_CACHE }}/fingerprint-storage/fingerprint.db
           key: fingerprint-db
           restore-keys: fingerprint-db
       - uses: actions/upload-artifact@v4
@@ -206,7 +206,7 @@ jobs:
         uses: actions/checkout@v5
       - uses: actions/cache/restore@v4
         with:
-          path: fingerprint-db
+          path: ${{ env.RUNNER_TOOL_CACHE }}/fingerprint-storage/fingerprint.db
           key: fingerprint-db
           restore-keys: fingerprint-db
       - uses: actions/upload-artifact@v4
