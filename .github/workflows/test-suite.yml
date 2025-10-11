@@ -39,9 +39,11 @@ jobs:
         with:
           path: |
             ${{ runner.tool_cache }}/fingerprint-storage/fingerprint.db
-          key: fingerprint-db
+          # key: fingerprint-db
+          key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
+          lookup-only: true
       - uses: actions/upload-artifact@v4
         with:
           name: fingerprint-db
@@ -210,9 +212,11 @@ jobs:
         with:
           path: |
             ${{ runner.tool_cache }}/fingerprint-storage/fingerprint.db
-          key: fingerprint-db
+          # key: fingerprint-db
+          key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
+          lookup-only: true
       - uses: actions/upload-artifact@v4
         with:
           name: fingerprint-db
