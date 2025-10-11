@@ -69,7 +69,7 @@ You can configure the React Native Directory check in your **package.json** file
 
 <Collapsible summary="See all available options">
 
-- **enabled**: If `true`, the check will warn if any packages are missing from React Native Directory. Set this to `false` to disable this behavior. On SDK 52 and above, this is set to `true` by default, otherwise it is `false` by default. You can also override this setting with the `EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK` environment variable (0 is `false`, 1 is `true`).
+- **enabled**: If `true`, the check will warn if any packages are missing from React Native Directory. Set this to `false` to disable this behavior. In SDK 52 and later, this is set to `true` by default, otherwise it is `false` by default. You can also override this setting with the `EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK` environment variable (0 is `false`, 1 is `true`).
 - **exclude**: List any packages you want to exclude from the check. Supports exact package names and regex patterns. For example, `["exact-package", "/or-a-regex-.*/"]`.
 - **listUnknownPackages**: By default, the check will warn if any packages are missing from React Native Directory. Set this to false to disable this behavior.
 
@@ -84,8 +84,8 @@ You can configure the React Native Directory check in your **package.json** file
 ## Enable the New Architecture in an existing project
 
 <Tabs>
-  <Tab label="SDK 53 and above">
-    **The New Architecture is enabled by default in SDK 53 and above**. If you have explicitly disabled it, remove that configuration to enable it.
+  <Tab label="SDK 53 and later">
+    **The New Architecture is enabled by default in SDK 53 and later**. If you have explicitly disabled it, remove that configuration to enable it.
 
   </Tab>
 
@@ -138,7 +138,7 @@ You can configure the React Native Directory check in your **package.json** file
 
   </Tab>
 
-  <Tab label="SDK 51 and below">
+  <Tab label="SDK 51 and earlier">
     We recommend upgrading to at least SDK 52, preferably SDK 53. It's possible to enable the New Architecture in SDK 51, but you are likely to encounter a variety of issues that have been resolved in more recent releases. To enable it, you need to [install the `expo-build-properties` plugin](/versions/latest/sdk/build-properties/#installation) and set `newArchEnabled` on target platforms.
   </Tab>
 </Tabs>

@@ -22,6 +22,7 @@ public final class ExpoUIModule: Module {
     View(ExpoUI.ContextMenu.self)
     View(ExpoUI.ContextMenuActivationElement.self)
     View(ExpoUI.ContextMenuPreview.self)
+    View(ExpoUI.ContextMenuContent.self)
     View(FormView.self)
     View(GaugeView.self)
     View(GroupView.self)
@@ -37,15 +38,28 @@ public final class ExpoUIModule: Module {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
       }
+      AsyncFunction("blur") { (view: SecureFieldView) in
+        view.blur()
+      }
+      AsyncFunction("focus") { (view: SecureFieldView) in
+        view.focus()
+      }
     }
     View(ShareLinkView.self)
     View(SliderView.self)
     View(SpacerView.self)
+    View(StepperView.self)
     View(SwitchView.self)
     View(TextView.self)
     View(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("blur") { (view: TextFieldView) in
+        view.blur()
+      }
+      AsyncFunction("focus") { (view: TextFieldView) in
+        view.focus()
       }
     }
     View(VStackView.self)
@@ -60,5 +74,6 @@ public final class ExpoUIModule: Module {
     View(CapsuleView.self)
     View(CircleView.self)
     View(ConcentricRectangleView.self)
+    View(DividerView.self)
   }
 }

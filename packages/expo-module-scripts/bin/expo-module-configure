@@ -17,10 +17,10 @@ OPTIONAL_TEMPLATE_FILES=(
 # returns relative file paths inside a given directory without the leading "./".
 # usage: get_relative_files "/path/to/dir"
 get_relative_files() {
-  pushd $1 > /dev/null
+  pushd "$1" > /dev/null
   local files=$(find . -type f | cut -c 3-)
   popd > /dev/null
-  echo $files
+  echo "$files"
 }
 
 

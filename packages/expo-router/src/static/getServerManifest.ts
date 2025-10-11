@@ -33,7 +33,7 @@ export async function getBuildTimeServerManifestAsync(
   // Evaluate all static params
   await loadStaticParamsAsync(routeTree);
 
-  return getServerManifest(routeTree);
+  return getServerManifest(routeTree, options);
 }
 
 /** Get the linking manifest from a Node.js process. */

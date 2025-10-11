@@ -405,6 +405,7 @@ export const eas = [
       expanded: true,
     }
   ),
+  makeSection('AI', [makePage('eas/ai/mcp.mdx')]),
   makeSection('EAS Workflows', [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
@@ -775,6 +776,7 @@ function makePage(file) {
     isNew: data.isNew ?? undefined,
     isAlpha: data.isAlpha ?? undefined,
     isBeta: data.isBeta ?? undefined,
+    isPreview: data.isPreview ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
     hasVideoLink: data.hasVideoLink ?? undefined,

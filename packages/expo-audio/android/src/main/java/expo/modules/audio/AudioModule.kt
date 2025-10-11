@@ -411,9 +411,9 @@ class AudioModule : Module() {
         }
       }
 
-      Function("setActiveForLockScreen") { ref: AudioPlayer, active: Boolean, metadata: Metadata? ->
+      Function("setActiveForLockScreen") { ref: AudioPlayer, active: Boolean, metadata: Metadata?, options: AudioLockScreenOptions? ->
         runOnMain {
-          ref.setActiveForLockScreen(active, metadata)
+          ref.setActiveForLockScreen(active, metadata, options)
         }
       }
 

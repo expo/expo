@@ -41,6 +41,7 @@ export interface SourceIconCombination {
     };
     drawable?: never;
     sf?: never;
+    androidSrc?: never;
 }
 export interface NamedIconCombination {
     /**
@@ -72,10 +73,67 @@ export interface NamedIconCombination {
      */
     drawable?: string;
     src?: never;
+    androidSrc?: never;
+}
+export interface CrossPlatformIconCombination {
+    /**
+     * The name of the SF Symbol to use as an icon on iOS.
+     *
+     * The value can be provided in two ways:
+     * - As a string with the SF Symbol name
+     * - As an object specifying the default and selected states
+     *
+     * @example
+     * ```tsx
+     * <Icon sf="magnifyingglass" androidSrc={require('./search.png')} />
+     * ```
+     *
+     * @example
+     * ```tsx
+     * <Icon
+     *   sf={{ default: "house", selected: "house.fill" }}
+     *   androidSrc={{ default: require('./home.png'), selected: require('./home-filled.png') }}
+     * />
+     * ```
+     *
+     * @platform iOS
+     */
+    sf?: SFSymbol | {
+        default?: SFSymbol;
+        selected: SFSymbol;
+    };
+    /**
+     * The image source to use as an icon on Android.
+     *
+     * The value can be provided in two ways:
+     * - As an image source
+     * - As an object specifying the default and selected states
+     *
+     * @example
+     * ```tsx
+     * <Icon sf="magnifyingglass" androidSrc={require('./search.png')} />
+     * ```
+     *
+     * @example
+     * ```tsx
+     * <Icon
+     *   sf={{ default: "house", selected: "house.fill" }}
+     *   androidSrc={{ default: require('./icon.png'), selected: require('./icon-selected.png') }}
+     * />
+     * ```
+     *
+     * @platform Android
+     */
+    androidSrc?: ImageSourcePropType | React.ReactElement | {
+        default?: ImageSourcePropType | React.ReactElement;
+        selected: ImageSourcePropType | React.ReactElement;
+    };
+    src?: never;
+    drawable?: never;
 }
 export type IconProps = {
     selectedColor?: ColorValue;
-} & (NamedIconCombination | SourceIconCombination);
+} & (NamedIconCombination | SourceIconCombination | CrossPlatformIconCombination);
 /**
  * Renders an icon for the tab.
  *

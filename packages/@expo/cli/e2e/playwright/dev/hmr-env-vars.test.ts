@@ -37,7 +37,7 @@ test.describe('router-e2e with spaces', () => {
       // outside the Expo monorepo module
       {
         linkExpoPackages: ['expo'],
-        linkExpoPackagesDev: ['@expo/cli', 'babel-preset-expo', '@expo/metro-config', '@expo/server'],
+        linkExpoPackagesDev: ['@expo/cli', 'babel-preset-expo', '@expo/metro-config', 'expo-server'],
       }
     );
 

@@ -46,7 +46,7 @@ export function NativeTabsNavigator({
     },
   });
 
-  const { state, descriptors } = builder;
+  const { state, descriptors, NavigationContent } = builder;
   const { routes } = state;
   let focusedIndex = state.index;
   const isAnyRouteFocused =
@@ -65,9 +65,11 @@ export function NativeTabsNavigator({
   }
 
   return (
-    <NativeTabsContext value>
-      <NativeTabsView builder={builder} {...rest} focusedIndex={focusedIndex} />
-    </NativeTabsContext>
+    <NavigationContent>
+      <NativeTabsContext value>
+        <NativeTabsView builder={builder} {...rest} focusedIndex={focusedIndex} />
+      </NativeTabsContext>
+    </NavigationContent>
   );
 }
 

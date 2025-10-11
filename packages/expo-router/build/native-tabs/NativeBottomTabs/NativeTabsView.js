@@ -53,6 +53,11 @@ function NativeTabsView(props) {
         blurEffect = undefined;
     }
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
+    // We need to check if the deferred index is not out of bounds
+    // This can happen when the focused index is the last tab, and user removes that tab
+    // In that case the deferred index will still point to the last tab, but after re-render
+    // it will be out of bounds
+    const inBoundsDeferredFocusedIndex = deferredFocusedIndex < routes.length ? deferredFocusedIndex : focusedIndex;
     let standardAppearance = (0, appearance_1.convertStyleToAppearance)({
         ...props.labelStyle,
         iconColor: props.iconColor,
@@ -80,24 +85,15 @@ function NativeTabsView(props) {
         .filter(({ route: { key } }) => (0, utils_1.shouldTabBeVisible)(descriptors[key].options))
         .map(({ route, index }) => {
         const descriptor = descriptors[route.key];
-        const isFocused = index === deferredFocusedIndex;
+        const isFocused = index === inBoundsDeferredFocusedIndex;
         return (<Screen key={route.key} routeKey={route.key} name={route.name} descriptor={descriptor} isFocused={isFocused} standardAppearance={appearances[index].standardAppearance} scrollEdgeAppearance={appearances[index].scrollEdgeAppearance} badgeTextColor={props.badgeTextColor}/>);
     });
+    const currentTabAppearance = appearances[inBoundsDeferredFocusedIndex]?.standardAppearance;
     return (<BottomTabsWrapper 
     // #region android props
-    tabBarItemTitleFontColor={appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-            ?.tabBarItemTitleFontColor} tabBarItemTitleFontFamily={appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-            ?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-            ?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-            ?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-            ?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-            ?.tabBarItemTitleFontStyle} tabBarItemIconColor={appearances[deferredFocusedIndex].standardAppearance.stacked?.normal?.tabBarItemIconColor} tabBarBackgroundColor={appearances[deferredFocusedIndex].standardAppearance.tabBarBackgroundColor ??
-            props.backgroundColor ??
-            undefined} tabBarItemRippleColor={props.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={appearances[deferredFocusedIndex].standardAppearance?.stacked?.selected
-            ?.tabBarItemIconColor ?? props?.tintColor} tabBarItemTitleFontColorActive={appearances[deferredFocusedIndex].standardAppearance?.stacked?.selected
-            ?.tabBarItemTitleFontColor ?? props?.tintColor} 
+    tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor} tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor ?? props.backgroundColor ?? undefined} tabBarItemRippleColor={props.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor} tabBarItemTitleFontColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor} 
     // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
-    tabBarItemActiveIndicatorColor={options[deferredFocusedIndex]?.indicatorColor ?? props?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
+    tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor ?? props?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
     // #endregion
     // #region iOS props
     tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} 
@@ -118,14 +114,10 @@ function NativeTabsView(props) {
 }
 function Screen(props) {
     const { routeKey, name, descriptor, isFocused, standardAppearance, scrollEdgeAppearance, badgeTextColor, } = props;
-    const role = descriptor.options.role;
-    // To align with apple documentation and prevent untested cases,
-    // title and icon cannot be changed when role is defined
-    const shouldResetTitleAndIcon = !!role && process.env.EXPO_OS === 'ios';
     const title = descriptor.options.title ?? name;
     const icon = useAwaitedScreensIcon(descriptor.options.icon);
     const selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
-    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(icon)} iconResource={getAndroidIconResource(icon)} icon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(icon)} selectedIcon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(selectedIcon)} title={shouldResetTitleAndIcon ? undefined : title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
+    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(icon)} iconResource={getAndroidIconResource(icon)} icon={convertOptionsIconToPropsIcon(icon)} selectedIcon={convertOptionsIconToPropsIcon(selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
       {descriptor.render()}
     </react_native_screens_1.BottomTabsScreen>);
 }

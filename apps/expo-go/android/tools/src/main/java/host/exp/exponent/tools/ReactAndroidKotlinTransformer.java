@@ -247,6 +247,14 @@ public class ReactAndroidKotlinTransformer {
             
             content = replaceFunction(content, "hasUpToDateJSBundleInCache", newHasUpToDateImplementation);
 
+            String getExponentActivityIdImplementation = """
+                private fun getExponentActivityId(): Int {
+                    val devInternalSettings = devSettings as? DevInternalSettings
+                    return devInternalSettings?.getExponentActivityId() ?: -1
+                }""";
+
+            content = replaceFunction(content, "getExponentActivityId", getExponentActivityIdImplementation);
+
             return content;
         }
 

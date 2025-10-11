@@ -428,6 +428,31 @@ The Jetpack Compose components in `@expo/ui/jetpack-compose` allow you to build 
   </Tab>
 </Tabs>
 
+### BottomSheet
+
+<Tabs>
+
+<Tab label="Android">
+  <ContentSpotlight
+    alt="BottomSheet component on Android."
+    src="/static/images/expo-ui/bottomsheet/android.png"
+    className="max-w-[240px]"
+  />
+</Tab>
+
+  <Tab label="Code">
+    ```tsx
+    import { BottomSheet } from '@expo/ui/jetpack-compose';
+
+    <BottomSheet isOpened={isOpened} onIsOpenedChange={e => setIsOpened(e)}>
+      <Text>Hello, world!</Text>
+    </BottomSheet>
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/bottom-sheets)*
+
+  </Tab>
+</Tabs>
+
 ## API
 
 Full documentation is not yet available. Use TypeScript types to explore the API.

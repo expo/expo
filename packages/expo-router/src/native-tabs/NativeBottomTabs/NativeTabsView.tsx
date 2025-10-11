@@ -47,6 +47,13 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   }
 
   const deferredFocusedIndex = useDeferredValue(focusedIndex);
+  // We need to check if the deferred index is not out of bounds
+  // This can happen when the focused index is the last tab, and user removes that tab
+  // In that case the deferred index will still point to the last tab, but after re-render
+  // it will be out of bounds
+  const inBoundsDeferredFocusedIndex =
+    deferredFocusedIndex < routes.length ? deferredFocusedIndex : focusedIndex;
+
   let standardAppearance = convertStyleToAppearance({
     ...props.labelStyle,
     iconColor: props.iconColor,
@@ -86,7 +93,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     .filter(({ route: { key } }) => shouldTabBeVisible(descriptors[key].options))
     .map(({ route, index }) => {
       const descriptor = descriptors[route.key];
-      const isFocused = index === deferredFocusedIndex;
+      const isFocused = index === inBoundsDeferredFocusedIndex;
 
       return (
         <Screen
@@ -102,54 +109,32 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       );
     });
 
+  const currentTabAppearance = appearances[inBoundsDeferredFocusedIndex]?.standardAppearance;
+
   return (
     <BottomTabsWrapper
       // #region android props
-      tabBarItemTitleFontColor={
-        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-          ?.tabBarItemTitleFontColor
-      }
-      tabBarItemTitleFontFamily={
-        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-          ?.tabBarItemTitleFontFamily
-      }
-      tabBarItemTitleFontSize={
-        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-          ?.tabBarItemTitleFontSize
-      }
-      tabBarItemTitleFontSizeActive={
-        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-          ?.tabBarItemTitleFontSize
-      }
-      tabBarItemTitleFontWeight={
-        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-          ?.tabBarItemTitleFontWeight
-      }
-      tabBarItemTitleFontStyle={
-        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
-          ?.tabBarItemTitleFontStyle
-      }
-      tabBarItemIconColor={
-        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal?.tabBarItemIconColor
-      }
+      tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor}
+      tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily}
+      tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize}
+      tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize}
+      tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight}
+      tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle}
+      tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor}
       tabBarBackgroundColor={
-        appearances[deferredFocusedIndex].standardAppearance.tabBarBackgroundColor ??
-        props.backgroundColor ??
-        undefined
+        currentTabAppearance?.tabBarBackgroundColor ?? props.backgroundColor ?? undefined
       }
       tabBarItemRippleColor={props.rippleColor}
       tabBarItemLabelVisibilityMode={props.labelVisibilityMode}
       tabBarItemIconColorActive={
-        appearances[deferredFocusedIndex].standardAppearance?.stacked?.selected
-          ?.tabBarItemIconColor ?? props?.tintColor
+        currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor
       }
       tabBarItemTitleFontColorActive={
-        appearances[deferredFocusedIndex].standardAppearance?.stacked?.selected
-          ?.tabBarItemTitleFontColor ?? props?.tintColor
+        currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor
       }
       // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
       tabBarItemActiveIndicatorColor={
-        options[deferredFocusedIndex]?.indicatorColor ?? props?.indicatorColor
+        options[inBoundsDeferredFocusedIndex]?.indicatorColor ?? props?.indicatorColor
       }
       tabBarItemActiveIndicatorEnabled={!disableIndicator}
       // #endregion
@@ -191,11 +176,6 @@ function Screen(props: {
     scrollEdgeAppearance,
     badgeTextColor,
   } = props;
-  const role = descriptor.options.role;
-  // To align with apple documentation and prevent untested cases,
-  // title and icon cannot be changed when role is defined
-  const shouldResetTitleAndIcon = !!role && process.env.EXPO_OS === 'ios';
-
   const title = descriptor.options.title ?? name;
 
   const icon = useAwaitedScreensIcon(descriptor.options.icon);
@@ -212,11 +192,9 @@ function Screen(props: {
       scrollEdgeAppearance={scrollEdgeAppearance}
       iconResourceName={getAndroidIconResourceName(icon)}
       iconResource={getAndroidIconResource(icon)}
-      icon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(icon)}
-      selectedIcon={
-        shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(selectedIcon)
-      }
-      title={shouldResetTitleAndIcon ? undefined : title}
+      icon={convertOptionsIconToPropsIcon(icon)}
+      selectedIcon={convertOptionsIconToPropsIcon(selectedIcon)}
+      title={title}
       freezeContents={false}
       tabKey={routeKey}
       systemItem={descriptor.options.role}

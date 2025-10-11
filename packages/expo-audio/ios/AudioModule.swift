@@ -174,8 +174,10 @@ public class AudioModule: Module {
         }
 
         if player.shouldCorrectPitch {
-          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
+          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .timeDomain
           player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
+        } else {
+          player.ref.currentItem?.audioTimePitchAlgorithm = .varispeed
         }
       }
 
@@ -200,8 +202,8 @@ public class AudioModule: Module {
         }
       }
 
-      Function("setActiveForLockScreen") { (player: AudioPlayer, active: Bool, metadata: Metadata?) in
-        player.setActiveForLockScreen(active, metadata: metadata)
+      Function("setActiveForLockScreen") { (player: AudioPlayer, active: Bool, metadata: Metadata?, options: LockScreenOptions?) in
+        player.setActiveForLockScreen(active, metadata: metadata, options: options)
       }
 
       Function("updateLockScreenMetadata") { (player: AudioPlayer, metadata: Metadata?) in
@@ -528,8 +530,12 @@ public class AudioModule: Module {
       }
 
 #if !os(tvOS)
-      if category == .playAndRecord || category == .playback {
+      if category == .playAndRecord {
+#if compiler(>=6.0)
+        categoryOptions.insert(.allowBluetoothHFP)
+#else
         categoryOptions.insert(.allowBluetooth)
+#endif
       }
 #endif
 

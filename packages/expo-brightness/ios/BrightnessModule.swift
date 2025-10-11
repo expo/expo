@@ -68,7 +68,6 @@ public class BrightnessModule: Module {
 
     AsyncFunction("getSystemBrightnessAsync") {}
     AsyncFunction("setSystemBrightnessAsync") {}
-    AsyncFunction("useSystemBrightnessAsync") {}
     AsyncFunction("isUsingSystemBrightnessAsync") {}
     AsyncFunction("getSystemBrightnessModeAsync") {}
     AsyncFunction("setSystemBrightnessModeAsync") {}

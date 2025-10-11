@@ -17,11 +17,15 @@ export type SearchResults = {
 export interface ModuleAndroidProjectInfo {
     name: string;
     sourceDir: string;
-    modules: string[];
+    modules: ModuleAndroidModuleInfo[];
     packages: string[];
     publication?: AndroidPublication;
     aarProjects?: AndroidGradleAarProjectDescriptor[];
     shouldUsePublicationScriptPath?: string;
+}
+export interface ModuleAndroidModuleInfo {
+    name: string | null;
+    classifier: string;
 }
 export interface ModuleAndroidPluginInfo {
     id: string;
@@ -54,7 +58,21 @@ export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
 export interface ModuleDescriptorDevTools {
     packageName: string;
     packageRoot: string;
-    webpageRoot: string;
+    webpageRoot?: string;
+    cliExtensions?: {
+        description: string;
+        commands: {
+            name: string;
+            title: string;
+            environments: ('cli' | 'mcp')[];
+            parameters?: {
+                name: string;
+                type: 'text' | 'number' | 'confirm';
+                description?: string;
+            }[];
+        }[];
+        entryPoint: string;
+    };
 }
 export interface ModuleDescriptorWeb {
     packageName: string;
@@ -143,6 +161,13 @@ export type RawModuleConfigApple = {
      */
     debugOnly?: boolean;
 };
+export type RawAndroidModuleConfig = {
+    /**
+     * Names of the modules to be linked in the project.
+     */
+    name: string;
+    class: string;
+};
 /**
  * Represents a raw config specific to Android platforms.
  */
@@ -169,7 +194,7 @@ export type RawAndroidProjectConfig = {
     /**
      * Names of the modules to be linked in the project.
      */
-    modules?: string[];
+    modules?: (string | RawAndroidModuleConfig)[];
     /**
      * Prebuilded AAR projects.
      */
@@ -213,9 +238,56 @@ export interface RawExpoModuleConfig {
      */
     devtools?: {
         /**
-         * The webpage root directory for Expo CLI DevTools to serve the web resources.
+         * The webpage root directory for Expo CLI DevTools to serve the web resources. Only set if the module has a web interface.
          */
-        webpageRoot: string;
+        webpageRoot?: string;
+        /**
+         * Cli extension config for the module.
+         */
+        cliExtensions?: {
+            description: string;
+            /**
+             * The commands that the module provides in the CLI.
+             * Each command has a name and a caption.
+             */
+            commands: {
+                /**
+                 * Name of command
+                 */
+                name: string;
+                /**
+                 * Title for the command that will be displayed in the CLI.
+                 */
+                title: string;
+                /**
+                 * Optional array of disabled environments for the command. By default all commands are enabled on all environments.
+                 * Environments can be 'cli' for the CLI or 'mcp' for the Model Context Protocol.
+                 */
+                environments: ('cli' | 'mcp')[];
+                /**
+                 * Optional parameters for the command.
+                 */
+                parameters?: {
+                    /**
+                     * Name of the parameter.
+                     */
+                    name: string;
+                    /**
+                     * Type of the parameter.
+                     * Can be 'text', 'number', or 'confirm'.
+                     */
+                    type: 'text' | 'number' | 'confirm';
+                    /**
+                     * Description of the parameter that will be displayed in the CLI.
+                     */
+                    description?: string;
+                }[];
+            }[];
+            /**
+             * The main entry point for the module in the CLI.
+             */
+            entryPoint: string;
+        };
     };
 }
 interface AndroidMavenRepositoryPasswordCredentials {

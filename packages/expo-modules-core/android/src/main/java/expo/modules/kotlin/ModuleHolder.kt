@@ -1,6 +1,5 @@
 package expo.modules.kotlin
 
-import com.facebook.react.bridge.Arguments
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
@@ -11,17 +10,17 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
-import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.objects.ObjectDefinitionData
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
-import kotlin.reflect.KClass
 
-class ModuleHolder<T : Module>(val module: T) {
+class ModuleHolder<T : Module>(
+  val module: T,
+  private val _name: String?
+) {
   val definition = module.definition()
 
-  val name get() = definition.name
+  val name get() = _name ?: definition.name
 
   private var wasInitialized = false
 
@@ -43,47 +42,11 @@ class ModuleHolder<T : Module>(val module: T) {
       val runtimeContext = module.runtimeContext
       val jniDeallocator = runtimeContext.jniDeallocator
 
-      val moduleDecorator = JSDecoratorsBridgingObject(jniDeallocator)
-      attachPrimitives(appContext, definition.objectDefinition, moduleDecorator, name)
-
-      // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
-      moduleDecorator.registerProperty("__expo_module_name__", false, emptyArray(), { name }, false, emptyArray(), null)
-
-      val viewPrototypesDecorator = JSDecoratorsBridgingObject(jniDeallocator)
-      definition.viewManagerDefinitions.forEach { key, definition ->
-        val viewFunctions = definition.asyncFunctions
-        if (viewFunctions.isEmpty()) {
-          return@forEach
-        }
-        trace("Attaching view prototype") {
-          val viewDecorator = JSDecoratorsBridgingObject(jniDeallocator)
-          viewFunctions.forEach { function ->
-            function.attachToJSObject(appContext, viewDecorator, name)
-          }
-          viewPrototypesDecorator.registerObject(if (key == DEFAULT_MODULE_VIEW) name else "${name}_${definition.name}", viewDecorator)
-        }
-      }
-      moduleDecorator.registerObject("ViewPrototypes", viewPrototypesDecorator)
-
-      trace("Attaching classes") {
-        definition.classData.forEach { clazz ->
-          val prototypeDecorator = JSDecoratorsBridgingObject(jniDeallocator)
-
-          attachPrimitives(appContext, clazz.objectDefinition, prototypeDecorator, clazz.name)
-
-          val constructor = clazz.constructor
-          val ownerClass = (constructor.ownerType?.classifier as? KClass<*>)?.java
-
-          moduleDecorator.registerClass(
-            clazz.name,
-            prototypeDecorator,
-            constructor.takesOwner,
-            ownerClass,
-            clazz.isSharedRef,
-            constructor.getCppRequiredTypes().toTypedArray(),
-            constructor.getJNIFunctionBody(clazz.name, appContext)
-          )
-        }
+      val moduleDecorator = JSDecoratorsBridgingObject(jniDeallocator).apply {
+        export(
+          appContext,
+          runtimeContext
+        )
       }
 
       JavaScriptModuleObject(jniDeallocator, name).apply {
@@ -92,33 +55,25 @@ class ModuleHolder<T : Module>(val module: T) {
     }
   }
 
-  private fun attachPrimitives(appContext: AppContext, definition: ObjectDefinitionData, moduleDecorator: JSDecoratorsBridgingObject, name: String) {
-    trace("Exporting constants") {
-      val constants = definition.legacyConstantsProvider()
-      val convertedConstants = Arguments.makeNativeMap(constants)
-      moduleDecorator.registerConstants(convertedConstants)
+  private fun JSDecoratorsBridgingObject.export(
+    appContext: AppContext,
+    runtimeContext: RuntimeContext
+  ) {
+    // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
+    registerModuleName(name)
 
-      definition
-        .constants
-        .forEach { (_, prop) ->
-          prop.attachToJSObject(moduleDecorator)
-        }
-    }
+    with(definition) {
+      objectDefinition.apply {
+        exportConstants()
+        exportFunctions(name, appContext)
+        exportProperties(appContext)
+      }
 
-    trace("Attaching functions") {
-      definition
-        .functions
-        .forEach { function ->
-          function.attachToJSObject(appContext, moduleDecorator, name)
-        }
-    }
+      viewManagerDefinitions
+        .exportViewPrototypes(name, appContext, runtimeContext)
 
-    trace("Attaching properties") {
-      definition
-        .properties
-        .forEach { (_, prop) ->
-          prop.attachToJSObject(appContext, moduleDecorator)
-        }
+      classData
+        .exportClasses(appContext, runtimeContext)
     }
   }
 
@@ -126,7 +81,7 @@ class ModuleHolder<T : Module>(val module: T) {
    * Invokes a function with promise. Is used in the bridge implementation of the Sweet API.
    */
   fun call(methodName: String, args: Array<Any?>, promise: Promise) = exceptionDecorator({
-    FunctionCallException(methodName, definition.name, it)
+    FunctionCallException(methodName, name, it)
   }) {
     val method = definition.asyncFunctions[methodName]
       ?: throw MethodNotFoundException()

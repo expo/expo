@@ -30,6 +30,7 @@ describe('exports with tailwind and postcss', () => {
     // The wrapper should not be included as a route.
     expect(files).toEqual([
       '+not-found.html',
+      '_expo/.routes.json',
       expect.stringMatching(/_expo\/static\/css\/global-.*\.css/),
       expect.stringMatching(/_expo\/static\/css\/modal\.module-.*\.css/),
       expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/),

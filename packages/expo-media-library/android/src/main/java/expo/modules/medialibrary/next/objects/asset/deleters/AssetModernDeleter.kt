@@ -16,6 +16,9 @@ class AssetModernDeleter(
   }
 
   override suspend fun delete(contentUris: List<Uri>) = withContext(Dispatchers.IO) {
+    if (contentUris.isEmpty()) {
+      return@withContext
+    }
     mediaStorePermissionsDelegate.launchMediaStoreDeleteRequest(contentUris)
   }
 }
