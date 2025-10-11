@@ -29,7 +29,7 @@ DevMenu.registerDevMenuItems([
   },
 ]);
 
-Splashscreen.setOptions({ fade: true, duration: 800 });
+Splashscreen.setOptions({ fade: true, duration: 600 });
 
 // Require the `BackgroundTaskScreen` component from `native-component-list` if it's available
 // so that we load the module and register its background task on startup.
