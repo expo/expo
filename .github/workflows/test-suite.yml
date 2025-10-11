@@ -210,11 +210,12 @@ jobs:
         uses: actions/checkout@v5
       - uses: actions/cache/restore@v4
         with:
+          # ${{ runner.tool_cache }}/fingerprint-storage/fingerprint.db
           path: |
-            ${{ runner.tool_cache }}/fingerprint-storage/fingerprint.db
+            ../../../../../opt/hostedtoolcache/fingerprint-storage/fingerprint.db
           key: fingerprint-db
           # key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
-          enableCrossOsArchive: true
+          # enableCrossOsArchive: true
           fail-on-cache-miss: true
           lookup-only: true
       - uses: actions/upload-artifact@v4
