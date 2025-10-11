@@ -7,6 +7,8 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- [Android] Fixed AAPT error when using locale format with region codes (e.g., `en-US`, `pt-BR`) in `supportedLocales` by converting to Android resource configuration format (`en-rUS`, `pt-rBR`). ([#40253](https://github.com/expo/expo/pull/40253) by [@mensonones](https://github.com/mensonones))
 - Correct types for getCalendars and getLocales ([#39703](https://github.com/expo/expo/pull/39703) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others

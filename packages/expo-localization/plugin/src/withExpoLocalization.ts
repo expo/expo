@@ -52,6 +52,45 @@ function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   return config;
 }
 
+/**
+ * Converts a locale from ISO format (en-US) to Android resource configuration format (en-rUS).
+ * 
+ * Android requires the 'r' prefix before the region code in resourceConfigurations,
+ * while XML locale configs and APIs use the standard ISO format with hyphen.
+ * 
+ * @param locale - The locale string to convert (e.g., "en-US", "pt-BR", "es-419")
+ * @returns The locale in Android resource configuration format (e.g., "en-rUS", "pt-rBR", "es-r419")
+ * 
+ * @example
+ * convertLocaleToAndroidFormat("en-US") // Returns "en-rUS"
+ * convertLocaleToAndroidFormat("pt-BR") // Returns "pt-rBR"
+ * convertLocaleToAndroidFormat("en") // Returns "en" (no region)
+ * convertLocaleToAndroidFormat("en-rUS") // Returns "en-rUS" (already in Android format)
+ * 
+ * @internal This function is exported for testing purposes
+ */
+export function convertLocaleToAndroidFormat(locale: string): string {
+  // If already in Android format (contains '-r'), return as is
+  if (locale.includes('-r')) {
+    return locale;
+  }
+  
+  // If it's a simple locale (language only), return as is
+  if (!locale.includes('-')) {
+    return locale;
+  }
+  
+  // Convert ISO format to Android format
+  const parts = locale.split('-');
+  if (parts.length >= 2) {
+    const language = parts[0];
+    const region = parts.slice(1).join('-');
+    return `${language}-r${region}`;
+  }
+  
+  return locale;
+}
+
 function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps) {
   if (data.allowDynamicLocaleChangesAndroid) {
     config = withAndroidManifest(config, (config) => {
@@ -106,10 +145,12 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
     });
     config = withAppBuildGradle(config, (config) => {
       if (config.modResults.language === 'groovy') {
+        // Convert locales to Android format before adding to resourceConfigurations
+        const androidFormattedLocales = supportedLocales.map(convertLocaleToAndroidFormat);
         config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
           config.modResults.contents,
           'defaultConfig',
-          `    resourceConfigurations += [${supportedLocales.map((lang) => `"${lang}"`).join(', ')}]\n    `
+          `    resourceConfigurations += [${androidFormattedLocales.map((lang) => `"${lang}"`).join(', ')}]\n    `
         );
       } else {
         WarningAggregator.addWarningAndroid(
