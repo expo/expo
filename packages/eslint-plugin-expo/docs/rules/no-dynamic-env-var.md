@@ -9,21 +9,19 @@ This rule aims to prevent users from encountering errors due to dynamically acce
 Examples of **incorrect** code for this rule:
 
 ```js
-
-const myVar = process.env["MY_VAR"]
-
-
 const dynamicVar = "MY_VAR";
 const myVar = process.env[dynamicVar];
 
+const myVar = process.env[`MY_${VAR}`];
 ```
 
 Examples of **correct** code for this rule:
 
 ```js
-
 const myVar = process.env.MY_VAR;
-
+const myVar = process.env["MY_VAR"];
+const myVar = process.env['MY_VAR'];
+const myVar = process.env[`MY_VAR`];
 ```
 
 ## When Not To Use It
