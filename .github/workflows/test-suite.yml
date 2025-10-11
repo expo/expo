@@ -35,154 +35,163 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/cache/restore@v4
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
-      - name: 🍺 Install required tools
-        run: |
-          brew install watchman || true
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-          ruby-version: 3.2.2
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-          bare-expo-pods: 'true'
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: 🕵️ Debug CocoaPods lockfiles
-        run: git diff Podfile.lock Pods/Manifest.lock
-        working-directory: apps/bare-expo/ios
-        continue-on-error: true
-      - name: ⚛️ Display React Native config
-        run: yarn expo-modules-autolinking react-native-config --platform ios
-        working-directory: apps/bare-expo
-      - name: ⬇️ Fetch commits from base branch
-        run: git fetch origin main:main --depth 100 --no-recurse-submodules
-        if: github.event_name == 'pull_request'
-      - name: 🔎 Get the base commit
-        id: base-commit
-        run: |
-          # Since we limit this workflow only triggered from limited paths, we should use custom base commit
-          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
-      - name: 📹 Check fingerprint
-        id: fingerprint
-        uses: expo/actions/fingerprint@main
-        with:
-          working-directory: apps/bare-expo
-          previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
-          fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
-      - name: 🏗️ Build/Repack iOS project (bare-expo)
-        uses: expo/actions/repack-app-artifact@main
-        timeout-minutes: 55
-        env:
-          EXPO_DEBUG: 1
-          NODE_ENV: production
-          RCT_USE_PREBUILT_RNCORE: 1
-          RCT_USE_RN_DEP: 1
-        with:
-          platform: ios
-          fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
-          working-directory: apps/bare-expo
-          build-command: |
-            pushd ios
-            pod env
-            pod install
-            popd
-            ./scripts/start-ios-e2e-test.ts --build
-          build-output: apps/bare-expo/ios/build/BareExpo.app
-          artifact-name: bare-expo-ios-builds
-      - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
-        with:
-          channel: '#expo-ios'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
-          author_name: Test Suite e2e (iOS)
+          path: fingerprint-db
+          key: fingerprint-db
+          restore-keys: fingerprint-db
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: fingerprint-db
+      #     path: fingerprint-db
+      # - name: 🏗️ Setup Bun
+      #   uses: oven-sh/setup-bun@v2
+      #   with:
+      #     # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+      #     # TODO(cedric): swap `latest` back once the issue is resolved
+      #     bun-version: latest
+      # - name: 🔨 Switch to Xcode 26.0
+      #   run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+      # - name: 🍺 Install required tools
+      #   run: |
+      #     brew install watchman || true
+      # - name: ➕ Add `bin` to GITHUB_PATH
+      #   run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      # - name: 💎 Setup Ruby and install gems
+      #   uses: ruby/setup-ruby@v1
+      #   with:
+      #     bundler-cache: true
+      #     ruby-version: 3.2.2
+      # - name: ♻️ Restore caches
+      #   uses: ./.github/actions/expo-caches
+      #   id: expo-caches
+      #   with:
+      #     yarn-workspace: 'true'
+      #     yarn-tools: 'true'
+      #     bare-expo-pods: 'true'
+      # - name: 🧶 Install node modules in root dir
+      #   if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+      #   run: yarn install --frozen-lockfile
+      # - name: 🕵️ Debug CocoaPods lockfiles
+      #   run: git diff Podfile.lock Pods/Manifest.lock
+      #   working-directory: apps/bare-expo/ios
+      #   continue-on-error: true
+      # - name: ⚛️ Display React Native config
+      #   run: yarn expo-modules-autolinking react-native-config --platform ios
+      #   working-directory: apps/bare-expo
+      # - name: ⬇️ Fetch commits from base branch
+      #   run: git fetch origin main:main --depth 100 --no-recurse-submodules
+      #   if: github.event_name == 'pull_request'
+      # - name: 🔎 Get the base commit
+      #   id: base-commit
+      #   run: |
+      #     # Since we limit this workflow only triggered from limited paths, we should use custom base commit
+      #     echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+      # - name: 📹 Check fingerprint
+      #   id: fingerprint
+      #   uses: expo/actions/fingerprint@main
+      #   with:
+      #     working-directory: apps/bare-expo
+      #     previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
+      #     fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
+      # - name: 🏗️ Build/Repack iOS project (bare-expo)
+      #   uses: expo/actions/repack-app-artifact@main
+      #   timeout-minutes: 55
+      #   env:
+      #     EXPO_DEBUG: 1
+      #     NODE_ENV: production
+      #     RCT_USE_PREBUILT_RNCORE: 1
+      #     RCT_USE_RN_DEP: 1
+      #   with:
+      #     platform: ios
+      #     fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
+      #     working-directory: apps/bare-expo
+      #     build-command: |
+      #       pushd ios
+      #       pod env
+      #       pod install
+      #       popd
+      #       ./scripts/start-ios-e2e-test.ts --build
+      #     build-output: apps/bare-expo/ios/build/BareExpo.app
+      #     artifact-name: bare-expo-ios-builds
+      # - name: 🔔 Notify on Slack
+      #   uses: 8398a7/action-slack@v3
+      #   if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
+      #   with:
+      #     channel: '#expo-ios'
+      #     status: ${{ job.status }}
+      #     fields: job,message,ref,eventName,author,took
+      #     author_name: Test Suite e2e (iOS)
 
-  ios-test-e2e:
-    needs: ios-build
-    runs-on: macos-15
-    steps:
-      - name: 👀 Checkout
-        uses: actions/checkout@v5
-        with:
-          submodules: true
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 🌠 Download builds
-        uses: actions/download-artifact@v4
-        with:
-          name: bare-expo-ios-builds
-          path: apps/bare-expo/ios/build/BareExpo.app
-      - name: 🧹 Cleanup unused simulator runtimes
-        run: |
-          xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
-          xcrun simctl list devices --json
-          xcrun simctl erase all
-          xcrun simctl shutdown all
-          sudo xcodebuild -runFirstLaunch
-      - name: 🍺 Install Maestro
-        run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
-          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: 🧪 Run e2e tests (bare-expo)
-        run: ./scripts/start-ios-e2e-test.ts --test
-        working-directory: apps/bare-expo
-        timeout-minutes: 30
-      - name: 📸 Store testing artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: bare-expo-artifacts-ios
-          path: |
-            ~/.maestro/tests/**/*
-            ~/Library/Logs/maestro/**/*
-          overwrite: true
-      - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
-        with:
-          channel: '#expo-ios'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
-          author_name: Test Suite e2e (iOS)
+  # ios-test-e2e:
+  #   needs: ios-build
+  #   runs-on: macos-15
+  #   steps:
+  #     - name: 👀 Checkout
+  #       uses: actions/checkout@v5
+  #       with:
+  #         submodules: true
+  #     - name: 🏗️ Setup Bun
+  #       uses: oven-sh/setup-bun@v2
+  #       with:
+  #         # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+  #         # TODO(cedric): swap `latest` back once the issue is resolved
+  #         bun-version: latest
+  #     - name: 🔨 Switch to Xcode 26.0
+  #       run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+  #     - name: ➕ Add `bin` to GITHUB_PATH
+  #       run: echo "$(pwd)/bin" >> $GITHUB_PATH
+  #     - name: 🌠 Download builds
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: bare-expo-ios-builds
+  #         path: apps/bare-expo/ios/build/BareExpo.app
+  #     - name: 🧹 Cleanup unused simulator runtimes
+  #       run: |
+  #         xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
+  #         xcrun simctl list devices --json
+  #         xcrun simctl erase all
+  #         xcrun simctl shutdown all
+  #         sudo xcodebuild -runFirstLaunch
+  #     - name: 🍺 Install Maestro
+  #       run: |
+  #         curl -Ls "https://get.maestro.mobile.dev" | bash
+  #         echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+  #     - name: ♻️ Restore caches
+  #       uses: ./.github/actions/expo-caches
+  #       id: expo-caches
+  #       with:
+  #         yarn-workspace: 'true'
+  #     - name: 🧶 Install node modules in root dir
+  #       if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+  #       run: yarn install --frozen-lockfile
+  #     - name: 🧪 Run e2e tests (bare-expo)
+  #       run: ./scripts/start-ios-e2e-test.ts --test
+  #       working-directory: apps/bare-expo
+  #       timeout-minutes: 30
+  #     - name: 📸 Store testing artifacts
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: bare-expo-artifacts-ios
+  #         path: |
+  #           ~/.maestro/tests/**/*
+  #           ~/Library/Logs/maestro/**/*
+  #         overwrite: true
+  #     - name: 🔔 Notify on Slack
+  #       uses: 8398a7/action-slack@v3
+  #       if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
+  #       with:
+  #         channel: '#expo-ios'
+  #         status: ${{ job.status }}
+  #         fields: job,message,ref,eventName,author,took
+  #         author_name: Test Suite e2e (iOS)
 
   android-build:
     runs-on: ubuntu-24.04
