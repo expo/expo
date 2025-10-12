@@ -15,6 +15,30 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 > **warning** Pedometer is not available in Expo Go for Android. Expo Go does not include the `ACTIVITY_RECOGNITION` permission that Pedometer needs. With this permission, Google Play could classify Expo Go as a health app. To use Pedometer on Android, create a [development build](/develop/development-builds/introduction/).
 
+> **Note:** iOS does not expose a Recording API toggle. `Pedometer.isRecordingAvailableAsync()` resolves to `false` on iOS, so the background subscription helpers (`subscribeRecording` / `unsubscribeRecording`) are Android-only.
+
+### Pause and resume events
+
+You can listen for pedometer pause/resume events to track when step updates are batching on each platform:
+
+```ts
+import { Pedometer } from 'expo-sensors';
+
+const subscription = Pedometer.watchEventUpdates((event) => {
+  console.log(`Pedometer ${event.type} at`, new Date(event.date));
+});
+
+const started = await Pedometer.startEventUpdatesAsync();
+if (!started) {
+  subscription.remove();
+  console.log('Pedometer events are not available on this device.');
+}
+
+// Later, to stop listening:
+subscription.remove();
+await Pedometer.stopEventUpdatesAsync();
+```
+
 ## Installation
 
 <APIInstallSection />

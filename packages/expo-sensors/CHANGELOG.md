@@ -42,6 +42,7 @@ _This version does not introduce any user-facing changes._
 
 ## 56.0.6 - 2026-06-10
 
+- Added pedometer pause/resume event helpers (`startEventUpdatesAsync`, `stopEventUpdatesAsync`, `watchEventUpdates`) via `Pedometer` ([#35652](https://github.com/expo/expo/pull/35652) by [@Krisztiaan](https://github.com/Krisztiaan))
 - [Android] Implemented `getStepCountAsync` for `Pedometer` ([#35652](https://github.com/expo/expo/pull/35652) by [@Krisztiaan](https://github.com/Krisztiaan))
 - [Android] Added Recording API related functions to `Pedometer` ([#35652](https://github.com/expo/expo/pull/35652) by [@Krisztiaan](https://github.com/Krisztiaan))
 
