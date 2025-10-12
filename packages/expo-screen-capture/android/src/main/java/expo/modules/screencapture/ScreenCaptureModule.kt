@@ -22,6 +22,13 @@ val grantedPermissions = mapOf(
   "status" to "granted"
 )
 
+val deniedPermissions = mapOf(
+  "canAskAgain" to false,
+  "granted" to false,
+  "expires" to "never",
+  "status" to "denied"
+)
+
 class ScreenCaptureModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
@@ -60,27 +67,55 @@ class ScreenCaptureModule : Module() {
       }
     }
 
-    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+    AsyncFunction("getPermissionsAsync") { useLegacyPermissions: Boolean?, promise: Promise ->
+      val useLegacy = useLegacyPermissions ?: false
+      
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        // Android 14+ has DETECT_SCREEN_CAPTURE
         promise.resolve(grantedPermissions)
         return@AsyncFunction
       }
+      
+      if (!useLegacy) {
+        // Android 13 and below - screenshot detection disabled
+        promise.resolve(deniedPermissions)
+        return@AsyncFunction
+      }
+      
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_MEDIA_IMAGES)
+        // Android 13 requires READ_MEDIA_IMAGES for screenshot detection
+        requestPermissionSafely(promise, Manifest.permission.READ_MEDIA_IMAGES, false)
+        return@AsyncFunction
       } else {
-        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_EXTERNAL_STORAGE)
+        // Android 12 and below - requires READ_EXTERNAL_STORAGE for screenshot detection
+        requestPermissionSafely(promise, Manifest.permission.READ_EXTERNAL_STORAGE, false)
+        return@AsyncFunction
       }
     }
 
-    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+    AsyncFunction("requestPermissionsAsync") { useLegacyPermissions: Boolean?, promise: Promise ->
+      val useLegacy = useLegacyPermissions ?: false
+      
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        // Android 14+ has DETECT_SCREEN_CAPTURE
         promise.resolve(grantedPermissions)
         return@AsyncFunction
       }
+      
+      if (!useLegacy) {
+        // Android 13 and below - screenshot detection disabled
+        promise.resolve(deniedPermissions)
+        return@AsyncFunction
+      }
+      
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_MEDIA_IMAGES)
+        // Android 13 requires READ_MEDIA_IMAGES for screenshot detection
+        requestPermissionSafely(promise, Manifest.permission.READ_MEDIA_IMAGES, true)
+        return@AsyncFunction
       } else {
-        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_EXTERNAL_STORAGE)
+        // Android 12 and below - requires READ_EXTERNAL_STORAGE for screenshot detection
+        requestPermissionSafely(promise, Manifest.permission.READ_EXTERNAL_STORAGE, true)
+        return@AsyncFunction
       }
     }
 
@@ -121,4 +156,19 @@ class ScreenCaptureModule : Module() {
       isRegistered = true
     }
   }
+
+  private fun requestPermissionSafely(promise: Promise, permission: String, isRequest: Boolean) {
+    try {
+      if (isRequest) {
+        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, permission)
+      } else {
+        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, permission)
+      }
+    } catch (e: Exception) {
+      val action = if (isRequest) "request" else "check"
+      Log.e("ExpoScreenCapture", "Failed to $action permission: $permission", e)
+      promise.resolve(deniedPermissions)
+    }
+  }
+
 }
