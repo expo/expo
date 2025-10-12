@@ -5,6 +5,17 @@ export type PedometerResult = {
      */
     steps: number;
 };
+export type PedometerEvent = {
+    /**
+     * Type of the pedometer event, indicating whether updates have paused or resumed.
+     */
+    type: 'pause' | 'resume';
+    /**
+     * Timestamp (in ms since the Unix epoch) associated with the pedometer event.
+     */
+    date: number;
+};
+export type PedometerEventCallback = (event: PedometerEvent) => void;
 /**
  * Callback function providing event result as an argument.
  */
@@ -22,22 +33,38 @@ export type PedometerUpdateCallback = (result: PedometerResult) => void;
  */
 export declare function watchStepCount(callback: PedometerUpdateCallback): EventSubscription;
 /**
+ * Listen for pedometer pause/resume events emitted by the underlying platform.
+ * Call {@link startEventUpdatesAsync} to begin receiving events.
+ * @platform android ios
+ */
+export declare function watchEventUpdates(callback: PedometerEventCallback): EventSubscription;
+/**
  * Check if Recording API is available to track steps.
- * On iOS, this is equivalent to calling `isAvailableAsync()`.
+ * Resolves to `false` on iOS because the platform does not expose a Recording API toggle.
  * @return Returns a promise that fulfills with a `boolean`, indicating whether
- * historical step count data is available on this device.
+ * historical step count data is available via the background Recording API on this device.
  *
- * > On iOS, this is equivalent to calling `isAvailableAsync()`.
- * > On Android, this is checking for the availability of appropriate Play Services version.
+ * > On Android, this checks for the availability of the required Play Services components.
  */
 export declare function isRecordingAvailableAsync(): Promise<boolean>;
 /**
+ * Start pedometer pause/resume event tracking.
+ * Resolves to `false` when the platform does not support pedometer events.
+ * @platform android ios
+ */
+export declare function startEventUpdatesAsync(): Promise<boolean>;
+/**
+ * Stop pedometer pause/resume event tracking.
+ * @platform android ios
+ */
+export declare function stopEventUpdatesAsync(): Promise<void>;
+/**
  * Subscribe to pedometer tracking. Step count will be tracked by Google Play Services
- * Recording API, if available, until unsubscribed. Subsequent calls are safe, ignored.
+ * Recording API, if available, until unsubscribed. Subsequent calls are safe and ignored.
  * @return Returns a promise that fulfills when the subscription is successful.
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
- * > LocalRecordingClient stores up to 10 days of data.
+ * > `LocalRecordingClient` stores up to 10 days of data.
  * @platform android
  */
 export declare function subscribeRecording(): Promise<void>;
@@ -46,8 +73,8 @@ export declare function subscribeRecording(): Promise<void>;
  * @return Returns a promise that fulfills when the unsubscription is successful.
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
- * > In order to free up resources, you should make sure to unsubscribe from
- * > the collection of sensor datawhen your app is no longer in need of it.
+ * > To free up resources, you should make sure to unsubscribe from
+ * > the collection of sensor data when your app is no longer in need of it.
  * > Unsubscribing will also reset the historical data that was collected.
  * @platform android
  */
@@ -63,7 +90,7 @@ export declare function unsubscribeRecording(): Promise<void>;
  * > a start date that is more than seven days in the past returns only the available data.
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
- * > LocalRecordingClient stores up to 10 days of data.
+ * > `LocalRecordingClient` stores up to 10 days of data.
  */
 export declare function getStepCountAsync(start: Date, end: Date): Promise<PedometerResult>;
 /**

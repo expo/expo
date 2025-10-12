@@ -66,16 +66,71 @@ function usePedometerHistory({
   return data;
 }
 
+function usePedometerEvents() {
+  const [lastEvent, setLastEvent] = React.useState<Pedometer.PedometerEvent | null>(null);
+  const [isSupported, setIsSupported] = React.useState<boolean | undefined>();
+  const isMounted = React.useRef(true);
+
+  React.useEffect(() => {
+    isMounted.current = true;
+    let subscription: Pedometer.Subscription | null = null;
+
+    Pedometer.startEventUpdatesAsync()
+      .then((available) => {
+        if (!isMounted.current) {
+          return;
+        }
+        setIsSupported(available);
+        if (!available) {
+          return;
+        }
+        subscription = Pedometer.watchEventUpdates((event) => {
+          if (isMounted.current) {
+            setLastEvent(event);
+          }
+        });
+      })
+      .catch(() => {
+        if (isMounted.current) {
+          setIsSupported(false);
+        }
+      });
+
+    return () => {
+      isMounted.current = false;
+      subscription?.remove();
+      Pedometer.stopEventUpdatesAsync().catch(() => {});
+    };
+  }, []);
+
+  return { lastEvent, isSupported };
+}
+
 function StepTrackerView() {
   const [isActive, setActive] = React.useState(false);
   const data = usePedometer({ isActive });
+  const { lastEvent, isSupported } = usePedometerEvents();
   const message = data?.steps ? `Total steps ${data.steps}` : `Waiting...`;
+  const eventMessage = React.useMemo(() => {
+    if (isSupported === undefined) {
+      return 'Checking pedometer event support...';
+    }
+    if (isSupported === false) {
+      return 'Pedometer events are not available on this device.';
+    }
+    if (!lastEvent) {
+      return 'Waiting for pedometer events...';
+    }
+    const date = new Date(lastEvent.date);
+    return `Last event: ${lastEvent.type} (${date.toLocaleTimeString()})`;
+  }, [isSupported, lastEvent]);
   return (
     <View style={{ padding: 10 }}>
       <H2>Step Tracker</H2>
       <ListButton onPress={() => setActive(true)} disabled={isActive} title="Start" />
       <ListButton onPress={() => setActive(false)} disabled={!isActive} title="Stop" />
       <Text style={{ paddingTop: 10, fontWeight: 'bold' }}>{message}</Text>
+      <Text style={{ paddingTop: 10 }}>{eventMessage}</Text>
     </View>
   );
 }
@@ -98,7 +153,7 @@ function StepHistoryMessage() {
   return (
     <View style={{ padding: 10 }}>
       <H2>Step History</H2>
-      {!isHistoryAvailable ? (
+      {isHistoryAvailable === false ? (
         <Text style={{ paddingTop: 10, fontWeight: 'bold' }}>
           Pedometer history is not available on this device.
         </Text>

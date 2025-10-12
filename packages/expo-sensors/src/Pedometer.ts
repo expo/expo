@@ -16,6 +16,19 @@ export type PedometerResult = {
   steps: number;
 };
 
+export type PedometerEvent = {
+  /**
+   * Type of the pedometer event, indicating whether updates have paused or resumed.
+   */
+  type: 'pause' | 'resume';
+  /**
+   * Timestamp (in ms since the Unix epoch) associated with the pedometer event.
+   */
+  date: number;
+};
+
+export type PedometerEventCallback = (event: PedometerEvent) => void;
+
 /**
  * Callback function providing event result as an argument.
  */
@@ -34,23 +47,64 @@ export type PedometerUpdateCallback = (result: PedometerResult) => void;
  * On Android, this is subject to Play Services Recording API availability.
  */
 export function watchStepCount(callback: PedometerUpdateCallback): EventSubscription {
+  if (!ExponentPedometer.addListener) {
+    return {
+      remove() {},
+    };
+  }
   return ExponentPedometer.addListener('Exponent.pedometerUpdate', callback);
 }
 
 /**
+ * Listen for pedometer pause/resume events emitted by the underlying platform.
+ * Call {@link startEventUpdatesAsync} to begin receiving events.
+ * @platform android ios
+ */
+export function watchEventUpdates(callback: PedometerEventCallback): EventSubscription {
+  if (!ExponentPedometer.addListener) {
+    return {
+      remove() {},
+    };
+  }
+  return ExponentPedometer.addListener('Exponent.pedometerEvent', callback);
+}
+
+/**
  * Check if Recording API is available to track steps.
- * On iOS, this is equivalent to calling `isAvailableAsync()`.
+ * Resolves to `false` on iOS because the platform does not expose a Recording API toggle.
  * @return Returns a promise that fulfills with a `boolean`, indicating whether
- * historical step count data is available on this device.
+ * historical step count data is available via the background Recording API on this device.
  *
- * > On iOS, this is equivalent to calling `isAvailableAsync()`.
- * > On Android, this is checking for the availability of appropriate Play Services version.
+ * > On Android, this checks for the availability of the required Play Services components.
  */
 export function isRecordingAvailableAsync(): Promise<boolean> {
   if (!ExponentPedometer.isRecordingAvailableAsync) {
-    throw new UnavailabilityError('ExponentPedometer', 'isRecordingAvailableAsync');
+    return Promise.resolve(false);
   }
   return ExponentPedometer.isRecordingAvailableAsync();
+}
+
+/**
+ * Start pedometer pause/resume event tracking.
+ * Resolves to `false` when the platform does not support pedometer events.
+ * @platform android ios
+ */
+export async function startEventUpdatesAsync(): Promise<boolean> {
+  if (!ExponentPedometer.startEventUpdates) {
+    return false;
+  }
+  return await ExponentPedometer.startEventUpdates();
+}
+
+/**
+ * Stop pedometer pause/resume event tracking.
+ * @platform android ios
+ */
+export async function stopEventUpdatesAsync(): Promise<void> {
+  if (!ExponentPedometer.stopEventUpdates) {
+    return;
+  }
+  await ExponentPedometer.stopEventUpdates();
 }
 
 /**
@@ -64,7 +118,7 @@ export function isRecordingAvailableAsync(): Promise<boolean> {
  */
 export async function subscribeRecording(): Promise<void> {
   if (!ExponentPedometer.subscribeRecording) {
-    throw new UnavailabilityError('ExponentPedometer', 'subscribeRecording');
+    return;
   }
   return await ExponentPedometer.subscribeRecording();
 }
@@ -81,7 +135,7 @@ export async function subscribeRecording(): Promise<void> {
  */
 export async function unsubscribeRecording(): Promise<void> {
   if (!ExponentPedometer.unsubscribeRecording) {
-    throw new UnavailabilityError('ExponentPedometer', 'unsubscribeRecording');
+    return;
   }
   return await ExponentPedometer.unsubscribeRecording();
 }
