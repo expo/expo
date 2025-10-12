@@ -4,6 +4,7 @@ export type SectionProps = {
      * On iOS, section titles are usually capitalized for consistency with platform conventions.
      */
     title?: string;
+    footer?: string;
     children: React.ReactNode;
 } & CommonViewModifierProps;
 /**

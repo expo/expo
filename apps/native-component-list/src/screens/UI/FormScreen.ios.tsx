@@ -12,6 +12,7 @@ import {
   ContentUnavailableView,
   LabeledContent,
 } from '@expo/ui/swift-ui';
+import { headerProminence } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
 export default function FormScreen() {
@@ -24,10 +25,22 @@ export default function FormScreen() {
   const profileImageSizes = ['Large', 'Medium', 'Small'];
   const [disclosureGroupExpanded, setDisclosureGroupExpanded] = useState<boolean>(false);
   const [selectedProfileImageSizeIndex, setSelectedProfileImageSizeIndex] = useState<number>(0);
+  const [increasedHeader, setIncreasedHeader] = useState(false);
 
   return (
     <Host style={{ flex: 1 }}>
       <Form>
+        <Section
+          title="Section"
+          footer="Footer text"
+          modifiers={[headerProminence(increasedHeader ? 'increased' : 'standard')]}>
+          <Text size={17}>Some text!</Text>
+          <Switch
+            label="Use increased section header"
+            value={increasedHeader}
+            onValueChange={setIncreasedHeader}
+          />
+        </Section>
         <Section title="My form Section">
           <Text size={17} testID="test-id-from-expo-ui!">
             Some text!

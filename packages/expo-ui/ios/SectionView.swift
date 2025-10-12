@@ -11,13 +11,14 @@ final class SectionProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var modifiers: ModifierArray?
 
   @Field var title: String?
+  @Field var footer: String?
 }
 
 internal struct SectionView: ExpoSwiftUI.View {
   @ObservedObject var props: SectionProps
 
   var body: some View {
-    Section(header: Text(props.title ?? "").textCase(nil)) {
+    Section(header: Text(props.title ?? "").textCase(nil), footer: Text(props.footer ?? "").textCase(nil)) {
       Children()
     }
     .modifier(CommonViewModifiers(props: props))

@@ -575,6 +575,12 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  * @description This value is always nonnegative. Otherwise, the default value will be used.
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
+/**
+ * Sets the header prominence for this view.
+ * @param prominence - The prominence to apply.
+ */
+export const headerProminence = (prominence: 'standard' | 'increased') =>
+  createModifier('headerProminence', { prominence });
 
 // =============================================================================
 // Type Definitions
@@ -640,7 +646,8 @@ export type BuiltInModifier =
   | ReturnType<typeof strikethrough>
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
-  | ReturnType<typeof lineSpacing>;
+  | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof headerProminence>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

@@ -1019,6 +1019,27 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
+internal enum Prominence: String, Enumerable {
+  case standard
+  case increased
+}
+
+internal struct HeaderProminence: ViewModifier, Record {
+  @Field var prominence: Prominence?
+
+  func body(content: Content) -> some View {
+      if let prominence = prominence {
+        switch prominence {
+        case .standard:
+          content.headerProminence(.standard)
+        case .increased:
+          content.headerProminence(.increased)
+        }
+      } else {
+        content
+      }
+  }
+}
 // MARK: - Registry
 
 /**
@@ -1383,6 +1404,10 @@ extension ViewModifierRegistry {
 
     register("scrollDismissesKeyboard") { params, appContext, _ in
       return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
+    }
+
+    register("headerProminence") { params, appContext, _ in
+      return try HeaderProminence(from: params, appContext: appContext)
     }
   }
 }
