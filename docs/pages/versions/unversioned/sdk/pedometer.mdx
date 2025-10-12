@@ -13,6 +13,30 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 `Pedometer` from `expo-sensors` uses the system `hardware.Sensor` and the Recording API on Android and Core Motion on iOS to get the user's step count, and also allows you to subscribe to pedometer updates.
 
+> **Note:** iOS does not expose a Recording API toggle. `Pedometer.isRecordingAvailableAsync()` resolves to `false` on iOS, so the background subscription helpers (`subscribeRecording` / `unsubscribeRecording`) are Android-only.
+
+### Pause and resume events
+
+You can listen for pedometer pause/resume events to track when step updates are batching on each platform:
+
+```ts
+import { Pedometer } from 'expo-sensors';
+
+const subscription = Pedometer.watchEventUpdates((event) => {
+  console.log(`Pedometer ${event.type} at`, new Date(event.date));
+});
+
+const started = await Pedometer.startEventUpdatesAsync();
+if (!started) {
+  subscription.remove();
+  console.log('Pedometer events are not available on this device.');
+}
+
+// Later, to stop listening:
+subscription.remove();
+await Pedometer.stopEventUpdatesAsync();
+```
+
 ## Installation
 
 <APIInstallSection />

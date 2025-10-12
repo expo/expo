@@ -4,6 +4,7 @@ import CoreMotion
 import ExpoModulesCore
 
 private let EVENT_PEDOMETER_UPDATE = "Exponent.pedometerUpdate"
+private let EVENT_PEDOMETER_EVENT = "Exponent.pedometerEvent"
 
 // This class should always be kept in sync with PedometerModuleDisabled
 public final class PedometerModule: Module {
@@ -11,27 +12,76 @@ public final class PedometerModule: Module {
 
   private var watchStartDate: Date?
   private var watchHandler: CMPedometerHandler?
+  private var eventHandler: CMPedometerEventHandler?
 
   public func definition() -> ModuleDefinition {
     Name("ExponentPedometer")
 
-    Events(EVENT_PEDOMETER_UPDATE)
+    Events(EVENT_PEDOMETER_UPDATE, EVENT_PEDOMETER_EVENT)
 
     AsyncFunction("isAvailableAsync") {
       return CMPedometer.isStepCountingAvailable()
     }
 
     AsyncFunction("isRecordingAvailableAsync") {
-      return CMPedometer.isStepCountingAvailable()
+      // iOS keeps collecting history automatically (up to seven days) and doesn't
+      // expose a Recording API toggle like Android does, so report this as
+      // unavailable to let the JS layer skip `subscribeRecording` calls.
+      return false
+    }
+
+    AsyncFunction("startEventUpdates") { (promise: Promise) in
+      if eventHandler != nil {
+        promise.resolve(true)
+        return
+      }
+
+      guard CMPedometer.isPedometerEventTrackingAvailable() else {
+        promise.resolve(false)
+        return
+      }
+
+      let handler: CMPedometerEventHandler = { [weak self] event, _ in
+        guard let self, let event else {
+          return
+        }
+
+        let type: String
+        switch event.type {
+        case .pause:
+          type = "pause"
+        case .resume:
+          type = "resume"
+        @unknown default:
+          return
+        }
+
+        self.sendEvent(
+          EVENT_PEDOMETER_EVENT,
+          [
+            "type": type,
+            "date": event.date.timeIntervalSince1970 * 1000
+          ]
+        )
+      }
+
+      pedometer.startEventUpdates(withHandler: handler)
+      eventHandler = handler
+      promise.resolve(true)
+    }
+
+    AsyncFunction("stopEventUpdates") {
+      pedometer.stopEventUpdates()
+      eventHandler = nil
     }
 
     // iOS does not expose a way to start recording history
-    AsyncFunction("subscribeRecording") {
+    AsyncFunction("subscribeRecording") { (promise: Promise) in
       promise.resolve(nil)
     }
 
     // iOS does not expose a way to stop recording history
-    AsyncFunction("unsubscribeRecording") {
+    AsyncFunction("unsubscribeRecording") { (promise: Promise) in
       promise.resolve(nil)
     }
 
@@ -116,6 +166,8 @@ public final class PedometerModule: Module {
 
     OnDestroy {
       stopUpdates()
+      pedometer.stopEventUpdates()
+      eventHandler = nil
     }
   }
 
