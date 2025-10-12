@@ -69,19 +69,19 @@ class ScreenCaptureModule : Module() {
 
     AsyncFunction("getPermissionsAsync") { useLegacyPermissions: Boolean?, promise: Promise ->
       val useLegacy = useLegacyPermissions ?: false
-      
+
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         // Android 14+ has DETECT_SCREEN_CAPTURE
         promise.resolve(grantedPermissions)
         return@AsyncFunction
       }
-      
+
       if (!useLegacy) {
         // Android 13 and below - screenshot detection disabled
         promise.resolve(deniedPermissions)
         return@AsyncFunction
       }
-      
+
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         // Android 13 requires READ_MEDIA_IMAGES for screenshot detection
         requestPermissionSafely(promise, Manifest.permission.READ_MEDIA_IMAGES, false)
@@ -95,19 +95,19 @@ class ScreenCaptureModule : Module() {
 
     AsyncFunction("requestPermissionsAsync") { useLegacyPermissions: Boolean?, promise: Promise ->
       val useLegacy = useLegacyPermissions ?: false
-      
+
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         // Android 14+ has DETECT_SCREEN_CAPTURE
         promise.resolve(grantedPermissions)
         return@AsyncFunction
       }
-      
+
       if (!useLegacy) {
         // Android 13 and below - screenshot detection disabled
         promise.resolve(deniedPermissions)
         return@AsyncFunction
       }
-      
+
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         // Android 13 requires READ_MEDIA_IMAGES for screenshot detection
         requestPermissionSafely(promise, Manifest.permission.READ_MEDIA_IMAGES, true)
