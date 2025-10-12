@@ -1,6 +1,5 @@
-import { type ContextMenuProps } from './types';
-export * from './Submenu';
-export { type ActivationMethod, type ContextMenuProps, type ContextMenuContentProps, } from './types';
+import { type SubmenuProps, type ContextMenuProps } from './types';
+export { type ActivationMethod, type ContextMenuProps } from './types';
 /**
  * Items visible inside the context menu. Pass input components as immidiate children of the tag.
  * `Button`, `Switch` and `Submenu` components are supported on both Android and iOS.
@@ -9,9 +8,6 @@ export { type ActivationMethod, type ContextMenuProps, type ContextMenuContentPr
 export declare function Items(props: {
     children: React.ReactNode;
 }): import("react").JSX.Element;
-export declare namespace Items {
-    var tag: string;
-}
 /**
  * The component visible all the time that triggers the menu when tapped or long-pressed.
  */
@@ -44,5 +40,9 @@ declare namespace ContextMenu {
     var Preview: typeof import(".").Preview;
     var Items: typeof import(".").Items;
 }
-export { ContextMenu };
+/**
+ * @deprecated Use `ContextMenu` component as Submenu instead.
+ */
+declare const Submenu: (props: SubmenuProps) => import("react").JSX.Element;
+export { ContextMenu, Submenu };
 //# sourceMappingURL=index.d.ts.map

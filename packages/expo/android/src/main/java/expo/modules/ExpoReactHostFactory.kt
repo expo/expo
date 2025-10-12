@@ -5,7 +5,6 @@ package expo.modules
 import android.content.Context
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
@@ -40,6 +39,24 @@ object ExpoReactHostFactory {
     private val hostHandlers: List<ReactNativeHostHandler>
   ) : ReactHostDelegate {
 
+    val hostDelegateJsBundleFilePath: String? by lazy {
+      hostHandlers.asSequence()
+        .mapNotNull { it.getJSBundleFile(useDevSupport) }
+        .firstOrNull() ?: jsBundleFilePath
+    }
+
+    val hostDelegateJSBundleAssetPath: String? by lazy {
+      hostHandlers.asSequence()
+        .mapNotNull { it.getBundleAssetName(useDevSupport) }
+        .firstOrNull() ?: jsBundleAssetPath
+    }
+
+    val hostDelegateUseDeveloperSupport: Boolean by lazy {
+      hostHandlers.asSequence()
+        .mapNotNull { it.useDeveloperSupport }
+        .firstOrNull() ?: useDevSupport
+    }
+
     // Keeps this `_jsBundleLoader` backing property for DevLauncher to replace its internal value
     private var _jsBundleLoader: JSBundleLoader? = null
     override val jsBundleLoader: JSBundleLoader
@@ -49,14 +66,14 @@ object ExpoReactHostFactory {
           return backingJSBundleLoader
         }
         val context = weakContext.get() ?: throw IllegalStateException("Unable to get concrete Context")
-        jsBundleFilePath?.let { jsBundleFile ->
+        hostDelegateJsBundleFilePath?.let { jsBundleFile ->
           if (jsBundleFile.startsWith("assets://")) {
             return JSBundleLoader.createAssetLoader(context, jsBundleFile, true)
           }
           return JSBundleLoader.createFileLoader(jsBundleFile)
         }
 
-        return JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+        return JSBundleLoader.createAssetLoader(context, "assets://$hostDelegateJSBundleAssetPath", true)
       }
 
     override val jsRuntimeFactory: JSRuntimeFactory
@@ -70,63 +87,9 @@ object ExpoReactHostFactory {
         throw error
       }
       hostHandlers.forEach { handler ->
-        handler.onReactInstanceException(useDevSupport, error)
+        handler.onReactInstanceException(hostDelegateUseDeveloperSupport, error)
       }
     }
-  }
-
-  @OptIn(UnstableReactNativeAPI::class)
-  @JvmStatic
-  fun createFromReactNativeHost(
-    context: Context,
-    reactNativeHost: ReactNativeHost
-  ): ReactHost {
-    require(reactNativeHost is ReactNativeHostWrapper) {
-      "You can call createFromReactNativeHost only with instances of ReactNativeHostWrapper"
-    }
-    if (reactHost == null) {
-      val useDeveloperSupport = reactNativeHost.useDeveloperSupport
-      val componentFactory = ComponentFactory()
-      DefaultComponentsRegistry.register(componentFactory)
-
-      reactNativeHost.reactNativeHostHandlers.forEach { handler ->
-        handler.onWillCreateReactInstance(useDeveloperSupport)
-      }
-
-      val reactHostDelegate = ExpoReactHostDelegate(
-        WeakReference(context),
-        reactNativeHost.packages,
-        reactNativeHost.jsMainModuleName,
-        reactNativeHost.bundleAssetName,
-        reactNativeHost.jsBundleFile,
-        reactNativeHost.useDeveloperSupport,
-        hostHandlers = reactNativeHost.reactNativeHostHandlers
-      )
-
-      val reactHostImpl =
-        ReactHostImpl(
-          context,
-          reactHostDelegate,
-          componentFactory,
-          true,
-          useDeveloperSupport
-        )
-
-      reactNativeHost.reactNativeHostHandlers.forEach { handler ->
-        handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
-      }
-
-      reactHostImpl.addReactInstanceEventListener(object : ReactInstanceEventListener {
-        override fun onReactContextInitialized(context: ReactContext) {
-          reactNativeHost.reactNativeHostHandlers.forEach { handler ->
-            handler.onDidCreateReactInstance(useDeveloperSupport, context)
-          }
-        }
-      })
-
-      reactHost = reactHostImpl
-    }
-    return reactHost as ReactHost
   }
 
   @OptIn(UnstableReactNativeAPI::class)

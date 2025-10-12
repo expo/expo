@@ -48,6 +48,8 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
 
   override fun delete(): Boolean = throw UnsupportedOperationException("Asset files are not writable and cannot be deleted")
 
+  override fun deleteRecursively(): Boolean = throw UnsupportedOperationException("Asset files are not writable and cannot be deleted")
+
   override fun listFilesAsUnified(): List<UnifiedFileInterface> {
     val list = context.assets.list(path)
     return list?.map { name -> AssetFile(context, File(path, name).toUri()) as UnifiedFileInterface } ?: emptyList()

@@ -2,7 +2,11 @@ package expo.modules.devmenu
 
 import android.app.Application
 import android.content.pm.PackageManager
-import expo.interfaces.devmenu.ReactHostWrapper
+import com.facebook.react.ReactHost
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.runtime.ReactHostDelegate
+import com.facebook.react.runtime.ReactHostImpl
+import java.lang.reflect.Field
 import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.manifests.core.ExpoUpdatesManifest
 
@@ -33,7 +37,8 @@ object AppInfo {
     )
   }
 
-  fun getAppInfo(reactHost: ReactHostWrapper): DevMenuState.AppInfo {
+  @OptIn(UnstableReactNativeAPI::class)
+  fun getAppInfo(reactHost: ReactHost): DevMenuState.AppInfo {
     // We want to override the native app name and version with the manifest values if available.
     var appName = native.appName
     var appVersion = native.appVersion
@@ -62,7 +67,13 @@ object AppInfo {
       hostUrl = DevMenuManager.currentManifestURL
     }
 
-    val jsExecutorName = reactHost.jsExecutorName
+    val reactHostDelegateField: Field =
+        ReactHostImpl::class.java.getDeclaredField("reactHostDelegate")
+      reactHostDelegateField.isAccessible = true
+    val reactHostDelegate = reactHostDelegateField.get(reactHost) as ReactHostDelegate
+    val className = reactHostDelegate.jsRuntimeFactory::class.simpleName.toString()
+    val jsExecutorName =  className.removeSuffix("Instance").removeSuffix("Runtime")
+
     val engine = when {
       jsExecutorName.contains("Hermes") -> "Hermes"
       jsExecutorName.contains("V8") -> "V8"

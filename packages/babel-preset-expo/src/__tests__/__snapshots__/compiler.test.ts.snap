@@ -23,9 +23,9 @@ function SIDE_EFFECT_MAY_THROW() {}
 
 // NOTE(EvanBacon): React compiler throws:
 // Cannot read properties of undefined (reading 'preds')
-function useSideEffectMayThrow() {var t0;try {
+function useSideEffectMayThrow() {var t0;
 
-
+  try {
     SIDE_EFFECT_MAY_THROW();
     t0 = true;} catch {
 
@@ -44,19 +44,19 @@ function App() {var $ = (0, _compilerRuntime.c)(5);
 
     t0 = () => {
       loadAssetsAsync(setAssetsAreLoaded);};
-    t1 = [];$[0] = t0;$[1] = t1;} else {t0 = $[0];t1 = $[1];}(0, _react.useEffect)(t0, t1);if (!
+    t1 = [];$[0] = t0;$[1] = t1;} else {t0 = $[0];t1 = $[1];}(0, _react.useEffect)(t0, t1);
 
-  assetsAreLoaded) {var _t;if ($[2] === Symbol.for("react.memo_cache_sentinel")) {
+  if (!assetsAreLoaded) {var _t;if ($[2] === Symbol.for("react.memo_cache_sentinel")) {
       _t = /*#__PURE__*/(0, _jsxRuntime.jsx)(_expoAppLoading.default, {});$[2] = _t;} else {_t = $[2];}return _t;}var t2;if ($[3] !== assetsAreLoaded) {
 
 
-    t2 = !assetsAreLoaded ? /*#__PURE__*/
-    (0, _jsxRuntime.jsx)(_expoAppLoading.default, {}) : /*#__PURE__*/
+    t2 = !assetsAreLoaded ? /*#__PURE__*/(0, _jsxRuntime.jsx)(
+      _expoAppLoading.default, {}
 
-    (0, _jsxRuntime.jsx)(_reactNative.View, { style: styles.container, children: /*#__PURE__*/
-      (0, _jsxRuntime.jsx)(_vectorIcons.Ionicons, { name: "md-options", size: 28 }) }
-    );$[3] = assetsAreLoaded;$[4] = t2;} else {t2 = $[4];}return t2;}function
 
+
+
+    ) : /*#__PURE__*/(0, _jsxRuntime.jsx)(_reactNative.View, { style: styles.container, children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_vectorIcons.Ionicons, { name: "md-options", size: 28 }) });$[3] = assetsAreLoaded;$[4] = t2;} else {t2 = $[4];}return t2;}function
 
 
 loadAssetsAsync(_x) {return _loadAssetsAsync.apply(this, arguments);}function _loadAssetsAsync() {_loadAssetsAsync = (0, _asyncToGenerator2.default)(function* (

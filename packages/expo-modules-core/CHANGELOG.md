@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Android] Add `ComposableScope` for compose Content functions. ([#39155](https://github.com/expo/expo/pull/39155) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Adds support for `ArrayBuffer`. ([#39943](https://github.com/expo/expo/pull/39943) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Introduce ExpoAppDelegateSubscriberManager class ([#40008](https://github.com/expo/expo/pull/40008) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Add `AppContext` to views environment so it can be accessed if needed. ([#39207](https://github.com/expo/expo/pull/39207) by [@alanjhughes](https://github.com/alanjhughes))
@@ -16,6 +17,8 @@
 - [iOS] Fix NSURL to JSIString conversion returning nil. ([#39567](https://github.com/expo/expo/pull/39567) by [@behenate](https://github.com/behenate))
 - Fix SharedObject created with `useReleasingSharedObject` getting destroyed after a fast refresh caused by a change in its dependencies. ([#39753](https://github.com/expo/expo/pull/39753) by [@behenate](https://github.com/behenate))
 - [Android] Restore `register` overload in `ModuleRegistry`. ([#40149](https://github.com/expo/expo/pull/40149) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Add `invalidate` callback to SwiftUIVirtualView. ([#40237](https://github.com/expo/expo/pull/40237) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix `androidNavigationBar.enforceContrast` app config property not working. ([#40263](https://github.com/expo/expo/pull/40263) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

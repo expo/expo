@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import type {
   BaseDependencyResolution,
   DependencyResolution,
@@ -12,6 +13,8 @@ import {
   AutolinkingResolutionsCache,
   scanNativeModuleResolutions,
 } from '../utils/autolinkingResolutions';
+
+const STORE_PATH = /node_modules[\\/]\.(?:bun|pnpm)[\\/]/;
 
 type DoctorCache = AutolinkingResolutionsCache;
 
@@ -60,16 +63,10 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
       );
     }
 
-    async function getHumanReadableDependency(
-      dependency: BaseDependencyResolution
-    ): Promise<string> {
-      let version = dependency.version || null;
-      if (!version) {
+    function getDependencyVersion(dependency: BaseDependencyResolution): string | null {
+      if (!dependency.version) {
+        const pkgContents = fs.readFileSync(path.join(dependency.path, 'package.json'), 'utf8');
         try {
-          const pkgContents = await fs.promises.readFile(
-            path.join(dependency.path, 'package.json'),
-            'utf8'
-          );
           const pkg: unknown = JSON.parse(pkgContents);
           if (
             pkg &&
@@ -77,12 +74,19 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
             'version' in pkg &&
             typeof pkg.version === 'string'
           ) {
-            version = pkg.version;
+            dependency.version = pkg.version;
           }
-        } catch (error) {
-          version = null;
+        } catch {
+          dependency.version = '';
         }
       }
+      return dependency.version || null;
+    }
+
+    async function getHumanReadableDependency(
+      dependency: BaseDependencyResolution
+    ): Promise<string> {
+      const version = getDependencyVersion(dependency);
       const relative = path.relative(projectRoot, dependency.originPath);
       return version
         ? `${dependency.name}@${version} (at: ${relative})`
@@ -94,10 +98,24 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
       if (dependency.duplicates?.length) {
         const line = [`Found duplicates for ${dependency.name}:`];
         const versions = [dependency, ...dependency.duplicates];
+        const hasStorePaths = versions.some((version) => STORE_PATH.test(version.originPath));
         for (let idx = 0; idx < versions.length; idx++) {
           const prefix = idx !== versions.length - 1 ? '├─' : '└─';
           const duplicate = versions[idx];
           line.push(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
+          // If some duplicates are isolated store paths, but not all, we display the real path
+          // of the non store paths to assure the user that this check is aware of isolated dependencies
+          if (
+            hasStorePaths &&
+            duplicate.originPath !== duplicate.path &&
+            STORE_PATH.test(duplicate.path)
+          ) {
+            const linkedOutput = !STORE_PATH.test(duplicate.originPath)
+              ? `linked to: ${path.relative(projectRoot, dependency.path)}`
+              : 'linked to a different installation';
+            const prefix = idx !== versions.length - 1 ? '│' : ' ';
+            line.push(`  ${prefix}  ` + chalk.grey(`└─ ${linkedOutput}`));
+          }
         }
         issues.push(line.join('\n'));
 
@@ -113,7 +131,7 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
           const areVersionsIdentical = dependency.duplicates.every((duplicate) => {
             return (
               duplicate.version &&
-              duplicate.version === dependency.version &&
+              getDependencyVersion(duplicate) === getDependencyVersion(dependency) &&
               /* NOTE(@kitten): We shouldn't have to compare here, but this is just in case there are weirder corruptions I can't think of */
               duplicate.originPath !== dependency.originPath
             );
@@ -127,8 +145,9 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
     if (issues.length) {
       if (corruptedInstallations.length) {
         advice.push(
-          `Multiple copies of the same version exist for: ${corruptedInstallations.map((x) => x.name).join(', ')}.\n` +
-            '- Try deleting your node_modules folders and reinstall your dependencies after.'
+          `Your node_modules folder may be corrupted. Multiple copies of the same version exist for: ${corruptedInstallations.map((x) => x.name).join(', ')}.\n` +
+            '- Try deleting your node_modules folders and reinstall your dependencies after.\n' +
+            '- If this error persists, delete your node_modules as well as your lockfile and reinstall.'
         );
       }
       advice.push(

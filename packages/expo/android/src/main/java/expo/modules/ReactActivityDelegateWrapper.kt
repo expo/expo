@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.ViewGroup
-import android.view.Window
 import androidx.annotation.VisibleForTesting
 import androidx.collection.ArrayMap
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +21,6 @@ import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.PermissionListener
@@ -56,9 +54,6 @@ class ReactActivityDelegateWrapper(
   private val reactActivityHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
-  private val _reactNativeHost: ReactNativeHost by lazy {
-    invokeDelegateMethod("getReactNativeHost")
-  }
   private val _reactHost: ReactHost? by lazy {
     delegate.reactHost
   }
@@ -101,10 +96,6 @@ class ReactActivityDelegateWrapper(
 
   override fun getReactDelegate(): ReactDelegate? {
     return invokeDelegateMethod("getReactDelegate")
-  }
-
-  override fun getReactNativeHost(): ReactNativeHost {
-    return _reactNativeHost
   }
 
   override fun getReactHost(): ReactHost? {
@@ -154,11 +145,6 @@ class ReactActivityDelegateWrapper(
 
         if (VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled) {
           activity.window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
-        }
-
-        val edgeToEdgeEnabled = invokeWindowUtilKtMethod<Boolean>("isEdgeToEdgeFeatureFlagOn") ?: true
-        if (edgeToEdgeEnabled) {
-          invokeWindowUtilKtMethod<Unit>("enableEdgeToEdge", Pair(Window::class.java, plainActivity.window))
         }
 
         val launchOptions = composeLaunchOptions()
@@ -430,25 +416,6 @@ class ReactActivityDelegateWrapper(
       methodMap[name] = method
     }
     return method!!.invoke(delegate, *args) as T
-  }
-
-  private inline fun <reified T> invokeWindowUtilKtMethod(
-    methodName: String,
-    vararg args: Pair<Class<*>, Any?>
-  ): T? {
-    val windowUtilClassName = "com.facebook.react.views.view.WindowUtilKt"
-
-    return runCatching {
-      val windowUtilKtClass = Class.forName(windowUtilClassName)
-      val parameterTypes = args.map { it.first }.toTypedArray()
-      val parameterValues = args.map { it.second }.toTypedArray()
-      val method = windowUtilKtClass.getDeclaredMethod(methodName, *parameterTypes)
-
-      method.isAccessible = true
-      method.invoke(null, *parameterValues) as? T
-    }.onFailure {
-      Log.e(TAG, "Failed to invoke '$methodName' on $windowUtilClassName", it)
-    }.getOrNull()
   }
 
   private suspend fun loadAppImpl(appKey: String?, supportsDelayLoad: Boolean) {

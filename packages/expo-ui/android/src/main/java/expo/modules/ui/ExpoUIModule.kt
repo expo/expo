@@ -1,6 +1,9 @@
 package expo.modules.ui
 
 import android.graphics.Color
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,9 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.jni.JavaScriptFunction
@@ -37,6 +40,10 @@ class ExpoUIModule : Module() {
         // Return a string representation of the modifier
         "ExpoModifier(ref=${ref.ref})"
       }
+    }
+
+    View(BottomSheetView::class) {
+      Events("onIsOpenedChange")
     }
 
     // Defines a single view for now – a single choice segmented control
@@ -85,9 +92,10 @@ class ExpoUIModule : Module() {
       }
     }
 
+    View(BoxView::class)
     View(RowView::class)
     View(ColumnView::class)
-    View(ContainerView::class)
+    View(HostView::class)
     View(TextView::class)
 
     View(AlertDialogView::class) {
@@ -104,8 +112,12 @@ class ExpoUIModule : Module() {
       )
     }
 
-    Function("padding") { all: Int ->
-      return@Function ExpoModifier(Modifier.padding(Dp(all.toFloat())))
+    Function("paddingAll") { all: Int ->
+      return@Function ExpoModifier(Modifier.padding(all.dp))
+    }
+
+    Function("padding") { start: Int, top: Int, end: Int, bottom: Int ->
+      return@Function ExpoModifier(Modifier.padding(start.dp, top.dp, end.dp, bottom.dp))
     }
 
     Function("size") { width: Int, height: Int ->
@@ -158,6 +170,44 @@ class ExpoUIModule : Module() {
 
     Function("zIndex") { index: Float ->
       return@Function ExpoModifier(Modifier.zIndex(index))
+    }
+
+    Function("animateContentSize") { dampingRatio: Float?, stiffness: Float? ->
+      return@Function ExpoModifier(
+        Modifier.animateContentSize(
+          spring(dampingRatio = dampingRatio ?: Spring.DampingRatioNoBouncy, stiffness = stiffness ?: Spring.StiffnessMedium)
+        )
+      )
+    }
+
+    Function("weight") { weight: Float ->
+      val scopedExpoModifier = ExpoModifier {
+        it.rowScope?.run {
+          Modifier.weight(weight)
+        } ?: it.columnScope?.run {
+          Modifier.weight(weight)
+        } ?: Modifier
+      }
+      return@Function scopedExpoModifier
+    }
+
+    Function("matchParentSize") {
+      val scopedExpoModifier = ExpoModifier {
+        it.boxScope?.run {
+          Modifier.matchParentSize()
+        } ?: Modifier
+      }
+      return@Function scopedExpoModifier
+    }
+
+    Function("testID") { testID: String ->
+      return@Function ExpoModifier(Modifier.applyTestTag(testID))
+    }
+
+    Function("clip") { shapeRecord: ShapeRecord ->
+      val shape = shapeFromShapeRecord(shapeRecord)
+        ?: return@Function Modifier
+      return@Function ExpoModifier(Modifier.clip(shape))
     }
 
     // TODO: Consider implementing semantics, layoutId, clip, navigationBarsPadding, systemBarsPadding

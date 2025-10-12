@@ -20,7 +20,7 @@ function uniqueBy(arr, key) {
     });
 }
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-function getServerManifest(route) {
+function getServerManifest(route, options) {
     function getFlatNodes(route, parentRoute = '') {
         // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.
         const absoluteRoute = [parentRoute, route.route].filter(Boolean).join('/');
@@ -82,6 +82,9 @@ function getServerManifest(route) {
         manifest.middleware = {
             file: route.middleware.contextKey,
         };
+    }
+    if (options?.headers) {
+        manifest.headers = options.headers;
     }
     return manifest;
 }

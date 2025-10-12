@@ -43,6 +43,10 @@ export type ExpoRouterServerManifestV1<TRegex = string> = {
      */
     middleware?: ExpoRouterServerManifestV1Middleware;
     /**
+     * Headers to be applied to all responses from the server.
+     */
+    headers?: Record<string, string | string[]>;
+    /**
      * Rewrites. After middleware has processed and regular routing resumes, these occur first.
      */
     rewrites: ExpoRouterServerManifestV1Route<TRegex>[];
@@ -71,10 +75,14 @@ export interface RouteRegex {
     groups: Record<string, Group>;
     re: RegExp;
 }
-export declare function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1;
+type GetServerManifestOptions = {
+    headers?: Record<string, string | string[]>;
+};
+export declare function getServerManifest(route: RouteNode, options: GetServerManifestOptions | undefined): ExpoRouterServerManifestV1;
 export declare function parseParameter(param: string): {
     name: string;
     repeat: boolean;
     optional: boolean;
 };
+export {};
 //# sourceMappingURL=getServerManifest.d.ts.map

@@ -4,13 +4,24 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Move all `jetpack-compose-primitives` components to `jetpack-compose` namespace. ([#40272](https://github.com/expo/expo/pull/40272) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🎉 New features
 
+- [iOS] Add `scrollDismissesKeyboard` modifier. ([#40201](https://github.com/expo/expo/pull/40201) by [@christianwooldridge](https://github.com/christianwooldridge))
+- [Android] Add Android BottomSheet ([#37553](https://github.com/expo/expo/pull/37553) by [@Jeroen-G](https://github.com/Jeroen-G))
+- [Android] Move all components to use Host ([#40244](https://github.com/expo/expo/pull/40244) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Add support for modifiers in primitives, add clip modifier. ([#40164](https://github.com/expo/expo/pull/40164) by [@aleqsio](https://github.com/aleqsio))
+- Add scoped compose modifiers, move testID to modifiers. ([#39155](https://github.com/expo/expo/pull/39155) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Add custom button shapes. ([#40163](https://github.com/expo/expo/pull/40163) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Add ref methods and onChangeFocus to TextField and SecureField. ([#39898](https://github.com/expo/expo/pull/39898) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Adds `controlSize` prop to Button([#40030](https://github.com/expo/expo/pull/40030) by [@betomoedano](https://github.com/betomoedano))
 - [iOS] Add SF symbol typings ([#39802](https://github.com/expo/expo/pull/39802) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Add `scrollContentBackground` and `listRowBackground` modifier. ([#40195](https://github.com/expo/expo/pull/40195) by [@doombladeoff](https://github.com/doombladeoff))
 - Added `onAppear` and `onDisappear` modifiers to `swift-ui`. ([#40056](https://github.com/expo/expo/pull/40056) by [@kudo](https://github.com/kudo))
 - [iOS] Add Stepper component. ([#39813](https://github.com/expo/expo/pull/39813) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- [ios] Add text modifiers (`truncationMode`, `kerning`, `allowsTightening`, `textCase`, `underline`, `strikethrough`, `multilineTextAlignment`,`textSelection` and `lineSpacing`) ([#40282](https://github.com/expo/expo/pull/40282) by [@doombladeoff](https://github.com/doombladeoff))
+- [iOS] Add Divider component. ([#40283](https://github.com/expo/expo/pull/40283) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Add RectangleMark and RuleMark support to Chart component ([#40046](https://github.com/expo/expo/pull/40046) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ### 🐛 Bug fixes
@@ -18,6 +29,8 @@
 - [iOS] Add `buttonStyle` modifier. ([#40119](https://github.com/expo/expo/pull/40119) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
+
+- [iOS] Make `ContextMenu` more composable. ([#40254](https://github.com/expo/expo/pull/40254) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 0.2.0-beta.5 - 2025-10-01
 
