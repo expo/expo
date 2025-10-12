@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix deleteAssetsAsync using incorrect MediaStore URI on Android 11+ ([#40343](https://github.com/expo/expo/pull/40343) by [@fanderzon](https://github.com/fanderzon))
 - [next][iOS] Convert `id` to URI format ([#39920](https://github.com/expo/expo/pull/39920) by [@Wenszel](https://github.com/Wenszel))
 - [next][android] Fix `delete()` throwing security exception ([#39914](https://github.com/expo/expo/pull/39914) by [@Wenszel](https://github.com/Wenszel))
 - [next][android] Change default root directory to Pictures ([#39716](https://github.com/expo/expo/pull/39716) by [@Wenszel](https://github.com/Wenszel))
