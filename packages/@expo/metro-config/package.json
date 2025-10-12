@@ -55,7 +55,7 @@
     "minimatch": "^9.0.0",
     "postcss": "~8.4.32",
     "resolve-from": "^5.0.0",
-    "react-native-css": "^3.0.0-preview.3"
+    "react-native-css": "~3.0.1"
   },
   "peerDependencies": {
     "expo": "*"

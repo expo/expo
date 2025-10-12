@@ -13715,10 +13715,10 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-css@^3.0.0-preview.3:
-  version "3.0.0-preview.3"
-  resolved "https://registry.yarnpkg.com/react-native-css/-/react-native-css-3.0.0-preview.3.tgz#d3c2e104f3e65984d13d6157280de1a70991ccc9"
-  integrity sha512-ykFZe9dyYSBJEsvHayBvIKW6mZ/1sn/jaNecrzOZSVDwlk4T7gs+5mLFqIkoI1fHsqEM8I1MxC0u5VDPVCATuw==
+react-native-css@~3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-css/-/react-native-css-3.0.1.tgz#b7c4e2cc09db9174ef1fc1ab948d48bf869ebffb"
+  integrity sha512-sE/Qp2p+UaV9+W6T+GwsRH5sIynaTfhM2Khn+tN1q1YKYq1STVyAWyC+0i6ac4mFAO/FxQ/a03BDmrrt48qiuQ==
   dependencies:
     babel-plugin-react-compiler "^19.1.0-rc.2"
     colorjs.io "0.6.0-alpha.1"
