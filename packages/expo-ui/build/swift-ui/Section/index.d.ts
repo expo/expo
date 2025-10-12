@@ -4,8 +4,18 @@ export type SectionProps = {
      * On iOS, section titles are usually capitalized for consistency with platform conventions.
      */
     title?: string;
+    /**
+     * Sets the section footer text.
+     * @description If `expanded` is `true`, the footer will not be shown.
+     */
     footer?: string;
     children: React.ReactNode;
+    /**
+     * Enables or disables collapsible behavior for the section.
+     * @default false
+     * @availability Available only when the list style is set to `sidebar`.
+     */
+    collapsible?: boolean;
 } & CommonViewModifierProps;
 /**
  * Section component uses the native [Section](https://developer.apple.com/documentation/swiftui/section) component.

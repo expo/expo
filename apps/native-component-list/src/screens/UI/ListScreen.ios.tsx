@@ -8,8 +8,9 @@ import {
   Picker,
   Section,
   Switch,
+  Text,
 } from '@expo/ui/swift-ui';
-import { frame, scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
+import { frame, headerProminence, scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
 import type { SFSymbol } from 'expo-symbols';
 import * as React from 'react';
@@ -47,6 +48,8 @@ export default function ListScreen() {
   const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<
     number | null
   >(0);
+  const [increasedHeader, setIncreasedHeader] = React.useState(false);
+  const [collapsible, setCollapsible] = React.useState<boolean>(false);
 
   const navigation = useNavigation();
 
@@ -72,10 +75,20 @@ export default function ListScreen() {
           scrollDismissesKeyboard(
             scrollDismissesKeyboardOptions[scrollDismissesKeyboardIndex ?? 0]
           ),
+          headerProminence(increasedHeader ? 'increased' : 'standard'),
         ]}
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
-        <Section title="Controls">
+        <Section collapsible={collapsible} title="Collapsible section" footer="Footer text">
+          <Text size={17}>Some text!</Text>
+          <Switch
+            label="Use increased section header"
+            value={increasedHeader}
+            onValueChange={setIncreasedHeader}
+          />
+          <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
+        </Section>
+        <Section title="Controls" collapsible>
           <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
           <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
           <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
