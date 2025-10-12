@@ -15,17 +15,6 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import HeadingText from '../../components/HeadingText';
 import MonoText from '../../components/MonoText';
 
-const lineDashArrays: (number[] | undefined)[] = [undefined, [5, 5], [2, 2]];
-const pointStyles: PointStyle[] = ['circle', 'square', 'diamond'];
-
-const lineStyleOptions = ['Solid', 'Dashed', 'Dotted'];
-const pointStyleOptions = ['Circle', 'Square', 'Diamond'];
-
-const ruleLineWidths = [1, 2, 4];
-const ruleDashArrays: (number[] | undefined)[] = [undefined, [5, 5], [2, 2]];
-const ruleLineWidthOptions = ['1pt', '2pt', '4pt'];
-const ruleDashOptions = ['Solid', 'Dashed', 'Dotted'];
-
 const salesData: ChartDataPoint[] = [
   { x: 'Jan', y: 15 },
   { x: 'Feb', y: 25 },
@@ -76,19 +65,43 @@ const dataSet: DataSet[] = ['sales', 'temperature', 'performance'];
 
 const charts: ChartType[] = ['line', 'point', 'bar', 'area', 'pie', 'rectangle'];
 
-const chartTypeOptions = ['Line', 'Point', 'Bar', 'Area', 'Pie', 'Rectangle'];
-const dataSetOptions = ['Sales', 'Temperature', 'Performance'];
-const toggleOptions = ['OFF', 'ON'];
-
-const barCornerRadiusOptions = ['Sharp', 'Rounded', 'Very Rounded'];
-const barCornerRadiusValues = [0, 6, 12];
-const barWidthOptions = ['Thin', 'Normal', 'Thick'];
-const barWidthValues = [20, 25, 35];
-
-const pieInnerRadiusOptions = ['Full Pie', 'Small Donut', 'Medium Donut', 'Large Donut'];
-const pieInnerRadiusValues = [0.0, 0.2, 0.4, 0.6];
-const pieAngularInsetOptions = ['None', 'Small', 'Medium', 'Large'];
-const pieAngularInsetValues = [0, 1, 3, 6];
+const chartConfig = {
+  chartTypeOptions: ['Line', 'Point', 'Bar', 'Area', 'Pie', 'Rectangle'],
+  dataSetOptions: ['Sales', 'Temperature', 'Performance'],
+  toggleOptions: ['OFF', 'ON'],
+  lineStyle: {
+    options: ['Solid', 'Dashed', 'Dotted'],
+    dashArrays: [undefined, [5, 5], [2, 2]] as (number[] | undefined)[],
+  },
+  pointStyle: {
+    options: ['Circle', 'Square', 'Diamond'],
+    styles: ['circle', 'square', 'diamond'] as PointStyle[],
+  },
+  ruleLine: {
+    widthOptions: ['1pt', '2pt', '4pt'],
+    widths: [1, 2, 4],
+  },
+  ruleDash: {
+    options: ['Solid', 'Dashed', 'Dotted'],
+    dashArrays: [undefined, [5, 5], [2, 2]] as (number[] | undefined)[],
+  },
+  barCornerRadius: {
+    options: ['Sharp', 'Rounded', 'Very Rounded'],
+    values: [0, 6, 12],
+  },
+  barWidth: {
+    options: ['Thin', 'Normal', 'Thick'],
+    values: [20, 25, 35],
+  },
+  pieInnerRadius: {
+    options: ['Full Pie', 'Small Donut', 'Medium Donut', 'Large Donut'],
+    values: [0.0, 0.2, 0.4, 0.6],
+  },
+  pieAngularInset: {
+    options: ['None', 'Small', 'Medium', 'Large'],
+    values: [0, 1, 3, 6],
+  },
+};
 
 export default function ChartScreen() {
   const [chartTypeIndex, setChartTypeIndex] = useState(0);
@@ -152,9 +165,9 @@ export default function ChartScreen() {
 
   const getLineStyle = (): LineChartStyle => {
     return {
-      dashArray: lineDashArrays[lineStyleIndex],
+      dashArray: chartConfig.lineStyle.dashArrays[lineStyleIndex],
       width: 3,
-      pointStyle: pointStyles[pointStyleIndex],
+      pointStyle: chartConfig.pointStyle.styles[pointStyleIndex],
       pointSize: 8,
       color: getChartColor(),
     };
@@ -162,7 +175,7 @@ export default function ChartScreen() {
 
   const getPointStyle = (): PointChartStyle => {
     return {
-      pointStyle: pointStyles[pointStyleIndex],
+      pointStyle: chartConfig.pointStyle.styles[pointStyleIndex],
       pointSize: 8,
     };
   };
@@ -175,30 +188,30 @@ export default function ChartScreen() {
 
   const getBarStyle = () => {
     return {
-      cornerRadius: barCornerRadiusValues[barCornerRadiusIndex],
-      width: barWidthValues[barWidthIndex],
+      cornerRadius: chartConfig.barCornerRadius.values[barCornerRadiusIndex],
+      width: chartConfig.barWidth.values[barWidthIndex],
     };
   };
 
   const getPieStyle = () => {
     return {
-      innerRadius: pieInnerRadiusValues[pieInnerRadiusIndex],
-      angularInset: pieAngularInsetValues[pieAngularInsetIndex],
+      innerRadius: chartConfig.pieInnerRadius.values[pieInnerRadiusIndex],
+      angularInset: chartConfig.pieAngularInset.values[pieAngularInsetIndex],
     };
   };
 
   const getRectangleStyle = () => {
     return {
       color: getChartColor(),
-      cornerRadius: barCornerRadiusValues[barCornerRadiusIndex],
+      cornerRadius: chartConfig.barCornerRadius.values[barCornerRadiusIndex],
     };
   };
 
   const getRuleStyle = (): RuleChartStyle => {
     return {
       color: '#FF6B6B',
-      lineWidth: ruleLineWidths[ruleLineWidthIndex],
-      dashArray: ruleDashArrays[ruleDashIndex],
+      lineWidth: chartConfig.ruleLine.widths[ruleLineWidthIndex],
+      dashArray: chartConfig.ruleDash.dashArrays[ruleDashIndex],
     };
   };
 
@@ -240,7 +253,7 @@ export default function ChartScreen() {
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={chartTypeOptions}
+            options={chartConfig.chartTypeOptions}
             selectedIndex={chartTypeIndex}
             onOptionSelected={({ nativeEvent: { index } }) => {
               setChartTypeIndex(index);
@@ -253,7 +266,7 @@ export default function ChartScreen() {
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={dataSetOptions}
+            options={chartConfig.dataSetOptions}
             selectedIndex={dataSetIndex}
             onOptionSelected={({ nativeEvent: { index } }) => {
               setDataSetIndex(index);
@@ -271,7 +284,7 @@ export default function ChartScreen() {
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={lineStyleOptions}
+                options={chartConfig.lineStyle.options}
                 selectedIndex={lineStyleIndex}
                 onOptionSelected={({ nativeEvent: { index } }) => {
                   setLineStyleIndex(index);
@@ -284,7 +297,7 @@ export default function ChartScreen() {
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={pointStyleOptions}
+                options={chartConfig.pointStyle.options}
                 selectedIndex={pointStyleIndex}
                 onOptionSelected={({ nativeEvent: { index } }) => {
                   setPointStyleIndex(index);
@@ -304,7 +317,7 @@ export default function ChartScreen() {
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={barCornerRadiusOptions}
+                options={chartConfig.barCornerRadius.options}
                 selectedIndex={barCornerRadiusIndex}
                 onOptionSelected={({ nativeEvent: { index } }) => {
                   setBarCornerRadiusIndex(index);
@@ -319,7 +332,7 @@ export default function ChartScreen() {
               <View style={styles.pickerContainer}>
                 <Host matchContents>
                   <Picker
-                    options={barWidthOptions}
+                    options={chartConfig.barWidth.options}
                     selectedIndex={barWidthIndex}
                     onOptionSelected={({ nativeEvent: { index } }) => {
                       setBarWidthIndex(index);
@@ -339,7 +352,7 @@ export default function ChartScreen() {
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={pieInnerRadiusOptions}
+                options={chartConfig.pieInnerRadius.options}
                 selectedIndex={pieInnerRadiusIndex}
                 onOptionSelected={({ nativeEvent: { index } }) => {
                   setPieInnerRadiusIndex(index);
@@ -352,7 +365,7 @@ export default function ChartScreen() {
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={pieAngularInsetOptions}
+                options={chartConfig.pieAngularInset.options}
                 selectedIndex={pieAngularInsetIndex}
                 onOptionSelected={({ nativeEvent: { index } }) => {
                   setPieAngularInsetIndex(index);
@@ -368,7 +381,7 @@ export default function ChartScreen() {
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={toggleOptions}
+            options={chartConfig.toggleOptions}
             selectedIndex={gridIndex}
             onOptionSelected={({ nativeEvent: { index } }) => {
               setGridIndex(index);
@@ -381,7 +394,7 @@ export default function ChartScreen() {
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={toggleOptions}
+            options={chartConfig.toggleOptions}
             selectedIndex={animateIndex}
             onOptionSelected={({ nativeEvent: { index } }) => {
               setAnimateIndex(index);
@@ -395,7 +408,7 @@ export default function ChartScreen() {
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={toggleOptions}
+            options={chartConfig.toggleOptions}
             selectedIndex={legendIndex}
             onOptionSelected={({ nativeEvent: { index } }) => {
               setLegendIndex(index);
@@ -409,7 +422,7 @@ export default function ChartScreen() {
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={toggleOptions}
+            options={chartConfig.toggleOptions}
             selectedIndex={showReferenceLinesIndex}
             onOptionSelected={({ nativeEvent: { index } }) => {
               setShowReferenceLinesIndex(index);
@@ -425,7 +438,7 @@ export default function ChartScreen() {
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={ruleLineWidthOptions}
+                options={chartConfig.ruleLine.widthOptions}
                 selectedIndex={ruleLineWidthIndex}
                 onOptionSelected={({ nativeEvent: { index } }) => {
                   setRuleLineWidthIndex(index);
@@ -439,7 +452,7 @@ export default function ChartScreen() {
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={ruleDashOptions}
+                options={chartConfig.ruleDash.options}
                 selectedIndex={ruleDashIndex}
                 onOptionSelected={({ nativeEvent: { index } }) => {
                   setRuleDashIndex(index);
