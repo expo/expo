@@ -1028,18 +1028,19 @@ internal struct HeaderProminence: ViewModifier, Record {
   @Field var prominence: Prominence?
 
   func body(content: Content) -> some View {
-      if let prominence = prominence {
-        switch prominence {
+    if let prominence = prominence {
+      switch prominence {
         case .standard:
           content.headerProminence(.standard)
         case .increased:
           content.headerProminence(.increased)
         }
-      } else {
-        content
-      }
+    } else {
+      content
+    }
   }
 }
+
 // MARK: - Registry
 
 /**
