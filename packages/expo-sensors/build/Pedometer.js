@@ -14,35 +14,73 @@ import ExponentPedometer from './ExponentPedometer';
  * On Android, this is subject to Play Services Recording API availability.
  */
 export function watchStepCount(callback) {
+    if (!ExponentPedometer.addListener) {
+        return {
+            remove() { },
+        };
+    }
     return ExponentPedometer.addListener('Exponent.pedometerUpdate', callback);
 }
 /**
+ * Listen for pedometer pause/resume events emitted by the underlying platform.
+ * Call {@link startEventUpdatesAsync} to begin receiving events.
+ * @platform android ios
+ */
+export function watchEventUpdates(callback) {
+    if (!ExponentPedometer.addListener) {
+        return {
+            remove() { },
+        };
+    }
+    return ExponentPedometer.addListener('Exponent.pedometerEvent', callback);
+}
+/**
  * Check if Recording API is available to track steps.
- * On iOS, this is equivalent to calling `isAvailableAsync()`.
+ * Resolves to `false` on iOS because the platform does not expose a Recording API toggle.
  * @return Returns a promise that fulfills with a `boolean`, indicating whether
- * historical step count data is available on this device.
+ * historical step count data is available via the background Recording API on this device.
  *
- * > On iOS, this is equivalent to calling `isAvailableAsync()`.
- * > On Android, this is checking for the availability of appropriate Play Services version.
+ * > On Android, this checks for the availability of the required Play Services components.
  */
 export function isRecordingAvailableAsync() {
     if (!ExponentPedometer.isRecordingAvailableAsync) {
-        throw new UnavailabilityError('ExponentPedometer', 'isRecordingAvailableAsync');
+        return Promise.resolve(false);
     }
     return ExponentPedometer.isRecordingAvailableAsync();
 }
 /**
+ * Start pedometer pause/resume event tracking.
+ * Resolves to `false` when the platform does not support pedometer events.
+ * @platform android ios
+ */
+export async function startEventUpdatesAsync() {
+    if (!ExponentPedometer.startEventUpdates) {
+        return false;
+    }
+    return await ExponentPedometer.startEventUpdates();
+}
+/**
+ * Stop pedometer pause/resume event tracking.
+ * @platform android ios
+ */
+export async function stopEventUpdatesAsync() {
+    if (!ExponentPedometer.stopEventUpdates) {
+        return;
+    }
+    await ExponentPedometer.stopEventUpdates();
+}
+/**
  * Subscribe to pedometer tracking. Step count will be tracked by Google Play Services
- * Recording API, if available, until unsubscribed. Subsequent calls are safe, ignored.
+ * Recording API, if available, until unsubscribed. Subsequent calls are safe and ignored.
  * @return Returns a promise that fulfills when the subscription is successful.
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
- * > LocalRecordingClient stores up to 10 days of data.
+ * > `LocalRecordingClient` stores up to 10 days of data.
  * @platform android
  */
 export async function subscribeRecording() {
     if (!ExponentPedometer.subscribeRecording) {
-        throw new UnavailabilityError('ExponentPedometer', 'subscribeRecording');
+        return;
     }
     return await ExponentPedometer.subscribeRecording();
 }
@@ -51,14 +89,14 @@ export async function subscribeRecording() {
  * @return Returns a promise that fulfills when the unsubscription is successful.
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
- * > In order to free up resources, you should make sure to unsubscribe from
- * > the collection of sensor datawhen your app is no longer in need of it.
+ * > To free up resources, you should make sure to unsubscribe from
+ * > the collection of sensor data when your app is no longer in need of it.
  * > Unsubscribing will also reset the historical data that was collected.
  * @platform android
  */
 export async function unsubscribeRecording() {
     if (!ExponentPedometer.unsubscribeRecording) {
-        throw new UnavailabilityError('ExponentPedometer', 'unsubscribeRecording');
+        return;
     }
     return await ExponentPedometer.unsubscribeRecording();
 }
@@ -74,7 +112,7 @@ export async function unsubscribeRecording() {
  * > a start date that is more than seven days in the past returns only the available data.
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
- * > LocalRecordingClient stores up to 10 days of data.
+ * > `LocalRecordingClient` stores up to 10 days of data.
  */
 export async function getStepCountAsync(start, end) {
     if (!ExponentPedometer.getStepCountAsync) {
