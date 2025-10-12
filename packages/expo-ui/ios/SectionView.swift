@@ -22,7 +22,7 @@ internal struct SectionView: ExpoSwiftUI.View {
 
   var body: some View {
     Group {
-      if #available(iOS 17.0, *), props.collapsible {
+      if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *), props.collapsible {
         collapsibleSection
       } else {
         regularSection
@@ -40,7 +40,7 @@ internal struct SectionView: ExpoSwiftUI.View {
     }
   }
 
-  @available(iOS 17.0, *)
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
   private var collapsibleSection: some View {
     Section(isExpanded: $isExpanded) {
       Children()
