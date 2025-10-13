@@ -13,7 +13,6 @@ final class SectionProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var title: String?
   @Field var footer: String?
   @Field var collapsible: Bool = false
-  var onStateChange = EventDispatcher()
 }
 
 internal struct SectionView: ExpoSwiftUI.View {
@@ -21,14 +20,13 @@ internal struct SectionView: ExpoSwiftUI.View {
   @State private var isExpanded: Bool = true
 
   var body: some View {
-    Group {
-      if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *), props.collapsible {
-        collapsibleSection
-      } else {
-        regularSection
-      }
+    if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *), props.collapsible {
+      collapsibleSection
+        .modifier(CommonViewModifiers(props: props))
+    } else {
+      regularSection
+        .modifier(CommonViewModifiers(props: props))
     }
-    .modifier(CommonViewModifiers(props: props))
   }
 
   private var regularSection: some View {
@@ -46,9 +44,6 @@ internal struct SectionView: ExpoSwiftUI.View {
       Children()
     } header: {
       Text(props.title ?? "").textCase(nil)
-    }
-    .onChange(of: isExpanded) { newValue in
-      props.onStateChange(["isExpanded": newValue])
     }
   }
 }

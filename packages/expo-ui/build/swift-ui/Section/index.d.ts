@@ -6,7 +6,7 @@ export type SectionProps = {
     title?: string;
     /**
      * Sets the section footer text.
-     * @description If `expanded` is `true`, the footer will not be shown.
+     * @description If section is expanded, the footer will not be shown.
      */
     footer?: string;
     children: React.ReactNode;
