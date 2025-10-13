@@ -37,7 +37,7 @@ export function AskPageAIOverlay({
   }
 
   return createPortal(
-    <div className="pointer-events-none fixed inset-0 z-[70]">
+    <div className="pointer-events-none fixed inset-0 z-[120]">
       <div
         className={mergeClasses(
           'max-sm:left-4 sm:bottom-8 sm:right-8 fixed bottom-4 right-4 flex h-full w-[min(420px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-default bg-default transition-all duration-150 ease-out',
