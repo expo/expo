@@ -1,17 +1,17 @@
 package expo.modules.devmenu.websockets
 
 import android.util.Log
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 
 class DevMenuCommandHandlersProvider(
   private val manager: DevMenuManagerInterface,
-  reactHost: ReactHostWrapper
+  reactHost: ReactHost
 ) {
   private val _host = WeakReference(reactHost)
   private val host

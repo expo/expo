@@ -4,8 +4,6 @@ import UIKit
 import SwiftUI
 
 class DevMenuViewController: UIViewController {
-  static let ContentDidAppearNotification = Notification.Name("DevMenuContentDidAppearNotification")
-
   private let manager: DevMenuManager
   private var hostingController: UIHostingController<DevMenuRootView>?
 
@@ -25,11 +23,6 @@ class DevMenuViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     setupSwiftUIView()
-  }
-
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    NotificationCenter.default.post(name: DevMenuViewController.ContentDidAppearNotification, object: nil)
   }
 
   #if !os(tvOS)

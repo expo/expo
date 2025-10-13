@@ -423,6 +423,34 @@ internal struct HueRotationModifier: ViewModifier, Record {
   }
 }
 
+internal enum ScrollDismissesKeyboardMode: String, Enumerable {
+  case automatic
+  case never
+  case interactively
+  case immediately
+}
+
+internal struct ScrollDismissesKeyboardModifier: ViewModifier, Record {
+  @Field var mode: ScrollDismissesKeyboardMode = .automatic
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      switch mode {
+      case .interactively:
+        content.scrollDismissesKeyboard(.interactively)
+      case .immediately:
+        content.scrollDismissesKeyboard(.immediately)
+      case .never:
+        content.scrollDismissesKeyboard(.never)
+      case .automatic:
+        content.scrollDismissesKeyboard(.automatic)
+      }
+    } else {
+      content
+    }
+  }
+}
+
 internal struct AccessibilityLabelModifier: ViewModifier, Record {
   @Field var label: String?
 
@@ -1351,6 +1379,10 @@ extension ViewModifierRegistry {
 
     register("lineSpacing") { params, appContext, _ in
       return try LineSpacing(from: params, appContext: appContext)
+    }
+
+    register("scrollDismissesKeyboard") { params, appContext, _ in
+      return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
     }
   }
 }

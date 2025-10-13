@@ -5,9 +5,9 @@ import android.content.Intent
 import android.provider.Settings
 import android.util.Log
 import androidx.core.net.toUri
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.UiThreadUtil
 import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.DEV_MENU_TAG
 import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference
 
 class DevMenuDevToolsDelegate(
   private val manager: DevMenuManagerInterface,
-  reactHost: ReactHostWrapper
+  reactHost: ReactHost
 ) {
   private val _reactDevManager = WeakReference(
     reactHost.devSupportManager

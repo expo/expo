@@ -16,12 +16,14 @@ struct BuildInfo {
   let runtimeVersion: String
   let usesEASUpdates: Bool
   let projectUrl: String?
+  let sdkVersion: String?
 
   init(buildInfo: [AnyHashable: Any], updatesConfig: [AnyHashable: Any]) {
     self.appId = (updatesConfig["appId"] as? String) ?? (buildInfo["appId"] as? String) ?? ""
     self.runtimeVersion = (updatesConfig["runtimeVersion"] as? String) ?? (buildInfo["runtimeVersion"] as? String) ?? ""
     self.usesEASUpdates = updatesConfig["usesEASUpdates"] as? Bool ?? false
     self.projectUrl = updatesConfig["projectUrl"] as? String
+    self.sdkVersion = buildInfo["sdkVersion"] as? String
   }
 }
 

@@ -111,7 +111,7 @@ type GetServerManifestOptions = {
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 export function getServerManifest(
   route: RouteNode,
-  options?: GetServerManifestOptions
+  options: GetServerManifestOptions | undefined
 ): ExpoRouterServerManifestV1 {
   function getFlatNodes(route: RouteNode, parentRoute: string = ''): FlatNodeTuple[] {
     // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.
