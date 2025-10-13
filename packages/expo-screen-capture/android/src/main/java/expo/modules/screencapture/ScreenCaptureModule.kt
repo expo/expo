@@ -170,5 +170,4 @@ class ScreenCaptureModule : Module() {
       promise.resolve(deniedPermissions)
     }
   }
-
 }
