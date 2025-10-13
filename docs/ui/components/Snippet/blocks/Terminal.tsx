@@ -1,10 +1,12 @@
 import { mergeClasses } from '@expo/styleguide';
 import { TerminalSquareIcon } from '@expo/styleguide-icons/outline/TerminalSquareIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { Language, Prism } from 'prism-react-renderer';
 
 import { CODE } from '~/ui/components/Text';
 
 import { Snippet } from '../Snippet';
+import { SnippetAction } from '../SnippetAction';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 import { CopyAction } from '../actions/CopyAction';
@@ -15,6 +17,10 @@ type TerminalProps = {
   hideOverflow?: boolean;
   title?: string;
   className?: string;
+  browserAction?: {
+    href: string;
+    label: string;
+  };
 };
 
 export const Terminal = ({
@@ -23,9 +29,11 @@ export const Terminal = ({
   hideOverflow,
   className,
   title = 'Terminal',
+  browserAction,
 }: TerminalProps) => (
   <Snippet className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
     <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
+      {renderBrowserAction(browserAction)}
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
     <SnippetContent alwaysDark hideOverflow={hideOverflow} className="flex flex-col">
@@ -49,6 +57,28 @@ function getDefaultCmdCopy(cmd: TerminalProps['cmd']) {
 function renderCopyButton({ cmd, cmdCopy }: TerminalProps) {
   const copyText = cmdCopy ?? getDefaultCmdCopy(cmd);
   return copyText && <CopyAction alwaysDark text={copyText} />;
+}
+
+function renderBrowserAction(browserAction: TerminalProps['browserAction']) {
+  if (!browserAction) {
+    return null;
+  }
+
+  const { href, label } = browserAction;
+
+  return (
+    <SnippetAction
+      alwaysDark
+      className="max-sm-gutters:gap-0 [&_p]:max-sm-gutters:hidden"
+      rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
+      onClick={() => {
+        if (typeof window !== 'undefined') {
+          window.open(href, '_blank', 'noopener,noreferrer');
+        }
+      }}>
+      {label}
+    </SnippetAction>
+  );
 }
 
 /**

@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -57,5 +58,27 @@ describe(Terminal, () => {
   it('do not generate copyCmd if there is more than one command', () => {
     render(<Terminal cmd={['$ npx create-expo-app init test', '$ cd test']} />);
     expect(screen.queryByText('Copy')).toBe(null);
+  });
+
+  it('renders browser action when provided', async () => {
+    const originalWindowOpen = window.open;
+    const openMock = jest.fn();
+    window.open = openMock as unknown as typeof window.open;
+
+    render(
+      <Terminal
+        cmd={['$ expo login']}
+        browserAction={{ href: 'https://expo.dev/login', label: 'Open in expo.dev' }}
+      />
+    );
+
+    expect(screen.getByText('Open in expo.dev')).toBeVisible();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByText('Open in expo.dev'));
+
+    expect(openMock).toHaveBeenCalledWith('https://expo.dev/login', '_blank', 'noopener,noreferrer');
+
+    window.open = originalWindowOpen;
   });
 });
