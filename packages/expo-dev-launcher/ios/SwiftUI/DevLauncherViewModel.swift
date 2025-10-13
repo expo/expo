@@ -212,7 +212,6 @@ class DevLauncherViewModel: ObservableObject {
 
   private func saveMenuPreference(key: String, value: Bool) {
     UserDefaults.standard.set(value, forKey: key)
-    UserDefaults.standard.synchronize()
   }
 
   private func checkAuthenticationStatus() {
