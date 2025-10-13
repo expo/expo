@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
 export type LabelProps = {
@@ -12,7 +13,7 @@ export type LabelProps = {
     /**
      * The color of the label icon.
      */
-    color?: string;
+    color?: ColorValue;
 } & CommonViewModifierProps;
 /**
  * Renders a native label view, which could be used in a list or section.

@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -35,7 +36,7 @@ export interface TextProps extends CommonViewModifierProps {
   /**
    * The color of the text.
    */
-  color?: string;
+  color?: ColorValue;
 }
 
 type NativeTextProps = Omit<TextProps, 'children'> & {

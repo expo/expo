@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
 
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -28,7 +29,7 @@ export type SliderProps = {
   /**
    * Slider color.
    */
-  color?: string;
+  color?: ColorValue;
   /**
    * Callback triggered on dragging along the slider.
    */
