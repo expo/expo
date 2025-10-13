@@ -597,6 +597,7 @@ jobs:
     params:
       platform: ios | android # required
       profile: string # optional, default: production
+      message: string # optional
 ```
 
 This job outputs the following properties:
@@ -793,7 +794,7 @@ jobs:
     type: maestro
     # @end #
     environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    image: string # optional. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on  for a list of available images.
     params:
       build_id: string # required
       flow_path: string | string[] # required
@@ -805,6 +806,7 @@ jobs:
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
       android_system_image_package: string # optional. Android emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
+      output_format?: string # optional. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
 ```
 
 #### `maestro-cloud`
@@ -820,7 +822,7 @@ jobs:
     type: maestro-cloud
     # @end #
     environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    image: string # optional. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on  for a list of available images.
     params:
       build_id: string # required. ID of the build to test.
       maestro_project_id: string # required. Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
@@ -868,7 +870,7 @@ jobs:
     params:
       message: string # optional - custom message to include in the report
       build_ids: string[] # optional - specific build IDs to include, defaults to all related to the running workflow
-      update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workfow
+      update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workflow
 
   # instead of using message and the builds and updates table, you can also override the comment contents with `payload`
   custom_github_comment:
@@ -921,7 +923,10 @@ jobs:
     # @info #
     type: repack
     params:
-      build_id: string
+      build_id: string # required
+      profile: string # optional
+      embed_bundle_assets: boolean # optional
+      message: string # optional
     # @end #
 ```
 
@@ -1313,6 +1318,61 @@ jobs:
   description="View the source code for the eas/use_npm_token function on GitHub."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
+/>
+
+#### `eas/download_artifact`
+
+Downloads an artifact from EAS given an artifact's ID or name. Useful for sending artifacts from previous jobs to other services.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/download_artifact
+        with:
+          name: string # Required if artifact_id is not provided. Name of the artifact to download.
+          artifact_id: string # Required if artifact_name is not provided. ID of the artifact to download.
+```
+
+##### Properties
+
+| Property      | Type   | Required | Description                                                                      |
+| ------------- | ------ | -------- | -------------------------------------------------------------------------------- |
+| `name`        | string | No       | The name of the artifact to download. Required if `artifact_id` is not provided. |
+| `artifact_id` | string | No       | The ID of the artifact to download. Required if `name` is not provided.          |
+
+##### Outputs
+
+| Property        | Type   | Description                                                                                                                                            |
+| --------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `artifact_path` | string | The path to the downloaded artifact. This output can be used as input into other steps in your workflow. For example, to send or process the artifact. |
+
+##### Example
+
+```yaml
+jobs:
+  maestro_tests:
+    type: maestro
+    params:
+      build_id: '123-abc'
+      flow_path: 'path/to/flow.yaml'
+      output_format: 'junit'
+  my_job:
+    needs: [maestro_tests]
+    steps:
+      - uses: eas/download_artifact
+        id: download_artifact
+        with:
+          name: 'iOS Maestro Test Report (junit)'
+      - name: Print Maestro output
+        run: echo ${{ steps.download_artifact.outputs.artifact_path }}
+```
+
+<BoxLink
+  title="eas/download_artifact source code"
+  description="View the source code for the eas/download_artifact function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
 />
 
 ## Built-in shell functions

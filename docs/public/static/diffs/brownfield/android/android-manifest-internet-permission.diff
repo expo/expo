@@ -1,0 +1,12 @@
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index a670c43..26eb9fe 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -2,6 +2,7 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools">
+
++    <uses-permission android:name="android.permission.INTERNET" />
+     <application
+         android:allowBackup="true"
+         android:dataExtractionRules="@xml/data_extraction_rules"

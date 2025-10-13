@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.1.4 - 2025-09-17
+
+### 🐛 Bug fixes
+
+- Set default glass style to regular ([#39732](https://github.com/expo/expo/pull/39732) by [@brentvatne](https://github.com/brentvatne))
+
 ## 0.1.3 — 2025-09-12
 
 ### 🎉 New features

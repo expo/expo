@@ -8,7 +8,6 @@ import java.security.MessageDigest
 @Serializable
 data class AutolinkingOptions(
   val searchPaths: List<String>? = null,
-  val ignorePaths: List<String>? = null,
   val exclude: List<String>? = null
 ) {
   fun toJson(): String {

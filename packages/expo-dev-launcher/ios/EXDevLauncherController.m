@@ -252,15 +252,13 @@
   return _errorManager;
 }
 
-- (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
+- (void)startWithWindow:(UIWindow *)window
 {
   _isStarted = YES;
-  _delegate = delegate;
-  _launchOptions = launchOptions;
   _window = window;
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
-  if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+  if (_launchOptions[UIApplicationLaunchOptionsURLKey]) {
     // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
     [_window makeKeyWindow];
     return;
@@ -310,7 +308,7 @@
 - (void)autoSetupStart:(UIWindow *)window
 {
   if (_delegate != nil) {
-    [self startWithWindow:window delegate:_delegate launchOptions:_launchOptions];
+    [self startWithWindow:window];
   } else {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"[EXDevLauncherController autoSetupStart:] was called before autoSetupPrepare:. Make sure you've set up expo-modules correctly in AppDelegate and are using ReactDelegate to create a bridge before calling [super application:didFinishLaunchingWithOptions:]." userInfo:nil];
   }
@@ -688,10 +686,28 @@
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
 
+  NSString *sdkVersion = nil;
+  if (self.manifest != nil) {
+    NSDictionary *expoConfig = [self.manifest expoClientConfigRootObject];
+    id sdk = expoConfig[@"sdkVersion"];
+    if ([sdk isKindOfClass:[NSString class]]) {
+      sdkVersion = (NSString *)sdk;
+    } else {
+      NSDictionary *rawManifest = [self.manifest rawManifestJSON];
+      id sdkFromManifest = rawManifest[@"sdkVersion"];
+      if ([sdkFromManifest isKindOfClass:[NSString class]]) {
+        sdkVersion = (NSString *)sdkFromManifest;
+      }
+    }
+  }
+
   [buildInfo setObject:appName forKey:@"appName"];
   [buildInfo setObject:appIcon forKey:@"appIcon"];
   [buildInfo setObject:appVersion forKey:@"appVersion"];
   [buildInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
+  if (sdkVersion) {
+    [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
+  }
 
   return buildInfo;
 }
@@ -777,17 +793,30 @@
 
   // the project url field is added to app.json.updates when running `eas update:configure`
   // the `u.expo.dev` determines that it is the modern manifest protocol
+  NSURL *updateURL = _updatesInterface ? _updatesInterface.updateURL : nil;
   NSString *projectUrl = @"";
   if (_updatesInterface) {
-    projectUrl = [[self.manifest updatesInfo] valueForKey:@"url"];
+    projectUrl = [[self.manifest updatesInfo] valueForKey:@"url"] ?: @"";
+    if (projectUrl.length == 0 && updateURL) {
+      projectUrl = updateURL.absoluteString ?: @"";
+    }
   }
 
-  NSURL *url = [NSURL URLWithString:projectUrl];
+  NSURL *url = projectUrl.length > 0 ? [NSURL URLWithString:projectUrl] : updateURL;
 
   BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
 
   NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: [self.manifest easProjectId];
+  if (appId.length == 0 && updateURL) {
+    NSString *possibleAppId = updateURL.lastPathComponent ?: @"";
+    if (possibleAppId.length == 0 && updateURL.pathComponents.count > 0) {
+      possibleAppId = updateURL.pathComponents.lastObject ?: @"";
+    }
+    if (possibleAppId.length > 0 && ![possibleAppId isEqualToString:@"/"]) {
+      appId = possibleAppId;
+    }
+  }
   BOOL hasAppId = appId.length > 0;
 
   BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;

@@ -19,16 +19,20 @@ object CameraUtils {
     }
   }
 
-  fun isMLKitAvailable(context: Context?): Boolean {
-    if (!hasGooglePlayServices(context)) {
-      return false
-    }
-
+  fun isMLKitBarcodeScannerAvailable(): Boolean {
     return try {
       Class.forName("com.google.mlkit.vision.barcode.BarcodeScanning")
       true
     } catch (_: ClassNotFoundException) {
       false
     }
+  }
+
+  fun isMLKitAvailable(context: Context?): Boolean {
+    if (!hasGooglePlayServices(context)) {
+      return false
+    }
+
+    return isMLKitBarcodeScannerAvailable()
   }
 }

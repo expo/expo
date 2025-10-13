@@ -84,6 +84,7 @@ export async function getFilesToExportFromServerAsync(
   projectRoot: string,
   {
     manifest,
+    serverManifest,
     renderAsync,
     // Servers can handle group routes automatically and therefore
     // don't require the build-time generation of every possible group
@@ -93,11 +94,25 @@ export async function getFilesToExportFromServerAsync(
     files = new Map(),
   }: {
     manifest: ExpoRouterRuntimeManifest;
+    serverManifest: ExpoRouterServerManifestV1;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     exportServer?: boolean;
     files?: ExportAssetMap;
   }
 ): Promise<ExportAssetMap> {
+  if (!exportServer && serverManifest) {
+    // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
+    // EAS Hosting to recognize the `headers` and `redirects` configs
+    const subsetServerManifest = {
+      headers: serverManifest.headers,
+      redirects: serverManifest.redirects,
+    };
+    files.set('_expo/.routes.json', {
+      contents: JSON.stringify(subsetServerManifest, null, 2),
+      targetDomain: 'client',
+    });
+  }
+
   await Promise.all(
     getHtmlFiles({ manifest, includeGroupVariations: !exportServer }).map(
       async ({ route, filePath, pathname }) => {
@@ -207,6 +222,7 @@ export async function exportFromServerAsync(
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
     manifest,
+    serverManifest,
     exportServer,
     async renderAsync({ pathname, route }) {
       const template = await renderAsync(pathname);
@@ -462,6 +478,7 @@ export async function exportApiRoutesStandaloneAsync(
     // TODO: Export an HTML entry for each file. This is a temporary solution until we have SSR/SSG for RSC.
     await getFilesToExportFromServerAsync(devServer.projectRoot, {
       manifest: htmlManifest,
+      serverManifest,
       exportServer: true,
       files,
       renderAsync: async ({ pathname, filePath }) => {

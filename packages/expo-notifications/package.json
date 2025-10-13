@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "expo-module build",
+    "build:plugin": "expo-module build plugin",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
@@ -48,7 +49,7 @@
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~7.0.7",
-    "expo-constants": "~18.0.8"
+    "expo-constants": "~18.0.9"
   },
   "devDependencies": {
     "expo-module-scripts": "^5.0.7",

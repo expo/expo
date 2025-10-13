@@ -1,4 +1,6 @@
+import com.android.build.gradle.tasks.ExternalNativeBuildJsonTask
 import expo.modules.plugin.gradle.ExpoModuleExtension
+import groovy.json.JsonSlurper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -14,6 +16,8 @@ buildscript {
     if (shouldIncludeCompose) {
       classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
     }
+
+    classpath("org.apache.commons:commons-text:1.14.0")
   }
 }
 
@@ -25,7 +29,7 @@ if (shouldIncludeCompose) {
 }
 
 group = 'host.exp.exponent'
-version = '3.0.15'
+version = '3.0.16'
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -75,7 +79,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "3.0.15"
+    versionName "3.0.16"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
@@ -117,7 +121,7 @@ android {
       "**/libfolly_json.so",
       "**/libfolly_runtime.so",
       "**/libglog.so",
-      "**/libhermes.so",
+      "**/libhermesvm.so",
       "**/libjscexecutor.so",
       "**/libjsi.so",
       "**/libreactnative.so",
@@ -138,8 +142,8 @@ android {
     // Required or mockk will crash
     resources {
       excludes += [
-          "META-INF/LICENSE.md",
-          "META-INF/LICENSE-notice.md"
+        "META-INF/LICENSE.md",
+        "META-INF/LICENSE-notice.md"
       ]
     }
 
@@ -182,11 +186,11 @@ android {
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
-  implementation 'androidx.annotation:annotation:1.7.1'
+  implementation 'androidx.annotation:annotation:1.9.1'
 
-  api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
-  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
-  api "androidx.core:core-ktx:1.13.1"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"
+  api "androidx.core:core-ktx:1.17.0"
 
   if (shouldIncludeCompose) {
     implementation 'androidx.compose.foundation:foundation-android:1.7.6'
@@ -198,20 +202,20 @@ dependencies {
 
   compileOnly 'com.facebook.fbjni:fbjni:0.5.1'
 
-  testImplementation 'androidx.test:core:1.5.0'
+  testImplementation 'androidx.test:core:1.7.0'
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.13.10'
-  testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.11.1"
-  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
-  testImplementation "org.json:json:20230227"
+  testImplementation "com.google.truth:truth:1.4.5"
+  testImplementation "org.robolectric:robolectric:4.16"
+  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2"
+  testImplementation "org.json:json:20250517"
 
-  androidTestImplementation 'androidx.test:runner:1.5.2'
-  androidTestImplementation 'androidx.test:core:1.5.0'
-  androidTestImplementation 'androidx.test:rules:1.5.0'
+  androidTestImplementation 'androidx.test:runner:1.7.0'
+  androidTestImplementation 'androidx.test:core:1.7.0'
+  androidTestImplementation 'androidx.test:rules:1.7.0'
   androidTestImplementation "io.mockk:mockk-android:1.13.10"
-  androidTestImplementation "com.google.truth:truth:1.1.2"
-  androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+  androidTestImplementation "com.google.truth:truth:1.4.5"
+  androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2"
 
   if (isExpoModulesCoreTests) {
     if (USE_HERMES) {
@@ -229,4 +233,57 @@ if (shouldTurnWarningsIntoErrors) {
   tasks.withType(KotlinCompile) configureEach {
     compilerOptions.allWarningsAsErrors = true
   }
+}
+
+// Generates the PCH file during sync if it doesn't exist yet
+def generatePCHTask = tasks.register("generatePCH") {
+  def configureTaskName = "configureCMakeDebug"
+  dependsOn(configureTaskName)
+
+  doLast {
+    reactNativeArchitectures().each { abi ->
+      def configureTaskNameForAbi = configureTaskName + "[" + abi + "]"
+      ExternalNativeBuildJsonTask configureTask = tasks.named(configureTaskNameForAbi).get() as ExternalNativeBuildJsonTask
+
+      // Gets CxxModel for the given ABI
+      File cxxBuildFolder = configureTask.abi.cxxBuildFolder
+
+      // Gets compile_commands.json file to find the command to generate the PCH file
+      File compileCommandsFile = new File(cxxBuildFolder, "compile_commands.json")
+      if (!compileCommandsFile.exists()) {
+        return
+      }
+
+      def parsedJson = new JsonSlurper().parseText(compileCommandsFile.text)
+      for (int i = 0; i < parsedJson.size(); i++) {
+        def commandObj = parsedJson[i]
+
+        def path = commandObj.file
+        if (!path.endsWith("cmake_pch.hxx.cxx")) {
+          continue
+        }
+
+        def generatedFilePath = path.substring(0, path.length() - ".cxx".length()) + ".pch"
+        // Checks if the file already exists, and skip if so
+        if (new File(generatedFilePath).exists()) {
+          continue
+        }
+
+        def tokenizer = new org.apache.commons.text.StringTokenizer(commandObj.command, " ")
+        def tokens = tokenizer.tokenList
+
+        def workingDirFile = new File(commandObj.directory)
+
+        providers.exec {
+          workingDir(providers.provider { workingDirFile }.get())
+          commandLine(tokens)
+        }.getResult().get().assertNormalExitValue()
+      }
+    }
+  }
+}
+
+// This task will run on the IDE project sync, ensuring the PCH file is generated early enough
+tasks.register("prepareKotlinBuildScriptModel") {
+  dependsOn(generatePCHTask)
 }

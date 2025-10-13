@@ -28,12 +28,10 @@ class SettingsManager(
   val settings: Settings,
   val projectRoot: File,
   searchPaths: List<String>? = null,
-  ignorePaths: List<String>? = null,
   exclude: List<String>? = null
 ) {
   private val autolinkingOptions = AutolinkingOptions(
     searchPaths,
-    ignorePaths,
     exclude
   )
 

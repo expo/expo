@@ -125,15 +125,17 @@ struct AudioUtils {
   }
 
   static func createRecordingOptions(_ options: RecordingOptions) -> [String: Any] {
-    let strategy = options.bitRateStrategy?.toAVBitRateStrategy() ?? AVAudioBitRateStrategy_Variable
+    let strategy = options.bitRateStrategy?.toAVBitRateStrategy()
 
     var settings = [String: Any]()
 
-    if strategy == AVAudioBitRateStrategy_Variable {
-      settings[AVEncoderAudioQualityForVBRKey] = strategy
-    } else {
-      settings[AVEncoderAudioQualityKey] = strategy
+    if let strategy {
+      settings[AVEncoderBitRateStrategyKey] = strategy
     }
+
+    let usesVBRQualityKey = strategy == AVAudioBitRateStrategy_Variable || strategy == AVAudioBitRateStrategy_VariableConstrained
+    let qualityKey = usesVBRQualityKey ? AVEncoderAudioQualityForVBRKey : AVEncoderAudioQualityKey
+    settings[qualityKey] = options.audioQuality
     settings[AVSampleRateKey] = options.sampleRate
     settings[AVNumberOfChannelsKey] = options.numberOfChannels
     settings[AVEncoderBitRateKey] = options.bitRate

@@ -90,6 +90,7 @@ exceptions:
   - '.*Fastlane.*'
   - '.*Firebase.*'
   - '.*FileSystem.*'
+  - '.*FlatList.*'
   - '.*Flipper.*'
   - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
@@ -131,6 +132,7 @@ exceptions:
   - '.*Legend-State.*'
   - '.*Link component.*'
   - '.*Linking.*'
+  - '.*MCP*'
   - '.*macOS.*'
   - '.*manifest\.json.*'
   - '.*metro\.config\.js.*'
@@ -281,3 +283,5 @@ exceptions:
   - Use Stacks
   - 'Mode 1: Auto-with-overrides mode'
   - 'Mode 2: Payload mode'
+  - 'Method 1: Use'
+  - 'Method 2: Use'

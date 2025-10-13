@@ -1,6 +1,14 @@
-import { Chip, ChipTextStyle, Slider } from '@expo/ui/jetpack-compose';
+import { Chip as JetpackChip, ChipTextStyle, Host, Slider } from '@expo/ui/jetpack-compose';
 import React, { useState } from 'react';
 import { View, Text, Alert, ScrollView, StyleSheet, Pressable } from 'react-native';
+
+function Chip(props: React.ComponentProps<typeof JetpackChip>) {
+  return (
+    <Host>
+      <JetpackChip {...props} />
+    </Host>
+  );
+}
 
 export default function ChipScreen() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>(['All']);

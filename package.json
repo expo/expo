@@ -20,10 +20,9 @@
     ]
   },
   "resolutions": {
-    "@expo/metro": "~0.1.1",
-    "react-native": "0.81.4",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "@expo/metro": "~54.0.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__template": "^7.4.4",

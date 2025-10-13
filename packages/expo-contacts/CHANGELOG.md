@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+- Added contact image uri validation. ([#39658](https://github.com/expo/expo/pull/39658) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- [Android] Removed unused `androidx.annotation:annotation` dependency ([#39761](https://github.com/expo/expo/pull/39761) by [@lukmccall](https://github.com/lukmccall))
+
+## 15.0.9 - 2025-10-01
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed issue with missing `namePrefix` on iOS ([#39974](https://github.com/expo/expo/pull/39974) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- [iOS] Fixed phonetic name fields being assigned to wrong keys ([#40013](https://github.com/expo/expo/pull/40013) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ## 15.0.8 — 2025-09-10
 
 ### 🎉 New features

@@ -2,8 +2,10 @@ package expo.modules.medialibrary.next.objects.asset.delegates
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
@@ -18,18 +20,32 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAssetHeight
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetModificationTime
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetPath
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetWidth
-import expo.modules.medialibrary.next.extensions.resolver.queryGetCreationTime
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetCreationTime
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePath
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.EXIF_TAGS
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
+import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
+import expo.modules.medialibrary.next.records.Location
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.let
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @RequiresApi(Build.VERSION_CODES.Q)
-class AssetModernDelegate(override val contentUri: Uri, context: Context) : AssetDelegate {
+class AssetModernDelegate(
+  override val contentUri: Uri,
+  val assetDeleter: AssetDeleter,
+  context: Context
+) : AssetDelegate {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
@@ -39,7 +55,7 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
 
   override suspend fun getCreationTime(): Long? {
     return contentResolver
-      .queryGetCreationTime(contentUri)
+      .queryAssetCreationTime(contentUri)
       .takeIf { it != 0L }
   }
 
@@ -61,7 +77,7 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
     val height = contentResolver.queryAssetHeight(contentUri)
       ?: throw AssetPropertyNotFoundException("Height")
     // If height is not saved to the database
-    if (getMediaType().contains("image") && height <= 0) {
+    if (getMediaType() == MediaType.IMAGE && height <= 0) {
       return downloadBitmapAndGet { it.outHeight }
     }
     return height
@@ -70,7 +86,7 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
   override suspend fun getWidth(): Int {
     val width = contentResolver.queryAssetWidth(contentUri)
       ?: throw AssetPropertyNotFoundException("Width")
-    if (getMediaType().contains("image") && width <= 0) {
+    if (getMediaType() == MediaType.IMAGE && width <= 0) {
       return downloadBitmapAndGet { it.outWidth }
     }
     return width
@@ -83,12 +99,14 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
     return extract(options)
   }
 
-  override suspend fun getMediaType(): String =
-    contentResolver.getType(contentUri)
-      ?: throw AssetPropertyNotFoundException("MediaType")
+  override suspend fun getMediaType(): MediaType =
+    MediaType.fromContentUri(contentUri)
 
   override suspend fun getModificationTime(): Long? =
-    contentResolver.queryAssetModificationTime(contentUri).takeIf { it != 0L }
+    contentResolver.queryAssetModificationTime(contentUri)
+      ?.takeIf { it != 0L }
+      ?.toDuration(DurationUnit.SECONDS)
+      ?.inWholeMilliseconds
 
   override suspend fun getUri(): Uri {
     // e.g. storage/emulated/0/Android/data/expo/files/[ROOT_ALBUM]/[ALBUM_NAME]
@@ -104,8 +122,36 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
       ?: MimeType.from(getUri())
   }
 
-  override suspend fun delete() {
-    contentResolver.delete(contentUri, null, null)
+  override suspend fun getLocation(): Location? =
+    contentResolver.openInputStream(contentUri)?.use { stream ->
+      ExifInterface(stream)
+        .latLong
+        ?.let { (lat, long) -> Location(lat, long) }
+    }
+
+  override suspend fun getExif(): Bundle = withContext(Dispatchers.IO) {
+    if (getMediaType() != MediaType.IMAGE) {
+      return@withContext Bundle()
+    }
+    val exifBundle = Bundle()
+    contentResolver.openInputStream(contentUri)?.use { stream ->
+      ensureActive()
+      val exifInterface = ExifInterface(stream)
+      for ((type, name) in EXIF_TAGS) {
+        if (exifInterface.getAttribute(name) != null) {
+          when (type) {
+            "string" -> exifBundle.putString(name, exifInterface.getAttribute(name))
+            "int" -> exifBundle.putInt(name, exifInterface.getAttributeInt(name, 0))
+            "double" -> exifBundle.putDouble(name, exifInterface.getAttributeDouble(name, 0.0))
+          }
+        }
+      }
+    }
+    return@withContext exifBundle
+  }
+
+  override suspend fun delete() = withContext(Dispatchers.IO) {
+    assetDeleter.delete(contentUri)
   }
 
   override suspend fun move(relativePath: RelativePath) {
@@ -116,6 +162,7 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
     val newAssetUri = contentResolver.insertPendingAsset(getFilename(), getMimeType(), relativePath)
     contentResolver.copyUriContent(contentUri, newAssetUri)
     contentResolver.publishPendingAsset(newAssetUri)
-    return@withContext Asset(newAssetUri, contextRef.getOrThrow())
+    val newAssetDelegate = AssetModernDelegate(newAssetUri, assetDeleter, contextRef.getOrThrow())
+    return@withContext Asset(newAssetDelegate)
   }
 }

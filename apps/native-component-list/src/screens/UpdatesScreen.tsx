@@ -83,9 +83,8 @@ export default function UpdatesScreen() {
   const setLocalImageOptions = () => {
     return Updates.showReloadScreen({
       reloadScreenOptions: {
-        backgroundColor: getRandomColor(),
-        image: require('../../assets/images/react-native.png'),
-        imageResizeMode: 'contain',
+        backgroundColor: 'black',
+        image: require('../../assets/images/sdk-54-release.png'),
       },
     });
   };

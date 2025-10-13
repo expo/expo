@@ -51,10 +51,20 @@ async function resolveDependencies(
   shouldIncludeDependency: (dependencyName: string) => boolean
 ): Promise<DependencyResolution[]> {
   const modules: DependencyResolution[] = [];
-  const dependencies =
+  let dependencies =
     packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
       ? packageJson.dependencies
       : {};
+
+  // NOTE(@kitten): Also traverse devDependencies for top-level package.json
+  const devDependencies =
+    packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
+      ? (packageJson.devDependencies as Record<string, string>)
+      : null;
+  if (depth === 0 && devDependencies) {
+    dependencies = { ...dependencies, ...devDependencies };
+  }
+
   for (const dependencyName in dependencies) {
     if (!shouldIncludeDependency(dependencyName)) {
       continue;

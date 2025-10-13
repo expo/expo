@@ -9,6 +9,7 @@ import {
   RawModuleConfigApple,
   SupportedPlatform,
 } from './types';
+import { memoize } from './utils';
 
 function arrayize<T>(value: T[] | T | undefined): T[] {
   if (Array.isArray(value)) {
@@ -17,11 +18,18 @@ function arrayize<T>(value: T[] | T | undefined): T[] {
   return value != null ? [value] : [];
 }
 
+export class ExpoAndroidModuleConfig {
+  constructor(
+    public classifier: string,
+    public name: string | null
+  ) {}
+}
+
 export class ExpoAndroidProjectConfig {
   constructor(
     public name: string,
     public path: string,
-    public modules?: string[],
+    public modules?: ExpoAndroidModuleConfig[],
     public publication?: AndroidPublication,
     public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
     public shouldUsePublicationScriptPath?: string,
@@ -44,13 +52,24 @@ export class ExpoModuleConfig {
   supportsPlatform(platform: SupportedPlatform): boolean {
     const supportedPlatforms = this.rawConfig.platforms ?? [];
 
-    if (platform === 'apple') {
+    if (platform === 'web') {
+      // Web platform is implicitly supported for autolinking resolution but has no special behavior
+      return true;
+    } else if (platform === 'apple') {
       // Apple platform is supported when any of iOS, macOS and tvOS is supported.
       return supportedPlatforms.some((supportedPlatform) => {
         return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
       });
     }
-    return supportedPlatforms.includes(platform);
+    switch (platform) {
+      case 'ios':
+      case 'macos':
+      case 'tvos':
+        // ios|macos|tvos are supported when the module supports "apple" as a platform in general
+        return supportedPlatforms.includes(platform) || supportedPlatforms.includes('apple');
+      default:
+        return supportedPlatforms.includes(platform);
+    }
   }
 
   /**
@@ -114,7 +133,11 @@ export class ExpoModuleConfig {
       new ExpoAndroidProjectConfig(
         this.rawConfig.android?.name ?? defaultProjectName,
         this.rawConfig.android?.path ?? 'android',
-        this.rawConfig.android?.modules,
+        this.rawConfig.android?.modules?.map((module) =>
+          typeof module === 'string'
+            ? new ExpoAndroidModuleConfig(module, null)
+            : new ExpoAndroidModuleConfig(module.class, module.name)
+        ),
         this.rawConfig.android?.publication,
         this.rawConfig.android?.gradleAarProjects,
         this.rawConfig.android?.shouldUsePublicationScriptPath,
@@ -127,7 +150,11 @@ export class ExpoModuleConfig {
         new ExpoAndroidProjectConfig(
           project.name,
           project.path,
-          project.modules,
+          project.modules?.map((module) =>
+            typeof module === 'string'
+              ? new ExpoAndroidModuleConfig(module, null)
+              : new ExpoAndroidModuleConfig(module.class, module.name)
+          ),
           project.publication,
           project.gradleAarProjects,
           project.shouldUsePublicationScriptPath
@@ -177,7 +204,7 @@ export class ExpoModuleConfig {
 /** Names of Expo Module config files (highest to lowest priority) */
 const EXPO_MODULE_CONFIG_FILENAMES = ['expo-module.config.json', 'unimodule.json'];
 
-export async function discoverExpoModuleConfigAsync(
+export const discoverExpoModuleConfigAsync = memoize(async function discoverExpoModuleConfigAsync(
   directoryPath: string
 ): Promise<ExpoModuleConfig | null> {
   for (let idx = 0; idx < EXPO_MODULE_CONFIG_FILENAMES.length; idx++) {
@@ -194,4 +221,4 @@ export async function discoverExpoModuleConfigAsync(
     return new ExpoModuleConfig(JSON.parse(text) as RawExpoModuleConfig);
   }
   return null;
-}
+});

@@ -1,7 +1,9 @@
 package expo.modules.plugin
 
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import expo.modules.plugin.configuration.ExpoModule
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
 import org.gradle.api.Plugin
@@ -11,11 +13,10 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
-import java.io.File
 import java.nio.file.Paths
 
 const val generatedPackageListNamespace = "expo.modules"
-const val generatedPackageListFilename = "ExpoModulesPackageList.java"
+const val generatedPackageListFilename = "ExpoModulesPackageList.kt"
 const val generatedFilesSrcDir = "generated/expo/src/main/java"
 
 open class ExpoAutolinkingPlugin : Plugin<Project> {
@@ -26,6 +27,9 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
 
     project.logger.quiet("")
     project.logger.quiet("Using expo modules")
+
+    val appProject = findAppProject(project.rootProject)
+    appProject?.let { copyAppDimensionsAndFlavorsToProject(project, it) }
 
     val (prebuiltProjects, projects) = config.allProjects.partition { project ->
       project.usePublication
@@ -50,7 +54,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     project.logger.quiet("")
 
     // Creates a task that generates a list of expo modules.
-    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.options, gradleExtension.hash, gradleExtension.projectRoot)
+    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.config.modules, gradleExtension.hash)
 
     // Ensures that the task is executed before the build.
     project.tasks
@@ -80,15 +84,87 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     return project.layout.buildDirectory.file(packageListRelativePath)
   }
 
-  fun createGeneratePackagesListTask(project: Project, options: AutolinkingOptions, hash: String, projectRoot: File): TaskProvider<GeneratePackagesListTask> {
+  fun createGeneratePackagesListTask(project: Project, modules: List<ExpoModule>, hash: String): TaskProvider<GeneratePackagesListTask> {
     return project.tasks.register("generatePackagesList", GeneratePackagesListTask::class.java) {
       it.hash.set(hash)
       it.namespace.set(generatedPackageListNamespace)
       it.outputFile.set(getPackageListFile(project))
-      it.workingDir = projectRoot
-      // Serializes the autolinking options to JSON to pass them to the task.
-      // The types supported as a task input are limited to primitives, strings, and files.
-      it.options.set(options.toJson())
+      it.modules = modules
+    }
+  }
+
+  private fun findAppProject(root: Project): Project? {
+    return root.allprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
+  }
+
+  private fun copyAppDimensionsAndFlavorsToProject(
+    project: Project,
+    appProject: Project
+  ) {
+    val appAndroid = appProject.extensions.findByName("android") as? BaseExtension ?: run {
+      return
+    }
+    val consumerAndroid = project.extensions.findByName("android") as? BaseExtension ?: run {
+      return
+    }
+
+    val appDimensions = syncFlavorDimensions(project, consumerAndroid, appAndroid)
+    copyMissingProductFlavors(project, consumerAndroid, appAndroid, appDimensions)
+  }
+
+  private fun syncFlavorDimensions(
+    project: Project,
+    consumerAndroid: BaseExtension,
+    appAndroid: BaseExtension
+  ): List<String> {
+    val appDimensions = appAndroid
+      .flavorDimensionList
+      .takeIf { it.isNotEmpty() }
+      ?: return emptyList()
+
+    val consumerDimensions = (consumerAndroid.flavorDimensionList).toMutableList()
+    val dimensionsAdded = appDimensions.any { dimension ->
+      if (dimension !in consumerDimensions) {
+        consumerDimensions.add(dimension)
+        true
+      } else {
+        false
+      }
+    }
+
+    if (dimensionsAdded) {
+      consumerAndroid.flavorDimensions(*consumerDimensions.toTypedArray())
+      project.logger.quiet("  -> Copied/merged flavorDimensions: ${consumerDimensions.joinToString()}")
+    }
+
+    return appDimensions
+  }
+
+  private fun copyMissingProductFlavors(
+    project: Project,
+    consumerAndroid: BaseExtension,
+    appAndroid: BaseExtension,
+    appDimensions: List<String>
+  ) {
+    val appFlavors = appAndroid.productFlavors
+    val consumerFlavors = consumerAndroid.productFlavors
+    val existingFlavorNames = consumerFlavors.map { it.name }.toSet()
+
+    appFlavors.forEach { appFlavor ->
+      if (appFlavor.name !in existingFlavorNames) {
+        val dimension = appFlavor.dimension ?: appDimensions.singleOrNull()
+
+        consumerFlavors.create(appFlavor.name).apply {
+          this.dimension = dimension
+          appFlavor.applicationIdSuffix?.let { this.applicationIdSuffix = it }
+          appFlavor.versionNameSuffix?.let { this.versionNameSuffix = it }
+          if (appFlavor.manifestPlaceholders.isNotEmpty()) {
+            this.manifestPlaceholders.putAll(appFlavor.manifestPlaceholders)
+          }
+        }
+
+        project.logger.quiet("  -> Created flavor '${appFlavor.name}' (dimension='$dimension') in :${project.path}")
+      }
     }
   }
 }

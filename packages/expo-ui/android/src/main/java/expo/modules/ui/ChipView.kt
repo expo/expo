@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import java.io.Serializable
@@ -30,7 +31,7 @@ data class ChipProps(
 ) : ComposeProps
 
 class ChipView(context: Context, appContext: AppContext) :
-  ExpoComposeView<ChipProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<ChipProps>(context, appContext) {
 
   override val props = ChipProps()
 
@@ -39,7 +40,7 @@ class ChipView(context: Context, appContext: AppContext) :
 
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val variant by props.variant
     val label by props.label
     val leadingIcon by props.leadingIcon
@@ -49,7 +50,7 @@ class ChipView(context: Context, appContext: AppContext) :
     val enabled by props.enabled
     val selected by props.selected
 
-    val chipModifier = modifier
+    val chipModifier = Modifier
       .padding(4.dp)
       .wrapContentSize(Alignment.Center)
 
@@ -85,7 +86,9 @@ class ChipView(context: Context, appContext: AppContext) :
           {
             ChipIcon(iconName = "filled.Done", iconSize = iconSize)
           }
-        } else null,
+        } else {
+          null
+        },
         trailingIcon = {
           trailingIcon?.let {
             ChipIcon(iconName = it, iconSize = iconSize)
@@ -166,6 +169,7 @@ private fun ChipText(label: String, textStyle: String = "labelSmall") {
     )
   }
 }
+
 @Composable
 private fun ChipIcon(
   iconName: String,

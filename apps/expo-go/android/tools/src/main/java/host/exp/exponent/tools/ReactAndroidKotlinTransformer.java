@@ -247,6 +247,14 @@ public class ReactAndroidKotlinTransformer {
             
             content = replaceFunction(content, "hasUpToDateJSBundleInCache", newHasUpToDateImplementation);
 
+            String getExponentActivityIdImplementation = """
+                private fun getExponentActivityId(): Int {
+                    val devInternalSettings = devSettings as? DevInternalSettings
+                    return devInternalSettings?.getExponentActivityId() ?: -1
+                }""";
+
+            content = replaceFunction(content, "getExponentActivityId", getExponentActivityIdImplementation);
+
             return content;
         }
 
@@ -273,6 +281,7 @@ public class ReactAndroidKotlinTransformer {
         public String transform(String content) {
             content = makePublic(content, "class BridgelessDevSupportManager");
             content = content.replaceAll("constructor", "public constructor");
+            content = content.replaceAll("fun tracingState():", "public fun tracingState():");
             return content;
         }
     }

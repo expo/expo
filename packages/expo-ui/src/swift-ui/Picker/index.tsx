@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -29,7 +30,7 @@ export type PickerProps = {
   /**
    * Picker color. On iOS it only applies to the `'menu'` variant.
    */
-  color?: string;
+  color?: ColorValue;
 } & CommonViewModifierProps;
 
 const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(

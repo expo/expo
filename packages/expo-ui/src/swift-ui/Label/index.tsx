@@ -1,4 +1,6 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
+import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -12,12 +14,12 @@ export type LabelProps = {
   /**
    * The name of the SFSymbol to be displayed in the label.
    */
-  systemImage?: string;
+  systemImage?: SFSymbol;
 
   /**
    * The color of the label icon.
    */
-  color?: string;
+  color?: ColorValue;
 } & CommonViewModifierProps;
 
 const LabelNativeView: React.ComponentType<LabelProps> = requireNativeView('ExpoUI', 'LabelView');

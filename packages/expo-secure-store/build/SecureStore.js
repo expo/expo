@@ -1,5 +1,4 @@
 import ExpoSecureStore from './ExpoSecureStore';
-import { byteCountOverLimit, VALUE_BYTES_LIMIT } from './byteCounter';
 // @needsAudit
 /**
  * The data in the keychain item cannot be accessed after a restart until the device has been
@@ -92,7 +91,7 @@ export async function getItemAsync(key, options = {}) {
  * Stores a key–value pair.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
- * @param value The value to store. Size limit is 2048 bytes.
+ * @param value The value to store.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
  * @return A promise that rejects if value cannot be stored on the device.
@@ -109,7 +108,7 @@ export async function setItemAsync(key, value, options = {}) {
  * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is set to `true` until the user authenticates.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
- * @param value The value to store. Size limit is 2048 bytes.
+ * @param value The value to store.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
  */
@@ -152,12 +151,6 @@ function isValidKey(key) {
     return typeof key === 'string' && /^[\w.-]+$/.test(key);
 }
 function isValidValue(value) {
-    if (typeof value !== 'string') {
-        return false;
-    }
-    if (byteCountOverLimit(value, VALUE_BYTES_LIMIT)) {
-        console.warn(`Value being stored in SecureStore is larger than ${VALUE_BYTES_LIMIT} bytes and it may not be stored successfully. In a future SDK version, this call may throw an error.`);
-    }
-    return true;
+    return typeof value === 'string';
 }
 //# sourceMappingURL=SecureStore.js.map

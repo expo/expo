@@ -356,7 +356,7 @@ bool JSIContext::wasDeallocated() const noexcept {
   return wasDeallocated_;
 }
 
-thread_local std::unordered_map<uintptr_t, JSIContext *> jsiContexts;
+std::unordered_map<uintptr_t, JSIContext *> jsiContexts;
 
 void bindJSIContext(const jsi::Runtime &runtime, JSIContext *jsiContext) {
   jsiContexts[reinterpret_cast<uintptr_t>(&runtime)] = jsiContext;

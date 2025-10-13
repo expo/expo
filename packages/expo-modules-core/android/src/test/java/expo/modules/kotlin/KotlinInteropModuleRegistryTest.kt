@@ -59,10 +59,10 @@ private class TestModule2 : Module() {
 }
 
 private val provider = object : ModulesProvider {
-  override fun getModulesList(): List<Class<out Module>> {
-    return listOf(
-      TestModule1::class.java,
-      TestModule2::class.java
+  override fun getModulesMap(): Map<Class<out Module>, String?> {
+    return mapOf(
+      TestModule1::class.java to null,
+      TestModule2::class.java to null
     )
   }
 }

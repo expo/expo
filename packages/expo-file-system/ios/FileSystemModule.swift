@@ -94,7 +94,11 @@ public final class FileSystemModule: Module {
             destination = to.url
           }
           if FileManager.default.fileExists(atPath: destination.path) {
-            throw DestinationAlreadyExistsException()
+            if options?.idempotent == true {
+              try FileManager.default.removeItem(at: destination)
+            } else {
+              throw DestinationAlreadyExistsException()
+            }
           }
           try FileManager.default.moveItem(at: fileURL, to: destination)
           // TODO: Remove .url.absoluteString once returning shared objects works
@@ -198,9 +202,16 @@ public final class FileSystemModule: Module {
         return try file.info(options: options ?? InfoOptions())
       }
 
-      Function("write") { (file, content: Either<String, TypedArray>) in
+      Function("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
         if let content: String = content.get() {
-          try file.write(content)
+          if options?.encoding == WriteEncoding.base64 {
+            guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
+              throw UnableToWriteBase64DataException(file.url.absoluteString)
+            }
+            try file.write(data)
+          } else {
+            try file.write(content)
+          }
         }
         if let content: TypedArray = content.get() {
           try file.write(content)

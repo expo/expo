@@ -15,6 +15,8 @@ function getLinkingImplementationForPlatform(platform) {
             return require('../platforms/android');
         case 'devtools':
             return require('../platforms/devtools');
+        case 'web':
+            return require('../platforms/web');
         default:
             throw new Error(`No linking implementation is available for platform "${platform}"`);
     }

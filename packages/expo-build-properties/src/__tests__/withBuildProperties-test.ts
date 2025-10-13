@@ -231,6 +231,22 @@ describe(withBuildProperties, () => {
     });
   });
 
+  it('generates the ios.forceStaticLinking property', async () => {
+    const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { ios: { forceStaticLinking: ['Test'] } },
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResultsEnabled).toMatchObject({
+      EX_DEV_CLIENT_NETWORK_INSPECTOR: 'true',
+      'ios.forceStaticLinking': '["Test"]',
+    });
+  });
+
   it('generates the android.buildArchs property', async () => {
     const pluginProps: PluginConfigType = {
       android: { buildArchs: ['armeabi-v7a', 'arm64-v8a'] },

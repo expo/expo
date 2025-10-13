@@ -6,9 +6,24 @@
 
 ### 🎉 New features
 
+- Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
+- [android] Remove references to reactNativeHost ([#40182](https://github.com/expo/expo/pull/40182) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 29.0.11 - 2025-09-18
+
+### 🐛 Bug fixes
+
+- [iOS] Fix resizeMode on reload screen image. ([#39768](https://github.com/expo/expo/pull/39768) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 29.0.10 — 2025-09-11
 

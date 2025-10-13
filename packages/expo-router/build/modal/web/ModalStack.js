@@ -48,6 +48,18 @@ function ModalStackNavigator({ initialRouteName, children, screenOptions, }) {
         screenOptions,
         initialRouteName,
     });
+    (0, react_1.useEffect)(() => 
+    // @ts-expect-error: there may not be a tab navigator in parent
+    navigation?.addListener?.('tabPress', (e) => {
+        requestAnimationFrame(() => {
+            if (navigation.isFocused() && !e.defaultPrevented) {
+                navigation.dispatch({
+                    ...native_1.StackActions.popToTop(),
+                    target: state.key,
+                });
+            }
+        });
+    }), [navigation, state.key]);
     return (<NavigationContent>
       <ModalStackView state={state} navigation={navigation} descriptors={descriptors} describe={describe}/>
     </NavigationContent>);
@@ -55,8 +67,13 @@ function ModalStackNavigator({ initialRouteName, children, screenOptions, }) {
 const ModalStackView = ({ state, navigation, descriptors, describe }) => {
     const isWeb = process.env.EXPO_OS === 'web';
     const { colors } = (0, native_1.useTheme)();
+    const { preventedRoutes } = (0, native_1.usePreventRemoveContext)();
     const { routes: filteredRoutes, index: nonModalIndex } = (0, utils_1.convertStackStateToNonModalState)(state, descriptors, isWeb);
-    const newStackState = { ...state, routes: filteredRoutes, index: nonModalIndex };
+    const newStackState = {
+        ...state,
+        routes: filteredRoutes,
+        index: nonModalIndex,
+    };
     const dismiss = (0, react_1.useCallback)(() => {
         navigation.goBack();
     }, [navigation]);
@@ -71,10 +88,11 @@ const ModalStackView = ({ state, navigation, descriptors, describe }) => {
       {isWeb &&
             overlayRoutes.map((route) => {
                 const isTransparentModal = (0, utils_1.isTransparentModalPresentation)(descriptors[route.key].options);
+                const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
                 const ModalComponent = isTransparentModal
                     ? TransparentModalStackRouteDrawer_1.TransparentModalStackRouteDrawer
                     : ModalStackRouteDrawer_1.ModalStackRouteDrawer;
-                return (<ModalComponent key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} themeColors={colors}/>);
+                return (<ModalComponent key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} dismissible={isRemovePrevented ? false : undefined} themeColors={colors}/>);
             })}
     </div>);
 };

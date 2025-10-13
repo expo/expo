@@ -5,7 +5,6 @@ import SwiftUI
 
 struct HomeTabView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
-  @State private var showingQRScanner = false
   @State private var showingInfoDialog = false
 
   var body: some View {
@@ -51,6 +50,9 @@ struct HomeTabView: View {
         .padding()
       }
     }
+    #if os(tvOS)
+    .background()
+    #endif
     .overlay(
       DevServerInfoModal(showingInfoDialog: $showingInfoDialog)
     )

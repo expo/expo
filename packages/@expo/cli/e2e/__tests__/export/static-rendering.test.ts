@@ -89,6 +89,8 @@ describe('exports static', () => {
     expect(files).toContain('[post].html');
     expect(files).toContain('welcome-to-the-universe.html');
     expect(files).toContain('other.html');
+
+    expect(files).toContain('_expo/.routes.json');
   });
 
   it('has source maps', async () => {

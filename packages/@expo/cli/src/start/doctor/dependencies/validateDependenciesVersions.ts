@@ -41,6 +41,9 @@ export async function validateDependenciesVersionsAsync(
   if (env.EXPO_OFFLINE) {
     Log.warn('Skipping dependency validation in offline mode');
     return null;
+  } else if (env.EXPO_NO_DEPENDENCY_VALIDATION) {
+    debug('Dependency validation is disabled through EXPO_NO_DEPENDENCY_VALIDATION=1');
+    return null;
   }
 
   const incorrectDeps = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packagesToCheck);

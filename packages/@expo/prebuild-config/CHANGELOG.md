@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.4 - 2025-10-01
+
+### 🐛 Bug fixes
+
+- fixed race condition when generating ios splashscreen assets ([#37559](https://github.com/expo/expo/pull/37559) by [@alfonsocj](https://github.com/alfonsocj))
+
+## 54.0.3 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Always set RCTNewArchEnabled ([#39626](https://github.com/expo/expo/pull/39626) by [@brentvatne](https://github.com/brentvatne))
+
 ## 54.0.2 — 2025-09-12
 
 _This version does not introduce any user-facing changes._

@@ -4,18 +4,18 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '31.0.9'
+version = '31.0.10'
 
 android {
   namespace "expo.modules.splashscreen"
   defaultConfig {
     versionCode 17
-    versionName '31.0.9'
+    versionName '31.0.10'
   }
 }
 
 dependencies {
-  implementation 'androidx.appcompat:appcompat:1.7.0'
+  implementation 'androidx.appcompat:appcompat:1.7.1'
   implementation "androidx.core:core-splashscreen:1.2.0-alpha02"
   implementation "com.facebook.react:react-android"
 }

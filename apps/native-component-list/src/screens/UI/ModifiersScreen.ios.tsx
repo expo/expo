@@ -1,4 +1,17 @@
-import { Host, Section, Text, Form, VStack, HStack, ColorPicker } from '@expo/ui/swift-ui';
+import {
+  DisclosureGroup,
+  Host,
+  Section,
+  Text,
+  Form,
+  VStack,
+  HStack,
+  ColorPicker,
+  Picker,
+  Switch,
+  Rectangle,
+  Slider,
+} from '@expo/ui/swift-ui';
 import {
   background,
   cornerRadius,
@@ -16,6 +29,8 @@ import {
   border,
   onTapGesture,
   onLongPressGesture,
+  onAppear,
+  onDisappear,
   accessibilityLabel,
   aspectRatio,
   grayscale,
@@ -23,6 +38,19 @@ import {
   clipShape,
   glassEffect,
   foregroundStyle,
+  fixedSize,
+  disabled,
+  scrollContentBackground,
+  listRowBackground,
+  allowsTightening,
+  truncationMode,
+  kerning,
+  textCase,
+  underline,
+  strikethrough,
+  multilineTextAlignment,
+  textSelection,
+  lineSpacing,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -30,19 +58,220 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ModifiersScreen() {
   const [playSounds, setPlaySounds] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(false);
   const dimensions = useWindowDimensions();
   const safeAreaInsets = useSafeAreaInsets();
   const [color, setColor] = useState<string | null>('blue');
+
+  const [hideScrollBackground, setHideScrollBackground] = useState(false);
+
+  const [rowColor, setRowColor] = useState<string>('white');
+  const [backgroundFormColor, setBackgroundFormColor] = useState<string>('#EAEAEAFF');
+
+  const truncationModeOptions = ['head', 'middle', 'tail'];
+  const [truncationModeIndex, setTruncationMode] = useState(0);
+
+  const [allowTightening, setAllowsTightening] = useState(false);
+
+  const [kerningValue, setKerning] = useState(0);
+
+  const multilineTextAlignmentOptions = ['center', 'leading', 'trailing'];
+  const [multilineTextAlignmentIndex, setMultilineTextAlignment] = useState(0);
+
+  const [enabledSelection, setEnabledSelection] = useState(false);
+
+  const [lineSpacingValue, setLineSpaceingValue] = useState(0);
   return (
     <ScrollView>
       <Host matchContents>
         <Form
           modifiers={[
+            scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),
+            background(backgroundFormColor),
             frame({
               height: dimensions.height - safeAreaInsets.top - safeAreaInsets.bottom,
               width: dimensions.width,
             }),
           ]}>
+          {/* Text modifiers */}
+          <Section title="Text modifier">
+            <Text
+              color={color ?? 'primary'}
+              size={16}
+              lineLimit={1}
+              modifiers={[
+                allowsTightening(allowTightening),
+                truncationMode(
+                  truncationModeOptions[truncationModeIndex] as 'head' | 'middle' | 'tail'
+                ),
+                frame({ width: 160, height: 50, alignment: 'leading' }),
+              ]}>
+              This is a wide text element
+            </Text>
+            <Picker
+              label="Select mode"
+              options={truncationModeOptions}
+              selectedIndex={truncationModeIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => {
+                setTruncationMode(index);
+              }}
+              variant="menu"
+            />
+            <Switch
+              label="Allow Tightening"
+              value={allowTightening}
+              onValueChange={setAllowsTightening}
+            />
+            <Text size={14} modifiers={[kerning(kerningValue)]}>
+              Kerning Text
+            </Text>
+            <Slider min={0} max={10} onValueChange={setKerning} />
+
+            <HStack spacing={20}>
+              <Text size={14} modifiers={[textCase('lowercase')]}>
+                lowercase
+              </Text>
+              <Text size={14} modifiers={[textCase('uppercase')]}>
+                uppercase
+              </Text>
+            </HStack>
+
+            <HStack alignment="center" spacing={80}>
+              <VStack spacing={15}>
+                <Text size={16}>Underline text</Text>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'solid', color: 'red' })]}>
+                  Text 1
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'dash', color: 'green' })]}>
+                  Text 2
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'dot', color: 'blue' })]}>
+                  Text 3
+                </Text>
+                <Text size={14} modifiers={[underline({ isActive: true, pattern: 'dashDot' })]}>
+                  Text 4
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[underline({ isActive: true, pattern: 'dashDotDot', color: 'pink' })]}>
+                  Text 5
+                </Text>
+              </VStack>
+              <VStack spacing={15}>
+                <Text size={16}>Strikethrough text</Text>
+                <Text
+                  size={14}
+                  modifiers={[strikethrough({ isActive: true, pattern: 'solid', color: 'red' })]}>
+                  Text 1
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[strikethrough({ isActive: true, pattern: 'dot', color: 'green' })]}>
+                  Text 2
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[strikethrough({ isActive: true, pattern: 'dash', color: 'blue' })]}>
+                  Text 3
+                </Text>
+                <Text size={14} modifiers={[strikethrough({ isActive: true, pattern: 'dashDot' })]}>
+                  Text 4
+                </Text>
+                <Text
+                  size={14}
+                  modifiers={[
+                    strikethrough({ isActive: true, pattern: 'dashDotDot', color: 'pink' }),
+                  ]}>
+                  Text 5
+                </Text>
+              </VStack>
+            </HStack>
+
+            <VStack spacing={15}>
+              <Picker
+                label="Select alignment"
+                options={multilineTextAlignmentOptions}
+                selectedIndex={multilineTextAlignmentIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setMultilineTextAlignment(index);
+                }}
+                variant="menu"
+              />
+              <Text
+                size={14}
+                modifiers={[
+                  multilineTextAlignment(
+                    multilineTextAlignmentOptions[multilineTextAlignmentIndex] as
+                      | 'center'
+                      | 'leading'
+                      | 'trailing'
+                  ),
+                ]}>
+                {`This is a block of text that shows up in a text element as multiple lines.\nHere we have chosen to center this text.`}
+              </Text>
+            </VStack>
+
+            <VStack spacing={25}>
+              <Switch
+                label="Enable selection"
+                value={enabledSelection}
+                onValueChange={setEnabledSelection}
+              />
+              <Text
+                size={14}
+                color={enabledSelection ? 'black' : 'gray'}
+                modifiers={[textSelection(enabledSelection)]}>
+                This is selected text
+              </Text>
+            </VStack>
+
+            <HStack spacing={30}>
+              <VStack alignment="center">
+                <Text size={14}>Default</Text>
+                <Text size={12} modifiers={[frame({ width: 150, height: 120 })]}>
+                  This is a string with default spacing between the bottom of one line and the top
+                  of the next.
+                </Text>
+              </VStack>
+              <VStack alignment="center">
+                <Text size={14}>Spacing</Text>
+                <Text
+                  size={12}
+                  modifiers={[frame({ width: 150, height: 120 }), lineSpacing(lineSpacingValue)]}>
+                  This is a string with 20 point spacing between the bottom of one line and the top
+                  of the next.
+                </Text>
+              </VStack>
+            </HStack>
+            <Slider min={0} max={20} onValueChange={setLineSpaceingValue} />
+          </Section>
+          {/* Modifier usingscrollContentBackground and listRowBackground */}
+          <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>
+            <Switch
+              value={hideScrollBackground}
+              label="Hide form background"
+              onValueChange={setHideScrollBackground}
+            />
+            <ColorPicker
+              label="Select a row color"
+              selection={rowColor}
+              supportsOpacity
+              onValueChanged={setRowColor}
+            />
+            <ColorPicker
+              label="Select a background color"
+              selection={backgroundFormColor}
+              supportsOpacity
+              onValueChanged={setBackgroundFormColor}
+            />
+          </Section>
+
           {/* Basic  Modifier using foregroundStyle */}
 
           <Section
@@ -172,6 +401,20 @@ export default function ModifiersScreen() {
               📐 2:1 Aspect ratio blue card
             </Text>
 
+            <Text
+              modifiers={[
+                background('#E67E22'),
+                cornerRadius(8),
+                padding({ all: 12 }),
+                fixedSize(),
+                frame({ width: 100, height: 60 }),
+                border({ color: '#D35400', width: 2 }),
+                offset({ x: 100, y: 0 }),
+                shadow({ radius: 3, y: 2 }),
+              ]}>
+              Text should break out of the 100px frame
+            </Text>
+
             {/* Complex Combination */}
             <Text
               modifiers={[
@@ -221,90 +464,140 @@ export default function ModifiersScreen() {
               ]}>
               {playSounds ? '🔊 Sounds ON (tap to toggle)' : '🔇 Sounds OFF (tap to toggle)'}
             </Text>
+
+            {/* Disabled Modifier Demo */}
+            <VStack spacing={8}>
+              <Switch
+                value={!isDisabled}
+                onValueChange={(value) => setIsDisabled(!value)}
+                label="Enable Picker"
+              />
+              <Picker
+                options={['Option 1', 'Option 2', 'Option 3', 'Option 4']}
+                selectedIndex={1}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  console.log('Picker option selected:', index);
+                }}
+                variant="segmented"
+                modifiers={[
+                  disabled(isDisabled),
+                  background(isDisabled ? '#BDC3C7' : '#3498DB'),
+                  cornerRadius(8),
+                  padding({ all: 4 }),
+                  shadow({ radius: 2, y: 1, color: isDisabled ? '#BDC3C740' : '#3498DB40' }),
+                ]}
+              />
+            </VStack>
+          </Section>
+
+          <AppearSection />
+
+          <Section title="Misc">
+            <VStack
+              spacing={20}
+              modifiers={[
+                frame({ height: 500 }),
+                padding({ all: 16 }),
+                background('#F8F9FA'),
+                cornerRadius(16),
+              ]}>
+              {/* Styled HStack with modifiers */}
+              <HStack
+                spacing={20}
+                modifiers={[
+                  background('#667eea'),
+                  cornerRadius(12),
+                  padding({ all: 12 }),
+                  shadow({ radius: 4, y: 2, color: '#667eea30' }),
+                ]}>
+                <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H0V0</Text>
+                <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H1V0</Text>
+              </HStack>
+
+              {/* Nested styled layout */}
+              <HStack modifiers={[padding({ horizontal: 10 })]}>
+                <HStack
+                  spacing={20}
+                  modifiers={[
+                    background('#f093fb'),
+                    cornerRadius(10),
+                    padding({ all: 10 }),
+                    scaleEffect(0.95),
+                    shadow({ radius: 3, y: 1 }),
+                  ]}>
+                  <Text modifiers={[foregroundColor('#FFFFFF')]}>H0V1</Text>
+                  <Text modifiers={[foregroundColor('#FFFFFF')]}>H1V1</Text>
+                </HStack>
+              </HStack>
+
+              {/* UIView with modifier styling around it */}
+              <HStack
+                modifiers={[
+                  frame({ width: 300, height: 100 }),
+                  background('#4facfe'),
+                  cornerRadius(20),
+                  padding({ all: 8 }),
+                  shadow({ radius: 8, x: 0, y: 4, color: '#4facfe40' }),
+                ]}>
+                <View style={[styles.uiView, { width: 280, height: 80 }]}>
+                  <RNText style={styles.uiViewText}>UIView in styled HStack</RNText>
+                </View>
+              </HStack>
+
+              {/* Interactive modifier demo */}
+              <Text
+                modifiers={[
+                  background('#ff9a9e'),
+                  cornerRadius(25),
+                  padding({ horizontal: 20, vertical: 12 }),
+                  shadow({ radius: 5, y: 3 }),
+                  foregroundColor('#FFFFFF'),
+                  scaleEffect(1.05),
+                  onTapGesture(() => alert('Layout section modifier demo!')),
+                ]}>
+                🚀 Tap this layout demo!
+              </Text>
+              <HStack
+                modifiers={[
+                  padding({ all: 16 }),
+                  glassEffect({
+                    glass: {
+                      variant: 'regular',
+                      interactive: true,
+                    },
+                  }),
+                ]}>
+                <Text modifiers={[foregroundColor('#000000')]}>Hello world</Text>
+              </HStack>
+            </VStack>
           </Section>
         </Form>
       </Host>
-
-      <Host style={{ height: 500 }}>
-        <VStack
-          spacing={20}
-          modifiers={[
-            frame({ height: 500 }),
-            padding({ all: 16 }),
-            background('#F8F9FA'),
-            cornerRadius(16),
-          ]}>
-          {/* Styled HStack with modifiers */}
-          <HStack
-            spacing={20}
-            modifiers={[
-              background('#667eea'),
-              cornerRadius(12),
-              padding({ all: 12 }),
-              shadow({ radius: 4, y: 2, color: '#667eea30' }),
-            ]}>
-            <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H0V0</Text>
-            <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H1V0</Text>
-          </HStack>
-
-          {/* Nested styled layout */}
-          <HStack modifiers={[padding({ horizontal: 10 })]}>
-            <HStack
-              spacing={20}
-              modifiers={[
-                background('#f093fb'),
-                cornerRadius(10),
-                padding({ all: 10 }),
-                scaleEffect(0.95),
-                shadow({ radius: 3, y: 1 }),
-              ]}>
-              <Text modifiers={[foregroundColor('#FFFFFF')]}>H0V1</Text>
-              <Text modifiers={[foregroundColor('#FFFFFF')]}>H1V1</Text>
-            </HStack>
-          </HStack>
-
-          {/* UIView with modifier styling around it */}
-          <HStack
-            modifiers={[
-              frame({ width: 300, height: 100 }),
-              background('#4facfe'),
-              cornerRadius(20),
-              padding({ all: 8 }),
-              shadow({ radius: 8, x: 0, y: 4, color: '#4facfe40' }),
-            ]}>
-            <View style={[styles.uiView, { width: 280, height: 80 }]}>
-              <RNText style={styles.uiViewText}>UIView in styled HStack</RNText>
-            </View>
-          </HStack>
-
-          {/* Interactive modifier demo */}
-          <Text
-            modifiers={[
-              background('#ff9a9e'),
-              cornerRadius(25),
-              padding({ horizontal: 20, vertical: 12 }),
-              shadow({ radius: 5, y: 3 }),
-              foregroundColor('#FFFFFF'),
-              scaleEffect(1.05),
-              onTapGesture(() => alert('Layout section modifier demo!')),
-            ]}>
-            🚀 Tap this layout demo!
-          </Text>
-          <HStack
-            modifiers={[
-              padding({ all: 16 }),
-              glassEffect({
-                glass: {
-                  variant: 'regular',
-                  interactive: true,
-                },
-              }),
-            ]}>
-            <Text modifiers={[foregroundColor('#000000')]}>Hello world</Text>
-          </HStack>
-        </VStack>
-      </Host>
     </ScrollView>
+  );
+}
+
+function AppearSection() {
+  const [appearCount, setAppearCount] = useState(0);
+  const [disappearCount, setDisappearCount] = useState(0);
+  const [disclosureGroupExpanded, setDisclosureGroupExpanded] = useState(false);
+
+  return (
+    <Section title={`Appear(${appearCount}) Disappear(${disappearCount})`}>
+      <DisclosureGroup
+        onStateChange={setDisclosureGroupExpanded}
+        isExpanded={disclosureGroupExpanded}
+        label="Show rectangle">
+        <Rectangle
+          modifiers={[
+            foregroundStyle('#9B59B6'),
+            cornerRadius(8),
+            onAppear(() => setAppearCount((prev) => prev + 1)),
+            onDisappear(() => setDisappearCount((prev) => prev + 1)),
+          ]}
+        />
+      </DisclosureGroup>
+    </Section>
   );
 }
 

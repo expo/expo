@@ -9,6 +9,7 @@ function mockedNodeModule(
   options?: {
     pkgVersion?: string;
     pkgDependencies?: Record<string, string>;
+    pkgDevDependencies?: Record<string, string>;
     pkgExtra?: Record<string, unknown>;
   }
 ): NestedDirectoryJSON {
@@ -17,6 +18,7 @@ function mockedNodeModule(
       name,
       version: options?.pkgVersion ?? '0.0.1',
       dependencies: options?.pkgDependencies ?? {},
+      devDependencies: options?.pkgDevDependencies ?? {},
       ...options?.pkgExtra,
     }),
   };

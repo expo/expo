@@ -20,7 +20,7 @@ function uniqueBy(arr, key) {
     });
 }
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-function getServerManifest(route) {
+function getServerManifest(route, options) {
     function getFlatNodes(route, parentRoute = '') {
         // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.
         const absoluteRoute = [parentRoute, route.route].filter(Boolean).join('/');
@@ -32,10 +32,10 @@ function getServerManifest(route) {
         // copies should be rendered. However, an API route is always the same regardless of parent segments.
         let key;
         if (route.type.includes('api')) {
-            key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
+            key = getNormalizedContextKey(route.contextKey);
         }
         else {
-            key = (0, matchers_1.getContextKey)(absoluteRoute).replace(/\/index$/, '') ?? '/';
+            key = getNormalizedContextKey(absoluteRoute);
         }
         return [[key, '/' + absoluteRoute, route]];
     }
@@ -82,6 +82,9 @@ function getServerManifest(route) {
         manifest.middleware = {
             file: route.middleware.contextKey,
         };
+    }
+    if (options?.headers) {
+        manifest.headers = options.headers;
     }
     return manifest;
 }
@@ -228,5 +231,8 @@ function parseParameter(param) {
         name = name.slice(3);
     }
     return { name, repeat, optional };
+}
+function getNormalizedContextKey(contextKey) {
+    return (0, matchers_1.getContextKey)(contextKey).replace(/\/index$/, '') ?? '/';
 }
 //# sourceMappingURL=getServerManifest.js.map

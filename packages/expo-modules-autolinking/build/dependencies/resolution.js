@@ -32,9 +32,16 @@ const createNodeModulePathsCreator = () => {
 };
 async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIncludeDependency) {
     const modules = [];
-    const dependencies = packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
+    let dependencies = packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
         ? packageJson.dependencies
         : {};
+    // NOTE(@kitten): Also traverse devDependencies for top-level package.json
+    const devDependencies = packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
+        ? packageJson.devDependencies
+        : null;
+    if (depth === 0 && devDependencies) {
+        dependencies = { ...dependencies, ...devDependencies };
+    }
     for (const dependencyName in dependencies) {
         if (!shouldIncludeDependency(dependencyName)) {
             continue;

@@ -2,13 +2,17 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
+import { ColorValue } from 'react-native';
 import { animation } from './animation/index';
+import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
+type NamedColor = 'primary' | 'secondary' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'white' | 'gray' | 'black' | 'clear' | 'mint' | 'teal' | 'cyan' | 'indigo' | 'brown';
+type Color = string | ColorValue | NamedColor;
 /**
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
  */
-export declare const background: (color: string) => ModifierConfig;
+export declare const background: (color: Color) => ModifierConfig;
 /**
  * Applies corner radius to a view.
  * @param radius - The corner radius value
@@ -21,7 +25,7 @@ export declare const shadow: (params: {
     radius: number;
     x?: number;
     y?: number;
-    color?: string;
+    color?: Color;
 }) => ModifierConfig;
 /**
  * Adds a matched geometry effect to a view.
@@ -56,9 +60,22 @@ export declare const padding: (params: {
 }) => ModifierConfig;
 /**
  * Controls fixed size behavior.
- * @param enabled - Whether the view should use its natural size
+ * @param horizontal - Whether the view should use its ideal width
+ * @param vertical - Whether the view should use its ideal height
  */
-export declare const fixedSize: (enabled?: boolean) => ModifierConfig;
+export declare const fixedSize: (params?: {
+    horizontal?: boolean;
+    vertical?: boolean;
+}) => ModifierConfig;
+/**
+ * Allows a view to ignore safe area constraints.
+ * @param regions - The safe area regions to ignore ('all', 'container', 'keyboard')
+ * @param edges - The edges to expand into ('all', 'top', 'bottom', 'leading', 'trailing', 'horizontal', 'vertical')
+ */
+export declare const ignoreSafeArea: (params?: {
+    regions?: "all" | "container" | "keyboard";
+    edges?: "all" | "top" | "bottom" | "leading" | "trailing" | "horizontal" | "vertical";
+}) => ModifierConfig;
 /**
  * Adds a tap gesture recognizer.
  * @param handler - Function to call when tapped
@@ -70,6 +87,16 @@ export declare const onTapGesture: (handler: () => void) => ModifierConfig;
  * @param minimumDuration - Minimum duration for long press (default: 0.5s)
  */
 export declare const onLongPressGesture: (handler: () => void, minimumDuration?: number) => ModifierConfig;
+/**
+ * Adds an onAppear modifier that calls a function when the view appears.
+ * @param handler - Function to call when the view appears
+ */
+export declare const onAppear: (handler: () => void) => ModifierConfig;
+/**
+ * Adds an onDisappear modifier that calls a function when the view disappears.
+ * @param handler - Function to call when the view disappears
+ */
+export declare const onDisappear: (handler: () => void) => ModifierConfig;
 /**
  * Sets the opacity of a view.
  * @param value - Opacity value between 0 and 1
@@ -85,7 +112,7 @@ export declare const clipShape: (shape: "rectangle" | "circle" | "roundedRectang
  * Adds a border to a view.
  */
 export declare const border: (params: {
-    color: string;
+    color: Color;
     width?: number;
 }) => ModifierConfig;
 /**
@@ -110,7 +137,7 @@ export declare const offset: (params: {
  * @param color - The foreground color (hex string)
  * @deprecated Use foregroundStyle instead
  */
-export declare const foregroundColor: (color: string) => ModifierConfig;
+export declare const foregroundColor: (color: Color) => ModifierConfig;
 /**
  * Sets the foreground style of a view with comprehensive styling options.
  *
@@ -231,12 +258,17 @@ export declare const foregroundStyle: (style: string | {
  * Sets the tint color of a view.
  * @param color - The tint color (hex string)
  */
-export declare const tint: (color: string) => ModifierConfig;
+export declare const tint: (color: Color) => ModifierConfig;
 /**
  * Hides or shows a view.
  * @param hidden - Whether the view should be hidden
  */
 export declare const hidden: (hidden?: boolean) => ModifierConfig;
+/**
+ * Disables or enables a view.
+ * @param disabled - Whether the view should be disabled
+ */
+export declare const disabled: (disabled?: boolean) => ModifierConfig;
 /**
  * Sets the z-index (display order) of a view.
  * @param index - The z-index value
@@ -278,6 +310,16 @@ export declare const colorInvert: (inverted?: boolean) => ModifierConfig;
  */
 export declare const grayscale: (amount: number) => ModifierConfig;
 /**
+ * Sets the button style for button views.
+ */
+export declare const buttonStyle: (style: "automatic" | "bordered" | "borderedProminent" | "borderless" | "glass" | "glassProminent" | "plain") => ModifierConfig;
+/**
+ * Controls how the keyboard is dismissed when scrolling.
+ * @param mode - The keyboard dismiss mode
+ * @platform ios 16.0+
+ */
+export declare const scrollDismissesKeyboard: (mode: "automatic" | "never" | "interactively" | "immediately") => ModifierConfig;
+/**
  * Sets accessibility label for the view.
  * @param label - The accessibility label
  */
@@ -309,7 +351,7 @@ export declare const mask: (shape: "rectangle" | "circle" | "roundedRectangle", 
  * @param alignment - Overlay alignment
  */
 export declare const overlay: (params: {
-    color?: string;
+    color?: Color;
     alignment?: "center" | "top" | "bottom" | "leading" | "trailing";
 }) => ModifierConfig;
 /**
@@ -318,7 +360,7 @@ export declare const overlay: (params: {
  * @param alignment - Background alignment
  */
 export declare const backgroundOverlay: (params: {
-    color?: string;
+    color?: Color;
     alignment?: "center" | "top" | "bottom" | "leading" | "trailing";
 }) => ModifierConfig;
 /**
@@ -342,7 +384,7 @@ export declare const glassEffect: (params?: {
     glass?: {
         variant: "regular" | "clear" | "identity";
         interactive?: boolean;
-        tint?: string;
+        tint?: Color;
     };
     shape?: "circle" | "capsule" | "rectangle" | "ellipse";
 }) => ModifierConfig;
@@ -351,10 +393,82 @@ export declare const glassEffect: (params?: {
  */
 export declare const glassEffectId: (id: string, namespaceId: string) => ModifierConfig;
 /**
+ * Specifies the visibility of the background for scrollable views within this view.
+ */
+export declare const scrollContentBackground: (visible: "automatic" | "visible" | "hidden") => ModifierConfig;
+/**
+ * Sets the background of a row.
+ * @param color - The row color (hex string, e.g., '#FF0000')
+ */
+export declare const listRowBackground: (color: Color) => ModifierConfig;
+/**
+ * Sets the truncation mode for lines of text that are too long to fit in the available space.
+ * @param mode - The truncation mode that specifies where to truncate the text within the text view, if needed.
+ * You can truncate at the beginning, middle, or end of the text view.
+ */
+export declare const truncationMode: (mode: "head" | "middle" | "tail") => ModifierConfig;
+/**
+ * Sets whether text in this view can compress the space between characters when necessary to fit text in a line
+ * @default true
+ */
+export declare const allowsTightening: (value: boolean) => ModifierConfig;
+/**
+ * Sets the spacing, or kerning, between characters for the text in this view.
+ * @default 0
+ */
+export declare const kerning: (value?: number) => ModifierConfig;
+/**
+ * Sets a transform for the case of the text contained in this view when displayed.
+ * @default "lowercase"
+ */
+export declare const textCase: (value: "lowercase" | "uppercase") => ModifierConfig;
+type LinePattern = 'solid' | 'dash' | 'dot' | 'dashDot' | 'dashDotDot';
+/**
+ * Applies an underline to the text.
+ *
+ * @param isActive - Controls whether the underline is visible (`true` to show, false to hide).
+ * @param pattern - Defines the underline style or pattern. Default - 'solid'
+ * @param color - Sets the color of the underline. If not provided, the system default text color is used.
+ */
+export declare const underline: (params: {
+    isActive: boolean;
+    pattern: LinePattern;
+    color?: Color;
+}) => ModifierConfig;
+/**
+ * Applies a strikethrough to the text.
+ *
+ * @param isActive - Controls whether the strikethrough is visible (`true` to show, false to hide).
+ * @param pattern - Defines the strikethrough style or pattern. Default - 'solid'
+ * @param color - Sets the color of the strikethrough. If not provided, the system default text color is used.
+ */
+export declare const strikethrough: (params: {
+    isActive: boolean;
+    pattern: LinePattern;
+    color?: Color;
+}) => ModifierConfig;
+/**
+ * An alignment position for text along the horizontal axis.
+ *
+ * @param alignment - A value that you use to align multiple lines of text within a view.
+ */
+export declare const multilineTextAlignment: (alignment: "center" | "leading" | "trailing") => ModifierConfig;
+/**
+ * Controls whether people can select text within this view.
+ * @param value - Enable selection
+ */
+export declare const textSelection: (value: boolean) => ModifierConfig;
+/**
+ * The distance in points between the bottom of one line fragment and the top of the next.
+ * @param value - The amount of space between the bottom of one line and the top of the next line in points.
+ * @description This value is always nonnegative. Otherwise, the default value will be used.
+ */
+export declare const lineSpacing: (value: number) => ModifierConfig;
+/**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
  */
-export type BuiltInModifier = ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation>;
+export type BuiltInModifier = ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof scrollDismissesKeyboard> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof listRowBackground> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.
@@ -381,4 +495,5 @@ export declare const isModifier: (value: any) => value is ModifierConfig;
  */
 export declare const filterModifiers: (modifiers: unknown[]) => ModifierConfig[];
 export * from './animation/index';
+export * from './containerShape';
 //# sourceMappingURL=index.d.ts.map

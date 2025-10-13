@@ -59,6 +59,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Stepper component',
+    route: 'ui/stepper',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./StepperScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},
@@ -160,6 +168,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MatchedGeometryEffectScreen'));
+    },
+  },
+  {
+    name: 'Shapes',
+    route: 'ui/shapes',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ShapesScreen'));
+    },
+  },
+  {
+    name: 'Image component',
+    route: 'ui/image',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageScreen'));
     },
   },
 ];

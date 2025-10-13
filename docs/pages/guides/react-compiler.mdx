@@ -25,10 +25,10 @@ This will generally verify if your app is following the [**rules of React**](htt
 
 Install `babel-plugin-react-compiler` and the React compiler runtime in your project:
 
-<Tabs tabs={['SDK 54 and above', 'SDK 53', 'SDK 52 and below']}>
+<Tabs tabs={['SDK 54 and later', 'SDK 53', 'SDK 52 and earlier']}>
   <Tab>
 
-    Babel is automatically configured in Expo SDK 54 and above.
+    Babel is automatically configured in Expo SDK 54 and later.
 
   </Tab>
   <Tab>
@@ -170,7 +170,7 @@ module.exports = function (api) {
         {
           'react-compiler': {
             // Passed directly to the React Compiler Babel plugin.
-            compilationMode: 'strict',
+            compilationMode: 'all',
             panicThreshold: 'all_errors',
           },
           web: {

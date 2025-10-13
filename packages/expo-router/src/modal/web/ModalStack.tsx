@@ -1,12 +1,15 @@
 'use client';
 import {
   createNavigatorFactory,
+  EventArg,
   ParamListBase,
   StackActionHelpers,
+  StackActions,
   StackNavigationState,
   StackRouter,
   StackRouterOptions,
   useNavigationBuilder,
+  usePreventRemoveContext,
   useTheme,
 } from '@react-navigation/native';
 import {
@@ -14,7 +17,7 @@ import {
   NativeStackNavigationOptions,
   NativeStackView,
 } from '@react-navigation/native-stack';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
 import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
@@ -44,6 +47,22 @@ function ModalStackNavigator({
     initialRouteName,
   });
 
+  useEffect(
+    () =>
+      // @ts-expect-error: there may not be a tab navigator in parent
+      navigation?.addListener?.('tabPress', (e: EventArg<'tabPress', true>) => {
+        requestAnimationFrame(() => {
+          if (navigation.isFocused() && !e.defaultPrevented) {
+            navigation.dispatch({
+              ...StackActions.popToTop(),
+              target: state.key,
+            });
+          }
+        });
+      }),
+    [navigation, state.key]
+  );
+
   return (
     <NavigationContent>
       <ModalStackView
@@ -59,6 +78,7 @@ function ModalStackNavigator({
 const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStackViewProps) => {
   const isWeb = process.env.EXPO_OS === 'web';
   const { colors } = useTheme();
+  const { preventedRoutes } = usePreventRemoveContext();
 
   const { routes: filteredRoutes, index: nonModalIndex } = convertStackStateToNonModalState(
     state,
@@ -66,7 +86,11 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
     isWeb
   );
 
-  const newStackState = { ...state, routes: filteredRoutes, index: nonModalIndex };
+  const newStackState = {
+    ...state,
+    routes: filteredRoutes,
+    index: nonModalIndex,
+  };
 
   const dismiss = useCallback(() => {
     navigation.goBack();
@@ -90,6 +114,8 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
         overlayRoutes.map((route) => {
           const isTransparentModal = isTransparentModalPresentation(descriptors[route.key].options);
 
+          const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
+
           const ModalComponent = isTransparentModal
             ? TransparentModalStackRouteDrawer
             : ModalStackRouteDrawer;
@@ -101,6 +127,7 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
               options={descriptors[route.key].options as ExtendedStackNavigationOptions}
               renderScreen={descriptors[route.key].render}
               onDismiss={dismiss}
+              dismissible={isRemovePrevented ? false : undefined}
               themeColors={colors}
             />
           );

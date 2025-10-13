@@ -100,7 +100,7 @@ async function scanExpoModuleResolutionsForPlatform(linker, platform) {
             return linker.scanDependenciesInSearchPath(searchPath);
         }),
         linker.scanDependenciesRecursively(),
-    ]));
+    ].filter((x) => x != null)));
     return await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {
         return !excludeNames.has(resolution.name)
             ? await (0, findModules_1.resolveExpoModule)(resolution, platform, excludeNames)

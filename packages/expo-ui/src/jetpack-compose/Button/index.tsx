@@ -3,6 +3,8 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
+import { getTextFromChildren } from '../../utils';
+import { parseJSXShape, ShapeJSXElement, ShapeProps } from '../Shape';
 
 /**
  * The built-in button styles available on Android.
@@ -27,8 +29,19 @@ export type ButtonProps = {
    */
   onPress?: () => void;
   /**
+   * A string describing the leading icon to display in the button.
+   * Uses Material Icons on Android.
+   */
+  leadingIcon?: MaterialIcon;
+  /**
+   * A string describing the trailing icon to display in the button.
+   * Uses Material Icons on Android.
+   */
+  trailingIcon?: MaterialIcon;
+  /**
    * A string describing the system image to display in the button.
    * Uses Material Icons on Android.
+   * @deprecated Use `leadingIcon` instead.
    */
   systemImage?: MaterialIcon;
   /**
@@ -42,7 +55,7 @@ export type ButtonProps = {
   /**
    * The text to display inside the button.
    */
-  children: string;
+  children?: string | string[] | React.JSX.Element;
   /**
    * Colors for button's core elements.
    * @platform android
@@ -52,6 +65,7 @@ export type ButtonProps = {
    * Button color.
    */
   color?: string;
+  shape?: ShapeJSXElement;
   /**
    * Disabled state of the button.
    */
@@ -66,10 +80,12 @@ export type ButtonProps = {
  */
 export type NativeButtonProps = Omit<
   ButtonProps,
-  'role' | 'onPress' | 'children' | 'systemImage'
+  'role' | 'onPress' | 'leadingIcon' | 'trailingIcon' | 'systemImage' | 'shape'
 > & {
   text: string;
-  systemImage?: string;
+  leadingIcon?: string;
+  trailingIcon?: string;
+  shape: ShapeProps;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
@@ -82,11 +98,18 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
  * @hidden
  */
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
-  const { children, onPress, systemImage, ...restProps } = props;
+  const { children, onPress, leadingIcon, trailingIcon, systemImage, shape, ...restProps } = props;
+
+  // Handle backward compatibility: systemImage maps to leadingIcon
+  const finalLeadingIcon = leadingIcon ?? systemImage;
+
   return {
     ...restProps,
-    text: children ?? '',
-    systemImage,
+    text: getTextFromChildren(children) ?? '',
+    children,
+    leadingIcon: finalLeadingIcon,
+    shape: parseJSXShape(shape),
+    trailingIcon,
     onButtonPressed: onPress,
     // @ts-expect-error
     modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),

@@ -28,8 +28,6 @@ class RuntimeContext(
   inline val reactContext: ReactApplicationContext?
     get() = reactContextHolder.get()
 
-  val registry = ModuleRegistry(this.weak())
-
   internal lateinit var jsiContext: JSIContext
 
   private fun isJSIContextInitialized(): Boolean {
@@ -50,8 +48,8 @@ class RuntimeContext(
    */
   internal val coreModule = run {
     val module = CoreModule()
-    module._runtimeContext = this
-    ModuleHolder(module)
+    module._appContextHolder = appContextHolder
+    ModuleHolder(module, null)
   }
 
   val jniDeallocator: JNIDeallocator = JNIDeallocator()
@@ -105,7 +103,6 @@ class RuntimeContext(
   }
 
   fun deallocate() {
-    coreModule.module._runtimeContext = null
     jniDeallocator.deallocate()
   }
 }

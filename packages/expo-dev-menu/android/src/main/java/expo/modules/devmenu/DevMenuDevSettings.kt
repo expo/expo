@@ -1,6 +1,6 @@
 package expo.modules.devmenu
 
-import expo.interfaces.devmenu.ReactHostWrapper
+import com.facebook.react.ReactHost
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 
 data class DevToolsSettings(
@@ -10,7 +10,7 @@ data class DevToolsSettings(
 )
 
 object DevMenuDevSettings {
-  fun getDevSettings(reactHost: ReactHostWrapper): DevToolsSettings {
+  fun getDevSettings(reactHost: ReactHost): DevToolsSettings {
     val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactHost)
     val devSettings = devDelegate.devSettings
 

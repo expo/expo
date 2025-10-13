@@ -10,6 +10,7 @@ interface UnifiedFileInterface {
   fun createFile(mimeType: String, displayName: String): UnifiedFileInterface?
   fun createDirectory(displayName: String): UnifiedFileInterface?
   fun delete(): Boolean
+  fun deleteRecursively(): Boolean
   fun listFilesAsUnified(): List<UnifiedFileInterface>
   val uri: Uri
   val type: String?

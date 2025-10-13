@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setShadowNodeSize:(float) width height:(float) height;
 
+- (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height;
+
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 
 /*

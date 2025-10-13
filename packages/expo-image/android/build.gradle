@@ -1,8 +1,16 @@
+buildscript {
+  dependencies {
+    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${rootProject["kspVersion"]}"
+  }
+}
+
 plugins {
   id 'com.android.library'
   id 'kotlin-kapt'
   id 'expo-module-gradle-plugin'
 }
+
+apply plugin: 'com.google.devtools.ksp'
 
 android {
   namespace "expo.modules.image"
@@ -26,20 +34,20 @@ android {
 }
 
 dependencies {
-  def GLIDE_VERSION = "4.16.0"
+  def GLIDE_VERSION = "5.0.5"
 
   implementation 'com.facebook.react:react-android'
 
   api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
-  kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
+  ksp "com.github.bumptech.glide:ksp:${GLIDE_VERSION}"
   api 'com.caverock:androidsvg-aar:1.4'
 
   implementation "com.github.penfeizhou.android.animation:glide-plugin:3.0.5"
   implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
 
-  api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
+  api "com.github.bumptech.glide:okhttp3-integration:${GLIDE_VERSION}"
   api "com.squareup.okhttp3:okhttp:${expoModule.safeExtGet("okHttpVersion", '4.9.2')}"
 
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
   implementation "jp.wasabeef:glide-transformations:4.3.0"
 }

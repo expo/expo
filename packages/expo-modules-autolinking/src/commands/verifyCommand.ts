@@ -18,6 +18,9 @@ import {
   scanDependencyResolutionsForPlatform,
 } from '../dependencies';
 
+// NOTE(@kitten): These are excluded explicitly, but we want to include them for the verify command explicitly
+const INCLUDE_PACKAGES = ['react-native', 'react-native-tvos'];
+
 interface VerifyArguments extends AutolinkingCommonArguments {
   verbose?: boolean | null;
   json?: boolean | null;
@@ -40,7 +43,9 @@ export function verifyCommand(cli: commander.CommanderStatic) {
       const linker = makeCachedDependenciesLinker({ projectRoot: appRoot });
       const results = mergeResolutionResults(
         await Promise.all(
-          platforms.map((platform) => scanDependencyResolutionsForPlatform(linker, platform))
+          platforms.map((platform) =>
+            scanDependencyResolutionsForPlatform(linker, platform, INCLUDE_PACKAGES)
+          )
         )
       );
       await verifySearchResults(results, {
@@ -129,24 +134,27 @@ export async function verifySearchResults(
   }
 
   if (options.verbose) {
+    const sortResolutions = (resolutions: DependencyResolution[]) =>
+      [...resolutions].sort((a, b) => a.name.localeCompare(b.name));
+
     if (groups.reactNativeProjectConfig.length) {
       console.log(
         `🔎  Found ${groups.reactNativeProjectConfig.length} modules from React Native project config`
       );
-      for (const revision of groups.reactNativeProjectConfig) {
+      for (const revision of sortResolutions(groups.reactNativeProjectConfig)) {
         console.log(` - ${await getHumanReadableDependency(revision)}`);
       }
     }
 
     if (groups.searchPaths.length) {
       console.log(`🔎  Found ${groups.searchPaths.length} modules in search paths`);
-      for (const revision of groups.searchPaths) {
+      for (const revision of sortResolutions(groups.searchPaths)) {
         console.log(` - ${await getHumanReadableDependency(revision)}`);
       }
     }
 
     console.log(`🔎  Found ${groups.dependencies.length} modules in dependencies`);
-    for (const revision of groups.dependencies) {
+    for (const revision of sortResolutions(groups.dependencies)) {
       console.log(` - ${await getHumanReadableDependency(revision)}`);
     }
   }

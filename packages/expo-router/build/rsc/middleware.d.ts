@@ -1,11 +1,4 @@
-/**
- * Copyright © 2024 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-import type { RenderRscArgs } from '@expo/server/private';
+import type { RenderRscArgs } from 'expo-server/private';
 type ImportMap = {
     router: () => Promise<typeof import('./router/expo-definedRouter')>;
 };

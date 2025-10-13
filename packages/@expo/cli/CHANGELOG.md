@@ -6,9 +6,50 @@
 
 ### 🎉 New features
 
+- Added support for cli command extension in expo modules ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
+- Add support for server data loaders in development ([#39570](https://github.com/expo/expo/pull/39570) by [@hassankhan](https://github.com/hassankhan))
+- Allow specifying user-defined headers for all routes ([#40173](https://github.com/expo/expo/pull/40173) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
+- fix launching apps on Android emulators where `hw.keyboard = no` ([#34677](https://github.com/expo/expo/pull/34677) by [@DimitarNestorov](https://github.com/DimitarNestorov))
+- only skip dependency validation for `EXPO_NO_DEPENDENCY_VALIDATION=1` ([#40043](https://github.com/expo/expo/pull/40043) by [@kitten](https://github.com/kitten))
+- Prevent externals logic from being applied to unreachable Node modules ([#40247](https://github.com/expo/expo/pull/40247) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Update usage of `@expo/server` API ([#39894](https://github.com/expo/expo/pull/39894) by [@kitten](https://github.com/kitten))
+- Rename to `@expo/server` to `expo-server` ([#40087](https://github.com/expo/expo/pull/40087) by [@kitten](https://github.com/kitten))
+- Export `_expo/.routes.json` metadata file for `static` outputs ([#40243](https://github.com/expo/expo/pull/40243) by [@kitten](https://github.com/kitten))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.7 - 2025-09-18
+
+### 💡 Others
+
+- fix typo in CLI error message when `expo-router` is not installed. ([#36608](https://github.com/expo/expo/pull/36608) by [@abraj](https://github.com/abraj))
+- Bump to `@expo/metro@~54.0.0` ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
+
+## 54.0.6 — 2025-09-16
+
+### 💡 Others
+
+- Added MCP tunnel integration. ([#39392](https://github.com/expo/expo/pull/39392) by [@kudo](https://github.com/kudo))
+- Allow `experiments.autolinkingModuleResolution` to apply to web bundling ([#39701](https://github.com/expo/expo/pull/39701) by [@kitten](https://github.com/kitten))
+
+## 54.0.5 — 2025-09-13
+
+### 🐛 Bug fixes
+
+- fix undefined logs being printed. ([#39645](https://github.com/expo/expo/pull/39645) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent iOS device builds from being remotely cached ([#39621](https://github.com/expo/expo/pull/39621) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.4 — 2025-09-12
+
+_This version does not introduce any user-facing changes._
 
 ## 54.0.3 — 2025-09-12
 
