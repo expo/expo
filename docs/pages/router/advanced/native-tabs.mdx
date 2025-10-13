@@ -122,14 +122,12 @@ export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: "house", selected: "house.fill" }} drawable="custom_home_drawable" />
+        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Icon
-          src={require('../../../assets/setting_icon.png')}
-        />
+        <Icon src={require('../../../assets/setting_icon.png')} />
       </NativeTabs.Trigger>
-  </NativeTabs>
+    </NativeTabs>
   );
 }
 ```
