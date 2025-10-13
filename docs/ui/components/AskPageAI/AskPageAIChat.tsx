@@ -1,6 +1,7 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
+import { FileSearch02Icon } from '@expo/styleguide-icons/outline/FileSearch02Icon';
 import { Maximize02Icon } from '@expo/styleguide-icons/outline/Maximize02Icon';
 import { Minimize02Icon } from '@expo/styleguide-icons/outline/Minimize02Icon';
 import { RefreshCcw02Icon } from '@expo/styleguide-icons/outline/RefreshCcw02Icon';
@@ -40,7 +41,25 @@ type AskPageAIChatProps = {
   isExpoSdkPage?: boolean;
 };
 
-type ConversationKey = string | null;
+type ContextScope = 'page' | 'global';
+
+const createMarkerMap = (
+  markers: { id: string; at: number; label: string }[]
+): Record<number, { id: string; label: string }[]> => {
+  const map: Record<number, { id: string; label: string }[]> = {};
+  for (const marker of markers) {
+    if (!map[marker.at]) {
+      map[marker.at] = [];
+    }
+    map[marker.at].push({ id: marker.id, label: marker.label });
+  }
+  return map;
+};
+
+const normalizeQuestion = (question: string) => question.trim().toLowerCase();
+
+const FALLBACK_TEMPLATE = (label: string) =>
+  `I can only answer questions about the current ${label} documentation.`;
 
 export function AskPageAIChat({
   onClose,
@@ -74,8 +93,23 @@ export function AskPageAIChat({
     }
     return `Expo ${label}`;
   }, [contextLabel, isExpoSdkPage]);
+
+  const fallbackResponse = useMemo(
+    () => FALLBACK_TEMPLATE(displayContextLabel),
+    [displayContextLabel]
+  );
+
+  const [contextScope, setContextScope] = useState<ContextScope>('page');
   const [question, setQuestion] = useState('');
   const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
+  const [contextMarkers, setContextMarkers] = useState<{ id: string; at: number; label: string }[]>(
+    []
+  );
+  const [globalSearchRequests, setGlobalSearchRequests] = useState<Record<string, boolean>>({});
+  const [globalSwitchNotices, setGlobalSwitchNotices] = useState<
+    Record<string, 'pending' | 'done'>
+  >({});
+  const [pendingGlobalQuestionKey, setPendingGlobalQuestionKey] = useState<string | null>(null);
 
   const extractUserQuestion = useCallback((fullPrompt: string, fallback: string) => {
     const marker = 'User question:';
@@ -93,6 +127,22 @@ export function AskPageAIChat({
   }, [conversation.length, askedQuestions.length]);
 
   useEffect(() => {
+    if (conversation.length === 0 && contextScope !== 'page') {
+      setContextScope('page');
+      setGlobalSearchRequests({});
+      setGlobalSwitchNotices({});
+      setPendingGlobalQuestionKey(null);
+    }
+  }, [conversation.length, contextScope]);
+
+  useEffect(() => {
+    setContextScope('page');
+    setGlobalSearchRequests({});
+    setGlobalSwitchNotices({});
+    setPendingGlobalQuestionKey(null);
+  }, [displayContextLabel]);
+
+  useEffect(() => {
     if (conversation.length <= askedQuestions.length) {
       return;
     }
@@ -106,9 +156,6 @@ export function AskPageAIChat({
     });
   }, [conversation, askedQuestions.length, extractUserQuestion]);
 
-  const [contextMarkers, setContextMarkers] = useState<{ id: string; at: number; label: string }[]>(
-    []
-  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = useCallback(() => {
     const el = scrollRef.current;
@@ -116,9 +163,11 @@ export function AskPageAIChat({
       el.scrollTop = el.scrollHeight;
     }
   }, []);
+
   const prevDisplayContextRef = useRef<string>(displayContextLabel);
   const prevBasePathRef = useRef<string | null>(null);
   const basePath = (router?.asPath ?? '').split('#')[0];
+
   useEffect(() => {
     const prevPath = prevBasePathRef.current;
     const prevLabel = prevDisplayContextRef.current;
@@ -156,34 +205,56 @@ export function AskPageAIChat({
     window.sessionStorage.setItem('expo-docs-ask-ai-last-path', basePath);
   }, [basePath, displayContextLabel, conversation.length]);
 
-  useEffect(() => {
-    window.requestAnimationFrame(() => {
-      scrollToBottom();
-    });
-  }, [contextMarkers.length, scrollToBottom]);
-
   const lastEntry = conversation.at(-1);
   const lastEntryKey = `${conversation.length}-${lastEntry?.id ?? 'noid'}-${
     lastEntry?.answer?.length ?? 0
   }`;
+
   useEffect(() => {
     window.requestAnimationFrame(() => {
       scrollToBottom();
     });
-  }, [lastEntryKey, scrollToBottom]);
+  }, [contextMarkers.length, lastEntryKey, scrollToBottom]);
 
-  const markersByIndex = useMemo(() => {
-    const map: Record<number, { id: string; label: string }[]> = {};
-    for (const m of contextMarkers) {
-      if (!map[m.at]) {
-        map[m.at] = [];
-      }
-      map[m.at].push({ id: m.id, label: m.label });
+  useEffect(() => {
+    if (!pendingGlobalQuestionKey) {
+      return;
     }
-    return map;
-  }, [contextMarkers]);
+    const match = conversation.find(qa => {
+      const normalizedAnswer = qa.answer
+        ?.replace(/<br\s*\/?>((\n)?)/gi, '\n')
+        ?.replace(/<sup[^>]*>(.*?)<\/sup>/gi, '$1')
+        ?.trim();
+      const normalizedQuestion = normalizeQuestion(extractUserQuestion(qa.question, qa.question));
+      if (normalizedQuestion !== pendingGlobalQuestionKey) {
+        return false;
+      }
+      if (!normalizedAnswer || normalizedAnswer.length === 0) {
+        return false;
+      }
+      return normalizedAnswer !== fallbackResponse;
+    });
+
+    if (match) {
+      setGlobalSearchRequests(prev => {
+        const next = { ...prev };
+        delete next[pendingGlobalQuestionKey];
+        return next;
+      });
+      setGlobalSwitchNotices(prev => {
+        if (!prev[pendingGlobalQuestionKey]) {
+          return prev;
+        }
+        return { ...prev, [pendingGlobalQuestionKey]: 'done' };
+      });
+      setPendingGlobalQuestionKey(null);
+    }
+  }, [conversation, extractUserQuestion, fallbackResponse, pendingGlobalQuestionKey]);
+
+  const markersByIndex = useMemo(() => createMarkerMap(contextMarkers), [contextMarkers]);
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
+
   const closeButtonThemeOverrides = useMemo(
     () =>
       ({
@@ -213,23 +284,36 @@ export function AskPageAIChat({
     }
     return null;
   }, [conversation]);
-  const buildPrompt = useMemo(() => {
-    const origin = typeof window !== 'undefined' ? window.location.href : '';
-    return (text: string) =>
-      [
+
+  const buildPrompt = useCallback(
+    (text: string, overrideScope?: ContextScope) => {
+      const scope = overrideScope ?? contextScope;
+      if (scope === 'global') {
+        return [
+          'You are ExpoDocsExpert, an assistant that can search across the entire Expo documentation set before answering.',
+          'Use Search Ask AI as needed, gather any relevant context from other pages, and verify that each part of your response is supported.',
+          'Prefer concise explanations with references to specific APIs or headings, and mention the Expo SDK version when it helps.',
+          '',
+          `User question: ${text}`,
+        ].join('\n');
+      }
+      const origin = typeof window !== 'undefined' ? window.location.href : '';
+      return [
         'You are ExpoDocsExpert, an assistant that must answer strictly using the supplied Expo SDK documentation context.',
         `The user is reading the Expo docs page titled "${contextLabel}" at ${origin || 'the latest Expo SDK docs'}.`,
         'You only have access to the content from this page. You do not have access to other pages, past answers, or external knowledge.',
         'Before responding, confirm that every sentence in your answer is directly supported by the provided context.',
-        `If you cannot confirm this support, respond exactly with: "I can only answer questions about the current ${displayContextLabel} documentation." Do not explain or apologize.`,
-        `If the question is unrelated to the provided context, respond exactly with: "I can only answer questions about the current ${displayContextLabel} documentation."`,
+        `If you cannot confirm this support, respond exactly with: "${fallbackResponse}" Do not explain or apologize.`,
+        `If the question is unrelated to the provided context, respond exactly with: "${fallbackResponse}"`,
         'Prefer concise explanations, reference relevant APIs or headings, and format instructions as short steps or bullet lists when helpful.',
         'Whenever you share code or configuration examples, return complete, ready-to-run snippets with all required imports and setup so the user can copy and paste them into their app without additional context.',
         'Mention the Expo SDK version when relevant (this context represents the "latest" docs).',
         '',
         `User question: ${text}`,
       ].join('\n');
-  }, [contextLabel, displayContextLabel]);
+    },
+    [contextLabel, contextScope, fallbackResponse]
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -255,6 +339,10 @@ export function AskPageAIChat({
     }
     setQuestion('');
     setAskedQuestions([]);
+    setGlobalSearchRequests({});
+    setGlobalSwitchNotices({});
+    setPendingGlobalQuestionKey(null);
+    setContextScope('page');
     resetConversation();
   }, [conversation.length, isBusy, resetConversation, stopGeneration]);
 
@@ -279,6 +367,34 @@ export function AskPageAIChat({
       onMinimize?.();
     },
     [onMinimize]
+  );
+
+  const handleSearchAcrossDocs = useCallback(
+    (questionText: string) => {
+      const trimmed = questionText.trim();
+      if (!trimmed) {
+        return;
+      }
+      const questionKey = normalizeQuestion(trimmed);
+      if (isBusy || globalSearchRequests[questionKey]) {
+        return;
+      }
+      setContextScope('global');
+      setGlobalSearchRequests(prev => ({ ...prev, [questionKey]: true }));
+      setGlobalSwitchNotices(prev => ({ ...prev, [questionKey]: 'pending' }));
+      setPendingGlobalQuestionKey(questionKey);
+      setContextMarkers(prev => [
+        ...prev,
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          at: conversation.length,
+          label: 'Expo docs context',
+        },
+      ]);
+      submitQuery(buildPrompt(trimmed, 'global'));
+      setAskedQuestions(prev => [...prev, trimmed]);
+    },
+    [buildPrompt, conversation.length, globalSearchRequests, isBusy, submitQuery]
   );
 
   const markdownComponents = useMemo<Components>(() => {
@@ -546,7 +662,11 @@ export function AskPageAIChat({
           </div>
         </div>
         <FOOTNOTE className="text-palette-white">
-          Ask a question about <span className="font-semibold">{displayContextLabel}</span>.
+          Ask a question about{' '}
+          <span className="font-semibold">
+            {contextScope === 'page' ? displayContextLabel : 'the Expo docs'}
+          </span>
+          .
         </FOOTNOTE>
       </div>
 
@@ -554,22 +674,36 @@ export function AskPageAIChat({
         {conversation.length > 0 ? (
           <div className="space-y-5">
             {conversation.map((qa, index) => {
-              const isLast = index === conversation.length - 1;
-              const key = (qa.id as ConversationKey) ?? `${qa.question}-${index}`;
-              const displayQuestion =
-                askedQuestions[index] ?? extractUserQuestion(qa.question, qa.question);
+              const markers = markersByIndex[index] ?? [];
+              const questionFromPrompt = extractUserQuestion(qa.question, qa.question);
+              const normalizedQuestion = normalizeQuestion(questionFromPrompt);
+              const displayQuestion = askedQuestions[index] ?? questionFromPrompt;
               const normalizedAnswer = qa.answer
-                ?.replace(/<br\s*\/?>(\n)?/gi, '\n')
+                ?.replace(/<br\s*\/?>((\n)?)/gi, '\n')
                 ?.replace(/<sup[^>]*>(.*?)<\/sup>/gi, '$1');
+              const trimmedAnswer = normalizedAnswer?.trim();
+              const isFallbackAnswer = trimmedAnswer === fallbackResponse;
+              const hasTriggeredGlobalSearch = Boolean(globalSearchRequests[normalizedQuestion]);
+              const isPendingGlobal = pendingGlobalQuestionKey === normalizedQuestion;
+              const isFinalAnswer =
+                'isFeedbackSubmissionEnabled' in qa &&
+                Boolean((qa as any).isFeedbackSubmissionEnabled);
+              const shouldOfferGlobalSearch =
+                isFinalAnswer && contextScope === 'page' && isFallbackAnswer;
+              const switchStatus = globalSwitchNotices[normalizedQuestion];
+              const showSwitchingNotice = Boolean(switchStatus);
+              const switchNoticeText =
+                switchStatus === 'pending' ? 'Switching to Expo docs.' : 'Switched to Expo docs.';
 
               return (
-                <div key={key} className="space-y-2">
-                  {markersByIndex[index]?.map(marker => (
+                <div key={qa.id ?? `${qa.question}-${index}`} className="space-y-2">
+                  {markers.map(marker => (
                     <div key={`marker-${marker.id}`} className="flex justify-center">
                       <FOOTNOTE
                         theme="secondary"
                         className="inline-block rounded-md border border-default bg-subtle px-2 py-1">
-                        Switched to <span className="font-medium text-default">{marker.label}</span>
+                        Switched to{' '}
+                        <span className="font-medium text-default">{marker.label}.</span>
                       </FOOTNOTE>
                     </div>
                   ))}
@@ -587,10 +721,33 @@ export function AskPageAIChat({
                         </ReactMarkdown>
                       ) : (
                         <FOOTNOTE theme="secondary">
-                          {isLast && isBusy ? 'Preparing answer...' : ''}
+                          {index === conversation.length - 1 && isBusy ? 'Preparing answer...' : ''}
                         </FOOTNOTE>
                       )}
                     </div>
+                    {shouldOfferGlobalSearch ? (
+                      <div className="mt-2 flex flex-col gap-2">
+                        <Button
+                          type="button"
+                          theme="quaternary"
+                          size="xs"
+                          className="inline-flex items-center gap-2 rounded-md border border-default bg-subtle px-3 py-1 text-xs font-medium text-default shadow-xs transition-colors hover:bg-element focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-blue9 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                          disabled={isBusy || hasTriggeredGlobalSearch || isPendingGlobal}
+                          onClick={() => {
+                            handleSearchAcrossDocs(displayQuestion);
+                          }}>
+                          <FileSearch02Icon className="icon-xs text-icon-secondary" />
+                          {hasTriggeredGlobalSearch || isPendingGlobal
+                            ? ' Searching Expo docs…'
+                            : ' Search Expo docs'}
+                        </Button>
+                        {showSwitchingNotice ? (
+                          <FOOTNOTE theme="secondary" className="text-xs">
+                            {switchNoticeText}
+                          </FOOTNOTE>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </div>
                   {qa.sources?.length ? (
                     <FOOTNOTE theme="secondary" className="ml-1 text-xs">
@@ -621,7 +778,7 @@ export function AskPageAIChat({
                 <FOOTNOTE
                   theme="secondary"
                   className="inline-block rounded-md border border-default bg-subtle px-2 py-1">
-                  Switched to <span className="font-medium text-default">{marker.label}</span>
+                  Switched to <span className="font-medium text-default">{marker.label}.</span>
                 </FOOTNOTE>
               </div>
             ))}
