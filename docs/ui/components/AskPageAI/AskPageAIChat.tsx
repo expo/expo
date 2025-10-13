@@ -1,21 +1,6 @@
-import { Button, mergeClasses } from '@expo/styleguide';
-import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
-import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
-import { FileSearch02Icon } from '@expo/styleguide-icons/outline/FileSearch02Icon';
-import { Maximize02Icon } from '@expo/styleguide-icons/outline/Maximize02Icon';
-import { Minimize02Icon } from '@expo/styleguide-icons/outline/Minimize02Icon';
-import { RefreshCcw02Icon } from '@expo/styleguide-icons/outline/RefreshCcw02Icon';
-import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
-import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
-import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
-import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
-import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
-import { useChat, type Reaction } from '@kapaai/react-sdk';
+import { useChat } from '@kapaai/react-sdk';
 import { useRouter } from 'next/compat/router';
 import {
-  type AnchorHTMLAttributes,
-  type ComponentType,
-  type CSSProperties,
   type FormEvent,
   type MouseEvent,
   useCallback,
@@ -24,13 +9,19 @@ import {
   useRef,
   useState,
 } from 'react';
-import ReactMarkdown, { type Components } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-
-import { cleanCopyValue, getCodeBlockDataFromChildren } from '~/common/code-utilities';
-import { markdownComponents as docsMarkdownComponents } from '~/ui/components/Markdown';
 
 import { FOOTNOTE } from '../Text';
+import type {
+  ContextMarker,
+  ContextScope,
+  FeedbackTarget,
+  GlobalSwitchStatus,
+} from './AskPageAIChat.types';
+import { createMarkerMap, normalizeQuestion } from './AskPageAIChat.utils';
+import { AskPageAIChatHeader } from './AskPageAIChatHeader';
+import { AskPageAIChatInput } from './AskPageAIChatInput';
+import { AskPageAIChatMessages } from './AskPageAIChatMessages';
+import { useChatMarkdownComponents } from './useChatMarkdownComponents';
 
 type AskPageAIChatProps = {
   onClose: () => void;
@@ -40,23 +31,6 @@ type AskPageAIChatProps = {
   isExpanded?: boolean;
   isExpoSdkPage?: boolean;
 };
-
-type ContextScope = 'page' | 'global';
-
-const createMarkerMap = (
-  markers: { id: string; at: number; label: string }[]
-): Record<number, { id: string; label: string }[]> => {
-  const map: Record<number, { id: string; label: string }[]> = {};
-  for (const marker of markers) {
-    if (!map[marker.at]) {
-      map[marker.at] = [];
-    }
-    map[marker.at].push({ id: marker.id, label: marker.label });
-  }
-  return map;
-};
-
-const normalizeQuestion = (question: string) => question.trim().toLowerCase();
 
 const FALLBACK_TEMPLATE = (label: string) =>
   `I can only answer questions about the current ${label} documentation.`;
@@ -102,12 +76,10 @@ export function AskPageAIChat({
   const [contextScope, setContextScope] = useState<ContextScope>('page');
   const [question, setQuestion] = useState('');
   const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
-  const [contextMarkers, setContextMarkers] = useState<{ id: string; at: number; label: string }[]>(
-    []
-  );
+  const [contextMarkers, setContextMarkers] = useState<ContextMarker[]>([]);
   const [globalSearchRequests, setGlobalSearchRequests] = useState<Record<string, boolean>>({});
   const [globalSwitchNotices, setGlobalSwitchNotices] = useState<
-    Record<string, 'pending' | 'done'>
+    Record<string, GlobalSwitchStatus>
   >({});
   const [pendingGlobalQuestionKey, setPendingGlobalQuestionKey] = useState<string | null>(null);
 
@@ -126,21 +98,41 @@ export function AskPageAIChat({
     }
   }, [conversation.length, askedQuestions.length]);
 
+  const resetLocalState = useCallback(
+    (options: { resetConversation?: boolean; clearMarkers?: boolean } = {}) => {
+      const { resetConversation: shouldResetConversation = false, clearMarkers = true } = options;
+      setQuestion('');
+      setAskedQuestions([]);
+      if (clearMarkers) {
+        setContextMarkers([]);
+      }
+      setGlobalSearchRequests({});
+      setGlobalSwitchNotices({});
+      setPendingGlobalQuestionKey(null);
+      setContextScope('page');
+      if (shouldResetConversation) {
+        resetConversation();
+      }
+    },
+    [resetConversation]
+  );
+
   useEffect(() => {
     if (conversation.length === 0 && contextScope !== 'page') {
+      resetLocalState();
+    }
+  }, [conversation.length, contextScope, resetLocalState]);
+
+  useEffect(() => {
+    if (conversation.length === 0) {
+      resetLocalState();
+    } else {
       setContextScope('page');
       setGlobalSearchRequests({});
       setGlobalSwitchNotices({});
       setPendingGlobalQuestionKey(null);
     }
-  }, [conversation.length, contextScope]);
-
-  useEffect(() => {
-    setContextScope('page');
-    setGlobalSearchRequests({});
-    setGlobalSwitchNotices({});
-    setPendingGlobalQuestionKey(null);
-  }, [displayContextLabel]);
+  }, [conversation.length, displayContextLabel, resetLocalState]);
 
   useEffect(() => {
     if (conversation.length <= askedQuestions.length) {
@@ -173,19 +165,19 @@ export function AskPageAIChat({
     const prevLabel = prevDisplayContextRef.current;
     const pathChanged = Boolean(prevPath && prevPath !== basePath);
     const labelChanged = Boolean(prevLabel && prevLabel !== displayContextLabel);
-    if (conversation.length > 0 && (pathChanged || labelChanged)) {
-      setContextMarkers(prev => [
-        ...prev,
-        {
-          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-          at: conversation.length,
-          label: displayContextLabel,
-        },
-      ]);
+
+    if (pathChanged || labelChanged) {
+      if (conversation.length > 0) {
+        stopGeneration();
+        resetLocalState({ resetConversation: true });
+      } else {
+        resetLocalState();
+      }
     }
+
     prevBasePathRef.current = basePath;
     prevDisplayContextRef.current = displayContextLabel;
-  }, [basePath, displayContextLabel, conversation.length]);
+  }, [basePath, conversation.length, displayContextLabel, resetLocalState, stopGeneration]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -255,22 +247,7 @@ export function AskPageAIChat({
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
 
-  const closeButtonThemeOverrides = useMemo(
-    () =>
-      ({
-        '--expo-theme-button-quaternary-hover': 'rgba(255,255,255,0.12)',
-        '--expo-theme-button-quaternary-text': '#ffffff',
-        '--expo-theme-button-quaternary-icon': '#ffffff',
-      }) as CSSProperties,
-    []
-  );
-  const headerAccentBackground = useMemo(() => ({ backgroundColor: 'rgba(255,255,255,0.1)' }), []);
-  const activeFeedbackBackground = useMemo(
-    () => ({ backgroundColor: 'rgba(255,255,255,0.12)' }),
-    []
-  );
-
-  const feedbackTarget = useMemo(() => {
+  const feedbackTarget = useMemo<FeedbackTarget>(() => {
     for (let index = conversation.length - 1; index >= 0; index -= 1) {
       const entry = conversation[index];
       if (
@@ -337,24 +314,18 @@ export function AskPageAIChat({
     if (isBusy && conversation.length > 0) {
       stopGeneration();
     }
-    setQuestion('');
-    setAskedQuestions([]);
-    setGlobalSearchRequests({});
-    setGlobalSwitchNotices({});
-    setPendingGlobalQuestionKey(null);
-    setContextScope('page');
-    resetConversation();
-  }, [conversation.length, isBusy, resetConversation, stopGeneration]);
+    resetLocalState({ resetConversation: true });
+  }, [conversation.length, isBusy, resetLocalState, stopGeneration]);
 
   const handleFeedback = useCallback(
-    (reaction: Reaction) => {
-      if (!feedbackTarget || !feedbackTarget.isFeedbackSubmissionEnabled) {
+    (reaction: 'upvote' | 'downvote') => {
+      if (!feedbackTarget?.isFeedbackSubmissionEnabled) {
         return;
       }
       if (feedbackTarget.reaction === reaction) {
         return;
       }
-      addFeedback(feedbackTarget.id, reaction);
+      addFeedback(feedbackTarget.id!, reaction);
     },
     [addFeedback, feedbackTarget]
   );
@@ -397,401 +368,50 @@ export function AskPageAIChat({
     [buildPrompt, conversation.length, globalSearchRequests, isBusy, submitQuery]
   );
 
-  const markdownComponents = useMemo<Components>(() => {
-    const AnchorComponent =
-      (docsMarkdownComponents.a as ComponentType<AnchorHTMLAttributes<HTMLAnchorElement>>) ?? 'a';
-    const ParagraphComponent = (docsMarkdownComponents.p as ComponentType<any>) ?? 'p';
-    const OrderedListComponent = (docsMarkdownComponents.ol as ComponentType<any>) ?? 'ol';
-    const UnorderedListComponent = (docsMarkdownComponents.ul as ComponentType<any>) ?? 'ul';
-    const ListItemComponent = (docsMarkdownComponents.li as ComponentType<any>) ?? 'li';
-    const Heading1Component = (docsMarkdownComponents.h1 as ComponentType<any>) ?? 'h1';
-    const Heading2Component = (docsMarkdownComponents.h2 as ComponentType<any>) ?? 'h2';
-    const Heading3Component = (docsMarkdownComponents.h3 as ComponentType<any>) ?? 'h3';
-    const Heading4Component = (docsMarkdownComponents.h4 as ComponentType<any>) ?? 'h4';
-    const Heading5Component = (docsMarkdownComponents.h5 as ComponentType<any>) ?? 'h5';
-    const PreComponent = (docsMarkdownComponents.pre as ComponentType<any>) ?? 'pre';
+  const markdownComponents = useChatMarkdownComponents({ onNavigate: handleNavigation });
 
-    const ChatPre: ComponentType<any> = preProps => {
-      const { value } = useMemo(
-        () => getCodeBlockDataFromChildren(preProps.children, preProps.className),
-        [preProps.children, preProps.className]
-      );
-      const codeToCopy = useMemo(() => cleanCopyValue(value ?? ''), [value]);
-      const [copied, setCopied] = useState(false);
-
-      useEffect(() => {
-        if (!copied) {
-          return undefined;
-        }
-        const timer = setTimeout(() => {
-          setCopied(false);
-        }, 2000);
-        return () => {
-          clearTimeout(timer);
-        };
-      }, [copied]);
-
-      const handleCopy = () => {
-        if (!codeToCopy) {
-          return;
-        }
-        void navigator.clipboard?.writeText(codeToCopy);
-        setCopied(true);
-      };
-
-      return (
-        <div className="relative">
-          <PreComponent {...preProps} className={mergeClasses('px-3 py-2', preProps.className)} />
-          <Button
-            type="button"
-            theme="quaternary"
-            size="xs"
-            className="pointer-events-auto absolute right-2 top-2 z-10 flex size-7 items-center justify-center rounded-full !border !border-default !bg-default !p-0 shadow-sm"
-            onClick={handleCopy}
-            aria-label="Copy code block">
-            {copied ? (
-              <CheckIcon className="icon-xs text-success" aria-hidden />
-            ) : (
-              <ClipboardIcon className="icon-xs text-icon-secondary" aria-hidden />
-            )}
-          </Button>
-        </div>
-      );
-    };
-
-    return {
-      ...docsMarkdownComponents,
-      h1: props => (
-        <Heading1Component
-          {...props}
-          className={mergeClasses('!text-[14px] font-semibold text-default', props.className)}
-        />
-      ),
-      h2: props => (
-        <Heading2Component
-          {...props}
-          className={mergeClasses('!text-[14px] font-semibold text-default', props.className)}
-        />
-      ),
-      h3: props => (
-        <Heading3Component
-          {...props}
-          className={mergeClasses('!text-[12px] font-semibold text-default', props.className)}
-        />
-      ),
-      h4: props => (
-        <Heading4Component
-          {...props}
-          className={mergeClasses('!text-[12px] font-semibold text-default', props.className)}
-        />
-      ),
-      h5: props => (
-        <Heading5Component
-          {...props}
-          className={mergeClasses('!text-[10px] font-semibold text-default', props.className)}
-        />
-      ),
-      p: ({ className, style, ...rest }) => (
-        <ParagraphComponent
-          {...rest}
-          style={{ ...(style ?? {}), fontSize: '14px', lineHeight: '1.5' }}
-          className={mergeClasses(
-            '!mb-2 text-secondary',
-            className,
-            '!text-[10px] !leading-[1.55]'
-          )}
-        />
-      ),
-      ol: ({ className, style, ...rest }) => (
-        <OrderedListComponent
-          {...rest}
-          style={{ ...(style ?? {}), fontSize: '14px', lineHeight: '1.5' }}
-          className={mergeClasses('text-secondary', className, '!text-[10px] leading-normal')}
-        />
-      ),
-      ul: ({ className, style, ...rest }) => (
-        <UnorderedListComponent
-          {...rest}
-          style={{ ...(style ?? {}), fontSize: '14px', lineHeight: '1.5' }}
-          className={mergeClasses('text-secondary', className, '!text-[10px] leading-normal')}
-        />
-      ),
-      li: ({ className, style, ...rest }) => (
-        <ListItemComponent
-          {...rest}
-          style={{ ...(style ?? {}), fontSize: '14px', lineHeight: '1.45' }}
-          className={mergeClasses('text-secondary', className, '!text-[10px] !leading-[1.45]')}
-        />
-      ),
-      sup: () => null,
-      section: ({ className, children, ...props }: any) => {
-        if (className?.includes('footnotes')) {
-          return null;
-        }
-        return (
-          <section className={className} {...props}>
-            {children}
-          </section>
-        );
-      },
-      hr: ({ className, ...props }: any) => {
-        if (className?.includes('footnotes-sep')) {
-          return null;
-        }
-        const HR = (docsMarkdownComponents.hr as ComponentType<any>) ?? 'hr';
-        return <HR className={className} {...props} />;
-      },
-      a: ({
-        href,
-        children,
-        onClick: originalOnClick,
-        ...props
-      }: AnchorHTMLAttributes<HTMLAnchorElement>) => (
-        <AnchorComponent
-          {...props}
-          href={href ?? '#'}
-          onClick={(event: MouseEvent<HTMLAnchorElement>) => {
-            originalOnClick?.(event);
-            if (
-              event.defaultPrevented ||
-              event.metaKey ||
-              event.ctrlKey ||
-              event.shiftKey ||
-              event.button !== 0
-            ) {
-              return;
-            }
-            handleNavigation(event);
-          }}>
-          {children}
-        </AnchorComponent>
-      ),
-      pre: ChatPre,
-    } as Components;
-  }, [handleNavigation]);
+  const messageEntries = useMemo(
+    () =>
+      conversation.map(qa => ({
+        id: qa.id ?? null,
+        question: qa.question,
+        answer: qa.answer,
+        sources: qa.sources,
+        isFeedbackSubmissionEnabled:
+          'isFeedbackSubmissionEnabled' in qa ? qa.isFeedbackSubmissionEnabled : undefined,
+      })),
+    [conversation]
+  );
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-default">
-      <div className="flex flex-col gap-3 border-b border-default bg-palette-black px-4 py-3 text-palette-white">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span
-              className={mergeClasses(
-                'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
-              )}
-              style={headerAccentBackground}>
-              <Star06Icon className="icon-sm text-palette-white" />
-            </span>
-            <span className="text-sm font-medium leading-tight text-palette-white">
-              Expo AI Assistant
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button
-              type="button"
-              aria-label="Provide positive feedback"
-              theme="quaternary"
-              size="xs"
-              className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-              style={{
-                ...closeButtonThemeOverrides,
-                ...(feedbackTarget?.reaction === 'upvote' ? activeFeedbackBackground : {}),
-              }}
-              aria-pressed={feedbackTarget?.reaction === 'upvote'}
-              disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
-              onClick={() => {
-                handleFeedback('upvote');
-              }}>
-              <ThumbsUpIcon className="icon-xs text-palette-white" />
-            </Button>
-            <Button
-              type="button"
-              aria-label="Provide negative feedback"
-              theme="quaternary"
-              size="xs"
-              className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-              style={{
-                ...closeButtonThemeOverrides,
-                ...(feedbackTarget?.reaction === 'downvote' ? activeFeedbackBackground : {}),
-              }}
-              aria-pressed={feedbackTarget?.reaction === 'downvote'}
-              disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
-              onClick={() => {
-                handleFeedback('downvote');
-              }}>
-              <ThumbsDownIcon className="icon-xs text-palette-white" />
-            </Button>
-            {onToggleExpand ? (
-              <Button
-                type="button"
-                aria-label={
-                  isExpanded ? 'Restore Ask AI assistant size' : 'Expand Ask AI assistant'
-                }
-                theme="quaternary"
-                size="xs"
-                className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-                style={closeButtonThemeOverrides}
-                aria-pressed={isExpanded}
-                onClick={onToggleExpand}>
-                {isExpanded ? (
-                  <Minimize02Icon className="icon-xs text-palette-white" />
-                ) : (
-                  <Maximize02Icon className="icon-xs text-palette-white" />
-                )}
-              </Button>
-            ) : null}
-            <Button
-              type="button"
-              aria-label="Reset conversation"
-              theme="quaternary"
-              size="xs"
-              className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-              style={closeButtonThemeOverrides}
-              onClick={handleConversationReset}>
-              <RefreshCcw02Icon className="icon-xs text-palette-white" />
-            </Button>
-            <Button
-              aria-label="Close Ask AI assistant"
-              theme="quaternary"
-              size="xs"
-              className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-              style={closeButtonThemeOverrides}
-              onClick={handleClose}>
-              <XIcon className="icon-xs text-palette-white" />
-            </Button>
-          </div>
-        </div>
-        <FOOTNOTE className="text-palette-white">
-          Ask a question about{' '}
-          <span className="font-semibold">
-            {contextScope === 'page' ? displayContextLabel : 'Expo docs'}
-          </span>
-          .
-        </FOOTNOTE>
-      </div>
+      <AskPageAIChatHeader
+        displayContextLabel={displayContextLabel}
+        contextScope={contextScope}
+        isExpanded={isExpanded}
+        onToggleExpand={onToggleExpand}
+        onReset={handleConversationReset}
+        onClose={handleClose}
+        feedbackTarget={feedbackTarget}
+        onFeedback={handleFeedback}
+      />
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
-        {conversation.length > 0 ? (
-          <div className="space-y-5">
-            {conversation.map((qa, index) => {
-              const markers = markersByIndex[index] ?? [];
-              const questionFromPrompt = extractUserQuestion(qa.question, qa.question);
-              const normalizedQuestion = normalizeQuestion(questionFromPrompt);
-              const displayQuestion = askedQuestions[index] ?? questionFromPrompt;
-              const normalizedAnswer = qa.answer
-                ?.replace(/<br\s*\/?>((\n)?)/gi, '\n')
-                ?.replace(/<sup[^>]*>(.*?)<\/sup>/gi, '$1');
-              const trimmedAnswer = normalizedAnswer?.trim();
-              const isFallbackAnswer = trimmedAnswer === fallbackResponse;
-              const hasTriggeredGlobalSearch = Boolean(globalSearchRequests[normalizedQuestion]);
-              const isPendingGlobal = pendingGlobalQuestionKey === normalizedQuestion;
-              const isFinalAnswer =
-                'isFeedbackSubmissionEnabled' in qa &&
-                Boolean((qa as any).isFeedbackSubmissionEnabled);
-              const shouldOfferGlobalSearch =
-                isFinalAnswer && contextScope === 'page' && isFallbackAnswer;
-              const switchStatus = globalSwitchNotices[normalizedQuestion];
-              const showSwitchingNotice = Boolean(switchStatus);
-              const switchNoticeText =
-                switchStatus === 'pending' ? 'Switching to Expo docs.' : 'Switched to Expo docs.';
-
-              return (
-                <div key={qa.id ?? `${qa.question}-${index}`} className="space-y-2">
-                  {markers.map(marker => (
-                    <div key={`marker-${marker.id}`} className="flex justify-center">
-                      <FOOTNOTE
-                        theme="secondary"
-                        className="inline-block rounded-md border border-default bg-subtle px-2 py-1">
-                        Switched to{' '}
-                        <span className="font-medium text-default">{marker.label}.</span>
-                      </FOOTNOTE>
-                    </div>
-                  ))}
-                  <div className="flex justify-end pr-1">
-                    <div className="ml-auto max-w-[85%] rounded-md border border-default bg-subtle px-3 py-1.5 text-right text-sm leading-snug text-secondary shadow-xs">
-                      {displayQuestion}
-                    </div>
-                  </div>
-                  <div className="px-0">
-                    <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
-                    <div className="mt-1 space-y-3 text-xs text-secondary">
-                      {normalizedAnswer ? (
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                          {normalizedAnswer}
-                        </ReactMarkdown>
-                      ) : (
-                        <FOOTNOTE theme="secondary">
-                          {index === conversation.length - 1 && isBusy ? 'Preparing answer...' : ''}
-                        </FOOTNOTE>
-                      )}
-                    </div>
-                    {shouldOfferGlobalSearch ? (
-                      <div className="mt-2 flex flex-col gap-2">
-                        <Button
-                          type="button"
-                          theme="quaternary"
-                          size="xs"
-                          className="inline-flex items-center gap-2 rounded-md border border-default bg-subtle px-3 py-1 text-xs font-medium text-default shadow-xs transition-colors hover:bg-element focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-blue9 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-                          disabled={isBusy || hasTriggeredGlobalSearch || isPendingGlobal}
-                          onClick={() => {
-                            handleSearchAcrossDocs(displayQuestion);
-                          }}>
-                          <FileSearch02Icon className="icon-xs text-icon-secondary" />
-                          {hasTriggeredGlobalSearch || isPendingGlobal
-                            ? ' Searching Expo docs…'
-                            : ' Search Expo docs'}
-                        </Button>
-                        {showSwitchingNotice ? (
-                          <FOOTNOTE theme="secondary" className="text-xs">
-                            {switchNoticeText}
-                          </FOOTNOTE>
-                        ) : null}
-                      </div>
-                    ) : null}
-                  </div>
-                  {qa.sources?.length ? (
-                    <FOOTNOTE theme="secondary" className="ml-1 text-xs">
-                      Sources:{' '}
-                      {qa.sources.map((source, sourceIdx) => (
-                        <span key={source.source_url}>
-                          <a
-                            className="text-link"
-                            href={source.source_url}
-                            onClick={event => {
-                              if (event.metaKey || event.ctrlKey || event.button !== 0) {
-                                return;
-                              }
-                              handleNavigation(event);
-                            }}>
-                            {source.title || `Source ${sourceIdx + 1}`}
-                          </a>
-                          {sourceIdx < qa.sources.length - 1 ? ', ' : ''}
-                        </span>
-                      ))}
-                    </FOOTNOTE>
-                  ) : null}
-                </div>
-              );
-            })}
-            {markersByIndex[conversation.length]?.map(marker => (
-              <div key={`marker-${marker.id}`} className="flex justify-center">
-                <FOOTNOTE
-                  theme="secondary"
-                  className="inline-block rounded-md border border-default bg-subtle px-2 py-1">
-                  Switched to <span className="font-medium text-default">{marker.label}.</span>
-                </FOOTNOTE>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
-            <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
-            <div className="mt-1 space-y-3 text-xs text-secondary">
-              I'm an SDK AI assistant — ask me a question about the{' '}
-              <span className="font-medium text-default">{displayContextLabel}</span> page.
-            </div>
-          </div>
-        )}
+        <AskPageAIChatMessages
+          conversation={messageEntries}
+          askedQuestions={askedQuestions}
+          fallbackResponse={fallbackResponse}
+          contextScope={contextScope}
+          globalSearchRequests={globalSearchRequests}
+          globalSwitchNotices={globalSwitchNotices}
+          pendingGlobalQuestionKey={pendingGlobalQuestionKey}
+          markersByIndex={markersByIndex}
+          isBusy={isBusy}
+          markdownComponents={markdownComponents}
+          onSearchAcrossDocs={handleSearchAcrossDocs}
+          extractUserQuestion={extractUserQuestion}
+          onNavigate={handleNavigation}
+        />
         {error && (
           <FOOTNOTE theme="danger" className="mt-4">
             {error}
@@ -799,37 +419,13 @@ export function AskPageAIChat({
         )}
       </div>
 
-      <div className="mt-auto border-t border-default px-5 pb-6 pt-4">
-        <form
-          className="flex items-center gap-1 rounded-md border border-default bg-default px-2 py-1.5"
-          onSubmit={handleSubmit}
-          aria-label="Ask AI form">
-          <textarea
-            aria-label="Ask AI about this page"
-            className="min-h-[72px] flex-1 resize-none rounded-md border border-transparent bg-subtle p-2 text-sm leading-relaxed outline-none focus:!shadow-none focus:!outline-none focus:ring-0 focus-visible:!shadow-none focus-visible:!outline-none focus-visible:ring-0"
-            rows={3}
-            value={question}
-            onChange={event => {
-              setQuestion(event.target.value);
-            }}
-            disabled={isBusy && conversation.length === 0}
-            onKeyDown={event => {
-              if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                event.currentTarget.form?.requestSubmit();
-              }
-            }}
-          />
-          <Button
-            type="submit"
-            theme="quaternary"
-            size="sm"
-            className="flex size-6 items-center justify-center rounded-full !p-0"
-            disabled={isBusy || question.trim().length === 0}>
-            <Send03Icon className="icon-xs text-icon-default" />
-          </Button>
-        </form>
-      </div>
+      <AskPageAIChatInput
+        question={question}
+        onQuestionChange={setQuestion}
+        onSubmit={handleSubmit}
+        isBusy={isBusy}
+        conversationLength={conversation.length}
+      />
     </div>
   );
 }
