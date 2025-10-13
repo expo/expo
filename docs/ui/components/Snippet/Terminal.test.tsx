@@ -77,7 +77,11 @@ describe(Terminal, () => {
     const user = userEvent.setup();
     await user.click(screen.getByText('Open in expo.dev'));
 
-    expect(openMock).toHaveBeenCalledWith('https://expo.dev/login', '_blank', 'noopener,noreferrer');
+    expect(openMock).toHaveBeenCalledWith(
+      'https://expo.dev/login',
+      '_blank',
+      'noopener,noreferrer'
+    );
 
     window.open = originalWindowOpen;
   });
