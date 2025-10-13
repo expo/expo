@@ -35,7 +35,7 @@ internal struct SectionFooter: ExpoSwiftUI.View {
 internal final class SectionContentProps: ExpoSwiftUI.ViewProps {}
 internal struct SectionContent: ExpoSwiftUI.View {
   @ObservedObject var props: SectionContentProps
-  
+
   var body: some View {
     Children()
   }
@@ -62,8 +62,6 @@ internal struct SectionView: ExpoSwiftUI.View {
       .first
     {
       content
-    } else {
-      EmptyView()
     }
   }
 
@@ -76,8 +74,6 @@ internal struct SectionView: ExpoSwiftUI.View {
       header
     } else if let title = props.title, !title.isEmpty {
       Text(title).textCase(nil)
-    } else {
-      EmptyView()
     }
   }
 
@@ -88,8 +84,6 @@ internal struct SectionView: ExpoSwiftUI.View {
       .first
     {
       footer
-    } else {
-      EmptyView()
     }
   }
 
