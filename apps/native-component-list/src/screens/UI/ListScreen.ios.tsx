@@ -2,6 +2,8 @@ import {
   Button,
   ColorPicker,
   Host,
+  HStack,
+  Image,
   Label,
   List,
   type ListStyle,
@@ -10,7 +12,15 @@ import {
   Switch,
   Text,
 } from '@expo/ui/swift-ui';
-import { frame, headerProminence, scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
+import {
+  background,
+  clipShape,
+  disabled,
+  frame,
+  headerProminence,
+  padding,
+  scrollDismissesKeyboard,
+} from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
 import type { SFSymbol } from 'expo-symbols';
 import * as React from 'react';
@@ -50,6 +60,10 @@ export default function ListScreen() {
   >(0);
   const [increasedHeader, setIncreasedHeader] = React.useState(false);
   const [collapsible, setCollapsible] = React.useState<boolean>(false);
+  const [customHeaderFooter, setCustomHeaderFooter] = React.useState<{
+    header: boolean;
+    footer: boolean;
+  }>({ header: false, footer: false });
 
   const navigation = useNavigation();
 
@@ -80,13 +94,47 @@ export default function ListScreen() {
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
         <Section collapsible={collapsible} title="Collapsible section" footer="Footer text">
-          <Text size={17}>Some text!</Text>
-          <Switch
-            label="Use increased section header"
-            value={increasedHeader}
-            onValueChange={setIncreasedHeader}
-          />
-          <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
+          {customHeaderFooter.header && (
+            <Section.Header>
+              <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
+                <HStack modifiers={[padding({ all: 8 })]}>
+                  <Image systemName="list.bullet" color="white" size={22} />
+                  <Text color="white" size={16}>
+                    Custom header
+                  </Text>
+                </HStack>
+              </HStack>
+            </Section.Header>
+          )}
+          {customHeaderFooter.footer && (
+            <Section.Footer>
+              <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
+                <Text size={16} color="white" modifiers={[padding({ all: 8 })]}>
+                  Custom Footer
+                </Text>
+              </HStack>
+            </Section.Footer>
+          )}
+          <Section.Content>
+            <Text size={17}>Some text!</Text>
+            <Switch
+              label="Use increased section header"
+              value={increasedHeader}
+              onValueChange={setIncreasedHeader}
+            />
+            <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
+            <Switch
+              label="Custom header"
+              value={customHeaderFooter.header}
+              onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
+            />
+            <Switch
+              label="Custom footer"
+              value={customHeaderFooter.footer}
+              onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
+              modifiers={[disabled(collapsible)]}
+            />
+          </Section.Content>
         </Section>
         <Section title="Controls" collapsible>
           <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
