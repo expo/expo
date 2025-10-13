@@ -664,7 +664,7 @@ export function AskPageAIChat({
         <FOOTNOTE className="text-palette-white">
           Ask a question about{' '}
           <span className="font-semibold">
-            {contextScope === 'page' ? displayContextLabel : 'the Expo docs'}
+            {contextScope === 'page' ? displayContextLabel : 'Expo docs'}
           </span>
           .
         </FOOTNOTE>
