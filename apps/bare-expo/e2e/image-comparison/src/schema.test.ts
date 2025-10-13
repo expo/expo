@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test';
+
 import { schema } from './schema';
 
 describe('Zod schema validation', () => {
@@ -9,10 +10,10 @@ describe('Zod schema validation', () => {
     similarityThreshold: 5,
     testID: 'image-comparison-list',
     platform: 'android' as const,
-    mode: 'crossPlatform' as const,
+    mode: 'keep-originals' as const,
   };
 
-  test('should validate data with testID and mode', () => {
+  it('should validate data with testID and mode', () => {
     const parsedBody = schema.parse(testData);
 
     expect(parsedBody).toEqual(testData);

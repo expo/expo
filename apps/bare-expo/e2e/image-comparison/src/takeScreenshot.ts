@@ -1,4 +1,4 @@
-// taking screenshots with Maestro is not reliable (for example, taking one screenshot would work, but taking two in row would time out)
+// taking screenshots with Maestro is not reliable (for example, taking one screenshot would work, but taking two in a row would time out)
 // hence this module
 
 import { exec } from 'node:child_process';
@@ -58,7 +58,7 @@ async function takeAndroidScreenshot(outputPath: string): Promise<void> {
   try {
     console.log(`Taking screenshot of Android device/emulator`);
 
-    // Take screenshot using adb
+    // Take a screenshot using adb
     const tempPath = `/sdcard/screenshot_temp.png`;
     await execAsync(`adb shell screencap -p ${tempPath}`);
 

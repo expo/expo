@@ -2,16 +2,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { compareImages, type ComparisonResult } from './compareImages';
+import { transformPaths } from './pathUtils';
 import { schema } from './schema';
-import { takeScreenshot } from './screenshot';
-import { compareImages, type ComparisonResult } from '../../scripts/compare-images';
-import { transformPaths } from '../../scripts/lib/pathUtils';
-import { ViewCropper } from '../../scripts/lib/viewCropper';
+import { takeScreenshot } from './takeScreenshot';
+import { cropViewByTestID } from './viewCropper';
 
 const PORT = process.env.PORT || 3000;
 const e2eDir = path.resolve(path.join(__dirname, '..', '..'));
 
-// @ts-ignore bun types are missing
 Bun.serve({
   port: PORT,
   hostname: '127.0.0.1', // Only bind to localhost for security
@@ -22,11 +21,13 @@ Bun.serve({
       try {
         const bodyJson = await req.json();
         const parsedBody = schema.parse(bodyJson);
-        const { similarityThreshold = 5, platform } = parsedBody;
+        const isNormalizationMode = 'mode' in parsedBody && parsedBody.mode === 'normalize';
+        const thresholdDefaultValue = isNormalizationMode ? 15 : 5;
+
+        const { similarityThreshold = thresholdDefaultValue, platform } = parsedBody;
 
         const testID = 'testID' in parsedBody ? parsedBody.testID : undefined;
 
-        const e2eDir = path.resolve(path.join(__dirname, '..'));
         const {
           baseImagePath,
           currentScreenshotPath,
@@ -36,6 +37,7 @@ Bun.serve({
           currentScreenshotArtifactPath,
         } = transformPaths(e2eDir, parsedBody);
 
+        // TODO add utility for taking screenshot and cropping by testID
         await takeScreenshot({
           platform,
           outputFilePath: currentScreenshotPath,
@@ -43,10 +45,9 @@ Bun.serve({
         });
 
         if (testID) {
-          const viewCropper = new ViewCropper();
           // TODO get scale factor from simctl
           const displayScaleFactor = platform === 'android' ? 1 : 3;
-          await viewCropper.cropViewByTestID({
+          await cropViewByTestID({
             testID,
             currentScreenshotPath,
             viewShotPath: viewShotOutputPath,
@@ -77,14 +78,12 @@ Bun.serve({
           );
         }
 
-        const isCrossPlatformMode = 'mode' in parsedBody && parsedBody.mode === 'crossPlatform';
-
         const result: ComparisonResult = await compareImages({
           image1Path: baseImagePath,
           image2Path: imageForComparisonPath,
           outputPath: diffOutputFilePath,
           similarityThreshold,
-          crossPlatformMode: isCrossPlatformMode,
+          isNormalizationMode,
         });
 
         if (result.success) {

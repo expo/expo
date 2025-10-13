@@ -7,7 +7,8 @@
 # Parameters:
 #   - screenshotOutputPath: The folder path of the viewshot to take and compare. The file name will be based on the testID
 #   - testID: The testID of the view to take shot of
-#   - mode: 'crossPlatform' or 'platformDependent'. When 'crossPlatform', the view shot will be normalized before compared with the base view shot
+#   - mode: 'normalize' or 'keep-originals'. When 'keep-originals', the view shots will be stored with platform suffix.
+#            With 'normalize', only one original view shot is kept, and the view shots taken at test time are normalized (if needed) and then compared with the base shot.
 #   - similarityThreshold: The percentage of similarity required to pass the comparison. Defaults to 5 and 15% for the platformDependent and crossPlatform modes, respectively
 
 appId: dev.expo.Payments

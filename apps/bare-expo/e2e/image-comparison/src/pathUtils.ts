@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import path from 'path';
 
-import { RequestBody } from '../../e2e/_nested-flows/schema';
+import { RequestBody } from './schema';
 
 const pngSuffix = '.png';
 
@@ -15,7 +15,7 @@ export const transformPaths = (e2eDir: string, parsedBody: RequestBody, homeDir?
 
   // Apply platform suffix to base image path if in platformDependent mode with testID
   let baseImageToUse = baseImage;
-  const addPlatformSuffixForViewShot = mode === 'platformDependent' && testID;
+  const addPlatformSuffixForViewShot = mode === 'keep-originals' && testID;
   if (addPlatformSuffixForViewShot) {
     // Add platform suffix: "example.base" -> "example.base.ios"
     const baseName = path.basename(baseImage, '.base');

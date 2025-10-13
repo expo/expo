@@ -8,6 +8,7 @@
 !/e2e/**/*.base.ios.png
 !/e2e/**/*.base.android.png
 !/e2e/**/*.base.png
+!/e2e/image-comparison/test-fixtures/*.png
 .kotlin/
 dist/
 

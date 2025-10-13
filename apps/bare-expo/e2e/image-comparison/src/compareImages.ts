@@ -1,9 +1,14 @@
 #!/usr/bin/env bun
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 
-import { ImageNormalizer, type NormalizationOptions } from './lib/imageNormalizer';
+import {
+  getOptimalTargetDimensions,
+  normalizeImagesForComparison,
+  type NormalizationOptions,
+} from './imageNormalizer';
+import { readPNG, writePNG } from './pngUtils';
 
 export interface ComparisonResult {
   success: boolean;
@@ -57,7 +62,7 @@ export interface CompareImagesOptions {
   image2Path: string;
   outputPath?: string;
   similarityThreshold?: number;
-  crossPlatformMode?: boolean;
+  isNormalizationMode?: boolean;
   normalizationOptions?: NormalizationOptions;
 }
 
@@ -66,39 +71,38 @@ export async function compareImages({
   image2Path,
   outputPath,
   similarityThreshold,
-  crossPlatformMode = false,
+  isNormalizationMode = false,
   normalizationOptions,
 }: CompareImagesOptions): Promise<ComparisonResult> {
   try {
-    if (!fs.existsSync(image1Path)) {
+    // Check if files exist
+    try {
+      await fs.access(image1Path);
+    } catch {
       return createErrorResult(`Image 1 not found: ${image1Path}`);
     }
 
-    if (!fs.existsSync(image2Path)) {
+    try {
+      await fs.access(image2Path);
+    } catch {
       return createErrorResult(`Image 2 not found: ${image2Path}`);
     }
 
     let finalImage1Path = image1Path;
     let finalImage2Path = image2Path;
 
-    // Handle cross-platform mode with different dimensions
-    if (crossPlatformMode) {
-      similarityThreshold = 15; // Relax the threshold for cross-platform comparisons
-      const img1 = PNG.sync.read(fs.readFileSync(image1Path));
-      const img2 = PNG.sync.read(fs.readFileSync(image2Path));
+    // Handle normalization mode with different dimensions
+    if (isNormalizationMode) {
+      const img1 = await readPNG(image1Path);
+      const img2 = await readPNG(image2Path);
 
       // Check if dimensions are different
       if (img1.width !== img2.width || img1.height !== img2.height) {
-        console.log(`Cross-platform mode: Normalizing images with different dimensions`);
+        console.log(`normalization mode: Normalizing images with different dimensions`);
         console.log(`Image 1: ${img1.width}x${img1.height}, Image 2: ${img2.width}x${img2.height}`);
 
-        const normalizer = new ImageNormalizer();
-
         // Calculate optimal target dimensions based on the actual images
-        const optimalDimensions = await normalizer.getOptimalTargetDimensions(
-          image1Path,
-          image2Path
-        );
+        const optimalDimensions = await getOptimalTargetDimensions(image1Path, image2Path);
 
         // Use provided options or calculated optimal dimensions
         const defaultOptions: NormalizationOptions = {
@@ -110,8 +114,11 @@ export async function compareImages({
 
         const options = normalizationOptions || defaultOptions;
 
-        const { normalizedImage1Path, normalizedImage2Path } =
-          await normalizer.normalizeImagesForComparison(image1Path, image2Path, options);
+        const { normalizedImage1Path, normalizedImage2Path } = await normalizeImagesForComparison(
+          image1Path,
+          image2Path,
+          options
+        );
 
         finalImage1Path = normalizedImage1Path;
         finalImage2Path = normalizedImage2Path;
@@ -122,8 +129,8 @@ export async function compareImages({
       }
     }
 
-    const img1 = PNG.sync.read(fs.readFileSync(finalImage1Path));
-    const img2 = PNG.sync.read(fs.readFileSync(finalImage2Path));
+    const img1 = await readPNG(finalImage1Path);
+    const img2 = await readPNG(finalImage2Path);
 
     const { width, height } = img1;
 
@@ -140,13 +147,9 @@ export async function compareImages({
       includeAA: false,
     });
 
-    const diffImagePath = (() => {
-      if (!outputPath) {
-        return undefined;
-      }
-      fs.writeFileSync(outputPath, PNG.sync.write(diff));
-      return outputPath;
-    })();
+    if (outputPath) {
+      await writePNG(diff, outputPath);
+    }
 
     const totalPixels = width * height;
     const diffPercentage = (numDiffPixels / totalPixels) * 100;
@@ -157,7 +160,7 @@ export async function compareImages({
       totalPixels,
       diffPercentageFormatted,
       similarityThreshold,
-      diffImagePath
+      outputPath
     );
   } catch (error) {
     return createErrorResult(error instanceof Error ? error.message : 'Unknown error occurred');
@@ -187,6 +190,6 @@ if (require.main === module) {
       process.exit(1);
     });
   } else {
-    throw new Error('Usage: compare-images.ts <image1> <image2> [outputDiffImage]');
+    throw new Error('Usage: compareImages.ts <image1> <image2> [outputDiffImage]');
   }
 }

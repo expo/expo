@@ -14,7 +14,7 @@ describe(transformPaths, () => {
         similarityThreshold: 5,
         testID: 'view-test-id',
         platform: 'android' as const,
-        mode: 'crossPlatform' as const,
+        mode: 'normalize' as const,
       },
       testHomeDir
     );
@@ -40,7 +40,7 @@ describe(transformPaths, () => {
         similarityThreshold: 5,
         testID: 'view-test-id',
         platform: 'ios' as const,
-        mode: 'platformDependent' as const,
+        mode: 'keep-originals' as const,
       },
       testHomeDir
     );

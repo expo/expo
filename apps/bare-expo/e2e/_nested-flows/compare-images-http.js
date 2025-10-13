@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-// there are a few maestro global variables that are used, hence the eslint-disable
-
 // Script to compare images via HTTP server using Maestro's HTTP request capabilities
 // NOTE do NOT use console.error, only console.log, as maestro always swallows console.error
 // console.log is unfortunately swallowed too when using nested flows https://docs.maestro.dev/advanced/nested-flows
@@ -10,28 +7,38 @@
 
 const SERVER_URL = 'http://localhost:3000';
 
+function getParams() {
+  /* eslint-disable no-undef */
+  // we need to do some pre-processing on some values, validation happens later on the server-side
+  const testIDparam = typeof testID === 'string' && testID !== 'undefined' ? testID : undefined;
+  const similarityThresholdParam = Number.isFinite(similarityThreshold)
+    ? Number(similarityThreshold)
+    : undefined;
+  return {
+    testID: testIDparam,
+    similarityThreshold: similarityThresholdParam,
+    diffOutputPath: outputPath,
+    baseImage,
+    currentScreenshot,
+    platform,
+    mode,
+  };
+  /* eslint-enable no-undef */
+}
+
 function compareImagesHttp() {
   try {
-    const testIDparam = typeof testID === 'string' && testID !== 'undefined' ? testID : undefined;
-    const similarityThresholdParam = Number.isFinite(similarityThreshold)
-      ? Number(similarityThreshold)
-      : undefined;
+    const params = getParams();
 
+    // eslint-disable-next-line no-undef
     const response = http.post(`${SERVER_URL}/process`, {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        baseImage,
-        currentScreenshot,
-        similarityThreshold: similarityThresholdParam,
-        diffOutputPath: outputPath,
-        testID: testIDparam,
-        platform,
-        mode,
-      }),
+      body: JSON.stringify(params),
     });
 
+    // eslint-disable-next-line no-undef
     const result = json(response.body);
 
     if (response.ok) {
@@ -56,4 +63,5 @@ function compareImagesHttp() {
 
 const comparisonResult = compareImagesHttp();
 
+// eslint-disable-next-line no-undef
 output.comparisonResult = comparisonResult;
