@@ -60,10 +60,14 @@ class PaddingValuesRecord : Record {
 }
 
 fun paddingValuesFromEither(either: Either<Float, PaddingValuesRecord>?): PaddingValues {
+  if (either == null) {
+    return PaddingValues(0.dp)
+  }
+  
   return when {
-    either?.`is`(Float::class) ?: false -> PaddingValues(either.get(Float::class).dp)
-    either?.`is`(PaddingValuesRecord::class) ?: false -> either.get(PaddingValuesRecord::class).toPaddingValues()
-    else -> PaddingValues(0.dp)
+    either.`is`(Float::class) -> PaddingValues(either.get(Float::class).dp)
+    either.`is`(PaddingValuesRecord::class) -> either.get(PaddingValuesRecord::class).toPaddingValues()
+    else -> throw IllegalStateException()
   }
 }
 
