@@ -9,10 +9,15 @@ export type SectionProps = {
    */
   title?: string;
   /**
-   * Sets the section footer text.
+   * Sets a custom footer for the section.
    * @description If section is expanded, the footer will not be shown.
    */
-  footer?: string;
+  footer?: React.ReactNode;
+  /**
+   * Sets a custom header for the section.
+   * @description This will replace the default section header with your own content.
+   */
+  header?: React.ReactNode;
   children: React.ReactNode;
   /**
    * Enables or disables collapsible behavior for the section.
@@ -27,67 +32,11 @@ const SectionNativeView: React.ComponentType<SectionProps> = requireNativeView(
   'SectionView'
 );
 
-const SectionNativeHeaderView: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'SectionHeader'
-);
+const SectionHeader: React.ComponentType<object> = requireNativeView('ExpoUI', 'SectionHeader');
 
-const SectionNativeFooterView: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'SectionFooter'
-);
+const SectionFooter: React.ComponentType<object> = requireNativeView('ExpoUI', 'SectionFooter');
 
-const SectionNativeContentView: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'SectionContent'
-);
-
-/**
- * The view displayed at the top of a section.
- *
- * @example
- * ```tsx
- * <Section.Header>Settings</Section.Header>
- * ```
- *
- * @platform ios
- */
-export function Header(props: { children: React.ReactNode }) {
-  return <SectionNativeHeaderView {...props} />;
-}
-/**
- * The view displayed at the bottom of a section.
- *
- * @example
- * ```tsx
- * <Section.Footer>Additional details</Section.Footer>
- * ```
- *
- * @platform ios
- */
-export function Footer(props: { children: React.ReactNode }) {
-  return <SectionNativeFooterView {...props} />;
-}
-/**
- * The main content area of the section.
- *
- * @example
- * ```tsx
- * <Section.Content>
- *   <Text>Option 1</Text>
- *   <Text>Option 2</Text>
- * </Section.Content>
- * ```
- *
- * @platform ios
- */
-export function Content(props: { children: React.ReactNode }) {
-  return <SectionNativeContentView {...props} />;
-}
-
-Section.Header = Header;
-Section.Footer = Footer;
-Section.Content = Content;
+const SectionContent: React.ComponentType<object> = requireNativeView('ExpoUI', 'SectionContent');
 
 /**
  * Section component uses the native [Section](https://developer.apple.com/documentation/swiftui/section) component.
@@ -95,12 +44,15 @@ Section.Content = Content;
  * @platform ios
  */
 export function Section(props: SectionProps) {
-  const { modifiers, ...restProps } = props;
+  const { modifiers, header, footer, children, ...restProps } = props;
   return (
     <SectionNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}
-    />
+      {...restProps}>
+      {header && <SectionHeader>{header}</SectionHeader>}
+      <SectionFooter>{footer}</SectionFooter>
+      <SectionContent>{children}</SectionContent>
+    </SectionNativeView>
   );
 }

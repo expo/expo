@@ -11,7 +11,6 @@ final class SectionProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var modifiers: ModifierArray?
 
   @Field var title: String?
-  @Field var footer: String?
   @Field var collapsible: Bool = false
 }
 
@@ -36,6 +35,7 @@ internal struct SectionFooter: ExpoSwiftUI.View {
 internal final class SectionContentProps: ExpoSwiftUI.ViewProps {}
 internal struct SectionContent: ExpoSwiftUI.View {
   @ObservedObject var props: SectionContentProps
+  
   var body: some View {
     Children()
   }
@@ -56,14 +56,26 @@ internal struct SectionView: ExpoSwiftUI.View {
   }
 
   @ViewBuilder
+  private var contentChildren: some View {
+    if let content = props.children?
+      .compactMap({ $0.childView as? SectionContent })
+      .first
+    {
+      content
+    } else {
+      EmptyView()
+    }
+  }
+
+  @ViewBuilder
   private var headerView: some View {
     if let header = props.children?
       .compactMap({ $0.childView as? SectionHeader })
       .first
     {
       header
-    } else if let title = props.title {
-      Text(footer ?? "").textCase(nil)
+    } else if let title = props.title, !title.isEmpty {
+      Text(title).textCase(nil)
     } else {
       EmptyView()
     }
@@ -76,29 +88,15 @@ internal struct SectionView: ExpoSwiftUI.View {
       .first
     {
       footer
-    } else if let footer = props.footer {
-      Text(footer ?? "").textCase(nil)
     } else {
       EmptyView()
     }
   }
 
   @ViewBuilder
-  private var contentView: some View {
-    if let content = props.children?
-      .compactMap({ $0.childView as? SectionContent })
-      .first
-    {
-      content
-    } else {
-      Children()
-    }
-  }
-
-  @ViewBuilder
   private var regularSection: some View {
     Section {
-      contentView
+      contentChildren
     } header: {
       headerView
     } footer: {
@@ -109,7 +107,7 @@ internal struct SectionView: ExpoSwiftUI.View {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
   private var collapsibleSection: some View {
     Section(isExpanded: $isExpanded) {
-      contentView
+      contentChildren
     } header: {
       headerView
     }

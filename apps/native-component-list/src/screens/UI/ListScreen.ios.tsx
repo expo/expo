@@ -93,9 +93,11 @@ export default function ListScreen() {
         ]}
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
-        <Section collapsible={collapsible} title="Collapsible section" footer="Footer text">
-          {customHeaderFooter.header && (
-            <Section.Header>
+        <Section
+          collapsible={collapsible}
+          title="Collapsible section"
+          {...(customHeaderFooter.header && {
+            header: (
               <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
                 <HStack modifiers={[padding({ all: 8 })]}>
                   <Image systemName="list.bullet" color="white" size={22} />
@@ -104,37 +106,36 @@ export default function ListScreen() {
                   </Text>
                 </HStack>
               </HStack>
-            </Section.Header>
-          )}
-          {customHeaderFooter.footer && (
-            <Section.Footer>
-              <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
-                <Text size={16} color="white" modifiers={[padding({ all: 8 })]}>
-                  Custom Footer
-                </Text>
-              </HStack>
-            </Section.Footer>
-          )}
-          <Section.Content>
-            <Text size={17}>Some text!</Text>
-            <Switch
-              label="Use increased section header"
-              value={increasedHeader}
-              onValueChange={setIncreasedHeader}
-            />
-            <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
-            <Switch
-              label="Custom header"
-              value={customHeaderFooter.header}
-              onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
-            />
-            <Switch
-              label="Custom footer"
-              value={customHeaderFooter.footer}
-              onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
-              modifiers={[disabled(collapsible)]}
-            />
-          </Section.Content>
+            ),
+          })}
+          footer={
+            <>
+              {customHeaderFooter.footer && (
+                <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
+                  <Text size={16} color="white" modifiers={[padding({ all: 8 })]}>
+                    Custom Footer
+                  </Text>
+                </HStack>
+              )}
+            </>
+          }>
+          <Switch
+            label="Use increased section header"
+            value={increasedHeader}
+            onValueChange={setIncreasedHeader}
+          />
+          <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
+          <Switch
+            label="Custom header"
+            value={customHeaderFooter.header}
+            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
+          />
+          <Switch
+            label="Custom footer"
+            value={customHeaderFooter.footer}
+            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
+            modifiers={[disabled(collapsible)]}
+          />
         </Section>
         <Section title="Controls" collapsible>
           <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
