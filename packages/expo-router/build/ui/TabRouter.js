@@ -17,29 +17,21 @@ function ExpoTabRouter(options) {
             }
             // We should reset if this is the first time visiting the route
             let shouldReset = !state.history.some((item) => item.key === route?.key) && !route.state;
-            if (!shouldReset && 'reset' in action.payload && action.payload.reset) {
-                switch (action.payload.reset) {
-                    case 'never': {
-                        shouldReset = false;
-                        break;
-                    }
-                    case 'always': {
-                        shouldReset = true;
-                        break;
-                    }
-                    case 'onFocus': {
-                        shouldReset = state.routes[state.index].key === route.key;
-                        break;
-                    }
-                    default: {
-                        // TypeScript trick to ensure all use-cases are accounted for
-                        action.payload.reset;
-                    }
-                }
+            if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
+                shouldReset = state.routes[state.index].key !== route.key;
             }
             if (shouldReset) {
                 options.routeParamList[route.name] = {
                     ...options.routeParamList[route.name],
+                };
+                state = {
+                    ...state,
+                    routes: state.routes.map((r) => {
+                        if (r.key !== route.key) {
+                            return r;
+                        }
+                        return { ...r, state: undefined };
+                    }),
                 };
                 return rnTabRouter.getStateForAction(state, action, options);
             }

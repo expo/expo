@@ -5,7 +5,9 @@ import { MovieList } from '../../components/MovieList';
 export default function MovieIndex() {
   return (
     <>
-      <Text style={styles.subheader}>Movies</Text>
+      <Text testID="tab-movies-index" style={styles.subheader}>
+        Movies
+      </Text>
       <View style={styles.listRoot}>
         <MovieList />
       </View>

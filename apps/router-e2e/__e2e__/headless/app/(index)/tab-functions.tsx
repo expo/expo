@@ -4,14 +4,16 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function OtherPage() {
   return (
     <View>
-      <Text style={styles.header}>Test Page</Text>
+      <Text style={styles.header} testID="tab-home-functions">
+        Test Page
+      </Text>
       <TabTrigger name="movies" style={styles.listItem}>
         <Text>Jump to movies tab</Text>
       </TabTrigger>
-      <TabTrigger name="movies" reset="always" style={styles.listItem}>
+      <TabTrigger name="movies" resetOnFocus style={styles.listItem}>
         <Text>Jump to movies tab (and reset tab)</Text>
       </TabTrigger>
-      <TabTrigger name="movies" reset="onLongPress" style={styles.listItem}>
+      <TabTrigger name="movies" resetOnFocus style={styles.listItem}>
         <Text>Jump to movies tab (and reset on long press)</Text>
       </TabTrigger>
     </View>

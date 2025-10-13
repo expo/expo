@@ -1,7 +1,6 @@
 import { TabNavigationState } from '@react-navigation/native';
 import { ReactNode, ReactElement, ComponentProps } from 'react';
 import { View, PressableProps } from 'react-native';
-import { ExpoTabsResetValue } from './TabRouter';
 import type { TriggerMap } from './common';
 import type { Href } from '../types';
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
@@ -24,7 +23,7 @@ export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
     /**
      * Resets the route when switching to a tab.
      */
-    reset?: SwitchToOptions['reset'] | 'onLongPress';
+    resetOnFocus?: boolean;
 };
 export type TabTriggerOptions = {
     name: string;
@@ -51,7 +50,7 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.
  * </Tabs>
  * ```
  */
-export declare function TabTrigger({ asChild, name, href, reset, ...props }: TabTriggerProps): import("react").JSX.Element;
+export declare function TabTrigger({ asChild, name, href, resetOnFocus, ...props }: TabTriggerProps): import("react").JSX.Element;
 /**
  * @hidden
  */
@@ -61,9 +60,9 @@ export declare function isTabTrigger(child: ReactElement<any>): child is ReactEl
  */
 export type SwitchToOptions = {
     /**
-     * Navigate and reset the history.
+     * Navigate and reset the history on route focus.
      */
-    reset?: ExpoTabsResetValue;
+    resetOnFocus?: boolean;
 };
 export type Trigger = TriggerMap[string] & {
     isFocused: boolean;
