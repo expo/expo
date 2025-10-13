@@ -22,8 +22,7 @@ on:
       - '!packages/@expo/cli/**'
 
 concurrency:
-  # When pushing main branch, we should limit single concurrency with pr-labeler workflow to prevent multiple fingerprints being updated at the same time
-  group: ${{ github.event_name != 'pull_request' && 'fingerprint-main' || format('{0}-{1}-{2}', github.workflow, github.event_name, github.ref) }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -85,6 +84,7 @@ jobs:
           working-directory: apps/bare-expo
           previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
           fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
       - name: 🏗️ Build/Repack iOS project (bare-expo)
         uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 55
@@ -96,6 +96,7 @@ jobs:
         with:
           platform: ios
           fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
           working-directory: apps/bare-expo
           build-command: |
             pushd ios
@@ -239,6 +240,7 @@ jobs:
           working-directory: apps/bare-expo
           previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
           fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
       - name: 🏗️ Build/Repack Android project (bare-expo)
         uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 35
@@ -248,6 +250,7 @@ jobs:
         with:
           platform: android
           fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
           working-directory: apps/bare-expo
           build-command: |
             ./scripts/start-android-e2e-test.ts --build
