@@ -83,6 +83,11 @@ data class CarouselProps(
   val itemWidth: MutableState<Float?> = mutableStateOf(null)
 ) : ComposeProps
 
+const val DEFAULT_MIN_SMALL_ITEM_WIDTH = 40f
+const val DEFAULT_MAX_SMALL_ITEM_WIDTH = 56f
+const val DEFAULT_PREFERRED_ITEM_WIDTH = 200f
+const val DEFAULT_ITEM_WIDTH = 200f
+
 class CarouselView(context: Context, appContext: AppContext) : ExpoComposeView<CarouselProps>(context, appContext) {
   override val props = CarouselProps()
 
@@ -92,12 +97,12 @@ class CarouselView(context: Context, appContext: AppContext) : ExpoComposeView<C
     val variant = props.variant.value ?: CarouselVariant.MULTI_BROWSE
     val modifiers = props.modifiers.value ?: emptyList()
     val itemSpacing = (props.itemSpacing.value ?: 0f).dp
-    val minSmallItemWidth = (props.minSmallItemWidth.value ?: 40f).dp
+    val minSmallItemWidth = (props.minSmallItemWidth.value ?: DEFAULT_MIN_SMALL_ITEM_WIDTH).dp
 
     // we need to constrain maxSmallItemWidth to be at least minSmallItemWidth or the app will crash
-    val maxSmallItemWidth = minSmallItemWidth.coerceAtLeast((props.maxSmallItemWidth.value ?: 56f).dp)
-    val preferredItemWidth = (props.preferredItemWidth.value ?: 200f).dp
-    val itemWidth = (props.itemWidth.value ?: 200f).dp
+    val maxSmallItemWidth = minSmallItemWidth.coerceAtLeast((props.maxSmallItemWidth.value ?: DEFAULT_MAX_SMALL_ITEM_WIDTH).dp)
+    val preferredItemWidth = (props.preferredItemWidth.value ?: DEFAULT_PREFERRED_ITEM_WIDTH).dp
+    val itemWidth = (props.itemWidth.value ?: DEFAULT_ITEM_WIDTH).dp
     val flingBehaviorType = props.flingBehavior.value ?: FlingBehaviorType.SINGLE_ADVANCE
     val contentPadding = paddingValuesFromEither(props.contentPadding.value)
 
