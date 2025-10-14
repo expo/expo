@@ -19,6 +19,8 @@ export interface ExpoProcessEnv {
     EXPO_BASE_URL?: string;
     /** Build-time representation of the `Platform.OS` value that the current JavaScript was bundled for. Does not support platform shaking wrapped require statements. */
     EXPO_OS?: string;
+    /** Run-time representation of the `Platform.OS` for the parent platform that's hosting the DOM component. Only defined in DOM components, undefined in standard runtimes and on web. */
+    EXPO_DOM_OS?: 'ios' | 'android' | (string & {});
     [key: string]: any;
 }
 export interface ExpoProcess {
