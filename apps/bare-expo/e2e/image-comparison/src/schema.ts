@@ -6,12 +6,13 @@ const screenshotSchema = z.object({
   diffOutputPath: z.string().nonempty(),
   similarityThreshold: z.number().min(0).max(100).optional(),
   platform: z.enum(['ios', 'android']),
+  resizingFactor: z.number().min(0.1).max(1).optional().default(0.5),
 });
 
 const viewShotSchema = screenshotSchema.and(
   z.object({
     testID: z.string().nonempty(),
-    mode: z.enum(['normalize', 'keep-originals']),
+    mode: z.enum(['normalize', 'keep-originals']).default('normalize'),
   })
 );
 

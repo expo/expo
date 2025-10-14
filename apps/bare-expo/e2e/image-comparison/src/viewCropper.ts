@@ -51,10 +51,7 @@ async function dumpViewHierarchy(platform: 'ios' | 'android'): Promise<ViewNode>
   throw new Error(`Failed to get valid JSON from maestro for ${platform}`);
 }
 
-function parseJsonElementProperties(
-  node: ViewNode,
-  displayScaleFactor: number
-): ElementProperties {
+function parseJsonElementProperties(node: ViewNode, displayScaleFactor: number): ElementProperties {
   const attrs = node.attributes;
   const boundsStr = attrs.bounds || '[0,0][0,0]';
   const boundsMatch = boundsStr.match(/\[(\d+),(\d+)\]\[(\d+),(\d+)\]/);
@@ -132,6 +129,7 @@ async function cropImageAsync({
   y,
   width,
   height,
+  resizingFactor,
 }: {
   imagePath: string;
   outputPath: string;
@@ -139,9 +137,18 @@ async function cropImageAsync({
   y: number;
   width: number;
   height: number;
+  resizingFactor: number;
 }): Promise<void> {
   const image = await Jimp.read(imagePath);
-  const croppedImage = image.crop(x, y, width, height);
+  let croppedImage = image.crop(x, y, width, height);
+
+  // Resize after cropping if resizingFactor is not 1
+  if (resizingFactor !== 1) {
+    const newWidth = Math.round(croppedImage.bitmap.width * resizingFactor);
+    const newHeight = Math.round(croppedImage.bitmap.height * resizingFactor);
+    croppedImage = croppedImage.resize(newWidth, newHeight);
+  }
+
   await croppedImage.write(outputPath);
 
   // Ensure file is fully written to disk before returning
@@ -156,12 +163,14 @@ export async function cropViewByTestID({
   platform,
   viewShotPath,
   displayScaleFactor,
+  resizingFactor,
 }: {
   testID: string;
   currentScreenshotPath: string;
   platform: 'ios' | 'android';
   viewShotPath: string;
   displayScaleFactor: number; // always 1 for Android, but can vary for iOS
+  resizingFactor: number;
 }): Promise<{ viewShotPath: string }> {
   const element = await findElementByTestID(testID, platform, displayScaleFactor);
   const bounds = element.bounds;
@@ -173,11 +182,8 @@ export async function cropViewByTestID({
     y: bounds.y,
     width: bounds.width,
     height: bounds.height,
+    resizingFactor,
   });
-
-  // we don't care about the full screenshot when taking view shots
-  console.log(`deleting full screenshot: ${currentScreenshotPath} because we have a view shot`);
-  await fs.promises.rm(currentScreenshotPath, { force: true });
 
   return {
     viewShotPath,

@@ -11,22 +11,17 @@ const execAsync = promisify(exec);
 export interface ScreenshotOptions {
   platform: 'ios' | 'android';
   outputFilePath: string;
-  copyAlsoTo: string;
 }
 
 export async function takeScreenshot({
   platform,
   outputFilePath,
-  copyAlsoTo,
 }: ScreenshotOptions): Promise<void> {
   const outputDir = path.dirname(outputFilePath);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
-  const copyDir = path.dirname(copyAlsoTo);
-  if (!fs.existsSync(copyDir)) {
-    fs.mkdirSync(copyDir, { recursive: true });
-  }
+
   const label = `${platform} screenshot duration`;
   console.time(label);
 
@@ -38,8 +33,6 @@ export async function takeScreenshot({
     throw new Error(`Unsupported platform: ${platform}`);
   }
   console.timeEnd(label);
-  await fs.promises.copyFile(outputFilePath, copyAlsoTo);
-  console.log(`Screenshot also copied to: ${copyAlsoTo}`);
 }
 
 async function takeIOSScreenshot(outputPath: string): Promise<void> {

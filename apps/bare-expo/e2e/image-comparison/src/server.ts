@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import { compareImages, type ComparisonResult } from './compareImages';
 import { transformPaths } from './pathUtils';
+import { resizeImage } from './resizeImage';
 import { schema } from './schema';
 import { takeScreenshot } from './takeScreenshot';
 import { cropViewByTestID } from './viewCropper';
@@ -24,7 +25,11 @@ Bun.serve({
         const isNormalizationMode = 'mode' in parsedBody && parsedBody.mode === 'normalize';
         const thresholdDefaultValue = isNormalizationMode ? 15 : 5;
 
-        const { similarityThreshold = thresholdDefaultValue, platform } = parsedBody;
+        const {
+          similarityThreshold = thresholdDefaultValue,
+          platform,
+          resizingFactor,
+        } = parsedBody;
 
         const testID = 'testID' in parsedBody ? parsedBody.testID : undefined;
 
@@ -41,8 +46,8 @@ Bun.serve({
         await takeScreenshot({
           platform,
           outputFilePath: currentScreenshotPath,
-          copyAlsoTo: currentScreenshotArtifactPath,
         });
+        await fs.promises.mkdir(path.dirname(currentScreenshotArtifactPath), { recursive: true });
 
         if (testID) {
           // TODO get scale factor from simctl
@@ -53,7 +58,21 @@ Bun.serve({
             viewShotPath: viewShotOutputPath,
             platform,
             displayScaleFactor,
+            resizingFactor,
           });
+          // we don't care about the full screenshot when taking view shots
+          console.log(
+            `deleting full screenshot: ${currentScreenshotPath} because we have a view shot`
+          );
+          await fs.promises.rm(currentScreenshotPath, { force: true });
+
+          await fs.promises.copyFile(viewShotOutputPath, currentScreenshotArtifactPath);
+          console.log(`View shot copied to artifact: ${currentScreenshotArtifactPath}`);
+        } else {
+          await resizeImage(currentScreenshotPath, resizingFactor);
+
+          await fs.promises.copyFile(currentScreenshotPath, currentScreenshotArtifactPath);
+          console.log(`Screenshot copied to artifact: ${currentScreenshotArtifactPath}`);
         }
 
         const baseImageExists = fs.existsSync(baseImagePath);

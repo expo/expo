@@ -16,6 +16,6 @@ describe('Zod schema validation', () => {
   it('should validate data with testID and mode', () => {
     const parsedBody = schema.parse(testData);
 
-    expect(parsedBody).toEqual(testData);
+    expect(parsedBody).toEqual({ ...testData, resizingFactor: 0.5 });
   });
 });
