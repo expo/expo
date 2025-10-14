@@ -2,12 +2,10 @@ import { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 /**
  * The type of `Gauge`.
- * @platform ios
  */
 export type GaugeType = 'default' | 'circular' | 'circularCapacity' | 'linear' | 'linearCapacity';
 /**
  * Value options for the `Gauge` component.
- * @platform ios
  */
 export type ValueOptions = {
     /**
@@ -55,7 +53,7 @@ export type GaugeProps = {
 } & CommonViewModifierProps;
 /**
  * Renders a native `Gauge` component.
- * @platform ios
+ * @platform ios 16.0+
  */
 export declare function Gauge({ type, modifiers, ...props }: GaugeProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

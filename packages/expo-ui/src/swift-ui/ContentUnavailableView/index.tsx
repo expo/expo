@@ -24,10 +24,6 @@ export interface ContentUnavailableViewProps extends CommonViewModifierProps {
 const ContentUnavailableViewNativeView: React.ComponentType<ContentUnavailableViewProps> =
   requireNativeView('ExpoUI', 'ContentUnavailableView');
 
-/**
- * Displays a native Swift UI ContentUnavailableView.
- * @platform ios 17.0+
- */
 function transformContentUnavailableViewProps(
   props: ContentUnavailableViewProps
 ): ContentUnavailableViewProps {
@@ -39,6 +35,11 @@ function transformContentUnavailableViewProps(
   };
 }
 
+/**
+ * Displays a native Swift UI ContentUnavailableView.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ */
 export function ContentUnavailableView(props: ContentUnavailableViewProps) {
   return <ContentUnavailableViewNativeView {...transformContentUnavailableViewProps(props)} />;
 }
