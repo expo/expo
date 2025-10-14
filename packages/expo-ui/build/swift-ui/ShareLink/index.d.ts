@@ -33,7 +33,7 @@ export type ShareLinkProps = {
  *
  * @param {ShareLinkProps} props - The properties passed to the ShareLink component.
  * @returns {JSX.Element} The rendered native ShareLink component.
- * @platform ios
+ * @platform ios 16.0+
  */
 export declare function ShareLink(props: ShareLinkProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

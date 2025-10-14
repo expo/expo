@@ -157,6 +157,8 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
   private var currentSubtitlesObserver: NSObjectProtocol?
   private var currentAudioTracksObserver: NSObjectProtocol?
 
+  private var videoTrackUpdateTask: Task<Void, Never>?
+
   init(owner: VideoPlayer, videoSourceLoader: VideoSourceLoader) {
     self.owner = owner
     self.videoSourceLoader = videoSourceLoader
@@ -239,24 +241,36 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
       // For HLS sources AVPlayer doesn't provide the tracks when they change
       // But it does call this event when they are loaded and when the current track changes.
       // We have to extract the necessary information ourselves.
-      Task { [weak self] in
+        self?.videoTrackUpdateTask?.cancel()
+        self?.videoTrackUpdateTask = Task { [weak self, playerItem] in
         // For HLS sources
         if let videoPlayerItem = playerItem as? VideoPlayerItem, videoPlayerItem.isHls {
           guard let itemUri = videoPlayerItem.videoSource.uri else {
             return
           }
-          let lastLog = playerItem.accessLog()?.events.last(where: { $0.uri != nil })
-          self?.currentVideoTrack = lastLog?.matchToVideoTrack(videoTracks: await videoPlayerItem.videoTracks, itemUrl: itemUri)
+          let lastLog = item.accessLog()?.events.last(where: { $0.uri != nil })
+          let tracks = await videoPlayerItem.videoTracks
+
+          guard let self, !Task.isCancelled else {
+            return
+          }
+
+          self.currentVideoTrack = lastLog?.matchToVideoTrack(videoTracks: tracks, itemUrl: itemUri)
           return
         }
 
-        // For "regular sources
+        // For non-HLS sources
         // The track which is currently playing will be first
         let currentTrack = try? await item.asset.loadTracks(withMediaType: .video).first
 
-        if let currentTrack {
-          let oldVideoTrack = self?.currentVideoTrack
-          self?.currentVideoTrack = await VideoTrack.from(assetTrack: currentTrack)
+        if let currentTrack, !Task.isCancelled {
+          let newVideoTrack = await VideoTrack.from(assetTrack: currentTrack)
+
+          guard let self, !Task.isCancelled else {
+            return
+          }
+
+          self.currentVideoTrack = newVideoTrack
         }
       }
     }
@@ -299,6 +313,10 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     playbackBufferEmptyObserver?.invalidate()
     playerItemStatusObserver?.invalidate()
     tracksObserver?.invalidate()
+
+    videoTrackUpdateTask?.cancel()
+    videoTrackUpdateTask = nil
+
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
     NotificationCenter.default.removeObserver(currentSubtitlesObserver as Any)
     NotificationCenter.default.removeObserver(currentAudioTracksObserver as Any)

@@ -61,4 +61,15 @@ export function runTask(fn) {
 export function deferTask(fn) {
     assertSupport('deferTask()', enforcedRequestScope().deferTask)(fn);
 }
+/** Sets headers on the `Response` the current request handler will return.
+ *
+ * This only updates the headers once the request handler has finished and resolved a `Response`.
+ * It will either receive a set of `Headers` or an equivalent object containing headers, which will
+ * be merged into the response's headers once it's returned.
+ *
+ * @param updateHeaders - A `Headers` object, a record of headers, or a function that receives `Headers` to be updated or can return a `Headers` object that will be merged into the response headers.
+ */
+export function setResponseHeaders(updateHeaders) {
+    assertSupport('setResponseHeaders()', enforcedRequestScope().setResponseHeaders)(updateHeaders);
+}
 //# sourceMappingURL=api.js.map

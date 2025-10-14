@@ -194,13 +194,13 @@ For example, if your project does not have an **ios** directory in the root of y
 
 Android apps can have multiple different **variants** which are defined in the project's `build.gradle` file. Variants can be selected with the `--variant` flag:
 
-**`debug` variant**
+##### `debug` variant
 
 Use the `debug` variant for a debug build:
 
 <Terminal cmd={['$ npx expo run:android --variant debug']} />
 
-**`debugOptimized` variant**
+##### `debugOptimized` variant
 
 > **important** `debugOptimized` is available in SDK 54 and later.
 
@@ -214,7 +214,7 @@ When using this variant, keep the following in mind:
 - In EAS Build, use a matching Gradle command like [`:app:assembleDebugOptimized` in **eas.json**](/build-reference/apk/#configuring-a-profile-to-build-apks)
 - **Limitation**: C++ debugging is disabled and C++ crashes may have less readable stack traces
 
-**`release` variant**
+##### `release` variant
 
 You can compile the Android app for production by running:
 
@@ -222,7 +222,7 @@ You can compile the Android app for production by running:
 
 This build is not automatically code-signed for submission to the Google Play Store. This command should be used to test bugs that may only show up in production builds. To generate a production build that is code signed for the Play Store, we recommend using [EAS Build](/build/introduction).
 
-**Debugging native Android project**
+##### Debugging native Android project
 
 You can debug the native Android project using native debugging tools by opening the **android** directory in Android Studio:
 
