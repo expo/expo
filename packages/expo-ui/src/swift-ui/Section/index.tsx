@@ -19,7 +19,6 @@ const SectionNativeView: React.ComponentType<SectionProps> = requireNativeView(
 /**
  * Section component uses the native [Section](https://developer.apple.com/documentation/swiftui/section) component.
  * It has no intrinsic dimensions, so it needs explicit height or flex set to display content (like ScrollView).
- * @platform ios
  */
 export function Section(props: SectionProps) {
   const { modifiers, ...restProps } = props;

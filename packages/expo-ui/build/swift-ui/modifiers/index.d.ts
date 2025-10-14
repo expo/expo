@@ -317,6 +317,7 @@ export declare const buttonStyle: (style: "automatic" | "bordered" | "borderedPr
  * Controls how the keyboard is dismissed when scrolling.
  * @param mode - The keyboard dismiss mode
  * @platform ios 16.0+
+ * @platform tvos 16.0+
  */
 export declare const scrollDismissesKeyboard: (mode: "automatic" | "never" | "interactively" | "immediately") => ModifierConfig;
 /**

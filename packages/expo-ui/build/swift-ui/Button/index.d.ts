@@ -49,7 +49,6 @@ export type ButtonProps = {
     systemImage?: SFSymbol;
     /**
      * Indicated the role of the button.
-     * @platform ios
      */
     role?: ButtonRole;
     /**

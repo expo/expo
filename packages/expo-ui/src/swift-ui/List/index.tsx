@@ -52,6 +52,7 @@ export interface ListProps extends CommonViewModifierProps {
    * Makes the list scrollable.
    * @default true
    * @platform ios 16.0+
+   * @platform tvos 16.0+
    */
   scrollEnabled?: boolean;
 
@@ -106,7 +107,6 @@ type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'onSelect
  * A list component that renders its children using a native SwiftUI list.
  * @param {ListProps} props - The properties for the list component.
  * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
- * @platform ios
  */
 export function List(props: ListProps) {
   const { children, ...nativeProps } = props;

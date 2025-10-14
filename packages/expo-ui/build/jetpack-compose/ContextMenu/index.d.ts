@@ -22,7 +22,7 @@ export type ContextMenuElementBase = {
 /**
  * Activation method of the context menu.
  * - `singlePress`: The context menu is opened with a single tap. Does not isolate the content.
- * - `longPress`: The context menu is opened with a long press. On iOS additionally Highlights the content by blurring the background.
+ * - `longPress`: The context menu is opened with a long press.
  */
 export type ActivationMethod = 'singlePress' | 'longPress';
 /**
@@ -30,20 +30,12 @@ export type ActivationMethod = 'singlePress' | 'longPress';
  */
 export type ContextMenuProps = {
     /**
-     * Determines how the context menu will be activated.
-     *
-     * @platform ios
-     */
-    activationMethod?: ActivationMethod;
-    /**
      * The contents of the submenu are used as an anchor for the context menu.
      * The children will be wrapped in a pressable element, which triggers opening of the context menu.
      */
     children: ReactNode;
     /**
      * The color of the container holding the context menu items.
-     *
-     * @platform android
      */
     color?: string;
     /**
