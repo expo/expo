@@ -98,7 +98,7 @@ export function setResponseHeaders(
     } else if (updateHeaders instanceof Headers) {
       headers = updateHeaders;
     } else if (typeof updateHeaders === 'object' && updateHeaders) {
-      appendHeadersRecord(response.headers, updateHeaders);
+      appendHeadersRecord(response.headers, updateHeaders, true);
       return;
     }
     if (headers !== response.headers) {

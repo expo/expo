@@ -216,7 +216,7 @@ export function createRequestHandler({
 
     // Apply user-defined headers, if provided
     if (manifest?.headers) {
-      appendHeadersRecord(modifiedResponseInit.headers, manifest.headers);
+      appendHeadersRecord(modifiedResponseInit.headers, manifest.headers, false);
     }
 
     // Callback call order matters, general rule is to call more specific callbacks first.
