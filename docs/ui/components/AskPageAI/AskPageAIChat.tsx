@@ -124,17 +124,6 @@ export function AskPageAIChat({
   }, [conversation.length, contextScope, resetLocalState]);
 
   useEffect(() => {
-    if (conversation.length === 0) {
-      resetLocalState();
-    } else {
-      setContextScope('page');
-      setGlobalSearchRequests({});
-      setGlobalSwitchNotices({});
-      setPendingGlobalQuestionKey(null);
-    }
-  }, [conversation.length, displayContextLabel, resetLocalState]);
-
-  useEffect(() => {
     if (conversation.length <= askedQuestions.length) {
       return;
     }
