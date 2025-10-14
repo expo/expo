@@ -25,7 +25,7 @@ export type PickerProps = {
     /**
      * The variant of the picker, which determines its appearance and behavior.
      * The `'wheel'`, `'inline'`, `'palette'` and `'menu'` variants are iOS only, the `'radio'` variant is Android only. The `'inline'` variant can only be used inside sections or lists. The `'palette'` variant displays differently inside menus.
-     * Wheel variant is not available on tvOS.
+     * > **Note**: The `wheel` variant is not available on tvOS.
      * @default 'segmented'
      */
     variant?: 'wheel' | 'segmented' | 'menu' | 'inline' | 'palette';
