@@ -576,6 +576,41 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  * @description This value is always nonnegative. Otherwise, the default value will be used.
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
+/**
+ * Applies an inset to the rows in a list.
+ * @param top - The amount of inset to apply to the **top** edge of each row.
+ * @param leading - The amount of inset to apply to the **leading (left)** edge of each row.
+ * @param bottom - The amount of inset to apply to the **bottom** edge of each row.
+ * @param trailing - The amount of inset to apply to the **trailing (right)** edge of each row.
+ */
+export const listRowInsets = (params: {
+  top?: number;
+  leading?: number;
+  bottom?: number;
+  trailing?: number;
+}) => createModifier('listRowInsets', params);
+/**
+ * The prominence to apply to badges associated with this environment.
+ * @param badgeType - Select the type of badge
+ */
+export const badgeProminence = (badgeType: 'standard' | 'increased' | 'decreased') =>
+  createModifier('badgeProminence', { badgeType });
+/**
+ * Generates a badge for the view from a localized string key.
+ * @param value - Text view to display as a badge. Set the value to nil to hide the badge.
+ */
+export const badge = (value?: string) => createModifier('badge', { value });
+/**
+ * Allows a view to ignore safe area constraints.
+ * @platform iOS 26+
+ * @param length - An amount, given in points, to pad section on the specified edges.
+ * @param edges - The edges to expand into ('all', 'top', 'bottom', 'leading', 'trailing', 'horizontal', 'vertical')
+ * @default edges: 'all'
+ */
+export const listSectionMargins = (params?: {
+  length?: number;
+  edges?: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical';
+}) => createModifier('listSectionMargins', params);
 
 // =============================================================================
 // Type Definitions
@@ -641,7 +676,11 @@ export type BuiltInModifier =
   | ReturnType<typeof strikethrough>
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
-  | ReturnType<typeof lineSpacing>;
+  | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof listRowInsets>
+  | ReturnType<typeof badgeProminence>
+  | ReturnType<typeof badge>
+  | ReturnType<typeof listSectionMargins>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

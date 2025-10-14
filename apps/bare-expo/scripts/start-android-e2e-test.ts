@@ -66,10 +66,14 @@ const __dirname = dirname(__filename);
 
 async function buildAsync(projectRoot: string): Promise<void> {
   console.log('\n💿 Building App');
-  await spawnAsync('./gradlew', ['--build-cache', ':app:assembleRelease'], {
-    stdio: 'inherit',
-    cwd: path.join(projectRoot, 'android'),
-  });
+  await spawnAsync(
+    './gradlew',
+    ['--build-cache', '--no-configuration-cache', ':app:assembleRelease'],
+    {
+      stdio: 'inherit',
+      cwd: path.join(projectRoot, 'android'),
+    }
+  );
 }
 
 async function testAsync(
