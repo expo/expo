@@ -1,5 +1,4 @@
 #!/usr/bin/env bun
-// this was done by claude
 
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -26,8 +25,8 @@ export interface NormalizedImages {
 }
 
 /**
- * Calculate optimal target dimensions for cross-platform comparison.
- * Minimizes padding by using smart aspect ratio averaging and balanced dimensions.
+ * Calculate target dimensions for cross-platform comparison.
+ * Minimizes padding by using aspect ratio averaging and averaged dimensions.
  */
 export async function getOptimalTargetDimensions(
   image1Path: string,

@@ -5,19 +5,17 @@
   "description": "Image comparison server and CLI for E2E testing",
   "type": "module",
   "main": "src/server.ts",
-  "bin": {
-    "image-compare": "src/cli.ts"
-  },
   "scripts": {
     "start": "bun run src/server.ts",
     "test": "bun test",
-    "cli": "bun run src/cli.ts"
+    "compare": "bun run src/compareImages.ts",
+    "debug-viewshot": "bun run src/debug-viewshot.ts"
   },
   "dependencies": {
     "zod": "^3.24.1",
     "pixelmatch": "^7.1.0",
     "pngjs": "^7.0.0",
-		"jimp-compact": "0.16.1"
+    "jimp-compact": "0.16.1"
   },
   "devDependencies": {
     "@types/bun": "latest"

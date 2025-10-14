@@ -9,19 +9,15 @@ const SERVER_URL = 'http://localhost:3000';
 
 function getParams() {
   /* eslint-disable no-undef */
-  // we need to do some pre-processing on some values, validation happens later on the server-side
-  const testIDparam = typeof testID === 'string' && testID !== 'undefined' ? testID : undefined;
-  const similarityThresholdParam = Number.isFinite(similarityThreshold)
-    ? Number(similarityThreshold)
-    : undefined;
   return {
-    testID: testIDparam,
-    similarityThreshold: similarityThresholdParam,
-    diffOutputPath: outputPath,
+    testID,
+    similarityThreshold,
+    diffOutputPath,
     baseImage,
     currentScreenshot,
     platform,
     mode,
+    resizingFactor,
   };
   /* eslint-enable no-undef */
 }

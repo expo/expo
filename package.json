@@ -17,7 +17,7 @@
       "apps/*",
       "packages/*",
       "packages/@expo/*",
-			"apps/bare-expo/e2e/image-comparison"
+      "apps/bare-expo/e2e/image-comparison"
     ]
   },
   "resolutions": {

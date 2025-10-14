@@ -7,7 +7,7 @@ import { compareImages } from './compareImages';
 
 const FIXTURES_DIR = path.join(__dirname, '../test-fixtures');
 
-describe('compareImages', () => {
+describe(compareImages, () => {
   const tempFiles: string[] = [];
 
   afterAll(async () => {
@@ -21,61 +21,55 @@ describe('compareImages', () => {
     }
   });
 
-  it.each([
-    { isNormalizationMode: false, description: 'without normalization' },
-    { isNormalizationMode: true, description: 'with normalization' },
-  ])(
-    'should return 0% difference for identical images ($description)',
-    async ({ isNormalizationMode }) => {
+  describe('comparison should return', () => {
+    it.each([
+      { isNormalizationMode: false, description: 'without normalization' },
+      { isNormalizationMode: true, description: 'with normalization' },
+    ])('0% difference for identical images ($description)', async ({ isNormalizationMode }) => {
       const image1 = path.join(FIXTURES_DIR, 'red-400x225.png');
       const image2 = path.join(FIXTURES_DIR, 'red-400x225.png');
 
       const result = await compareImages({
         image1Path: image1,
         image2Path: image2,
-        similarityThreshold: 5,
+        similarityThreshold: 0.05,
         isNormalizationMode,
       });
 
       expect(result.success).toBe(true);
-      expect(result.diffPercentage).toBe(0);
+      expect(result.diffRatio).toBe(0);
       expect(result.diffPixels).toBe(0);
       expect(result.message).toContain('identical');
-    }
-  );
-
-  it('should return success for similar images below threshold', async () => {
-    const image1 = path.join(FIXTURES_DIR, 'red-400x225.png');
-    const image2 = path.join(FIXTURES_DIR, 'blue-800x450.png');
-
-    // These images have same aspect ratio but different sizes, so will fail without normalization
-    // Let's use normalization mode to make them comparable
-    const result = await compareImages({
-      image1Path: image1,
-      image2Path: image2,
-      similarityThreshold: 100, // High threshold to ensure success
-      isNormalizationMode: true,
     });
 
-    expect(result.success).toBe(true);
-    expect(result.diffPercentage).toBeGreaterThan(0);
-    expect(result.message).toContain('similar');
-  });
+    it('failure for different images above threshold', async () => {
+      const image1 = path.join(FIXTURES_DIR, 'red-400x225.png');
+      const image2 = path.join(FIXTURES_DIR, 'blue-800x450.png');
 
-  it('should return failure for different images above threshold', async () => {
-    const image1 = path.join(FIXTURES_DIR, 'red-400x225.png');
-    const image2 = path.join(FIXTURES_DIR, 'blue-800x450.png');
+      const result = await compareImages({
+        image1Path: image1,
+        image2Path: image2,
+        similarityThreshold: 0.1,
+        isNormalizationMode: true,
+      });
 
-    const result = await compareImages({
-      image1Path: image1,
-      image2Path: image2,
-      similarityThreshold: 1, // Very low threshold
-      isNormalizationMode: true,
+      expect(result.success).toBe(false);
+      expect(result.diffRatio).toBeGreaterThan(0.01);
     });
 
-    expect(result.success).toBe(false);
-    expect(result.diffPercentage).toBeGreaterThan(1);
-    expect(result.message).toContain('significantly different');
+    it('success for images with different dimensions in normalization mode', async () => {
+      const image1 = path.join(FIXTURES_DIR, 'header-Appearance.android.png');
+      const image2 = path.join(FIXTURES_DIR, 'header-Appearance.ios.png');
+
+      const result = await compareImages({
+        image1Path: image1,
+        image2Path: image2,
+        isNormalizationMode: true,
+        similarityThreshold: 0.1,
+      });
+
+      expect(result.success).toBe(true);
+    });
   });
 
   it('should write diff image when outputPath is provided', async () => {
@@ -91,23 +85,7 @@ describe('compareImages', () => {
       isNormalizationMode: true,
     });
 
+    await fs.access(outputPath);
     expect(result.diffImagePath).toBe(outputPath);
-    await fs.access(outputPath); // Should not throw if file exists
-  });
-
-  it('should normalize images with different dimensions in normalization mode', async () => {
-    const image1 = path.join(FIXTURES_DIR, 'header-Appearance.android.png');
-    const image2 = path.join(FIXTURES_DIR, 'header-Appearance.ios.png');
-
-    const result = await compareImages({
-      image1Path: image1,
-      image2Path: image2,
-      isNormalizationMode: true,
-      similarityThreshold: 50, // Reasonable threshold for cross-platform
-    });
-
-    // Should succeed because normalization handles dimension differences
-    expect(result.success).toBe(true);
-    expect(result.totalPixels).toBeGreaterThan(0);
   });
 });

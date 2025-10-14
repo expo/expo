@@ -1,6 +1,6 @@
 import Jimp from 'jimp-compact';
 
-export async function resizeImage(imagePath: string, resizingFactor: number = 0.5): Promise<void> {
+export async function resizeImage(imagePath: string, resizingFactor: number): Promise<void> {
   if (resizingFactor === 1) {
     return;
   }

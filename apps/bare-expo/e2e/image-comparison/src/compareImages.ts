@@ -12,7 +12,7 @@ import { readPNG, writePNG } from './pngUtils';
 
 export interface ComparisonResult {
   success: boolean;
-  diffPercentage: number;
+  diffRatio: number;
   totalPixels: number;
   diffPixels: number;
   message: string;
@@ -22,7 +22,7 @@ export interface ComparisonResult {
 function createErrorResult(message: string, totalPixels: number = 0): ComparisonResult {
   return {
     success: false,
-    diffPercentage: 0,
+    diffRatio: 0,
     totalPixels,
     diffPixels: 0,
     message,
@@ -32,24 +32,24 @@ function createErrorResult(message: string, totalPixels: number = 0): Comparison
 function createSuccessResult(
   diffPixels: number,
   totalPixels: number,
-  diffPercentage: number,
+  diffRatio: number,
   similarityThreshold: number,
   diffImagePath?: string
 ): ComparisonResult {
-  const success = diffPercentage <= similarityThreshold;
+  const success = diffRatio <= similarityThreshold;
   let message: string;
 
   if (diffPixels === 0) {
     message = '✅ Images are identical';
   } else if (success) {
-    message = `✅ Images are similar (${diffPercentage}% difference, similarityThreshold ${similarityThreshold})`;
+    message = `✅ Images are similar (${(diffRatio * 100).toFixed(2)}% difference, threshold ${(similarityThreshold * 100).toFixed(2)}%)`;
   } else {
-    message = `❌ Images are significantly different (${diffPercentage}% difference)`;
+    message = `❌ Images are significantly different (${(diffRatio * 100).toFixed(2)}% difference)`;
   }
 
   return {
     success,
-    diffPercentage,
+    diffRatio,
     totalPixels,
     diffPixels,
     message,
@@ -101,10 +101,8 @@ export async function compareImages({
         console.log(`normalization mode: Normalizing images with different dimensions`);
         console.log(`Image 1: ${img1.width}x${img1.height}, Image 2: ${img2.width}x${img2.height}`);
 
-        // Calculate optimal target dimensions based on the actual images
         const optimalDimensions = await getOptimalTargetDimensions(image1Path, image2Path);
 
-        // Use provided options or calculated optimal dimensions
         const defaultOptions: NormalizationOptions = {
           targetWidth: optimalDimensions.width,
           targetHeight: optimalDimensions.height,
@@ -152,8 +150,8 @@ export async function compareImages({
     }
 
     const totalPixels = width * height;
-    const diffPercentage = (numDiffPixels / totalPixels) * 100;
-    const diffPercentageFormatted = parseFloat(diffPercentage.toFixed(2));
+    const diffPercentage = numDiffPixels / totalPixels;
+    const diffPercentageFormatted = parseFloat(diffPercentage.toFixed(4));
 
     return createSuccessResult(
       numDiffPixels,

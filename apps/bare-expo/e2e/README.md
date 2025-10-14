@@ -3,6 +3,7 @@
 ### Prerequisites
 
 - Install [Maestro CLI](https://maestro.mobile.dev/docs/getting-started/installation)
+- `brew install oxipng` for image compression
 - (optional, recommended) Alignment with devices which are used in CI ([iOS](https://github.com/expo/expo/blob/051a306ce7c5b875f7398450e5aeec2e52e313ae/apps/bare-expo/scripts/start-ios-e2e-test.ts#L18), [Android](https://github.com/expo/expo/blob/051a306ce7c5b875f7398450e5aeec2e52e313ae/.github/actions/use-android-emulator/action.yml#L48)). This is necessary for assertions on what is visible on the screen and (especially) for view shots to match.
 - use the following command to generate the Android emulator:
 
@@ -18,10 +19,10 @@ avdmanager create avd --force -n pixel_7_pro --package 'system-images;android-36
 
 3. Take a screen in NCL, adjust it for your e2e test needs (you can use `KeyValueBox` component to render values you want to test and use the "copy maestro assertions" button to get yaml that you can paste into your test file).
 
-4. Start the image comparison server if you want to take and compare view shots:
+4. Start the image comparison server if you want to take and compare view shots. Use the `start` script in `apps/bare-expo/e2e/image-comparison/package.json` or run this in case you want to make changes to the server:
 
 ```bash
-cd e2e/_nested-flows && bun --watch --no-clear-screen ./image-comparison-server.ts
+cd e2e/image-comparison/src && bun --watch --no-clear-screen ./server.ts
 ```
 
 5. In Maestro Studio, deep link into the screen and write your test. Here are the available [selectors](https://docs.maestro.dev/api-reference/selectors) and [commands](https://docs.maestro.dev/api-reference/commands). Studio will offer some guidance on the yaml syntax.
@@ -64,10 +65,20 @@ The shots, as well as diffs against the base images are stored as GH artifacts i
 
 ### Troubleshooting
 
-Maestro creates a folder at `./maestro` where you'll find logs, failed view shot diffs, and screenshots for when an assertion failed. If a view shot fails, look at the logs of the image comparison server, it includes path to the image diff.
+- Maestro creates a folder at `./maestro` where you'll find logs, failed view shot diffs, and screenshots for when an assertion failed. If a view shot fails, look at the logs of the image comparison server, it includes path to the image diff.
 
-When running in CI, the artifacts (logs, screenshots, view shot diffs) are uploaded as artifacts and you can download them directly from slack failure message. Also the workflow run logs have a `Artifacts download URL` where you can download them.
+- When running in CI, the artifacts (logs, screenshots, view shot diffs) are uploaded as artifacts and you can download them directly from slack failure message. Also the workflow run logs have a `Artifacts download URL` where you can download them.
 
-There's also a maestro slack channel.
+- There's also a maestro slack channel.
 
-Notable durations (iOS device startup, time to run a test) are present in the logs - search for "duration".
+- Notable durations (iOS device startup, time to run a test) are present in the logs - search for "duration".
+
+- To test the viewshot capture and view cropping independently from the full test flow, use the debug script:
+
+Example:
+
+```bash
+# Take a screenshot and crop by testID on iOS
+./src/debug-viewshot.ts ios image-comparison-list ./output
+```
+
