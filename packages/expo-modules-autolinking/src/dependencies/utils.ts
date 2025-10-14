@@ -49,7 +49,7 @@ export const maybeRealpath = async (target: string): Promise<string | null> => {
   }
 };
 
-export type PackageJson = Record<string, unknown> & { name: string; version?: string };
+export type PackageJson = Record<string, unknown> & { version?: string };
 
 export const loadPackageJson = memoize(async function loadPackageJson(
   jsonPath: string
@@ -58,8 +58,6 @@ export const loadPackageJson = memoize(async function loadPackageJson(
     const packageJsonText = await fs.promises.readFile(jsonPath, 'utf8');
     const json = JSON.parse(packageJsonText);
     if (typeof json !== 'object' || json == null) {
-      return null;
-    } else if (typeof json.name !== 'string' || !json.name) {
       return null;
     }
     return json;

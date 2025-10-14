@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type PickerProps = {
     /**
@@ -24,13 +25,14 @@ export type PickerProps = {
     /**
      * The variant of the picker, which determines its appearance and behavior.
      * The `'wheel'`, `'inline'`, `'palette'` and `'menu'` variants are iOS only, the `'radio'` variant is Android only. The `'inline'` variant can only be used inside sections or lists. The `'palette'` variant displays differently inside menus.
+     * > **Note**: The `wheel` variant is not available on tvOS.
      * @default 'segmented'
      */
     variant?: 'wheel' | 'segmented' | 'menu' | 'inline' | 'palette';
     /**
      * Picker color. On iOS it only applies to the `'menu'` variant.
      */
-    color?: string;
+    color?: ColorValue;
 } & CommonViewModifierProps;
 /**
  * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.

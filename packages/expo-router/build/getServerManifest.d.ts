@@ -78,7 +78,7 @@ export interface RouteRegex {
 type GetServerManifestOptions = {
     headers?: Record<string, string | string[]>;
 };
-export declare function getServerManifest(route: RouteNode, options?: GetServerManifestOptions): ExpoRouterServerManifestV1;
+export declare function getServerManifest(route: RouteNode, options: GetServerManifestOptions | undefined): ExpoRouterServerManifestV1;
 export declare function parseParameter(param: string): {
     name: string;
     repeat: boolean;

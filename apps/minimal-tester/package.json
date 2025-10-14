@@ -20,9 +20,12 @@
     "expo-status-bar": "~3.0.8",
     "expo-updates": "~29.0.10",
     "expo-video": "~3.0.11",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "react-native": "0.82.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-native": "0.83.0-nightly-20251013-f4e93df55",
+    "@react-native/assets-registry": "0.83.0-nightly-20251013-f4e93df55",
+    "@react-native/dev-middleware": "0.83.0-nightly-20251013-f4e93df55",
+    "@react-native/babel-preset": "0.83.0-nightly-20251013-f4e93df55",
     "react-native-web": "~0.21.0"
   },
   "devDependencies": {

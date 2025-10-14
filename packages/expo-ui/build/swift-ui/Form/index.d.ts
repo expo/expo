@@ -5,6 +5,7 @@ export interface FormProps extends CommonViewModifierProps {
      * Makes the form scrollable.
      * @default true
      * @platform ios 16.0+
+     * @platform tvos 16.0+
      */
     scrollEnabled?: boolean;
 }

@@ -37,14 +37,18 @@ export function createRequestScope(scopeDefinition, makeRequestAPISetup) {
         scopeRef.current = scopeDefinition;
         const setup = makeRequestAPISetup(...args);
         const { waitUntil = defaultWaitUntil } = setup;
+        const deferredTasks = [];
+        const responseHeadersUpdates = [];
         const scope = {
             ...setup,
             origin: setup.origin,
             environment: setup.environment,
             waitUntil,
             deferTask: setup.deferTask,
+            setResponseHeaders(updateHeaders) {
+                responseHeadersUpdates.push(updateHeaders);
+            },
         };
-        const deferredTasks = [];
         if (!scope.deferTask) {
             scope.deferTask = function deferTask(fn) {
                 deferredTasks.push(fn);
@@ -58,15 +62,46 @@ export function createRequestScope(scopeDefinition, makeRequestAPISetup) {
                     : await run(...args);
         }
         catch (error) {
-            if (error != null && error instanceof Error && 'status' in error) {
+            if (error != null && error instanceof Response && !error.bodyUsed) {
+                result = error;
+            }
+            else if (error != null && error instanceof Error && 'status' in error) {
                 return errorToResponse(error);
             }
             else {
                 throw error;
             }
         }
-        if (deferredTasks.length) {
-            deferredTasks.forEach((fn) => waitUntil(fn()));
+        deferredTasks.forEach((fn) => {
+            const maybePromise = fn();
+            if (maybePromise != null)
+                waitUntil(maybePromise);
+        });
+        for (const updateHeaders of responseHeadersUpdates) {
+            let headers = result.headers;
+            if (typeof updateHeaders === 'function') {
+                headers = updateHeaders(result.headers) || headers;
+            }
+            else if (updateHeaders instanceof Headers) {
+                headers = updateHeaders;
+            }
+            else if (typeof updateHeaders === 'object' && updateHeaders) {
+                for (const headerName in updateHeaders) {
+                    if (Array.isArray(updateHeaders[headerName])) {
+                        for (const headerValue of updateHeaders[headerName]) {
+                            headers.append(headerName, headerValue);
+                        }
+                    }
+                    else if (updateHeaders[headerName] != null) {
+                        headers.set(headerName, updateHeaders[headerName]);
+                    }
+                }
+            }
+            if (headers !== result.headers) {
+                for (const [headerName, headerValue] of headers) {
+                    result.headers.set(headerName, headerValue);
+                }
+            }
         }
         return result;
     };

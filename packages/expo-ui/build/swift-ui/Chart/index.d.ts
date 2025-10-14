@@ -1,4 +1,4 @@
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 import { CommonViewModifierProps } from '../types';
 /**
  * The type of chart to display.
@@ -7,17 +7,14 @@ import { CommonViewModifierProps } from '../types';
  * - `bar` charts show vertical bars using system colors or individual ChartDataPoint colors, with optional corner radius and width styling.
  * - `area` charts show filled areas under lines with color.
  * - `pie` charts show pie slices with optional inner radius and angular inset. Pie charts require iOS 17.0+.
- * @platform ios
  */
 export type ChartType = 'line' | 'point' | 'bar' | 'area' | 'pie';
 /**
  * Point symbol style options.
- * @platform ios
  */
 export type PointStyle = 'circle' | 'square' | 'diamond';
 /**
  * Data point for the chart.
- * @platform ios
  */
 export type ChartDataPoint = {
     /**
@@ -155,7 +152,8 @@ export type ChartProps = {
 } & CommonViewModifierProps;
 /**
  * Renders a native Chart component using Swift Charts.
- * @platform ios
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
  */
 export declare function Chart({ style, data, modifiers, ...props }: ChartProps & {
     style?: StyleProp<ViewStyle>;

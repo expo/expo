@@ -123,6 +123,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Carousel component',
+    route: 'ui/carousel',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CarouselScreen'));
+    },
+  },
+  {
     name: 'Jetpack Compose primitives',
     route: 'ui/jetpack-compose-primitives',
     options: {},

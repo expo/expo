@@ -66,6 +66,7 @@ jobs:
         with:
           working-directory: apps/bare-expo
           previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
+          fingerprint-db-cache-path: .fingerprint.db
 
       - name: 👀 Debug fingerprint
         run: |
