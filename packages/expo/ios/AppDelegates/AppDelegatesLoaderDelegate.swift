@@ -3,6 +3,7 @@
 import ExpoModulesCore
 
 @MainActor
+@preconcurrency
 @objc
 public class AppDelegatesLoaderDelegate: NSObject {
   /**

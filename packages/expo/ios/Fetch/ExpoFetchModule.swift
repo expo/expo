@@ -1,12 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
+@preconcurrency import ExpoModulesCore
 
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
-nonisolated(unsafe) internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
+@MainActor internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
 
 public final class ExpoFetchModule: Module {
-  private lazy var urlSession = createURLSession()
+  @MainActor private lazy var urlSession = createURLSession()
   private let urlSessionDelegate: URLSessionSessionDelegateProxy
 
   public required init(appContext: AppContext) {
@@ -18,7 +18,11 @@ public final class ExpoFetchModule: Module {
     Name("ExpoFetchModule")
 
     OnDestroy {
-      urlSession.invalidateAndCancel()
+      // Assume the lifecycle event is called from the main thread.
+      // Switching to the `MainActor` context with the `Task` would defer the execution which is not exactly what we want.
+      MainActor.assumeIsolated {
+        urlSession.invalidateAndCancel()
+      }
     }
 
     // swiftlint:disable:next closure_body_length
