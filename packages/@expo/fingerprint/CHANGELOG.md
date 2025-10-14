@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the **package.json** file appears in fingerprint when loading from **app.config.js**. ([#40320](https://github.com/expo/expo/pull/40320) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.15.1 — 2025-09-16

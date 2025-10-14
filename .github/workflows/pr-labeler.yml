@@ -10,7 +10,7 @@ on:
       - apps/test-suite/**
       - packages/**
       - yarn.lock
-      # Adding new paths should also update the following "Get the base commit" step's paths
+      # When adding new paths, also update the paths of the "Get the base commit" step below
   pull_request:
     types: [opened, synchronize]
     paths:
@@ -33,7 +33,7 @@ jobs:
     permissions:
       # REQUIRED: Allow comments of PRs
       pull-requests: write
-      # REQUIRED: Allow updating fingerprint in acton caches
+      # REQUIRED: Allow updating fingerprint in action caches
       actions: write
     steps:
       - name: 👀 Checkout
@@ -62,10 +62,11 @@ jobs:
           echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/pr-labeler.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
       - name: 📷 Check fingerprint
         id: fingerprint
-        uses: expo/expo-github-action/fingerprint@main
+        uses: expo/actions/fingerprint@main
         with:
           working-directory: apps/bare-expo
           previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
+          fingerprint-db-cache-path: .fingerprint.db
 
       - name: 👀 Debug fingerprint
         run: |

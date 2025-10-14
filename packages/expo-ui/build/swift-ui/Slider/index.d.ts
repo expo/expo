@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type SliderProps = {
     /**
@@ -23,7 +24,7 @@ export type SliderProps = {
     /**
      * Slider color.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Callback triggered on dragging along the slider.
      */
