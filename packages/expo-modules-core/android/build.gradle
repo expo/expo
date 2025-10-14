@@ -63,6 +63,14 @@ def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
+def enableWorkletsIntegration = findProperty("expo.core.worklets") == "true"
+if (enableWorkletsIntegration) {
+  evaluationDependsOn(":react-native-worklets")
+}
+
+def workletsProject = enableWorkletsIntegration ? findProject(":react-native-worklets") : null
+def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
+
 expoModule {
   canBePublished false
 }
@@ -87,14 +95,22 @@ android {
 
     externalNativeBuild {
       cmake {
-        abiFilters(*reactNativeArchitectures())
-        arguments "-DANDROID_STL=c++_shared",
+        def cppArguments = [
+          "-DANDROID_STL=c++_shared",
           "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
           "-DREACT_NATIVE_DIR=${expoModuleExtension.reactNativeDir}",
           "-DREACT_NATIVE_TARGET_VERSION=${expoModuleExtension.reactNativeVersion.minor}",
           "-DUSE_HERMES=${USE_HERMES}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
           "-DUNIT_TEST=${isExpoModulesCoreTests}"
+        ]
+
+        if (reactNativeWorkletsRootDir != null) {
+          cppArguments += "-DREACT_NATIVE_WORKLETS_DIR=${reactNativeWorkletsRootDir.absolutePath}"
+        }
+
+        abiFilters(*reactNativeArchitectures())
+        arguments(*cppArguments)
       }
     }
   }
@@ -286,4 +302,20 @@ def generatePCHTask = tasks.register("generatePCH") {
 // This task will run on the IDE project sync, ensuring the PCH file is generated early enough
 tasks.register("prepareKotlinBuildScriptModel") {
   dependsOn(generatePCHTask)
+}
+
+if (workletsProject != null) {
+  afterEvaluate {
+    tasks.named("externalNativeBuildDebug") { externalNativeBuildTask ->
+      workletsProject.tasks.named("externalNativeBuildDebug") { workletsExternalNativeBuildTask ->
+        externalNativeBuildTask.dependsOn(workletsExternalNativeBuildTask)
+      }
+    }
+
+    tasks.named("externalNativeBuildRelease") { externalNativeBuildTask ->
+      workletsProject.tasks.named("externalNativeBuildRelease") { workletsExternalNativeBuildTask ->
+        externalNativeBuildTask.dependsOn(workletsExternalNativeBuildTask)
+      }
+    }
+  }
 }
