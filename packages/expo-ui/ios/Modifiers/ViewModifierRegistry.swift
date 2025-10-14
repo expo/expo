@@ -1047,7 +1047,7 @@ internal struct Badge: ViewModifier, Record {
     #if os(tvOS)
       content
     #else
-      if let value = value {
+      if let value {
         content.badge(value)
       } else {
         content
