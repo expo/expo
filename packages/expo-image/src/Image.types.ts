@@ -598,13 +598,11 @@ export declare class ImageNativeModule extends NativeModule {
 export type ImageLoadOptions = {
   /**
    * If provided, the image will be automatically resized to not exceed this width in pixels, preserving its aspect ratio.
-   * @platform ios
    */
   maxWidth?: number;
 
   /**
    * If provided, the image will be automatically resized to not exceed this height in pixels, preserving its aspect ratio.
-   * @platform ios
    */
   maxHeight?: number;
 
