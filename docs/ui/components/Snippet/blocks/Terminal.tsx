@@ -23,6 +23,10 @@ type TerminalProps = {
   };
 };
 
+type CopyButtonProps = Pick<TerminalProps, 'cmd' | 'cmdCopy'>;
+
+type BrowserActionProps = NonNullable<TerminalProps['browserAction']>;
+
 export const Terminal = ({
   cmd,
   cmdCopy,
@@ -33,8 +37,8 @@ export const Terminal = ({
 }: TerminalProps) => (
   <Snippet className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
     <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
-      {renderBrowserAction(browserAction)}
-      {renderCopyButton({ cmd, cmdCopy })}
+      {browserAction && <BrowserAction {...browserAction} />}
+      <CopyButton cmd={cmd} cmdCopy={cmdCopy} />
     </SnippetHeader>
     <SnippetContent alwaysDark hideOverflow={hideOverflow} className="flex flex-col">
       {cmd.map(cmdMapper)}
@@ -54,32 +58,29 @@ function getDefaultCmdCopy(cmd: TerminalProps['cmd']) {
   return undefined;
 }
 
-function renderCopyButton({ cmd, cmdCopy }: TerminalProps) {
+const CopyButton = ({ cmd, cmdCopy }: CopyButtonProps) => {
   const copyText = cmdCopy ?? getDefaultCmdCopy(cmd);
-  return copyText && <CopyAction alwaysDark text={copyText} />;
-}
 
-function renderBrowserAction(browserAction: TerminalProps['browserAction']) {
-  if (!browserAction) {
+  if (!copyText) {
     return null;
   }
 
-  const { href, label } = browserAction;
+  return <CopyAction alwaysDark text={copyText} />;
+};
 
-  return (
-    <SnippetAction
-      alwaysDark
-      className="max-sm-gutters:gap-0 [&_p]:max-sm-gutters:hidden"
-      rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
-      onClick={() => {
-        if (typeof window !== 'undefined') {
-          window.open(href, '_blank', 'noopener,noreferrer');
-        }
-      }}>
-      {label}
-    </SnippetAction>
-  );
-}
+const BrowserAction = ({ href, label }: BrowserActionProps) => (
+  <SnippetAction
+    alwaysDark
+    className="max-sm-gutters:gap-0 [&_p]:max-sm-gutters:hidden"
+    rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
+    onClick={() => {
+      if (typeof window !== 'undefined') {
+        window.open(href, '_blank', 'noopener,noreferrer');
+      }
+    }}>
+    {label}
+  </SnippetAction>
+);
 
 /**
  * Map all provided lines and render the correct component.
