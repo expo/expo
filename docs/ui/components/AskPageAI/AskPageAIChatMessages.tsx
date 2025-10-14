@@ -126,7 +126,7 @@ export function AskPageAIChatMessages({
                     onClick={() => {
                       onSearchAcrossDocs(displayQuestion);
                     }}>
-                    <FileSearch02Icon className="icon-xs text-icon-secondary mr-2" />
+                    <FileSearch02Icon className="icon-xs mr-2 text-icon-secondary" />
                     {hasTriggeredGlobalSearch || isPendingGlobal
                       ? 'Searching Expo docs…'
                       : 'Search Expo docs'}
