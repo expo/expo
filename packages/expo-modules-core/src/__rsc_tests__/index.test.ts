@@ -4,11 +4,14 @@
 // Other tests like expo-linking will accidentally break and CI won't catch it otherwise.
 
 const originalError = console.error;
+const originalWarn = console.warn;
 beforeAll(() => {
   console.error = jest.fn(originalError);
+  console.warn = jest.fn(originalWarn);
 });
 afterAll(() => {
   console.error = originalError;
+  console.warn = originalWarn;
 });
 
 it('has platform defined', () => {
@@ -16,4 +19,5 @@ it('has platform defined', () => {
   expect(Platform.OS).toBeDefined();
 
   expect(console.error).not.toHaveBeenCalled();
+  expect(console.warn).not.toHaveBeenCalled();
 });
