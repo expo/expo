@@ -34,7 +34,7 @@ function Redirect({ href, relativeToDirectory, withAnchor }) {
     (0, useFocusEffect_1.useFocusEffect)(() => {
         if (!isPreview) {
             try {
-                router.replace(href, { relativeToDirectory, withAnchor });
+                router.navigate(href, { relativeToDirectory, withAnchor });
             }
             catch (error) {
                 console.error(error);

@@ -135,6 +135,7 @@ export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
   const context = React.use(NavigatorContext);
 
   if (context?.contextKey !== contextKey) {
+    console.log('Rendering default navigator');
     // The _layout has changed since the last navigator
     return <SlotNavigator {...props} />;
   }

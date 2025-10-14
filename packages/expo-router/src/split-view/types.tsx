@@ -30,7 +30,7 @@ export interface SidebarProps {
 
 export interface SidebarTriggerProps {
   children?: ReactNode;
-  href?: Href;
+  href: Href;
   notCollapsible?: boolean;
 }
 
@@ -50,9 +50,4 @@ export interface SidebarHeaderTitleProps {
 
 export interface SidebarHeaderSectionProps {
   children?: ReactNode;
-}
-
-export interface SidebarContextValue {
-  addChild: () => void;
-  removeChild: () => void;
 }

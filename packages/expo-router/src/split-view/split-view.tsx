@@ -1,91 +1,69 @@
-import React, { useEffect } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import React, { createContext, isValidElement } from 'react';
 import { SplitViewHost, SplitViewScreen } from 'react-native-screens/experimental';
 
-import { SidebarHeader, SidebarTrigger } from './elements';
+import { SplitViewColumn } from './elements';
 import type { SidebarProps } from './types';
 import { Slot } from '../views/Navigator';
+import { View } from 'react-native';
 
-const ParentSideBarContext = React.createContext(0);
-const ChildrenSideBarContext = React.createContext({ addChild: () => {}, removeChild: () => {} });
+const SplitViewContext = createContext(0);
 
-function SidebarNavigator({ children, displayMode }: SidebarProps) {
-  const numberOfParentSidebars = React.useContext(ParentSideBarContext);
-  const { addChild, removeChild } = React.useContext(ChildrenSideBarContext);
-
-  const [numberOfChildrenSidebars, setNumberOfChildrenSidebars] = React.useState(0);
-
-  const value = React.useMemo(
-    () => ({
-      addChild: () => setNumberOfChildrenSidebars((c) => c + 1),
-      removeChild: () => setNumberOfChildrenSidebars((c) => c - 1),
-    }),
-    []
-  );
-
-  useEffect(() => {
-    addChild();
-    return () => {
-      removeChild();
-    };
-  }, []);
-
-  if (numberOfParentSidebars > 1) {
-    throw new Error('Sidebar cannot be nested more than one level deep');
-  }
-
-  useEffect(() => {
-    if (numberOfChildrenSidebars > 0 && displayMode) {
-      console.warn('`displayMode` can only be set on the primary sidebar.');
-    }
-  }, [displayMode]);
-
-  const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <ParentSideBarContext value={numberOfParentSidebars + 1}>
-      <ChildrenSideBarContext value={value}>{children}</ChildrenSideBarContext>
-    </ParentSideBarContext>
-  );
+function SplitViewNavigator({ children, displayMode }: SidebarProps) {
+  const numberOfParentSidebars = React.useContext(SplitViewContext);
 
   if (numberOfParentSidebars > 0) {
-    return (
-      <Wrapper>
-        <SplitViewScreen.Column>{children}</SplitViewScreen.Column>
-        <SplitViewScreen.Column>
-          <Slot />
-        </SplitViewScreen.Column>
-      </Wrapper>
-    );
+    throw new Error('There can only be one SplitView in the navigation hierarchy.');
   }
 
-  const numberOfScreens = numberOfChildrenSidebars === 0 ? 'one' : 'two';
+  const WrappedSlot = () => (
+    <SplitViewContext value={numberOfParentSidebars + 1}>
+      <Slot />
+    </SplitViewContext>
+  );
+
+  const allChildrenArray = React.Children.toArray(children);
+  const columnChildren = allChildrenArray.filter(
+    (child) => isValidElement(child) && child.type === SplitViewColumn
+  );
+  const numberOfSidebars = columnChildren.length;
+
+  if (allChildrenArray.length !== columnChildren.length) {
+    console.warn('Only SplitView.Column components are allowed as direct children of SplitView.');
+  }
+
+  if (numberOfSidebars > 2) {
+    throw new Error('There can only be two SplitView.Column in the SplitView.');
+  }
+
+  const numberOfScreens = numberOfSidebars === 1 ? 'one' : 'two';
   const mode = displayMode === 'over' ? 'Over' : 'Beside';
-  const preferredDisplayMode = `${numberOfScreens}${mode}Secondary` as const;
+  const preferredDisplayMode =
+    numberOfSidebars === 0 ? 'secondaryOnly' : (`${numberOfScreens}${mode}Secondary` as const);
+
 
   return (
-    <Wrapper>
-      <SplitViewHost
-        key={numberOfChildrenSidebars}
-        preferredDisplayMode={preferredDisplayMode}
-        displayModeButtonVisibility="always">
+    <SplitViewHost
+      preferredDisplayMode={preferredDisplayMode}
+      preferredSplitBehavior="tile"
+      displayModeButtonVisibility="always">
+      {numberOfSidebars === 0 && (
         <SplitViewScreen.Column>
-          <SafeAreaProvider>{children}</SafeAreaProvider>
+          <View />
         </SplitViewScreen.Column>
-        {numberOfChildrenSidebars === 0 ? (
-          <>
-            <SplitViewScreen.Column />
-            <SplitViewScreen.Column>
-              <Slot />
-            </SplitViewScreen.Column>
-          </>
-        ) : (
-          <Slot />
-        )}
-      </SplitViewHost>
-    </Wrapper>
+      )}
+      {numberOfSidebars < 2 && (
+        <SplitViewScreen.Column>
+          <View />
+        </SplitViewScreen.Column>
+      )}
+      {columnChildren}
+      <SplitViewScreen.Column>
+        <WrappedSlot />
+      </SplitViewScreen.Column>
+    </SplitViewHost>
   );
 }
 
-export const Sidebar = Object.assign(SidebarNavigator, {
-  Trigger: SidebarTrigger,
-  Header: SidebarHeader,
+export const SplitView = Object.assign(SplitViewNavigator, {
+  Column: SplitViewColumn,
 });

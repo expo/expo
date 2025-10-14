@@ -69,7 +69,7 @@ export function Redirect({ href, relativeToDirectory, withAnchor }: RedirectProp
   useFocusEffect(() => {
     if (!isPreview) {
       try {
-        router.replace(href, { relativeToDirectory, withAnchor });
+        router.navigate(href, { relativeToDirectory, withAnchor });
       } catch (error) {
         console.error(error);
       }

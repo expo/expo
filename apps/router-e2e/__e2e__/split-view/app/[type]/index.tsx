@@ -1,7 +1,11 @@
-import { Redirect, useLocalSearchParams } from 'expo-router';
+import { PlatformColor, Text, View } from 'react-native';
 
 export default function Index() {
-  const { type } = useLocalSearchParams();
-  console.log('Redirecting to /{type}/0 with type:', type);
-  return <Redirect href={`/${type}/0`} />;
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ color: PlatformColor('label'), fontSize: 24, fontWeight: 'bold' }}>
+        Nothing is selected
+      </Text>
+    </View>
+  );
 }

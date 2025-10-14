@@ -1,4 +1,3 @@
-export { Sidebar } from './split-view';
-export { NativeButton } from './elements';
+export { SplitView } from './split-view';
 export * from './types';
 //# sourceMappingURL=index.d.ts.map
