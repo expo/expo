@@ -56,9 +56,6 @@ exports.loadPackageJson = (0, utils_1.memoize)(async function loadPackageJson(js
         if (typeof json !== 'object' || json == null) {
             return null;
         }
-        else if (typeof json.name !== 'string' || !json.name) {
-            return null;
-        }
         return json;
     }
     catch {

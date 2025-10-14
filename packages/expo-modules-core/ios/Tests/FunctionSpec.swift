@@ -252,6 +252,11 @@ class FunctionSpec: ExpoSpec {
         @Field var url: URL = defaultURL
       }
 
+      struct WithUndefinedRecord: Record {
+        @Field var a: ValueOrUndefined<Double> = .value(unwrapped: 1.0)
+        @Field var b: ValueOrUndefined<Double> = .undefined
+      }
+
       afterEach {
         try runtime.eval("globalThis.result = undefined")
       }
@@ -301,6 +306,10 @@ class FunctionSpec: ExpoSpec {
             return TestURLRecord.defaultURL
           }
 
+          Function("withUndefined") {
+            return WithUndefinedRecord()
+          }
+
           Function("withNestedURL") {
             return TestURLRecord()
           }
@@ -327,6 +336,10 @@ class FunctionSpec: ExpoSpec {
 
           AsyncFunction("withURLAsync") {
             return TestURLRecord.defaultURL
+          }
+
+          AsyncFunction("withUndefinedAsync") {
+            return WithUndefinedRecord()
           }
 
           AsyncFunction("withNestedURLAsync") {
@@ -401,6 +414,33 @@ class FunctionSpec: ExpoSpec {
         let urlValue = try runtime.eval("url = globalThis.result")
         expect(urlValue.kind) == .string
         expect(urlValue.getString()) == TestURLRecord.defaultURLString
+      }
+
+      it("returns value or undefined (sync)") {
+        let object = try runtime.eval("globalThis.result = expo.modules.TestModule.withUndefined()")
+        expect(object.kind) == .object
+
+        expect(object.getObject().hasProperty("a")) == true
+        expect(object.getObject().getProperty("a").kind) == .number
+        expect(object.getObject().getProperty("a").getDouble()) == 1.0
+
+        expect(object.getObject().hasProperty("b")) == true
+        expect(object.getObject().getProperty("b").kind) == .undefined
+      }
+
+      it("returns value or undefined (async)") {
+        try runtime.eval("expo.modules.TestModule.withUndefinedAsync().then((result) => { globalThis.result = result; })")
+        expect(safeBoolEval("!!globalThis.result")).toEventually(beTrue(), timeout: .milliseconds(2000))
+
+        let object = try runtime.eval("object = globalThis.result")
+        expect(object.kind) == .object
+
+        expect(object.getObject().hasProperty("a")) == true
+        expect(object.getObject().getProperty("a").kind) == .number
+        expect(object.getObject().getProperty("a").getDouble()) == 1.0
+
+        expect(object.getObject().hasProperty("b")) == true
+        expect(object.getObject().getProperty("b").kind) == .undefined
       }
 
       it("returns a record wit url (sync)") {

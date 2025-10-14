@@ -1041,6 +1041,98 @@ internal struct HeaderProminence: ViewModifier, Record {
   }
 }
 
+internal struct ListRowInsets: ViewModifier, Record {
+  @Field var top: CGFloat = 0
+  @Field var leading: CGFloat = 0
+  @Field var bottom: CGFloat = 0
+  @Field var trailing: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    if top != 0 || leading != 0 || bottom != 0 || trailing != 0 {
+      content.listRowInsets(.init(
+        top: top,
+        leading: leading,
+        bottom: bottom,
+        trailing: trailing
+      ))
+    } else {
+      content
+    }
+  }
+}
+
+internal enum BadgeProminenceType: String, Enumerable {
+  case standard
+  case increased
+  case decreased
+}
+
+internal struct BadgeProminence: ViewModifier, Record {
+  @Field var badgeType: BadgeProminenceType = .standard
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if #available(iOS 17.0, macOS 14.0, *) {
+        switch badgeType {
+          case .standard:         
+            content.badgeProminence(.standard)
+          case .increased:         
+            content.badgeProminence(.increased)
+          case .decreased:         
+            content.badgeProminence(.decreased)
+        }
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
+internal struct Badge: ViewModifier, Record {
+  @Field var value: String?
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if let value {
+        content.badge(value)
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
+internal struct ListSectionMargins: ViewModifier, Record {
+  @Field var length: CGFloat?
+  @Field var edges: EdgeOptions?
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      #if compiler(>=6.2) // Xcode 26
+        if #available(iOS 26.0, *) {
+          if let edges, let length {
+            content.listSectionMargins(edges.toEdge(), length)
+          } else if let edges {
+            content.listSectionMargins(edges.toEdge(), 0)
+          } else {
+            content
+          }
+        } else {
+          content
+        }
+      #else 
+        content
+      #endif
+    #endif
+  }
+}
+
 // MARK: - Registry
 
 /**
@@ -1401,6 +1493,22 @@ extension ViewModifierRegistry {
 
     register("lineSpacing") { params, appContext, _ in
       return try LineSpacing(from: params, appContext: appContext)
+    }
+
+    register("listRowInsets") { params, appContext, _ in
+      return try ListRowInsets(from: params, appContext: appContext)
+    }
+
+    register("badgeProminence") { params, appContext, _ in
+      return try BadgeProminence(from: params, appContext: appContext)
+    }
+
+    register("badge") { params, appContext, _ in
+      return try Badge(from: params, appContext: appContext)
+    }
+
+    register("listSectionMargins") { params, appContext, _ in
+      return try ListSectionMargins(from: params, appContext: appContext)
     }
 
     register("scrollDismissesKeyboard") { params, appContext, _ in

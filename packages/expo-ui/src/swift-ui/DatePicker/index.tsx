@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
 
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -36,7 +37,7 @@ export type DateTimePickerProps = {
   /**
    * The tint color to use on the picker elements.
    */
-  color?: string;
+  color?: ColorValue;
 } & CommonViewModifierProps;
 
 type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected'> & {

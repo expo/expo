@@ -146,16 +146,15 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         let modifiedResponseInit = responseInit;
         // Apply user-defined headers, if provided
         if (manifest?.headers) {
-            for (const [key, value] of Object.entries(manifest.headers)) {
-                if (Array.isArray(value)) {
-                    // For arrays, append each value separately (important for Set-Cookie)
-                    value.forEach((v) => modifiedResponseInit.headers.append(key, v));
-                }
-                else {
-                    // Don't override existing headers
-                    if (!modifiedResponseInit.headers.has(key)) {
-                        modifiedResponseInit.headers.set(key, value);
+            for (const headerName in manifest.headers) {
+                if (Array.isArray(manifest.headers[headerName])) {
+                    for (const headerValue of manifest.headers[headerName]) {
+                        modifiedResponseInit.headers.append(headerName, headerValue);
                     }
+                }
+                else if (manifest.headers[headerName] != null &&
+                    !modifiedResponseInit.headers.has(headerName)) {
+                    modifiedResponseInit.headers.set(headerName, manifest.headers[headerName]);
                 }
             }
         }
