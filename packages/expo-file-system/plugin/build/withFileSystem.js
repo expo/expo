@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-file-system/package.json');
 const withFileSystem = (config, options = {}) => {
-    const { supportsOpeningDocumentsInPlace = false, enableFileSharing = false } = options;
     // Apply Android permissions
     config = config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         'android.permission.READ_EXTERNAL_STORAGE',
@@ -12,11 +11,11 @@ const withFileSystem = (config, options = {}) => {
     ]);
     // Apply iOS modifications
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
-        if (supportsOpeningDocumentsInPlace) {
-            config.modResults.LSSupportsOpeningDocumentsInPlace = true;
+        if ('supportsOpeningDocumentsInPlace' in options) {
+            config.modResults.LSSupportsOpeningDocumentsInPlace = options.supportsOpeningDocumentsInPlace;
         }
-        if (enableFileSharing) {
-            config.modResults.UIFileSharingEnabled = true;
+        if ('enableFileSharing' in options) {
+            config.modResults.UIFileSharingEnabled = options.enableFileSharing;
         }
         return config;
     });
