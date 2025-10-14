@@ -1,5 +1,11 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 /**
+ * Returns whether tracking functionality is available on the current device.
+ *
+ * @returns `true` on iOS and Android (if Google Play Services are available), `false` on Web.
+ */
+export declare function isAvailable(): boolean;
+/**
  * Gets the advertising ID, a UUID string intended only for advertising. Use this string for
  * frequency capping, attribution, conversion events, estimating the number of unique users,
  * advertising fraud detection, and debugging.
@@ -91,12 +97,5 @@ export declare function getTrackingPermissionsAsync(): Promise<PermissionRespons
  * ```
  */
 export declare const useTrackingPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
-/**
- * Returns whether the TrackingTransparency API is available on the current device.
- *
- * @returns On devices where the Tracking Transparency API is unavailable,
- * the get and request permissions methods will always resolve to `granted`.
- */
-export declare function isAvailable(): boolean;
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
 //# sourceMappingURL=TrackingTransparency.d.ts.map

@@ -10,6 +10,10 @@ public class TrackingTransparencyModule: Module {
       EXPermissionsMethodsDelegate.register([TrackingTransparencyPermissionRequester()], withPermissionsManager: self.appContext?.permissions)
     }
 
+    Function("isAvailable") { () -> Bool in
+      return true
+    }
+
     Function("getAdvertisingId") { () -> String in
       return ASIdentifierManager.shared().advertisingIdentifier.uuidString
     }
