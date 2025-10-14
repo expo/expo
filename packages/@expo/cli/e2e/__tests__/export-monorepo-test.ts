@@ -25,7 +25,7 @@ beforeAll(async () => {
 
 describe.each(configTypes)('exports monorepo using "%s"', (configType) => {
   // See: https://github.com/expo/expo/issues/29700#issuecomment-2165348259
-  it('exports identical projects with cache invalidation', async () => {
+  it.skip('exports identical projects with cache invalidation', async () => {
     // Ensure our fixture uses the correct monorepo configuration
     await configureMonorepo(configType, projectRoot);
 

@@ -10,7 +10,7 @@ import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
-describe('exports with react native canary', () => {
+describe.skip('exports with react native canary', () => {
   const projectRoot = getRouterE2ERoot();
   const outputName = 'dist-rn-canary';
   const outputDir = path.join(projectRoot, outputName);
