@@ -37,14 +37,18 @@ export function createRequestScope(scopeDefinition, makeRequestAPISetup) {
         scopeRef.current = scopeDefinition;
         const setup = makeRequestAPISetup(...args);
         const { waitUntil = defaultWaitUntil } = setup;
+        const deferredTasks = [];
+        const onResponseFns = [];
         const scope = {
             ...setup,
             origin: setup.origin,
             environment: setup.environment,
             waitUntil,
             deferTask: setup.deferTask,
+            onResponse(fn) {
+                onResponseFns.push(fn);
+            },
         };
-        const deferredTasks = [];
         if (!scope.deferTask) {
             scope.deferTask = function deferTask(fn) {
                 deferredTasks.push(fn);
@@ -58,16 +62,22 @@ export function createRequestScope(scopeDefinition, makeRequestAPISetup) {
                     : await run(...args);
         }
         catch (error) {
-            if (error != null && error instanceof Error && 'status' in error) {
+            if (error != null && error instanceof Response && !error.bodyUsed) {
+                result = error;
+            }
+            else if (error != null && error instanceof Error && 'status' in error) {
                 return errorToResponse(error);
             }
             else {
                 throw error;
             }
         }
-        if (deferredTasks.length) {
-            deferredTasks.forEach((fn) => waitUntil(fn()));
-        }
+        deferredTasks.forEach((fn) => {
+            const maybePromise = fn();
+            if (maybePromise != null)
+                waitUntil(maybePromise);
+        });
+        onResponseFns.forEach((fn) => fn(result));
         return result;
     };
 }

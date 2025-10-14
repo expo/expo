@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoError = void 0;
 exports.createRequestHandler = createRequestHandler;
 const ImmutableRequest_1 = require("../ImmutableRequest");
+const headers_1 = require("../utils/headers");
 const matchers_1 = require("../utils/matchers");
 const middleware_1 = require("../utils/middleware");
 /** Internal errors class to indicate that the server has failed
@@ -151,18 +152,7 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
         let modifiedResponseInit = responseInit;
         // Apply user-defined headers, if provided
         if (manifest?.headers) {
-            for (const [key, value] of Object.entries(manifest.headers)) {
-                if (Array.isArray(value)) {
-                    // For arrays, append each value separately (important for Set-Cookie)
-                    value.forEach((v) => modifiedResponseInit.headers.append(key, v));
-                }
-                else {
-                    // Don't override existing headers
-                    if (!modifiedResponseInit.headers.has(key)) {
-                        modifiedResponseInit.headers.set(key, value);
-                    }
-                }
-            }
+            (0, headers_1.appendHeadersRecord)(modifiedResponseInit.headers, manifest.headers, false);
         }
         // Callback call order matters, general rule is to call more specific callbacks first.
         if (routeType === 'html') {

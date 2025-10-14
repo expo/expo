@@ -2,7 +2,8 @@ export interface RequestAPI {
     origin?: string;
     environment?: string | null;
     waitUntil?(promise: Promise<unknown>): void;
-    deferTask?(fn: () => Promise<unknown>): void;
+    deferTask?(fn: () => Promise<unknown> | void): void;
+    onResponse?(fn: (response: Response) => void): void;
 }
 export interface ScopeDefinition<Scope extends RequestAPI = any> {
     getStore(): Scope | undefined;
