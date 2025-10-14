@@ -51,6 +51,9 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
   // MARK: - AnyViewDefinition
 
   public func createView(appContext: AppContext) -> AppleView? {
+    // It's assumed that this function is called only from the main thread.
+    // In the ideal scenario it would be marked as `@MainActor`, but then `ViewModuleWrapper`
+    // would be incompatible with `RCTViewManager` as it doesn't specify the actor.
     return MainActor.assumeIsolated {
       if let expoViewType = ViewType.self as? AnyExpoView.Type {
 #if RCT_NEW_ARCH_ENABLED

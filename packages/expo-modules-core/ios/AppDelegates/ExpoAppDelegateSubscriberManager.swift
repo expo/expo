@@ -2,6 +2,7 @@ import Dispatch
 import Foundation
 
 @MainActor
+@preconcurrency
 public class ExpoAppDelegateSubscriberManager: NSObject {
 #if os(iOS) || os(tvOS)
 
