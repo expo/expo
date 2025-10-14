@@ -87,30 +87,5 @@ export function setResponseHeaders(
     | Record<string, string | string[]>
     | ((headers: Headers) => Headers | void)
 ): void {
-  assertSupport(
-    'onResponse()',
-    enforcedRequestScope().onResponse
-  )((response) => {
-    let headers: Headers = response.headers;
-    if (typeof updateHeaders === 'function') {
-      headers = updateHeaders(response.headers) || headers;
-    } else if (updateHeaders instanceof Headers) {
-      headers = updateHeaders;
-    } else if (typeof updateHeaders === 'object' && updateHeaders) {
-      for (const headerName in updateHeaders) {
-        if (Array.isArray(updateHeaders[headerName])) {
-          for (const headerValue of updateHeaders[headerName]) {
-            headers.append(headerName, headerValue);
-          }
-        } else if (updateHeaders[headerName] != null) {
-          headers.set(headerName, updateHeaders[headerName]);
-        }
-      }
-    }
-    if (headers !== response.headers) {
-      for (const [headerName, headerValue] of headers) {
-        response.headers.set(headerName, headerValue);
-      }
-    }
-  });
+  assertSupport('setResponseHeaders()', enforcedRequestScope().setResponseHeaders)(updateHeaders);
 }

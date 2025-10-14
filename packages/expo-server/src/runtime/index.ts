@@ -1,5 +1,5 @@
 import { errorToResponse } from './error';
-import { type ScopeDefinition, type RequestAPI, scopeRef } from './scope';
+import { type ScopeDefinition, type RequestAPI, scopeRef, UpdateResponseHeaders } from './scope';
 import { importMetaRegistry } from '../utils/importMetaRegistry';
 
 export interface RequestAPISetup extends RequestAPI {
@@ -57,7 +57,7 @@ export function createRequestScope<F extends RequestContextFactory>(
     const setup = makeRequestAPISetup(...args);
     const { waitUntil = defaultWaitUntil } = setup;
     const deferredTasks: (() => Promise<unknown> | void)[] = [];
-    const onResponseFns: ((response: Response) => void)[] = [];
+    const responseHeadersUpdates: UpdateResponseHeaders[] = [];
 
     const scope = {
       ...setup,
@@ -65,8 +65,8 @@ export function createRequestScope<F extends RequestContextFactory>(
       environment: setup.environment,
       waitUntil,
       deferTask: setup.deferTask,
-      onResponse(fn) {
-        onResponseFns.push(fn);
+      setResponseHeaders(updateHeaders) {
+        responseHeadersUpdates.push(updateHeaders);
       },
     } satisfies RequestAPI;
 
@@ -97,7 +97,29 @@ export function createRequestScope<F extends RequestContextFactory>(
       if (maybePromise != null) waitUntil(maybePromise);
     });
 
-    onResponseFns.forEach((fn) => fn(result));
+    for (const updateHeaders of responseHeadersUpdates) {
+      let headers: Headers = result.headers;
+      if (typeof updateHeaders === 'function') {
+        headers = updateHeaders(result.headers) || headers;
+      } else if (updateHeaders instanceof Headers) {
+        headers = updateHeaders;
+      } else if (typeof updateHeaders === 'object' && updateHeaders) {
+        for (const headerName in updateHeaders) {
+          if (Array.isArray(updateHeaders[headerName])) {
+            for (const headerValue of updateHeaders[headerName]) {
+              headers.append(headerName, headerValue);
+            }
+          } else if (updateHeaders[headerName] != null) {
+            headers.set(headerName, updateHeaders[headerName]);
+          }
+        }
+      }
+      if (headers !== result.headers) {
+        for (const [headerName, headerValue] of headers) {
+          result.headers.set(headerName, headerValue);
+        }
+      }
+    }
 
     return result;
   };
