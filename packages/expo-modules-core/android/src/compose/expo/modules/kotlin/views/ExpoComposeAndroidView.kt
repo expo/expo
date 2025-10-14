@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.size
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import expo.modules.kotlin.AppContext
 
