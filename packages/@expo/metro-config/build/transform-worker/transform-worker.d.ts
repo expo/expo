@@ -6,9 +6,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
-import type { JsTransformerConfig, JsTransformOptions, JsOutput } from '@expo/metro/metro-transform-worker';
+import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
+import { ExpoJsOutput } from '../serializer/jsOutput';
 export interface TransformResponse {
     readonly dependencies: readonly TransformResultDependency[];
-    readonly output: readonly JsOutput[];
+    readonly output: readonly ExpoJsOutput[];
 }
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;

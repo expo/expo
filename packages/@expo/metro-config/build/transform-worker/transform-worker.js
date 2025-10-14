@@ -45,6 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transform = transform;
 const countLines_1 = __importDefault(require("@expo/metro/metro/lib/countLines"));
+const node_assert_1 = __importDefault(require("node:assert"));
 const node_path_1 = require("node:path");
 const nativeCSSCompiler = __importStar(require("react-native-css/compiler"));
 const browserslist_1 = require("./browserslist");
@@ -203,25 +204,12 @@ async function transformCss(config, projectRoot, filename, data, options) {
         }
         // Evaluate the CSS modules, etc. to standard CSS.
         const cssResults = await transformCssOnly(config, projectRoot, filename, data, options);
-        // @ts-expect-error: css is added
-        const css = cssResults.output[0].data.css.code.toString();
-        const cssModuleExports = cssResults.output[0].data.css.exports;
+        const css = cssResults.output[0].data.css?.code.toString();
+        (0, node_assert_1.default)(typeof css === 'string', 'Expected CSS to be a string');
+        const cssModuleExports = cssResults.output[0].data.css?.exports;
         // Parse evaluated CSS to a collection of JS values to inject.
         const productionJS = nativeCSSCompiler
             .compile(css, {
-            // ...options.reactNativeCSS,
-            // inlineRem?: number | false;
-            // selectorPrefix?: string;
-            // stylesheetOrder?: number;
-            // features?: FeatureFlagRecord;
-            // logger?: (message: string) => void | Debugger;
-            // /** Strip unused variables declarations. Defaults: false */
-            // stripUnusedVariables?: boolean;
-            // /** @internal */
-            // ignorePropertyWarningRegex?: (string | RegExp)[];
-            // preserveVariables?: boolean;
-            // hexColors?: boolean;
-            // colorPrecision?: number;
             filename,
             projectRoot,
         })
@@ -235,7 +223,7 @@ async function transformCss(config, projectRoot, filename, data, options) {
         data = Buffer.from(cssToJs);
         return worker.transform(config, projectRoot, `${filename}.js`, data, options);
     }
-    return await transformCssOnly(config, projectRoot, filename, data, options);
+    return transformCssOnly(config, projectRoot, filename, data, options);
 }
 // Transform CSS for web, no native checks.
 async function transformCssOnly(config, projectRoot, filename, data, options) {
@@ -278,7 +266,7 @@ async function transformCssOnly(config, projectRoot, filename, data, options) {
                     ...jsModuleResults.output[0]?.data,
                     // Append additional css metadata for static extraction.
                     css: {
-                        exports: results.exports,
+                        exports: results.exports ?? undefined,
                         code: cssCode,
                         lineCount: (0, countLines_1.default)(cssCode),
                         map: [],

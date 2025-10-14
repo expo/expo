@@ -1,4 +1,4 @@
-import type { TransformResult, Warning } from 'lightningcss';
+import type { TransformResult, Warning, CSSModuleExports } from 'lightningcss';
 export declare function transformCssModuleWeb(props: {
     filename: string;
     src: string;
@@ -23,9 +23,9 @@ export declare function transformCssModuleWeb(props: {
     output: string;
     css: string;
     map: void | Uint8Array<ArrayBufferLike>;
-    exports: void | import("lightningcss").CSSModuleExports;
+    exports: void | CSSModuleExports;
 }>;
-export declare function convertLightningCssToReactNativeWebStyleSheet(input: import('lightningcss').CSSModuleExports): {
+export declare function convertLightningCssToReactNativeWebStyleSheet(input: CSSModuleExports): {
     styles: Record<string, string>;
     reactNativeWeb: Record<string, any>;
     variables: Record<string, string>;

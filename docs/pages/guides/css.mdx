@@ -10,7 +10,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
-> Experimentally available in **SDK 54 and above**. This is a beta release and subject to breaking changes.
+> Experimentally available in **SDK 55 and above**. This is a beta release and subject to breaking changes.
 
 Expo's bundler supports full comprehensive CSS for web platforms, but this traditionally doesn't work for React Native because the native platform doesn't support CSS files. However, you can use **Functional CSS** to enable a subset of CSS features on native platforms.
 
@@ -86,27 +86,19 @@ export default function Page() {
 
 Now run `npx expo` to start the project. You should see a white screen with black text. On web, this will fallback to standard CSS behavior.
 
+## Platform specification
+
+CSS supports platform extensions such as `globals.ios.css` and `globals.android.css` to define platform-specific styles.
+
 ## Media queries
 
-You can use media queries to adapt styles based on the device's screen size, platform, and color scheme. For example, you can add the following CSS to your **globals.css** file:
+You can use media queries to adapt styles based on the device's screen size, and color scheme. For example, you can add the following CSS to your **globals.css** file:
 
 ```css globals.css
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #000;
     --text: #fff;
-  }
-}
-
-@media ios {
-  :root {
-    --background: #ff00ff;
-  }
-}
-
-@media android {
-  :root {
-    --background: #ffff00;
   }
 }
 ```
@@ -118,18 +110,3 @@ You can use media queries to adapt styles based on the device's screen size, pla
 - CSS has dynamic functionality that would normally require React hooks. React hooks are limiting as they don't support server rendering, and you cannot call them conditionally meaning you need to refactor components to optimize them.
 - High-performance animations and built-in. We use the native Reanimated animation library on native and CSS as-is on web. This results in smooth max-fps animations on all platforms.
 - Additional CSS units such as `vw`, `vh`, `%`, `em`, and `rem` are supported.
-
-## Migration from React Native
-
-Unlike React Native APIs which have no commitment to backwards-compatibility, Tailwind classes are generally considered very stable. They're also globally available and don't require imports in every file, this leads to more composable code that's easier to copy and paste. Here's some APIs that you can migrate to Expo CSS:
-
-- `useColorScheme()` hook can be replaced with declarative classes like `dark:text-white` or `dark:bg-black`.
-- `useWindowDimensions()` can be replaced with media query fallbacks like `md:text-lg` or `lg:bg-gray-200`. This allows you to use the same styles on web and native without needing to write platform-specific code.
-- `useWindowDimensions()` for clamping to the window size can be replaced with `vw` and `vh` units in CSS, e.g. `width: 100vw; height: 100vh;`.
-- `useAnimatedValue()` can generally be replaced with CSS transitions and animations. For example, you can use `transition-all` to animate all properties, or `transition-colors` to animate color changes.
-- `expo-linear-gradient` can be replaced with `linear-gradient()` in CSS. This is a more standard way to create gradients and works on web and native. Also consider using inner shadows for gradients that fade content.
-- `react-native-svg` for radial gradients can be replaced with `radial-gradient()` in CSS.
-- `StyleSheet.hairlineWidth` can be replaced with `border-[0.5px]` in CSS. This is a more standard way to create thin borders and works on web and native.
-- `StyleSheet.absoluteFillObject` can be replaced with `absolute inset-0` in CSS.
-- The non-standard `pointerEvent` prop can be replaced with `pointer-events-none` or `pointer-events-auto` in CSS.
-- Custom fonts (such as the ones loaded with `expo-font`) should generally be avoided in favor of the built-in native fonts like `font-mono`, `font-sans`, `font-serif`, and `font-rounded`. These fonts are optimized for accessibility and performance, and they have fallbacks on web and Android.

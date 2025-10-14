@@ -1,5 +1,5 @@
 import codeFrame from '@babel/code-frame';
-import type { TransformResult, Warning } from 'lightningcss';
+import type { TransformResult, Warning, CSSModuleExports } from 'lightningcss';
 
 import { getBrowserslistTargets } from './browserslist';
 import type { CollectedDependencies } from './collect-dependencies';
@@ -86,9 +86,7 @@ export async function transformCssModuleWeb(props: {
   };
 }
 
-export function convertLightningCssToReactNativeWebStyleSheet(
-  input: import('lightningcss').CSSModuleExports
-) {
+export function convertLightningCssToReactNativeWebStyleSheet(input: CSSModuleExports) {
   const styles: Record<string, string> = {};
   const reactNativeWeb: Record<string, any> = {};
   const variables: Record<string, string> = {};

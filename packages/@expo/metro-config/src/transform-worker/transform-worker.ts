@@ -13,6 +13,7 @@ import type {
   JsTransformOptions,
   JsOutput,
 } from '@expo/metro/metro-transform-worker';
+import assert from 'node:assert';
 import { relative, dirname } from 'node:path';
 import * as nativeCSSCompiler from 'react-native-css/compiler';
 
@@ -34,7 +35,7 @@ import { toPosixPath } from '../utils/filePath';
 
 export interface TransformResponse {
   readonly dependencies: readonly TransformResultDependency[];
-  readonly output: readonly JsOutput[];
+  readonly output: readonly ExpoJsOutput[];
 }
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
@@ -249,28 +250,13 @@ async function transformCss(
     // Evaluate the CSS modules, etc. to standard CSS.
     const cssResults = await transformCssOnly(config, projectRoot, filename, data, options);
 
-    // @ts-expect-error: css is added
-    const css = cssResults.output[0].data.css.code.toString();
-    const cssModuleExports = cssResults.output[0].data.css.exports;
+    const css = cssResults.output[0].data.css?.code.toString();
+    assert(typeof css === 'string', 'Expected CSS to be a string');
+    const cssModuleExports = cssResults.output[0].data.css?.exports;
 
     // Parse evaluated CSS to a collection of JS values to inject.
     const productionJS = nativeCSSCompiler
       .compile(css, {
-        // ...options.reactNativeCSS,
-
-        // inlineRem?: number | false;
-        // selectorPrefix?: string;
-        // stylesheetOrder?: number;
-        // features?: FeatureFlagRecord;
-        // logger?: (message: string) => void | Debugger;
-        // /** Strip unused variables declarations. Defaults: false */
-        // stripUnusedVariables?: boolean;
-        // /** @internal */
-        // ignorePropertyWarningRegex?: (string | RegExp)[];
-        // preserveVariables?: boolean;
-        // hexColors?: boolean;
-        // colorPrecision?: number;
-
         filename,
         projectRoot,
       })
@@ -291,7 +277,7 @@ async function transformCss(
     return worker.transform(config, projectRoot, `${filename}.js`, data, options);
   }
 
-  return await transformCssOnly(config, projectRoot, filename, data, options);
+  return transformCssOnly(config, projectRoot, filename, data, options);
 }
 
 // Transform CSS for web, no native checks.
@@ -354,7 +340,7 @@ async function transformCssOnly(
 
           // Append additional css metadata for static extraction.
           css: {
-            exports: results.exports,
+            exports: results.exports ?? undefined,
             code: cssCode,
             lineCount: countLines(cssCode),
             map: [],
@@ -403,7 +389,7 @@ async function transformCssOnly(
   const cssCode = cssImports.code;
 
   // Append additional css metadata for static extraction.
-  const cssOutput: Required<ExpoJsOutput['data']['css']> = {
+  const cssOutput: ExpoJsOutput['data']['css'] = {
     code: cssCode,
     lineCount: countLines(cssCode),
     map: [],

@@ -7,6 +7,7 @@
 import { types as t } from '@babel/core';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
+import type { CSSModuleExports } from 'lightningcss';
 import { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
 export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
 export type JsOutput = {
@@ -32,7 +33,7 @@ export type JsOutput = {
 };
 export type CSSMetadata = {
     code: string;
-    exports: Record<string, string>;
+    exports?: CSSModuleExports;
     lineCount: number;
     map: unknown[];
     functionMap: null;
