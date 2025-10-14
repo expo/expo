@@ -51,7 +51,7 @@ export function Section(props: SectionProps) {
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
       {header && <SectionHeader>{header}</SectionHeader>}
-      <SectionFooter>{footer}</SectionFooter>
+      {footer && <SectionFooter>{footer}</SectionFooter>}
       <SectionContent>{children}</SectionContent>
     </SectionNativeView>
   );
