@@ -15,6 +15,7 @@ interface MarshalledProps {
 }
 
 interface WindowType {
+  $$EXPO_DOM_OS?: string;
   $$EXPO_INITIAL_PROPS?: MarshalledProps;
 }
 
@@ -65,6 +66,13 @@ function convertError(error: any) {
 }
 
 export function registerDOMComponent(AppModule: any) {
+  if (typeof window.$$EXPO_DOM_OS === 'undefined') {
+    throw new Error(
+      'Parent OS ($$EXPO_DOM_OS) is not defined. This is a bug in the DOM Component runtime.'
+    );
+  }
+  process.env.EXPO_DOM_OS = window.$$EXPO_DOM_OS;
+
   function DOMComponentRoot(props: Record<string, unknown>) {
     // Props listeners
     const [marshalledProps, setProps] = React.useState(() => {

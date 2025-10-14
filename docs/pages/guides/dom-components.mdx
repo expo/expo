@@ -290,6 +290,8 @@ Since DOM components are used to run websites, you might need extra qualifiers t
 import { IS_DOM } from 'expo/dom';
 ```
 
+While `process.env.EXPO_OS` will always be web in a DOM component, you can detect the owner platform with `process.env.EXPO_DOM_OS`. This will be either `ios`, `android`, depending on the parent OS, and `undefined` on web.
+
 ## Public assets
 
 > **important** **Warning:** This is experimental and may change in the future. Public assets are not supported in EAS Update. Use `require()` to load local assets instead.
