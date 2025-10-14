@@ -6,6 +6,10 @@
 
 ### 🎉 New features
 
+- Allow `deferTask(fn)` function to return undefined ([#40370](https://github.com/expo/expo/pull/40370) by [@kitten](https://github.com/kitten))
+- Return `Response` if it's thrown from request handler ([#40370](https://github.com/expo/expo/pull/40370) by [@kitten](https://github.com/kitten))
+- Add `setResponseHeaders()` runtime API ([#40370](https://github.com/expo/expo/pull/40370) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
