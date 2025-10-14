@@ -7,11 +7,6 @@
   }
 }
 
-@media ios {
-  :root {
-    --sf-bg-2: platformColor(secondarySystemBackground);
-  }
-}
 
 .card {
   -rn-border-curve: continuous;

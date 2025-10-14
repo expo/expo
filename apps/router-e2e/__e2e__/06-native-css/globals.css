@@ -31,6 +31,6 @@
 /* dark mode */
 @media (prefers-color-scheme: dark) {
   .text {
-    color: indianred;
+    color: seagreen;
   }
 }

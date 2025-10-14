@@ -165,6 +165,7 @@ export async function loadMetroConfigAsync(
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled,
+    isFunctionalCSSEnabled: !!exp.experiments?.functionalCSS,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,

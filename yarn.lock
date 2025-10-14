@@ -5590,6 +5590,13 @@ babel-plugin-react-compiler@^1.0.0:
   dependencies:
     "@babel/types" "^7.26.0"
 
+babel-plugin-react-compiler@^19.1.0-rc.2:
+  version "19.1.0-rc.1-rc-af1b7da-20250421"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-compiler/-/babel-plugin-react-compiler-19.1.0-rc.1-rc-af1b7da-20250421.tgz#d52096e058c63293ced8b57d3f9b0395d1894ede"
+  integrity sha512-E3kaokBhWDLf7ZD8fuYjYn0ZJHYZ+3EHtAWCdX2hl4lpu1z9S/Xr99sxhx2bTCVB41oIesz9FtM8f4INsrZaOw==
+  dependencies:
+    "@babel/types" "^7.26.0"
+
 babel-plugin-react-native-web@~0.21.0:
   version "0.21.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-react-native-web/-/babel-plugin-react-native-web-0.21.0.tgz#d95f0483e79afbe6086d4ec074b5775521ba2083"
