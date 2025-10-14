@@ -631,6 +631,12 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
 /**
+ * Sets the header prominence for this view.
+ * @param prominence - The prominence to apply.
+ */
+export const headerProminence = (prominence: 'standard' | 'increased') =>
+  createModifier('headerProminence', { prominence });
+/**
  * Applies an inset to the rows in a list.
  * @param top - The amount of inset to apply to the **top** edge of each row.
  * @param leading - The amount of inset to apply to the **leading (left)** edge of each row.
@@ -735,6 +741,7 @@ export type BuiltInModifier =
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
   | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof headerProminence>
   | ReturnType<typeof listRowInsets>
   | ReturnType<typeof badgeProminence>
   | ReturnType<typeof badge>
