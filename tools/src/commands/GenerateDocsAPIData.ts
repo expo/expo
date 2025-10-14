@@ -43,6 +43,8 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/slider': ['jetpack-compose/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/switch': ['swift-ui/Switch/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
