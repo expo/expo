@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, createRef, type PropsWithChildren, useRef } from 'react';
+import { useEffect, useState, createRef, type PropsWithChildren, useRef, useCallback } from 'react';
 
 import { InlineHelp } from 'ui/components/InlineHelp';
 import { PageHeader } from 'ui/components/PageHeader';
@@ -45,6 +45,9 @@ export default function DocumentationPage({
 }: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const [isAskAIVisible, setAskAIVisible] = useState(false);
+  const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isAskAIExpanded, setAskAIExpanded] = useState(false);
+  const [didChatForceSidebarCollapse, setDidChatForceSidebarCollapse] = useState(false);
   const { version } = usePageApiVersion();
   const router = useRouter();
 
@@ -61,16 +64,40 @@ export default function DocumentationPage({
   const isAskAIEligiblePage = isLatestSdkPage || isLatestConfigPage;
   const askAIButtonVariant = isLatestConfigPage ? 'config' : 'default';
 
+  const handleAskAIExpandedChange = useCallback(
+    (expanded: boolean) => {
+      setAskAIExpanded(expanded);
+      if (expanded) {
+        if (!isSidebarCollapsed) {
+          setSidebarCollapsed(true);
+          setDidChatForceSidebarCollapse(true);
+        } else {
+          setDidChatForceSidebarCollapse(false);
+        }
+        return;
+      }
+
+      if (didChatForceSidebarCollapse) {
+        setSidebarCollapsed(false);
+        setDidChatForceSidebarCollapse(false);
+      }
+    },
+    [didChatForceSidebarCollapse, isSidebarCollapsed]
+  );
+
   useEffect(() => {
     if (!isAskAIEligiblePage && isAskAIVisible) {
       setAskAIVisible(false);
+      handleAskAIExpandedChange(false);
     }
-  }, [isAskAIEligiblePage, isAskAIVisible]);
+  }, [handleAskAIExpandedChange, isAskAIEligiblePage, isAskAIVisible]);
 
   const handleAskAIChatClose = () => {
+    handleAskAIExpandedChange(false);
     setAskAIVisible(false);
   };
   const handleAskAIMinimize = () => {
+    handleAskAIExpandedChange(false);
     setAskAIVisible(false);
   };
   const handleAskAIToggle = () => {
@@ -78,7 +105,14 @@ export default function DocumentationPage({
       return;
     }
 
-    setAskAIVisible(previous => !previous);
+    const nextVisibility = !isAskAIVisible;
+    setAskAIVisible(nextVisibility);
+    handleAskAIExpandedChange(false);
+  };
+
+  const handleSidebarToggle = () => {
+    setSidebarCollapsed(previous => !previous);
+    setDidChatForceSidebarCollapse(false);
   };
 
   useEffect(() => {
@@ -179,7 +213,10 @@ export default function DocumentationPage({
         hideTOC={hideSidebarRight}
         isMobileMenuVisible={isMobileMenuVisible}
         onContentScroll={handleContentScroll}
-        sidebarScrollPosition={sidebarScrollPosition}>
+        sidebarScrollPosition={sidebarScrollPosition}
+        onSidebarToggle={handleSidebarToggle}
+        isSidebarCollapsed={isSidebarCollapsed}
+        isChatExpanded={isAskAIExpanded}>
         <DocumentationHead
           title={title}
           description={description}
@@ -249,6 +286,8 @@ export default function DocumentationPage({
           pageTitle={title}
           isExpoSdkPage={isLatestSdkPage}
           isVisible={isAskAIVisible}
+          isExpanded={isAskAIExpanded}
+          onExpandedChange={handleAskAIExpandedChange}
         />
       )}
     </>
