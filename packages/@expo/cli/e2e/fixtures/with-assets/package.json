@@ -2,12 +2,12 @@
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
-    "@expo/metro-runtime": "^4.0.0",
-    "expo": "^52",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "react-native": "0.76.3",
-    "react-native-web": "~0.20.0"
+    "@expo/metro-runtime": "~6.1.2",
+    "expo": "^54",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "react-native": "0.82.0",
+    "react-native-web": "~0.21.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"

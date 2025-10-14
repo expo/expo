@@ -189,7 +189,7 @@ export async function setupTestProjectWithOptionsAsync(
   fixtureName: string,
   {
     reuseExisting = testingLocally,
-    sdkVersion = '52.0.0',
+    sdkVersion = '54.0.0',
     linkExpoPackages,
     linkExpoPackagesDev,
   }: {
