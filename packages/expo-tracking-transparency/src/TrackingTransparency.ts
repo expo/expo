@@ -3,10 +3,8 @@ import {
   PermissionStatus,
   PermissionExpiration,
   PermissionHookOptions,
-  UnavailabilityError,
   createPermissionHook,
 } from 'expo-modules-core';
-import { Platform } from 'react-native';
 
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
 
@@ -26,8 +24,7 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  * On Android devices that support multiple users, including guest users, it's possible for your app
  * to obtain different advertising IDs on the same device. These different IDs correspond to
  * different users who could be signed in on that device. See Google's documentation for more
- * information: [Get a user-resettable advertising
- * ID](https://developer.android.com/training/articles/ad-id).
+ * information: [Get a user-resettable advertising ID](https://developer.android.com/training/articles/ad-id).
  *
  * On iOS, this function returns the "Identifier for Advertisers"
  * ([IDFA](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier)),
@@ -36,7 +33,7 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  * advertising identifier.
  *
  * @return Returns either a UUID `string` or `null`. It returns null in the following cases:
- * - On Android, when `isLimitAdTrackingEnabled()` is `true`
+ * - On Android, when the user has enabled "Opt out of Ads Personalization" in their device settings
  * - In the iOS simulator, regardless of any settings
  * - On iOS if you haven't received permission using [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync)
  * - On iOS, if you've requested permission and the user declines
@@ -57,23 +54,22 @@ export function getAdvertisingId(): string | null {
   return advertisingId;
 }
 
-const androidAndWebPermissionsResponse: PermissionResponse = {
-  granted: true,
-  expires: 'never',
-  canAskAgain: true,
-  status: PermissionStatus.GRANTED,
-};
-
 /**
  * Requests the user to authorize or deny access to app-related data that can be used for tracking
  * the user or the device. Examples of data used for tracking include email address, device ID,
- * advertising ID, and so on. On iOS, if the user denies this permission, any attempt to collect the
- * IDFA will return a string of 0s.
+ * advertising ID, and so on.
  *
- * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
- * reinstalls the app on the device.
+ * On iOS, this method shows the App Tracking Transparency permission dialog. The system remembers
+ * the user's choice and doesn't prompt again unless a user uninstalls and then reinstalls the app.
+ * If the user denies permission, any attempt to collect the [`getAdvertisingId()`](#getadvertisingid)
+ * will return `null`.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, this method returns the current tracking permission status based on the "Opt out of
+ * Ads Personalization" setting (no dialog is shown). When this setting is enabled, the permission
+ * will be denied.
+ *
+ * On web, this method always returns a granted permission.
+ *
  * @example
  * ```typescript
  * const { granted } = await requestTrackingPermissionsAsync();
@@ -84,21 +80,20 @@ const androidAndWebPermissionsResponse: PermissionResponse = {
  * ```
  */
 export async function requestTrackingPermissionsAsync(): Promise<PermissionResponse> {
-  if (Platform.OS !== 'ios') {
-    return Promise.resolve(androidAndWebPermissionsResponse);
-  }
-
-  if (!ExpoTrackingTransparency.requestPermissionsAsync) {
-    throw new UnavailabilityError('TrackingTransparency', 'requestPermissionsAsync');
-  }
-  return await ExpoTrackingTransparency.requestPermissionsAsync();
+  return ExpoTrackingTransparency.requestPermissionsAsync();
 }
 
 /**
  * Checks whether or not the user has authorized the app to access app-related data that can be used
- * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
+ * for tracking the user or the device. See [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync)
+ * for more details.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On iOS, this method returns the current App Tracking Transparency permission status.
+ *
+ * On Android, this method returns the current tracking permission status based on the "Opt out of
+ * Ads Personalization" setting. When this setting is enabled, the permission will be denied.
+ *
+ * On web, this method always returns a granted permission.
  *
  * @example
  * ```typescript
@@ -110,26 +105,24 @@ export async function requestTrackingPermissionsAsync(): Promise<PermissionRespo
  * ```
  */
 export async function getTrackingPermissionsAsync(): Promise<PermissionResponse> {
-  if (Platform.OS !== 'ios') {
-    return Promise.resolve(androidAndWebPermissionsResponse);
-  }
-
-  if (!ExpoTrackingTransparency.getPermissionsAsync) {
-    throw new UnavailabilityError('TrackingTransparency', 'getPermissionsAsync');
-  }
-  return await ExpoTrackingTransparency.getPermissionsAsync();
+  return ExpoTrackingTransparency.getPermissionsAsync();
 }
 
 /**
- * Check or request the user to authorize or deny access to app-related data that can be used for tracking
- * the user or the device. Examples of data used for tracking include email address, device ID,
- * advertising ID, and so on. On iOS, if the user denies this permission, any attempt to collect the
- * IDFA will return a string of 0s.
+ * Check or request the user to authorize or deny access to app-related data that can be used for
+ * tracking the user or the device. Examples of data used for tracking include email address, device
+ * ID, advertising ID, and so on.
  *
- * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
- * reinstalls the app on the device.
+ * On iOS, requesting permission shows the App Tracking Transparency dialog. The system remembers
+ * the user's choice and doesn't prompt again unless a user uninstalls and then reinstalls the app.
+ * If the user denies permission, any attempt to collect the [`getAdvertisingId()`](#getadvertisingid)
+ * will return `null`.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, requesting permission returns the current status based on the "Opt out of Ads
+ * Personalization" setting (no dialog is shown).
+ *
+ * On web, this method always returns a granted permission.
+ *
  * @example
  * ```ts
  * const [status, requestPermission] = useTrackingPermissions();
