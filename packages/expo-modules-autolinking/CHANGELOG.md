@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ignore missing `package.json` name property when scanning dependencies ([#40367](https://github.com/expo/expo/pull/40367) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 3.0.15 — 2025-10-09
