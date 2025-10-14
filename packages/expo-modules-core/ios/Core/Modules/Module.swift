@@ -5,7 +5,7 @@
  but doesn't implement that protocol explicitly, though — it would have to provide a definition which would require
  other modules to use `override` keyword in the function returning the definition.
  */
-open class BaseModule: @unchecked Sendable {
+open class BaseModule {
   public private(set) weak var appContext: AppContext?
 
   @available(*, unavailable, message: "Module's initializer cannot be overriden, use \"onCreate\" definition component instead.")
