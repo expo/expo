@@ -70,7 +70,7 @@ export function runTask(fn: () => Promise<unknown>): void {
  *
  * @param fn - A task function to execute after the request handler has finished.
  */
-export function deferTask(fn: () => Promise<unknown>): void {
+export function deferTask(fn: () => Promise<unknown> | void): void {
   assertSupport('deferTask()', enforcedRequestScope().deferTask)(fn);
 }
 
