@@ -1,6 +1,7 @@
 import Dispatch
 import Foundation
 
+@MainActor
 public class ExpoAppDelegateSubscriberManager: NSObject {
 #if os(iOS) || os(tvOS)
 

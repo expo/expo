@@ -3,7 +3,7 @@
 /**
  Base class for other definitions representing an object, such as `ModuleDefinition`.
  */
-public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
+public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder, @unchecked Sendable {
   /**
    A dictionary of functions defined by the object.
    */

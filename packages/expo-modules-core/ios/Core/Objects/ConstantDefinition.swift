@@ -101,13 +101,13 @@ public final class ConstantDefinition<ReturnType>: AnyDefinition, AnyConstantDef
 
 // MARK: - Exceptions
 
-internal final class NativeConstantUnavailableException: GenericException<String> {
+internal final class NativeConstantUnavailableException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     return "Native constant '\(param)' is no longer available in memory"
   }
 }
 
-internal final class NativeConstantWithoutGetterException: GenericException<String> {
+internal final class NativeConstantWithoutGetterException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     return "Native constant '\(param)' doesn't have a getter"
   }

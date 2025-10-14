@@ -2,6 +2,7 @@
 
 import ExpoModulesCore
 
+@MainActor
 @objc
 public class AppDelegatesLoaderDelegate: NSObject {
   /**

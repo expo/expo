@@ -2,15 +2,15 @@
 
 import SwiftUI
 import Combine
+@preconcurrency import UIKit
 
 /**
  A protocol for SwiftUI views that need to access props.
  */
-public protocol ExpoSwiftUIView<Props>: SwiftUI.View, AnyArgument, ExpoSwiftUI.AnyChild {
+public protocol ExpoSwiftUIView<Props>: SwiftUI.View, AnyArgument, ExpoSwiftUI.AnyChild, Sendable {
   associatedtype Props: ExpoSwiftUI.ViewProps
 
   var props: Props { get }
-  static func getDynamicType() -> AnyDynamicType
 
   init(props: Props)
 }
@@ -62,7 +62,7 @@ public extension ExpoSwiftUIView {
     }
   }
 
-  static func getDynamicType() -> AnyDynamicType {
+  nonisolated static func getDynamicType() -> AnyDynamicType {
     return DynamicSwiftUIViewType(innerType: Self.self)
   }
 
@@ -77,7 +77,7 @@ extension ExpoSwiftUI {
   /**
    A definition representing the native SwiftUI view to export to React.
    */
-  public final class ViewDefinition<Props: ViewProps, ViewType: View<Props>>: ExpoModulesCore.ViewDefinition<ViewType> {
+  public final class ViewDefinition<Props: ViewProps, ViewType: View<Props>>: ExpoModulesCore.ViewDefinition<ViewType>, @unchecked Sendable {
     // To obtain prop and event names from the props object we need to create a dummy instance first.
     // This is not ideal, but RN requires us to provide all names before the view is created
     // and there doesn't seem to be a better way to do this right now.
@@ -90,26 +90,28 @@ extension ExpoSwiftUI {
     }
 
     public override func createView(appContext: AppContext) -> AppleView? {
+      return MainActor.assumeIsolated {
 #if RCT_NEW_ARCH_ENABLED
-      let props = Props()
-      props.appContext = appContext
-
-      if ViewType.self is WithHostingView.Type {
-        let view = HostingView(viewType: ViewType.self, props: props, appContext: appContext)
+        let props = Props()
+        props.appContext = appContext
+        
+        if ViewType.self is WithHostingView.Type {
+          let view = HostingView(viewType: ViewType.self, props: props, appContext: appContext)
+          // Set up events to call view's `dispatchEvent` method.
+          // This is supported only on the new architecture, `dispatchEvent` exists only there.
+          props.setUpEvents(view.dispatchEvent(_:payload:))
+          return AppleView.from(view)
+        }
+        
+        let view = SwiftUIVirtualView(viewType: ViewType.self, props: props, viewDefinition: self, appContext: appContext)
         // Set up events to call view's `dispatchEvent` method.
         // This is supported only on the new architecture, `dispatchEvent` exists only there.
         props.setUpEvents(view.dispatchEvent(_:payload:))
         return AppleView.from(view)
-      }
-
-      let view = SwiftUIVirtualView(viewType: ViewType.self, props: props, viewDefinition: self, appContext: appContext)
-      // Set up events to call view's `dispatchEvent` method.
-      // This is supported only on the new architecture, `dispatchEvent` exists only there.
-      props.setUpEvents(view.dispatchEvent(_:payload:))
-      return AppleView.from(view)
 #else
-      return AppleView.from(UnimplementedExpoView(appContext: appContext, text: "Rendering SwiftUI views is possible only with the New Architecture enabled"))
+        return AppleView.from(UnimplementedExpoView(appContext: appContext, text: "Rendering SwiftUI views is possible only with the New Architecture enabled"))
 #endif
+      }
     }
 
     public override func getSupportedPropNames() -> [String] {

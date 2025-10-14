@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
     :osx => '11.0',
     :tvos => '15.1'
   }
-  s.swift_version  = '5.9'
+  s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
   s.header_dir     = 'ExpoModulesCore'

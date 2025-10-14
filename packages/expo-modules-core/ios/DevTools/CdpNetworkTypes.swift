@@ -79,7 +79,7 @@ struct CdpNetwork {
 
   // MARK: Events
 
-  struct RequestWillBeSentParams: EventParms {
+  struct RequestWillBeSentParams: EventParams {
     let requestId: RequestId
     var loaderId = ""
     var documentURL = "mobile"
@@ -108,7 +108,7 @@ struct CdpNetwork {
     }
   }
 
-  struct RequestWillBeSentExtraInfoParams: EventParms {
+  struct RequestWillBeSentExtraInfoParams: EventParams {
     let requestId: RequestId
     var associatedCookies = [String: String]()
     let headers: Headers
@@ -121,7 +121,7 @@ struct CdpNetwork {
     }
   }
 
-  struct ResponseReceivedParams: EventParms {
+  struct ResponseReceivedParams: EventParams {
     let requestId: RequestId
     var loaderId = ""
     let timestamp: MonotonicTime
@@ -137,7 +137,7 @@ struct CdpNetwork {
     }
   }
 
-  struct LoadingFinishedParams: EventParms {
+  struct LoadingFinishedParams: EventParams {
     let requestId: RequestId
     let timestamp: MonotonicTime
     let encodedDataLength: Int64
@@ -149,7 +149,7 @@ struct CdpNetwork {
     }
   }
 
-  struct ExpoReceivedResponseBodyParams: EventParms {
+  struct ExpoReceivedResponseBodyParams: EventParams {
     let requestId: RequestId
     let body: String
     let base64Encoded: Bool
@@ -167,9 +167,9 @@ struct CdpNetwork {
     }
   }
 
-  typealias EventParms = Encodable
+  typealias EventParams = Encodable & Sendable
 
-  struct Event<T: EventParms>: Encodable {
+  struct Event<T: EventParams>: Encodable, Sendable {
     let method: String
     let params: T
   }
