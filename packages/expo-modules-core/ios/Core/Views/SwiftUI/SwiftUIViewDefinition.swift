@@ -2,7 +2,6 @@
 
 import SwiftUI
 import Combine
-@preconcurrency import UIKit
 
 /**
  A protocol for SwiftUI views that need to access props.
