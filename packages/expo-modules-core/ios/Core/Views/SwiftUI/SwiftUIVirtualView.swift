@@ -7,7 +7,7 @@ extension ExpoSwiftUI {
    An NSObject acting as a fake UIView for RCTMountingManager to represent a SwiftUI view.
    This class is the Swift component of SwiftUIVirtualView, as referenced in ExpoFabricView.swift.
    */
-  final class SwiftUIVirtualView<Props: ViewProps, ContentView: View<Props>>: SwiftUIVirtualViewObjC, @preconcurrency ExpoSwiftUIView {
+  final class SwiftUIVirtualView<Props: ViewProps, ContentView: View<Props>>: SwiftUIVirtualViewObjC, ExpoSwiftUIView {
     /**
      A weak reference to the app context associated with this view.
      The app context is injected into the class after the context is initialized.
@@ -92,16 +92,16 @@ extension ExpoSwiftUI {
     /**
      Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
      */
+    @MainActor
+    @preconcurrency
     override func viewDidUpdateProps() {
-      MainActor.assumeIsolated {
-        guard let viewDefinition else {
-          return
-        }
-        guard let view = AppleView.from(self) else {
-          return
-        }
-        viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: view)
+      guard let viewDefinition else {
+        return
       }
+      guard let view = AppleView.from(self) else {
+        return
+      }
+      viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: view)
     }
 
     /**
