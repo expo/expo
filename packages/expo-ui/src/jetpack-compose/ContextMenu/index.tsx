@@ -38,13 +38,6 @@ export type EventHandlers = Record<
 export type ContextMenuElementBase = { contextMenuElementID: string };
 
 /**
- * Activation method of the context menu.
- * - `singlePress`: The context menu is opened with a single tap. Does not isolate the content.
- * - `longPress`: The context menu is opened with a long press.
- */
-export type ActivationMethod = 'singlePress' | 'longPress';
-
-/**
  * Props of the `ContextMenu` component.
  */
 export type ContextMenuProps = {
