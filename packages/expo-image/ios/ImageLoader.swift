@@ -4,7 +4,7 @@ import SDWebImage
 import ExpoModulesCore
 
 internal final class ImageLoader {
-  static let shared = ImageLoader()
+  nonisolated(unsafe) static let shared = ImageLoader()
 
   lazy var imageManager = SDWebImageManager(
     cache: SDImageCache.shared,
