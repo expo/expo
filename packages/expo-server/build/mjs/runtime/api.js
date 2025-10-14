@@ -1,5 +1,4 @@
 import { scopeRef } from './scope';
-import { appendHeadersRecord } from '../utils/headers';
 function enforcedRequestScope() {
     const scope = scopeRef.current?.getStore();
     if (scope === undefined) {
@@ -71,23 +70,6 @@ export function deferTask(fn) {
  * @param updateHeaders - A `Headers` object, a record of headers, or a function that receives `Headers` to be updated or can return a `Headers` object that will be merged into the response headers.
  */
 export function setResponseHeaders(updateHeaders) {
-    assertSupport('onResponse()', enforcedRequestScope().onResponse)((response) => {
-        let headers = response.headers;
-        if (typeof updateHeaders === 'function') {
-            headers = updateHeaders(response.headers) || headers;
-        }
-        else if (updateHeaders instanceof Headers) {
-            headers = updateHeaders;
-        }
-        else if (typeof updateHeaders === 'object' && updateHeaders) {
-            appendHeadersRecord(response.headers, updateHeaders, true);
-            return;
-        }
-        if (headers !== response.headers) {
-            for (const [headerName, headerValue] of headers) {
-                response.headers.set(headerName, headerValue);
-            }
-        }
-    });
+    assertSupport('setResponseHeaders()', enforcedRequestScope().setResponseHeaders)(updateHeaders);
 }
 //# sourceMappingURL=api.js.map

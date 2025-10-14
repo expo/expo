@@ -1,5 +1,4 @@
 import { ImmutableRequest } from '../ImmutableRequest';
-import { appendHeadersRecord } from '../utils/headers';
 import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils/matchers';
 import { shouldRunMiddleware } from '../utils/middleware';
 /** Internal errors class to indicate that the server has failed
@@ -147,7 +146,17 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         let modifiedResponseInit = responseInit;
         // Apply user-defined headers, if provided
         if (manifest?.headers) {
-            appendHeadersRecord(modifiedResponseInit.headers, manifest.headers, false);
+            for (const headerName in manifest.headers) {
+                if (Array.isArray(manifest.headers[headerName])) {
+                    for (const headerValue of manifest.headers[headerName]) {
+                        modifiedResponseInit.headers.append(headerName, headerValue);
+                    }
+                }
+                else if (manifest.headers[headerName] != null &&
+                    !modifiedResponseInit.headers.has(headerName)) {
+                    modifiedResponseInit.headers.set(headerName, manifest.headers[headerName]);
+                }
+            }
         }
         // Callback call order matters, general rule is to call more specific callbacks first.
         if (routeType === 'html') {
