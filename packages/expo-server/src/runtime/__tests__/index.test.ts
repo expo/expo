@@ -138,12 +138,21 @@ describe('setResponseHeaders', () => {
   it('updates response headers when setResponseHeaders is called with record', async () => {
     const run = createRequestScope(STORE, () => ({}));
     const result = await run(async () => {
-      setResponseHeaders({ 'X-Test': 'true' });
-      return new Response(null, { status: 204 });
+      setResponseHeaders({
+        'X-Test': 'true',
+        'X-List': ['2'],
+      });
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'X-List': '1',
+        },
+      });
     });
     expect(result).toBeInstanceOf(Response);
     expect(result.status).toBe(204);
     expect(result.headers.get('X-Test')).toBe('true');
+    expect(result.headers.get('X-List')).toBe('1, 2');
   });
 
   it('updates response headers when setResponseHeaders is called with headers', async () => {
