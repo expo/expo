@@ -21,8 +21,8 @@ typedef void (^JSRuntimeExecutionBlock)(void);
 
 typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue *_Nonnull thisValue,
                                      NSArray<EXJavaScriptValue *> *_Nonnull arguments,
-                                     RCTPromiseResolveBlock _Nonnull resolve,
-                                     RCTPromiseRejectBlock _Nonnull reject);
+                                     NS_SWIFT_SENDABLE RCTPromiseResolveBlock _Nonnull resolve,
+                                     NS_SWIFT_SENDABLE RCTPromiseRejectBlock _Nonnull reject);
 
 typedef EXJavaScriptValue *_Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue *_Nonnull thisValue,
                                                             NSArray<EXJavaScriptValue *> *_Nonnull arguments,

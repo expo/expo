@@ -3,7 +3,7 @@
 /**
  A definition representing the native view to export to React.
  */
-public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition {
+public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unchecked Sendable {
   /**
    An array of view props definitions.
    */
@@ -51,21 +51,23 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition {
   // MARK: - AnyViewDefinition
 
   public func createView(appContext: AppContext) -> AppleView? {
-    if let expoViewType = ViewType.self as? AnyExpoView.Type {
+    return MainActor.assumeIsolated {
+      if let expoViewType = ViewType.self as? AnyExpoView.Type {
 #if RCT_NEW_ARCH_ENABLED
-      if let fabricViewType = ViewType.self as? ExpoFabricView.Type {
-        return AppleView.from(ExpoFabricView.create(viewType: fabricViewType, viewDefinition: self, appContext: appContext))
-      }
+        if let fabricViewType = ViewType.self as? ExpoFabricView.Type {
+          return AppleView.from(ExpoFabricView.create(viewType: fabricViewType, viewDefinition: self, appContext: appContext))
+        }
 #endif
-      return AppleView.from(expoViewType.init(appContext: appContext))
+        return AppleView.from(expoViewType.init(appContext: appContext))
+      }
+      if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {
+        return AppleView.from(legacyViewType.init(moduleRegistry: appContext.legacyModuleRegistry) as? UIView)
+      }
+      if let UIViewType = ViewType.self as? UIView.Type {
+        return AppleView.from(UIViewType.init(frame: .zero))
+      }
+      return nil
     }
-    if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {
-      return AppleView.from(legacyViewType.init(moduleRegistry: appContext.legacyModuleRegistry) as? UIView)
-    }
-    if let UIViewType = ViewType.self as? UIView.Type {
-      return AppleView.from(UIViewType.init(frame: .zero))
-    }
-    return nil
   }
 
   public func propsDict() -> [String: AnyViewProp] {
@@ -116,7 +118,7 @@ extension ConcurrentFunctionDefinition: ViewDefinitionFunctionElement {
   public typealias ViewType = FirstArgType
 }
 
-extension UIView: AnyArgument {
+extension UIView: @MainActor AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicViewType(innerType: Self.self)
   }

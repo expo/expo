@@ -14,7 +14,7 @@ internal protocol AnyConcurrentFunctionDefinition: AnyFunctionDefinition {
  Represents a concurrent function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  As opposed to `AsyncFunctionDefinition`, it can leverage the new Swift's concurrency model and take the async/await closure.
  */
-public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyConcurrentFunctionDefinition {
+public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyConcurrentFunctionDefinition, @unchecked Sendable {
   typealias ClosureType = (Args) async throws -> ReturnType
 
   let body: ClosureType
@@ -43,13 +43,15 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
   var takesOwner: Bool = false
   var requiresMainActor: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
-    var arguments: [Any]
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @Sendable @escaping (FunctionCallResult) -> Void) {
+    // We have to trick the compiler here to make the arguments sendable and nonisolated, otherwise they couldn't be captured.
+    // TODO: Find a way to structure this code better, that is more in line with the concurrency model.
+    let arguments = NonisolatedUnsafeVar<[Any]>([])
 
     do {
       try validateArgumentsNumber(function: self, received: args.count)
 
-      arguments = concat(
+      arguments.value = concat(
         arguments: args,
         withOwner: owner,
         withPromise: nil,
@@ -58,7 +60,7 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       )
 
       // All `JavaScriptValue` args must be preliminarly converted on the JS thread, before we jump to the function's queue.
-      arguments = try cast(jsValues: arguments, forFunction: self, appContext: appContext)
+      arguments.value = try cast(jsValues: arguments.value, forFunction: self, appContext: appContext)
     } catch let error as Exception {
       callback(.failure(error))
       return
@@ -73,18 +75,19 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 
       do {
         // Convert arguments to the types desired by the function.
-        var finalArguments: [Any]
+        let finalArguments = NonisolatedUnsafeVar<[Any]>([])
+
         if requiresMainActor {
-          finalArguments = try await MainActor.run {
-            try cast(arguments: arguments, forFunction: self, appContext: appContext)
+          try await MainActor.run {
+            finalArguments.value = try cast(arguments: arguments.value, forFunction: self, appContext: appContext)
           }
         } else {
-          finalArguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
+          finalArguments.value = try cast(arguments: arguments.value, forFunction: self, appContext: appContext)
         }
 
         // TODO: Right now we force cast the tuple in all types of functions, but we should throw another exception here.
         // swiftlint:disable force_cast
-        let argumentsTuple = try Conversions.toTuple(finalArguments) as! Args
+        let argumentsTuple = try Conversions.toTuple(finalArguments.value) as! Args
         let returnValue = try await body(argumentsTuple)
 
         result = .success(returnValue)
@@ -104,15 +107,9 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
   // MARK: - JavaScriptObjectBuilder
 
   func build(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createAsyncFunction(name, argsCount: argumentsCount) {
-      [weak appContext, weak self, name] this, args, resolve, reject in
-
+    return try appContext.runtime.createAsyncFunction(name, argsCount: argumentsCount) { [weak appContext, self] this, args, resolve, reject in
       guard let appContext else {
         let exception = Exceptions.AppContextLost()
-        return reject(exception.code, exception.description, nil)
-      }
-      guard let self else {
-        let exception = NativeFunctionUnavailableException(name)
         return reject(exception.code, exception.description, nil)
       }
       self.call(by: this, withArguments: args, appContext: appContext) { result in

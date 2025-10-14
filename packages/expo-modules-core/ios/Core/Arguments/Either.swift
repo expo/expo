@@ -136,7 +136,7 @@ open class EitherOfFour<FirstType, SecondType, ThirdType, FourthType>: EitherOfT
 /**
  An exception thrown when the value is of neither type.
  */
-internal class NeitherTypeException: GenericException<[AnyDynamicType]> {
+internal final class NeitherTypeException: GenericException<[AnyDynamicType]>, @unchecked Sendable {
   override var reason: String {
     var typeDescriptions = param.map({ $0.description })
     let lastTypeDescription = typeDescriptions.removeLast()

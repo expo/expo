@@ -4,7 +4,7 @@ internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicT
   let innerType: InnerType.Type = InnerType.self
   let dynamicInnerType: AnyDynamicType = InnerType.getDynamicType()
 
-  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
+  func wraps<AnyInnerType>(_ type: AnyInnerType.Type) -> Bool {
     return innerType == type
   }
 

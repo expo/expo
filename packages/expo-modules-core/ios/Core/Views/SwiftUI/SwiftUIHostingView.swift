@@ -42,7 +42,7 @@ extension ExpoSwiftUI {
   /**
    A hosting view that renders a SwiftUI view inside the UIKit view hierarchy.
    */
-  public final class HostingView<Props: ViewProps, ContentView: View<Props>>: ExpoView, AnyExpoSwiftUIHostingView {
+  public final class HostingView<Props: ViewProps, ContentView: View<Props>>: ExpoView, @MainActor AnyExpoSwiftUIHostingView {
     /**
      Props object that stores all the props for this particular view.
      It's an environment object that is observed by the content view.

@@ -3,7 +3,7 @@
 /**
  The base class for any type of the typed array.
  */
-public class TypedArray: AnyTypedArray {
+public class TypedArray: AnyTypedArray, @unchecked Sendable {
   /**
    Creates a concrete TypedArray from the given JavaScriptTypedArray
    */

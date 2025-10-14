@@ -4,6 +4,8 @@ import React
 
 public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
+
+  @MainActor
   private lazy var reactDelegate: ExpoReactDelegate = {
     ExpoReactDelegate(
       handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers,

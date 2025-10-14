@@ -11,7 +11,7 @@ public protocol Record: Convertible {
   /**
    The default initializer. It enforces the structs not to have any uninitialized properties.
    */
-  init()
+  nonisolated init()
 
   /**
    Initializes a record from given dictionary. Only members wrapped by `@Field` will be set in the object.

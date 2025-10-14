@@ -5,7 +5,7 @@ import SwiftUI
 /**
  An abstract view supports both UIKit and SwiftUI.
  */
-public enum AppleView {
+public enum AppleView: Sendable {
   case uikit(UIView)
   case swiftui(any ExpoSwiftUI.View)
 

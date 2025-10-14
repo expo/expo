@@ -5,7 +5,7 @@ let DEFAULT_MODULE_VIEW = "DEFAULT_MODULE_VIEW"
  of the module and what it exports to the JavaScript world.
  See `ModuleDefinitionBuilder` for more details on how to create it.
  */
-public final class ModuleDefinition: ObjectDefinition {
+public final class ModuleDefinition: ObjectDefinition, @unchecked Sendable {
   /**
    The module's type associated with the definition. It's used to create the module instance.
    */
