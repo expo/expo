@@ -1,6 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-protocol AnyPropertyDefinition: Sendable {
+protocol AnyPropertyDefinition {
   /**
    Name of the property.
    */

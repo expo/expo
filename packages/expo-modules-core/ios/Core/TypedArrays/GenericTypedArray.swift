@@ -3,7 +3,7 @@
 /**
  Generic TypedArray with an associated numeric ContentType (e.g. UInt8, Int16, Double).
  */
-public class GenericTypedArray<ContentType: Numeric>: TypedArray, @unchecked Sendable {
+public class GenericTypedArray<ContentType: Numeric>: TypedArray {
   /**
    The unsafe mutable typed buffer that shares the same memory as the underlying JavaScript `ArrayBuffer`.
    */
