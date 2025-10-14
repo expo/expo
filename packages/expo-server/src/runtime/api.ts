@@ -1,5 +1,4 @@
 import { type RequestAPI, scopeRef } from './scope';
-import { appendHeadersRecord } from '../utils/headers';
 
 function enforcedRequestScope(): RequestAPI {
   const scope = scopeRef.current?.getStore();
@@ -98,8 +97,15 @@ export function setResponseHeaders(
     } else if (updateHeaders instanceof Headers) {
       headers = updateHeaders;
     } else if (typeof updateHeaders === 'object' && updateHeaders) {
-      appendHeadersRecord(response.headers, updateHeaders, true);
-      return;
+      for (const headerName in updateHeaders) {
+        if (Array.isArray(updateHeaders[headerName])) {
+          for (const headerValue of updateHeaders[headerName]) {
+            headers.append(headerName, headerValue);
+          }
+        } else if (updateHeaders[headerName] != null) {
+          headers.set(headerName, updateHeaders[headerName]);
+        }
+      }
     }
     if (headers !== response.headers) {
       for (const [headerName, headerValue] of headers) {
