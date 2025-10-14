@@ -1019,6 +1019,28 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
+internal enum Prominence: String, Enumerable {
+  case standard
+  case increased
+}
+
+internal struct HeaderProminence: ViewModifier, Record {
+  @Field var prominence: Prominence?
+
+  func body(content: Content) -> some View {
+    if let prominence = prominence {
+      switch prominence {
+        case .standard:
+          content.headerProminence(.standard)
+        case .increased:
+          content.headerProminence(.increased)
+        }
+    } else {
+      content
+    }
+  }
+}
+
 internal struct ListRowInsets: ViewModifier, Record {
   @Field var top: CGFloat = 0
   @Field var leading: CGFloat = 0
@@ -1491,6 +1513,10 @@ extension ViewModifierRegistry {
 
     register("scrollDismissesKeyboard") { params, appContext, _ in
       return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
+    }
+
+    register("headerProminence") { params, appContext, _ in
+      return try HeaderProminence(from: params, appContext: appContext)
     }
   }
 }

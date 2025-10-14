@@ -631,6 +631,12 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
 /**
+ * Sets the header prominence for this view.
+ * @param prominence - The prominence to apply.
+ */
+export const headerProminence = (prominence: 'standard' | 'increased') =>
+  createModifier('headerProminence', { prominence });
+/**
  * Applies an inset to the rows in a list.
  * @param params - The inset to apply to the rows in a list.
  * @see https://developer.apple.com/documentation/swiftui/view/listrowinsets(_:)
@@ -730,6 +736,7 @@ export type BuiltInModifier =
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
   | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof headerProminence>
   | ReturnType<typeof listRowInsets>
   | ReturnType<typeof badgeProminence>
   | ReturnType<typeof badge>
