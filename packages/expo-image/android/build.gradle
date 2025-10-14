@@ -12,6 +12,9 @@ plugins {
 
 apply plugin: 'com.google.devtools.ksp'
 
+group = 'expo.modules.image'
+version = '3.0.8'
+
 android {
   namespace "expo.modules.image"
   defaultConfig {
