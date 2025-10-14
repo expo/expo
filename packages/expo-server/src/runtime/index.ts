@@ -83,7 +83,9 @@ export function createRequestScope<F extends RequestContextFactory>(
           ? await scopeRef.current.run(scope, () => run(...args))
           : await run(...args);
     } catch (error) {
-      if (error != null && error instanceof Error && 'status' in error) {
+      if (error != null && error instanceof Response && !error.bodyUsed) {
+        result = error;
+      } else if (error != null && error instanceof Error && 'status' in error) {
         return errorToResponse(error);
       } else {
         throw error;
