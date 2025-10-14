@@ -132,7 +132,7 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
                 className={mergeClasses(
                   'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out',
                   isChatExpanded &&
-                    'lg:pr-[360px] lg:pl-8 lg:max-w-[calc(100%-360px)] max-lg-gutters:pr-0 max-lg-gutters:pl-0 max-lg-gutters:max-w-screen-xl'
+                    'lg:pr-[360px] lg:pl-8 lg:max-w-[calc(100%-360px)] max-lg-gutters:max-w-screen-xl max-lg-gutters:pl-0 max-lg-gutters:pr-0'
                 )}>
                 {children}
               </div>
