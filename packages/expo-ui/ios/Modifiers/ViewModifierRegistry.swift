@@ -992,18 +992,18 @@ internal struct LineSpacing: ViewModifier, Record {
 }
 
 internal struct ListRowInsets: ViewModifier, Record {
-  @Field var top: CGFloat? = 0
-  @Field var leading: CGFloat? = 0
-  @Field var bottom: CGFloat? = 0
-  @Field var trailing: CGFloat? = 0
+  @Field var top: CGFloat = 0
+  @Field var leading: CGFloat = 0
+  @Field var bottom: CGFloat = 0
+  @Field var trailing: CGFloat = 0
 
   func body(content: Content) -> some View {
-    if top != nil || leading != nil || bottom != nil || trailing != nil {
+    if top != 0 || leading != 0 || bottom != 0 || trailing != 0 {
       content.listRowInsets(.init(
-        top: top ?? 0,
-        leading: leading ?? 0,
-        bottom: bottom ?? 0,
-        trailing: trailing ?? 0
+        top: top,
+        leading: leading,
+        bottom: bottom,
+        trailing: trailing
       ))
     } else {
       content
