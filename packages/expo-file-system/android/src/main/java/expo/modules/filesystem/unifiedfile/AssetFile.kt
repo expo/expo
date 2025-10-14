@@ -28,7 +28,7 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
   }
 
   // Cache the content URI to avoid redundant file writes – assets are read-only
-  var contentUri: Uri? = null;
+  var contentUri: Uri? = null
   override fun getContentUri(appContext: AppContext): Uri {
     inputStream().use { inputStream ->
       val outputFile = File(context.cacheDir, "expo_shared_assets/$fileName")

@@ -41,12 +41,12 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
   }
 
   override fun getContentUri(appContext: AppContext): Uri {
-      return FileProvider.getUriForFile(
-        appContext.throwingActivity.application,
-        "${appContext.throwingActivity.application.packageName}.FileSystemFileProvider",
-        this
-      )
-    }
+    return FileProvider.getUriForFile(
+      appContext.throwingActivity.application,
+      "${appContext.throwingActivity.application.packageName}.FileSystemFileProvider",
+      this
+    )
+  }
 
   override fun listFilesAsUnified(): List<UnifiedFileInterface> =
     super<File>.listFiles()?.map { JavaFile(it.toUri()) } ?: emptyList()
