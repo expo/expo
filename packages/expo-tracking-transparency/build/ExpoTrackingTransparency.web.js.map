@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoTrackingTransparency.web.js","sourceRoot":"","sources":["../src/ExpoTrackingTransparency.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,gBAAgB;QACd,OAAO,sCAAsC,CAAC;IAChD,CAAC;CACF,CAAC","sourcesContent":["export default {\n  getAdvertisingId(): string {\n    return '00000000-0000-0000-0000-000000000000';\n  },\n};\n"]}
