@@ -14,8 +14,10 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SplitView = void 0;
+exports.NativeButton = exports.Sidebar = void 0;
 var split_view_1 = require("./split-view");
-Object.defineProperty(exports, "SplitView", { enumerable: true, get: function () { return split_view_1.SplitView; } });
+Object.defineProperty(exports, "Sidebar", { enumerable: true, get: function () { return split_view_1.Sidebar; } });
+var elements_1 = require("./elements");
+Object.defineProperty(exports, "NativeButton", { enumerable: true, get: function () { return elements_1.NativeButton; } });
 __exportStar(require("./types"), exports);
 //# sourceMappingURL=index.js.map

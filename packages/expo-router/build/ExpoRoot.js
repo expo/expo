@@ -39,7 +39,6 @@ const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const experimental_1 = require("react-native-screens/experimental");
 const constants_1 = require("./constants");
 const useDomComponentNavigation_1 = require("./domComponents/useDomComponentNavigation");
 const NavigationContainer_1 = require("./fork/NavigationContainer");
@@ -49,7 +48,6 @@ const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
 const primitives_1 = require("./primitives");
-const split_view_1 = require("./split-view/split-view");
 const statusbar_1 = require("./utils/statusbar");
 const Sitemap_1 = require("./views/Sitemap");
 const SplashScreen = __importStar(require("./views/Splash"));
@@ -129,7 +127,6 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         : undefined;
     const store = (0, router_store_1.useStore)(context, linking, serverUrl);
     (0, useDomComponentNavigation_1.useDomComponentNavigation)();
-    const [options, setOptions] = react_1.default.useState({});
     if (store.shouldShowTutorial()) {
         SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
@@ -147,9 +144,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
       <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} onStateChange={store.onStateChange} documentTitle={documentTitle} onReady={store.onReady}>
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <split_view_1.SplitViewContext value={{ options, setOptions }}>
-              <Content />
-            </split_view_1.SplitViewContext>
+            <Content />
           </WrapperComponent>
         </serverLocationContext_1.ServerContext.Provider>
       </NavigationContainer_1.NavigationContainer>
@@ -165,30 +160,9 @@ function Content() {
     }
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         children,
-        screenOptions: { headerShown: false },
         id: constants_1.INTERNAL_SLOT_NAME,
     });
-    const { options } = (0, react_1.use)(split_view_1.SplitViewContext);
-    (0, react_1.useEffect)(() => {
-        console.log('Remounting Content');
-    }, []);
-    if (router_store_1.store.supplementaryComponent && !router_store_1.store.sidebarComponent) {
-        console.warn('Supplementary component is set but sidebar component is missing. The supplementary component will not be rendered.');
-    }
-    if (!router_store_1.store.sidebarComponent || process.env.EXPO_OS !== 'ios') {
-        return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
-    }
-    return (<experimental_1.SplitViewHost {...options}>
-      <experimental_1.SplitViewScreen.Column>
-        {router_store_1.store.sidebarComponent ? (<router_store_1.store.sidebarComponent navigation={{ isFocused: () => false }}/>) : null}
-      </experimental_1.SplitViewScreen.Column>
-      {router_store_1.store.supplementaryComponent && (<experimental_1.SplitViewScreen.Column>
-          <router_store_1.store.supplementaryComponent navigation={{ isFocused: () => false }}/>
-        </experimental_1.SplitViewScreen.Column>)}
-      <experimental_1.SplitViewScreen.Column>
-        <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
-      </experimental_1.SplitViewScreen.Column>
-    </experimental_1.SplitViewHost>);
+    return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
 }
 let onUnhandledAction;
 if (process.env.NODE_ENV !== 'production') {

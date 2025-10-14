@@ -32,46 +32,67 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SplitViewContext = exports.SplitView = void 0;
+exports.Sidebar = void 0;
 const react_1 = __importStar(require("react"));
-// import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
-const StackClient_1 = __importDefault(require("../layouts/StackClient"));
-const withLayoutContext_1 = require("../layouts/withLayoutContext");
-exports.SplitView = (0, withLayoutContext_1.withLayoutContext)(SplitViewNavigator, undefined);
-function SplitViewNavigator({ columnMetrics, disableSidebar, disableGestures, preferredDisplayMode, preferredSplitBehavior, showSecondaryToggleButton, ...stackProps }) {
-    const { setOptions, options } = (0, react_1.use)(exports.SplitViewContext);
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const experimental_1 = require("react-native-screens/experimental");
+const elements_1 = require("./elements");
+const Navigator_1 = require("../views/Navigator");
+const ParentSideBarContext = react_1.default.createContext(0);
+const ChildrenSideBarContext = react_1.default.createContext({ addChild: () => { }, removeChild: () => { } });
+function SidebarNavigator({ children, displayMode }) {
+    const numberOfParentSidebars = react_1.default.useContext(ParentSideBarContext);
+    const { addChild, removeChild } = react_1.default.useContext(ChildrenSideBarContext);
+    const [numberOfChildrenSidebars, setNumberOfChildrenSidebars] = react_1.default.useState(0);
+    const value = react_1.default.useMemo(() => ({
+        addChild: () => setNumberOfChildrenSidebars((c) => c + 1),
+        removeChild: () => setNumberOfChildrenSidebars((c) => c - 1),
+    }), []);
     (0, react_1.useEffect)(() => {
-        if (columnMetrics !== options.columnMetrics ||
-            disableSidebar !== options.disableSidebar ||
-            disableGestures !== options.disableGestures ||
-            preferredDisplayMode !== options.preferredDisplayMode ||
-            preferredSplitBehavior !== options.preferredSplitBehavior ||
-            showSecondaryToggleButton !== options.showSecondaryToggleButton) {
-            setOptions({
-                columnMetrics,
-                disableSidebar,
-                disableGestures,
-                preferredDisplayMode,
-                preferredSplitBehavior,
-                showSecondaryToggleButton,
-            });
+        addChild();
+        return () => {
+            removeChild();
+        };
+    }, []);
+    if (numberOfParentSidebars > 1) {
+        throw new Error('Sidebar cannot be nested more than one level deep');
+    }
+    (0, react_1.useEffect)(() => {
+        if (numberOfChildrenSidebars > 0 && displayMode) {
+            console.warn('`displayMode` can only be set on the primary sidebar.');
         }
-    }, [
-        columnMetrics,
-        disableSidebar,
-        disableGestures,
-        preferredDisplayMode,
-        preferredSplitBehavior,
-        showSecondaryToggleButton,
-    ]);
-    return <StackClient_1.default {...stackProps}/>;
+    }, [displayMode]);
+    const Wrapper = ({ children }) => (<ParentSideBarContext value={numberOfParentSidebars + 1}>
+      <ChildrenSideBarContext value={value}>{children}</ChildrenSideBarContext>
+    </ParentSideBarContext>);
+    if (numberOfParentSidebars > 0) {
+        return (<Wrapper>
+        <experimental_1.SplitViewScreen.Column>{children}</experimental_1.SplitViewScreen.Column>
+        <experimental_1.SplitViewScreen.Column>
+          <Navigator_1.Slot />
+        </experimental_1.SplitViewScreen.Column>
+      </Wrapper>);
+    }
+    const numberOfScreens = numberOfChildrenSidebars === 0 ? 'one' : 'two';
+    const mode = displayMode === 'over' ? 'Over' : 'Beside';
+    const preferredDisplayMode = `${numberOfScreens}${mode}Secondary`;
+    return (<Wrapper>
+      <experimental_1.SplitViewHost key={numberOfChildrenSidebars} preferredDisplayMode={preferredDisplayMode} displayModeButtonVisibility="always">
+        <experimental_1.SplitViewScreen.Column>
+          <react_native_safe_area_context_1.SafeAreaProvider>{children}</react_native_safe_area_context_1.SafeAreaProvider>
+        </experimental_1.SplitViewScreen.Column>
+        {numberOfChildrenSidebars === 0 ? (<>
+            <experimental_1.SplitViewScreen.Column />
+            <experimental_1.SplitViewScreen.Column>
+              <Navigator_1.Slot />
+            </experimental_1.SplitViewScreen.Column>
+          </>) : (<Navigator_1.Slot />)}
+      </experimental_1.SplitViewHost>
+    </Wrapper>);
 }
-exports.SplitViewContext = react_1.default.createContext({
-    options: {},
-    setOptions: () => { },
+exports.Sidebar = Object.assign(SidebarNavigator, {
+    Trigger: elements_1.SidebarTrigger,
+    Header: elements_1.SidebarHeader,
 });
 //# sourceMappingURL=split-view.js.map
