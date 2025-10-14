@@ -34,7 +34,7 @@ module.exports = {
     backgroundColor: '#ffffff',
   },
   experiments: {
-    autolinkingModuleResolution: true,
+    autolinkingModuleResolution: !process.env.E2E_CANARY_ENABLED,
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
     typedRoutes: true,
