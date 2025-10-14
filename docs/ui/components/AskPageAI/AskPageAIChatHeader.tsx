@@ -3,6 +3,7 @@ import { Maximize02Icon } from '@expo/styleguide-icons/outline/Maximize02Icon';
 import { Minimize02Icon } from '@expo/styleguide-icons/outline/Minimize02Icon';
 import { RefreshCcw02Icon } from '@expo/styleguide-icons/outline/RefreshCcw02Icon';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+import { SwitchHorizontal01Icon } from '@expo/styleguide-icons/outline/SwitchHorizontal01Icon';
 import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
 import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
@@ -17,6 +18,7 @@ type AskPageAIChatHeaderProps = {
   contextScope: ContextScope;
   isExpanded: boolean;
   onToggleExpand?: () => void;
+  onSwitchToPageContext?: () => void;
   onReset: () => void;
   onClose: () => void;
   feedbackTarget: FeedbackTarget;
@@ -28,6 +30,7 @@ export function AskPageAIChatHeader({
   contextScope,
   isExpanded,
   onToggleExpand,
+  onSwitchToPageContext,
   onReset,
   onClose,
   feedbackTarget,
@@ -51,7 +54,7 @@ export function AskPageAIChatHeader({
   );
 
   return (
-    <div className="flex flex-col gap-3 border-b border-default bg-palette-black px-4 py-3 text-palette-white">
+    <div className="flex flex-col gap-3 border-b border-default bg-palette-black px-4 py-2.5 text-palette-white">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
@@ -138,13 +141,27 @@ export function AskPageAIChatHeader({
           </Button>
         </div>
       </div>
-      <FOOTNOTE className="text-palette-white">
-        Ask a question about{' '}
-        <span className="font-semibold">
-          {contextScope === 'page' ? displayContextLabel : 'the Expo docs'}
-        </span>
-        .
-      </FOOTNOTE>
+      <div className="flex flex-col gap-2">
+        <FOOTNOTE className="text-palette-white">
+          Ask a question about{' '}
+          <span className="font-semibold">
+            {contextScope === 'page' ? displayContextLabel : 'the Expo docs'}
+          </span>
+          .
+        </FOOTNOTE>
+        {contextScope === 'global' && onSwitchToPageContext ? (
+          <Button
+            type="button"
+            theme="quaternary"
+            size="xs"
+            className="inline-flex items-center self-start px-2 py-1.5 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+            style={closeButtonThemeOverrides}
+            onClick={onSwitchToPageContext}>
+            <SwitchHorizontal01Icon className="icon-xs mr-2 self-center text-palette-white" />
+            <span className="leading-snug">Switch back to {displayContextLabel} docs</span>
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 }

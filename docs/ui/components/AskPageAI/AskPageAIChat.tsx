@@ -357,6 +357,39 @@ export function AskPageAIChat({
     [buildPrompt, conversation.length, globalSearchRequests, isBusy, submitQuery]
   );
 
+  const handleSwitchBackToPageContext = useCallback(() => {
+    if (contextScope !== 'global') {
+      return;
+    }
+
+    setContextScope('page');
+    if (pendingGlobalQuestionKey) {
+      setGlobalSearchRequests(prev => {
+        if (!(pendingGlobalQuestionKey in prev)) {
+          return prev;
+        }
+        const next = { ...prev };
+        delete next[pendingGlobalQuestionKey];
+        return next;
+      });
+      setGlobalSwitchNotices(prev => {
+        if (!prev[pendingGlobalQuestionKey]) {
+          return prev;
+        }
+        return { ...prev, [pendingGlobalQuestionKey]: 'done' };
+      });
+      setPendingGlobalQuestionKey(null);
+    }
+    setContextMarkers(prev => [
+      ...prev,
+      {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        at: conversation.length,
+        label: displayContextLabel,
+      },
+    ]);
+  }, [contextScope, conversation.length, displayContextLabel, pendingGlobalQuestionKey]);
+
   const markdownComponents = useChatMarkdownComponents({ onNavigate: handleNavigation });
 
   const messageEntries = useMemo(
@@ -379,6 +412,7 @@ export function AskPageAIChat({
         contextScope={contextScope}
         isExpanded={isExpanded}
         onToggleExpand={onToggleExpand}
+        onSwitchToPageContext={handleSwitchBackToPageContext}
         onReset={handleConversationReset}
         onClose={handleClose}
         feedbackTarget={feedbackTarget}
