@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-import { StatusError, environment, origin, runTask, deferTask } from '../api';
+import { StatusError, environment, origin, runTask, deferTask, setResponseHeaders } from '../api';
 import { createRequestScope } from '../index';
 
 const STORE = new AsyncLocalStorage();
@@ -117,4 +117,53 @@ it('uses StatusError to construct a JSON response if one is thrown', async () =>
   expect(result).toBeInstanceOf(Response);
   expect(result.status).toBe(418);
   expect(await result.json()).toEqual({ test: 'I might be a teapot' });
+});
+
+it('uses thrown Response as response if thrown', async () => {
+  const run = createRequestScope(STORE, () => ({}));
+  const result = await run(async () => {
+    throw new Response(null, { status: 204 });
+  });
+  expect(result).toBeInstanceOf(Response);
+  expect(result.status).toBe(204);
+});
+
+it('updates response headers when setResponseHeaders is called with record', async () => {
+  const run = createRequestScope(STORE, () => ({}));
+  const result = await run(async () => {
+    setResponseHeaders({ 'X-Test': 'true' });
+    return new Response(null, { status: 204 });
+  });
+  expect(result).toBeInstanceOf(Response);
+  expect(result.status).toBe(204);
+  expect(result.headers.get('X-Test')).toBe('true');
+});
+
+it('updates response headers when setResponseHeaders is called with headers', async () => {
+  const run = createRequestScope(STORE, () => ({}));
+  const result = await run(async () => {
+    setResponseHeaders(new Headers({ 'X-Test': 'true' }));
+    return new Response(null, { status: 204 });
+  });
+  expect(result).toBeInstanceOf(Response);
+  expect(result.status).toBe(204);
+  expect(result.headers.get('X-Test')).toBe('true');
+});
+
+it('can mutate response headers when setResponseHeaders is called with function', async () => {
+  const run = createRequestScope(STORE, () => ({}));
+  const result = await run(async () => {
+    setResponseHeaders((headers) => {
+      headers.append('X-Test', '2');
+    });
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'X-Test': '1',
+      },
+    });
+  });
+  expect(result).toBeInstanceOf(Response);
+  expect(result.status).toBe(204);
+  expect(result.headers.get('X-Test')).toBe('1, 2');
 });
