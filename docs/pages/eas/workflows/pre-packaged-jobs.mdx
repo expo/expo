@@ -342,26 +342,30 @@ jobs:
       sdk_version: string # optional
       runtime_version: string # optional
       simulator: boolean # optional
+      wait_for_in_progress: boolean # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter         | Type    | Description                                                                    |
-| ----------------- | ------- | ------------------------------------------------------------------------------ |
-| platform          | string  | Optional. The platform to get the build for. Can be `ios` or `android`.        |
-| profile           | string  | Optional. The build profile to use.                                            |
-| distribution      | string  | Optional. The distribution method. Can be `store`, `internal`, or `simulator`. |
-| channel           | string  | Optional. The update channel.                                                  |
-| app_identifier    | string  | Optional. The bundle identifier/package name.                                  |
-| app_build_version | string  | Optional. The build version.                                                   |
-| app_version       | string  | Optional. The app version.                                                     |
-| git_commit_hash   | string  | Optional. The git commit hash.                                                 |
-| fingerprint_hash  | string  | Optional. The fingerprint hash.                                                |
-| sdk_version       | string  | Optional. The SDK version.                                                     |
-| runtime_version   | string  | Optional. The runtime version.                                                 |
-| simulator         | boolean | Optional. Whether to get a simulator build.                                    |
+| Parameter            | Type    | Description                                                                    |
+| -------------------- | ------- | ------------------------------------------------------------------------------ |
+| platform             | string  | Optional. The platform to get the build for. Can be `ios` or `android`.        |
+| profile              | string  | Optional. The build profile to use.                                            |
+| distribution         | string  | Optional. The distribution method. Can be `store`, `internal`, or `simulator`. |
+| channel              | string  | Optional. The update channel.                                                  |
+| app_identifier       | string  | Optional. The bundle identifier/package name.                                  |
+| app_build_version    | string  | Optional. The build version.                                                   |
+| app_version          | string  | Optional. The app version.                                                     |
+| git_commit_hash      | string  | Optional. The git commit hash.                                                 |
+| fingerprint_hash     | string  | Optional. The fingerprint hash.                                                |
+| sdk_version          | string  | Optional. The SDK version.                                                     |
+| runtime_version      | string  | Optional. The runtime version.                                                 |
+| simulator            | boolean | Optional. Whether to get a simulator build.                                    |
+| wait_for_in_progress | boolean | Optional. Whether to wait for a matching in-progress build. Default: `false`.  |
+
+If `wait_for_in_progress` is set to `true`, the job will still prioritize continuing immediately with a successful build, but it will also look for in-progress builds. If no successful build is found, the job will wait for an in-progress build to complete before continuing. If the matched build succeeds, the job will be marked as successful and will return the successful build. If the matched build fails, the job will be marked as successful and its outputs will be empty — as if the build has not been matched.
 
 #### Outputs
 
@@ -429,7 +433,7 @@ jobs:
 
 <Collapsible summary="Get simulator build">
 
-This workflow retrieves a simulator build for iOS development.
+This workflow retrieves a simulator build for iOS development. `wait_for_in_progress` is set to `true` so that if a build matching the filter already exists, the job will wait for it to complete before continuing.
 
 ```yaml .eas/workflows/get-build-simulator.yml
 name: Get Simulator Build
@@ -442,6 +446,7 @@ jobs:
       platform: ios
       simulator: true
       profile: development
+      wait_for_in_progress: true
 ```
 
 </Collapsible>
