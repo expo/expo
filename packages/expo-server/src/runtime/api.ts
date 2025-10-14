@@ -1,4 +1,5 @@
 import { type RequestAPI, scopeRef } from './scope';
+import { appendHeadersRecord } from '../utils/headers';
 
 function enforcedRequestScope(): RequestAPI {
   const scope = scopeRef.current?.getStore();
@@ -71,4 +72,39 @@ export function runTask(fn: () => Promise<unknown>): void {
  */
 export function deferTask(fn: () => Promise<unknown>): void {
   assertSupport('deferTask()', enforcedRequestScope().deferTask)(fn);
+}
+
+/** Sets headers on the `Response` the current request handler will return.
+ *
+ * This only updates the headers once the request handler has finished and resolved a `Response`.
+ * It will either receive a set of `Headers` or an equivalent object containing headers, which will
+ * be merged into the response's headers once it's returned.
+ *
+ * @param updateHeaders - A `Headers` object, a record of headers, or a function that receives `Headers` to be updated or can return a `Headers` object that will be merged into the response headers.
+ */
+export function setResponseHeaders(
+  updateHeaders:
+    | Headers
+    | Record<string, string | string[]>
+    | ((headers: Headers) => Headers | void)
+): void {
+  assertSupport(
+    'onResponse()',
+    enforcedRequestScope().onResponse
+  )((response) => {
+    let headers: Headers = response.headers;
+    if (typeof updateHeaders === 'function') {
+      headers = updateHeaders(response.headers) || headers;
+    } else if (updateHeaders instanceof Headers) {
+      headers = updateHeaders;
+    } else if (typeof updateHeaders === 'object' && updateHeaders) {
+      appendHeadersRecord(response.headers, updateHeaders);
+      return;
+    }
+    if (headers !== response.headers) {
+      for (const [headerName, headerValue] of headers) {
+        response.headers.set(headerName, headerValue);
+      }
+    }
+  });
 }

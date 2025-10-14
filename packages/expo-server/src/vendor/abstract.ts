@@ -1,5 +1,6 @@
 import { ImmutableRequest } from '../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, Route } from '../manifest';
+import { appendHeadersRecord } from '../utils/headers';
 import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils/matchers';
 import { MiddlewareModule, shouldRunMiddleware } from '../utils/middleware';
 
@@ -215,17 +216,7 @@ export function createRequestHandler({
 
     // Apply user-defined headers, if provided
     if (manifest?.headers) {
-      for (const [key, value] of Object.entries(manifest.headers)) {
-        if (Array.isArray(value)) {
-          // For arrays, append each value separately (important for Set-Cookie)
-          value.forEach((v) => modifiedResponseInit.headers.append(key, v));
-        } else {
-          // Don't override existing headers
-          if (!modifiedResponseInit.headers.has(key)) {
-            modifiedResponseInit.headers.set(key, value);
-          }
-        }
-      }
+      appendHeadersRecord(modifiedResponseInit.headers, manifest.headers);
     }
 
     // Callback call order matters, general rule is to call more specific callbacks first.

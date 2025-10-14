@@ -3,6 +3,7 @@ export interface RequestAPI {
   environment?: string | null;
   waitUntil?(promise: Promise<unknown>): void;
   deferTask?(fn: () => Promise<unknown>): void;
+  onResponse?(fn: (response: Response) => void): void;
 }
 
 export interface ScopeDefinition<Scope extends RequestAPI = any> {

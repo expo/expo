@@ -56,6 +56,8 @@ export function createRequestScope<F extends RequestContextFactory>(
 
     const setup = makeRequestAPISetup(...args);
     const { waitUntil = defaultWaitUntil } = setup;
+    const deferredTasks: (() => Promise<unknown>)[] = [];
+    const onResponseFns: ((response: Response) => void)[] = [];
 
     const scope = {
       ...setup,
@@ -63,9 +65,11 @@ export function createRequestScope<F extends RequestContextFactory>(
       environment: setup.environment,
       waitUntil,
       deferTask: setup.deferTask,
+      onResponse(fn) {
+        onResponseFns.push(fn);
+      },
     } satisfies RequestAPI;
 
-    const deferredTasks: (() => Promise<unknown>)[] = [];
     if (!scope.deferTask) {
       scope.deferTask = function deferTask(fn) {
         deferredTasks.push(fn);
@@ -86,9 +90,8 @@ export function createRequestScope<F extends RequestContextFactory>(
       }
     }
 
-    if (deferredTasks.length) {
-      deferredTasks.forEach((fn) => waitUntil(fn()));
-    }
+    deferredTasks.forEach((fn) => waitUntil(fn()));
+    onResponseFns.forEach((fn) => fn(result));
 
     return result;
   };
