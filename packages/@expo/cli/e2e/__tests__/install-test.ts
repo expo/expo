@@ -235,7 +235,6 @@ describe('expo-router integration', () => {
       'with-router',
       {
         reuseExisting: false,
-        sdkVersion: '52.0.0',
         linkExpoPackages: ['expo-router'],
       }
     );
