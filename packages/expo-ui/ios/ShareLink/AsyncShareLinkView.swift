@@ -78,6 +78,7 @@ extension AsyncShareData: Transferable {
   }
 }
 
+#if !os(tvOS)
 @available(iOS 16.0, *)
 internal struct AsyncShareLinkView<Content: View>: View {
   var props: ShareLinkViewProps
@@ -130,4 +131,6 @@ internal struct AsyncShareLinkView<Content: View>: View {
 #endif
   }
 }
+#endif
+
 
