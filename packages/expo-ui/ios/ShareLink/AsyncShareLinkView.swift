@@ -5,20 +5,27 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 internal final class AsyncShareableItem {
+  private let queue = DispatchQueue(label: "expo.asyncshareableitemqueue")
   var continuation: CheckedContinuation<URL, Error>?
 
   func setContinuation(_ continuation: CheckedContinuation<URL, Error>) {
-    self.continuation = continuation
+    queue.async {
+      self.continuation = continuation
+    }
   }
 
   func resolve(with url: URL) {
-    continuation?.resume(returning: url)
-    continuation = nil
+    queue.async {
+      self.continuation?.resume(returning: url)
+      self.continuation = nil
+    }
   }
 
   func reject(with error: Error) {
-    continuation?.resume(throwing: error)
-    continuation = nil
+    queue.async {
+      self.continuation?.resume(throwing: error)
+      self.continuation = nil
+    }
   }
 }
 
@@ -152,3 +159,4 @@ internal struct AsyncShareLinkView<Content: View>: View {
   }
 #endif
 }
+
