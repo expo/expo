@@ -8,9 +8,10 @@ internal final class AsyncShareableItem {
   private let queue = DispatchQueue(label: "expo.asyncshareableitemqueue")
   var continuation: CheckedContinuation<URL, Error>?
 
-  func setContinuation(_ continuation: CheckedContinuation<URL, Error>) {
+  func setContinuation(_ continuation: CheckedContinuation<URL, Error>, callback: @escaping () -> Void) {
     queue.async {
       self.continuation = continuation
+      callback()
     }
   }
 
@@ -70,8 +71,9 @@ extension AsyncShareData: Transferable {
       // reject any previous continuation
       asyncShareableItem.reject(with: ShareError.failed)
 
-      asyncShareableItem.setContinuation(continuation)
-      props.onAsyncItemRequest()
+      asyncShareableItem.setContinuation(continuation) {
+        props.onAsyncItemRequest()
+      }
     }
   }
 }
