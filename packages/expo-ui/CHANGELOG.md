@@ -25,6 +25,7 @@
 - [iOS] Add Divider component. ([#40283](https://github.com/expo/expo/pull/40283) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Added `header` and `footer` props for sections, support for collapsible sections, and headerProminence modifier ([#40340](https://github.com/expo/expo/pull/40340) by [@doombladeoff](https://github.com/doombladeoff))
 - [iOS] Add new modifiers (`listRowInsets`, `listSectionMargins`, `badgeProminence`, `badge`) ([#40329](https://github.com/expo/expo/pull/40329) by [@doombladeoff](https://github.com/doombladeoff))
+- [iOS] Add popover view support for buttons ([#40407](https://github.com/expo/expo/pull/40407) by [@betomoedano](https://github.com/betomoedano))
 
 ### 🐛 Bug fixes
 
