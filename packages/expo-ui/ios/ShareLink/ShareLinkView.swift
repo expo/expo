@@ -26,19 +26,19 @@ struct ShareLinkView: ExpoSwiftUI.View {
 
   init(props: ShareLinkViewProps) {
     self.props = props
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       self.asyncData = AsyncShareData(props: props)
     }
   }
 
   func resolveContinuation(_ url: URL) {
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       asyncData?.resolveContinuation(url)
    }
   }
 
   func rejectContinuation() {
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       asyncData?.rejectContinuation()
     }
   }
