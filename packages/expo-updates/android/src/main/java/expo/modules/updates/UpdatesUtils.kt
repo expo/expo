@@ -126,8 +126,7 @@ object UpdatesUtils {
       // this message digest must be read after the input stream has been consumed in order to get the hash correctly
       val md = digestInputStream.messageDigest
       val hash = md.digest()
-      // base64url - https://datatracker.ietf.org/doc/html/rfc4648#section-5
-      val hashBase64String = Base64.encodeToString(hash, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+      val hashBase64String = toBase64Url(hash)
       if (expectedBase64URLEncodedHash != null && expectedBase64URLEncodedHash != hashBase64String) {
         throw IOException("File download was successful but base64url-encoded SHA-256 did not match expected; expected: $expectedBase64URLEncodedHash; actual: $hashBase64String")
       }
@@ -148,6 +147,10 @@ object UpdatesUtils {
 
       return hash
     }
+  }
+
+  fun toBase64Url(bytes: ByteArray): String {
+    return Base64.encodeToString(bytes, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
   }
 
   /**
