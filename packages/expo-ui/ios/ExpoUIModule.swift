@@ -14,6 +14,7 @@ public final class ExpoUIModule: Module {
 
     View(BottomSheetView.self)
     View(Button.self)
+    View(ButtonPopoverView.self)
     View(ChartView.self)
     View(ColorPickerView.self)
     View(DateTimePickerView.self)

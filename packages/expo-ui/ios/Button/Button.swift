@@ -5,6 +5,35 @@ import ExpoModulesCore
 
 struct Button: ExpoSwiftUI.View {
   @ObservedObject var props: ButtonProps
+  @State private var isPresented: Bool
+  
+  init(props: ButtonProps) {
+    self.props = props
+    self._isPresented = State(initialValue: props.isPresented)
+  }
+
+  @ViewBuilder
+  private var popoverView: some View {
+    if let popover = props.children?
+      .compactMap({ $0.childView as? ButtonPopoverView })
+      .first
+    {
+      popover
+    }
+  }
+
+  @ViewBuilder
+  private var buttonLabelChildren: some View {
+    // Filter out ButtonPopoverView from the label children
+    let filteredChildren = props.children?.filter { child in
+      !(child.childView is ButtonPopoverView)
+    } ?? []
+    
+    ForEach(filteredChildren, id: \.id) { child in
+      let view: any View = child.childView
+      AnyView(view)
+    }
+  }
 
   var body: some View {
     let button = SwiftUI.Button(
@@ -22,13 +51,35 @@ struct Button: ExpoSwiftUI.View {
         } else if let systemImage = props.systemImage {
           Image(systemName: systemImage)
         } else {
-          Children()
+          buttonLabelChildren
         }
       })
     .disabled(props.disabled)
     .tint(props.color)
     .controlSize(props.controlSize?.toNativeControlSize() ?? .regular)
+    .popover(isPresented: $isPresented) {
+      if #available(iOS 16.4, *) {
+        popoverView
+          .presentationCompactAdaptation(.popover)
+      } else {
+        popoverView
+      }
+    }
     .modifier(CommonViewModifiers(props: props))
+    .onChange(of: isPresented, perform: { newIsPresented in
+      if props.isPresented == newIsPresented {
+        return
+      }
+      props.onIsPresentedChange([
+        "isPresented": newIsPresented
+      ])
+    })
+    .onChange(of: props.isPresented) { newValue in
+      isPresented = newValue
+    }
+    .onAppear {
+      isPresented = props.isPresented
+    }
     // TODO: Maybe there is a way to do a switch statement similarly to the `if` extension?
     .if(props.variant == .bordered, {
       $0.buttonStyle(.bordered)

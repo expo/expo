@@ -1,6 +1,5 @@
-import type { ColorValue } from 'react-native';
+import type { ColorValue, NativeSyntheticEvent } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
-import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 /**
  * The role of the button.
@@ -71,21 +70,46 @@ export type ButtonProps = {
      * Disabled state of the button.
      */
     disabled?: boolean;
+    /**
+     * Controls whether the popover is presented.
+     */
+    isPresented?: boolean;
+    /**
+     * Callback fired when the popover presentation state changes.
+     */
+    onIsPresentedChange?: (event: {
+        isPresented: boolean;
+    }) => void;
+    /**
+     * The content to display in the popover.
+     */
+    popoverView?: React.ReactNode;
 } & CommonViewModifierProps;
 /**
  * exposed for ContextMenu
  * @hidden
  */
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage' | 'controlSize'> & {
+export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage' | 'controlSize' | 'popoverView' | 'onIsPresentedChange'> & {
     buttonRole?: ButtonRole;
     text: string | undefined;
     systemImage?: SFSymbol;
-} & ViewEvent<'onButtonPressed', void>;
+    onButtonPressed?: () => void;
+    onIsPresentedChange?: (event: NativeSyntheticEvent<{
+        isPresented: boolean;
+    }>) => void;
+};
+/**
+ * Wrapper component for popover content
+ * @hidden
+ */
+export declare function ButtonPopoverView({ children }: {
+    children?: React.ReactNode;
+}): import("react").JSX.Element;
 /**
  * exposed for ContextMenu
  * @hidden
  */
-export declare function transformButtonProps(props: Omit<ButtonProps, 'children'>, text: string | undefined): NativeButtonProps;
+export declare function transformButtonProps(props: Omit<ButtonProps, 'children' | 'popoverView'>, text: string | undefined): NativeButtonProps;
 /**
  * Displays a native button component.
  */

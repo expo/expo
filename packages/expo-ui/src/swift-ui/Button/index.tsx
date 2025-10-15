@@ -1,8 +1,7 @@
 import { requireNativeView } from 'expo';
-import type { ColorValue } from 'react-native';
+import type { ColorValue, NativeSyntheticEvent } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
-import { type ViewEvent } from '../../types';
 import { getTextFromChildren } from '../../utils';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -92,6 +91,18 @@ export type ButtonProps = {
    * Disabled state of the button.
    */
   disabled?: boolean;
+  /**
+   * Controls whether the popover is presented.
+   */
+  isPresented?: boolean;
+  /**
+   * Callback fired when the popover presentation state changes.
+   */
+  onIsPresentedChange?: (event: { isPresented: boolean }) => void;
+  /**
+   * The content to display in the popover.
+   */
+  popoverView?: React.ReactNode;
 } & CommonViewModifierProps;
 
 /**
@@ -100,12 +111,20 @@ export type ButtonProps = {
  */
 export type NativeButtonProps = Omit<
   ButtonProps,
-  'role' | 'onPress' | 'children' | 'systemImage' | 'controlSize'
+  | 'role'
+  | 'onPress'
+  | 'children'
+  | 'systemImage'
+  | 'controlSize'
+  | 'popoverView'
+  | 'onIsPresentedChange'
 > & {
   buttonRole?: ButtonRole;
   text: string | undefined;
   systemImage?: SFSymbol;
-} & ViewEvent<'onButtonPressed', void>;
+  onButtonPressed?: () => void;
+  onIsPresentedChange?: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
+};
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
@@ -113,15 +132,27 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
   'Button'
 );
 
+// Native view component for ButtonPopoverView
+const ButtonPopoverViewNative: React.ComponentType<{ children?: React.ReactNode }> =
+  requireNativeView('ExpoUI', 'ButtonPopoverView');
+
+/**
+ * Wrapper component for popover content
+ * @hidden
+ */
+export function ButtonPopoverView({ children }: { children?: React.ReactNode }) {
+  return <ButtonPopoverViewNative>{children}</ButtonPopoverViewNative>;
+}
+
 /**
  * exposed for ContextMenu
  * @hidden
  */
 export function transformButtonProps(
-  props: Omit<ButtonProps, 'children'>,
+  props: Omit<ButtonProps, 'children' | 'popoverView'>,
   text: string | undefined
 ): NativeButtonProps {
-  const { role, onPress, systemImage, modifiers, ...restProps } = props;
+  const { role, onPress, systemImage, modifiers, onIsPresentedChange, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
@@ -130,6 +161,9 @@ export function transformButtonProps(
     systemImage,
     buttonRole: role,
     onButtonPressed: onPress,
+    onIsPresentedChange: onIsPresentedChange
+      ? ({ nativeEvent: { isPresented } }) => onIsPresentedChange({ isPresented })
+      : undefined,
   };
 }
 
@@ -137,7 +171,7 @@ export function transformButtonProps(
  * Displays a native button component.
  */
 export function Button(props: ButtonProps) {
-  const { children, ...restProps } = props;
+  const { children, popoverView, ...restProps } = props;
 
   if (!children && !restProps.systemImage) {
     throw new Error('Button without systemImage prop should have React children');
@@ -150,8 +184,22 @@ export function Button(props: ButtonProps) {
   // Render without children wrapper if text-only or icon-only
   const shouldRenderDirectly = text != null || children == null;
 
-  if (shouldRenderDirectly) {
+  if (shouldRenderDirectly && !popoverView) {
     return <ButtonNativeView {...transformedProps} />;
   }
-  return <ButtonNativeView {...transformedProps}>{children}</ButtonNativeView>;
+
+  if (shouldRenderDirectly && popoverView) {
+    return (
+      <ButtonNativeView {...transformedProps}>
+        <ButtonPopoverView>{popoverView}</ButtonPopoverView>
+      </ButtonNativeView>
+    );
+  }
+
+  return (
+    <ButtonNativeView {...transformedProps}>
+      {children}
+      {popoverView && <ButtonPopoverView>{popoverView}</ButtonPopoverView>}
+    </ButtonNativeView>
+  );
 }

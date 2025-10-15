@@ -77,6 +77,8 @@ final class ButtonProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps, Observa
   @Field var controlSize: ButtonControlSize? = .regular
   @Field var variant: ButtonVariant? = .default
   @Field var disabled: Bool = false
+  @Field var isPresented: Bool = false
   var onButtonPressed = EventDispatcher()
+  var onIsPresentedChange = EventDispatcher()
 }
 
