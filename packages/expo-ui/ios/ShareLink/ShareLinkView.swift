@@ -76,7 +76,13 @@ struct ShareLinkView: ExpoSwiftUI.View {
           }
         } else {
           if let asyncData {
-            AsyncShareLinkView(props: props, asyncData: asyncData) {
+            AsyncShareLinkView(
+              props: props,
+              asyncData: asyncData,
+              subject: subject,
+              message: message,
+              preview: preview
+            ) {
               Children()
             }.onDisappear {
               // performs continuation cleanup if component is unmounted mid async request

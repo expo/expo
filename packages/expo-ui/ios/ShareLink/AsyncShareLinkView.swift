@@ -82,39 +82,46 @@ extension AsyncShareData: Transferable {
 internal struct AsyncShareLinkView<Content: View>: View {
   var props: ShareLinkViewProps
   let asyncData: AsyncShareData?
+  let subject: Text?
+  let message: Text?
+  let preview: SharePreview<Image, Never>?
   let content: () -> Content
 
-  init(props: ShareLinkViewProps, asyncData: AsyncShareData, @ViewBuilder content: @escaping () -> Content) {
+  init(
+    props: ShareLinkViewProps,
+    asyncData: AsyncShareData,
+    subject: Text?,
+    message: Text?,
+    preview: SharePreview<Image, Never>?,
+    @ViewBuilder content: @escaping () -> Content
+  ) {
     self.props = props
     self.asyncData = asyncData
+    self.subject = subject
+    self.message = message
+    self.preview = preview
     self.content = content
   }
 
   var body: some View {
 #if !os(tvOS)
     let hasChildren = props.children?.isEmpty == false
-    let subject = props.subject.map { Text($0) }
-    let message = props.message.map { Text($0) }
-    let preview: SharePreview<Image, Never>? = props.preview.flatMap { preview in
-      SharePreview(preview.title, image: Image(preview.image))
-    }
 
-    if let asyncData {
+    if let item = asyncData, let preview {
       if hasChildren {
-        asyncShareLink(
-            item: asyncData,
-            subject: subject,
-            message: message,
-            preview: preview
-          ) {
-            content()
-        }.modifier(CommonViewModifiers(props: props))
+         SwiftUI.ShareLink(
+          item: item,
+          subject: subject,
+          message: message,
+          preview: preview,
+          label: content
+        ).modifier(CommonViewModifiers(props: props))
       } else {
-        asyncShareLink(
-            item: asyncData,
-            subject: subject,
-            message: message,
-            preview: preview
+        SwiftUI.ShareLink(
+          item: item,
+          subject: subject,
+          message: message,
+          preview: preview
         ).modifier(CommonViewModifiers(props: props))
       }
     }
@@ -122,43 +129,5 @@ internal struct AsyncShareLinkView<Content: View>: View {
     EmptyView()
 #endif
   }
-
-#if !os(tvOS)
-  @ViewBuilder
-  private func asyncShareLink(
-    item: AsyncShareData,
-    subject: Text?,
-    message: Text?,
-    preview: SharePreview<Image, Never>?,
-    @ViewBuilder label: () -> some View
-  ) -> some View {
-    if let preview = preview {
-      SwiftUI.ShareLink(
-        item: item,
-        subject: subject,
-        message: message,
-        preview: preview,
-        label: label
-      )
-    }
-  }
-
-  @ViewBuilder
-  private func asyncShareLink(
-    item: AsyncShareData,
-    subject: Text?,
-    message: Text?,
-    preview: SharePreview<Image, Never>?
-  ) -> some View {
-    if let preview = preview {
-      SwiftUI.ShareLink(
-        item: item,
-        subject: subject,
-        message: message,
-        preview: preview
-      )
-    }
-  }
-#endif
 }
 
