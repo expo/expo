@@ -3334,7 +3334,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated (4.1.1):
+  - RNReanimated (4.1.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3361,11 +3361,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 4.1.1)
+    - RNReanimated/reanimated (= 4.1.3)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated (4.1.1):
+  - RNReanimated/reanimated (4.1.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3392,11 +3392,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 4.1.1)
+    - RNReanimated/reanimated/apple (= 4.1.3)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated/apple (4.1.1):
+  - RNReanimated/reanimated/apple (4.1.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3542,7 +3542,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets (0.5.1):
+  - RNWorklets (0.6.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3569,10 +3569,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets (= 0.5.1)
+    - RNWorklets/worklets (= 0.6.1)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets (0.5.1):
+  - RNWorklets/worklets (0.6.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3599,10 +3599,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets/apple (= 0.5.1)
+    - RNWorklets/worklets/apple (= 0.6.1)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets/apple (0.5.1):
+  - RNWorklets/worklets/apple (0.6.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4492,10 +4492,10 @@ SPEC CHECKSUMS:
   RNCPicker: 51992b3407f6b70ddb8e417ec5714c3f2d48d8a4
   RNDateTimePicker: c4a42c6a77d474f05162d61a4ab4253d13008277
   RNGestureHandler: 310fefa1b72004d0b0a6a361b537a74724f45d5b
-  RNReanimated: ef388beb18beb3a053c30e9ac068c92b56f37359
+  RNReanimated: 451f6574c6913b15ea3e3a33f2d0a95f68f83081
   RNScreens: 74985ca8e102294a60cec7513fa84c936fa0b20b
   RNSVG: 42c67442bd1f7568e8a4abbd42a093d00e1e2dde
-  RNWorklets: a4a057191f470b49f5d30f7995dd5408f40214f6
+  RNWorklets: 089683f4a4564f30393d32352d41d9e92c3e5a55
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
