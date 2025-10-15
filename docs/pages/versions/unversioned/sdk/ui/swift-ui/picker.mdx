@@ -1,0 +1,86 @@
+---
+title: Picker
+description: A SwiftUI Picker component for selecting options from a list.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A picker component that allows users to select from a list of options with different display styles.
+
+## Installation
+
+<APIInstallSection />
+
+## Segmented picker
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Picker component on iOS."
+      src="/static/images/expo-ui/segmentedPicker/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Host, Picker } from '@expo/ui/swift-ui';
+
+    <Host matchContents>
+      <Picker
+        options={['$', '$$', '$$$', '$$$$']}
+        selectedIndex={selectedIndex}
+        onOptionSelected={({ nativeEvent: { index } }) => {
+          setSelectedIndex(index);
+        }}
+        variant="segmented"
+      />
+    </Host>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [Official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/picker#Styling-pickers) for more information.
+
+## Wheel picker
+
+> **Warning** The wheel variant is not available on Apple TV.
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Picker component on iOS."
+      src="/static/images/expo-ui/menuPicker/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Host, Picker } from '@expo/ui/swift-ui';
+
+    <Host style={{ height: 100 }}>
+      <Picker
+        options={['$', '$$', '$$$', '$$$$']}
+        selectedIndex={selectedIndex}
+        onOptionSelected={({ nativeEvent: { index } }) => {
+          setSelectedIndex(index);
+        }}
+        variant="wheel"
+      />
+    </Host>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [Official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/pickerstyle/wheel) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/picker" apiName="Picker" />

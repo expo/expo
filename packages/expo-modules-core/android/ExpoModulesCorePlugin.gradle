@@ -80,6 +80,10 @@ ext.useExpoPublishing = {
     apply plugin: 'maven-publish'
   }
 
+  if (components.findByName("release") == null) {
+    return
+  }
+
   project.android {
     publishing {
       singleVariant("release") {

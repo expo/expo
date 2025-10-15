@@ -638,10 +638,7 @@ export const headerProminence = (prominence: 'standard' | 'increased') =>
   createModifier('headerProminence', { prominence });
 /**
  * Applies an inset to the rows in a list.
- * @param top - The amount of inset to apply to the **top** edge of each row.
- * @param leading - The amount of inset to apply to the **leading (left)** edge of each row.
- * @param bottom - The amount of inset to apply to the **bottom** edge of each row.
- * @param trailing - The amount of inset to apply to the **trailing (right)** edge of each row.
+ * @param params - The inset to apply to the rows in a list.
  * @see https://developer.apple.com/documentation/swiftui/view/listrowinsets(_:)
  */
 export const listRowInsets = (params: {
@@ -666,9 +663,7 @@ export const badge = (value?: string) => createModifier('badge', { value });
 /**
  * Allows a view to ignore safe area constraints.
  * @platform iOS 26+
- * @param length - An amount, given in points, to pad section on the specified edges.
- * @param edges - The edges to expand into ('all', 'top', 'bottom', 'leading', 'trailing', 'horizontal', 'vertical')
- * @default edges: 'all'
+ * @param params - The margins to apply to the section in a list.
  * @see https://developer.apple.com/documentation/swiftui/view/listsectionmargins(_:_:)
  */
 export const listSectionMargins = (params?: {
