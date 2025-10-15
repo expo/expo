@@ -64,11 +64,16 @@ def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
 def enableWorkletsIntegration = findProperty("expo.core.worklets") == "true"
-if (enableWorkletsIntegration) {
+def workletsProject = enableWorkletsIntegration ? findProject(":react-native-worklets") : null
+
+if (enableWorkletsIntegration && workletsProject == null) {
+  throw new GradleException("The 'expo.core.worklets' property is set to true, but the ':react-native-worklets' project is not found.")
+}
+
+if (workletsProject != null) {
   evaluationDependsOn(":react-native-worklets")
 }
 
-def workletsProject = enableWorkletsIntegration ? findProject(":react-native-worklets") : null
 def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
 
 expoModule {
