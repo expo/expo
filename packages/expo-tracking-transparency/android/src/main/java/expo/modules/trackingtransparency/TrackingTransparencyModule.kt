@@ -37,7 +37,7 @@ class TrackingTransparencyModule : Module() {
         "status" to status,
         "expires" to "never",
         "granted" to !isLimited,
-        "canAskAgain" to (status != "denied"),
+        "canAskAgain" to (status != "denied")
       )
     } catch (e: Exception) {
       // Fallback: granted (Android default)
@@ -45,7 +45,7 @@ class TrackingTransparencyModule : Module() {
         "status" to "granted",
         "expires" to "never",
         "granted" to true,
-        "canAskAgain" to true,
+        "canAskAgain" to true
       )
     }
   }
