@@ -124,7 +124,8 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
     List<JobInfo> pendingJobs = jobScheduler.getAllPendingJobs();
     if (pendingJobs == null) {
-      // In some cases, pendingJobs can be null. Collections.sort will crash, if it is not set to an empty list here.
+      // There is a mismatch between documentation and implementation. In the reference implementation they return null in case of RemoteException:
+      // https://android.googlesource.com/platform//frameworks/base/+/980636f0a5440a12f5d8896d8738c6fcf2430553/apex/jobscheduler/framework/java/android/app/JobSchedulerImpl.java#137
       pendingJobs = new ArrayList<>();
     }
 
