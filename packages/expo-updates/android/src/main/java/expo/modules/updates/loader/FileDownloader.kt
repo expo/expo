@@ -1,10 +1,12 @@
 package expo.modules.updates.loader
 
+import android.util.Base64
 import androidx.annotation.VisibleForTesting
 import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.OuterList
 import expo.modules.structuredheaders.StringItem
+import expo.modules.updates.BSPatch
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.UpdatesUtils.parseContentDispositionNameParameter
@@ -21,31 +23,39 @@ import expo.modules.updates.manifest.ResponsePartHeaderData
 import expo.modules.updates.manifest.ResponsePartInfo
 import expo.modules.updates.manifest.UpdateFactory
 import expo.modules.updates.selectionpolicy.SelectionPolicies
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Cache
 import okhttp3.Headers
+import okhttp3.MediaType
 import okhttp3.MultipartReader
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.brotli.BrotliInterceptor
-import org.json.JSONObject
-import java.io.File
-import java.io.IOException
-import java.security.cert.CertificateException
-import java.util.Date
-import java.util.concurrent.TimeUnit
-import kotlin.math.max
-import kotlin.math.min
-import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.MediaType
 import okio.Buffer
 import okio.BufferedSource
 import okio.ForwardingSource
 import okio.Source
 import okio.buffer
+import org.json.JSONObject
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.security.cert.CertificateException
+import java.util.Date
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.math.max
+import kotlin.math.min
+
+private const val PATCH_CONTENT_TYPE = "application/vnd.bsdiff"
+private const val PATCH_TEMP_SUFFIX = ".patch"
+private const val PATCHED_TEMP_SUFFIX = ".patched"
+private const val EXPO_CURRENT_UPDATE_ID_HEADER = "Expo-Current-Update-ID"
+private const val EXPO_REQUESTED_UPDATE_ID_HEADER = "Expo-Requested-Update-ID"
+private const val EXPO_EMBEDDED_UPDATE_ID_HEADER = "Expo-Embedded-Update-ID"
 
 /**
  * Utility class that holds all the logic for downloading data and files, such as update manifests
@@ -55,7 +65,8 @@ class FileDownloader(
   private val filesDirectory: File,
   private val easClientID: String,
   private val configuration: UpdatesConfiguration,
-  private val logger: UpdatesLogger
+  private val logger: UpdatesLogger,
+  private val database: UpdatesDatabase
 ) {
   // If the configured launch wait milliseconds is greater than the okhttp default (10_000)
   // we should use that as the timeout. For example, let's say launchWaitMs is 20 seconds,
@@ -70,7 +81,14 @@ class FileDownloader(
   /**
    * Constructor for tests
    */
-  constructor(filesDirectory: File, easClientID: String, configuration: UpdatesConfiguration, logger: UpdatesLogger, client: OkHttpClient) : this(filesDirectory, easClientID, configuration, logger) {
+  constructor(
+    filesDirectory: File,
+    easClientID: String,
+    configuration: UpdatesConfiguration,
+    logger: UpdatesLogger,
+    database: UpdatesDatabase,
+    client: OkHttpClient
+  ) : this(filesDirectory, easClientID, configuration, logger, database) {
     this.client = client
   }
 
@@ -78,35 +96,266 @@ class FileDownloader(
   data class AssetDownloadResult(val assetEntity: AssetEntity, val isNew: Boolean)
 
   private suspend fun downloadAssetAndVerifyHashAndWriteToPath(
+    asset: AssetEntity,
+    extraHeaders: JSONObject,
     request: Request,
     expectedBase64URLEncodedSHA256Hash: String?,
     destination: File,
-    progressListener: FileDownloadProgressListener? = null
+    updatesDirectory: File,
+    progressListener: FileDownloadProgressListener? = null,
+    launchedUpdate: UpdateEntity?,
+    requestedUpdate: UpdateEntity?
   ): FileDownloadResult {
     try {
       val response = downloadData(request, progressListener)
-
-      if (!response.isSuccessful) {
-        val message = "Asset download request not successful"
-        val cause = IOException(response.body?.string() ?: "Unknown error")
-        logger.error(message, cause, UpdatesErrorCode.AssetsFailedToLoad)
-        throw IOException(message, cause)
-      }
-
-      try {
-        response.body!!.byteStream().use { inputStream ->
-          val hash = UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, expectedBase64URLEncodedSHA256Hash)
-          return FileDownloadResult(destination, hash)
+      val hash = response.use { resp ->
+        if (!resp.isSuccessful) {
+          val message = "Asset download request not successful"
+          val cause = IOException(resp.body?.string() ?: "Unknown error")
+          logger.error(message, cause, UpdatesErrorCode.AssetsFailedToLoad)
+          throw IOException(message, cause)
         }
-      } catch (e: Exception) {
-        val message = "Failed to write asset file from ${request.url} to destination $destination"
-        logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
-        throw IOException(message, e)
+
+        val responseBody = resp.body
+          ?: throw IOException("Asset download response from ${request.url} had no body")
+        responseBody.use { body ->
+          val isPatch = isPatchResponse(responseBody)
+          if (!isPatch) {
+            body.byteStream().use { inputStream ->
+              UpdatesUtils.verifySHA256AndWriteToFile(
+                inputStream,
+                destination,
+                expectedBase64URLEncodedSHA256Hash
+              )
+            }
+          } else {
+            val requestedUpdateId = requestedUpdate?.id?.toString()
+            val shouldAttemptPatch =
+              launchedUpdate != null &&
+                requestedUpdate != null &&
+                asset.isLaunchAsset &&
+                launchedUpdate.id != requestedUpdate.id
+
+            if (!shouldAttemptPatch) {
+              logger.warn(
+                "Received patch response even though patch application is disabled; retrying with full asset download",
+                UpdatesErrorCode.AssetsFailedToLoad,
+                requestedUpdateId,
+                asset.key
+              )
+              return@use downloadFullAsset(
+                asset,
+                extraHeaders,
+                expectedBase64URLEncodedSHA256Hash,
+                destination,
+                progressListener
+              )
+            }
+
+            return@use runCatching {
+              applyPatchAndVerify(
+                asset = asset,
+                responseBody = body,
+                destination = destination,
+                updatesDirectory = updatesDirectory,
+                launchedUpdate = launchedUpdate,
+                requestedUpdate = requestedUpdate,
+                expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash
+              )
+            }.getOrElse {
+              logger.warn(
+                "Patch application failed for asset ${asset.key}; retrying with full asset download",
+                UpdatesErrorCode.AssetsFailedToLoad,
+                requestedUpdateId,
+                asset.key
+              )
+              downloadFullAsset(
+                asset,
+                extraHeaders,
+                expectedBase64URLEncodedSHA256Hash,
+                destination,
+                progressListener
+              )
+            }
+          }
+        }
       }
+      return FileDownloadResult(destination, hash)
     } catch (e: IOException) {
       val message = "Failed to download asset from URL ${request.url}"
       logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
       throw IOException(message, e)
+    }
+  }
+
+  private suspend fun downloadFullAsset(
+    asset: AssetEntity,
+    extraHeaders: JSONObject,
+    expectedBase64URLEncodedSHA256Hash: String?,
+    destination: File,
+    progressListener: FileDownloadProgressListener?
+  ): ByteArray {
+    val fallbackRequest = createRequestForAsset(
+      assetEntity = asset,
+      extraHeaders = extraHeaders,
+      configuration = configuration,
+      allowPatch = false
+    )
+
+    val fallbackResponse = downloadData(fallbackRequest, progressListener)
+    return fallbackResponse.use { fallbackResp ->
+      val fallbackBody = fallbackResp.body
+        ?: throw IOException("Fallback asset download response from ${fallbackRequest.url} had no body")
+
+      fallbackBody.use { body ->
+        if (!fallbackResp.isSuccessful) {
+          throw IOException(body.string())
+        }
+
+        body.byteStream().use { inputStream ->
+          UpdatesUtils.verifySHA256AndWriteToFile(
+            inputStream,
+            destination,
+            expectedBase64URLEncodedSHA256Hash
+          )
+        }
+      }
+    }
+  }
+
+  private fun isPatchResponse(responseBody: ResponseBody): Boolean {
+    val mediaType = responseBody.contentType()
+    return mediaType?.let { it.type == "application" && it.subtype == "vnd.bsdiff" } ?: false
+  }
+
+  @Throws(IOException::class)
+  private fun applyPatchAndVerify(
+    asset: AssetEntity,
+    responseBody: ResponseBody,
+    destination: File,
+    updatesDirectory: File,
+    launchedUpdate: UpdateEntity,
+    requestedUpdate: UpdateEntity?,
+    expectedBase64URLEncodedSHA256Hash: String?
+  ): ByteArray {
+    val launchAssetContext = preparePatchBaseAsset(
+      asset,
+      updatesDirectory,
+      launchedUpdate
+    )
+
+    return applyBSPatch(
+      baseFile = launchAssetContext.baseFile,
+      diffBody = responseBody,
+      destination = destination,
+      expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
+      asset = asset,
+      requestedUpdateId = requestedUpdate?.id?.toString()
+    )
+  }
+
+  private data class LaunchAssetContext(val baseFile: File)
+
+  private fun preparePatchBaseAsset(
+    asset: AssetEntity,
+    updatesDirectory: File,
+    launchedUpdate: UpdateEntity
+  ): LaunchAssetContext {
+    if (!asset.isLaunchAsset) {
+      throw IOException("Received patch for non-launch asset ${asset.key}")
+    }
+
+    val launchAssetEntity = database.updateDao().loadLaunchAssetForUpdate(launchedUpdate.id)
+      ?: throw IOException("Launch asset not found for current update ${launchedUpdate.id}")
+
+    val launchAssetRelativePath = launchAssetEntity.relativePath ?: throw IOException(
+      "Launch asset for update ${launchedUpdate.id} is missing a relative path"
+    )
+
+    val baseFile = File(updatesDirectory, launchAssetRelativePath)
+    if (!baseFile.exists()) {
+      throw IOException("Base asset $baseFile is missing; cannot apply Hermes diff")
+    }
+
+    val actualBaseHash = try {
+      val hashBytes = UpdatesUtils.sha256(baseFile)
+      Base64.encodeToString(hashBytes, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+    } catch (_: Exception) {
+      null
+    }
+
+    val expectedBaseHash = launchAssetEntity.expectedHash
+    if (expectedBaseHash != null && actualBaseHash != null && expectedBaseHash != actualBaseHash) {
+      logger.warn(
+        "Asset hash mismatch for update ${launchedUpdate.id}; expected=$expectedBaseHash actual=$actualBaseHash",
+        UpdatesErrorCode.AssetsFailedToLoad,
+        launchedUpdate.id.toString(),
+        asset.key
+      )
+      throw IOException("Asset hash mismatch for update ${launchedUpdate.id}; expected=$expectedBaseHash actual=$actualBaseHash")
+    }
+
+    return LaunchAssetContext(baseFile)
+  }
+
+  private fun applyBSPatch(
+    baseFile: File,
+    diffBody: ResponseBody,
+    destination: File,
+    expectedBase64URLEncodedSHA256Hash: String?,
+    asset: AssetEntity,
+    requestedUpdateId: String?
+  ): ByteArray {
+    val patchFile = File(destination.absolutePath + PATCH_TEMP_SUFFIX)
+    val patchedTempFile = File(destination.absolutePath + PATCHED_TEMP_SUFFIX)
+
+    try {
+      patchFile.parentFile?.mkdirs()
+      patchedTempFile.parentFile?.mkdirs()
+
+      diffBody.byteStream().use { input ->
+        patchFile.outputStream().use { output -> input.copyTo(output) }
+      }
+
+      val patchResult = BSPatch.applyPatch(
+        baseFile.absolutePath,
+        patchedTempFile.absolutePath,
+        patchFile.absolutePath
+      )
+
+      if (patchResult != 0) {
+        throw IOException("BSPatch exited with code $patchResult while applying Hermes diff")
+      }
+
+      FileInputStream(patchedTempFile).use { patchedInputStream ->
+        val result = UpdatesUtils.verifySHA256AndWriteToFile(
+          patchedInputStream,
+          destination,
+          expectedBase64URLEncodedSHA256Hash
+        )
+        logger.info(
+          "Applied diff for asset ${asset.key}",
+          UpdatesErrorCode.None,
+          requestedUpdateId,
+          asset.key
+        )
+        return result
+      }
+    } catch (e: Exception) {
+      val ioException = e as? IOException ?: IOException("Failed to apply patch", e)
+      logger.error(
+        "Failed to apply patch for asset ${asset.key}",
+        ioException,
+        UpdatesErrorCode.AssetsFailedToLoad
+      )
+      throw ioException
+    } finally {
+      if (patchFile.exists()) {
+        patchFile.delete()
+      }
+      if (patchedTempFile.exists()) {
+        patchedTempFile.delete()
+      }
     }
   }
 
@@ -341,8 +590,10 @@ class FileDownloader(
 
   suspend fun downloadAsset(
     asset: AssetEntity,
-    destinationDirectory: File?,
+    destinationDirectory: File,
     extraHeaders: JSONObject,
+    launchedUpdate: UpdateEntity?,
+    requestedUpdate: UpdateEntity?,
     assetLoadProgressListener: ((Double) -> Unit)? = null
   ): AssetDownloadResult {
     if (asset.url == null) {
@@ -359,12 +610,28 @@ class FileDownloader(
       asset.relativePath = filename
       return AssetDownloadResult(asset, false)
     } else {
+      val canApplyPatch =
+        asset.isLaunchAsset &&
+          launchedUpdate != null &&
+          requestedUpdate != null &&
+          launchedUpdate.id != requestedUpdate.id
+
       try {
         val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
-          createRequestForAsset(asset, extraHeaders, configuration),
+          asset,
+          extraHeaders,
+          createRequestForAsset(
+            asset,
+            extraHeaders,
+            configuration,
+            allowPatch = canApplyPatch
+          ),
           asset.expectedHash,
           path,
-          assetLoadProgressListener?.let { listener -> { listener.invoke(it) } }
+          destinationDirectory,
+          assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
+          launchedUpdate = launchedUpdate,
+          requestedUpdate = requestedUpdate
         )
 
         asset.downloadTime = Date()
@@ -379,26 +646,27 @@ class FileDownloader(
     }
   }
 
-  private suspend fun downloadData(request: Request, progressListener: FileDownloadProgressListener? = null): Response = suspendCancellableCoroutine { continuation ->
-    val call = client.newCall(request)
+  private suspend fun downloadData(request: Request, progressListener: FileDownloadProgressListener? = null): Response =
+    suspendCancellableCoroutine { continuation ->
+      val call = client.newCall(request)
 
-    continuation.invokeOnCancellation {
-      call.cancel()
-    }
-
-    try {
-      val response = call.execute()
-      val wrappedResponse = progressListener?.let { listener ->
-        response.body?.let { responseBody ->
-          val wrappedBody = FileDownloadProgressResponseBody(responseBody, listener)
-          response.newBuilder().body(wrappedBody).build()
-        }
+      continuation.invokeOnCancellation {
+        call.cancel()
       }
-      continuation.resume(wrappedResponse ?: response)
-    } catch (e: Exception) {
-      continuation.resumeWithException(e)
+
+      try {
+        val response = call.execute()
+        val wrappedResponse = progressListener?.let { listener ->
+          response.body?.let { responseBody ->
+            val wrappedBody = FileDownloadProgressResponseBody(responseBody, listener)
+            response.newBuilder().body(wrappedBody).build()
+          }
+        }
+        continuation.resume(wrappedResponse ?: response)
+      } catch (e: Exception) {
+        continuation.resumeWithException(e)
+      }
     }
-  }
 
   private fun getCache(): Cache {
     val cacheSize = 50 * 1024 * 1024 // 50 MiB
@@ -413,24 +681,24 @@ class FileDownloader(
   fun createRequestForAsset(
     assetEntity: AssetEntity,
     extraHeaders: JSONObject,
-    configuration: UpdatesConfiguration
-  ): Request {
-    return Request.Builder()
-      .url(assetEntity.url!!.toString())
-      .addHeadersFromJSONObject(assetEntity.extraRequestHeaders)
-      .addHeadersFromJSONObject(extraHeaders)
-      .header("Expo-Platform", "android")
-      .header("Expo-Protocol-Version", "1")
-      .header("Expo-API-Version", "1")
-      .header("Expo-Updates-Environment", "BARE")
-      .header("EAS-Client-ID", easClientID)
-      .apply {
-        for ((key, value) in configuration.requestHeaders) {
-          header(key, value)
-        }
+    configuration: UpdatesConfiguration,
+    allowPatch: Boolean = true
+  ): Request = Request.Builder()
+    .url(assetEntity.url!!.toString())
+    .addHeadersFromJSONObject(assetEntity.extraRequestHeaders)
+    .addHeadersFromJSONObject(extraHeaders)
+    .header("Expo-Platform", "android")
+    .header("Expo-Protocol-Version", "1")
+    .header("Expo-API-Version", "1")
+    .header("Expo-Updates-Environment", "BARE")
+    .header("EAS-Client-ID", easClientID)
+    .header("Accept", if (allowPatch && assetEntity.isLaunchAsset) "$PATCH_CONTENT_TYPE,*/*" else "*/*")
+    .apply {
+      for ((key, value) in configuration.requestHeaders) {
+        header(key, value)
       }
-      .build()
-  }
+    }
+    .build()
 
   private fun checkCodeSigningAndCreateManifest(
     bodyString: String,
@@ -572,10 +840,10 @@ class FileDownloader(
       }
 
       launchedUpdate?.let {
-        extraHeaders.put("Expo-Current-Update-ID", it.id.toString().lowercase())
+        extraHeaders.put(EXPO_CURRENT_UPDATE_ID_HEADER, it.id.toString().lowercase())
       }
       embeddedUpdate?.let {
-        extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
+        extraHeaders.put(EXPO_EMBEDDED_UPDATE_ID_HEADER, it.id.toString().lowercase())
       }
 
       database.updateDao().loadRecentUpdateIdsWithFailedLaunch().let {
@@ -604,7 +872,7 @@ class FileDownloader(
         extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
       }
       requestedUpdate?.let {
-        extraHeaders.put("Expo-Requested-Update-ID", it.id.toString().lowercase())
+        extraHeaders.put(EXPO_REQUESTED_UPDATE_ID_HEADER, it.id.toString().lowercase())
       }
 
       return extraHeaders

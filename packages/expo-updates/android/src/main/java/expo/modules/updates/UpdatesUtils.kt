@@ -86,13 +86,19 @@ object UpdatesUtils {
   @Throws(NoSuchAlgorithmException::class, IOException::class)
   fun sha256(file: File): ByteArray {
     try {
+      val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
       FileInputStream(file).use { inputStream ->
         DigestInputStream(
           inputStream,
           MessageDigest.getInstance("SHA-256")
         ).use { digestInputStream ->
-          val md = digestInputStream.messageDigest
-          return md.digest()
+          while (true) {
+            val bytesRead = digestInputStream.read(buffer)
+            if (bytesRead == -1) {
+              break
+            }
+          }
+          return digestInputStream.messageDigest.digest()
         }
       }
     } catch (e: NoSuchAlgorithmException) {
@@ -175,6 +181,7 @@ object UpdatesUtils {
         }
         !cm.isActiveNetworkMetered
       }
+
       CheckAutomaticallyConfiguration.ALWAYS -> true
     }
   }
@@ -244,10 +251,12 @@ object UpdatesUtils {
           // Value is "double-quoted". That's valid and our regex group already strips the quotes.
           parameter.group(3)
         }
+
         token.startsWith("'") && token.endsWith("'") && token.length > 2 -> {
           // If the token is 'single-quoted' it's invalid! But we're lenient and strip the quotes.
           token.substring(1, token.length - 1)
         }
+
         else -> token
       }
 
