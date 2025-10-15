@@ -95,9 +95,15 @@ extension UIColor {
     var g: CGFloat = 0
     var b: CGFloat = 0
     var a: CGFloat = 0
+
+#if os(macOS)
+    getRed(&r, green: &g, blue: &b, alpha: &a)
+    return String(format: "#%02x%02x%02x%02x", Int(r * 255), Int(g * 255), Int(b * 255), Int(a * 255) )
+#else
     if getRed(&r, green: &g, blue: &b, alpha: &a) {
       return String(format: "#%02x%02x%02x%02x", Int(r * 255), Int(g * 255), Int(b * 255), Int(a * 255) )
     }
+#endif
     return "#00000000"
   }
 }
