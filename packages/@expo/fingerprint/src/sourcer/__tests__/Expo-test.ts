@@ -303,6 +303,7 @@ describe(getExpoConfigSourcesAsync, () => {
     const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
     expect(sources).toContainEqual(
       expect.objectContaining({
+        // the icon composer .icon is actually a directory
         type: 'dir',
         filePath: 'assets/ExpoGo.icon',
       })
