@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Improve local mock lookup. ([#39743](https://github.com/expo/expo/pull/39743) by [@aleqsio](https://github.com/aleqsio))
+- Add mocks for pedometer Recording API functions and event update helpers. ([#35652](https://github.com/expo/expo/pull/35652) by [@Krisztiaan](https://github.com/Krisztiaan))
 
 ### ⚠️ Notices
 
