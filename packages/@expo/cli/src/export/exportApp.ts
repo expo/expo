@@ -199,6 +199,7 @@ export async function exportAppAsync(
                 serializerIncludeMaps: sourceMaps,
                 bytecode: bytecode && isHermes,
                 reactCompiler: !!exp.experiments?.reactCompiler,
+                css: !!exp.experiments?.functionalCSS,
                 hosted: hostedNative,
               },
               files
@@ -392,6 +393,7 @@ export async function exportAppAsync(
           includeSourceMaps: sourceMaps,
           routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
           reactCompiler: !!exp.experiments?.reactCompiler,
+          css: !!exp.experiments?.functionalCSS,
           exportServer,
           maxWorkers,
           isExporting: true,

@@ -216,6 +216,7 @@ export async function exportEmbedBundleAndAssetsAsync(
         bytecode: options.bytecode ?? false,
         // source map inline
         reactCompiler: !!exp.experiments?.reactCompiler,
+        css: !!exp.experiments?.functionalCSS,
       },
       files,
       {

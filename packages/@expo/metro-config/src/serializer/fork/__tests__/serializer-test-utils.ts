@@ -87,6 +87,7 @@ export async function serializeShakingAsync(
     splitChunks?: boolean;
     mockRuntime?: boolean;
     minify?: boolean;
+    css?: boolean;
   } = {}
 ) {
   return serializeOptimizeAsync(fs, { treeshake: true, ...options });
@@ -102,6 +103,8 @@ export async function serializeOptimizeAsync(
     minify?: boolean;
     dev?: boolean;
     mockRuntime?: boolean;
+    platform?: string;
+    css?: boolean;
   } = {}
 ) {
   return await serializeToWithGraph(

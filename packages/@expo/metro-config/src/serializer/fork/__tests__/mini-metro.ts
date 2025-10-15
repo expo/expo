@@ -51,6 +51,7 @@ export async function microBundle({
       'expo-mock/async-require',
       'react-server-dom-webpack/server',
       'react-server-dom-webpack/client',
+      'react-native-css/native-internal',
       'expo-router/rsc/internal',
     ]) {
       if (id === mid && !fullFs[mid]) {
@@ -88,6 +89,7 @@ export async function microBundle({
     treeshake?: boolean;
     optimize?: boolean;
     inlineRequires?: boolean;
+    css?: boolean;
   };
   preModulesFs?: Record<string, string>;
 }): Promise<
@@ -102,6 +104,7 @@ export async function microBundle({
     'expo-router/rsc/internal': ``,
     'react-server-dom-webpack/server': ``,
     'react-server-dom-webpack/client': ``,
+    'react-native-css/native-internal': ``,
 
     'expo-mock/async-require': `
     module.exports = () => 'MOCK'
@@ -136,6 +139,7 @@ export async function microBundle({
       engine: options.hermes ? 'hermes' : undefined,
       environment: options.isReactServer ? 'react-server' : options.isServer ? 'node' : undefined,
       optimize: options.optimize ?? options.treeshake,
+      css: options.css ?? false,
     },
     // NOTE: This is non-standard but it provides a cleaner output
     experimentalImportSupport: true,

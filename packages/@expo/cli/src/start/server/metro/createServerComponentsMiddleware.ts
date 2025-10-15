@@ -353,6 +353,7 @@ export function createServerComponentsMiddleware(
       asyncRoutes,
       preserveEnvVars,
       reactCompiler,
+      css,
       lazy,
     } = instanceMetroOptions;
 
@@ -404,6 +405,7 @@ export function createServerComponentsMiddleware(
         routerRoot,
         isExporting,
         reactCompiler: !!reactCompiler,
+        css,
         engine: context.engine ?? undefined,
         bytecode: false,
         clientBoundaries: [],

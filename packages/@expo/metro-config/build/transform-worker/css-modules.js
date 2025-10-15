@@ -51,6 +51,7 @@ async function transformCssModuleWeb(props) {
         output: outputModule,
         css: cssImports.code,
         map: cssResults.map,
+        exports: cssResults.exports,
         ...cssImports,
     };
 }

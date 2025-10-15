@@ -65,6 +65,7 @@ export async function exportDomComponentAsync({
     serializerIncludeMaps: includeSourceMaps,
     bytecode: false,
     reactCompiler: !!exp.experiments?.reactCompiler,
+    css: !!exp.experiments?.functionalCSS,
     baseUrl: './',
     useMd5Filename,
     // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
