@@ -9,6 +9,8 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix recursive file deletion. ([#40248](https://github.com/expo/expo/pull/40248) by [@aleqsio](https://github.com/aleqsio))
+- fix(expo-file-system): Correct TypeScript definition for File.write to return Promise<void> ([#40400](https://github.com/expo/expo/pull/40400) by [@nihar777](https://github.com/nihar777))
+
 
 ### 💡 Others
 
@@ -22,6 +24,7 @@
 
 - Fix typedoc in the File class. ([#40064](https://github.com/expo/expo/pull/40064) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Fix getContentUri. ([#40001](https://github.com/expo/expo/pull/40001) by [@aleqsio](https://github.com/aleqsio))
+
 
 ## 19.0.15 - 2025-09-22
 
