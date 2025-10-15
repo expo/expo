@@ -81,5 +81,4 @@ var useNavigation_1 = require("./useNavigation");
 Object.defineProperty(exports, "useNavigation", { enumerable: true, get: function () { return useNavigation_1.useNavigation; } });
 var useFocusEffect_1 = require("./useFocusEffect");
 Object.defineProperty(exports, "useFocusEffect", { enumerable: true, get: function () { return useFocusEffect_1.useFocusEffect; } });
-__exportStar(require("./split-view"), exports);
 //# sourceMappingURL=exports.js.map

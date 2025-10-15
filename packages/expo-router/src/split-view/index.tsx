@@ -1,2 +1,1 @@
-export { SplitView } from './split-view';
-export * from './types';
+export { SplitView, SplitViewProps } from './split-view';

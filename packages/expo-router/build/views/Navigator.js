@@ -126,7 +126,6 @@ function Slot(props) {
     const contextKey = (0, Route_1.useContextKey)();
     const context = React.use(exports.NavigatorContext);
     if (context?.contextKey !== contextKey) {
-        console.log('Rendering default navigator');
         // The _layout has changed since the last navigator
         return <SlotNavigator {...props}/>;
     }

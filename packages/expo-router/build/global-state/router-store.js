@@ -84,12 +84,6 @@ exports.store = {
     get rootComponent() {
         return storeRef.current.rootComponent;
     },
-    get sidebarComponent() {
-        return storeRef.current.sidebarComponent;
-    },
-    get supplementaryComponent() {
-        return storeRef.current.supplementaryComponent;
-    },
     getStateForHref(href, options) {
         href = (0, href_1.resolveHref)(href);
         href = (0, href_1.resolveHrefStringWithSegments)(href, exports.store.getRouteInfo(), options);
@@ -147,8 +141,6 @@ function useStore(context, linkingConfigOptions, serverUrl) {
     const config = expo_constants_1.default.expoConfig?.extra?.router;
     let linking;
     let rootComponent = react_1.Fragment;
-    let sidebarComponent;
-    let supplementaryComponent;
     let initialState;
     const routeNode = (0, getRoutes_1.getRoutes)(context, {
         ...config,
@@ -178,14 +170,6 @@ function useStore(context, linkingConfigOptions, serverUrl) {
             notFound: config?.notFound ?? true,
         });
         rootComponent = (0, useScreens_1.getQualifiedRouteComponent)(routeNode);
-        const sidebarNode = routeNode.children.find((child) => child.route === '+sidebar');
-        if (sidebarNode) {
-            sidebarComponent = (0, useScreens_1.getQualifiedRouteComponent)(sidebarNode);
-        }
-        const supplementaryNode = routeNode.children.find((child) => child.route === '+supplementary');
-        if (supplementaryNode) {
-            supplementaryComponent = (0, useScreens_1.getQualifiedRouteComponent)(supplementaryNode);
-        }
         // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
         // This will cause static rendering to fail, which once performs a single pass.
         // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
@@ -214,8 +198,6 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         routeNode,
         config,
         rootComponent,
-        sidebarComponent,
-        supplementaryComponent,
         linking,
         redirects,
         state: initialState,

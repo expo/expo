@@ -33,6 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.IsWithinLayoutContext = void 0;
 exports.useFilterScreenChildren = useFilterScreenChildren;
 exports.withLayoutContext = withLayoutContext;
 const react_1 = __importStar(require("react"));
@@ -107,6 +108,7 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
         };
     }, [children]);
 }
+exports.IsWithinLayoutContext = (0, react_1.createContext)(false);
 /**
  * Returns a navigator that automatically injects matched routes and renders nothing when there are no children.
  * Return type with `children` prop optional.
@@ -153,7 +155,9 @@ function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
         if (!sorted.length) {
             return null;
         }
-        return <Nav {...props} id={contextKey} ref={ref} children={sorted}/>;
+        return (<exports.IsWithinLayoutContext value>
+          <Nav {...props} id={contextKey} ref={ref} children={sorted}/>;
+        </exports.IsWithinLayoutContext>);
     }), {
         Screen: Screen_1.Screen,
         Protected: Protected_1.Protected,

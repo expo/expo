@@ -1,6 +1,7 @@
-import { SplitView, useGlobalSearchParams, useRouter } from 'expo-router';
+import { useGlobalSearchParams, useRouter } from 'expo-router';
+import { SplitView } from 'expo-router/unstable-split-view';
 import React from 'react';
-import { PlatformColor, Pressable, Text } from 'react-native';
+import { PlatformColor, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-screens/experimental';
 
 const passkeys = ['Github', 'Google', 'Facebook', 'Twitter', 'Apple', 'Microsoft', 'Amazon'];
@@ -9,6 +10,44 @@ const security = ['Admin1234', 'Root'];
 const all = [...passkeys, ...security];
 
 export default function Layout() {
+  return (
+    <SplitView
+      preferredDisplayMode="secondaryOnly"
+      displayModeButtonVisibility="always"
+      // primaryEdge="trailing"
+      showSecondaryToggleButton
+      showInspector
+      preferredSplitBehavior="automatic">
+      <SplitView.Column>
+        <SafeAreaView
+          edges={{ top: true, left: true }}
+          style={{
+            flex: 1,
+            flexWrap: 'wrap',
+            gap: 8,
+            flexDirection: 'row',
+            padding: 8,
+          }}>
+          <PasscodeCard title="All" param="all" />
+          <PasscodeCard title="Passkeys" param="passkeys" />
+          <PasscodeCard title="Codes" param="codes" />
+          <PasscodeCard title="Security" param="security" />
+          <PasscodeCard title="Deleted" param="deleted" />
+        </SafeAreaView>
+      </SplitView.Column>
+      <SplitView.Column>
+        <PasswordElementList />
+      </SplitView.Column>
+      <SplitView.Inspector>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Inspector</Text>
+        </View>
+      </SplitView.Inspector>
+    </SplitView>
+  );
+}
+
+function PasswordElementList() {
   const params = useGlobalSearchParams();
   const data = (() => {
     switch (params.type) {
@@ -24,39 +63,12 @@ export default function Layout() {
     }
   })();
   return (
-    <SplitView>
-      <SplitView.Column>
-        <SafeAreaView
-          edges={{ top: true }}
-          style={{
-            flex: 1,
-            flexWrap: 'wrap',
-            gap: 8,
-            flexDirection: 'row',
-            padding: 8,
-            backgroundColor: PlatformColor('lightGray'),
-          }}>
-          <PasscodeCard title="All" param="all" />
-          <PasscodeCard title="Passkeys" param="passkeys" />
-          <PasscodeCard title="Codes" param="codes" />
-          <PasscodeCard title="Security" param="security" />
-          <PasscodeCard title="Deleted" param="deleted" />
-        </SafeAreaView>
-      </SplitView.Column>
-      <SplitView.Column>
-        <SafeAreaView
-          edges={{ top: true, left: true }}
-          style={{
-            flex: 1,
-            gap: 8,
-            backgroundColor: PlatformColor('lightGray'),
-          }}>
-          {data.map((item, index) => (
-            <PasswordElement key={item} title={item} />
-          ))}
-        </SafeAreaView>
-      </SplitView.Column>
-    </SplitView>
+    <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: undefined }}>
+      {/* <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: '#0F0' }}> */}
+      {data.map((item, index) => (
+        <PasswordElement key={item} title={item} />
+      ))}
+    </ScrollView>
   );
 }
 
@@ -100,7 +112,9 @@ function PasswordElement({ title }: { title: string }) {
         backgroundColor: isActive ? PlatformColor('systemBlue') : undefined,
         padding: 12,
       }}>
-      <Text style={{ color: isActive ? 'white' : 'black', fontSize: 16 }}>{title}</Text>
+      <SafeAreaView edges={{ left: true }}>
+        <Text style={{ color: isActive ? 'white' : 'black', fontSize: 16 }}>{title}</Text>
+      </SafeAreaView>
     </Pressable>
   );
 }

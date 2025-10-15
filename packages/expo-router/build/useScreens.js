@@ -198,7 +198,7 @@ function getQualifiedRouteComponent(value) {
             if (isLeaf && stateForPath)
                 store.setFocusedState(stateForPath);
         }
-        (0, react_1.useEffect)(() => navigation?.addListener?.('focus', () => {
+        (0, react_1.useEffect)(() => navigation.addListener('focus', () => {
             const state = navigation.getState();
             const isLeaf = !('state' in state.routes[state.index]);
             // Because setFocusedState caches the route info, this call will only trigger rerenders

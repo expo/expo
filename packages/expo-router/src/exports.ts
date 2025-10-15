@@ -47,5 +47,3 @@ export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 
 export type * from './types';
-
-export * from './split-view';

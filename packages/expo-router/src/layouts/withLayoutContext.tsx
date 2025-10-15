@@ -9,6 +9,7 @@ import React, {
   ReactNode,
   RefAttributes,
   useMemo,
+  createContext,
 } from 'react';
 
 import { useContextKey } from '../Route';
@@ -109,6 +110,8 @@ export function useFilterScreenChildren(
   }, [children]);
 }
 
+export const IsWithinLayoutContext = createContext(false);
+
 /**
  * Returns a navigator that automatically injects matched routes and renders nothing when there are no children.
  * Return type with `children` prop optional.
@@ -170,7 +173,11 @@ export function withLayoutContext<
         return null;
       }
 
-      return <Nav {...props} id={contextKey} ref={ref} children={sorted} />;
+      return (
+        <IsWithinLayoutContext value>
+          <Nav {...props} id={contextKey} ref={ref} children={sorted} />;
+        </IsWithinLayoutContext>
+      );
     }),
     {
       Screen,

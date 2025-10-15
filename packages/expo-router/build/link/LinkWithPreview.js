@@ -44,7 +44,6 @@ const elements_1 = require("./elements");
 const LinkPreviewContext_1 = require("./preview/LinkPreviewContext");
 const native_1 = require("./preview/native");
 const useNextScreenId_1 = require("./preview/useNextScreenId");
-const children_1 = require("../utils/children");
 const url_1 = require("../utils/url");
 const isPad = react_native_1.Platform.OS === 'ios' && react_native_1.Platform.isPad;
 function LinkWithPreview({ children, ...rest }) {
@@ -74,9 +73,9 @@ function LinkWithPreview({ children, ...rest }) {
             }
         }
     }, [rest.href, rest.replace]);
-    const triggerElement = react_1.default.useMemo(() => (0, children_1.getFirstChildOfType)(children, elements_1.LinkTrigger), [children]);
-    const menuElement = react_1.default.useMemo(() => (0, children_1.getFirstChildOfType)(children, elements_1.LinkMenu), [children]);
-    const previewElement = react_1.default.useMemo(() => (0, children_1.getFirstChildOfType)(children, elements_1.LinkPreview), [children]);
+    const triggerElement = react_1.default.useMemo(() => getFirstChildOfType(children, elements_1.LinkTrigger), [children]);
+    const menuElement = react_1.default.useMemo(() => getFirstChildOfType(children, elements_1.LinkMenu), [children]);
+    const previewElement = react_1.default.useMemo(() => getFirstChildOfType(children, elements_1.LinkPreview), [children]);
     if ((previewElement || menuElement) && !triggerElement) {
         if (process.env.NODE_ENV !== 'production') {
             throw new Error('When you use Link.Preview, you must use Link.Trigger to specify the trigger element.');
@@ -126,5 +125,8 @@ function LinkWithPreview({ children, ...rest }) {
         {menuElement}
       </InternalLinkPreviewContext_1.InternalLinkPreviewContext>
     </native_1.NativeLinkPreview>);
+}
+function getFirstChildOfType(children, type) {
+    return react_1.default.Children.toArray(children).find((child) => (0, react_1.isValidElement)(child) && child.type === type);
 }
 //# sourceMappingURL=LinkWithPreview.js.map

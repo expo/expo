@@ -675,8 +675,6 @@ function flattenDirectoryTreeToRoutes(
   return layout;
 }
 
-const ALLOWED_PLUS_FILES = new Set(['+not-found', '+sidebar', '+supplementary']);
-
 function getFileMeta(
   originalKey: string,
   options: Options,
@@ -700,7 +698,7 @@ function getFileMeta(
   }
 
   // Nested routes cannot start with the '+' character, except for the '+not-found' route
-  if (!isApi && filename.startsWith('+') && !ALLOWED_PLUS_FILES.has(filenameWithoutExtensions)) {
+  if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
     const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
     throw new Error(
       `Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Rename it to ${renamedRoute}"`

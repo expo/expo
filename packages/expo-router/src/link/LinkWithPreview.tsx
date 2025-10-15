@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  isValidElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement,
+} from 'react';
 import { Platform } from 'react-native';
 
 import { useRouter } from '../hooks';
@@ -11,7 +18,6 @@ import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
-import { getFirstChildOfType } from '../utils/children';
 import { shouldLinkExternally } from '../utils/url';
 
 const isPad = Platform.OS === 'ios' && Platform.isPad;
@@ -135,5 +141,14 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
         {menuElement}
       </InternalLinkPreviewContext>
     </NativeLinkPreview>
+  );
+}
+
+function getFirstChildOfType<PropsT>(
+  children: React.ReactNode | React.ReactNode[],
+  type: (props: PropsT) => unknown
+) {
+  return React.Children.toArray(children).find(
+    (child): child is ReactElement<PropsT> => isValidElement(child) && child.type === type
   );
 }
