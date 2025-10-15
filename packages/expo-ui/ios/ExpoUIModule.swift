@@ -48,7 +48,15 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
     }
-    View(ShareLinkView.self)
+    View(ShareLinkView.self) {
+      AsyncFunction("setItem") { (view: ShareLinkView, url: String?) in
+        guard let url, let validURL = URL(string: url) else {
+          view.rejectContinuation()
+          return
+        }
+        view.resolveContinuation(validURL)
+      }
+    }
     View(SliderView.self)
     View(SpacerView.self)
     View(StepperView.self)

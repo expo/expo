@@ -4,7 +4,14 @@ export type ShareLinkProps = {
      * The URL or item to be shared.
      * This can be a web URL, a file path, or any other shareable item.
      */
-    item: string;
+    item?: string;
+    /**
+     * A function that returns a promise resolving to the URL to be shared.
+     * When provided, the ShareLink will wait for this promise to resolve before sharing.
+     * > **Note**: Preview is required when using `getItemAsync`.
+     * @platform ios 16.0+
+     */
+    getItemAsync?: () => Promise<string>;
     /**
      * Optional subject for the share action.
      * This is typically used as the title of the shared content.
