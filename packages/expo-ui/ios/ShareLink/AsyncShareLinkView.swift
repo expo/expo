@@ -70,7 +70,7 @@ extension AsyncShareData: Transferable {
 }
 
 @available(iOS 16.0, *)
-struct AsyncShareLinkView<Content: View>: View {
+internal struct AsyncShareLinkView<Content: View>: View {
   var props: ShareLinkViewProps
   let asyncData: AsyncShareData?
   let content: () -> Content
