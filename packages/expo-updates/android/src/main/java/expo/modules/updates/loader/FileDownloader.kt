@@ -641,6 +641,7 @@ class FileDownloader(
           launchedUpdate.id != requestedUpdate.id
 
       try {
+        val allowPatch = asset.isLaunchAsset && configuration.enableBsdiffPatchSupport
         val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
           asset,
           extraHeaders,
@@ -717,7 +718,7 @@ class FileDownloader(
     .header("Expo-API-Version", "1")
     .header("Expo-Updates-Environment", "BARE")
     .header("EAS-Client-ID", easClientID)
-    .header("Accept", if (allowPatch && assetEntity.isLaunchAsset) "$PATCH_CONTENT_TYPE,*/*" else "*/*")
+    .header("Accept", if (allowPatch && assetEntity.isLaunchAsset && configuration.enableBsdiffPatchSupport) "$PATCH_CONTENT_TYPE,*/*" else "*/*")
     .apply {
       for ((key, value) in configuration.requestHeaders) {
         header(key, value)
