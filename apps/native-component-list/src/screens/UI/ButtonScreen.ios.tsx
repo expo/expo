@@ -9,7 +9,15 @@ import {
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
-import { Animation, animation, fixedSize, frame, padding } from '@expo/ui/swift-ui/modifiers';
+import {
+  Animation,
+  animation,
+  background,
+  fixedSize,
+  frame,
+  glassEffect,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
@@ -47,18 +55,16 @@ export default function ButtonScreen() {
                 </HStack>
               </VStack>
             }>
-            <HStack spacing={8}>
+            <HStack spacing={8} modifiers={[frame({ height: 50 }), padding({ horizontal: 10 })]}>
               <Text>Open Popover</Text>
               <Image
-                modifiers={[
-                  animation(Animation.easeInOut({ duration: 0.4 }), isPresented),
-                  padding({ all: 30 }),
-                ]}
+                modifiers={[animation(Animation.easeInOut({ duration: 0.4 }), isPresented)]}
                 systemName={isPresented ? 'gearshape' : 'gearshape.fill'}
                 size={24}
               />
             </HStack>
           </Button>
+
           <Button
             modifiers={[fixedSize()]}
             variant="glassProminent"
