@@ -8,8 +8,8 @@ public func Property(_ name: String) -> PropertyDefinition<Void> {
 /**
  Creates the read-only property whose getter doesn't take the owner as an argument.
  */
-public func Property<Value: AnyArgument>(_ name: String, @_implicitSelfCapture get: @escaping () -> Value) -> PropertyDefinition<Void> {
-  return PropertyDefinition(name: name, getter: get)
+public func Property<Value: AnyArgument>(_ name: String, @_implicitSelfCapture get: @Sendable @escaping () -> Value) -> PropertyDefinition<Void> {
+  return PropertyDefinition(name: name, get: get)
 }
 
 /**
@@ -17,9 +17,9 @@ public func Property<Value: AnyArgument>(_ name: String, @_implicitSelfCapture g
  */
 public func Property<Value: AnyArgument, OwnerType>(
   _ name: String,
-  @_implicitSelfCapture get: @escaping (_ this: OwnerType) -> Value
+  @_implicitSelfCapture get: @Sendable @escaping (_ this: OwnerType) -> Value
 ) -> PropertyDefinition<OwnerType> {
-  return PropertyDefinition<OwnerType>(name: name, getter: get)
+  return PropertyDefinition<OwnerType>(name: name, get: get)
 }
 
 /**
@@ -48,3 +48,5 @@ public func Property<Value: AnyArgument, OwnerType>(
     owner[keyPath: keyPath] = newValue
   }
 }
+
+extension KeyPath: @unchecked @retroactive Sendable {}

@@ -3,7 +3,7 @@
 /**
  Type-erased protocol for synchronous functions.
  */
-internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition {
+internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition, Sendable {
   /**
    Calls the function synchronously with given arguments.
    - Parameters:

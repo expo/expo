@@ -12,7 +12,7 @@ protocol AnyPropertyDefinition {
   func buildDescriptor(appContext: AppContext) throws -> JavaScriptObject
 }
 
-public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefinition, @unchecked Sendable {
+public struct PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefinition, Sendable {
   /**
    Name of the property.
    */
@@ -21,38 +21,64 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
   /**
    Synchronous function that is called when the property is being accessed.
    */
-  var getter: AnySyncFunctionDefinition?
+  let getter: AnySyncFunctionDefinition?
 
   /**
    Synchronous function that is called when the property is being set.
    */
-  var setter: AnySyncFunctionDefinition?
+  let setter: AnySyncFunctionDefinition?
 
   /**
-   Initializes an unowned PropertyDefinition without getter and setter functions.
+   Initializes a property definition without getter and setter functions.
+   Make sure to call `.get` or `.set` modifiers, otherwise the property is no-op.
    */
   init(name: String) {
     self.name = name
+    self.getter = nil
+    self.setter = nil
   }
 
   /**
-   Initializes an unowned PropertyDefinition with a getter without arguments.
+   The main initializer that initializes all stored properties.
    */
-  init<ReturnType>(name: String, getter: @escaping () -> ReturnType) {
+  private init(name: String, getter: AnySyncFunctionDefinition? = nil, setter: AnySyncFunctionDefinition? = nil) {
     self.name = name
-
-    // Set the getter right away
-    self.get(getter)
+    self.getter = getter
+    self.setter = setter
   }
 
   /**
-   Initializes an owned PropertyDefinition with a getter that takes the owner as its first argument.
+   Initializes a property definition with an optional getter and setter.
    */
-  init<ReturnType>(name: String, getter: @escaping (_ this: OwnerType) -> ReturnType) {
-    self.name = name
+  init<ReturnType>(
+    name: String,
+    get: (@Sendable (_ this: OwnerType) -> ReturnType)?,
+    set: (@Sendable (_ this: OwnerType, _ newValue: ReturnType) -> Void)? = nil
+  ) {
+    var getter: AnySyncFunctionDefinition?
+    var setter: AnySyncFunctionDefinition?
 
-    // Set the getter right away
-    self.get(getter)
+    if let get {
+      getter = SyncFunctionDefinition(
+        "get",
+        firstArgType: OwnerType.self,
+        dynamicArgumentTypes: [~OwnerType.self],
+        returnType: ~ReturnType.self,
+        get
+      )
+      getter?.takesOwner = true
+    }
+    if let set {
+      setter = SyncFunctionDefinition(
+        "set",
+        firstArgType: OwnerType.self,
+        dynamicArgumentTypes: [~OwnerType.self, ~ReturnType.self],
+        returnType: ~Void.self,
+        set
+      )
+      setter?.takesOwner = true
+    }
+    self.init(name: name, getter: getter, setter: setter)
   }
 
   // MARK: - Modifiers
@@ -61,47 +87,46 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
    Modifier that sets property getter that has no arguments (the owner is not used).
    */
   @discardableResult
-  public func get<ReturnType>(_ getter: @escaping () -> ReturnType) -> Self {
-    self.getter = SyncFunctionDefinition(
+  public func get<ReturnType>(_ get: @Sendable @escaping () -> ReturnType) -> Self {
+    let getter = SyncFunctionDefinition(
       "get",
       firstArgType: Void.self,
       dynamicArgumentTypes: [],
       returnType: ~ReturnType.self,
-      getter
+      get
     )
-    return self
+    return PropertyDefinition(name: name, getter: getter, setter: setter)
   }
 
   /**
    Modifier that sets property getter that receives the owner as an argument.
-   The owner is an object on which the function is called, like `this` in JavaScript.
    */
   @discardableResult
-  public func get<ReturnType>(_ getter: @escaping (_ this: OwnerType) -> ReturnType) -> Self {
-    self.getter = SyncFunctionDefinition(
+  public func get<ReturnType>(_ get: @Sendable @escaping (_ this: OwnerType) -> ReturnType) -> Self {
+    let getter = SyncFunctionDefinition(
       "get",
       firstArgType: OwnerType.self,
       dynamicArgumentTypes: [~OwnerType.self],
       returnType: ~ReturnType.self,
-      getter
+      get
     )
-    self.getter?.takesOwner = true
-    return self
+    getter.takesOwner = true
+    return PropertyDefinition(name: name, getter: getter, setter: setter)
   }
 
   /**
    Modifier that sets property setter that receives only the new value as an argument.
    */
   @discardableResult
-  public func set<ValueType>(_ setter: @escaping (_ newValue: ValueType) -> Void) -> Self {
-    self.setter = SyncFunctionDefinition(
+  public func set<ValueType>(_ set: @Sendable @escaping (_ newValue: ValueType) -> Void) -> Self {
+    let setter = SyncFunctionDefinition(
       "set",
       firstArgType: ValueType.self,
       dynamicArgumentTypes: [~ValueType.self],
       returnType: ~Void.self,
-      setter
+      set
     )
-    return self
+    return PropertyDefinition(name: name, getter: getter, setter: setter)
   }
 
   /**
@@ -109,16 +134,16 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
    The owner is an object on which the function is called, like `this` in JavaScript.
    */
   @discardableResult
-  public func set<ValueType>(_ setter: @escaping (_ this: OwnerType, _ newValue: ValueType) -> Void) -> Self {
-    self.setter = SyncFunctionDefinition(
+  public func set<ValueType>(_ set: @Sendable @escaping (_ this: OwnerType, _ newValue: ValueType) -> Void) -> Self {
+    let setter = SyncFunctionDefinition(
       "set",
       firstArgType: OwnerType.self,
       dynamicArgumentTypes: [~OwnerType.self, ~ValueType.self],
       returnType: ~Void.self,
-      setter
+      set
     )
-    self.setter?.takesOwner = true
-    return self
+    setter.takesOwner = true
+    return PropertyDefinition(name: name, getter: getter, setter: setter)
   }
 
   // MARK: - Internals
@@ -138,14 +163,11 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
    Creates the JavaScript function that will be used as a getter of the property.
    */
   internal func buildGetter(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createSyncFunction(name, argsCount: 0) { [weak appContext, weak self, name] this, arguments in
+    return try appContext.runtime.createSyncFunction(name, argsCount: 0) { [weak appContext, getter] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
-      guard let self else {
-        throw NativePropertyUnavailableException(name)
-      }
-      guard let getter = self.getter else {
+      guard let getter else {
         return .undefined
       }
       return try getter.call(appContext, withThis: this, arguments: arguments)
@@ -156,14 +178,11 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
    Creates the JavaScript function that will be used as a setter of the property.
    */
   internal func buildSetter(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createSyncFunction(name, argsCount: 1) { [weak appContext, weak self, name] this, arguments in
+    return try appContext.runtime.createSyncFunction(name, argsCount: 1) { [weak appContext, setter] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
-      guard let self else {
-        throw NativePropertyUnavailableException(name)
-      }
-      guard let setter = self.setter else {
+      guard let setter else {
         return .undefined
       }
       return try setter.call(appContext, withThis: this, arguments: arguments)
@@ -185,13 +204,5 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
       descriptor.setProperty("set", value: try buildSetter(appContext: appContext))
     }
     return descriptor
-  }
-}
-
-// MARK: - Exceptions
-
-internal final class NativePropertyUnavailableException: GenericException<String>, @unchecked Sendable {
-  override var reason: String {
-    return "Native property '\(param)' is no longer available in memory"
   }
 }
