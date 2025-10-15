@@ -28,7 +28,7 @@ internal struct AsyncShareData {
 }
 
 // use extension for ios 16+ check
-@available(iOS 16.0, *)
+@available(iOS 16.0, tvOS 16.0, *)
 extension AsyncShareData: Transferable {
   init(props: ShareLinkViewProps) {
     self.props = props

@@ -8,7 +8,7 @@ export type ShareLinkProps = {
     /**
      * A function that returns a promise resolving to the URL to be shared.
      * When provided, the ShareLink will wait for this promise to resolve before sharing.
-     * > **Note**: Preview is required when using `getItemAsync`.
+     * > *Note*: Preview is required when using `getItemAsync`.
      * @platform ios 16.0+
      */
     getItemAsync?: () => Promise<string>;
