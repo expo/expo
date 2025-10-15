@@ -290,7 +290,7 @@ Since DOM components are used to run websites, you might need extra qualifiers t
 import { IS_DOM } from 'expo/dom';
 ```
 
-While `process.env.EXPO_OS` will always be web in a DOM component, you can detect the owner platform with `process.env.EXPO_DOM_OS`. This will be either `ios`, `android`, depending on the parent OS, and `undefined` on web.
+While `process.env.EXPO_OS` will always be web in a DOM component, you can detect the _top_ platform with `process.env.EXPO_TOP_OS`. This will be either `ios`, `android`, depending on the OS of the top-most native platform, and `undefined` on web.
 
 ## Public assets
 

@@ -24,7 +24,7 @@ export interface ExpoProcessEnv {
   EXPO_OS?: string;
 
   /** Run-time representation of the `Platform.OS` for the parent platform that's hosting the DOM component. Only defined in DOM components, undefined in standard runtimes and on web. */
-  EXPO_DOM_OS?: 'ios' | 'android' | (string & {});
+  EXPO_TOP_OS?: 'ios' | 'android' | (string & {});
 
   [key: string]: any;
 }
