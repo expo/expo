@@ -91,14 +91,6 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   }
 
   if (isReactServer) {
-    try {
-      // This will throw if React isn't the right version.
-      require('react-server-dom-webpack/server');
-    } catch {
-      // Use a resolver which redirects to the canaries directory for React and React DOM.
-      preset.resolver = require.resolve('./react-canaries-resolver');
-    }
-
     preset.testEnvironment = 'node';
     if (!preset.setupFiles) {
       preset.setupFiles = [];
