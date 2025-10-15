@@ -2735,7 +2735,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNReanimated (4.1.1):
+  - RNReanimated (4.1.3):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2757,10 +2757,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/reanimated (= 4.1.1)
+    - RNReanimated/reanimated (= 4.1.3)
     - RNWorklets
     - Yoga
-  - RNReanimated/reanimated (4.1.1):
+  - RNReanimated/reanimated (4.1.3):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2782,10 +2782,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/reanimated/apple (= 4.1.1)
+    - RNReanimated/reanimated/apple (= 4.1.3)
     - RNWorklets
     - Yoga
-  - RNReanimated/reanimated/apple (4.1.1):
+  - RNReanimated/reanimated/apple (4.1.3):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2901,7 +2901,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.5.1):
+  - RNWorklets (0.6.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2923,9 +2923,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets (= 0.5.1)
+    - RNWorklets/worklets (= 0.6.1)
     - Yoga
-  - RNWorklets/worklets (0.5.1):
+  - RNWorklets/worklets (0.6.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2947,9 +2947,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets/apple (= 0.5.1)
+    - RNWorklets/worklets/apple (= 0.6.1)
     - Yoga
-  - RNWorklets/worklets/apple (0.5.1):
+  - RNWorklets/worklets/apple (0.6.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3674,7 +3674,7 @@ SPEC CHECKSUMS:
   ExpoStoreReview: 142af4a031b0a7ad99e70e1de8675da03be4ff40
   ExpoSymbols: ef7b8ac77ac2d496b1bc3f0f7daf5e19c3a9933a
   ExpoSystemUI: 5e7fbe4b716edb9e3a7bc0441e4a3b6b1f9eb1ea
-  ExpoTrackingTransparency: fee2dc0cea16d12aeffde2f388671b029c563ed3
+  ExpoTrackingTransparency: 92e731b9b9b09353c3ef48e0fc9f82b89a1957c6
   ExpoUI: 54732dfe9e601d3515e9d715eddb466d4184577a
   ExpoVideo: 7e39a5933892dc640b1b83013f3f9d9d37072151
   ExpoVideoThumbnails: c951ae8c6ed9974dd3ae5f79b2dd1d9b6e8ab266
@@ -3774,10 +3774,10 @@ SPEC CHECKSUMS:
   RNCPicker: 38a9deb903d9a8ae18b598bac727e6c84b3cf0fa
   RNDateTimePicker: 6fdd63f5d1e0f21faf4cc8674957c52958a7efae
   RNGestureHandler: 811910565ec11984124c509763477bb53ab445d3
-  RNReanimated: 58fbe34137d4ce55a1545a88d9afac0e3087099b
+  RNReanimated: f365c13045d09b5a84487029490d0fa15281d6ec
   RNScreens: dd61bc3a3e6f6901ad833efa411917d44827cf51
   RNSVG: 602379e4d59935e26ecc05dd9d04832eefb20dac
-  RNWorklets: 56b7e8755716f5995a4a775bebf3a6ea4e2f7f64
+  RNWorklets: c181ebc224265a35743abc490e54a5cf66eb2add
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
