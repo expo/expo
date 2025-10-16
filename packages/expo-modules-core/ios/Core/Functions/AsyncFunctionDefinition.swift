@@ -21,7 +21,7 @@ private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue
 /**
  Represents a function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
-public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition {
+public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition, @unchecked Sendable {
   typealias ClosureType = (Args) throws -> ReturnType
 
   /**
@@ -63,7 +63,12 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
 
   var takesOwner: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+  func call(
+    by owner: AnyObject?,
+    withArguments args: [Any],
+    appContext: AppContext,
+    callback: @Sendable @escaping (FunctionCallResult) -> ()
+  ) {
     let promise = Promise(appContext: appContext) { value in
       callback(.success(Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: ~ReturnType.self)))
     } rejecter: { exception in
@@ -174,13 +179,5 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
   public func runOnQueue(_ queue: DispatchQueue?) -> Self {
     self.queue = queue
     return self
-  }
-}
-
-// MARK: - Exceptions
-
-internal final class NativeFunctionUnavailableException: GenericException<String> {
-  override var reason: String {
-    return "Native function '\(param)' is no longer available in memory"
   }
 }

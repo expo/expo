@@ -1,10 +1,10 @@
-import React
+@preconcurrency import React
 
 /**
  The app context is an interface to a single Expo app.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject {
+public final class AppContext: NSObject, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 

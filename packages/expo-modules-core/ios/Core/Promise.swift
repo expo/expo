@@ -1,8 +1,8 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-public struct Promise: AnyArgument {
-  public typealias ResolveClosure = (Any?) -> Void
-  public typealias RejectClosure = (Exception) -> Void
+public struct Promise: AnyArgument, Sendable {
+  public typealias ResolveClosure = @Sendable (Any?) -> Void
+  public typealias RejectClosure = @Sendable (Exception) -> Void
 
   internal weak var appContext: AppContext?
   public var resolver: ResolveClosure
