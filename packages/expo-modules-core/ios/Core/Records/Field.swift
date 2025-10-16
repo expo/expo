@@ -3,7 +3,7 @@
  For supported field types, see https://docs.expo.dev/modules/module-api/#argument-types
  */
 @propertyWrapper
-public final class Field<Type: AnyArgument>: AnyFieldInternal {
+public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendable {
   /**
    The wrapped value.
    */
@@ -89,13 +89,13 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal {
   }
 }
 
-internal class FieldRequiredException: GenericException<String> {
+internal final class FieldRequiredException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     "Value for field '\(param)' is required, got nil"
   }
 }
 
-internal class FieldInvalidTypeException: GenericException<(fieldKey: String, value: Any?, desiredType: Any.Type)> {
+internal final class FieldInvalidTypeException: GenericException<(fieldKey: String, value: Any?, desiredType: Any.Type)>, @unchecked Sendable {
   override var reason: String {
     let value = String(describing: param.value ?? "null")
     let desiredType = String(describing: param.desiredType)

@@ -83,6 +83,7 @@ def useDevClient = findProject(":expo-dev-client") != null
 android {
   buildFeatures {
     buildConfig true
+    prefab true
   }
 
   namespace "expo.modules.updates"
@@ -97,6 +98,17 @@ android {
     buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", exUpdatesAndroidDelayLoadApp)
     buildConfigField("boolean", "EX_UPDATES_COPY_EMBEDDED_ASSETS", exUpdatesCopyEmbeddedAssets)
     buildConfigField("boolean", "USE_DEV_CLIENT", useDevClient.toString())
+
+    externalNativeBuild {
+      cmake {
+        arguments "-DANDROID_STL=c++_shared"
+      }
+    }
+  }
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
   }
   testOptions {
     unitTests.includeAndroidResources = true
@@ -108,6 +120,12 @@ android {
       resources.excludes.add("META-INF/LICENSE.md")
       resources.excludes.add("META-INF/LICENSE-notice.md")
     }
+  }
+  packagingOptions {
+    excludes += [
+      "**/libc++_shared.so",
+      "**/libfbjni.so",
+    ]
   }
   sourceSets {
     main.assets.srcDirs += files("$projectDir/src/main/certificates".toString())
@@ -142,12 +160,15 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
   implementation("org.bouncycastle:bcutil-jdk15to18:1.81")
 
+  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
+
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'androidx.test:core:1.7.0'
   testImplementation 'com.google.truth:truth:1.4.5'
   testImplementation "io.mockk:mockk:$mockk_version"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
   testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
+  testImplementation "com.squareup.okhttp3:mockwebserver:4.9.2"
   testImplementation 'org.robolectric:robolectric:4.16'
 
   androidTestImplementation 'com.squareup.okio:okio:2.9.0'

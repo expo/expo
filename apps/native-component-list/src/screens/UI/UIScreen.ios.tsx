@@ -187,6 +187,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Text component',
+    route: 'ui/text',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextScreen'));
+    },
+  },
+  {
     name: 'RTL Layout',
     route: 'ui/rtl',
     options: {},

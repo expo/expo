@@ -4,7 +4,7 @@
  A protocol whose intention is to wrap any type
  to keep its real signature and not type-erase it by the compiler.
  */
-public protocol AnyDynamicType: CustomStringConvertible {
+public protocol AnyDynamicType: CustomStringConvertible, Sendable {
   /**
    Checks whether the inner type is the same as the given type.
    */

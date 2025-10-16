@@ -3,7 +3,7 @@
 /**
  The exception that needs some additional parameters to be best described.
  */
-open class GenericException<ParamType>: Exception {
+open class GenericException<ParamType>: Exception, @unchecked Sendable {
   /**
    The additional parameter passed to the initializer.
    */

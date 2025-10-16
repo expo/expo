@@ -90,6 +90,7 @@ final class HomeAppLoader: AppLoader {
         }
 
         self.downloader.downloadAsset(
+          asset: asset,
           fromURL: assetUrl,
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,

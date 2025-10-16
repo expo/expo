@@ -5,6 +5,36 @@ import SwiftUI
 
 // MARK: - Individual ViewModifier Structs
 
+internal enum ListSectionSpacingType: String, Enumerable {
+  case `default`
+  case compact
+  case custom
+}
+
+internal struct ListSectionSpacingModifier: ViewModifier, Record {
+  @Field var spacing: ListSectionSpacingType = .default
+  @Field var value: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if #available(iOS 17.0, *) {
+        switch spacing {
+        case .compact:
+          content.listSectionSpacing(.compact)
+        case .custom:
+          content.listSectionSpacing(value)
+        default:
+          content.listSectionSpacing(.default)
+        }
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
 internal struct BackgroundModifier: ViewModifier, Record {
   @Field var color: Color?
 
@@ -75,17 +105,19 @@ internal struct PaddingModifier: ViewModifier, Record {
   @Field var trailing: CGFloat?
 
   func body(content: Content) -> some View {
-    if let all {
-      content.padding(all)
-    } else if let horizontal, let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: horizontal, bottom: vertical, trailing: horizontal))
-    } else if let horizontal {
-      content.padding(EdgeInsets(top: 0, leading: horizontal, bottom: 0, trailing: horizontal))
-    } else if let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: 0, bottom: vertical, trailing: 0))
-    } else {
-      content.padding(EdgeInsets(top: top ?? 0, leading: leading ?? 0, bottom: bottom ?? 0, trailing: trailing ?? 0))
-    }
+    let topValue = top ?? vertical ?? all ?? 0
+    let bottomValue = bottom ?? vertical ?? all ?? 0
+    let leadingValue = leading ?? horizontal ?? all ?? 0
+    let trailingValue = trailing ?? horizontal ?? all ?? 0
+
+    content.padding(
+      EdgeInsets(
+        top: topValue,
+        leading: leadingValue,
+        bottom: bottomValue,
+        trailing: trailingValue
+      )
+    )
   }
 }
 
@@ -1272,6 +1304,10 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
 // swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
+    register("listSectionSpacing") { params, appContext, _ in
+      return try ListSectionSpacingModifier(from: params, appContext: appContext)
+    }
+
     register("background") { params, appContext, _ in
       return try BackgroundModifier(from: params, appContext: appContext)
     }

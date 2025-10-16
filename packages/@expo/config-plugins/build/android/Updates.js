@@ -76,6 +76,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["CODE_SIGNING_CERTIFICATE"] = "expo.modules.updates.CODE_SIGNING_CERTIFICATE";
   Config["CODE_SIGNING_METADATA"] = "expo.modules.updates.CODE_SIGNING_METADATA";
   Config["DISABLE_ANTI_BRICKING_MEASURES"] = "expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES";
+  Config["BSDIFF_PATCH_SUPPORT"] = "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT";
   return Config;
 }({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
@@ -160,6 +161,12 @@ async function setUpdatesConfigAsync(projectRoot, config, androidManifest, expoU
     (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.DISABLE_ANTI_BRICKING_MEASURES, 'true');
   } else {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.DISABLE_ANTI_BRICKING_MEASURES);
+  }
+  const bsPatchSupport = (0, _Updates().getUpdatesBsdiffPatchSupportEnabled)(config);
+  if (!bsPatchSupport) {
+    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.BSDIFF_PATCH_SUPPORT, 'false');
+  } else {
+    (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.BSDIFF_PATCH_SUPPORT);
   }
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);
 }

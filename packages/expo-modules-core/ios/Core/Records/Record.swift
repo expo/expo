@@ -11,7 +11,7 @@ public protocol Record: Convertible {
   /**
    The default initializer. It enforces the structs not to have any uninitialized properties.
    */
-  init()
+  nonisolated init()
 
   /**
    Initializes a record from given dictionary. Only members wrapped by `@Field` will be set in the object.
@@ -65,6 +65,13 @@ public extension Record {
         result[key] = Conversions.convertFunctionResult(field.get(), appContext: appContext)
       }
     }
+  }
+
+  static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
+    if let value = result as? Record {
+      return value.toDictionary(appContext: appContext)
+    }
+    return result
   }
 }
 

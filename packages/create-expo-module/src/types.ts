@@ -1,4 +1,4 @@
-import { PromptObject } from 'prompts';
+import type { PromptObject } from 'prompts';
 
 /**
  * Possible command options.

@@ -15,7 +15,11 @@ import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabsView } from './NativeTabsView';
 import { withLayoutContext } from '../..';
 import type { NativeTabOptions, NativeTabsProps } from './types';
-import { shouldTabBeVisible } from './utils';
+import {
+  convertIconColorPropToObject,
+  convertLabelStylePropToObject,
+  shouldTabBeVisible,
+} from './utils';
 import { getPathFromState } from '../../link/linking';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
@@ -32,6 +36,8 @@ export function NativeTabsNavigator({
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
     );
   }
+  const selectedLabelStyle = convertLabelStylePropToObject(rest.labelStyle).selected;
+  const selectedIconColor = convertIconColorPropToObject(rest.iconColor).selected;
   const builder = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,
@@ -43,6 +49,8 @@ export function NativeTabsNavigator({
     backBehavior,
     screenOptions: {
       disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
+      selectedLabelStyle,
+      selectedIconColor,
     },
   });
 

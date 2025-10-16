@@ -1,9 +1,11 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #if DEBUG
-@_exported import Quick
-@_exported import Nimble
-@_exported @testable import ExpoModulesCore
+@_exported @preconcurrency import Quick
+@_exported @preconcurrency import Nimble
+@_exported @testable @preconcurrency import ExpoModulesCore
 
+@MainActor
+@preconcurrency
 open class ExpoSpec: QuickSpec {}
 #endif

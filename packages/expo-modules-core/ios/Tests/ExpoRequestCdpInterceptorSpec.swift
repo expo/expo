@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class MockCdpInterceptorDelegate: ExpoRequestCdpInterceptorDelegate {
-  var events: [String] = []
+  nonisolated(unsafe) var events: [String] = []
 
   // ExpoRequestCdpInterceptorDelegate implementations
 
@@ -14,6 +14,7 @@ final class MockCdpInterceptorDelegate: ExpoRequestCdpInterceptorDelegate {
   }
 }
 
+@MainActor
 final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
   private static let mockDelegate = MockCdpInterceptorDelegate()
   private static var session: URLSession = {

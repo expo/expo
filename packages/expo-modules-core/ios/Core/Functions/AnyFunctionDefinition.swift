@@ -44,7 +44,12 @@ internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder 
       - appContext: An app context where the function is being executed.
       - callback: A callback that receives a result of the function execution.
    */
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ())
+  func call(
+    by owner: AnyObject?,
+    withArguments args: [Any],
+    appContext: AppContext,
+    callback: @Sendable @escaping (FunctionCallResult) -> ()
+  )
 }
 
 extension AnyFunctionDefinition {
@@ -75,7 +80,7 @@ extension AnyFunctionDefinition {
   }
 }
 
-internal class FunctionCallException: GenericException<String> {
+internal final class FunctionCallException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     "Calling the '\(param)' function has failed"
   }
@@ -88,7 +93,7 @@ internal class FunctionCallException: GenericException<String> {
   }
 }
 
-internal class ArgumentConversionException: Exception {
+internal final class ArgumentConversionException: Exception, @unchecked Sendable {
   override var reason: String {
     "Failed to downcast arguments"
   }

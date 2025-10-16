@@ -58,7 +58,6 @@ apply from: new File(rootDir, "versioning_linking.gradle")
 includeBuild(new File(rootDir, "../../../react-native-lab/react-native/packages/gradle-plugin").toString())
 
 include ':expoview'
-include ':tools'
 
 include(":packages")
 project(":packages").projectDir = file("$rootDir/../../../react-native-lab/react-native/packages") // Gradle 9 require us to include this

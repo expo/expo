@@ -24,7 +24,11 @@ export type ColumnProps = LayoutBaseProps;
 export declare function Column(props: ColumnProps): import("react").JSX.Element | null;
 export type TextFontWeight = 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
 export type TextProps = {
-    children: string;
+    /**
+     * The children of the text.
+     * Only string and number are supported.
+     */
+    children?: React.ReactNode;
     color?: ColorValue;
     fontSize?: number;
     fontWeight?: TextFontWeight;
