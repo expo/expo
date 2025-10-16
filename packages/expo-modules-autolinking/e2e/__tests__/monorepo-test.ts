@@ -113,9 +113,16 @@ describe('monorepo', () => {
       if (platform === 'android') return;
       const appPath = projectPath(app);
       const target = join(appPath, 'generated', 'file.txt');
-
+      const watchedDirsSerialized = JSON.stringify([]);
       const generatePackageListResult = await autolinkingRunAsync(
-        ['generate-modules-provider', '--platform', platform, '--target', target],
+        [
+          'generate-modules-provider',
+          watchedDirsSerialized,
+          '--platform',
+          platform,
+          '--target',
+          target,
+        ],
         {
           cwd: appPath,
         }
