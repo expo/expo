@@ -23,7 +23,6 @@
   "author": "Expo",
   "bin": "build/index.js",
   "main": "build/index.js",
-  "types": "build/index.d.ts",
   "files": [
     "bin",
     "build"
