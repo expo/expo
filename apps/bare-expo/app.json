@@ -93,6 +93,12 @@
       ],
       "./plugins/withAndroidNetworkSecurityConfig",
       "./plugins/withBenchmarkModules"
-    ]
+    ],
+    "experiments": {
+      "localModules": true
+    },
+    "localModules": {
+      "watchedDirs": ["../native-component-list/src/screens/LocalModules/localModulesExamples"]
+    }
   }
 }
