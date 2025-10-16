@@ -186,6 +186,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ImageScreen'));
     },
   },
+  {
+    name: 'Text component',
+    route: 'ui/text',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

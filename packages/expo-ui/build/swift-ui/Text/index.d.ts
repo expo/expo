@@ -1,7 +1,7 @@
 import type { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export interface TextProps extends CommonViewModifierProps {
-    children: string;
+    children: string | React.ReactNode;
     /**
      * The font weight of the text.
      * Maps to iOS system font weights.
