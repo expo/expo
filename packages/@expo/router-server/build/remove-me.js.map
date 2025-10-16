@@ -1,1 +1,0 @@
-{"version":3,"file":"remove-me.js","sourceRoot":"","sources":["../src/remove-me.ts"],"names":[],"mappings":";;;AAAa,QAAA,GAAG,GAAG,KAAK,CAAC","sourcesContent":["export const foo = 'bar';"]}

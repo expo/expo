@@ -13,6 +13,10 @@
       "node"
     ]
   },
-  "include": ["./src"],
+  "include": [
+    "./src",
+    "../cli/ts-declarations",
+    "../../expo/src/ts-declarations"
+  ],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__rsc_tests__/*"]
 }
