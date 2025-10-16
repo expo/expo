@@ -84,9 +84,10 @@ function useTabTrigger(options) {
             }
             else {
                 return navigation?.dispatch({
+                    ...config.action,
                     type: 'JUMP_TO',
                     payload: {
-                        name,
+                        ...config.action.payload,
                         ...options,
                     },
                 });
