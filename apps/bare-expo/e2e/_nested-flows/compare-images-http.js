@@ -35,18 +35,7 @@ function compareImagesHttp() {
     });
 
     // eslint-disable-next-line no-undef
-    const result = json(response.body);
-
-    if (response.ok) {
-      return result;
-    } else if (response.status === 400) {
-      console.log('❌ Images are too different');
-    } else {
-      console.log(`Server status: ${response.status}`);
-    }
-    console.log(`result: ${JSON.stringify(result, null, 2)}`);
-
-    return result;
+    return json(response.body);
   } catch (error) {
     const errorMessage = error?.message || error;
     console.log(`Failed to compare images: ${errorMessage}`);

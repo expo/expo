@@ -22,7 +22,7 @@ async function compressPNGWithOxipng(filePath: string): Promise<void> {
     await spawnAsync('oxipng', ['-o', 'max', '--strip', 'safe', filePath], {
       stdio: 'ignore',
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(`oxipng compression failed for ${filePath}:`, error.message);
     console.log('run brew install oxipng to install it');
   }

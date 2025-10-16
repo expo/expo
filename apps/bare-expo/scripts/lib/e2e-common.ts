@@ -2,8 +2,8 @@ import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs/promises';
 import { glob } from 'glob';
 import * as path from 'path';
-const MAESTRO_DRIVER_STARTUP_TIMEOUT = 180_000;
-const MAESTRO_CLI_NO_ANALYTICS = 1;
+const MAESTRO_DRIVER_STARTUP_TIMEOUT = String(180_000);
+const MAESTRO_CLI_NO_ANALYTICS = '1';
 
 export const MAESTRO_ENV_VARS = {
   MAESTRO_DRIVER_STARTUP_TIMEOUT,

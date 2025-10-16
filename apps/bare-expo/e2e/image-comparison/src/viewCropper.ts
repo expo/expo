@@ -19,6 +19,7 @@ interface ElementProperties {
 
 interface Attributes {
   accessibilityText: string;
+  'resource-id': string;
   text: string;
   bounds: string;
 }

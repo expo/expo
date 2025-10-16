@@ -4,6 +4,7 @@
 
 - Install [Maestro CLI](https://maestro.mobile.dev/docs/getting-started/installation)
 - `brew install oxipng` for image compression
+- run `yarn install` in `bare-expo/e2e/image-comparison`
 - (optional, recommended) Alignment with devices which are used in CI ([iOS](https://github.com/expo/expo/blob/051a306ce7c5b875f7398450e5aeec2e52e313ae/apps/bare-expo/scripts/start-ios-e2e-test.ts#L18), [Android](https://github.com/expo/expo/blob/051a306ce7c5b875f7398450e5aeec2e52e313ae/.github/actions/use-android-emulator/action.yml#L48)). This is necessary for assertions on what is visible on the screen and (especially) for view shots to match.
 - use the following command to generate the Android emulator:
 
@@ -60,7 +61,9 @@ To run the tests the same way they'd run in CI, do `cd apps/bare-expo/scripts` a
 
 ### Comparing images
 
-Comparison works by always keeping a base image committed in the repository (`.base.png` for cross-platform view shots, or `.base.platform.png` for platform-specific view shots). During CI, a new view shot is taken and compared to the base image. Based on the comparison result, the test assertion will either pass or fail. For examples, see use of `_nested-flows/viewshot-comparison.yaml`.
+Comparison works by always keeping a base image committed in the repository (`.base.png` for cross-platform view shots, or `.base.platform.png` for platform-specific view shots). To obtain the base image, run the test and rename the viewshot that it saves to `${oldName}.base.png` (if normalized) or `${oldName}.base.${platform}.png` if not normalized.
+
+During CI, a new view shot is taken and compared to the base image. Based on the comparison result, the test assertion will either pass or fail. For examples, see use of `_nested-flows/viewshot-comparison.yaml`.
 The shots, as well as diffs against the base images are stored as GH artifacts in CI, and so are the logs of the image comparison server.
 
 ### Troubleshooting

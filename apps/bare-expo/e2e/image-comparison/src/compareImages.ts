@@ -61,7 +61,7 @@ export interface CompareImagesOptions {
   image1Path: string;
   image2Path: string;
   outputPath?: string;
-  similarityThreshold?: number;
+  similarityThreshold: number;
   isNormalizationMode?: boolean;
   normalizationOptions?: NormalizationOptions;
 }
@@ -183,10 +183,12 @@ if (require.main === module) {
   const [, , image1Path, image2Path, outputPath] = process.argv;
 
   if (image1Path && image2Path) {
-    compareImagesSync({ image1Path, image2Path, outputPath }).catch((error) => {
-      console.error('Error:', error.message);
-      process.exit(1);
-    });
+    compareImagesSync({ image1Path, image2Path, outputPath, similarityThreshold: 0.05 }).catch(
+      (error) => {
+        console.error('Error:', error.message);
+        process.exit(1);
+      }
+    );
   } else {
     throw new Error('Usage: compareImages.ts <image1> <image2> [outputDiffImage]');
   }

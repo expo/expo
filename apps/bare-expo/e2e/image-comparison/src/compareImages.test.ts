@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, it } from 'bun:test';
+import { describe, expect, it, afterAll } from 'bun:test';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -83,6 +83,7 @@ describe(compareImages, () => {
       image2Path: image2,
       outputPath,
       isNormalizationMode: true,
+      similarityThreshold: 0.1,
     });
 
     await fs.access(outputPath);

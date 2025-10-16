@@ -1,10 +1,12 @@
+import { describe, expect, it, afterAll } from 'bun:test';
+
 import { transformPaths } from './pathUtils';
 
 describe(transformPaths, () => {
   const testHomeDir = '/Users/dev';
   const e2ePath = '/Users/dev/expo/apps/bare-expo/e2e';
 
-  test('view shots cross platform mode', () => {
+  it('view shots cross platform mode', () => {
     const parsedBody = transformPaths(
       e2ePath,
       {
@@ -12,6 +14,7 @@ describe(transformPaths, () => {
         currentScreenshot: 'expo-image/view-test-id_full.android',
         diffOutputPath: '~/.maestro/tests/expo-image',
         similarityThreshold: 0.05,
+        resizingFactor: 0.5,
         testID: 'view-test-id',
         platform: 'android' as const,
         mode: 'normalize' as const,
@@ -30,7 +33,7 @@ describe(transformPaths, () => {
     });
   });
 
-  test('view shots with platformDependent mode', () => {
+  it('view shots with platformDependent mode', () => {
     const parsedBody = transformPaths(
       e2ePath,
       {
@@ -38,6 +41,7 @@ describe(transformPaths, () => {
         currentScreenshot: 'expo-image/view-test-id_full.ios',
         diffOutputPath: '/Users/dev/.maestro/tests/expo-image',
         similarityThreshold: 0.05,
+        resizingFactor: 0.5,
         testID: 'view-test-id',
         platform: 'ios' as const,
         mode: 'keep-originals' as const,
@@ -56,7 +60,7 @@ describe(transformPaths, () => {
     });
   });
 
-  test('screenshot paths', () => {
+  it('screenshot paths', () => {
     const parsedBody = transformPaths(
       e2ePath,
       {
@@ -64,6 +68,7 @@ describe(transformPaths, () => {
         currentScreenshot: 'expo-image/comparison-with-core-image.android',
         diffOutputPath: '/Users/dev/.maestro/tests/expo-image/comparison-with-core-image',
         similarityThreshold: 0.05,
+        resizingFactor: 0.5,
         platform: 'android',
       },
       testHomeDir

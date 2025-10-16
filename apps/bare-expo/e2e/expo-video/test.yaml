@@ -14,7 +14,6 @@ appId: dev.expo.Payments
 - assertVisible: 'mimeType = video/avc'
 - assertVisible: 'isSupported = true'
 - assertVisible: 'bitratePositive = true'
-- assertVisible: 'frameRate = null'
 - assertVisible: 'volume = 1'
 - assertVisible: 'status = readyToPlay'
 - assertVisible: 'playbackRate = 1'

@@ -43,7 +43,7 @@ Bun.serve({
         });
         await fs.promises.mkdir(path.dirname(currentScreenshotArtifactPath), { recursive: true });
 
-        if (testID) {
+        if (testID && viewShotOutputPath) {
           // TODO get scale factor from simctl
           const displayScaleFactor = platform === 'android' ? 1 : 3;
           await cropViewByTestID({
@@ -76,7 +76,7 @@ Bun.serve({
           if (!baseImageExists) missingFiles.push(`image1: ${baseImagePath}`);
           if (!image2exists) missingFiles.push(`image2: ${imageForComparisonPath}`);
 
-          const errorMessage = `Files not found: ${missingFiles.join(', ')}`;
+          const errorMessage = `Files(s) not found: ${missingFiles.join(', ')}`;
           console.error(errorMessage);
 
           return new Response(
