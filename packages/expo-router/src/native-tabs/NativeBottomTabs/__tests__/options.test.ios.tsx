@@ -1,7 +1,10 @@
 import { screen, act, fireEvent } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
-import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
+import {
+  BottomTabsScreen as _BottomTabsScreen,
+  type BottomTabsScreenProps,
+} from 'react-native-screens';
 
 import { HrefPreview } from '../../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../../testing-library';
@@ -260,6 +263,63 @@ describe('Icons', () => {
       icon: undefined,
     } as NativeTabOptions);
   });
+
+  it('when selectedIconColor is provided, it is passed to screen', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs iconColor={{ selected: 'red' }}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      standardAppearance: {
+        stacked: {
+          selected: {
+            tabBarItemIconColor: 'red',
+          },
+        },
+      },
+    } as Partial<BottomTabsScreenProps>);
+  });
+
+  it('when selectedIconColor is provided in container and tab, the tab should use the tab color', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs iconColor={{ selected: 'red' }}>
+          <NativeTabs.Trigger name="index">
+            <Icon selectedColor="blue" />
+          </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="one" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      one: () => <View testID="one" />,
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      standardAppearance: {
+        stacked: {
+          selected: {
+            tabBarItemIconColor: 'blue',
+          },
+        },
+      },
+    } as Partial<BottomTabsScreenProps>);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      standardAppearance: {
+        stacked: {
+          selected: {
+            tabBarItemIconColor: 'red',
+          },
+        },
+      },
+    } as Partial<BottomTabsScreenProps>);
+  });
 });
 
 describe('Badge', () => {
@@ -372,8 +432,8 @@ describe('Badge', () => {
   });
 });
 
-describe('Title', () => {
-  it('passes title via Title element', () => {
+describe('Label', () => {
+  it('passes title via Label element', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
@@ -411,7 +471,7 @@ describe('Title', () => {
     expect(BottomTabsScreen.mock.calls[1][0].title).toBe('one');
   });
 
-  it('uses last Title value when multiple are provided', () => {
+  it('uses last Label value when multiple are provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
@@ -464,6 +524,66 @@ describe('Title', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0].title).toBe(''); // Route name is used as title when Label is empty
+  });
+
+  it('when selectedLabelStyle is provided, it is passed to screen', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      standardAppearance: {
+        stacked: {
+          selected: {
+            tabBarItemTitleFontSize: 24,
+            tabBarItemTitleFontColor: 'red',
+          },
+        },
+      },
+    } as Partial<BottomTabsScreenProps>);
+  });
+
+  it('when selectedLabelStyle is provided in container and tab, the tab should use the tab color', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
+          <NativeTabs.Trigger name="index">
+            <Label selectedStyle={{ fontSize: 32, color: 'blue' }} />
+          </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="one" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      one: () => <View testID="one" />,
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      standardAppearance: {
+        stacked: {
+          selected: {
+            tabBarItemTitleFontSize: 32,
+            tabBarItemTitleFontColor: 'blue',
+          },
+        },
+      },
+    } as Partial<BottomTabsScreenProps>);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      standardAppearance: {
+        stacked: {
+          selected: {
+            tabBarItemTitleFontSize: 24,
+            tabBarItemTitleFontColor: 'red',
+          },
+        },
+      },
+    } as Partial<BottomTabsScreenProps>);
   });
 });
 
