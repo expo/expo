@@ -224,6 +224,9 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
                         aarProject.projectDir = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, aarProject.projectDir));
                     }
                 }
+                if (typeof project.shouldUsePublicationScriptPath === 'string') {
+                    project.shouldUsePublicationScriptPath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, project.shouldUsePublicationScriptPath));
+                }
             }
             if (module.plugins) {
                 for (const plugin of module.plugins) {
