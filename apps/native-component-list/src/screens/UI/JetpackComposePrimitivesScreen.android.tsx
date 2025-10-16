@@ -38,6 +38,7 @@ export default function JetpackComposePrimitivesScreen() {
           verticalAlignment="center"
           modifiers={[testID('interpolatedTextRow')]}>
           <Text fontSize={18} fontWeight="bold" color="#ff0000">
+            {/* eslint-disable-next-line */}
             Hello {'world'} {123}
           </Text>
         </Row>

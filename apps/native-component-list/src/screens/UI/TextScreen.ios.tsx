@@ -15,6 +15,7 @@ export default function TextScreen() {
         </Section>
         <Section title="Interpolated string">
           <Text>
+            {/* eslint-disable-next-line */}
             Hello {'world'} {123}
           </Text>
         </Section>

@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
+import { getTextFromChildren } from '../../utils';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { getTextFromChildren } from '../../utils';
 
 export interface TextProps extends CommonViewModifierProps {
   /**
