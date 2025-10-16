@@ -4,6 +4,7 @@ sidebar_title: Trigger builds from GitHub App
 description: Learn how to trigger builds on EAS for your app using the Expo GitHub App.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 This guide explains how to trigger builds directly from your GitHub repository using the Expo GitHub App.
@@ -139,11 +140,44 @@ of the build in the PR's checks. A link to the build will be available in the ch
   src="/static/images/eas-build/build-from-github/gh-check-details.png"
 />
 
-### Build automatically when code is pushed to repository
+### Build automatically when code is pushed to your GitHub repository
 
 You can take your build automation further by automatically building your Expo project when you push code to GitHub.
 
+#### Using EAS Workflows
+
+EAS Workflows is a service from Expo that allows you to run builds, and many other types of jobs, on EAS. You can use EAS Workflows to automate your development and release processes, like creating development builds or automatically building and submitting to the app stores.
+
+To create a build with EAS Workflows, start by adding the following code in **.eas/workflows/build.yml**:
+
+```yaml .eas/workflows/build.yml
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_android:
+    name: Build Android App
+    type: build
+    params:
+      platform: android
+  build_ios:
+    name: Build iOS App
+    type: build
+    params:
+      platform: ios
+```
+
+When a commit is pushed to the main branch, this workflow will create Android and iOS builds. You can learn how to modify this workflow and sequence other types of jobs in the [EAS Workflows documentation](/eas/workflows/get-started).
+
 #### Set up build triggers
+
+> **warning** **Deprecated:** This feature is deprecated and disabled for new projects. We recommend using [EAS Workflows](/eas/workflows/get-started/) instead.
+
+<Collapsible summary="Learn how to set up build triggers">
 
 You can set up build triggers to configure when EAS builds your app from GitHub. We allow you to build when pushing to a branch, pull request, and Git tag.
 
@@ -250,18 +284,15 @@ To enable automatic submission, you need to configure your build triggers to inc
 
 Once enabled, every time a build is triggered from this configuration, it will automatically be submitted to the app stores you have configured in your **eas.json** under the `submit` field.
 
-> **Note:** Ensure that your **eas.json** is properly configured for submission, including specifying the correct app store's credentials and submission profile. For more information, see the [EAS Submit](/submit/eas-json/).
+> **Note:** Ensure that your **eas.json** is properly configured for submission, including
+> specifying the correct app store's credentials and submission profile. For more information, see
+> the [EAS Submit](/submit/eas-json/).
+
+</Collapsible>
 
 ### Troubleshooting
 
-- When things go wrong, we will comment on the commit we attempted to build with some error information. We also show the latest result in the build triggers UI, which includes error information when you hover the **Error** tag.
-
-<ContentSpotlight
-  alt="Status UI on the build trigger UI"
-  src="/static/images/eas-build/build-from-github/trigger-troubleshooting-status.png"
-  className="max-w-[200px]"
-/>
-
+- When things go wrong, we will comment on the commit we attempted to build with some error information.
 - Double check everything in the [Prerequisites](#prerequisites) section is true when trying to build.
 - Confirm that your base directory is accurate if you're using a monorepo setup.
 - Is your build profile correct? If a matching profile can't be found in **eas.json**, the build will not dispatch.

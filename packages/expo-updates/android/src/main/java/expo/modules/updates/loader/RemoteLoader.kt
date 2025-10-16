@@ -55,15 +55,15 @@ class RemoteLoader internal constructor(
 
   override suspend fun loadAsset(
     assetEntity: AssetEntity,
-    updatesDirectory: File?,
+    updatesDirectory: File,
     configuration: UpdatesConfiguration,
     requestedUpdate: UpdateEntity?,
     embeddedUpdate: UpdateEntity?
   ): FileDownloader.AssetDownloadResult {
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate, requestedUpdate)
-    return mFileDownloader.downloadAsset(assetEntity, updatesDirectory, extraHeaders, { progress ->
+    return mFileDownloader.downloadAsset(assetEntity, updatesDirectory, extraHeaders, launchedUpdate, requestedUpdate) { progress ->
       assetLoadProgressListener(assetEntity, progress)
-    })
+    }
   }
 
   companion object {

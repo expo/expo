@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -18,7 +19,7 @@ export type LabelProps = {
   /**
    * The color of the label icon.
    */
-  color?: string;
+  color?: ColorValue;
 } & CommonViewModifierProps;
 
 const LabelNativeView: React.ComponentType<LabelProps> = requireNativeView('ExpoUI', 'LabelView');
@@ -28,7 +29,6 @@ const LabelNativeView: React.ComponentType<LabelProps> = requireNativeView('Expo
  *
  * @param {LabelProps} props - The properties passed to the Label component.
  * @returns {JSX.Element} The rendered native Label component.
- * @platform ios
  */
 export function Label(props: LabelProps) {
   const { modifiers, ...restProps } = props;

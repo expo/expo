@@ -19,6 +19,7 @@ import {
   getExpoCNGPatchSourcesAsync,
   sortExpoAutolinkingAndroidConfig,
 } from '../Expo';
+import { copyDirSync } from './vol-utils';
 
 jest.mock('@expo/spawn-async');
 jest.mock('fs/promises');
@@ -246,6 +247,65 @@ describe(getExpoConfigSourcesAsync, () => {
       expect.objectContaining({
         type: 'file',
         filePath: 'assets/icon.png',
+      })
+    );
+  });
+
+  it('should contain external icon file in app.json - ios light/dark/tinted icons', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.mkdirSync('/app/assets');
+    vol.writeFileSync('/app/assets/icon-light.png', 'PNG data');
+    vol.writeFileSync('/app/assets/icon-dark.png', 'PNG data');
+    vol.writeFileSync('/app/assets/icon-tinted.png', 'PNG data');
+    const appJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
+    appJson.expo.ios ||= {};
+    appJson.expo.ios.icon = {
+      light: '/app/assets/icon-light.png',
+      dark: '/app/assets/icon-dark.png',
+      tinted: '/app/assets/icon-tinted.png',
+    };
+    vol.writeFileSync('/app/app.json', JSON.stringify(appJson, null, 2));
+
+    const options = await normalizeOptionsAsync('/app');
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'assets/icon-light.png',
+      })
+    );
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'assets/icon-dark.png',
+      })
+    );
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'assets/icon-tinted.png',
+      })
+    );
+  });
+
+  it('should contain external icon file in app.json - ios 26 icon composer', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.mkdirSync('/app/assets');
+    copyDirSync(path.join(__dirname, 'fixtures', 'ExpoGo.icon'), '/app/assets/ExpoGo.icon');
+    const appJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
+    appJson.expo.ios ||= {};
+    appJson.expo.ios.icon = '/app/assets/ExpoGo.icon';
+    vol.writeFileSync('/app/app.json', JSON.stringify(appJson, null, 2));
+
+    const options = await normalizeOptionsAsync('/app');
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        // the icon composer .icon is actually a directory
+        type: 'dir',
+        filePath: 'assets/ExpoGo.icon',
       })
     );
   });

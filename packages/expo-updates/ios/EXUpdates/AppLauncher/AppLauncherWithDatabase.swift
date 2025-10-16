@@ -341,10 +341,13 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
 
     FileDownloader.assetFilesQueue.async {
       self.downloader.downloadAsset(
+        asset: asset,
         fromURL: assetUrl,
         verifyingHash: asset.expectedHash,
         toPath: assetLocalUrl.path,
-        extraHeaders: asset.extraRequestHeaders ?? [:]
+        extraHeaders: asset.extraRequestHeaders ?? [:],
+        allowPatch: false,
+        launchedUpdate: self.launchedUpdate
       ) { _, response, base64URLEncodedSHA256Hash in
         self.launcherQueue.async {
           if let response = response as? HTTPURLResponse {
@@ -363,7 +366,12 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   }
 
   private lazy var downloader: FileDownloader = {
-    FileDownloader(config: config, logger: self.logger)
+    FileDownloader(
+      config: config,
+      logger: self.logger,
+      updatesDirectory: self.directory,
+      database: self.database
+    )
   }()
 }
 // swiftlint:enable closure_body_length

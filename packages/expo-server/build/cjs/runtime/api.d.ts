@@ -35,4 +35,13 @@ export declare function runTask(fn: () => Promise<unknown>): void;
  *
  * @param fn - A task function to execute after the request handler has finished.
  */
-export declare function deferTask(fn: () => Promise<unknown>): void;
+export declare function deferTask(fn: () => Promise<unknown> | void): void;
+/** Sets headers on the `Response` the current request handler will return.
+ *
+ * This only updates the headers once the request handler has finished and resolved a `Response`.
+ * It will either receive a set of `Headers` or an equivalent object containing headers, which will
+ * be merged into the response's headers once it's returned.
+ *
+ * @param updateHeaders - A `Headers` object, a record of headers, or a function that receives `Headers` to be updated or can return a `Headers` object that will be merged into the response headers.
+ */
+export declare function setResponseHeaders(updateHeaders: Headers | Record<string, string | string[]> | ((headers: Headers) => Headers | void)): void;

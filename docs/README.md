@@ -473,18 +473,48 @@ If you just want to hide a single page from the sidebar, set `hideInSidebar: tru
 
 Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported into any markdown file.
 
+#### Supported props
+
+| Option          | Type                              | Description                                                                                                                                                                    |
+| --------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cmd`           | `string[]`                        | **Required**. Lines to render. Use `$` to mark commands, `#` for comments, and empty strings for spacing.                                                                      |
+| `cmdCopy`       | `string`                          | **Optional**. Overrides the auto-generated copy text. Helpful when multiple commands should be chained (for example with `&&`) or when you want to control the copied content. |
+| `title`         | `string`                          | **Optional**. Overrides the default header label of "Terminal".                                                                                                                |
+| `browserAction` | `{ href: string; label: string }` | **Optional**. Adds a launch button in the header that opens the link in a new tab—ideal for flows that continue in a web UI.                                                   |
+| `hideOverflow`  | `boolean`                         | **Optional**. Prevents horizontal scrollbars when you prefer the content to clip instead of scroll.                                                                            |
+| `className`     | `string`                          | **Optional**. Additional utility classes for adjusting layout or spacing around the snippet.                                                                                   |
+
 ```mdx
 import { Terminal } from '~/ui/components/Snippet';
 
-{/* for single command and one prop: */}
+{/* For single command and one prop */}
 
 <Terminal cmd={['$ npx expo install package']} />
 
-{/* for multiple commands: */}
+{/* For multiple commands */}
 
 <Terminal
   cmd={['# Create a new Expo project', '$ npx create-expo-app --template bare-minimum', '']}
   cmdCopy="npx create-expo-app --template bare-minimum"
+/>
+
+{/* Clamp long outputs and tweak spacing */}
+
+<Terminal
+  className="mt-6"
+  hideOverflow
+  cmd={[
+    '$ npx expo config --json',
+    '# Output is trimmed visually because hideOverflow is enabled.',
+  ]}
+/>
+
+{/* Surface a button that opens related browser flows */}
+
+<Terminal
+  title="Deploy website with EAS"
+  cmd={['$ npx eas-cli deploy']}
+  browserAction={{ href: 'https://expo.dev/eas', label: 'Open in expo.dev' }}
 />
 ```
 

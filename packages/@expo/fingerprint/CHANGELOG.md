@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the **package.json** file appears in fingerprint when loading from **app.config.js**. ([#40320](https://github.com/expo/expo/pull/40320) by [@kudo](https://github.com/kudo))
+- Fixed errors when `ios.icon` is an object in **app.json**. ([#40403](https://github.com/expo/expo/pull/40403) by [@kudo](https://github.com/kudo))
 - Ensure AAR file paths in expo fingerprint are relative for SDK 53 and later. ([#40319](https://github.com/expo/expo/pull/40319) by [@jonemilnik](https://github.com/jonemilnik))
 
 ### 💡 Others

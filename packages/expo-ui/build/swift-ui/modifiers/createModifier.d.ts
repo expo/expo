@@ -10,6 +10,7 @@ export interface ModifierConfig {
 /**
  * Factory function to create modifier configuration objects.
  * This is used internally by all modifier functions.
+ * @hidden
  */
 export declare function createModifier(type: string, params?: Record<string, any>): ModifierConfig;
 //# sourceMappingURL=createModifier.d.ts.map

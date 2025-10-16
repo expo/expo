@@ -128,7 +128,9 @@ function appendLabelOptions(options, props) {
     }
     else {
         options.title = props.children;
-        options.selectedLabelStyle = props.selectedStyle;
+        if (props.selectedStyle) {
+            options.selectedLabelStyle = props.selectedStyle;
+        }
     }
 }
 function appendIconOptions(options, props) {
@@ -168,7 +170,9 @@ function appendIconOptions(options, props) {
         options.icon = { drawable: props.drawable };
         options.selectedIcon = undefined;
     }
-    options.selectedIconColor = props.selectedColor;
+    if (props.selectedColor) {
+        options.selectedIconColor = props.selectedColor;
+    }
 }
 function convertIconSrcToIconOption(icon) {
     if (icon && icon.src) {
