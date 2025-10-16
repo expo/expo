@@ -282,6 +282,12 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
             aarProject.projectDir = toPosixPath(path.relative(projectRoot, aarProject.projectDir));
           }
         }
+
+        if (typeof project.shouldUsePublicationScriptPath === 'string') {
+          project.shouldUsePublicationScriptPath = toPosixPath(
+            path.relative(projectRoot, project.shouldUsePublicationScriptPath)
+          );
+        }
       }
       if (module.plugins) {
         for (const plugin of module.plugins) {
