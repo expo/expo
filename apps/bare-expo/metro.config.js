@@ -1,6 +1,7 @@
 /* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
+const fs = require('node:fs');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -24,6 +25,26 @@ config.watchFolders = [
   path.join(monorepoRoot, 'apps/test-suite'), // Workaround for Yarn v1 workspace issue where workspace dependencies aren't properly linked, should be at `<root>/node_modules/apps/test-suite`
 ];
 
+function findUpTSConfig(cwd) {
+  const tsconfigPath = path.resolve(cwd, './tsconfig.json');
+  if (fs.existsSync(tsconfigPath)) {
+    return path.dirname(tsconfigPath);
+  }
+
+  const parent = path.dirname(cwd);
+  if (parent === cwd) return null;
+
+  return findUpTSConfig(parent);
+}
+
+function findUpTSProjectRootOrThrow(dir) {
+  const tsProjectRoot = findUpTSConfig(dir);
+  if (!tsProjectRoot) {
+    throw new Error('Local modules watched dir needs to be inside a TS project with tsconfig.json');
+  }
+  return tsProjectRoot;
+}
+
 // When testing on MacOS we need to swap out `react-native` for `react-native-macos`
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (
@@ -33,6 +54,34 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     const newModuleName = moduleName.replace('react-native', 'react-native-macos');
     return context.resolveRequest(context, newModuleName, platform);
   }
+
+  const localModulesModulesPath = path.resolve(__dirname, './.expo/localModules/modules');
+
+  let localModuleFileExtension = null;
+  if (moduleName.endsWith('.module')) {
+    localModuleFileExtension = '.module.js';
+  } else if (moduleName.endsWith('.view')) {
+    localModuleFileExtension = '.view.js';
+  }
+  if (localModuleFileExtension) {
+    const tsProjectRoot = findUpTSProjectRootOrThrow(path.dirname(context.originModulePath));
+    const modulePathRelativeToTSRoot = path.relative(
+      tsProjectRoot,
+      fs.realpathSync(path.dirname(context.originModulePath))
+    );
+
+    const modulePath = path.resolve(
+      localModulesModulesPath,
+      modulePathRelativeToTSRoot,
+      moduleName.substring(0, moduleName.lastIndexOf('.')) + localModuleFileExtension
+    );
+
+    return {
+      filePath: modulePath,
+      type: 'sourceFile',
+    };
+  }
+
   return context.resolveRequest(context, moduleName, platform);
 };
 // writing a screenshot otherwise shows a metro refresh banner at the top of the screen which can interfere with another screenshot
