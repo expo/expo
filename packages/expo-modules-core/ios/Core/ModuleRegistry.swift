@@ -42,7 +42,7 @@ public final class ModuleRegistry: Sequence {
   /**
    Registers a module by its type.
    */
-  public func register(moduleType: AnyModule.Type, name: String?,preventModuleOverriding: Bool = false) {
+  public func register(moduleType: AnyModule.Type, name: String?, preventModuleOverriding: Bool = false) {
     guard let appContext else {
       log.error("Unable to register a module '\(moduleType)', the app context is unavailable")
       return
@@ -54,7 +54,7 @@ public final class ModuleRegistry: Sequence {
    Registers modules exported by given modules provider.
    */
   public func register(fromProvider provider: ModulesProviderProtocol) {
-    provider.getModuleClasses().forEach { (module, name) in
+    provider.getModuleClasses().forEach { module, name in
       register(moduleType: module, name: name)
     }
   }
