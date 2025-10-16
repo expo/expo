@@ -16,18 +16,22 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   @Field var value: CGFloat = 0
 
   func body(content: Content) -> some View {
-    if #available(iOS 17.0, *) {
-      switch spacing {
-      case .compact:
-        content.listSectionSpacing(.compact)
-      case .custom:
-        content.listSectionSpacing(value)
-      default:
-        content.listSectionSpacing(.default)
-      }
-    } else {
+    #if os(tvOS)
       content
-    }
+    #else
+      if #available(iOS 17.0, *) {
+        switch spacing {
+        case .compact:
+          content.listSectionSpacing(.compact)
+        case .custom:
+          content.listSectionSpacing(value)
+        default:
+          content.listSectionSpacing(.default)
+        }
+      } else {
+        content
+      }
+    #endif
   }
 }
 
