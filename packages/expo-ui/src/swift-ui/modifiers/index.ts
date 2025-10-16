@@ -47,6 +47,22 @@ type Color = string | ColorValue | NamedColor;
 // =============================================================================
 
 /**
+ * Sets the spacing between adjacent sections.
+ * @param spacing - The spacing to apply
+ * @platform ios 17.0+
+ */
+export const listSectionSpacing = (spacing: 'default' | 'compact' | number) => {
+  if (typeof spacing === 'number') {
+    return createModifier('listSectionSpacing', {
+      spacing: 'custom',
+      value: spacing,
+    });
+  }
+
+  return createModifier('listSectionSpacing', { spacing });
+};
+
+/**
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
  * @see https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)
@@ -681,6 +697,7 @@ export const listSectionMargins = (params?: {
  * @hidden
  */
 export type BuiltInModifier =
+  | ReturnType<typeof listSectionSpacing>
   | ReturnType<typeof background>
   | ReturnType<typeof cornerRadius>
   | ReturnType<typeof shadow>
