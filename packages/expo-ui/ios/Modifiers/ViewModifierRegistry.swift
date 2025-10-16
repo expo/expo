@@ -105,17 +105,19 @@ internal struct PaddingModifier: ViewModifier, Record {
   @Field var trailing: CGFloat?
 
   func body(content: Content) -> some View {
-    if let all {
-      content.padding(all)
-    } else if let horizontal, let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: horizontal, bottom: vertical, trailing: horizontal))
-    } else if let horizontal {
-      content.padding(EdgeInsets(top: 0, leading: horizontal, bottom: 0, trailing: horizontal))
-    } else if let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: 0, bottom: vertical, trailing: 0))
-    } else {
-      content.padding(EdgeInsets(top: top ?? 0, leading: leading ?? 0, bottom: bottom ?? 0, trailing: trailing ?? 0))
-    }
+    let topValue = top ?? vertical ?? all ?? 0
+    let bottomValue = bottom ?? vertical ?? all ?? 0
+    let leadingValue = leading ?? horizontal ?? all ?? 0
+    let trailingValue = trailing ?? horizontal ?? all ?? 0
+
+    content.padding(
+      EdgeInsets(
+        top: topValue,
+        leading: leadingValue,
+        bottom: bottomValue,
+        trailing: trailingValue
+      )
+    )
   }
 }
 
