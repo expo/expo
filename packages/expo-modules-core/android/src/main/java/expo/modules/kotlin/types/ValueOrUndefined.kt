@@ -26,6 +26,6 @@ sealed interface ValueOrUndefined<T> {
     inline fun <reified T> getUndefined() = Undefined<T>()
 
     @Suppress("FunctionName")
-    inline fun <reified  T> Undefined(): ValueOrUndefined<T> = getUndefined<T>()
+    inline fun <reified T> Undefined(): ValueOrUndefined<T> = getUndefined<T>()
   }
 }
