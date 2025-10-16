@@ -14,8 +14,6 @@ The core React Native library does not include a built-in navigation solution, s
 
 React Native core includes basic UI components, touch handling, device APIs and networking, but excludes, among other things, storage, navigation, camera, maps, most device sensors and navigation, leaving these to community-based libraries.
 
-Expo projects default to Expo Router because it layers features such as file-based structure, dynamic routes, lazy bundling, typed routes, universal links, and so on, on top of React Navigation without additional setup. However, React Navigation stays available as a choice for projects where you need a different architecture than Expo Router's file-based routing model.
-
 ## React Navigation
 
 React Navigation is a component-based navigation library widely used across the React Native ecosystem. It lets you compose stack, tab, and drawer navigators entirely in code so you can implement complex flows, custom transitions, and app-specific UX patterns.
@@ -31,7 +29,7 @@ The library offers platform-specific look-and-feel with smooth animations and ge
 
 ## Expo Router (recommended)
 
-Expo Router is a file-based routing library for Expo and React Native projects that builds directly on React Navigation. By following the **app** directory convention, it turns files into routes. The library also adds features such as typed routes, dynamic routes, lazy bundling in development, static rendering for the web, and automatic deep linking.
+Expo Router is a file-based routing library for Expo and React Native projects and is a superset of React Navigation. By following the **app** directory convention, it turns files into routes and is integrated with Expo for [Expo CLI](/more/expo-cli/), deep linking, and bundling without additional setup. The library also adds features such as typed routes, dynamic routes, lazy bundling in development, static rendering for the web, and automatic deep linking.
 
 New Expo projects created with `npx create-expo-app@latest` include Expo Router by default so you can ship cross-platform navigation quickly while still being able to reach for React Navigation APIs when needed.
 
