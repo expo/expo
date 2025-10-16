@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 
 class FunctionWithConvertiblesSpec: ExpoSpec {
   override class func spec() {
-    let appContext = AppContext()
+    let appContext = AppContext.create()
     let functionName = "function"
 
     it("converts arguments to CoreGraphics types") {
@@ -60,6 +60,80 @@ class FunctionWithConvertiblesSpec: ExpoSpec {
         "60CA",
         0
       ])
+    }
+
+    context("Record") {
+      let runtime = try! appContext.runtime
+
+      struct TestRecord: Record {
+        @Field var url: URL = URL.init(string: "https://expo.dev/")!
+        @Field var cgFloat: CGFloat = CGFloat(1.0)
+        @Field var cgPoint: CGPoint = CGPoint(x: 1, y: 2)
+        @Field var cgSize: CGSize = CGSize(width: 100, height: 200)
+        @Field var cgVector: CGVector = CGVector(dx: 100, dy: 200)
+        @Field var cgRect: CGRect = CGRect(x: 50, y: 100, width: 200, height: 300)
+        @Field var cgColor: CGColor = UIColor.red.cgColor
+        @Field var uiColor: UIColor = UIColor.green
+      }
+
+      afterEach {
+        try runtime.eval("globalThis.result = undefined")
+      }
+
+      beforeSuite {
+        appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
+          Name("TestModule")
+
+          Function("withConvertibles") { TestRecord() }
+        })
+      }
+
+      it("converts convertibles") {
+        let object = try runtime.eval("globalThis.result = expo.modules.TestModule.withConvertibles()")
+        expect(object.kind) == .object
+
+        expect(object.getObject().hasProperty("url")).to(beTrue())
+        expect(object.getObject().hasProperty("cgFloat")).to(beTrue())
+        expect(object.getObject().hasProperty("cgPoint")).to(beTrue())
+        expect(object.getObject().hasProperty("cgSize")).to(beTrue())
+        expect(object.getObject().hasProperty("cgVector")).to(beTrue())
+        expect(object.getObject().hasProperty("cgRect")).to(beTrue())
+        expect(object.getObject().hasProperty("cgColor")).to(beTrue())
+
+        expect(object.getObject().getProperty("url").kind).to(equal(.string))
+        expect(object.getObject().getProperty("url").getString()) == "https://expo.dev/"
+
+        expect(object.getObject().getProperty("cgFloat").kind).to(equal(.number))
+        expect(object.getObject().getProperty("cgFloat").getDouble()).to(equal(1.0))
+
+        let cgPoint = object.getObject().getProperty("cgPoint")
+        expect(cgPoint.kind).to(equal(.object))
+        expect(cgPoint.getObject().getProperty("x").getDouble()).to(equal(1.0))
+        expect(cgPoint.getObject().getProperty("y").getDouble()).to(equal(2.0))
+
+        let cgSize = object.getObject().getProperty("cgSize")
+        expect(cgSize.kind).to(equal(.object))
+        expect(cgSize.getObject().getProperty("width").getDouble()).to(equal(100.0))
+        expect(cgSize.getObject().getProperty("height").getDouble()).to(equal(200.0))
+
+        let cgVector = object.getObject().getProperty("cgVector")
+        expect(cgVector.kind).to(equal(.object))
+        expect(cgVector.getObject().getProperty("dx").getDouble()).to(equal(100.0))
+        expect(cgVector.getObject().getProperty("dy").getDouble()).to(equal(200.0))
+
+        let cgRect = object.getObject().getProperty("cgRect")
+        expect(cgRect.kind).to(equal(.object))
+        expect(cgRect.getObject().getProperty("x").getDouble()).to(equal(50.0))
+        expect(cgRect.getObject().getProperty("y").getDouble()).to(equal(100.0))
+        expect(cgRect.getObject().getProperty("width").getDouble()).to(equal(200.0))
+        expect(cgRect.getObject().getProperty("height").getDouble()).to(equal(300.0))
+
+        expect(object.getObject().getProperty("cgColor").kind).to(equal(.string))
+        expect(object.getObject().getProperty("cgColor").getString()).to(equal("#ff0000ff"))
+
+        expect(object.getObject().getProperty("uiColor").kind).to(equal(.string))
+        expect(object.getObject().getProperty("uiColor").getString()).to(equal("#00ff00ff"))
+      }
     }
   }
 }
