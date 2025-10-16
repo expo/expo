@@ -3,7 +3,8 @@ import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 
-export const name = 'Brightness';
+export const name = 'Brightness (device-only)';
+
 export const EPSILON = Math.pow(10, -5);
 
 export async function test(t) {
@@ -12,7 +13,7 @@ export async function test(t) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   t.describe(name, () => {
-    let originalBrightness;
+    let originalBrightness: number;
 
     t.beforeAll(async () => {
       originalBrightness = await Brightness.getBrightnessAsync();
@@ -218,7 +219,7 @@ export async function test(t) {
         });
 
         t.it(
-          `returns a boolean specifiying whether or not the current activity is using the system brightness`,
+          `returns a boolean specifying whether or not the current activity is using the system brightness`,
           async () => {
             let wasRejected = false;
             const beforeValue = await Brightness.isUsingSystemBrightnessAsync();
