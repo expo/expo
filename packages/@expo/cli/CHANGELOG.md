@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add `--api-only` as an alias for `--ssg-only` to `expo export -p web` ([#39709](https://github.com/expo/expo/pull/39709) by [@kitten](https://github.com/kitten))
+
 ## 54.0.11 — 2025-10-09
 
 ### 🎉 New features
