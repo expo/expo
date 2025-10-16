@@ -133,7 +133,7 @@ class AppContext(
     try {
       val localModulesList = Class.forName("local.modules.ExpoLocalModulesList").getConstructor()
         .newInstance() as ModulesProvider
-      hostingRuntimeContext.registry.register(localModulesList)
+      registry.register(localModulesList)
     } catch (_: ClassNotFoundException) {}
   }
 
