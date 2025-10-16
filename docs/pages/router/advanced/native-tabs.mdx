@@ -147,19 +147,21 @@ export default function TabLayout() {
           dark: 'white',
           light: 'black',
         }),
-        // For the selected icon color
-        tintColor: DynamicColorIOS({
-          dark: 'white',
-          light: 'black',
-        }),
-      }}>
+      }}
+      // For the selected icon color
+      tintColor={DynamicColorIOS({
+        dark: 'white',
+        light: 'black',
+      })}>
       <NativeTabs.Trigger name="index">
         <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon
-          src={require('../../../assets/setting_icon.png')}
-          selectedSrc={require('../../../assets/selected_setting_icon.png')}
+          src={{
+            default: require('../../../assets/setting_icon.png'),
+            selected: require('../../../assets/selected_setting_icon.png'),
+          }}
         />
       </NativeTabs.Trigger>
     </NativeTabs>
