@@ -9,4 +9,4 @@ if (boolish('EXPO_DEBUG', false)) {
   process.env.EXPO_DEBUG = '1';
 }
 
-require('../build/create-expo-module.js');
+require('./create-expo-module.js');
