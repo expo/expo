@@ -36,7 +36,7 @@ async function getExpoConfigSourcesAsync(projectRoot, config, loadedModules, opt
         // icons
         expoConfig.icon,
         isAndroid ? expoConfig.android?.icon : undefined,
-        isIos ? expoConfig.ios?.icon : undefined,
+        ...(isIos ? collectIosIcons(expoConfig.ios?.icon) : []),
         isAndroid ? expoConfig.android?.adaptiveIcon?.foregroundImage : undefined,
         isAndroid ? expoConfig.android?.adaptiveIcon?.backgroundImage : undefined,
         expoConfig.notification?.icon,
@@ -177,6 +177,18 @@ function postUpdateExpoConfig(config, projectRoot) {
     delete config.android?.googleServicesFile;
     delete config.ios?.googleServicesFile;
     return config;
+}
+/**
+ * Collect iOS icon to flattened file paths.
+ */
+function collectIosIcons(icon) {
+    if (icon == null) {
+        return [];
+    }
+    if (typeof icon === 'string') {
+        return [icon];
+    }
+    return [icon.light, icon.dark, icon.tinted].filter((file) => Boolean(file));
 }
 async function getEasBuildSourcesAsync(projectRoot, options) {
     const files = ['eas.json', '.easignore'];
