@@ -57,11 +57,11 @@ const ShareLinkNativeView: React.ComponentType<
  * @platform ios 16.0+
  */
 export function ShareLink(props: ShareLinkProps) {
-  const { modifiers, getItemAsync, ...restProps } = props;
+  const { modifiers, getItemAsync, item, ...restProps } = props;
   const shareLinkRef = useRef<ShareLinkNativeRef>(null);
 
   const handleAsyncItemRequest = useCallback(async () => {
-    if (getItemAsync && shareLinkRef.current) {
+    if (getItemAsync && shareLinkRef.current && !item) {
       try {
         const url = await getItemAsync();
         shareLinkRef.current.setItem(url);
@@ -70,7 +70,7 @@ export function ShareLink(props: ShareLinkProps) {
         throw error;
       }
     }
-  }, [getItemAsync]);
+  }, [getItemAsync, item]);
 
   return (
     <ShareLinkNativeView

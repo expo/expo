@@ -5,7 +5,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 internal final class AsyncShareableItem {
-  private let queue = DispatchQueue(label: "expo.asyncshareableitemqueue")
+  private let queue = DispatchQueue.main
   var continuation: CheckedContinuation<URL, Error>?
 
   func setContinuation(_ continuation: CheckedContinuation<URL, Error>, callback: @escaping () -> Void) {
