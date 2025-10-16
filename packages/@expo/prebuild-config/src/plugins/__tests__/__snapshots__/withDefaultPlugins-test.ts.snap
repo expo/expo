@@ -755,6 +755,16 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
+          {
+            "key": "expo.localModules.enabled",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "key": "expo.localModules.watchedDirs",
+            "type": "property",
+            "value": "[]",
+          },
         ],
         "manifest": {
           "manifest": {
@@ -1174,6 +1184,8 @@ exports[`built-in plugins introspects mods 1`] = `
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.jsEngine": "hermes",
+          "expo.localModules.enabled": "false",
+          "expo.localModules.watchedDirs": "[]",
         },
         "splashScreenStoryboard": {
           "document": {
@@ -1683,6 +1695,16 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             "type": "property",
             "value": "true",
           },
+          {
+            "key": "expo.localModules.enabled",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "key": "expo.localModules.watchedDirs",
+            "type": "property",
+            "value": "[]",
+          },
         ],
         "manifest": {
           "manifest": {
@@ -2100,6 +2122,8 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "podfileProperties": {
           "expo.jsEngine": "hermes",
+          "expo.localModules.enabled": "false",
+          "expo.localModules.watchedDirs": "[]",
         },
         "splashScreenStoryboard": {
           "document": {

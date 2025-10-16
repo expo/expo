@@ -1,5 +1,5 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
-import { getPackageJson } from '@expo/config';
+import { getConfig, getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import JsonFile from '@expo/json-file';
 import type { Reporter } from '@expo/metro/metro';
@@ -11,8 +11,10 @@ import type {
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
-import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
+import { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver/types';
 import chalk from 'chalk';
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -136,6 +138,61 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 function asMetroConfigInput<T extends InputConfigT>(config: T): T {
   return config;
 }
+function findUpTSConfig(cwd: string): string | null {
+  const tsconfigPath = path.resolve(cwd, './tsconfig.json');
+  if (fs.existsSync(tsconfigPath)) {
+    return path.dirname(tsconfigPath);
+  }
+
+  const parent = path.dirname(cwd);
+  if (parent === cwd) return null;
+
+  return findUpTSConfig(parent);
+}
+
+function findUpTSProjectRootOrThrow(dir: string): string {
+  const tsProjectRoot = findUpTSConfig(dir);
+  if (!tsProjectRoot) {
+    throw new Error('Local modules watched dir needs to be inside a TS project with tsconfig.json');
+  }
+  return tsProjectRoot;
+}
+
+function resolveLocalModules(
+  projectRoot: string,
+  context: CustomResolutionContext,
+  moduleName: string,
+  platform: string | null
+): Resolution {
+  const localModulesModulesPath = path.resolve(projectRoot, './.expo/localModules/modules');
+
+  let localModuleFileExtension = null;
+  if (moduleName.endsWith('.module')) {
+    localModuleFileExtension = '.module.js';
+  } else if (moduleName.endsWith('.view')) {
+    localModuleFileExtension = '.view.js';
+  }
+  if (localModuleFileExtension) {
+    const tsProjectRoot = findUpTSProjectRootOrThrow(path.dirname(context.originModulePath));
+    const modulePathRelativeToTSRoot = path.relative(
+      tsProjectRoot,
+      fs.realpathSync(path.dirname(context.originModulePath))
+    );
+
+    const modulePath = path.resolve(
+      localModulesModulesPath,
+      modulePathRelativeToTSRoot,
+      moduleName.substring(0, moduleName.lastIndexOf('.')) + localModuleFileExtension
+    );
+
+    return {
+      filePath: modulePath,
+      type: 'sourceFile',
+    };
+  }
+
+  return context.resolveRequest(context, moduleName, platform);
+}
 
 export function createStableModuleIdFactory(
   root: string
@@ -224,6 +281,12 @@ export function getDefaultConfig(
 
   // Add support for cjs (without platform extensions).
   sourceExts.push('cjs');
+  sourceExts.push('kt');
+
+  // TODO @HubertBer Adding specifically swift extension break something after merging latest changes
+  // For now I'll leave it commented out and investigate it - this means that ios inline modules won't work
+  //
+  // sourceExts.push('swift');
 
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
   const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
@@ -276,6 +339,21 @@ export function getDefaultConfig(
   });
 
   const serverRoot = getMetroServerRoot(projectRoot);
+  const expoConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const resolveLocalModulesWithRoot = (
+    context: CustomResolutionContext,
+    moduleName: string,
+    platform: string | null
+  ) => {
+    return resolveLocalModules(projectRoot, context, moduleName, platform);
+  };
+
+  const contextResolveRequest = (
+    context: CustomResolutionContext,
+    moduleName: string,
+    platform: string | null
+  ) => context.resolveRequest(context, moduleName, platform);
+  const defaultResolveRequest = metroDefaultValues.resolver.resolveRequest ?? contextResolveRequest;
 
   const routerPackageRoot = resolveFrom.silent(projectRoot, 'expo-router');
 
@@ -307,6 +385,10 @@ export function getDefaultConfig(
         .filter((assetExt: string) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
+      resolveRequest:
+        expoConfig.exp.experiments?.localModules === true
+          ? resolveLocalModulesWithRoot
+          : defaultResolveRequest,
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.
