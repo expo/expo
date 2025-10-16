@@ -8,7 +8,7 @@ public final class ModuleHolder {
    Name of the module.
    */
   private(set) var _name: String?
-  
+
   /**
    Instance of the module.
    */
