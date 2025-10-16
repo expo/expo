@@ -25,6 +25,7 @@ let collapsedGuardTimer: ReturnType<typeof setTimeout> | undefined;
 export function logLikeMetro(
   originalLogFunction: (...args: any[]) => void,
   level: string,
+  platform: 'BRIDGE' | 'NOBRIDGE' | 'λ' | null,
   ...data: any[]
 ) {
   // @ts-expect-error
@@ -67,8 +68,12 @@ export function logLikeMetro(
       data[data.length - 1] = lastItem.trimEnd();
     }
 
+    const modePrefix =
+      platform && platform !== 'BRIDGE' && platform !== 'NOBRIDGE' ? chalk.bold`${platform} ` : '';
     originalLogFunction(
-      color.bold(` ${logFunction.toUpperCase()} `) + ''.padEnd(groupStack.length * 2, ' '),
+      modePrefix +
+        color.bold(` ${logFunction.toUpperCase()} `) +
+        ''.padEnd(groupStack.length * 2, ' '),
       ...data
     );
   }
@@ -81,7 +86,7 @@ const SERVER_STACK_MATCHER = new RegExp(
 
 export async function maybeSymbolicateAndFormatJSErrorStackLogAsync(
   projectRoot: string,
-  level: 'error' | 'warn',
+  level: 'error' | 'warn' | (string & {}),
   error: {
     message: string;
     stack: StackFrame[];

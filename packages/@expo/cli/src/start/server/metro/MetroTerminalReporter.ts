@@ -77,8 +77,7 @@ export class MetroTerminalReporter extends TerminalReporter {
           break;
         }
 
-        // @ts-expect-error
-        if (level === 'warn' || level === 'error') {
+        if (level === 'warn' || (level as string) === 'error') {
           let hasStack = false;
           const parsed = event.data.map((msg) => {
             // Quick check to see if an unsymbolicated stack is being logged.
@@ -123,14 +122,14 @@ export class MetroTerminalReporter extends TerminalReporter {
                   ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
                   : symbolicated;
 
-              logLikeMetro(this.terminal.log.bind(this.terminal), level, ...filtered);
+              logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...filtered);
             })();
             return;
           }
         }
 
         // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-        logLikeMetro(this.terminal.log.bind(this.terminal), level, ...event.data);
+        logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...event.data);
         return;
       }
     }
