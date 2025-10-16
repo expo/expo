@@ -419,7 +419,8 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     var mutablePayload = payload
     var response = [[String: Any]]()
     guard let contacts = payload["data"] as? [CNContact] else {
-      return nil
+      mutablePayload["data"] = response
+      return mutablePayload
     }
 
     let directory = appContext?.config.cacheDirectory?.appendingPathComponent("Contacts")
