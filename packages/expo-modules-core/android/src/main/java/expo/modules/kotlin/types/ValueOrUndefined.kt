@@ -21,5 +21,11 @@ sealed interface ValueOrUndefined<T> {
     @JvmStatic
     @DoNotStrip
     fun getUndefined(): Any = Undefined
+
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified T> getUndefined() = Undefined<T>()
+
+    @Suppress("FunctionName")
+    inline fun <reified  T> Undefined(): ValueOrUndefined<T> = getUndefined<T>()
   }
 }
