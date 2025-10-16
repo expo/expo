@@ -19,6 +19,7 @@ import expo.modules.manifests.core.Manifest
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_ALGORITHM_KEY
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
 import expo.modules.updates.codesigning.CodeSigningAlgorithm
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
@@ -164,7 +165,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       return
     }
     val logger = UpdatesLogger(context.filesDir)
-    val fileDownloader = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), configuration, logger)
+    val fileDownloader = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), configuration, logger,
+      databaseHolder.database)
     loaderScope.launch {
       startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
     }
