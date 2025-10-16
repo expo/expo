@@ -1,10 +1,9 @@
 import { memo } from 'react';
 
-import ComponentListScreen from './ComponentListScreen';
+import ComponentListScreen, { type ListElement } from './ComponentListScreen';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import { type ScreenApiItem } from '../types/ScreenConfig';
 
-export default memo(function ExpoComponentsScreen({ apis }: { apis: ScreenApiItem[] }) {
+export default memo(function ExpoComponentsScreen({ apis }: { apis: ListElement[] }) {
   return (
     <ComponentListScreen
       renderItemRight={({ name }: { name: string }) => (
