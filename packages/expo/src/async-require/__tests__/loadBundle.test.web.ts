@@ -27,9 +27,12 @@ it('loads a bundle', async () => {
   expect(DeviceEventEmitter.emit).not.toHaveBeenCalled();
   expect(DeviceEventEmitter.emit).not.toHaveBeenCalled();
 
-  const url = `/Second.bundle?modulesOnly=true`;
-  expect(HMRClient.registerBundle).toHaveBeenCalledWith(url);
-  expect(fetchThenEvalAsync).toHaveBeenCalledWith(url);
+  expect(HMRClient.registerBundle).toHaveBeenCalledWith(
+    expect.stringMatching(/Second.bundle\?modulesOnly=true$/)
+  );
+  expect(fetchThenEvalAsync).toHaveBeenCalledWith(
+    expect.stringMatching(/Second.bundle\?modulesOnly=true$/)
+  );
 });
 it('loads a bundle in production', async () => {
   DeviceEventEmitter.emit = jest.fn();
@@ -38,7 +41,8 @@ it('loads a bundle in production', async () => {
   expect(DeviceEventEmitter.emit).not.toHaveBeenCalled();
   expect(DeviceEventEmitter.emit).not.toHaveBeenCalled();
 
-  const url = `/Second.bundle?modulesOnly=true`;
   expect(HMRClient.registerBundle).not.toHaveBeenCalled();
-  expect(fetchThenEvalAsync).toHaveBeenCalledWith(url);
+  expect(fetchThenEvalAsync).toHaveBeenCalledWith(
+    expect.stringMatching(/Second.bundle\?modulesOnly=true$/)
+  );
 });

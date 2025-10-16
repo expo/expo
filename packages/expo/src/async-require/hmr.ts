@@ -164,9 +164,7 @@ const HMRClient: HMRClientNativeInterface = {
     const fullBundleUrl = (() => {
       const currentScript = document?.currentScript;
       const bundleUrl = new URL(
-        currentScript && 'src' in currentScript
-          ? currentScript.src
-          : location.href,
+        currentScript && 'src' in currentScript ? currentScript.src : location.href,
         location.href
       );
 

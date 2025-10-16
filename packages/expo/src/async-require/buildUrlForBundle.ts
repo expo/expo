@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import getDevServer from './getDevServer';
+
 /**
  * Given a path and some optional additional query parameters, create the dev server bundle URL.
  * @param bundlePath like `/foobar`
@@ -12,7 +14,9 @@
  * @returns a URL like "/foobar.bundle?platform=android&modulesOnly=true&runModule=false&runtimeBytecodeVersion=null"
  */
 export function buildUrlForBundle(bundlePath: string): string {
-  return /^https?:\/\//.test(bundlePath)
-    ? bundlePath
-    : new URL(bundlePath, location.href).toString();
+  if (/^https?:\/\//.test(bundlePath)) {
+    return bundlePath;
+  }
+  const { url: baseURL } = getDevServer();
+  return baseURL ? new URL(bundlePath, baseURL).toString() : `//${bundlePath.replace(/^\/+/, '')}`;
 }
