@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed the **package.json** file appears in fingerprint when loading from **app.config.js**. ([#40320](https://github.com/expo/expo/pull/40320) by [@kudo](https://github.com/kudo))
+- Fixed errors when `ios.icon` is an object in **app.json**. ([#40403](https://github.com/expo/expo/pull/40403) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
