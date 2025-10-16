@@ -37,9 +37,6 @@ const DEF_OPTIONS = {
 (
   [
     {
-      isDev: true
-    },
-    {
       isServer: true,
     },
     {
