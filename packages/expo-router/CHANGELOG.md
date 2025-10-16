@@ -24,6 +24,8 @@
 ### 💡 Others
 
 - Remove unnecessary ModalContextProvider ([#40179](https://github.com/expo/expo/pull/40179) by [@Ubax](https://github.com/Ubax))
+- Move state update logic from addListener to onStateChange ([#40261](https://github.com/expo/expo/pull/40261) by [@Ubax](https://github.com/Ubax))
+
 
 ## 6.0.9 - 2025-10-01
 

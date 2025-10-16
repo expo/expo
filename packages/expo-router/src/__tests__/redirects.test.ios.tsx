@@ -67,11 +67,9 @@ it('deep link to a redirect', () => {
               path: '/bar',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 });
 
@@ -110,11 +108,9 @@ it('deep link to a dynamic redirect', () => {
               path: '/deeply/nested/route/bar',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 });
 
@@ -147,11 +143,9 @@ it('keeps extra params as query params', () => {
               path: '/bar',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 });
 
@@ -190,11 +184,9 @@ it('can redirect from single to catch all', () => {
               path: '/bar/bar',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 });
 
@@ -222,11 +214,9 @@ it('can push to a redirect', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => router.push('/foo'));
