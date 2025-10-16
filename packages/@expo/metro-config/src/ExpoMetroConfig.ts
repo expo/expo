@@ -287,7 +287,11 @@ export function getDefaultConfig(
   // Add support for cjs (without platform extensions).
   sourceExts.push('cjs');
   sourceExts.push('kt');
-  sourceExts.push('swift');
+
+  // TODO @HubertBer Adding specifically swift extension break something after merging latest changes
+  // For now I'll leave it commented out and investigate it - this means that ios inline modules won't work
+  //
+  // sourceExts.push('swift');
 
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
   const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
