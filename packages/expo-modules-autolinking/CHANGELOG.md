@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- fix globMatchFunctorAllAsync to check if globbed path is a file to prevent errors ([#40437](https://github.com/expo/expo/pull/40437) by [@artus9033](https://github.com/artus9033))
 - [iOS] Added build phase script for a workaround to autolinking-generated react-native-config output not being used in ReactCodegen script phase due to temp output directory. ([#40219](https://github.com/expo/expo/pull/40219) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fix passing exclude options. ([#40014](https://github.com/expo/expo/pull/40014) by [@jakex7](https://github.com/jakex7))
 - Ignore missing `package.json` name property when scanning dependencies ([#40367](https://github.com/expo/expo/pull/40367) by [@kitten](https://github.com/kitten))

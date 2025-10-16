@@ -27,6 +27,9 @@ async function globMatchFunctorAllAsync(globPattern, matchFunctor, options) {
         if (!path_1.default.isAbsolute(filePath)) {
             filePath = path_1.default.resolve(cwd, filePath);
         }
+        if (!(await promises_1.default.stat(filePath))?.isFile()) {
+            continue;
+        }
         const contents = await promises_1.default.readFile(filePath);
         const matched = matchFunctor(filePath, contents);
         if (matched != null) {

@@ -30,6 +30,9 @@ export async function globMatchFunctorAllAsync(
     if (!path.isAbsolute(filePath)) {
       filePath = path.resolve(cwd, filePath);
     }
+    if (!(await fs.stat(filePath))?.isFile()) {
+      continue;
+    }
     const contents = await fs.readFile(filePath);
     const matched = matchFunctor(filePath, contents);
     if (matched != null) {
