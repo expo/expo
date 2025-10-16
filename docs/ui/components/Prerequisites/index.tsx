@@ -1,8 +1,9 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
 import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon';
 import { ListIcon } from '@expo/styleguide-icons/outline/ListIcon';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/compat/router';
-import { type ComponentType, type PropsWithChildren, useRef, useEffect } from 'react';
+import { type ComponentType, type PropsWithChildren, useEffect, useRef, useState } from 'react';
 
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink';
@@ -30,6 +31,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
     open = false,
   }: PrerequisitesProps & HeadingManagerProps) => {
     const router = useRouter();
+    const [isOpen, setIsOpen] = useState(open);
     const detailsRef = useRef<HTMLDetailsElement>(null);
     const anchorId = 'prerequisites';
 
@@ -42,14 +44,26 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
         const splitUrl = router.asPath.split('#');
         const hash = splitUrl.length > 0 ? splitUrl[1] : undefined;
         if (hash && hash === heading.current.slug) {
-          detailsRef?.current?.setAttribute('open', '');
+          detailsRef.current?.setAttribute('open', '');
+          setIsOpen(true);
         }
       }
-    }, []);
+    }, [router?.asPath]);
+
+    useEffect(() => {
+      if (open) {
+        detailsRef.current?.setAttribute('open', '');
+        setIsOpen(true);
+      }
+    }, [open]);
+
+    const animate = {
+      transition: { type: 'tween' },
+      height: isOpen ? 'auto' : 0,
+    };
 
     return (
       <details
-        ref={detailsRef}
         id={anchorId}
         className={mergeClasses(
           'mb-3 scroll-m-4 rounded-md border border-default p-0',
@@ -57,7 +71,11 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
         )}
-        open={open}>
+        ref={detailsRef}
+        open={isOpen}
+        onToggle={event => {
+          setIsOpen(event.currentTarget.open);
+        }}>
         <summary
           className={mergeClasses(
             'group m-0 flex cursor-pointer items-center justify-between rounded-md p-1.5 py-3 pr-4',
@@ -88,7 +106,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               href={'#' + heading.current.slug}
               ref={heading.current.ref}
               onClick={() => {
-                detailsRef?.current?.setAttribute('open', '');
+                setIsOpen(true);
               }}
               className="ml-1 inline rounded-md p-1 hocus:bg-element"
               aria-label="Permalink">
@@ -101,7 +119,9 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             </p>
           </div>
         </summary>
-        {children}
+        <motion.div initial={false} animate={animate} className="overflow-hidden">
+          <div>{children}</div>
+        </motion.div>
       </details>
     );
   }
