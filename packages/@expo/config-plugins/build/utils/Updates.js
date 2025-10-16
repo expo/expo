@@ -12,6 +12,7 @@ exports.getRuntimeVersionAsync = getRuntimeVersionAsync;
 exports.getRuntimeVersionNullableAsync = getRuntimeVersionNullableAsync;
 exports.getSDKVersion = getSDKVersion;
 exports.getUpdateUrl = getUpdateUrl;
+exports.getUpdatesBsdiffPatchSupportEnabled = getUpdatesBsdiffPatchSupportEnabled;
 exports.getUpdatesCheckOnLaunch = getUpdatesCheckOnLaunch;
 exports.getUpdatesCodeSigningCertificate = getUpdatesCodeSigningCertificate;
 exports.getUpdatesCodeSigningMetadata = getUpdatesCodeSigningMetadata;
@@ -171,6 +172,12 @@ function getUpdatesEnabled(config) {
 function getUpdatesUseEmbeddedUpdate(config) {
   if (config.updates?.useEmbeddedUpdate !== undefined) {
     return config.updates.useEmbeddedUpdate;
+  }
+  return true;
+}
+function getUpdatesBsdiffPatchSupportEnabled(config) {
+  if (config.updates?.enableBsdiffPatchSupport !== undefined) {
+    return config.updates.enableBsdiffPatchSupport;
   }
   return true;
 }

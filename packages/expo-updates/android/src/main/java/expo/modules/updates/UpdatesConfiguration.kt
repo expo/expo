@@ -41,6 +41,7 @@ data class UpdatesConfiguration(
   val codeSigningIncludeManifestResponseCertificateChain: Boolean,
   private val codeSigningAllowUnsignedManifests: Boolean,
   val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean, // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
+  val enableBsdiffPatchSupport: Boolean,
   val disableAntiBrickingMeasures: Boolean,
   val hasUpdatesOverride: Boolean,
 
@@ -123,6 +124,9 @@ data class UpdatesConfiguration(
       UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS
     ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS") ?: false,
     enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false,
+    enableBsdiffPatchSupport = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_BSDIFF_PATCH_SUPPORT)
+      ?: context?.getMetadataValue("expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT")
+      ?: true,
     disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap),
     hasUpdatesOverride = configOverride != null
   )
@@ -154,6 +158,7 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate"
     const val UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE = "enableExpoUpdatesProtocolCompatibilityMode"
     const val UPDATES_CONFIGURATION_DISABLE_ANTI_BRICKING_MEASURES = "disableAntiBrickingMeasures"
+    const val UPDATES_CONFIGURATION_ENABLE_BSDIFF_PATCH_SUPPORT = "enableBsdiffPatchSupport"
 
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_METADATA = "codeSigningMetadata"

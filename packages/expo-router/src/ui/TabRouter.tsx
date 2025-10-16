@@ -7,7 +7,6 @@ import {
   TabNavigationState,
   TabRouterOptions as RNTabRouterOptions,
 } from '@react-navigation/native';
-import * as Linking from 'expo-linking';
 
 import { TriggerMap } from './common';
 
@@ -31,7 +30,7 @@ export type ExpoTabActionType =
       };
     };
 
-export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) {
+export function ExpoTabRouter(options: ExpoTabRouterOptions) {
   const rnTabRouter = RNTabRouter(options);
 
   const router: Router<
@@ -44,18 +43,7 @@ export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) 
         return rnTabRouter.getStateForAction(state, action, options);
       }
 
-      const name = action.payload.name;
-      const trigger = triggerMap[name];
-
-      if (!trigger) {
-        // This is probably for a different navigator
-        return null;
-      } else if (trigger.type === 'external') {
-        Linking.openURL(trigger.href);
-        return state;
-      }
-
-      const route = state.routes.find((route) => route.name === trigger.routeNode.route);
+      const route = state.routes.find((route) => route.name === action.payload.name);
 
       if (!route) {
         // This shouldn't occur, but lets just hand it off to the next navigator in case.
@@ -89,9 +77,8 @@ export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) 
       if (shouldReset) {
         options.routeParamList[route.name] = {
           ...options.routeParamList[route.name],
-          ...trigger.action.payload.params,
         };
-        return rnTabRouter.getStateForAction(state, trigger.action, options);
+        return rnTabRouter.getStateForAction(state, action, options);
       } else {
         return rnTabRouter.getStateForRouteFocus(state, route.key);
       }

@@ -22,7 +22,6 @@ test.describe(inputDir, () => {
       E2E_ROUTER_SRC: testName,
       E2E_SERVER_FUNCTIONS: '1',
       EXPO_USE_METRO_REQUIRE: '1',
-      E2E_CANARY_ENABLED: '1',
 
       // Ensure CI is disabled otherwise the file watcher won't run.
       CI: '0',

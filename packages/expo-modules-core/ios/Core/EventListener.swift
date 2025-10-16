@@ -40,13 +40,13 @@ internal struct EventListener: AnyDefinition {
   }
 }
 
-class InvalidSenderTypeException: GenericException<(eventName: EventName, senderType: Any.Type)> {
+final class InvalidSenderTypeException: GenericException<(eventName: EventName, senderType: Any.Type)>, @unchecked Sendable {
   override var reason: String {
     "Sender for event '\(param.eventName)' must be of type \(param.senderType)"
   }
 }
 
-public enum EventName: Equatable {
+public enum EventName: Equatable, Sendable {
   case custom(_ name: String)
 
   // MARK: Module lifecycle

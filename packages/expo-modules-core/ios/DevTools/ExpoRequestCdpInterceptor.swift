@@ -7,7 +7,7 @@ import Foundation
  dispatch CDP (Chrome DevTools Protocol: https://chromedevtools.github.io/devtools-protocol/) events.
  */
 @objc(EXRequestCdpInterceptor)
-public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorProtocolDelegate {
+public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorProtocolDelegate, @unchecked Sendable {
   private weak var delegate: ExpoRequestCdpInterceptorDelegate?
   public var dispatchQueue = DispatchQueue(label: "expo.requestCdpInterceptor")
 
@@ -23,7 +23,7 @@ public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorPr
     }
   }
 
-  private func dispatchEvent<T: CdpNetwork.EventParms>(_ event: CdpNetwork.Event<T>) {
+  private func dispatchEvent<T: CdpNetwork.EventParams>(_ event: CdpNetwork.Event<T>) {
     dispatchQueue.async {
       let encoder = JSONEncoder()
       if let jsonData = try? encoder.encode(event), let payload = String(data: jsonData, encoding: .utf8) {
@@ -77,7 +77,7 @@ public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorPr
  The delegate to dispatch CDP events for ExpoRequestCdpInterceptor
  */
 @objc(EXRequestCdpInterceptorDelegate)
-public protocol ExpoRequestCdpInterceptorDelegate {
+public protocol ExpoRequestCdpInterceptorDelegate: Sendable {
   @objc
   func dispatch(_ event: String)
 }

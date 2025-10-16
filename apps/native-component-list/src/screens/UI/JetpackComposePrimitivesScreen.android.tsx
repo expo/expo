@@ -32,6 +32,17 @@ export default function JetpackComposePrimitivesScreen() {
           </Text>
         </Row>
 
+        {/* Row with interpolated string text */}
+        <Row
+          horizontalArrangement="spaceBetween"
+          verticalAlignment="center"
+          modifiers={[testID('interpolatedTextRow')]}>
+          <Text fontSize={18} fontWeight="bold" color="#ff0000">
+            {/* eslint-disable-next-line */}
+            Hello {'world'} {123}
+          </Text>
+        </Row>
+
         {/* Example 2: Column with different Text styles */}
         <Column verticalArrangement="spaceEvenly" horizontalAlignment="center">
           <Text

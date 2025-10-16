@@ -6,36 +6,48 @@ import ExpoModulesTestCore
 
 import EXManifests
 
+private final class FileDownloaderHermesDiffSpecBundle {}
+
 class FileDownloaderSpec : ExpoSpec {
   override class func spec() {
     var testDatabaseDir: URL!
+    var testUpdatesDir: URL!
     var db: UpdatesDatabase!
     var logger: UpdatesLogger!
+    var updatesDirectory: URL!
+    var launchedUpdate: Update!
 
     beforeEach {
       let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
       testDatabaseDir = applicationSupportDir!.appendingPathComponent("UpdatesDatabaseTests")
-      
+      testUpdatesDir = applicationSupportDir!.appendingPathComponent("UpdatesDirectoryTests")
+
       try? FileManager.default.removeItem(atPath: testDatabaseDir.path)
-      
+      try? FileManager.default.removeItem(atPath: testUpdatesDir.path)
+
       if !FileManager.default.fileExists(atPath: testDatabaseDir.path) {
         try! FileManager.default.createDirectory(atPath: testDatabaseDir.path, withIntermediateDirectories: true)
       }
-      
+      if !FileManager.default.fileExists(atPath: testUpdatesDir.path) {
+        try! FileManager.default.createDirectory(atPath: testUpdatesDir.path, withIntermediateDirectories: true)
+      }
+
       db = UpdatesDatabase()
       db.databaseQueue.sync {
         try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
       }
 
       logger = UpdatesLogger()
+      updatesDirectory = testUpdatesDir
     }
     
     afterEach {
       db.databaseQueue.sync {
         db.closeDatabase()
       }
-      
+
       try! FileManager.default.removeItem(atPath: testDatabaseDir.path)
+      try? FileManager.default.removeItem(atPath: testUpdatesDir.path)
     }
     
     describe("cache control") {
@@ -44,7 +56,12 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
         let actual = downloader.createManifestRequest(withURL: URL(string: "https://exp.host/@test/test")!, extraHeaders: nil)
         expect(actual.cachePolicy) == .useProtocolCachePolicy
         expect(actual.value(forHTTPHeaderField: "Cache-Control")).to(beNil())
@@ -55,7 +72,12 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
         let actual = downloader.createManifestRequest(withURL: URL(string: "https://u.expo.dev/00000000-0000-0000-0000-000000000000")!, extraHeaders: nil)
         expect(actual.cachePolicy) == .useProtocolCachePolicy
         expect(actual.value(forHTTPHeaderField: "Cache-Control")).to(beNil())
@@ -68,8 +90,13 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
-        let extraHeaders = [
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
+        let extraHeaders: [String: Any?] = [
           "expo-string": "test",
           "expo-number": 47.5,
           "expo-boolean": true,
@@ -94,7 +121,12 @@ class FileDownloaderSpec : ExpoSpec {
             "expo-updates-environment": "custom"
           ]
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
 
         // serverDefinedHeaders should not be able to override preset headers
         let extraHeaders = [
@@ -204,7 +236,12 @@ class FileDownloaderSpec : ExpoSpec {
             "expo-updates-environment": "custom"
           ]
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
 
         // serverDefinedHeaders should not be able to override preset headers
         let extraHeaders = [
@@ -222,7 +259,12 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
         let extraHeaders = [
           "expo-string": "test",
           "expo-number": 47.5,
@@ -240,6 +282,260 @@ class FileDownloaderSpec : ExpoSpec {
       }
     }
     
+    describe("Hermes diff application") {
+      var config: UpdatesConfig!
+      var downloader: FileDownloader!
+      var updatesDir: URL!
+      var bundle: Bundle!
+      var baseData: Data!
+      var patchData: Data!
+      var expectedPatchedData: Data!
+      var baseHashBase64: String!
+      var baseHashHex: String!
+      var expectedPatchedHash: String!
+      var updateId: UUID!
+      var destinationURL: URL!
+      var createLaunchAsset: ((String?, Bool, String?) -> Void)!
+
+      beforeEach {
+        config = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/11111111-1111-1111-1111-111111111111",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0.0",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "test-scope"
+        ])
+
+        updatesDir = testDatabaseDir.appendingPathComponent("HermesDiff")
+        try? FileManager.default.removeItem(at: updatesDir)
+        try! FileManager.default.createDirectory(at: updatesDir, withIntermediateDirectories: true)
+
+        downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDir,
+          database: db
+        )
+
+        bundle = Bundle(for: FileDownloaderHermesDiffSpecBundle.self)
+        let oldPath = bundle.path(forResource: "old", ofType: "hbc")!
+        let newPath = bundle.path(forResource: "new", ofType: "hbc")!
+        let patchPath = bundle.path(forResource: "test", ofType: "patch")!
+
+        baseData = try! Data(contentsOf: URL(fileURLWithPath: oldPath))
+        expectedPatchedData = try! Data(contentsOf: URL(fileURLWithPath: newPath))
+        patchData = try! Data(contentsOf: URL(fileURLWithPath: patchPath))
+
+        baseHashBase64 = UpdatesUtils.base64UrlEncodedSHA256WithData(baseData)
+        baseHashHex = UpdatesUtils.hexEncodedSHA256WithData(baseData)
+        expectedPatchedHash = UpdatesUtils.base64UrlEncodedSHA256WithData(expectedPatchedData)
+
+        updateId = UUID()
+        destinationURL = updatesDir.appendingPathComponent("patched.hbc")
+
+        launchedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: updateId,
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: UpdateStatus.StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+
+        db.databaseQueue.sync {
+          try! db.addUpdate(launchedUpdate, config: config)
+        }
+
+        createLaunchAsset = { expectedHash, useExpectedHash, contentHashOverride in
+          let asset = UpdateAsset(key: "bundle", type: "hbc")
+          asset.isLaunchAsset = true
+          asset.filename = "launch-asset.hbc"
+          asset.downloadTime = Date()
+          asset.contentHash = contentHashOverride ?? baseHashHex
+          asset.expectedHash = useExpectedHash ? expectedHash : nil
+
+          let fileURL = updatesDir.appendingPathComponent(asset.filename)
+          try? FileManager.default.removeItem(at: fileURL)
+          try! baseData.write(to: fileURL, options: .atomic)
+
+          db.databaseQueue.sync {
+            try! db.addNewAssets([asset], toUpdateWithId: updateId)
+          }
+        }
+      }
+
+      afterEach {
+        try? FileManager.default.removeItem(at: destinationURL)
+        try? FileManager.default.removeItem(at: updatesDir)
+      }
+
+      it("applies Hermes diff and writes patched asset") {
+        createLaunchAsset(baseHashBase64, true, nil)
+        let requestedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: UUID(),
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: UpdateStatus.StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+        let targetAsset = UpdateAsset(key: "new-asset", type: "hbc")
+        targetAsset.isLaunchAsset = true
+
+        expect(FileManager.default.fileExists(atPath: destinationURL.path)).to(beFalse())
+
+        let (patchedData, patchedHash) = try downloader.applyHermesDiff(
+          asset: targetAsset,
+          diffData: patchData,
+          destinationPath: destinationURL.path,
+          launchedUpdate: launchedUpdate,
+          requestedUpdate: requestedUpdate,
+          expectedBase64URLEncodedSHA256Hash: expectedPatchedHash
+        )
+
+        expect(patchedData) == expectedPatchedData
+        expect(patchedHash) == expectedPatchedHash
+        expect(FileManager.default.fileExists(atPath: destinationURL.path)).to(beTrue())
+        let writtenData = try! Data(contentsOf: destinationURL)
+        expect(writtenData) == expectedPatchedData
+      }
+
+      it("throws when asset is not a launch asset") {
+        let targetAsset = UpdateAsset(key: "new-asset", type: "hbc")
+        expect {
+          try downloader.applyHermesDiff(
+            asset: targetAsset,
+            diffData: patchData,
+            destinationPath: destinationURL.path,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: nil,
+            expectedBase64URLEncodedSHA256Hash: expectedPatchedHash
+          )
+        }.to(throwError { (error: FileDownloader.DiffError) in
+          guard case .assetNotLaunch = error else {
+            fail("Expected assetNotLaunch, got \(error)")
+            return
+          }
+        })
+      }
+
+      it("throws when launch asset cannot be found") {
+        let targetAsset = UpdateAsset(key: "new-asset", type: "hbc")
+        targetAsset.isLaunchAsset = true
+
+        expect {
+          try downloader.applyHermesDiff(
+            asset: targetAsset,
+            diffData: patchData,
+            destinationPath: destinationURL.path,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: nil,
+            expectedBase64URLEncodedSHA256Hash: expectedPatchedHash
+          )
+        }.to(throwError { (error: FileDownloader.DiffError) in
+          guard case .launchAssetNotFound = error else {
+            fail("Expected launchAssetNotFound, got \(error)")
+            return
+          }
+        })
+      }
+
+      it("throws when launch asset hash mismatches expected value") {
+        let expectedHash = "incorrect-hash"
+        createLaunchAsset(expectedHash, true, nil)
+
+        let targetAsset = UpdateAsset(key: "new-asset", type: "hbc")
+        targetAsset.isLaunchAsset = true
+
+        expect {
+          try downloader.applyHermesDiff(
+            asset: targetAsset,
+            diffData: patchData,
+            destinationPath: destinationURL.path,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: nil,
+            expectedBase64URLEncodedSHA256Hash: expectedPatchedHash
+          )
+        }.to(throwError { (error: FileDownloader.DiffError) in
+          guard case let .baseHashMismatch(expected, actual) = error else {
+            fail("Expected baseHashMismatch, got \(error)")
+            return
+          }
+          expect(expected) == expectedHash
+          expect(actual) == baseHashBase64
+        })
+
+        expect(FileManager.default.fileExists(atPath: destinationURL.path)).to(beFalse())
+      }
+
+      it("throws when stored base asset hex hash mismatches actual asset") {
+        let storedHash = "deadbeef"
+        createLaunchAsset(nil, false, storedHash)
+
+        let targetAsset = UpdateAsset(key: "new-asset", type: "hbc")
+        targetAsset.isLaunchAsset = true
+
+        expect {
+          try downloader.applyHermesDiff(
+            asset: targetAsset,
+            diffData: patchData,
+            destinationPath: destinationURL.path,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: nil,
+            expectedBase64URLEncodedSHA256Hash: expectedPatchedHash
+          )
+        }.to(throwError { (error: FileDownloader.DiffError) in
+          guard case let .baseHexHashMismatch(expected, actual) = error else {
+            fail("Expected baseHexHashMismatch, got \(error)")
+            return
+          }
+          expect(expected) == storedHash
+          expect(actual) == baseHashHex
+        })
+
+        expect(FileManager.default.fileExists(atPath: destinationURL.path)).to(beFalse())
+      }
+
+      it("throws when patched asset hash mismatches expected value") {
+        createLaunchAsset(baseHashBase64, true, nil)
+
+        let targetAsset = UpdateAsset(key: "new-asset", type: "hbc")
+        targetAsset.isLaunchAsset = true
+
+        expect {
+          try downloader.applyHermesDiff(
+            asset: targetAsset,
+            diffData: patchData,
+            destinationPath: destinationURL.path,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: nil,
+            expectedBase64URLEncodedSHA256Hash: "unexpected"
+          )
+        }.to(throwError { (error: FileDownloader.DiffError) in
+          guard case let .patchedHashMismatch(expected, actual) = error else {
+            fail("Expected patchedHashMismatch, got \(error)")
+            return
+          }
+          expect(expected) == "unexpected"
+          expect(actual) == expectedPatchedHash
+        })
+
+        expect(FileManager.default.fileExists(atPath: destinationURL.path)).to(beFalse())
+      }
+    }
+
     describe("downloadAsset") {
       it("should report download progress") {
         let config = try! UpdatesConfig.config(fromDictionary: [
@@ -250,7 +546,13 @@ class FileDownloaderSpec : ExpoSpec {
         let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.protocolClasses = [MockURLProtocol.self]
 
-        let downloader = FileDownloader(config: config, urlSessionConfiguration: sessionConfig, logger: logger)
+        let downloader = FileDownloader(
+          config: config,
+          urlSessionConfiguration: sessionConfig,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
 
         let responseBody = "hello world this is a test"
         let expectedHash = "-NfUrZcahFwJ6UrL_Vq0ZCh0dses8IUEv-0WS_d61uQ" // Corrected hash
@@ -268,12 +570,17 @@ class FileDownloaderSpec : ExpoSpec {
 
         var success = false
         var error: Error?
+        let testAsset = UpdateAsset(key: "test-asset", type: "txt")
         waitUntil { done in
           downloader.downloadAsset(
+            asset: testAsset,
             fromURL: URL(string: "https://example.com/testfile.txt")!,
             verifyingHash: expectedHash,
             toPath: destinationURL.path,
             extraHeaders: [:],
+            allowPatch: false,
+            launchedUpdate: nil,
+            requestedUpdate: nil,
             progressBlock: progressBlock,
             successBlock: { _, _, _ in
               success = true
@@ -282,7 +589,7 @@ class FileDownloaderSpec : ExpoSpec {
             errorBlock: { err in
               error = err
               done()
-            }
+            },
           )
         }
 

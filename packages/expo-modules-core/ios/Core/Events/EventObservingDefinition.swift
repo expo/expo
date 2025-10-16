@@ -5,7 +5,7 @@ internal enum EventObservingType: String {
   case stopObserving
 }
 
-internal protocol AnyEventObservingDefinition: AnyDefinition {
+internal protocol AnyEventObservingDefinition: AnyDefinition, Sendable {
   var event: String? { get }
 
   var type: EventObservingType { get }
@@ -13,7 +13,7 @@ internal protocol AnyEventObservingDefinition: AnyDefinition {
   func call()
 }
 
-public final class EventObservingDefinition: AnyEventObservingDefinition {
+public final class EventObservingDefinition: AnyEventObservingDefinition, @unchecked Sendable {
   public typealias ClosureType = () -> Void
 
   let type: EventObservingType

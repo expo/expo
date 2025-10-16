@@ -4,7 +4,9 @@ import Foundation
  Swift protocol defining the requirements for modules providers.
  */
 public protocol ModulesProviderProtocol {
-  func getModuleClasses() -> [AnyModule.Type]
+  typealias ExpoModuleTupleType = (module: AnyModule.Type, name: String?)
+
+  func getModuleClasses() -> [ExpoModuleTupleType]
 
   /**
    Returns an array of classes that hooks into `ExpoAppDelegate` to receive app delegate events.
@@ -28,7 +30,7 @@ public protocol ModulesProviderProtocol {
 open class ModulesProvider: NSObject, ModulesProviderProtocol {
   public override required init() {}
 
-  open func getModuleClasses() -> [AnyModule.Type] {
+  open func getModuleClasses() -> [ExpoModuleTupleType] {
     return []
   }
 

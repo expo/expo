@@ -250,16 +250,26 @@ func asyncMap<ItemsType: Sequence, ResultType>(
 /**
  Concurrently maps the given sequence.
  */
-func concurrentMap<ItemsType: Sequence, ResultType>(
+func concurrentMap<ItemsType: Sequence, ResultType: Sendable>(
   _ items: ItemsType,
-  _ transform: @escaping (ItemsType.Element) async throws -> ResultType
-) async rethrows -> [ResultType] {
-  let tasks = items.map { item in
-    Task {
-      try await transform(item)
+  _ transform: @Sendable @escaping (ItemsType.Element) async throws -> ResultType
+) async rethrows -> [ResultType] where ItemsType.Element: Sendable {
+  return try await withThrowingTaskGroup(of: (Int, ResultType).self) { group in
+    var results = Array<ResultType?>.init(repeating: nil, count: Array(items).count)
+
+    // Enumerate items to preserve the original order in the output.
+    for (index, item) in Array(items).enumerated() {
+      group.addTask { [item] in
+        let value = try await transform(item)
+        return (index, value)
+      }
     }
-  }
-  return try await asyncMap(tasks) { task in
-    try await task.value
+
+    while let (index, value) = try await group.next() {
+      results[index] = value
+    }
+
+    // Compact map to unwrap optionals, all positions should be filled.
+    return results.compactMap { $0 }
   }
 }

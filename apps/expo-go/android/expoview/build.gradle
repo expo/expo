@@ -12,10 +12,10 @@ buildscript {
 }
 
 plugins {
-   alias libs.plugins.android.library
-   alias libs.plugins.kotlin.android
-   alias libs.plugins.download
-   id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+  alias libs.plugins.android.library
+  alias libs.plugins.kotlin.android
+  alias libs.plugins.download
+  id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 }
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
@@ -69,6 +69,12 @@ android {
     ndkVersion rootProject.ext.ndkVersion
   }
 
+  flavorDimensions += "device"
+  productFlavors {
+    quest { dimension "device" }
+    mobile { dimension "device" }
+  }
+
   buildFeatures {
     viewBinding true
     compose true
@@ -84,7 +90,7 @@ android {
 
     // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
-        'appAuthRedirectScheme': 'host.exp.exponent'
+      'appAuthRedirectScheme': 'host.exp.exponent'
     ]
 
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
@@ -154,7 +160,7 @@ dependencies {
   api project(':packages:react-native:ReactAndroid')
 
   implementation(project(':packages:react-native:ReactAndroid:hermes-engine')) {
-    exclude(group:'com.facebook.fbjni', module: 'fbjni')
+    exclude(group: 'com.facebook.fbjni', module: 'fbjni')
   }
 
   // Expo modules
