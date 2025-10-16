@@ -44,6 +44,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         assetExts: string[];
         sourceExts: string[];
         nodeModulesPaths: string[];
+        resolveRequest: import("@expo/metro/metro-resolver/types").CustomResolver;
         blockList: RegExp[];
     };
     cacheStores: FileStore<any>[];
