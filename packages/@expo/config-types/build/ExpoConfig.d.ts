@@ -301,6 +301,7 @@ export interface ExpoConfig {
         turboModules?: boolean;
         /**
          * Experimentally use a vendored canary build of React for testing upcoming features.
+         * @deprecated React 19 is enabled by default. Remove unused experiments.reactCanary flag.
          */
         reactCanary?: boolean;
         /**
