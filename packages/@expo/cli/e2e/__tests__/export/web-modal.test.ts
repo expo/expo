@@ -14,26 +14,22 @@ import {
 runExportSideEffects();
 
 describe.each(['0', '1'])(
-  'export web-modal example with EXPO_PUBLIC_EXPERIMENTAL_WEB_MODAL=%s',
-  (EXPO_PUBLIC_EXPERIMENTAL_WEB_MODAL) => {
+  'export web-modal example with EXPO_UNSTABLE_WEB_MODAL=%s',
+  (EXPO_UNSTABLE_WEB_MODAL) => {
     const projectRoot = getRouterE2ERoot();
-    const outputName = 'dist-static-web-modal-' + EXPO_PUBLIC_EXPERIMENTAL_WEB_MODAL;
+    const outputName = 'dist-static-web-modal-' + EXPO_UNSTABLE_WEB_MODAL;
     const outputDir = path.join(projectRoot, outputName);
 
     beforeAll(async () => {
-      await executeExpoAsync(
-        projectRoot,
-        ['export', '-p', 'web', '--output-dir', outputName, '--clear'],
-        {
-          env: {
-            NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
-            E2E_ROUTER_SRC: 'web-modal',
-            E2E_ROUTER_ASYNC: 'production',
-            EXPO_PUBLIC_EXPERIMENTAL_WEB_MODAL,
-          },
-        }
-      );
+      await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'web-modal',
+          E2E_ROUTER_ASYNC: 'production',
+          EXPO_UNSTABLE_WEB_MODAL,
+        },
+      });
     });
 
     it('generates expected route files', async () => {
@@ -78,10 +74,10 @@ describe.each(['0', '1'])(
       });
       expect(links.length).toBe(
         // Global CSS, CSS Module
-        EXPO_PUBLIC_EXPERIMENTAL_WEB_MODAL === '1' ? 2 : 0
+        EXPO_UNSTABLE_WEB_MODAL === '1' ? 2 : 0
       );
 
-      if (EXPO_PUBLIC_EXPERIMENTAL_WEB_MODAL === '1') {
+      if (EXPO_UNSTABLE_WEB_MODAL === '1') {
         const linkStrings = links.map((l) => l.toString());
 
         expect(linkStrings).toEqual(
