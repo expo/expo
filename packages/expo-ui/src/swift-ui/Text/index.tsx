@@ -6,7 +6,11 @@ import { type CommonViewModifierProps } from '../types';
 import { getTextFromChildren } from '../../utils';
 
 export interface TextProps extends CommonViewModifierProps {
-  children: string | React.ReactNode;
+  /**
+   * The children of the text.
+   * Only string and number are supported.
+   */
+  children?: React.ReactNode;
   /**
    * The font weight of the text.
    * Maps to iOS system font weights.
