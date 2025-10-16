@@ -4,13 +4,23 @@ const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-camera/package.json');
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
-const withCamera = (config, { cameraPermission, microphonePermission, recordAudioAndroid = true } = {}) => {
+const BARCODE_SCANNER_PODFILE_KEY = 'expo-camera.barcode-scanner-enabled';
+const withCamera = (config, { cameraPermission, microphonePermission, recordAudioAndroid = true, barcodeScannerEnabled = true, } = {}) => {
     config_plugins_1.IOSConfig.Permissions.createPermissionsPlugin({
         NSCameraUsageDescription: CAMERA_USAGE,
         NSMicrophoneUsageDescription: MICROPHONE_USAGE,
     })(config, {
         NSCameraUsageDescription: cameraPermission,
         NSMicrophoneUsageDescription: microphonePermission,
+    });
+    config = (0, config_plugins_1.withPodfileProperties)(config, (config) => {
+        if (barcodeScannerEnabled === false) {
+            config.modResults[BARCODE_SCANNER_PODFILE_KEY] = 'false';
+        }
+        else {
+            delete config.modResults[BARCODE_SCANNER_PODFILE_KEY];
+        }
+        return config;
     });
     config = config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         'android.permission.CAMERA',

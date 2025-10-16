@@ -1,7 +1,9 @@
-import ZXingObjC
 import AVFoundation
 
 let BARCODE_TYPES_KEY = "barcodeTypes"
+
+#if canImport(ZXingObjC)
+import ZXingObjC
 
 class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
   private var onBarcodeScanned: (([String: Any]?) -> Void)?
@@ -159,3 +161,4 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
     self.onBarcodeScanned?(result)
   }
 }
+#endif
