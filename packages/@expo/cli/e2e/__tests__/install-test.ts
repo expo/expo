@@ -101,8 +101,6 @@ it('runs `npx expo install expo-sms`', async () => {
 it('runs `npx expo install --check` fails', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('install-check-fail', 'with-blank', {
     reuseExisting: false,
-    // TODO(@hassankhan): remove @expo/router-server after publishing
-    linkExpoPackages: ['@expo/router-server'],
   });
 
   const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
@@ -140,8 +138,6 @@ it('runs `npx expo install --check` fails', async () => {
 it('runs `npx expo install --fix` fails', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('install-fix-fail', 'with-blank', {
     reuseExisting: false,
-    // TODO(@hassankhan): remove @expo/router-server after publishing
-    linkExpoPackages: ['@expo/router-server'],
   });
 
   // Install wrong package versions of `expo-sms` and `expo-auth-session`
@@ -184,8 +180,6 @@ it('runs `npx expo install expo@<version> --fix`', async () => {
     'with-blank',
     {
       reuseExisting: false,
-      // TODO(@hassankhan): remove @expo/router-server after publishing
-      linkExpoPackages: ['@expo/router-server'],
     }
   );
   const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
@@ -214,8 +208,6 @@ it('validates when with `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --chec
     'with-blank',
     {
       reuseExisting: false,
-      // TODO(@hassankhan): remove @expo/router-server after publishing
-      linkExpoPackages: ['@expo/router-server'],
     }
   );
   const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
@@ -285,5 +277,5 @@ describe('expo-router integration', () => {
     expect(pkg.read().dependencies).toMatchObject({
       '@react-navigation/native': '^7.1.8',
     });
-  });
+  }, 600_000);
 });
