@@ -1,8 +1,6 @@
+#if canImport(ZXingObjC)
+import AVFoundation
 import ZXingObjC
-
-protocol BarcodeScanningResponseHandler {
-  func onScanningResult(_ result: [String: Any])
-}
 
 class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
   private var settings: [String: [AVMetadataObject.ObjectType]]
@@ -106,3 +104,4 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
     }
   }
 }
+#endif
