@@ -186,6 +186,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ImageScreen'));
     },
   },
+  {
+    name: 'Popover component',
+    route: 'ui/popover',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./PopoverScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

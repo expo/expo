@@ -78,5 +78,8 @@ public final class ExpoUIModule: Module {
     View(CircleView.self)
     View(ConcentricRectangleView.self)
     View(DividerView.self)
+    View(ExpoUI.Popover.self)
+    View(ExpoUI.PopoverViewContent.self)
+    View(ExpoUI.PopoverViewPopContent.self)
   }
 }
