@@ -45,6 +45,11 @@ export type TextFieldRef = {
   setText: (newText: string) => Promise<void>;
   focus: () => Promise<void>;
   blur: () => Promise<void>;
+  /**
+   * Programmatically select text using start and end indices.
+   * @platform ios 18.0+ tvos 18.0+
+   */
+  setSelection: (start: number, end: number) => Promise<void>;
 };
 
 export type TextFieldProps = {
@@ -65,6 +70,11 @@ export type TextFieldProps = {
    * A callback triggered when user focuses or blurs the TextField.
    */
   onChangeFocus?: (focused: boolean) => void;
+  /**
+   * A callback triggered when user selects text in the TextField.
+   * @platform ios 18.0+ tvos 18.0+
+   */
+  onChangeSelection?: ({ start, end }: { start: number; end: number }) => void;
   /**
    * If true, the text input can be multiple lines.
    * While the content will wrap, there's no keyboard button to insert a new line.
@@ -90,8 +100,8 @@ export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText'> & {} & V
     'onValueChanged',
     { value: string }
   > &
-  ViewEvent<'onFocusChanged', { value: boolean }>;
-
+  ViewEvent<'onFocusChanged', { value: boolean }> &
+  ViewEvent<'onSelectionChanged', { start: number; end: number }>;
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
   'ExpoUI',
@@ -109,6 +119,9 @@ function transformTextFieldProps(props: TextFieldProps): NativeTextFieldProps {
     },
     onFocusChanged: (event) => {
       props.onChangeFocus?.(event.nativeEvent.value);
+    },
+    onSelectionChanged: (event) => {
+      props.onChangeSelection?.({ start: event.nativeEvent.start, end: event.nativeEvent.end });
     },
   };
 }

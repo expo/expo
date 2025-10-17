@@ -32,6 +32,7 @@ final class TextFieldProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var allowNewlines: Bool = true
   var onValueChanged = EventDispatcher()
   var onFocusChanged = EventDispatcher()
+  var onSelectionChanged = EventDispatcher()
 }
 
 func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
@@ -69,7 +70,14 @@ func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
 class TextFieldManager: ObservableObject {
   @Published var text: String
   @Published var isFocused: Bool
-
+  
+  @Published var _selection: Any?
+  @available(iOS 18.0, tvOS 18.0, *)
+  var selection: SwiftUI.TextSelection? {
+    get { _selection as? SwiftUI.TextSelection }
+    set { _selection = newValue }
+  }
+  
   init(initialText: String = "") {
     self.text = initialText
     self.isFocused = false
@@ -105,8 +113,23 @@ struct TextFieldView: ExpoSwiftUI.View {
     textManager.isFocused = false
   }
 
+  func setSelection(start: Int, end: Int) {
+    if #available(iOS 18.0, tvOS 18.0, *) {
+      let startIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(start, textManager.text.count))
+      let endIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(end, textManager.text.count))
+      textManager.selection = SwiftUI.TextSelection(range: startIndex..<endIndex)
+    }
+  }
+
   var text: some View {
-    let text = if #available(iOS 16.0, tvOS 16.0, *) {
+    let text = if #available(iOS 18.0, tvOS 18.0, *) {
+      TextField(
+        props.placeholder,
+        text: $textManager.text,
+        selection: $textManager.selection,
+        axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
+      )
+    } else if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
         props.placeholder,
         text: $textManager.text,
@@ -134,7 +157,7 @@ struct TextFieldView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    text
+    let baseView = text
       .onAppear { textManager.text = props.defaultValue }
       .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])
@@ -146,5 +169,19 @@ struct TextFieldView: ExpoSwiftUI.View {
         textManager.isFocused = newValue
         props.onFocusChanged(["value": newValue])
       }
+    
+    if #available(iOS 18.0, tvOS 18.0, *) {
+      baseView.onChange(of: textManager.selection) {
+        if let selection = textManager.selection {
+          if case let .selection(range) = selection.indices {
+            let start = textManager.text.distance(from: textManager.text.startIndex, to: range.lowerBound)
+            let end = textManager.text.distance(from: textManager.text.startIndex, to: range.upperBound)
+            props.onSelectionChanged(["start": start, "end": end])
+          }
+        }
+      }
+    }
+  
+    baseView
   }
 }

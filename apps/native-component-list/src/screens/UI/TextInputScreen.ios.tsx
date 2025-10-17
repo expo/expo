@@ -8,6 +8,8 @@ export default function TextInputScreen() {
   const [value, setValue] = React.useState<string>('');
   const textRef = React.useRef<TextFieldRef>(null);
   const secureRef = React.useRef<TextFieldRef>(null);
+  const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
+  console.log('selection', selection);
 
   return (
     <Page>
@@ -36,6 +38,12 @@ export default function TextInputScreen() {
             }}>
             Blur
           </Button>
+          <Button
+            onPress={async () => {
+              textRef.current?.setSelection(2, 7);
+            }}>
+            Set Selection (start: 2, end: 7)
+          </Button>
         </VStack>
       </Host>
       <Section title="Text Input">
@@ -45,8 +53,10 @@ export default function TextInputScreen() {
             autocorrection={false}
             defaultValue="hey there"
             onChangeText={setValue}
+            onChangeSelection={setSelection}
           />
         </Host>
+        <Text>Selection: {JSON.stringify(selection)}</Text>
       </Section>
       <Section title="Multiline Text Input">
         <Host matchContents>
