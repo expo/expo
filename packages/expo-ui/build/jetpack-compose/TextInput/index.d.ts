@@ -67,6 +67,17 @@ export type TextInputProps = {
      */
     autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
     /**
+     * Specifies the UI style of the text field.
+     *
+     * Available options:
+     * - `filled`: Renders a TextField with a filled background and no visible border.
+     * - `outlined`: Renders an OutlinedTextField with a transparent background and a visible outline border.
+     *
+     * @default filled
+     * @platform android
+     */
+    variant?: 'filled' | 'outlined';
+    /**
      * Modifiers for the component.
      */
     modifiers?: ExpoModifier[];
