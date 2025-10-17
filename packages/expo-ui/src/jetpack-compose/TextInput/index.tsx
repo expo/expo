@@ -104,6 +104,11 @@ export type TextInputProps = {
    * @platform android
    */
   label?: string;
+  /**
+   * Placeholder text shown inside the field when empty and focused.
+   *
+   */
+  placeholder?: string;
   /** Modifiers for the component */
   modifiers?: ExpoModifier[];
 };
