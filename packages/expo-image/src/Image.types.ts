@@ -384,7 +384,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   preferHighDynamicRange?: boolean;
 
   /**
-   * Whether the img element is draggable on web.
+   * Whether the `img` element is draggable on web.
    * @default undefined
    * @platform web
    */
