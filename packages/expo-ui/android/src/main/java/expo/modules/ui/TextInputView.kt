@@ -2,6 +2,7 @@ package expo.modules.ui
 
 import android.content.Context
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -11,10 +12,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+
+enum class TextInputViewVariant(val value: String) : Enumerable {
+  FILLED("filled"),
+  OUTLINED("outlined"),
+}
 
 data class TextInputProps(
   val defaultValue: MutableState<String> = mutableStateOf(""),
@@ -25,6 +32,8 @@ data class TextInputProps(
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
   val modifiers: MutableState<List<ModifierConfig>> = mutableStateOf(emptyList())
+  val variant: MutableState<TextInputViewVariant> = mutableStateOf(TextInputViewVariant.FILLED),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -69,21 +78,44 @@ class TextInputView(context: Context, appContext: AppContext) :
 
   @Composable
   override fun ComposableScope.Content() {
-    TextField(
-      value = requireNotNull(textState.value),
-      onValueChange = {
-        textState.value = it
-        onValueChanged(mapOf("value" to it))
-      },
-      placeholder = { Text(props.placeholder.value) },
-      maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
-      singleLine = !props.multiline.value,
-      keyboardOptions = KeyboardOptions.Default.copy(
-        keyboardType = props.keyboardType.value.keyboardType(),
-        autoCorrectEnabled = props.autocorrection.value,
-        capitalization = props.autoCapitalize.value.autoCapitalize()
-      ),
-      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, scope = this@Content)
-    )
+    when (props.variant.value) {
+      TextInputViewVariant.OUTLINED -> {
+        OutlinedTextField(
+          value = requireNotNull(textState.value),
+          onValueChange = {
+            textState.value = it
+            onValueChanged(mapOf("value" to it))
+          },
+          placeholder = { Text(props.placeholder.value) },
+          maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
+          singleLine = !props.multiline.value,
+          keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = props.keyboardType.value.keyboardType(),
+            autoCorrectEnabled = props.autocorrection.value,
+            capitalization = props.autoCapitalize.value.autoCapitalize()
+          ),
+          modifier = ModifierRegistry.applyModifiers(props.modifiers.value, scope = this@Content)
+        )
+      }
+
+      TextInputViewVariant.FILLED -> {
+        TextField(
+          value = requireNotNull(textState.value),
+          onValueChange = {
+            textState.value = it
+            onValueChanged(mapOf("value" to it))
+          },
+          placeholder = { Text(props.placeholder.value) },
+          maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
+          singleLine = !props.multiline.value,
+          keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = props.keyboardType.value.keyboardType(),
+            autoCorrectEnabled = props.autocorrection.value,
+            capitalization = props.autoCapitalize.value.autoCapitalize()
+          ),
+          modifier = ModifierRegistry.applyModifiers(props.modifiers.value, scope = this@Content)
+        )
+      }
+    }
   }
 }
