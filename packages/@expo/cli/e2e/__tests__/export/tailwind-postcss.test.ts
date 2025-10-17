@@ -32,7 +32,6 @@ describe('exports with tailwind and postcss', () => {
       '+not-found.html',
       '_expo/.routes.json',
       expect.stringMatching(/_expo\/static\/css\/global-.*\.css/),
-      expect.stringMatching(/_expo\/static\/css\/modal\.module-.*\.css/),
       expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/),
       '_sitemap.html',
       'assets/__packages/expo-router/assets/arrow_down.017bc6ba3fc25503e5eb5e53826d48a8.png',
@@ -53,7 +52,7 @@ describe('exports with tailwind and postcss', () => {
   it('has tailwind CSS', async () => {
     const files = findProjectFiles(outputDir).filter((file) => file.endsWith('.css'));
 
-    expect(files.length).toBe(2);
+    expect(files.length).toBe(1);
 
     const contents = fs.readFileSync(path.join(outputDir, files[0]!), 'utf8');
 

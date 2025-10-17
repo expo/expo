@@ -665,6 +665,23 @@ export function withExtendedResolver(
         return result;
       }
 
+      const normalizedPath = normalizeSlashes(result.filePath);
+
+      if (normalizedPath.endsWith('expo-router/build/layouts/_web-modal.js')) {
+        if (env.EXPO_UNSTABLE_WEB_MODAL) {
+          try {
+            const webModal = doResolve('expo-router/build/layouts/ExperimentalModalStack.js');
+            if (webModal.type === 'sourceFile') {
+              debug('Using `_unstable-web-modal` implementation.');
+              return webModal;
+            }
+          } catch (error) {
+            // Fallback to react-navigation web modal implementation.
+          }
+        }
+        debug("Using React Navigation's web modal implementation.");
+      }
+
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
           // Disallow importing confusing native modules on web
@@ -685,9 +702,8 @@ export function withExtendedResolver(
 
           // Replace with static shims
 
-          const normalName = normalizeSlashes(result.filePath)
-            // Drop everything up until the `node_modules` folder.
-            .replace(/.*node_modules\//, '');
+          // Drop everything up until the `node_modules` folder.
+          const normalName = normalizedPath.replace(/.*node_modules\//, '');
 
           const shimFile = shouldCreateVirtualShim(normalName);
           if (shimFile) {
@@ -709,12 +725,9 @@ export function withExtendedResolver(
           context.customResolverOptions?.environment === 'node' ||
           context.customResolverOptions?.environment === 'react-server';
 
-        // react-native/Libraries/Core/InitializeCore
-        const normal = normalizeSlashes(result.filePath);
-
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          if (normal.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
+          if (normalizedPath.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
             debug('Shimming out InitializeCore for React Native in native SSR bundle');
             return {
               type: 'empty',
