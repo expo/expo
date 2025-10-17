@@ -10,6 +10,8 @@ import {
   useState,
 } from 'react';
 
+import { usePageMetadata } from '~/providers/page-metadata';
+
 import { FOOTNOTE } from '../Text';
 import type {
   ContextMarker,
@@ -34,6 +36,22 @@ type AskPageAIChatProps = {
 
 const FALLBACK_TEMPLATE = (label: string) =>
   `I can only answer questions about the current ${label} documentation.`;
+const DEFAULT_CONTEXT_LABEL = 'This page';
+
+const buildDisplayContextLabel = (label: string, shouldPrefixExpo: boolean) => {
+  const trimmed = label.trim();
+  if (!trimmed) {
+    return DEFAULT_CONTEXT_LABEL;
+  }
+  if (!shouldPrefixExpo) {
+    return trimmed;
+  }
+  const lower = trimmed.toLowerCase();
+  if (lower === 'expo') {
+    return trimmed;
+  }
+  return `Expo ${trimmed}`;
+};
 
 export function AskPageAIChat({
   onClose,
@@ -44,6 +62,7 @@ export function AskPageAIChat({
   isExpoSdkPage = false,
 }: AskPageAIChatProps) {
   const router = useRouter();
+  const pageMetadata = usePageMetadata();
   const {
     conversation,
     submitQuery,
@@ -55,18 +74,21 @@ export function AskPageAIChat({
     addFeedback,
   } = useChat();
 
-  const contextLabel = pageTitle?.trim() ? pageTitle : 'This page';
-  const displayContextLabel = useMemo(() => {
-    const label = contextLabel.trim();
-    if (!isExpoSdkPage) {
-      return label;
-    }
-    const lower = label.toLowerCase();
-    if (lower === 'expo' || lower.startsWith('expo ')) {
-      return label;
-    }
-    return `Expo ${label}`;
-  }, [contextLabel, isExpoSdkPage]);
+  const basePath = (router?.asPath ?? '').split('#')[0];
+  const providedTitle = pageTitle?.trim() ?? '';
+  const metadataTitle = pageMetadata?.title?.trim() ?? '';
+  const contextLabel =
+    (providedTitle || metadataTitle || DEFAULT_CONTEXT_LABEL).trim() || DEFAULT_CONTEXT_LABEL;
+
+  const shouldPrefixExpo =
+    typeof isExpoSdkPage === 'boolean'
+      ? isExpoSdkPage
+      : basePath.startsWith('/versions/latest/sdk/');
+
+  const displayContextLabel = useMemo(
+    () => buildDisplayContextLabel(contextLabel, shouldPrefixExpo),
+    [contextLabel, shouldPrefixExpo]
+  );
 
   const fallbackResponse = useMemo(
     () => FALLBACK_TEMPLATE(displayContextLabel),
@@ -147,7 +169,6 @@ export function AskPageAIChat({
 
   const prevDisplayContextRef = useRef<string>(displayContextLabel);
   const prevBasePathRef = useRef<string | null>(null);
-  const basePath = (router?.asPath ?? '').split('#')[0];
 
   useEffect(() => {
     const prevPath = prevBasePathRef.current;
