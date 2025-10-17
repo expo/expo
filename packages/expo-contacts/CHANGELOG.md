@@ -12,6 +12,7 @@
 
 - Added contact image uri validation. ([#39658](https://github.com/expo/expo/pull/39658) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 - [Android] Removed unused `androidx.annotation:annotation` dependency ([#39761](https://github.com/expo/expo/pull/39761) by [@lukmccall](https://github.com/lukmccall))
+- Added ContactSerializationException for error handling. ([#40426](https://github.com/expo/expo/pull/40426) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ## 15.0.9 - 2025-10-01
 
