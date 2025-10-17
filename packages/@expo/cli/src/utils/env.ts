@@ -271,6 +271,11 @@ class Env {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
   }
 
+  /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
+  get EXPO_UNSTABLE_WEB_MODAL(): boolean {
+    return boolish('EXPO_UNSTABLE_WEB_MODAL', false);
+  }
+
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */
   get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
     return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);
