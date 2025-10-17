@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
 
-- (void)autoSetupStart:(UIWindow *)window;
+- (void)autoSetupStart;
 
 - (nullable NSURL *)sourceUrl;
 

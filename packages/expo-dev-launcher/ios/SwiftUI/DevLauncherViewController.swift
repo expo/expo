@@ -5,6 +5,14 @@ import SwiftUI
   private var hostingController: UIHostingController<DevLauncherRootView>?
   var viewModel = DevLauncherViewModel()
 
+  public override var view: UIView! {
+    didSet {
+      if view is EXDevLauncherDeferredRCTRootView {
+        addHostingController()
+      }
+    }
+  }
+
   @objc public override init(nibName: String?, bundle: Bundle?) {
     super.init(nibName: nibName, bundle: bundle)
     setupViewController()
@@ -27,9 +35,13 @@ import SwiftUI
     hostingController?.view.backgroundColor = UIColor.clear
   }
 
-  public override func viewDidLoad() {
-    super.viewDidLoad()
+  @objc public func resetHostingController() {
+    hostingController = nil
+    view = UIView()
+    addHostingController()
+  }
 
+  private func addHostingController() {
     if hostingController == nil {
       setupViewController()
     }
