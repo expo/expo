@@ -30,9 +30,11 @@ final class TextFieldProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var keyboardType: KeyboardType = KeyboardType.defaultKeyboard
   @Field var autocorrection: Bool = true
   @Field var allowNewlines: Bool = true
+  @Field var autoFocus: Bool = false
   var onValueChanged = EventDispatcher()
   var onFocusChanged = EventDispatcher()
   var onSelectionChanged = EventDispatcher()
+  var onSubmit = EventDispatcher()
 }
 
 func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
@@ -146,19 +148,32 @@ struct TextFieldView: ExpoSwiftUI.View {
       .fixedSize(horizontal: false, vertical: true)
       .keyboardType(getKeyboardType(props.keyboardType))
       .autocorrectionDisabled(!props.autocorrection)
-      .if(props.allowNewlines, {
-        $0.focused($isFocused).onSubmit({
-          if  textManager.text.filter({ $0 == "\n" }).count < props.numberOfLines ?? Int.max - 1 {
+      .focused($isFocused)
+      .onSubmit({
+        if props.allowNewlines && props.multiline && allowMultiLine() {
+          if textManager.text.filter({ $0 == "\n" }).count < props.numberOfLines ?? Int.max - 1 {
             textManager.text.append("\n")
+            
+            // when selection state is set, the cursor does not auto update to added newline
+            if #available(iOS 18.0, tvOS 18.0, *) {
+              let cursorPosition = textManager.text.endIndex
+              textManager.selection = SwiftUI.TextSelection(range: cursorPosition..<cursorPosition)
+            }
           }
           isFocused = true
-        })
+        }
+        props.onSubmit(["value": textManager.text])
       })
   }
 
   var body: some View {
     let baseView = text
-      .onAppear { textManager.text = props.defaultValue }
+      .onAppear {
+        textManager.text = props.defaultValue
+        if props.autoFocus {
+          isFocused = true
+        }
+      }
       .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])
       }
@@ -171,17 +186,20 @@ struct TextFieldView: ExpoSwiftUI.View {
       }
     
     if #available(iOS 18.0, tvOS 18.0, *) {
-      baseView.onChange(of: textManager.selection) {
+      return baseView.onChange(of: textManager.selection) {
         if let selection = textManager.selection {
           if case let .selection(range) = selection.indices {
-            let start = textManager.text.distance(from: textManager.text.startIndex, to: range.lowerBound)
-            let end = textManager.text.distance(from: textManager.text.startIndex, to: range.upperBound)
+            let clampedLower = range.lowerBound < textManager.text.endIndex ? range.lowerBound : textManager.text.endIndex
+            let clampedUpper = range.upperBound < textManager.text.endIndex ? range.upperBound : textManager.text.endIndex
+            
+            let start = textManager.text.distance(from: textManager.text.startIndex, to: clampedLower)
+            let end = textManager.text.distance(from: textManager.text.startIndex, to: clampedUpper)
             props.onSelectionChanged(["start": start, "end": end])
           }
         }
       }
+    } else {
+      return baseView
     }
-  
-    baseView
   }
 }
