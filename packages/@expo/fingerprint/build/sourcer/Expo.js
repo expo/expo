@@ -36,7 +36,7 @@ async function getExpoConfigSourcesAsync(projectRoot, config, loadedModules, opt
         // icons
         expoConfig.icon,
         isAndroid ? expoConfig.android?.icon : undefined,
-        isIos ? expoConfig.ios?.icon : undefined,
+        ...(isIos ? collectIosIcons(expoConfig.ios?.icon) : []),
         isAndroid ? expoConfig.android?.adaptiveIcon?.foregroundImage : undefined,
         isAndroid ? expoConfig.android?.adaptiveIcon?.backgroundImage : undefined,
         expoConfig.notification?.icon,
@@ -178,6 +178,18 @@ function postUpdateExpoConfig(config, projectRoot) {
     delete config.ios?.googleServicesFile;
     return config;
 }
+/**
+ * Collect iOS icon to flattened file paths.
+ */
+function collectIosIcons(icon) {
+    if (icon == null) {
+        return [];
+    }
+    if (typeof icon === 'string') {
+        return [icon];
+    }
+    return [icon.light, icon.dark, icon.tinted].filter((file) => Boolean(file));
+}
 async function getEasBuildSourcesAsync(projectRoot, options) {
     const files = ['eas.json', '.easignore'];
     const results = (await Promise.all(files.map(async (file) => {
@@ -204,6 +216,17 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
                 project.sourceDir = filePath; // use relative path for the dir
                 debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
                 results.push({ type: 'dir', filePath, reasons });
+                // `aarProjects` is present in project starting from SDK 53+.
+                if (project.aarProjects) {
+                    for (const aarProject of project.aarProjects) {
+                        // use relative path for aarProject fields
+                        aarProject.aarFilePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, aarProject.aarFilePath));
+                        aarProject.projectDir = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, aarProject.projectDir));
+                    }
+                }
+                if (typeof project.shouldUsePublicationScriptPath === 'string') {
+                    project.shouldUsePublicationScriptPath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, project.shouldUsePublicationScriptPath));
+                }
             }
             if (module.plugins) {
                 for (const plugin of module.plugins) {
@@ -213,6 +236,7 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
                     results.push({ type: 'dir', filePath, reasons });
                 }
             }
+            // Backward compatibility for SDK versions earlier than 53
             if (module.aarProjects) {
                 for (const aarProject of module.aarProjects) {
                     // use relative path for aarProject fields

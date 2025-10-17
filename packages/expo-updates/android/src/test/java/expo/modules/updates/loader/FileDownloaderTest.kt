@@ -13,9 +13,13 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import kotlinx.coroutines.test.runTest
-import okhttp3.*
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import okio.BufferedSource
@@ -28,12 +32,13 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.File
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
 class FileDownloaderTest {
   private lateinit var logger: UpdatesLogger
+  private lateinit var database: UpdatesDatabase
 
   @get:Rule
   val temporaryFolder = TemporaryFolder()
@@ -41,6 +46,7 @@ class FileDownloaderTest {
   @Before
   fun setup() {
     logger = UpdatesLogger(temporaryFolder.newFolder())
+    database = mockk(relaxed = true)
   }
 
   @Test
@@ -118,6 +124,7 @@ class FileDownloaderTest {
 
     val assetEntity = AssetEntity("test", "jpg").apply {
       url = Uri.parse("https://example.com")
+      isLaunchAsset = true
       extraRequestHeaders = JSONObject().apply { put("expo-platform", "ios") }
     }
 
@@ -126,6 +133,7 @@ class FileDownloaderTest {
     val actual = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
+    Assert.assertEquals("application/vnd.bsdiff,*/*", actual.header("Accept"))
   }
 
   @Test
@@ -147,6 +155,7 @@ class FileDownloaderTest {
 
     val assetEntity = AssetEntity("test", "jpg").apply {
       url = Uri.parse("https://example.com")
+      isLaunchAsset = true
       extraRequestHeaders = extraHeaders
     }
 
@@ -156,6 +165,88 @@ class FileDownloaderTest {
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
     Assert.assertEquals("null", actual.header("expo-null"))
+    Assert.assertEquals("application/vnd.bsdiff,*/*", actual.header("Accept"))
+  }
+
+  @Test
+  fun testCreateRequestForAsset_ConfigAcceptOverrideRespected() {
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0",
+      "requestHeaders" to mapOf("Accept" to "application/custom")
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val assetEntity = AssetEntity("test", "hbc").apply {
+      url = Uri.parse("https://example.com")
+      isLaunchAsset = true
+    }
+
+    val fileDownloader = createFileDownloader(config)
+    val actual = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
+    Assert.assertEquals("application/custom", actual.header("Accept"))
+
+    val fallback = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config, allowPatch = false)
+    Assert.assertEquals("application/custom", fallback.header("Accept"))
+  }
+
+  @Test
+  fun testCreateRequestForAsset_DisallowsPatchWhenRequested() {
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0"
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val assetEntity = AssetEntity("test", "hbc").apply {
+      url = Uri.parse("https://example.com")
+      isLaunchAsset = true
+    }
+
+    val fileDownloader = createFileDownloader(config)
+    val fallback = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config, allowPatch = false)
+    Assert.assertEquals("*/*", fallback.header("Accept"))
+  }
+
+  @Test
+  fun testCreateRequestForAsset_NonLaunchAssetDefaultAccept() {
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0"
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val assetEntity = AssetEntity("test", "png").apply {
+      url = Uri.parse("https://example.com")
+      isLaunchAsset = false
+    }
+
+    val fileDownloader = createFileDownloader(config)
+    val request = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
+    Assert.assertEquals("*/*", request.header("Accept"))
+  }
+
+  @Test
+  fun testCreateRequestForAsset_PatchDisabledConfiguration() {
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0",
+      "enableBsdiffPatchSupport" to false
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val assetEntity = AssetEntity("launch", "hbc").apply {
+      url = Uri.parse("https://example.com")
+      isLaunchAsset = true
+    }
+
+    val fileDownloader = createFileDownloader(config)
+    val request = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
+    Assert.assertEquals("*/*", request.header("Accept"))
   }
 
   @Test
@@ -230,18 +321,23 @@ class FileDownloaderTest {
 
     val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
-        every { execute() } returns mockk {
-          every { isSuccessful } returns true
-          every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
-        }
+        every { execute() } returns Response.Builder()
+          .request(Request.Builder().url("https://example.com").build())
+          .protocol(Protocol.HTTP_2)
+          .code(200)
+          .message("OK")
+          .body("hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
+          .build()
       }
     }
 
     try {
-      FileDownloader(temporaryFolder.newFolder(), "eas-client-id-test", config, logger, client).downloadAsset(
+      FileDownloader(temporaryFolder.newFolder(), "eas-client-id-test", config, logger, database, client).downloadAsset(
         assetEntity,
-        File(temporaryFolder.newFolder(), "test"),
-        JSONObject("{}")
+        temporaryFolder.newFolder(),
+        JSONObject("{}"),
+        null,
+        null
       )
       Assert.fail("Expected exception to be thrown")
     } catch (e: Exception) {
@@ -265,17 +361,22 @@ class FileDownloaderTest {
 
     val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
-        every { execute() } returns mockk {
-          every { isSuccessful } returns true
-          every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
-        }
+        every { execute() } returns Response.Builder()
+          .request(Request.Builder().url("https://example.com").build())
+          .protocol(Protocol.HTTP_2)
+          .code(200)
+          .message("OK")
+          .body("hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
+          .build()
       }
     }
 
-    val result = FileDownloader(temporaryFolder.newFolder(), "eas-test-client-id", config, logger, client).downloadAsset(
+    val result = FileDownloader(temporaryFolder.newFolder(), "eas-test-client-id", config, logger, database, client).downloadAsset(
       assetEntity,
-      File(temporaryFolder.newFolder(), "test"),
-      JSONObject("{}")
+      temporaryFolder.newFolder(),
+      JSONObject("{}"),
+      null,
+      null
     )
 
     Assert.assertNotNull(result)
@@ -307,7 +408,7 @@ class FileDownloaderTest {
       }
     }
 
-    val fileDownloader = FileDownloader(temporaryFolder.newFolder(), "eas-client-id-test", config, logger, client)
+    val fileDownloader = FileDownloader(temporaryFolder.newFolder(), "eas-client-id-test", config, logger, database, client)
 
     val progressValues = mutableListOf<Double>()
     val assetLoadProgressListener: (Double) -> Unit = { progress: Double ->
@@ -316,8 +417,10 @@ class FileDownloaderTest {
 
     fileDownloader.downloadAsset(
       assetEntity,
-      File(temporaryFolder.newFolder(), "test"),
+      temporaryFolder.newFolder(),
       JSONObject("{}"),
+      null,
+      null,
       assetLoadProgressListener
     )
 
@@ -361,7 +464,7 @@ class FileDownloaderTest {
       }
     }
 
-    val fileDownloader = FileDownloader(temporaryFolder.newFolder(), "eas-client-id-test", config, logger, client)
+    val fileDownloader = FileDownloader(temporaryFolder.newFolder(), "eas-client-id-test", config, logger, database, client)
 
     val progressValues = mutableListOf<Double>()
     val assetLoadProgressListener: (Double) -> Unit = { progress: Double ->
@@ -370,8 +473,10 @@ class FileDownloaderTest {
 
     fileDownloader.downloadAsset(
       assetEntity,
-      File(temporaryFolder.newFolder(), "test"),
+      temporaryFolder.newFolder(),
       JSONObject("{}"),
+      null,
+      null,
       assetLoadProgressListener
     )
 
@@ -384,7 +489,8 @@ class FileDownloaderTest {
       filesDirectory,
       easClientID = "test-eas-client-id",
       configuration = config,
-      logger = logger
+      logger = logger,
+      database = database
     )
   }
 }

@@ -47,6 +47,7 @@ describe('iOS Updates config', () => {
             'expo-channel-name': 'test',
             testheader: 'test',
           },
+          enableBsdiffPatchSupport: false,
         },
       },
       {} as any,
@@ -65,6 +66,7 @@ describe('iOS Updates config', () => {
       ),
       EXUpdatesCodeSigningMetadata: { alg: 'rsa-v1_5-sha256', keyid: 'test' },
       EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
+      EXUpdatesEnableBsdiffPatchSupport: false,
     });
   });
 });

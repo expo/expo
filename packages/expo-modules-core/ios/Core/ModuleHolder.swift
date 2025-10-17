@@ -5,6 +5,11 @@ import Dispatch
  */
 public final class ModuleHolder {
   /**
+   Name of the module.
+   */
+  private(set) var _name: String?
+
+  /**
    Instance of the module.
    */
   private(set) var module: AnyModule
@@ -28,7 +33,7 @@ public final class ModuleHolder {
    Returns `definition.name` if not empty, otherwise falls back to the module type name.
    */
   var name: String {
-    return definition.name.isEmpty ? String(describing: type(of: module)) : definition.name
+    return _name ?? (definition.name.isEmpty ? String(describing: type(of: module)) : definition.name)
   }
 
   /**
@@ -36,8 +41,9 @@ public final class ModuleHolder {
    */
   var listenersCount: Int = 0
 
-  init(appContext: AppContext, module: AnyModule) {
+  init(appContext: AppContext, module: AnyModule, name: String?) {
     self.appContext = appContext
+    self._name = name
     self.module = module
     self.definition = module.definition()
     post(event: .moduleCreate)
@@ -54,7 +60,8 @@ public final class ModuleHolder {
 
   // MARK: Calling functions
 
-  func call(function functionName: String, args: [Any], _ callback: @escaping (FunctionCallResult) -> () = { _ in }) {
+  @preconcurrency
+  func call(function functionName: String, args: [Any], _ callback: @Sendable @escaping (FunctionCallResult) -> () = { _ in }) {
     guard let appContext else {
       callback(.failure(Exceptions.AppContextLost()))
       return

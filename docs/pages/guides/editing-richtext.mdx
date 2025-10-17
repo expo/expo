@@ -35,7 +35,7 @@ There are a lot of good options to display rich text:
   </TextInput>
   ```
 
-- You can also use [Expo Modules](/modules/overview/) to write a custom renderer component with native platform primitives using third-party libraries such as [Markwon](https://github.com/noties/Markwon) on Android and `AttributedString` on iOS.
+- You can also use [Expo Modules API](/modules/overview/) to write a custom renderer component with native platform primitives using third-party libraries such as [Markwon](https://github.com/noties/Markwon) on Android and `AttributedString` on iOS.
 
 ## Approaches to edit rich text
 
@@ -107,7 +107,7 @@ You can use a native Android or iOS rich text editor wrapped into a React Native
 - [`react-native-live-markdown`](https://github.com/Expensify/react-native-live-markdown)
 - [`react-native-enriched`](https://github.com/software-mansion-labs/react-native-enriched)
 
-You can also wrap any native rich text editor using [Expo Modules](/modules/overview/), but if you use different ones on each platform, you need to unify their APIs and input formats.
+You can also wrap any native rich text editor using [Expo Modules API](/modules/overview/), but if you use different ones on each platform, you need to unify their APIs and input formats.
 
 > Rich text is usually represented using [abstract syntax trees](https://en.wikipedia.org/wiki/Abstract_syntax_tree). For example, a bullet list can be a node of type `bulleted-list` with several children of type `list-item`. You can convert both HTML and markdown to a suitable AST format.
 

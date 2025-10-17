@@ -161,7 +161,13 @@ class UpdatesDevLauncherController(
 
     setDevelopmentSelectionPolicy()
 
-    val fileDownloader = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration!!, logger)
+    val fileDownloader = FileDownloader(
+      context.filesDir,
+      EASClientID(context).uuid.toString(),
+      updatesConfiguration!!,
+      logger,
+      databaseHolder.database
+    )
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,

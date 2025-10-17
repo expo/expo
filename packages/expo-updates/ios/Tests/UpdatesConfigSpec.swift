@@ -25,6 +25,7 @@ class UpdatesConfigSpec : ExpoSpec {
         expect(config.checkOnLaunch) == .ErrorRecoveryOnly
         expect(config.codeSigningConfiguration).toNot(beNil())
         expect(config.enableExpoUpdatesProtocolV0CompatibilityMode) == false
+        expect(config.enableBsdiffPatchSupport) == true
         expect(config.runtimeVersion) == "fake-version-1"
         expect(config.hasEmbeddedUpdate) == true
       }
@@ -40,6 +41,7 @@ class UpdatesConfigSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "overridden",
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://google.com",
           UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["Foo": "Bar"],
+          UpdatesConfig.EXUpdatesConfigEnableBsdiffPatchSupportKey: false,
         ]
 
         guard let configNSDictionary = NSDictionary(contentsOfFile: configPlistPath) as? [String: Any] else {
@@ -56,6 +58,7 @@ class UpdatesConfigSpec : ExpoSpec {
         expect(config.checkOnLaunch) == .ErrorRecoveryOnly
         expect(config.codeSigningConfiguration).toNot(beNil())
         expect(config.enableExpoUpdatesProtocolV0CompatibilityMode) == false
+        expect(config.enableBsdiffPatchSupport) == false
         expect(config.runtimeVersion) == "overridden"
         expect(config.hasEmbeddedUpdate) == true
       }

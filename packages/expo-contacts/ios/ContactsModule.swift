@@ -412,13 +412,15 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   }
 
   private func serializeContactPayload(payload: [String: Any], keys: [String], options: ContactsQuery) throws -> [String: Any]? {
-    if payload["error"] != nil {
-      return nil
+    if let error = payload["error"] {
+      let errorMessage = String(describing: error)
+      throw ContactSerializationException(errorMessage)
     }
     var mutablePayload = payload
     var response = [[String: Any]]()
     guard let contacts = payload["data"] as? [CNContact] else {
-      return nil
+      mutablePayload["data"] = response
+      return mutablePayload
     }
 
     let directory = appContext?.config.cacheDirectory?.appendingPathComponent("Contacts")

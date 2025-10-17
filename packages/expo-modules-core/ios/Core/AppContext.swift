@@ -1,10 +1,10 @@
-import React
+@preconcurrency import React
 
 /**
  The app context is an interface to a single Expo app.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject {
+public final class AppContext: NSObject, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
@@ -124,7 +124,7 @@ public final class AppContext: NSObject {
   /**
    The module holder for the core module.
    */
-  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule)
+  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule, name: nil)
 
   internal private(set) lazy var converter = MainValueConverter(appContext: self)
 
@@ -136,7 +136,7 @@ public final class AppContext: NSObject {
 
     super.init()
 
-    self.moduleRegistry.register(module: JSLoggerModule(appContext: self))
+    self.moduleRegistry.register(module: JSLoggerModule(appContext: self), name: nil)
     listenToClientAppNotifications()
   }
 

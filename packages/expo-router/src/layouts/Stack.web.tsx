@@ -1,21 +1,9 @@
-import { ComponentProps } from 'react';
+// This will be changed to `ExperimentalModalStack` in @expo/cli/src/start/server/metro/withMetroMultiPlatform.ts
+// When the `EXPO_UNSTABLE_WEB_MODAL` env variable is truthy.
+import Stack from './_web-modal';
+import { Screen } from '../views/Screen';
 
-import { stackRouterOverride } from './StackClient';
-import { RouterModal, RouterModalScreen } from '../modal/web/ModalStack';
-import { Protected } from '../views/Protected';
-
-// The RouterModal already includes Screen and Protected via withLayoutContext
-// but we need to ensure we forward the stackRouterOverride for singular routes etc.
-
-const Stack = Object.assign(
-  (props: ComponentProps<typeof RouterModal>) => {
-    return <RouterModal {...props} UNSTABLE_router={stackRouterOverride} />;
-  },
-  {
-    Screen: RouterModalScreen,
-    Protected,
-  }
-);
+Stack.Screen = Screen;
 
 export { Stack };
 

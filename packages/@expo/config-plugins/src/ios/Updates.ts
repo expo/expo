@@ -16,6 +16,7 @@ import {
   getUpdatesRequestHeaders,
   getUpdatesEnabled,
   getUpdatesTimeout,
+  getUpdatesBsdiffPatchSupportEnabled,
   getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
 } from '../utils/Updates';
@@ -32,6 +33,7 @@ export enum Config {
   CODE_SIGNING_CERTIFICATE = 'EXUpdatesCodeSigningCertificate',
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
   DISABLE_ANTI_BRICKING_MEASURES = 'EXUpdatesDisableAntiBrickingMeasures',
+  ENABLE_BSDIFF_PATCH_SUPPORT = 'EXUpdatesEnableBsdiffPatchSupport',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -136,6 +138,13 @@ export async function setUpdatesConfigAsync(
     newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES] = disableAntiBrickingMeasures;
   } else {
     delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
+  }
+
+  const bsPatchSupport = getUpdatesBsdiffPatchSupportEnabled(config);
+  if (!bsPatchSupport) {
+    newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = bsPatchSupport;
+  } else {
+    delete newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT];
   }
 
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);

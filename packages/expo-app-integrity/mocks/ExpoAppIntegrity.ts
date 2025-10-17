@@ -5,20 +5,22 @@
  * and works out of the box with the expo jest preset.
  *  */
 
-export async function generateKey(): Promise<any> {
+export async function generateKeyAsync(): Promise<any> {
   return 'mock-key';
 }
 
-export async function attestKey(key: string, challenge: string): Promise<any> {
+export async function attestKeyAsync(key: string, challenge: string): Promise<any> {
   return 'mock-attestation';
 }
 
-export async function generateAssertion(key: string, challenge: string): Promise<string> {
+export async function generateAssertionAsync(key: string, challenge: string): Promise<string> {
   return '';
 }
 
-export async function requestIntegrityCheck(challenge: string): Promise<string> {
+export async function requestIntegrityCheckAsync(challenge: string): Promise<string> {
   return '';
 }
 
-export async function prepareIntegrityTokenProvider(cloudProjectNumber: string): Promise<void> {}
+export async function prepareIntegrityTokenProviderAsync(
+  cloudProjectNumber: string
+): Promise<void> {}

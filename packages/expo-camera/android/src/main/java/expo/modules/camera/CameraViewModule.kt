@@ -148,6 +148,11 @@ class CameraViewModule : Module() {
     }
 
     AsyncFunction("launchScanner") { settings: BarcodeSettings, promise: Promise ->
+      if (!CameraUtils.isMLKitBarcodeScannerAvailable()) {
+        promise.reject(CameraExceptions.MLKitUnavailableException())
+        return@AsyncFunction
+      }
+
       if (!CameraUtils.hasGooglePlayServices(appContext.reactContext)) {
         promise.reject(CameraExceptions.GooglePlayServicesUnavailableException())
         return@AsyncFunction
@@ -328,12 +333,20 @@ class CameraViewModule : Module() {
       }
 
       Prop("barcodeScannerSettings") { view, settings: BarcodeSettings? ->
+        if (!CameraUtils.isMLKitBarcodeScannerAvailable()) {
+          appContext.jsLogger?.warn("Barcode scanning has been disabled")
+          return@Prop
+        }
         settings?.let {
           view.setBarcodeScannerSettings(it)
         }
       }
 
       Prop("barcodeScannerEnabled") { view, enabled: Boolean? ->
+        if (!CameraUtils.isMLKitBarcodeScannerAvailable()) {
+          view.setShouldScanBarcodes(false)
+          return@Prop
+        }
         enabled?.let {
           view.setShouldScanBarcodes(enabled)
         }

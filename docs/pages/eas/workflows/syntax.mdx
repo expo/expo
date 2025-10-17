@@ -518,15 +518,35 @@ jobs:
 
 To ease the migration from GitHub Actions to EAS Workflows we expose some context fields you may find useful.
 
-```json
-{
-  "event_name": "pull_request" | "push" | "schedule" | "workflow_dispatch",
-  "sha": string,
-  "ref": string, // e.g. refs/heads/main
-  "ref_name": string, // e.g. main
-  "ref_type": "branch" | "tag" | "other",
-  "commit_message": string // Only available for push and schedule events
-}
+```ts
+type GitHubContext = {
+  triggering_actor?: string;
+  event_name: 'pull_request' | 'push' | 'schedule' | 'workflow_dispatch';
+  sha: string;
+  ref: string; // e.g. refs/heads/main
+  ref_name: string; // e.g. main
+  ref_type: 'branch' | 'tag' | 'other';
+  commit_message?: string; // Only available for push and schedule events
+  label?: string;
+  repository?: string;
+  repository_owner?: string;
+  event?: {
+    label?: {
+      name: string;
+    };
+    // Only available for push and schedule events
+    head_commit?: {
+      message: string;
+      id: string;
+    };
+    pull_request?: {
+      number: number;
+    };
+    number?: number;
+    schedule?: string;
+    inputs?: Record<string, string | number | boolean>;
+  };
+};
 ```
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
@@ -544,6 +564,13 @@ jobs:
       platform: ios
       profile: production
 ```
+
+<BoxLink
+  title="${{ github }} context"
+  description="View the ${{ github }} definition source code."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/eas-build-job/src/common.ts"
+/>
 
 ### `success()`, `failure()`
 
@@ -679,6 +706,7 @@ jobs:
       sdk_version: string # optional
       runtime_version: string # optional
       simulator: boolean # optional
+      wait_for_in_progress: boolean # optional
 ```
 
 This job outputs the following properties:
