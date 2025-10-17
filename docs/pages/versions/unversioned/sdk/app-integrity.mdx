@@ -39,7 +39,7 @@ You need to prepare the integrity token provider before you make integrity check
 import * as AppIntegrity from '@expo/app-integrity';
 
 const cloudProjectNumber = 'your-cloud-project-number';
-await AppIntegrity.prepareIntegrityTokenProvider(cloudProjectNumber);
+await AppIntegrity.prepareIntegrityTokenProviderAsync(cloudProjectNumber);
 ```
 
 ### Request an integrity token (on demand)
@@ -48,16 +48,16 @@ Whenever your app makes a server request that you want to check is genuine, you 
 
 ```js
 const requestHash = '2cp24z...';
-const result = await AppIntegrity.requestIntegrityCheck(requestHash);
+const result = await AppIntegrity.requestIntegrityCheckAsync(requestHash);
 ```
 
-Before calling [requestIntegrityCheck](#appintegrityrequestintegritycheckrequesthash), ensure that [prepareIntegrityTokenProvider](#appintegrityprepareintegritytokenprovidercloudprojectnumber) was called successfully.
+Before calling [requestIntegrityCheckAsync](#appintegrityrequestintegritycheckasyncrequesthash), ensure that [prepareIntegrityTokenProviderAsync](#appintegrityprepareintegritytokenproviderasynccloudprojectnumber) was called successfully.
 
-In this example, `requestHash` is a hash unique to the specific user action being verified. You can call [requestIntegrityCheck](#appintegrityprepareintegritytokenprovidercloudprojectnumber) multiple times with different hashes for different user actions.
+In this example, `requestHash` is a hash unique to the specific user action being verified. You can call [requestIntegrityCheckAsync](#appintegrityprepareintegritytokenproviderasynccloudprojectnumber) multiple times with different hashes for different user actions.
 
 On success, send the result to your server for verification.
 
-> **Note**: If your app uses the same token provider for too long, the token provider can expire which results in the `ERR_APP_INTEGRITY_PROVIDER_INVALID` error on the next token request. You should handle this error by requesting a new provider by calling `prepareIntegrityTokenProvider` again.
+> **Note**: If your app uses the same token provider for too long, the token provider can expire which results in the `ERR_APP_INTEGRITY_PROVIDER_INVALID` error on the next token request. You should handle this error by requesting a new provider by calling `prepareIntegrityTokenProviderAsync` again.
 
 ### Decrypt and verify the integrity verdict
 
@@ -105,7 +105,7 @@ if (AppIntegrity.isSupported) {
 For each user account on each device running your app, generate a unique, hardware-based, cryptographic key pair by calling the `generateKey` method.
 
 ```js
-const keyId = await AppIntegrity.generateKey();
+const keyId = await AppIntegrity.generateKeyAsync();
 ```
 
 On success, the method returns a key identifier (`keyId`) that you use later to access the key. Record the identifier in persistent storage because there's no way to use the key without the identifier and no way to get the identifier later. The device automatically stores the associated private key in the Secure Enclave, from where the App Attest service can use it to create signatures, but from where no process can ever directly read or modify it, ensuring its security.
@@ -123,7 +123,7 @@ Request a unique, one-time challenge from your server. This challenge will be em
 Pass the `keyId` alongwith the challenge from your server created in the previous steps in `attestKey` method as shown below:
 
 ```js
-const attestationObject = await AppIntegrity.attestKey(keyId, challenge);
+const attestationObject = await AppIntegrity.attestKeyAsync(keyId, challenge);
 ```
 
 On success, send the received `attestationObject` and the `keyId` to your server for verification.
@@ -145,7 +145,7 @@ const request = {
   levelId: '1234',
   challenge: challenge,
 };
-const assertion = await AppIntegrity.generateAssertion(keyId, JSON.stringify(request));
+const assertion = await AppIntegrity.generateAssertionAsync(keyId, JSON.stringify(request));
 ```
 
 On success, pass the assertion object, along with the client data, to the server. If the assertion object fails verification, it's your responsibility to decide how to handle the request.
