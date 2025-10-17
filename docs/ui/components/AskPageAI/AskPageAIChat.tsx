@@ -47,7 +47,7 @@ const buildDisplayContextLabel = (label: string, shouldPrefixExpo: boolean) => {
     return trimmed;
   }
   const lower = trimmed.toLowerCase();
-  if (lower === 'expo' || lower.startsWith('expo ')) {
+  if (lower === 'expo') {
     return trimmed;
   }
   return `Expo ${trimmed}`;
