@@ -679,7 +679,10 @@ jobs:
       sdk_version: string # optional
       runtime_version: string # optional
       simulator: boolean # optional
+      wait_for_in_progress: boolean # optional, default: false
 ```
+
+When `wait_for_in_progress` is `true`, if a matching build is currently in progress, this job will wait for it to complete and then return that build. When `false` (default), only already-completed builds are considered.
 
 This job outputs the following properties:
 

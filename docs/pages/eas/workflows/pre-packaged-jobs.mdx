@@ -342,26 +342,28 @@ jobs:
       sdk_version: string # optional
       runtime_version: string # optional
       simulator: boolean # optional
+      wait_for_in_progress: boolean # optional, default: false
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter         | Type    | Description                                                                    |
-| ----------------- | ------- | ------------------------------------------------------------------------------ |
-| platform          | string  | Optional. The platform to get the build for. Can be `ios` or `android`.        |
-| profile           | string  | Optional. The build profile to use.                                            |
-| distribution      | string  | Optional. The distribution method. Can be `store`, `internal`, or `simulator`. |
-| channel           | string  | Optional. The update channel.                                                  |
-| app_identifier    | string  | Optional. The bundle identifier/package name.                                  |
-| app_build_version | string  | Optional. The build version.                                                   |
-| app_version       | string  | Optional. The app version.                                                     |
-| git_commit_hash   | string  | Optional. The git commit hash.                                                 |
-| fingerprint_hash  | string  | Optional. The fingerprint hash.                                                |
-| sdk_version       | string  | Optional. The SDK version.                                                     |
-| runtime_version   | string  | Optional. The runtime version.                                                 |
-| simulator         | boolean | Optional. Whether to get a simulator build.                                    |
+| Parameter            | Type    | Description                                                                                                                           |
+| -------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| platform             | string  | Optional. The platform to get the build for. Can be `ios` or `android`.                                                               |
+| profile              | string  | Optional. The build profile to use.                                                                                                   |
+| distribution         | string  | Optional. The distribution method. Can be `store`, `internal`, or `simulator`.                                                        |
+| channel              | string  | Optional. The update channel.                                                                                                         |
+| app_identifier       | string  | Optional. The bundle identifier/package name.                                                                                         |
+| app_build_version    | string  | Optional. The build version.                                                                                                          |
+| app_version          | string  | Optional. The app version.                                                                                                            |
+| git_commit_hash      | string  | Optional. The git commit hash.                                                                                                        |
+| fingerprint_hash     | string  | Optional. The fingerprint hash.                                                                                                       |
+| sdk_version          | string  | Optional. The SDK version.                                                                                                            |
+| runtime_version      | string  | Optional. The runtime version.                                                                                                        |
+| simulator            | boolean | Optional. Whether to get a simulator build.                                                                                           |
+| wait_for_in_progress | boolean | Optional. When `true`, if a matching build is currently in progress, wait for it to complete and return that build. Default: `false`. |
 
 #### Outputs
 
