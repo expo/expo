@@ -1,0 +1,55 @@
+---
+title: Navigation in Expo and React Native apps
+description: Learn about the recommended approach for integrating navigation in an Expo and React Native project.
+sidebar_title: Navigation
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+The core React Native library does not include a built-in navigation solution, so you can choose a navigation library that best fits your needs. For Expo and React Native apps, it is generally a choice between [React Navigation](https://reactnavigation.org/) or [Expo Router](/router/introduction/).
+
+## Why React Native apps needs a navigation library
+
+React Native core includes basic UI components, touch handling, device APIs and networking, but excludes, among other things, storage, camera, maps, most device sensors, and **navigation**! These are intended to be covered by community libraries.
+
+## React Navigation
+
+React Navigation is a component-based navigation library widely used across the React Native ecosystem. It lets you compose stack, tab, and drawer navigators entirely in code so you can implement complex flows, custom transitions, and app-specific UX patterns.
+
+The library offers platform-specific look-and-feel with smooth animations and gestures, unified mobile and web routing, automatic deep links, type routes with static configuration, and is highly customizable.
+
+<BoxLink
+  title="React Navigation: Getting started"
+  description="Learn how to get started with React Navigation."
+  Icon={BookOpen02Icon}
+  href="https://reactnavigation.org/docs/getting-started"
+/>
+
+## Expo Router (recommended for Expo projects)
+
+Expo Router is a file-based routing library for Expo and React Native projects and is a built on top of React Navigation. By following the **app** directory convention, it turns files into routes and is integrated with Expo for [Expo CLI](/more/expo-cli/) and bundling without additional setup. The library also adds features such as typed routes, dynamic routes, lazy bundling in development, static rendering for the web, and automatic deep linking.
+
+New Expo projects created with `npx create-expo-app@latest` include Expo Router by default so you can ship cross-platform navigation quickly while still being able to reach for React Navigation APIs when needed.
+
+<BoxLink
+  title="Introduction to Expo Router"
+  description="Expo Router is an open-source routing library for Universal React Native applications built with Expo."
+  Icon={BookOpen02Icon}
+  href="/router/introduction/"
+/>
+
+<BoxLink
+  title="Installation"
+  description="Learn how to quickly get started by creating a new project with Expo Router or adding the library to an existing project."
+  Icon={BookOpen02Icon}
+  href="/router/installation/"
+/>
+
+<BoxLink
+  title="Core concepts"
+  description="Learn about the core concepts of file-based routing in Expo."
+  Icon={BookOpen02Icon}
+  href="/router/basics/core-concepts/"
+/>
