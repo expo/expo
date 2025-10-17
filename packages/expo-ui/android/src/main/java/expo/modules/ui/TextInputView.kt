@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoComposeView
 
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -23,7 +24,13 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.Direction
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.types.Enumerable
 import java.util.EnumSet
+
+enum class TextInputViewVariant(val value: String) : Enumerable {
+  FILLED("filled"),
+  OUTLINED("outlined"),
+}
 
 data class TextInputProps(
   val defaultValue: MutableState<String> = mutableStateOf(""),
@@ -33,6 +40,7 @@ data class TextInputProps(
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
+  val variant: MutableState<TextInputViewVariant> = mutableStateOf(TextInputViewVariant.FILLED),
   val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
@@ -79,22 +87,44 @@ class TextInputView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
-      TextField(
-        value = requireNotNull(textState.value),
-        onValueChange = {
-          textState.value = it
-          onValueChanged(mapOf("value" to it))
-        },
-        placeholder = { Text(props.placeholder.value) },
-        maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
-        singleLine = !props.multiline.value,
-        keyboardOptions = KeyboardOptions.Default.copy(
-          keyboardType = props.keyboardType.value.keyboardType(),
-          autoCorrectEnabled = props.autocorrection.value,
-          capitalization = props.autoCapitalize.value.autoCapitalize()
-        ),
-        modifier = Modifier.fromExpoModifiers(props.modifiers.value)
-      )
+      when (props.variant.value) {
+        TextInputViewVariant.OUTLINED -> {
+          OutlinedTextField(
+            value = requireNotNull(textState.value),
+            onValueChange = {
+              textState.value = it
+              onValueChanged(mapOf("value" to it))
+            },
+            placeholder = { Text(props.placeholder.value) },
+            maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
+            singleLine = !props.multiline.value,
+            keyboardOptions = KeyboardOptions.Default.copy(
+              keyboardType = props.keyboardType.value.keyboardType(),
+              autoCorrectEnabled = props.autocorrection.value,
+              capitalization = props.autoCapitalize.value.autoCapitalize()
+            ),
+            modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+          )
+        }
+        TextInputViewVariant.FILLED -> {
+          TextField(
+            value = requireNotNull(textState.value),
+            onValueChange = {
+              textState.value = it
+              onValueChanged(mapOf("value" to it))
+            },
+            placeholder = { Text(props.placeholder.value) },
+            maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
+            singleLine = !props.multiline.value,
+            keyboardOptions = KeyboardOptions.Default.copy(
+              keyboardType = props.keyboardType.value.keyboardType(),
+              autoCorrectEnabled = props.autocorrection.value,
+              capitalization = props.autoCapitalize.value.autoCapitalize()
+            ),
+            modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+          )
+        }
+      }
     }
   }
 }
