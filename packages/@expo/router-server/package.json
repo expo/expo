@@ -43,14 +43,6 @@
     "expo-font": "*",
     "expo-router": "*"
   },
-  "peerDependenciesMeta": {
-    "react-dom": {
-      "optional": true
-    },
-    "react-native-web": {
-      "optional": true
-    }
-  },
   "dependencies": {
     "debug": "^4.3.4"
   }
