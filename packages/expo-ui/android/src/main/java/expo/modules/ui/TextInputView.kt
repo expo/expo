@@ -32,6 +32,7 @@ data class TextInputProps(
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
   val variant: MutableState<TextInputViewVariant> = mutableStateOf(TextInputViewVariant.FILLED),
+  val label: MutableState<String> = mutableStateOf(""),
   val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
@@ -86,6 +87,9 @@ class TextInputView(context: Context, appContext: AppContext) :
             onValueChanged(mapOf("value" to it))
           },
           placeholder = { Text(props.placeholder.value) },
+          label = if (props.label.value.isNotEmpty()) {
+            { Text(props.label.value) }
+          } else null,
           maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
           singleLine = !props.multiline.value,
           keyboardOptions = KeyboardOptions.Default.copy(
@@ -105,6 +109,9 @@ class TextInputView(context: Context, appContext: AppContext) :
             onValueChanged(mapOf("value" to it))
           },
           placeholder = { Text(props.placeholder.value) },
+          label = if (props.label.value.isNotEmpty()) {
+            { Text(props.label.value) }
+          } else null,
           maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
           singleLine = !props.multiline.value,
           keyboardOptions = KeyboardOptions.Default.copy(
