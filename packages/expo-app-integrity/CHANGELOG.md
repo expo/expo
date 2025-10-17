@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Rename functions to include `async` suffix. ([#40447](https://github.com/expo/expo/pull/40447) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

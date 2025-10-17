@@ -25,8 +25,8 @@ class IntegrityModule : Module() {
   private var integrityTokenException: Exception? = null
 
   companion object {
-    private const val PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME = "prepareIntegrityTokenProvider"
-    private const val REQUEST_INTEGRITY_CHECK_METHOD_NAME = "requestIntegrityCheck"
+    private const val PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME = "prepareIntegrityTokenProviderAsync"
+    private const val REQUEST_INTEGRITY_CHECK_METHOD_NAME = "requestIntegrityCheckAsync"
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
   }
 
@@ -95,7 +95,7 @@ class IntegrityModule : Module() {
       )
     }
 
-    AsyncFunction("isHardwareAttestationSupported") {
+    AsyncFunction("isHardwareAttestationSupportedAsync") {
       try {
         isHardwareAttestationSupported()
       } catch (e: Exception) {
@@ -103,7 +103,7 @@ class IntegrityModule : Module() {
       }
     }
 
-    AsyncFunction("generateHardwareAttestedKey") { keyAlias: String, challenge: String ->
+    AsyncFunction("generateHardwareAttestedKeyAsync") { keyAlias: String, challenge: String ->
       try {
         generateHardwareAttestedKey(keyAlias, challenge)
       } catch (e: Exception) {
@@ -111,7 +111,7 @@ class IntegrityModule : Module() {
       }
     }
 
-    AsyncFunction("getAttestationCertificateChain") { keyAlias: String ->
+    AsyncFunction("getAttestationCertificateChainAsync") { keyAlias: String ->
       try {
         getAttestationCertificateChain(keyAlias)
       } catch (e: Exception) {
