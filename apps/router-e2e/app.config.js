@@ -84,6 +84,7 @@ module.exports = {
             : undefined,
         unstable_useServerDataLoaders: process.env.E2E_ROUTER_SERVER_LOADERS === 'true',
         unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
+        unstable_splitView: true
       },
     ],
   ],
