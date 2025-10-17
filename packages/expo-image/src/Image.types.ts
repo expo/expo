@@ -382,6 +382,13 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * @platform tvos 17.0+
    */
   preferHighDynamicRange?: boolean;
+
+  /**
+   * Whether the img element is draggable on web.
+   * @default undefined
+   * @platform web
+   */
+  draggable?: boolean;
 }
 
 /**

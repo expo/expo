@@ -27,5 +27,6 @@ export type ImageWrapperProps = {
     className?: string;
     accessibilityLabel?: string;
     cachePolicy?: ImageProps['cachePolicy'];
+    draggable?: boolean;
 };
 //# sourceMappingURL=ImageWrapper.types.d.ts.map

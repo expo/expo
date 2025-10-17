@@ -35,4 +35,5 @@ export type ImageWrapperProps = {
   className?: string;
   accessibilityLabel?: string;
   cachePolicy?: ImageProps['cachePolicy'];
+  draggable?: boolean;
 };
