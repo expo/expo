@@ -51,7 +51,7 @@ abstract class DevLauncherPlugin : Plugin<Project> {
     return if (System.getenv("EX_UPDATES_NATIVE_DEBUG") != "1" && reactExtension != null) {
       reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
     } else {
-      variant.buildType == "debug"
+      variant.buildType == "debug" || variant.buildType == "debugOptimized"
     }
   }
 
