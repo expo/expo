@@ -72,7 +72,6 @@ export type TextFieldProps = {
   onChangeFocus?: (focused: boolean) => void;
   /**
    * A callback triggered when user submits the TextField by pressing the return key.
-   * Only works if `allowNewlines` is not true.
    */
   onSubmit?: (value: string) => void;
   /**
