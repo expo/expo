@@ -89,7 +89,6 @@ export type TextInputProps = {
    * @platform android
    */
   autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
-
   /**
    * Modifiers for the component.
    */
