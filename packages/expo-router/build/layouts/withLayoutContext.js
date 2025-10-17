@@ -156,7 +156,7 @@ function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
             return null;
         }
         return (<exports.IsWithinLayoutContext value>
-          <Nav {...props} id={contextKey} ref={ref} children={sorted}/>;
+          <Nav {...props} id={contextKey} ref={ref} children={sorted}/>
         </exports.IsWithinLayoutContext>);
     }), {
         Screen: Screen_1.Screen,

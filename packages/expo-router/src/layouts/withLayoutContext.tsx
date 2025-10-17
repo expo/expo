@@ -175,7 +175,7 @@ export function withLayoutContext<
 
       return (
         <IsWithinLayoutContext value>
-          <Nav {...props} id={contextKey} ref={ref} children={sorted} />;
+          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
         </IsWithinLayoutContext>
       );
     }),

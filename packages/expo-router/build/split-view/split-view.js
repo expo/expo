@@ -32,10 +32,14 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SplitView = void 0;
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importStar(require("react"));
-const experimental_1 = require("react-native-screens/experimental");
+const react_native_screens_1 = require("react-native-screens");
 const elements_1 = require("./elements");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
 const Navigator_1 = require("../views/Navigator");
@@ -47,6 +51,13 @@ function SplitViewNavigator({ children, ...splitViewHostProps }) {
     // TODO: Add better way of detecting if SplitView is rendered inside Native navigator.
     if ((0, react_1.use)(withLayoutContext_1.IsWithinLayoutContext)) {
         throw new Error('SplitView cannot be used inside another navigator, except for Slot.');
+    }
+    if (!expo_constants_1.default.expoConfig?.extra?.router?.unstable_splitView) {
+        throw new Error('SplitView is not enabled. Make sure to enable it in your expo-router configuration with "unstable_splitView": true. After enabling, make sure to prebuild your app.');
+    }
+    if (process.env.EXPO_OS !== 'ios') {
+        console.warn('SplitView is only supported on iOS. The SplitView will behave like a Slot navigator on other platforms.');
+        return <Navigator_1.Slot />;
     }
     const WrappedSlot = () => (<withLayoutContext_1.IsWithinLayoutContext value>
       <Navigator_1.Slot />
@@ -67,13 +78,13 @@ function SplitViewNavigator({ children, ...splitViewHostProps }) {
         return <Navigator_1.Slot />;
     }
     // The key is needed, because number of columns cannot be changed dynamically
-    return (<experimental_1.SplitViewHost key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
+    return (<react_native_screens_1.SplitViewHost key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
       {columnChildren}
-      <experimental_1.SplitViewScreen.Column>
+      <react_native_screens_1.SplitViewScreen.Column>
         <WrappedSlot />
-      </experimental_1.SplitViewScreen.Column>
+      </react_native_screens_1.SplitViewScreen.Column>
       {inspectorChildren}
-    </experimental_1.SplitViewHost>);
+    </react_native_screens_1.SplitViewHost>);
 }
 exports.SplitView = Object.assign(SplitViewNavigator, {
     Column: elements_1.SplitViewColumn,

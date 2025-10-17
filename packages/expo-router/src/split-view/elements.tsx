@@ -1,11 +1,16 @@
-import { SplitViewScreen } from 'react-native-screens/experimental';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SplitViewScreen } from 'react-native-screens';
 
 interface SplitViewColumnProps {
   children?: React.ReactNode;
 }
 
 export function SplitViewColumn(props: SplitViewColumnProps) {
-  return <SplitViewScreen.Column>{props.children}</SplitViewScreen.Column>;
+  return (
+    <SplitViewScreen.Column>
+      <SafeAreaProvider>{props.children}</SafeAreaProvider>
+    </SplitViewScreen.Column>
+  );
 }
 
 interface SplitViewColumnProps {
