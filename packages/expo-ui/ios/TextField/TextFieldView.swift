@@ -72,14 +72,14 @@ func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
 class TextFieldManager: ObservableObject {
   @Published var text: String
   @Published var isFocused: Bool
-  
+
   @Published var _selection: Any?
   @available(iOS 18.0, tvOS 18.0, *)
   var selection: SwiftUI.TextSelection? {
     get { _selection as? SwiftUI.TextSelection }
     set { _selection = newValue }
   }
-  
+
   init(initialText: String = "") {
     self.text = initialText
     self.isFocused = false
@@ -153,7 +153,7 @@ struct TextFieldView: ExpoSwiftUI.View {
         if props.allowNewlines && props.multiline && allowMultiLine() {
           if textManager.text.filter({ $0 == "\n" }).count < props.numberOfLines ?? Int.max - 1 {
             textManager.text.append("\n")
-            
+
             // when selection state is set, the cursor does not auto update to added newline
             if #available(iOS 18.0, tvOS 18.0, *) {
               let cursorPosition = textManager.text.endIndex
@@ -184,14 +184,14 @@ struct TextFieldView: ExpoSwiftUI.View {
         textManager.isFocused = newValue
         props.onFocusChanged(["value": newValue])
       }
-    
+
     if #available(iOS 18.0, tvOS 18.0, *) {
       return baseView.onChange(of: textManager.selection) {
         if let selection = textManager.selection {
           if case let .selection(range) = selection.indices {
             let clampedLower = range.lowerBound < textManager.text.endIndex ? range.lowerBound : textManager.text.endIndex
             let clampedUpper = range.upperBound < textManager.text.endIndex ? range.upperBound : textManager.text.endIndex
-            
+
             let start = textManager.text.distance(from: textManager.text.startIndex, to: clampedLower)
             let end = textManager.text.distance(from: textManager.text.startIndex, to: clampedUpper)
             props.onSelectionChanged(["start": start, "end": end])
