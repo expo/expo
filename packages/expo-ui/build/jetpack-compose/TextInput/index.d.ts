@@ -78,8 +78,16 @@ export type TextInputProps = {
      */
     variant?: 'filled' | 'outlined';
     /**
-     * Modifiers for the component.
+     * The label text that floats above the text field when focused or filled.
+     *
+     * The label provides a description of the field's purpose and animates smoothly.
+     * - When empty and unfocused: appears inside the field
+     * - When focused or has text: floats above and shrinks
+     *
+     * @platform android
      */
+    label?: string;
+    /** Modifiers for the component */
     modifiers?: ExpoModifier[];
 };
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
