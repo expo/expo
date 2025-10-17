@@ -15,7 +15,7 @@ const getServerManifest_1 = require("expo-router/build/getServerManifest");
 const loadStaticParamsAsync_1 = require("expo-router/build/loadStaticParamsAsync");
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
- * Unlike the `expo-router/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which
+ * Unlike the `@expo/router-server/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which
  * takes substantially longer and requires Metro bundling.
  *
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.

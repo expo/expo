@@ -12,8 +12,8 @@ exports.Html = Html;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const html_1 = require("expo-router/build/utils/html");
 const react_1 = __importDefault(require("react"));
+const html_1 = require("../utils/html");
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
  */

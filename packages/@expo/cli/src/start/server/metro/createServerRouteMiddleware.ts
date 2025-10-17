@@ -42,7 +42,7 @@ export function createRouteHandlerMiddleware(
     ) => Promise<null | Record<string, Function> | Response>;
     config: ProjectConfig;
     headers: Record<string, string | string[]>;
-  } & import('expo-router/build/routes-manifest').Options
+  } & import('@expo/router-server/build/routes-manifest').Options
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {
     throw new CommandError(
