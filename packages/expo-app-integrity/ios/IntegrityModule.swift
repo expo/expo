@@ -12,7 +12,7 @@ public class IntegrityModule: Module {
       return service.isSupported
     }
 
-    AsyncFunction("generateKey") {
+    AsyncFunction("generateKeyAsync") {
       do {
         return try await service.generateKey()
       } catch let error {
@@ -20,7 +20,7 @@ public class IntegrityModule: Module {
       }
     }
 
-    AsyncFunction("attestKey") { (key: String, challenge: String) in
+    AsyncFunction("attestKeyAsync") { (key: String, challenge: String) in
       let data = Data(challenge.utf8)
       let clientDataHash = Data(SHA256.hash(data: data))
 
@@ -32,7 +32,7 @@ public class IntegrityModule: Module {
       }
     }
 
-    AsyncFunction("generateAssertion") { (key: String, challenge: String) -> String in
+    AsyncFunction("generateAssertionAsync") { (key: String, challenge: String) -> String in
       let data = Data(challenge.utf8)
       let clientDataHash = Data(SHA256.hash(data: data))
       do {

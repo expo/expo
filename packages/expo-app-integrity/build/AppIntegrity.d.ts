@@ -9,7 +9,7 @@ export declare const isSupported: boolean;
  * @return A Promise that is fulfilled with a string that contains the key identifier. The key itself is stored securely in the Secure Enclave.
  * @platform ios
  */
-export declare function generateKey(): Promise<string>;
+export declare function generateKeyAsync(): Promise<string>;
 /**
  * Asks Apple to attest to the validity of a generated cryptographic key.
  * @param keyId The identifier you received by calling the `generateKey` function.
@@ -17,7 +17,7 @@ export declare function generateKey(): Promise<string>;
  * @return A Promise that is fulfilled with a string that contains the attestation data. A statement from Apple about the validity of the key associated with keyId. Send this to your server for processing.
  * @platform ios
  */
-export declare function attestKey(keyId: string, challenge: string): Promise<string>;
+export declare function attestKeyAsync(keyId: string, challenge: string): Promise<string>;
 /**
  * Creates a block of data that demonstrates the legitimacy of an instance of your app running on a device.
  * @param keyId The identifier you received by calling the `generateKey` function.
@@ -25,27 +25,27 @@ export declare function attestKey(keyId: string, challenge: string): Promise<str
  * @return A Promise that is fulfilled with a string that contains the assertion object. A data structure that you send to your server for processing.
  * @platform ios
  */
-export declare function generateAssertion(keyId: string, challenge: string): Promise<string>;
+export declare function generateAssertionAsync(keyId: string, challenge: string): Promise<string>;
 /**
  * Prepares the integrity token provider for the given cloud project number.
  * @param cloudProjectNumber The cloud project number.
  * @return A Promise that is fulfilled if the integrity token provider is prepared successfully.
  * @platform android
  */
-export declare function prepareIntegrityTokenProvider(cloudProjectNumber: string): Promise<void>;
+export declare function prepareIntegrityTokenProviderAsync(cloudProjectNumber: string): Promise<void>;
 /**
  * Requests an integrity verdict for the given request hash from Google Play.
  * @param requestHash A string representing the request hash.
  * @return A Promise that is fulfilled with a string that contains the integrity check result.
  * @platform android
  */
-export declare function requestIntegrityCheck(requestHash: string): Promise<string>;
+export declare function requestIntegrityCheckAsync(requestHash: string): Promise<string>;
 /**
  * Checks if hardware attestation is supported on this device.
  * @return A Promise that is fulfilled with a boolean indicating support.
  * @platform android
  */
-export declare function isHardwareAttestationSupported(): Promise<boolean>;
+export declare function isHardwareAttestationSupportedAsync(): Promise<boolean>;
 /**
  * Generates a hardware-attested key pair in the Android Keystore.
  * This key can be used for attestation on GrapheneOS and other secure Android distributions.
@@ -54,7 +54,7 @@ export declare function isHardwareAttestationSupported(): Promise<boolean>;
  * @return A Promise that resolves when the key is generated successfully.
  * @platform android
  */
-export declare function generateHardwareAttestedKey(keyAlias: string, challenge: string): Promise<void>;
+export declare function generateHardwareAttestedKeyAsync(keyAlias: string, challenge: string): Promise<void>;
 /**
  * Retrieves the attestation certificate chain for a hardware-attested key.
  * The certificate chain can be validated on your server to verify device integrity.
@@ -62,5 +62,5 @@ export declare function generateHardwareAttestedKey(keyAlias: string, challenge:
  * @return A Promise that is fulfilled with an array of base64-encoded X.509 certificates.
  * @platform android
  */
-export declare function getAttestationCertificateChain(keyAlias: string): Promise<string[]>;
+export declare function getAttestationCertificateChainAsync(keyAlias: string): Promise<string[]>;
 //# sourceMappingURL=AppIntegrity.d.ts.map

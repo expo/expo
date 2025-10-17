@@ -21,7 +21,7 @@ export default function AppIntegrityAndroidScreen() {
   useEffect(() => {
     const checkHardwareAttestationSupport = async () => {
       try {
-        const supported = await AppIntegrity.isHardwareAttestationSupported();
+        const supported = await AppIntegrity.isHardwareAttestationSupportedAsync();
         setHardwareAttestationSupported(supported);
         addResult(`Hardware attestation supported: ${supported}`);
       } catch (error) {
@@ -36,10 +36,10 @@ export default function AppIntegrityAndroidScreen() {
   const testPrepareIntegrityTokenProvider = async () => {
     setIsLoading(true);
     try {
-      await AppIntegrity.prepareIntegrityTokenProvider('1234567890');
-      addResult('prepareIntegrityTokenProvider: Success');
+      await AppIntegrity.prepareIntegrityTokenProviderAsync('1234567890');
+      addResult('prepareIntegrityTokenProviderAsync: Success');
     } catch (error) {
-      addResult(`prepareIntegrityTokenProvider error: ${error}`);
+      addResult(`prepareIntegrityTokenProviderAsync error: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -49,10 +49,10 @@ export default function AppIntegrityAndroidScreen() {
     setIsLoading(true);
     try {
       const challenge = 'test-challenge-' + Date.now();
-      const token = await AppIntegrity.requestIntegrityCheck(challenge);
-      addResult(`requestIntegrityCheck: Success (token length: ${token.length})`);
+      const token = await AppIntegrity.requestIntegrityCheckAsync(challenge);
+      addResult(`requestIntegrityCheckAsync: Success (token length: ${token.length})`);
     } catch (error) {
-      addResult(`requestIntegrityCheck error: ${error}`);
+      addResult(`requestIntegrityCheckAsync error: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -61,12 +61,12 @@ export default function AppIntegrityAndroidScreen() {
   const testFullFlow = async () => {
     setIsLoading(true);
     try {
-      await AppIntegrity.prepareIntegrityTokenProvider('1234567890');
-      addResult('prepareIntegrityTokenProvider: Success');
+      await AppIntegrity.prepareIntegrityTokenProviderAsync('1234567890');
+      addResult('prepareIntegrityTokenProviderAsync: Success');
 
       const challenge = 'test-challenge-' + Date.now();
-      const token = await AppIntegrity.requestIntegrityCheck(challenge);
-      addResult(`requestIntegrityCheck: Success (token length: ${token.length})`);
+      const token = await AppIntegrity.requestIntegrityCheckAsync(challenge);
+      addResult(`requestIntegrityCheckAsync: Success (token length: ${token.length})`);
     } catch (error) {
       addResult(`Full flow error: ${error}`);
     } finally {
@@ -80,11 +80,11 @@ export default function AppIntegrityAndroidScreen() {
       const keyAlias = 'test_key';
       const challenge = 'hw_challenge';
 
-      await AppIntegrity.generateHardwareAttestedKey(keyAlias, challenge);
-      addResult(`generateHardwareAttestedKey: Success (alias: ${keyAlias})`);
+      await AppIntegrity.generateHardwareAttestedKeyAsync(keyAlias, challenge);
+      addResult(`generateHardwareAttestedKeyAsync: Success (alias: ${keyAlias})`);
       setLastGeneratedKeyAlias(keyAlias);
     } catch (error) {
-      addResult(`generateHardwareAttestedKey error: ${error}`);
+      addResult(`generateHardwareAttestedKeyAsync error: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +98,7 @@ export default function AppIntegrityAndroidScreen() {
         addResult(`No key alias found. Please generate a key first.`);
         return;
       }
-      const certificates = await AppIntegrity.getAttestationCertificateChain(keyAlias);
+      const certificates = await AppIntegrity.getAttestationCertificateChainAsync(keyAlias);
 
       addResult(`getAttestationCertificateChain: Success`);
       addResult(`Certificate chain length: ${certificates.length}`);
@@ -120,10 +120,10 @@ export default function AppIntegrityAndroidScreen() {
       const keyAlias = 'full_flow_key';
       const challenge = 'full_challenge';
 
-      await AppIntegrity.generateHardwareAttestedKey(keyAlias, challenge);
+      await AppIntegrity.generateHardwareAttestedKeyAsync(keyAlias, challenge);
       addResult(`✓ Generated hardware-attested key: ${keyAlias}`);
 
-      const certificates = await AppIntegrity.getAttestationCertificateChain(keyAlias);
+      const certificates = await AppIntegrity.getAttestationCertificateChainAsync(keyAlias);
       addResult(`✓ Retrieved certificate chain (${certificates.length} certificates)`);
       // console.log('certificates ', certificates);
 
@@ -161,11 +161,11 @@ export default function AppIntegrityAndroidScreen() {
             style={styles.button}
             onPress={testPrepareIntegrityTokenProvider}
             disabled={isLoading}>
-            <Text style={styles.buttonText}>Test prepareIntegrityTokenProvider</Text>
+            <Text style={styles.buttonText}>Test prepareIntegrityTokenProviderAsync</Text>
           </Pressable>
 
           <Pressable style={styles.button} onPress={testRequestIntegrityCheck} disabled={isLoading}>
-            <Text style={styles.buttonText}>Test requestIntegrityCheck</Text>
+            <Text style={styles.buttonText}>Test requestIntegrityCheckAsync</Text>
           </Pressable>
 
           <Pressable style={styles.button} onPress={testFullFlow} disabled={isLoading}>
