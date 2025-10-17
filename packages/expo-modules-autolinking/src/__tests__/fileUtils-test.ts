@@ -21,7 +21,15 @@ describe('globMatchFunctorAllAsync and globMatchFunctorFirstAsync', () => {
     });
 
     // NOTE: Cast because the utility uses the result as an async iterable
-    mockGlobStream.mockReturnValue(['1.js', '2.js', '3.js', '4.ts'] as any);
+    mockGlobStream.mockImplementation((_, options) => {
+      const arr = ['1.js', '2.js', '3.js', '4.ts'];
+      return options?.withFileTypes
+        ? arr.map((pth) => ({
+            fullpath: () => pth,
+            isFile: () => true,
+          }))
+        : (arr as any);
+    });
   });
 
   afterAll(() => {

@@ -19,16 +19,16 @@ async function fileExistsAsync(file) {
  * Search files that match the glob pattern and return all matches from the matchFunctor.
  */
 async function globMatchFunctorAllAsync(globPattern, matchFunctor, options) {
-    const globStream = glob_1.glob.stream(globPattern, { ...options, withFileTypes: false });
+    const globStream = glob_1.glob.stream(globPattern, { withFileTypes: true });
     const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
     const results = [];
-    for await (const file of globStream) {
-        let filePath = file.toString();
+    for await (const globPath of globStream) {
+        if (!globPath.isFile()) {
+            continue;
+        }
+        let filePath = globPath.fullpath();
         if (!path_1.default.isAbsolute(filePath)) {
             filePath = path_1.default.resolve(cwd, filePath);
-        }
-        if (!(await promises_1.default.stat(filePath))?.isFile()) {
-            continue;
         }
         const contents = await promises_1.default.readFile(filePath);
         const matched = matchFunctor(filePath, contents);

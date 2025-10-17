@@ -1,4 +1,4 @@
-import { glob } from 'glob';
+import { glob, Path } from 'glob';
 import { vol } from 'memfs';
 
 import {
@@ -16,7 +16,7 @@ jest.mock('glob');
 const mockGlob = glob as jest.MockedFunction<typeof glob>;
 const mockGlobStream = glob.stream as jest.MockedFunction<typeof glob.stream>;
 
-function registerGlobStreamMockOnce(results: string[]) {
+function registerGlobStreamMockOnce(results: (string | Path)[]) {
   // NOTE: Cast to any since any async iterable is accepted here
   mockGlobStream.mockReturnValueOnce(results as any);
 }
@@ -387,13 +387,21 @@ describe(parseComponentDescriptorsAsync, () => {
   });
 
   it('should parse component descriptors', async () => {
-    registerGlobStreamMockOnce([
-      'Test.ts',
-      'SearchBarNativeComponent.js',
-      'ScreenNativeComponent.ts',
-      'specs/SpecComponent.ts',
-      'node_modules/ScreenNested.tsx',
-    ]);
+    registerGlobStreamMockOnce(
+      [
+        'Test.ts',
+        'SearchBarNativeComponent.js',
+        'ScreenNativeComponent.ts',
+        'specs/SpecComponent.ts',
+        'node_modules/ScreenNested.tsx',
+      ].map(
+        (pth) =>
+          ({
+            fullpath: () => pth,
+            isFile: () => true,
+          }) as Path
+      )
+    );
     vol.fromJSON({
       // not matched: no `codegenNativeComponent` pattern
       '/app/node_modules/test/Test.ts': `export default {};`,
