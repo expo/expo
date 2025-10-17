@@ -24,7 +24,6 @@ export default function TextInputScreen() {
           <TextField
             ref={textRef}
             autocorrection={false}
-            allowNewlines={false}
             defaultValue="hey there"
             onChangeText={(value) => {
               console.log('value', value);
