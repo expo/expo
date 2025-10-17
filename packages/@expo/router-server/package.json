@@ -34,7 +34,24 @@
     "expo"
   ],
   "peerDependencies": {
+    "@expo/metro-runtime": "^6.1.2",
+    "@react-navigation/native": "^7.1.8",
+    "react": "*",
+    "react-dom": "*",
+    "react-native-web": "*",
     "expo": "*",
+    "expo-font": "*",
     "expo-router": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-web": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "debug": "^4.3.4"
   }
 }
