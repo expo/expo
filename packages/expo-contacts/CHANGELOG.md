@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Added ContactSerializationException for error handling. ([#40426](https://github.com/expo/expo/pull/40426) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ## 15.0.9 — 2025-10-01
 
 ### 🐛 Bug fixes
