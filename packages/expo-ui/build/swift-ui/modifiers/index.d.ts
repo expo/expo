@@ -437,7 +437,8 @@ export declare const glassEffect: (params?: {
         interactive?: boolean;
         tint?: Color;
     };
-    shape?: "circle" | "capsule" | "rectangle" | "ellipse";
+    shape?: "circle" | "capsule" | "rectangle" | "ellipse" | "roundedRectangle";
+    cornerRadius?: number;
 }) => ModifierConfig;
 /**
  * Associates an identity value to Liquid Glass effects defined within a `GlassEffectContainer`.
