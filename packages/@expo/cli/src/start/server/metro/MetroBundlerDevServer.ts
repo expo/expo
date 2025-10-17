@@ -387,14 +387,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const url = this.getDevServerUrlOrAssert();
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
-      await this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
-        '@expo/router-server/node/render.js',
-        {
-          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
-          // the previous React SSG utilities which aren't available in React 19.
-          environment: 'node',
-        }
-      );
+      await this.ssrLoadModule<
+        typeof import('@expo/router-server/build/static/renderStaticContent')
+      >('@expo/router-server/node/render.js', {
+        // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+        // the previous React SSG utilities which aren't available in React 19.
+        environment: 'node',
+      });
 
     const { exp } = getConfig(this.projectRoot);
 

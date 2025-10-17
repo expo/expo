@@ -47,16 +47,16 @@ exports.getStaticContent = getStaticContent;
 require("@expo/metro-runtime");
 const native_1 = require("@react-navigation/native");
 const Font = __importStar(require("expo-font/build/server"));
+const _ctx_1 = require("expo-router/_ctx");
+const ExpoRoot_1 = require("expo-router/build/ExpoRoot");
+const head_1 = require("expo-router/build/head");
+const ServerDataLoaderContext_1 = require("expo-router/build/loaders/ServerDataLoaderContext");
 const react_1 = __importDefault(require("react"));
 const server_node_1 = __importDefault(require("react-dom/server.node"));
 // @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)
 const react_native_web_1 = require("react-native-web");
 const getRootComponent_1 = require("./getRootComponent");
-const _ctx_1 = require("expo-router/_ctx");
-const ExpoRoot_1 = require("expo-router/build/ExpoRoot");
-const head_1 = require("expo-router/build/head");
 const html_1 = require("./html");
-const ServerDataLoaderContext_1 = require("expo-router/build/loaders/ServerDataLoaderContext");
 const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 function resetReactNavigationContexts() {

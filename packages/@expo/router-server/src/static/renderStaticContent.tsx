@@ -8,17 +8,17 @@ import '@expo/metro-runtime';
 
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
 import * as Font from 'expo-font/build/server';
+import { ctx } from 'expo-router/_ctx';
+import { ExpoRoot } from 'expo-router/build/ExpoRoot';
+import { Head } from 'expo-router/build/head';
+import { ServerDataLoaderContext } from 'expo-router/build/loaders/ServerDataLoaderContext';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server.node';
 // @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)
 import { AppRegistry } from 'react-native-web';
 
 import { getRootComponent } from './getRootComponent';
-import { ctx } from 'expo-router/_ctx';
-import { ExpoRoot } from 'expo-router/build/ExpoRoot';
-import { Head } from 'expo-router/build/head';
 import { PreloadedDataScript } from './html';
-import { ServerDataLoaderContext } from 'expo-router/build/loaders/ServerDataLoaderContext';
 
 const debug = require('debug')('expo:router:renderStaticContent');
 
