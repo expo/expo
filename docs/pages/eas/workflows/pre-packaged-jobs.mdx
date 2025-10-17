@@ -365,7 +365,7 @@ You can pass the following parameters into the `params` list:
 | simulator            | boolean | Optional. Whether to get a simulator build.                                    |
 | wait_for_in_progress | boolean | Optional. Whether to wait for a matching in-progress build. Default: `false`.  |
 
-If `wait_for_in_progress` is set to `true`, the job will still prioritize continuing immediately with a successful build, but it will also look for in-progress builds. If no successful build is found, the job will wait for an in-progress build to complete before continuing. If the matched build succeeds, the job will be marked as successful and will return the successful build. If the matched build fails, the job will be marked as successful and its outputs will be empty — as if the build has not been matched.
+If `wait_for_in_progress` is set to `true`, the job will still prioritize continuing immediately with a successful build, but it will also look for in-progress builds. If no successful build is found, the job will wait for an in-progress build to complete before continuing. If the matched build succeeds, the job will be marked as successful and will return the successful build. If the matched build fails, the job will be marked as successful and its outputs will be empty &mdash; as if the build has not been matched.
 
 #### Outputs
 
