@@ -46,15 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) id<EXUpdatesExternalInterface> updatesInterface;
-@property (nonatomic, readonly, assign) BOOL isStarted;
 
 + (instancetype)sharedInstance;
 
 - (void)startWithWindow:(UIWindow *)window;
 
-- (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
-
-- (void)autoSetupStart;
+- (void)autoSetup:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
 
 - (nullable NSURL *)sourceUrl;
 
@@ -77,8 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSURL *)appManifestURLWithFallback;
 
 - (BOOL)isAppRunning;
-
-- (BOOL)isStarted;
 
 - (UIWindow * _Nullable)currentWindow;
 

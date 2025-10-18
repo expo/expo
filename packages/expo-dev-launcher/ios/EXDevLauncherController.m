@@ -53,7 +53,6 @@
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
-@property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, strong) EXDevLauncherReactNativeFactory *reactNativeFactory;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
@@ -153,7 +152,6 @@
 
 - (void)start
 {
-  _isStarted = YES;
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
   void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
@@ -186,7 +184,7 @@
   [self navigateToLauncher];
 }
 
-- (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
+- (void)autoSetup:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
   _delegate = delegate;
   _launchOptions = launchOptions;
@@ -195,15 +193,8 @@
     _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
   }
   EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
-}
 
-- (void)autoSetupStart
-{
-  if (_delegate != nil) {
-    [self start];
-  } else {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"[EXDevLauncherController autoSetupStart:] was called before autoSetupPrepare:. Make sure you've set up expo-modules correctly in AppDelegate and are using ReactDelegate to create a bridge before calling [super application:didFinishLaunchingWithOptions:]." userInfo:nil];
-  }
+  [self start];
 }
 
 - (void)navigateToLauncher
