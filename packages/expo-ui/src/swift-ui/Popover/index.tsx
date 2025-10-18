@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import React from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -22,8 +21,9 @@ export type PopoverViewProps = {
   attachmentAnchor?: 'leading' | 'trailing' | 'center' | 'top' | 'bottom';
   /**
    * The edge of the attachmentAnchor that defines the location of the popover’s arrow. The default is nil, which results in the system allowing any arrow edge.
+   * @default 'none'
    */
-  arrowEdge?: 'leading' | 'trailing' | 'top' | 'bottom';
+  arrowEdge?: 'leading' | 'trailing' | 'top' | 'bottom' | 'none';
 } & CommonViewModifierProps;
 
 type NativePopoverViewProps = Omit<PopoverViewProps, 'onStateChange'> & {
@@ -32,7 +32,7 @@ type NativePopoverViewProps = Omit<PopoverViewProps, 'onStateChange'> & {
 
 const PopoverNativeView: React.ComponentType<NativePopoverViewProps> = requireNativeView(
   'ExpoUI',
-  'Popover'
+  'PopoverView'
 );
 
 const PopoverViewContent: React.ComponentType<object> = requireNativeView(

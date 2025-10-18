@@ -12,8 +12,8 @@ internal class PopoverViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps 
 
   @Field var isPresented: Bool = false
   var onIsPresentedChange = EventDispatcher()
-  @Field var attachmentAnchor: PopoverAttachmentAnchorOption = .top
-  @Field var arrowEdge: PopoverArrowEdgeOption = .top
+  @Field var attachmentAnchor: PopoverAttachmentAnchorOption?
+  @Field var arrowEdge: PopoverArrowEdgeOption?
 }
 
 internal final class PopoverViewContentPorps: ExpoSwiftUI.ViewProps {}
@@ -80,42 +80,34 @@ internal enum PopoverArrowEdgeOption: String, Enumerable {
   }
 }
 
-internal struct Popover: ExpoSwiftUI.View {
+internal struct PopoverView: ExpoSwiftUI.View {
   @ObservedObject var props: PopoverViewProps
   @State private var isPresented: Bool = false
 
-  init(props: PopoverViewProps) {
-    self.props = props
-    self._isPresented = State(initialValue: props.isPresented)
-  }
-
   var body: some View {
     #if os(tvOS)
-      contentChildren
+      triggerContent
     #else
-      contentChildren
+      triggerContent
         .popover(
           isPresented: $isPresented,
-          attachmentAnchor: props.attachmentAnchor.anchor,
-          arrowEdge: props.arrowEdge.edge ?? nil
+          attachmentAnchor: props.attachmentAnchor?.anchor ?? .rect(.bounds),
+          arrowEdge: props.arrowEdge?.edge
         ) {
           if #available(iOS 16.4, *) {
-            popoverViewChildren
+            popoverContent
               .presentationCompactAdaptation(.popover)
           } else {
-            popoverViewChildren
+            popoverContent
           }
         }
         .modifier(CommonViewModifiers(props: props))
         .onChange(
           of: isPresented,
-          perform: { newIsPresented in
-            if props.isPresented == newIsPresented {
-              return
+          perform: { newValue in
+            if props.isPresented != newValue {
+              props.onIsPresentedChange(["isPresented": newValue])
             }
-            props.onIsPresentedChange([
-              "isPresented": newIsPresented
-            ])
           }
         )
         .onChange(of: props.isPresented) { newValue in
@@ -128,7 +120,7 @@ internal struct Popover: ExpoSwiftUI.View {
   }
 
   @ViewBuilder
-  private var contentChildren: some View {
+  private var triggerContent: some View {
     if let content = props.children?
       .compactMap({ $0.childView as? PopoverViewContent })
       .first
@@ -138,12 +130,12 @@ internal struct Popover: ExpoSwiftUI.View {
   }
 
   @ViewBuilder
-  private var popoverViewChildren: some View {
-    if let popoverView = props.children?
+  private var popoverContent: some View {
+    if let content = props.children?
       .compactMap({ $0.childView as? PopoverViewPopContent })
       .first
     {
-      popoverView
+      content
     }
   }
 
