@@ -8,7 +8,6 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   private weak var reactNativeFactory: RCTReactNativeFactory?
   private weak var reactDelegate: ExpoReactDelegate?
   private var launchOptions: [AnyHashable: Any]?
-  private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
   private weak var rootViewController: UIViewController?
@@ -36,8 +35,21 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     self.rootViewInitialProperties = initialProperties
     EXDevLauncherController.sharedInstance().autoSetupStart()
 
-    self.deferredRootView = EXDevLauncherDeferredRCTRootView()
-    return self.deferredRootView
+    let viewController = EXDevLauncherController.sharedInstance().createRootViewController()
+    rootViewController = viewController
+
+    // We need to create a wrapper View because React Native Factory will reassign rootViewController later
+    let wrapperView = UIView()
+    wrapperView.addSubview(viewController.view)
+    viewController.view.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      viewController.view.topAnchor.constraint(equalTo: wrapperView.topAnchor),
+      viewController.view.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor),
+      viewController.view.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor),
+      viewController.view.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor)
+    ])
+
+    return wrapperView
   }
 
   @objc
@@ -74,7 +86,6 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       launchOptions: developmentClientController.getLaunchOptions()
     )
     developmentClientController.appBridge = RCTBridge.current()
-    rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
 
     guard let rootViewController = rootViewController ?? self.reactDelegate?.createRootViewController() else {
       fatalError("Invalid rootViewController returned from ExpoReactDelegate")
@@ -83,12 +94,5 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     // it is purposeful that we don't clean up saved properties here, because we may initialize
     // several React instances over a single app lifetime and we want them all to have the same
     // initial properties
-  }
-
-
-  @objc
-  open override func createRootViewController() -> UIViewController? {
-    rootViewController = EXDevLauncherController.sharedInstance().createRootViewController()
-    return rootViewController
   }
 }

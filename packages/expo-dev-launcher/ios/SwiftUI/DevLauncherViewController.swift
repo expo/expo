@@ -5,17 +5,9 @@ import SwiftUI
   private var hostingController: UIHostingController<DevLauncherRootView>?
   var viewModel = DevLauncherViewModel()
 
-  public override var view: UIView! {
-    didSet {
-      if view is EXDevLauncherDeferredRCTRootView {
-        addHostingController()
-      }
-    }
-  }
-
   @objc public override init(nibName: String?, bundle: Bundle?) {
     super.init(nibName: nibName, bundle: bundle)
-    setupViewController()
+    addHostingController()
   }
 
   @objc public convenience init() {
@@ -24,7 +16,7 @@ import SwiftUI
 
   required init?(coder: NSCoder) {
     super.init(coder: coder)
-    setupViewController()
+    addHostingController()
   }
 
   private func setupViewController() {
