@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type Options } from 'expo-router/build/getRoutes';
-import { type ExpoRouterServerManifestV1 } from 'expo-router/build/getServerManifest';
+import { type ExpoRouterServerManifestV1 } from '../getServerManifest';
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
  * Unlike the `@expo/router-server/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which

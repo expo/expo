@@ -7,10 +7,10 @@
  *
  * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
  */
-import type { RouteNode } from './Route';
-import { getContextKey, matchGroupName } from './matchers';
-import { sortRoutes } from './sortRoutes';
-import { shouldLinkExternally } from './utils/url';
+import type { RouteNode } from 'expo-router/build/Route';
+import { getContextKey, matchGroupName } from 'expo-router/build/matchers';
+import { sortRoutes } from 'expo-router/build/sortRoutes';
+import { shouldLinkExternally } from 'expo-router/build/utils/url';
 
 // TODO: Share these types across cli, server, router, etc.
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {

@@ -11,8 +11,8 @@ exports.getManifest = getManifest;
 const _ctx_1 = require("expo-router/_ctx");
 const getReactNavigationConfig_1 = require("expo-router/build/getReactNavigationConfig");
 const getRoutes_1 = require("expo-router/build/getRoutes");
-const getServerManifest_1 = require("expo-router/build/getServerManifest");
 const loadStaticParamsAsync_1 = require("expo-router/build/loadStaticParamsAsync");
+const getServerManifest_1 = require("../getServerManifest");
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
  * Unlike the `@expo/router-server/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which
