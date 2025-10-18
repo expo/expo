@@ -47,10 +47,10 @@ exports.getStaticContent = getStaticContent;
 require("@expo/metro-runtime");
 const native_1 = require("@react-navigation/native");
 const Font = __importStar(require("expo-font/build/server"));
+const expo_router_1 = require("expo-router");
 const _ctx_1 = require("expo-router/_ctx");
-const ExpoRoot_1 = require("expo-router/build/ExpoRoot");
-const head_1 = require("expo-router/build/head");
 const ServerDataLoaderContext_1 = require("expo-router/build/loaders/ServerDataLoaderContext");
+const head_1 = __importDefault(require("expo-router/head"));
 const react_1 = __importDefault(require("react"));
 const server_node_1 = __importDefault(require("react-dom/server.node"));
 // @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)
@@ -58,7 +58,7 @@ const react_native_web_1 = require("react-native-web");
 const getRootComponent_1 = require("./getRootComponent");
 const html_1 = require("./html");
 const debug = require('debug')('expo:router:renderStaticContent');
-react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
+react_native_web_1.AppRegistry.registerComponent('App', () => expo_router_1.ExpoRoot);
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -90,11 +90,11 @@ async function getStaticContent(location, options) {
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
     const loadedData = options?.loader?.data ? { [location.pathname]: options.loader.data } : null;
-    const html = await server_node_1.default.renderToString(<head_1.Head.Provider context={headContext}>
+    const html = await server_node_1.default.renderToString(<head_1.default.Provider context={headContext}>
       <ServerDataLoaderContext_1.ServerDataLoaderContext value={loadedData}>
         <native_1.ServerContainer ref={ref}>{element}</native_1.ServerContainer>
       </ServerDataLoaderContext_1.ServerDataLoaderContext>
-    </head_1.Head.Provider>);
+    </head_1.default.Provider>);
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
     const css = server_node_1.default.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
