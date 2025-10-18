@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix(expo-module-scripts): respect mutual exclusion for eslint config files ([#40078](https://github.com/expo/expo/pull/40078) by [@adam-sajko](https://github.com/adam-sajko))
+
 ### 💡 Others
 
 ## 5.0.7 — 2025-09-10
