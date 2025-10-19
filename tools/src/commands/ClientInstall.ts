@@ -1,10 +1,10 @@
 import { Command } from '@expo/commander';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { Writable } from 'node:stream';
-import { extract as tarExtract } from 'tar';
 
 import * as AndroidDevice from '../AndroidDevice';
 import * as Simulator from '../IOSSimulator';
@@ -42,23 +42,24 @@ async function downloadAndInstallOnIOSAsync(downloadUrl: string): Promise<void> 
     const downloadFilePath = await downloadExpoGoAsync({ downloadUrl, targetDir: tmpDir });
     const appPath = path.join(tmpDir, 'Expo Go.app');
     await fs.promises.mkdir(appPath, { recursive: true });
-    await tarExtract({
-      file: downloadFilePath,
-      cwd: appPath,
-      strip: 1,
-    });
+    await extractAsync(downloadFilePath, appPath);
     console.log(`Extracted to ${chalk.blue(tmpDir)}`);
     console.log(`Installing Expo Go from ${chalk.blue(appPath)} on iOS simulator...`);
     await Simulator.installSimulatorAppAsync(simulator, appPath);
     console.log(`Launching Expo Go with identifier ${chalk.blue(EXPO_GO_APP_ID_IOS)}...`);
     await Simulator.launchSimulatorAppAsync(simulator, EXPO_GO_APP_ID_IOS);
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error(chalk.red(`Unable to install Expo Go: ${error.message}`));
-    }
+    console.error(chalk.red(error));
+    throw new Error('Unable to install Expo Go.', { cause: error });
   } finally {
     await fs.promises.rm(tmpDir, { recursive: true, force: true });
   }
+}
+
+export async function extractAsync(input: string, output: string): Promise<void> {
+  await spawnAsync('tar', ['-xf', input, '-C', output], {
+    stdio: 'inherit',
+  });
 }
 
 async function downloadAndInstallOnAndroidAsync(downloadUrl: string): Promise<void> {
@@ -100,9 +101,8 @@ async function downloadAndInstallOnAndroidAsync(downloadUrl: string): Promise<vo
       activity,
     });
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error(chalk.red(`Unable to install Expo Go: ${error.message}`));
-    }
+    console.error(chalk.red(error));
+    throw new Error('Unable to install Expo Go.', { cause: error });
   } finally {
     await fs.promises.rm(tmpDir, { recursive: true, force: true });
   }
