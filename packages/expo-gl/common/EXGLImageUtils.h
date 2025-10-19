@@ -24,5 +24,7 @@ std::shared_ptr<uint8_t> loadImage(
     int *fileWidth,
     int *fileHeight,
     int *fileComp);
+
+GLsizei calculateImageSize(GLsizei width, GLsizei height, GLint internalFormat);
 } // namespace gl_cpp
 } // namespace expo
