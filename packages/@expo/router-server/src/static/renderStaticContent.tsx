@@ -20,7 +20,7 @@ import { AppRegistry } from 'react-native-web';
 import { getRootComponent } from './getRootComponent';
 import { PreloadedDataScript } from './html';
 
-const debug = require('debug')('expo:router:renderStaticContent');
+const debug = require('debug')('expo:router:server:renderStaticContent');
 
 AppRegistry.registerComponent('App', () => ExpoRoot);
 
