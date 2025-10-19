@@ -76,31 +76,35 @@ class VideoThumbnailsModule : Module() {
     private val videoOptions: VideoThumbnailOptions,
     private val context: Context
   ) {
-    fun execute(): Bitmap? = MediaMetadataRetriever()
-      .use { retriever ->
-        try {
-          if (URLUtil.isFileUrl(sourceFilename)) {
-            retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
-          } else if (URLUtil.isContentUrl(sourceFilename)) {
-            val fileUri = Uri.parse(sourceFilename)
-            context.contentResolver.openFileDescriptor(fileUri, "r")?.use { parcelFileDescriptor ->
-              FileInputStream(parcelFileDescriptor.fileDescriptor).use { inputStream ->
-                retriever.setDataSource(inputStream.fd)
-              }
-            }
-          } else {
-            retriever.setDataSource(sourceFilename, videoOptions.headers)
-          }
-
-          return retriever.getFrameAtTime(
-            videoOptions.time.toLong() * 1000,
-            MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+    fun execute(): Bitmap? {
+      val retriever = MediaMetadataRetriever()
+      try {
+        if (URLUtil.isFileUrl(sourceFilename)) {
+          retriever.setDataSource(
+            Uri.decode(sourceFilename).replace("file://", "")
           )
-        } catch (e: Exception) {
-          Log.e(ERROR_TAG, "Unable to retrieve source file")
-          return null
+        } else if (URLUtil.isContentUrl(sourceFilename)) {
+          val fileUri = Uri.parse(sourceFilename)
+          context.contentResolver.openFileDescriptor(fileUri, "r")?.use { parcelFileDescriptor ->
+            FileInputStream(parcelFileDescriptor.fileDescriptor).use { inputStream ->
+              retriever.setDataSource(inputStream.fd)
+            }
+          }
+        } else {
+          retriever.setDataSource(sourceFilename, videoOptions.headers)
         }
+
+        return retriever.getFrameAtTime(
+          videoOptions.time.toLong() * 1000,
+          MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+        )
+      } catch (e: Exception) {
+        Log.e(ERROR_TAG, "Unable to retrieve source file", e)
+        return null
+      } finally {
+        retriever.release()
       }
+    }
   }
 
   private fun isAllowedToRead(url: String): Boolean {
