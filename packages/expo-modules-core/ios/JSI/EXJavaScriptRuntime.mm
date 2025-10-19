@@ -266,13 +266,9 @@ typedef jsi::Function (^InstanceFactory)(jsi::Runtime& runtime, NSString * name,
     _runtimeScheduler->scheduleTask(schedulerPriority, std::move(callback));
     return;
   }
-#if REACT_NATIVE_TARGET_VERSION >= 75
   _jsCallInvoker->invokeAsync(SchedulerPriority(priority), [block = std::move(block)](jsi::Runtime&) {
     block();
   });
-#else
-  _jsCallInvoker->invokeAsync(SchedulerPriority(priority), block);
-#endif
 }
 
 #pragma mark - Private
