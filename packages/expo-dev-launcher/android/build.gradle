@@ -30,8 +30,19 @@ android {
   }
 
   buildTypes {
+    create("debugOptimized") {
+      initWith(buildTypes.debug)
+      matchingFallbacks += ["release"]
+    }
+
     buildTypes.each {
       it.buildConfigField 'String', 'VERSION', "\"${defaultConfig.versionName}\""
+    }
+  }
+
+  sourceSets {
+    debugOptimized {
+      setRoot 'src/debug'
     }
   }
 

@@ -59,6 +59,19 @@ android {
       }
     }
   }
+
+  buildTypes {
+    create("debugOptimized") {
+      initWith(buildTypes.release)
+      matchingFallbacks += ["release"]
+    }
+  }
+
+  sourceSets {
+    debugOptimized {
+      setRoot 'src/release'
+    }
+  }
 }
 
 dependencies { dependencyHandler ->
