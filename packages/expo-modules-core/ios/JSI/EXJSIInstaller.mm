@@ -34,6 +34,17 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 
 @implementation EXJavaScriptRuntimeManager
 
++ (std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeSchedulerFromRuntime:(jsi::Runtime *)jsiRuntime
+{
+  if (jsiRuntime == nullptr) {
+    return nullptr;
+  }
+  if (auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(*jsiRuntime)) {
+    return binding->getRuntimeScheduler();
+  }
+  return nullptr;
+}
+
 + (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
 {
   jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(bridge.runtime);
@@ -41,13 +52,9 @@ static NSString *modulesHostObjectPropertyName = @"modules";
     return nil;
   }
 
-  std::shared_ptr<facebook::react::RuntimeScheduler> runtimeScheduler = nullptr;
-  if (auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(*jsiRuntime)) {
-    runtimeScheduler = binding->getRuntimeScheduler();
-  }
   return [[EXRuntime alloc] initWithRuntime:jsiRuntime
                                   callInvoker:bridge.jsCallInvoker
-                             runtimeScheduler:runtimeScheduler];
+                             runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
 }
 
 #if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
@@ -71,13 +78,9 @@ static NSString *modulesHostObjectPropertyName = @"modules";
     return nil;
   }
 
-  std::shared_ptr<facebook::react::RuntimeScheduler> runtimeScheduler = nullptr;
-  if (auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(*jsiRuntime)) {
-    runtimeScheduler = binding->getRuntimeScheduler();
-  }
   return [[EXRuntime alloc] initWithRuntime:jsiRuntime
                                   callInvoker:callInvoker
-                             runtimeScheduler:runtimeScheduler];
+                             runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
 }
 #endif // React Native >=0.74
 
