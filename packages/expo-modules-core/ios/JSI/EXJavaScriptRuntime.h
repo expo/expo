@@ -9,6 +9,10 @@
 
 #ifdef __cplusplus
 
+namespace facebook::react {
+class RuntimeScheduler;
+}
+
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 #endif // __cplusplus
@@ -47,6 +51,9 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 - (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
+- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
+                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+                       runtimeScheduler:(std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeScheduler;
 
 /**
  Returns the underlying runtime object.

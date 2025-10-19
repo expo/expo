@@ -10,10 +10,13 @@
 #import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/Swift.h>
 #import <ExpoModulesCore/TestingJSCallInvoker.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <ReactCommon/SchedulerPriority.h>
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
   std::shared_ptr<react::CallInvoker> _jsCallInvoker;
+  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 }
 
 /**
@@ -48,12 +51,20 @@
 - (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
 {
+  return [self initWithRuntime:runtime callInvoker:callInvoker runtimeScheduler:nullptr];
+}
+
+- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
+                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+                       runtimeScheduler:(std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeScheduler
+{
   if (self = [super init]) {
     // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
     // In this code flow, the runtime should be owned by something else like the RCTBridge.
     // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
     _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
     _jsCallInvoker = callInvoker;
+    _runtimeScheduler = runtimeScheduler;
   }
   return self;
 }
@@ -247,6 +258,14 @@ typedef jsi::Function (^InstanceFactory)(jsi::Runtime& runtime, NSString * name,
 
 - (void)schedule:(nonnull JSRuntimeExecutionBlock)block priority:(int)priority
 {
+  if (_runtimeScheduler) {
+    auto schedulerPriority = static_cast<facebook::react::SchedulerPriority>(priority);
+    auto callback = [block](jsi::Runtime &) {
+      block();
+    };
+    _runtimeScheduler->scheduleTask(schedulerPriority, std::move(callback));
+    return;
+  }
 #if REACT_NATIVE_TARGET_VERSION >= 75
   _jsCallInvoker->invokeAsync(SchedulerPriority(priority), [block = std::move(block)](jsi::Runtime&) {
     block();
