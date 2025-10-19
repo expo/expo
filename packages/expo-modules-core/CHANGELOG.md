@@ -30,7 +30,7 @@
 - [iOS] Add explicit CallInvoker and CallbackWrapper imports to EXJSIUtils ([#39818](https://github.com/expo/expo/pull/39818) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Refactor getDelayLoadAppHandler to use ReactHost ([#40084](https://github.com/expo/expo/pull/40084) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985), [#40241](https://github.com/expo/expo/pull/40241) by [@jakex7](https://github.com/jakex7))
-- [iOS] Use the `RuntimeScheduler` to schedule tasks on the JS thread.
+- [iOS] Use the `RuntimeScheduler` to schedule tasks on the JS thread. ([#40473](https://github.com/expo/expo/pull/40473) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 3.0.19 - 2025-10-01
 
