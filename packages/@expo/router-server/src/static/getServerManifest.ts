@@ -8,9 +8,9 @@
 import { ctx } from 'expo-router/_ctx';
 import { getReactNavigationConfig } from 'expo-router/build/getReactNavigationConfig';
 import { getRoutes, type Options } from 'expo-router/build/getRoutes';
-import { loadStaticParamsAsync } from 'expo-router/build/loadStaticParamsAsync';
 
 import { type ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
+import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
