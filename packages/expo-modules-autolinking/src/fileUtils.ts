@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { glob, GlobOptions, Path } from 'glob';
+import { glob, GlobOptions } from 'glob';
 import path from 'path';
 
 /**
@@ -26,10 +26,10 @@ export async function globMatchFunctorAllAsync(
   const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
   const results: string[] = [];
   for await (const globPath of globStream) {
-    if (!(globPath as Path).isFile()) {
+    if (!globPath.isFile()) {
       continue;
     }
-    let filePath = (globPath as Path).fullpath();
+    let filePath = globPath.fullpath();
     if (!path.isAbsolute(filePath)) {
       filePath = path.resolve(cwd, filePath);
     }
