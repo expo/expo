@@ -11,12 +11,12 @@ isNew: true
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { CODE } from '~/ui/components/Text';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/ui/components/ConfigSection';
+import { CODE } from '~/ui/components/Text';
 
 `expo-file-system` provides access to files and directories stored on a device or bundled as assets into the native project. It also allows downloading files from the network.
 
@@ -61,7 +61,7 @@ You can configure `expo-file-system` using its built-in [config plugin](/config-
       name: 'enableFileSharing',
       platform: 'ios',
       description:
-        "A boolean to enable `UIFileSharingEnabled` in **Info.plist**. This enables file sharing in the iOS Files app, making the app's Documents folder accessible to users through the Files app, iTunes File Sharing, and other file management tools.",
+        "A boolean to enable `UIFileSharingEnabled` in **Info.plist**. This enables file sharing in the iOS Files app, making the app's Documents directory accessible to users through the Files app, iTunes File Sharing, and other file management tools.",
       default: 'false',
     },
   ]}
