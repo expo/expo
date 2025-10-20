@@ -161,4 +161,101 @@ describe('runAsync', () => {
 
     expect(mockSpawnAsync.mock.calls[0][1]).toEqual(['expo', 'install', '--check']);
   });
+
+  it('ignores all stderr content when dependencies are up to date for SDK 54+ projects', async () => {
+    const jsonOutput = JSON.stringify({ upToDate: true, dependencies: [] });
+    const stderrWithDebugLogs = `
+      expo:env /Users/test/.env does not exist, skipping this env file
+      2025-09-23T15:35:37.693Z expo:doctor:dependencies:bundledNativeModules Fetching bundled native modules from the server...
+      expo:doctor:dependencies:validate Checking dependencies for 54.0.0: {
+  '@expo/vector-icons': '^15.0.2',
+  '@expo/metro-runtime': '~6.1.2'
+}
+    `.trim();
+
+    jest.mocked(spawnAsync).mockImplementation(() =>
+      mockSpawnPromise(
+        Promise.resolve({
+          stdout: jsonOutput,
+          stderr: stderrWithDebugLogs,
+          status: 0,
+        })
+      )
+    );
+
+    const check = new InstalledDependencyVersionCheck();
+    const result = await check.runAsync({
+      projectRoot: '/path/to/project',
+      ...additionalProjectProps,
+      exp: { ...additionalProjectProps.exp, sdkVersion: '54.0.0' },
+    });
+
+    expect(result.isSuccessful).toBeTruthy();
+    expect(result.issues).toEqual([]);
+  });
+
+  it('reports actual errors in stderr while filtering out debug logs when dependencies are not up to date for SDK 54+ projects', async () => {
+    const jsonOutput = JSON.stringify({ upToDate: false, dependencies: [] });
+    const stderrWithMixedContent = `
+      expo:env /Users/test/.env does not exist, skipping this env file
+      2025-09-23T15:35:37.693Z expo:doctor:dependencies:bundledNativeModules Fetching bundled native modules from the server...
+      Error: Something went wrong
+      expo:doctor:dependencies:validate Checking dependencies for 54.0.0
+      Another actual error message
+    `.trim();
+
+    jest.mocked(spawnAsync).mockImplementation(() =>
+      mockSpawnPromise(
+        Promise.resolve({
+          stdout: jsonOutput,
+          stderr: stderrWithMixedContent,
+          status: 0,
+        })
+      )
+    );
+
+    const check = new InstalledDependencyVersionCheck();
+    const result = await check.runAsync({
+      projectRoot: '/path/to/project',
+      ...additionalProjectProps,
+      exp: { ...additionalProjectProps.exp, sdkVersion: '54.0.0' },
+    });
+
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues).toEqual([
+      'Error: Something went wrong\n      Another actual error message',
+    ]);
+  });
+
+  it('filters debug logs from stderr when dependencies are not up to date but no real errors exist for SDK 54+ projects', async () => {
+    const jsonOutput = JSON.stringify({ upToDate: false, dependencies: [] });
+    const stderrWithOnlyDebugLogs = `
+      expo:env /Users/test/.env does not exist, skipping this env file
+      
+      2025-09-23T15:35:37.693Z expo:doctor:dependencies:bundledNativeModules Fetching bundled native modules from the server...
+      
+      expo:doctor:dependencies:validate Checking dependencies for 54.0.0
+      
+    `.trim();
+
+    jest.mocked(spawnAsync).mockImplementation(() =>
+      mockSpawnPromise(
+        Promise.resolve({
+          stdout: jsonOutput,
+          stderr: stderrWithOnlyDebugLogs,
+          status: 0,
+        })
+      )
+    );
+
+    const check = new InstalledDependencyVersionCheck();
+    const result = await check.runAsync({
+      projectRoot: '/path/to/project',
+      ...additionalProjectProps,
+      exp: { ...additionalProjectProps.exp, sdkVersion: '54.0.0' },
+    });
+
+    expect(result.isSuccessful).toBeTruthy();
+    expect(result.issues).toEqual([]);
+  });
 });

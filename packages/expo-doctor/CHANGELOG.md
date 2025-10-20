@@ -17,6 +17,7 @@
 ### 🐛 Bug fixes
 
 - Prevent peer dependency check from warning on peer/regular hybrid dependency ([#39916](https://github.com/expo/expo/pull/39916) by [@kitten](https://github.com/kitten))
+- Fix dependecy check failure when using EXPO_DEBUG=1 ([#39929](https://github.com/expo/expo/pull/39929) by [@betomoedano](https://github.com/betomoedano))
 
 ## 1.17.8 - 2025-09-18
 
