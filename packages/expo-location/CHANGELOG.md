@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Remove UIBackgroundMode location requirement for geofencing. [#39419](https://github.com/expo/expo/pull/39419)
+
 ### 💡 Others
 
 - [Android] Removed unused `androidx.annotation:annotation` dependency. ([#39758](https://github.com/expo/expo/pull/39758) by [@lukmccall](https://github.com/lukmccall))
