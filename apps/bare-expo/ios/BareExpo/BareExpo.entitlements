@@ -5,6 +5,8 @@
     <key>aps-environment</key>
     <string>development</string>
     <key>com.apple.developer.applesignin</key>
+    <key>com.apple.developer.declared-age-range</key>
+    <true/>
     <array>
       <string>Default</string>
     </array>
