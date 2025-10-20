@@ -22,11 +22,14 @@ export async function globMatchFunctorAllAsync(
   matchFunctor: MatchFunctor,
   options?: GlobOptions
 ): Promise<string[]> {
-  const globStream = glob.stream(globPattern, { ...options, withFileTypes: false });
+  const globStream = glob.stream(globPattern, { withFileTypes: true });
   const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
   const results: string[] = [];
-  for await (const file of globStream) {
-    let filePath = file.toString();
+  for await (const globPath of globStream) {
+    if (!globPath.isFile()) {
+      continue;
+    }
+    let filePath = globPath.fullpath();
     if (!path.isAbsolute(filePath)) {
       filePath = path.resolve(cwd, filePath);
     }

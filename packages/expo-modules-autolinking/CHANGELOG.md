@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Ignore missing `package.json` name property when scanning dependencies ([#40367](https://github.com/expo/expo/pull/40367) by [@kitten](https://github.com/kitten))
+- fix globMatchFunctorAllAsync to check if globbed path is a file to prevent errors ([#40437](https://github.com/expo/expo/pull/40437) by [@artus9033](https://github.com/artus9033))
 
 ### 💡 Others
 
