@@ -45,7 +45,6 @@ const doTransform = async (filename: string, src: string, options: Partial<JsTra
     minify: false,
     platform: 'web',
     type: 'script',
-    hot: false,
     inlinePlatform: false,
     inlineRequires: false,
     unstable_transformProfile: 'default',

@@ -686,10 +686,28 @@
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
 
+  NSString *sdkVersion = nil;
+  if (self.manifest != nil) {
+    NSDictionary *expoConfig = [self.manifest expoClientConfigRootObject];
+    id sdk = expoConfig[@"sdkVersion"];
+    if ([sdk isKindOfClass:[NSString class]]) {
+      sdkVersion = (NSString *)sdk;
+    } else {
+      NSDictionary *rawManifest = [self.manifest rawManifestJSON];
+      id sdkFromManifest = rawManifest[@"sdkVersion"];
+      if ([sdkFromManifest isKindOfClass:[NSString class]]) {
+        sdkVersion = (NSString *)sdkFromManifest;
+      }
+    }
+  }
+
   [buildInfo setObject:appName forKey:@"appName"];
   [buildInfo setObject:appIcon forKey:@"appIcon"];
   [buildInfo setObject:appVersion forKey:@"appVersion"];
   [buildInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
+  if (sdkVersion) {
+    [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
+  }
 
   return buildInfo;
 }

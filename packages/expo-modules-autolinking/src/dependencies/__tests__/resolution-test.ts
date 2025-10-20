@@ -213,6 +213,39 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
+  it('discovers dependencies on nameless package.json', async () => {
+    vol.fromNestedJSON(
+      {
+        'package.json': JSON.stringify({
+          // Missing name
+          dependencies: { 'react-native-third-party': '*' },
+        }),
+        node_modules: {
+          'react-native-third-party': {
+            'package.json': '{}', // Missing name
+          },
+        },
+      },
+      projectRoot
+    );
+
+    const result = await scanDependenciesRecursively(projectRoot);
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "react-native-third-party": {
+          "depth": 0,
+          "duplicates": null,
+          "name": "react-native-third-party",
+          "originPath": "/fake/project/node_modules/react-native-third-party",
+          "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
+          "version": "",
+        },
+      }
+    `);
+  });
+
   it('ignores transitive, hoisted dependencies without dependents', async () => {
     vol.fromNestedJSON(
       {

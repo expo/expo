@@ -94,13 +94,12 @@ export class ImmutableRequest {
     #throwImmutableBodyError() {
         throw new Error('This operation is not allowed on immutable requests.');
     }
-    /**
-     * The request body is not accessible in immutable requests.
-     */
-    // @ts-expect-error This ensures JavaScript users cannot mutate the request body
-    // eslint-disable-next-line getter-return
+    /** The request body is not accessible in immutable requests. */
     get body() {
-        this.#throwImmutableBodyError();
+        // NOTE(@kitten): `new Request(req.url, req)` may internally access `req.body` to copy the request
+        // We can pretend it is `null`. Marking `bodyUsed` makes no sense here as it manipulates the subsequent
+        // code paths, but pretending there was no body should be safe
+        return null;
     }
     async arrayBuffer() {
         this.#throwImmutableBodyError();

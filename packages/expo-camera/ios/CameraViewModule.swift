@@ -148,6 +148,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       Prop("barcodeScannerEnabled") { (view, scanBarcodes: Bool?) in
+#if canImport(ZXingObjC)
         if let scanBarcodes, view.isScanningBarcodes != scanBarcodes {
           view.isScanningBarcodes = scanBarcodes
           return
@@ -155,12 +156,17 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         if scanBarcodes == nil && view.isScanningBarcodes != false {
           view.isScanningBarcodes = false
         }
+#endif
       }
 
       Prop("barcodeScannerSettings") { (view, settings: BarcodeSettings?) in
+#if canImport(ZXingObjC)
         if let settings {
           view.setBarcodeScannerSettings(settings: settings)
         }
+#else
+        self.appContext?.jsLogger.warn("Barcode scanning has been disabled")
+#endif
       }
 
       Prop("mute") { (view, muted: Bool?) in

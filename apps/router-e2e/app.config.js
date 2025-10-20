@@ -34,10 +34,10 @@ module.exports = {
     backgroundColor: '#ffffff',
   },
   experiments: {
+    autolinkingModuleResolution: true,
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
     typedRoutes: true,
-    reactCanary: process.env.E2E_CANARY_ENABLED,
     reactCompiler: process.env.E2E_ROUTER_COMPILER,
     reactServerComponentRoutes: process.env.E2E_RSC_ENABLED,
     reactServerFunctions: process.env.E2E_SERVER_FUNCTIONS,
@@ -79,7 +79,7 @@ module.exports = {
           : process.env.E2E_ROUTER_HEADERS_PREDEFINED
             ? {
                 'X-Powered-By': 'expo-server',
-                'Set-Cookie': ['session=123','token=xyz'],
+                'Set-Cookie': ['session=123', 'token=xyz'],
               }
             : undefined,
         unstable_useServerDataLoaders: process.env.E2E_ROUTER_SERVER_LOADERS === 'true',

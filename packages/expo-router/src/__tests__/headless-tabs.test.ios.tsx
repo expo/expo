@@ -378,3 +378,65 @@ describe('warnings/errors', () => {
     );
   });
 });
+
+it('can update href dynamically', () => {
+  const MockContext = React.createContext({ href: '/a', setHref: (href: string) => {} });
+  renderRouter({
+    _layout: function TabLayout() {
+      const [href, setHref] = useState('/a');
+      return (
+        <MockContext.Provider value={{ href, setHref }}>
+          <Tabs>
+            <TabSlot />
+            <TabList>
+              <TabTrigger name="index" href="/">
+                <Text>Index</Text>
+              </TabTrigger>
+              <TabTrigger name="[p]" href={href}>
+                <Text>{href}</Text>
+              </TabTrigger>
+            </TabList>
+          </Tabs>
+        </MockContext.Provider>
+      );
+    },
+    index: function Index() {
+      const { href, setHref } = React.useContext(MockContext);
+      return (
+        <View testID="index">
+          <Button
+            testID="toggle"
+            title="Toggle"
+            onPress={() => setHref(href === '/a' ? '/b' : '/a')}
+          />
+        </View>
+      );
+    },
+    '[p]': function P() {
+      const { p } = useLocalSearchParams();
+      return <Text testID="page">{p}</Text>;
+    },
+  });
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.queryByTestId('page')).toBeNull();
+  expect(screen.getByText('/a')).toBeVisible();
+  expect(screen.getByText('Index')).toBeVisible();
+
+  fireEvent.press(screen.getByText('/a'));
+  expect(screen.queryByTestId('index')).toBeNull();
+  expect(screen.getByTestId('page')).toBeVisible();
+  expect(screen.getByTestId('page')).toHaveTextContent('a');
+  expect(screen.getByText('Index')).toBeVisible();
+
+  fireEvent.press(screen.getByText('Index'));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.queryByTestId('page')).toBeNull();
+
+  fireEvent.press(screen.getByTestId('toggle'));
+  expect(screen.getByText('/b')).toBeVisible();
+  expect(screen.queryByText('/a')).toBeNull();
+
+  fireEvent.press(screen.getByText('/b'));
+  expect(screen.getByTestId('page')).toBeVisible();
+  expect(screen.getByTestId('page')).toHaveTextContent('b');
+});

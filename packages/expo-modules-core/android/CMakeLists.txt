@@ -36,12 +36,12 @@ endmacro()
 add_library(CommonSettings INTERFACE)
 
 add_library(
-        ${PACKAGE_NAME}
-        SHARED
-        ${common_sources}
-        ${sources_android}
-        ${sources_android_types}
-        ${sources_android_javaclasses}
+  ${PACKAGE_NAME}
+  SHARED
+  ${common_sources}
+  ${sources_android}
+  ${sources_android_types}
+  ${sources_android_javaclasses}
 )
 
 target_precompile_headers(${PACKAGE_NAME} PRIVATE ${SRC_DIR}/main/cpp/ExpoHeader.pch)
@@ -99,24 +99,33 @@ get_target_property(INCLUDE_reactnativejni
 )
 
 target_include_directories(
-       ${PACKAGE_NAME}
-       PRIVATE
-       ${INCLUDE_reactnativejni}/react
+  ${PACKAGE_NAME}
+  PRIVATE
+  ${INCLUDE_reactnativejni}/react
 
-        # header only imports from turbomodule, e.g. CallInvokerHolder.h
-       "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
-       "${COMMON_DIR}"
-       "${SRC_DIR}/fabric"
+  # header only imports from turbomodule, e.g. CallInvokerHolder.h
+  "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
+  "${COMMON_DIR}"
+  "${SRC_DIR}/fabric"
 )
+
+if (REACT_NATIVE_WORKLETS_DIR)
+  target_include_directories(
+    ${PACKAGE_NAME}
+    PRIVATE
+    "${REACT_NATIVE_WORKLETS_DIR}/Common/cpp"
+    "${REACT_NATIVE_WORKLETS_DIR}/android/src/main/cpp"
+  )
+endif()
 
 # linking
 
 include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
 
 target_compile_options(
-        ${PACKAGE_NAME}
-        PRIVATE
-        ${folly_FLAGS}
+  ${PACKAGE_NAME}
+  PRIVATE
+  ${folly_FLAGS}
 )
 
 target_link_libraries(
@@ -135,3 +144,19 @@ target_link_libraries(
   ${PACKAGE_NAME}
   ReactAndroid::reactnative
 )
+
+if (REACT_NATIVE_WORKLETS_DIR)
+  add_library(worklets SHARED IMPORTED)
+
+  set_target_properties(
+    worklets
+    PROPERTIES
+    IMPORTED_LOCATION
+    "${REACT_NATIVE_WORKLETS_DIR}/android/build/intermediates/cmake/${BUILD_TYPE}/obj/${ANDROID_ABI}/libworklets.so"
+  )
+
+  target_link_libraries(
+    ${PACKAGE_NAME}
+    worklets
+  )
+endif()

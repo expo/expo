@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
@@ -48,7 +49,6 @@ export type ButtonProps = {
     systemImage?: SFSymbol;
     /**
      * Indicated the role of the button.
-     * @platform ios
      */
     role?: ButtonRole;
     /**
@@ -66,7 +66,7 @@ export type ButtonProps = {
     /**
      * Button color.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Disabled state of the button.
      */

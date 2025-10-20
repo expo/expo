@@ -65,8 +65,12 @@ export interface ModuleIosPodspecInfo {
   podName: string;
   podspecDir: string;
 }
+export interface ModuleIosConfig {
+  name: string | null;
+  class: string;
+}
 export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
-  modules: string[];
+  modules: ModuleIosConfig[];
   pods: ModuleIosPodspecInfo[];
   flags: Record<string, any> | undefined;
   swiftModuleNames: string[];
@@ -163,6 +167,10 @@ export interface AndroidPublication {
   repository: string;
 }
 
+export type RawAppleModuleConfig = {
+  name: string;
+  class: string;
+};
 /**
  * Represents a raw config specific to Apple platforms.
  */
@@ -170,7 +178,7 @@ export type RawModuleConfigApple = {
   /**
    * Names of Swift native modules classes to put to the generated modules provider file.
    */
-  modules?: string[];
+  modules?: (string | RawAppleModuleConfig)[];
 
   /**
    * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.

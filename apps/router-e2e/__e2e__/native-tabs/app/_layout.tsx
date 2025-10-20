@@ -19,16 +19,22 @@ export default function Layout() {
         <NativeTabs
         // Both platforms
         // labelStyle={{
-        //   fontSize: 16,
-        //   fontWeight: 700,
-        //   fontStyle: 'italic',
-        //   // fontFamily: 'Courier New',
-        //   color: Platform.OS === 'android' ? '#888' : undefined,
+        //   default: {
+        //     fontSize: 16,
+        //     fontWeight: 700,
+        //     fontStyle: 'italic',
+        //     // fontFamily: 'Courier New',
+        //     color: Platform.OS === 'android' ? '#888' : undefined,
+        //   },
+        //   selected: {
+        //     fontSize: 32,
+        //     color: 'red',
+        //   },
         // }}
         // backgroundColor={Platform.OS === 'android' ? 'black' : undefined}
         // badgeBackgroundColor="green"
         // tintColor="orange"
-        // iconColor={Platform.OS === 'android' ? '#888' : undefined}
+        // iconColor={Platform.OS === 'android' ? '#888' : { selected: 'purple' }}
         // iOS only
         // blurEffect="systemChromeMaterial"
         // minimizeBehavior="onScrollDown"

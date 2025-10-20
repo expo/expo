@@ -25,7 +25,7 @@ import {
 } from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
-import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
+import { isNodeExternal, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
@@ -34,7 +34,6 @@ import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTrans
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
@@ -161,7 +160,6 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * - Alias `react-native` to `react-native-web` on web.
  * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
- * - Alias react-native renderer code to a vendored React canary build on native.
  */
 export function withExtendedResolver(
   config: ConfigT,
@@ -171,7 +169,6 @@ export function withExtendedResolver(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
-    isReactCanaryEnabled,
     isReactServerComponentsEnabled,
     getMetroBundler,
   }: {
@@ -180,16 +177,12 @@ export function withExtendedResolver(
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
-    isReactCanaryEnabled?: boolean;
     isReactServerComponentsEnabled?: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
   if (isReactServerComponentsEnabled) {
     Log.warn(`React Server Components (beta) is enabled.`);
-  }
-  if (isReactCanaryEnabled) {
-    Log.warn(`Experimental React 19 canary is enabled.`);
   }
   if (isFastResolverEnabled) {
     Log.log(chalk.dim`Fast resolver is enabled.`);
@@ -214,14 +207,6 @@ export function withExtendedResolver(
       'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
-
-  // The vendored canary modules live inside /static/canary-full/node_modules
-  // Adding the `index.js` allows us to add this path as `originModulePath` to
-  // resolve the nested `node_modules` folder properly.
-  const canaryModulesPath = path.join(
-    require.resolve('@expo/cli/package.json'),
-    '../static/canary-full/index.js'
-  );
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -665,6 +650,23 @@ export function withExtendedResolver(
         return result;
       }
 
+      const normalizedPath = normalizeSlashes(result.filePath);
+
+      if (normalizedPath.endsWith('expo-router/build/layouts/_web-modal.js')) {
+        if (env.EXPO_UNSTABLE_WEB_MODAL) {
+          try {
+            const webModal = doResolve('expo-router/build/layouts/ExperimentalModalStack.js');
+            if (webModal.type === 'sourceFile') {
+              debug('Using `_unstable-web-modal` implementation.');
+              return webModal;
+            }
+          } catch (error) {
+            // Fallback to react-navigation web modal implementation.
+          }
+        }
+        debug("Using React Navigation's web modal implementation.");
+      }
+
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
           // Disallow importing confusing native modules on web
@@ -685,9 +687,8 @@ export function withExtendedResolver(
 
           // Replace with static shims
 
-          const normalName = normalizeSlashes(result.filePath)
-            // Drop everything up until the `node_modules` folder.
-            .replace(/.*node_modules\//, '');
+          // Drop everything up until the `node_modules` folder.
+          const normalName = normalizedPath.replace(/.*node_modules\//, '');
 
           const shimFile = shouldCreateVirtualShim(normalName);
           if (shimFile) {
@@ -709,32 +710,12 @@ export function withExtendedResolver(
           context.customResolverOptions?.environment === 'node' ||
           context.customResolverOptions?.environment === 'react-server';
 
-        // react-native/Libraries/Core/InitializeCore
-        const normal = normalizeSlashes(result.filePath);
-
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          if (normal.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
+          if (normalizedPath.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
             debug('Shimming out InitializeCore for React Native in native SSR bundle');
             return {
               type: 'empty',
-            };
-          }
-        }
-
-        // When server components are enabled, redirect React Native's renderer to the canary build
-        // this will enable the use hook and other requisite features from React 19.
-        if (isReactCanaryEnabled && result.filePath.includes('node_modules')) {
-          const normalName = normalizeSlashes(result.filePath)
-            // Drop everything up until the `node_modules` folder.
-            .replace(/.*node_modules\//, '');
-
-          const canaryFile = shouldCreateVirtualCanary(normalName);
-          if (canaryFile) {
-            debug(`Redirecting React Native module "${result.filePath}" to canary build`);
-            return {
-              ...result,
-              filePath: canaryFile,
             };
           }
         }
@@ -764,18 +745,6 @@ export function withExtendedResolver(
         ...immutableContext,
         preferNativePlatform: platform !== 'web',
       };
-
-      // TODO: Remove this when we have React 19 in the expo/expo monorepo.
-      if (
-        isReactCanaryEnabled &&
-        // Change the node modules path for react and react-dom to use the vendor in Expo CLI.
-        /^(react|react\/.*|react-dom|react-dom\/.*)$/.test(moduleName)
-      ) {
-        // Modifying the origin module path changes the starting Node module resolution path to this folder
-        context.originModulePath = canaryModulesPath;
-        // Hierarchical lookup has to be enabled for this to work
-        context.disableHierarchicalLookup = false;
-      }
 
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
@@ -862,7 +831,7 @@ export async function withMetroMultiPlatformAsync(
     isAutolinkingResolverEnabled,
     isFastResolverEnabled,
     isExporting,
-    isReactCanaryEnabled,
+
     isReactServerComponentsEnabled,
     getMetroBundler,
   }: {
@@ -873,7 +842,7 @@ export async function withMetroMultiPlatformAsync(
     isAutolinkingResolverEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
-    isReactCanaryEnabled: boolean;
+
     isReactServerComponentsEnabled: boolean;
     isNamedRequiresEnabled: boolean;
     getMetroBundler: () => Bundler;
@@ -909,10 +878,6 @@ export async function withMetroMultiPlatformAsync(
       // For virtual modules
       path.join(require.resolve('expo/package.json'), '..')
     );
-    if (isReactCanaryEnabled) {
-      // @ts-expect-error: watchFolders is readonly
-      config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
-    }
   }
 
   let tsconfig: null | TsConfigPaths = null;
@@ -950,7 +915,6 @@ export async function withMetroMultiPlatformAsync(
     isExporting,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
-    isReactCanaryEnabled,
     isReactServerComponentsEnabled,
     getMetroBundler,
   });

@@ -89,7 +89,6 @@ it('runs `npx expo customize tsconfig.json`', async () => {
     'with-router',
     {
       reuseExisting: false,
-      sdkVersion: '52.0.0',
     }
   );
 
@@ -110,7 +109,6 @@ it('runs `npx expo customize tsconfig.json` on a partially setup project', async
     'with-router',
     {
       reuseExisting: false,
-      sdkVersion: '52.0.0',
     }
   );
 

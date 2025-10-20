@@ -1,10 +1,16 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
 
+import { getTextFromChildren } from '../../utils';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export interface TextProps extends CommonViewModifierProps {
-  children: string;
+  /**
+   * The children of the text.
+   * Only string and number are supported.
+   */
+  children?: React.ReactNode;
   /**
    * The font weight of the text.
    * Maps to iOS system font weights.
@@ -35,7 +41,7 @@ export interface TextProps extends CommonViewModifierProps {
   /**
    * The color of the text.
    */
-  color?: string;
+  color?: ColorValue;
 }
 
 type NativeTextProps = Omit<TextProps, 'children'> & {
@@ -47,12 +53,12 @@ const TextNativeView: React.ComponentType<Omit<TextProps, 'children'> & { text: 
 
 function transformTextProps(props: TextProps): NativeTextProps {
   const { children, modifiers, ...restProps } = props;
-
+  const text = getTextFromChildren(children);
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    text: children ?? '',
+    text: text ?? '',
   };
 }
 

@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Update to `babel-plugin-react-compiler@^1.0.0` ([#40281](https://github.com/expo/expo/pull/40281) by [@kitten](https://github.com/kitten))
+- Bump to `@expo/metro@54.1.0` and `metro@0.83.2` ([#39826](https://github.com/expo/expo/pull/39826) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

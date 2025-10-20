@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { CommonViewModifierProps } from '../types';
@@ -18,13 +18,11 @@ export type ChartType = 'line' | 'point' | 'bar' | 'area' | 'pie' | 'rectangle';
 
 /**
  * Point symbol style options.
- * @platform ios
  */
 export type PointStyle = 'circle' | 'square' | 'diamond';
 
 /**
  * Data point for the chart.
- * @platform ios
  */
 export type ChartDataPoint = {
   /**
@@ -209,7 +207,8 @@ const ChartNativeView: React.ComponentType<ChartProps> = requireNativeView('Expo
 
 /**
  * Renders a native Chart component using Swift Charts.
- * @platform ios
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
  */
 export function Chart({
   style,

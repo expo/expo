@@ -5,6 +5,36 @@ import SwiftUI
 
 // MARK: - Individual ViewModifier Structs
 
+internal enum ListSectionSpacingType: String, Enumerable {
+  case `default`
+  case compact
+  case custom
+}
+
+internal struct ListSectionSpacingModifier: ViewModifier, Record {
+  @Field var spacing: ListSectionSpacingType = .default
+  @Field var value: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if #available(iOS 17.0, *) {
+        switch spacing {
+        case .compact:
+          content.listSectionSpacing(.compact)
+        case .custom:
+          content.listSectionSpacing(value)
+        default:
+          content.listSectionSpacing(.default)
+        }
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
 internal struct BackgroundModifier: ViewModifier, Record {
   @Field var color: Color?
 
@@ -75,17 +105,19 @@ internal struct PaddingModifier: ViewModifier, Record {
   @Field var trailing: CGFloat?
 
   func body(content: Content) -> some View {
-    if let all {
-      content.padding(all)
-    } else if let horizontal, let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: horizontal, bottom: vertical, trailing: horizontal))
-    } else if let horizontal {
-      content.padding(EdgeInsets(top: 0, leading: horizontal, bottom: 0, trailing: horizontal))
-    } else if let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: 0, bottom: vertical, trailing: 0))
-    } else {
-      content.padding(EdgeInsets(top: top ?? 0, leading: leading ?? 0, bottom: bottom ?? 0, trailing: trailing ?? 0))
-    }
+    let topValue = top ?? vertical ?? all ?? 0
+    let bottomValue = bottom ?? vertical ?? all ?? 0
+    let leadingValue = leading ?? horizontal ?? all ?? 0
+    let trailingValue = trailing ?? horizontal ?? all ?? 0
+
+    content.padding(
+      EdgeInsets(
+        top: topValue,
+        leading: leadingValue,
+        bottom: bottomValue,
+        trailing: trailingValue
+      )
+    )
   }
 }
 
@@ -1019,6 +1051,120 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
+internal enum Prominence: String, Enumerable {
+  case standard
+  case increased
+}
+
+internal struct HeaderProminence: ViewModifier, Record {
+  @Field var prominence: Prominence?
+
+  func body(content: Content) -> some View {
+    if let prominence = prominence {
+      switch prominence {
+        case .standard:
+          content.headerProminence(.standard)
+        case .increased:
+          content.headerProminence(.increased)
+        }
+    } else {
+      content
+    }
+  }
+}
+
+internal struct ListRowInsets: ViewModifier, Record {
+  @Field var top: CGFloat = 0
+  @Field var leading: CGFloat = 0
+  @Field var bottom: CGFloat = 0
+  @Field var trailing: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    if top != 0 || leading != 0 || bottom != 0 || trailing != 0 {
+      content.listRowInsets(.init(
+        top: top,
+        leading: leading,
+        bottom: bottom,
+        trailing: trailing
+      ))
+    } else {
+      content
+    }
+  }
+}
+
+internal enum BadgeProminenceType: String, Enumerable {
+  case standard
+  case increased
+  case decreased
+}
+
+internal struct BadgeProminence: ViewModifier, Record {
+  @Field var badgeType: BadgeProminenceType = .standard
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if #available(iOS 17.0, macOS 14.0, *) {
+        switch badgeType {
+          case .standard:         
+            content.badgeProminence(.standard)
+          case .increased:         
+            content.badgeProminence(.increased)
+          case .decreased:         
+            content.badgeProminence(.decreased)
+        }
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
+internal struct Badge: ViewModifier, Record {
+  @Field var value: String?
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if let value {
+        content.badge(value)
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
+internal struct ListSectionMargins: ViewModifier, Record {
+  @Field var length: CGFloat?
+  @Field var edges: EdgeOptions?
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      #if compiler(>=6.2) // Xcode 26
+        if #available(iOS 26.0, *) {
+          if let edges, let length {
+            content.listSectionMargins(edges.toEdge(), length)
+          } else if let edges {
+            content.listSectionMargins(edges.toEdge(), 0)
+          } else {
+            content
+          }
+        } else {
+          content
+        }
+      #else 
+        content
+      #endif
+    #endif
+  }
+}
+
 // MARK: - Registry
 
 /**
@@ -1158,6 +1304,10 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
 // swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
+    register("listSectionSpacing") { params, appContext, _ in
+      return try ListSectionSpacingModifier(from: params, appContext: appContext)
+    }
+
     register("background") { params, appContext, _ in
       return try BackgroundModifier(from: params, appContext: appContext)
     }
@@ -1381,8 +1531,28 @@ extension ViewModifierRegistry {
       return try LineSpacing(from: params, appContext: appContext)
     }
 
+    register("listRowInsets") { params, appContext, _ in
+      return try ListRowInsets(from: params, appContext: appContext)
+    }
+
+    register("badgeProminence") { params, appContext, _ in
+      return try BadgeProminence(from: params, appContext: appContext)
+    }
+
+    register("badge") { params, appContext, _ in
+      return try Badge(from: params, appContext: appContext)
+    }
+
+    register("listSectionMargins") { params, appContext, _ in
+      return try ListSectionMargins(from: params, appContext: appContext)
+    }
+
     register("scrollDismissesKeyboard") { params, appContext, _ in
       return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
+    }
+
+    register("headerProminence") { params, appContext, _ in
+      return try HeaderProminence(from: params, appContext: appContext)
     }
   }
 }

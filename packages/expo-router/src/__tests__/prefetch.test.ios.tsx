@@ -29,11 +29,9 @@ it('prefetch a sibling route', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -98,11 +96,9 @@ it('will prefetch the correct route within a group', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -167,11 +163,9 @@ it('will prefetch the correct route within nested groups', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -234,11 +228,9 @@ it('works with relative Href', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -301,11 +293,9 @@ it('works with params', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -381,15 +371,12 @@ it('ignores the current route', () => {
                     path: '/directory',
                   },
                 ],
-                stale: true,
               },
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -492,15 +479,12 @@ it('can prefetch a deeply nested route', () => {
                     path: '/directory',
                   },
                 ],
-                stale: true,
               },
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -615,23 +599,18 @@ it('can prefetch a parent route', () => {
                                 path: '/directory/apple/banana',
                               },
                             ],
-                            stale: true,
                           },
                         },
                       ],
-                      stale: true,
                     },
                   },
                 ],
-                stale: true,
               },
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -677,21 +656,35 @@ it('can prefetch a parent route', () => {
                     name: 'apple',
                     params: undefined,
                     state: {
+                      index: 0,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['banana'],
                       routes: [
                         {
+                          key: expect.any(String),
                           name: 'banana',
+                          params: undefined,
                           state: {
+                            index: 0,
+                            key: expect.any(String),
+                            preloadedRoutes: [],
+                            routeNames: ['index'],
                             routes: [
                               {
+                                key: expect.any(String),
                                 name: 'index',
+                                params: undefined,
                                 path: '/directory/apple/banana',
                               },
                             ],
-                            stale: true,
+                            stale: false,
+                            type: 'stack',
                           },
                         },
                       ],
-                      stale: true,
+                      stale: false,
+                      type: 'stack',
                     },
                   },
                 ],

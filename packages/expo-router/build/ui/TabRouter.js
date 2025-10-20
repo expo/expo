@@ -1,42 +1,8 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoTabRouter = ExpoTabRouter;
 const native_1 = require("@react-navigation/native");
-const Linking = __importStar(require("expo-linking"));
-function ExpoTabRouter({ triggerMap, ...options }) {
+function ExpoTabRouter(options) {
     const rnTabRouter = (0, native_1.TabRouter)(options);
     const router = {
         ...rnTabRouter,
@@ -44,17 +10,7 @@ function ExpoTabRouter({ triggerMap, ...options }) {
             if (action.type !== 'JUMP_TO') {
                 return rnTabRouter.getStateForAction(state, action, options);
             }
-            const name = action.payload.name;
-            const trigger = triggerMap[name];
-            if (!trigger) {
-                // This is probably for a different navigator
-                return null;
-            }
-            else if (trigger.type === 'external') {
-                Linking.openURL(trigger.href);
-                return state;
-            }
-            const route = state.routes.find((route) => route.name === trigger.routeNode.route);
+            const route = state.routes.find((route) => route.name === action.payload.name);
             if (!route) {
                 // This shouldn't occur, but lets just hand it off to the next navigator in case.
                 return null;
@@ -84,9 +40,8 @@ function ExpoTabRouter({ triggerMap, ...options }) {
             if (shouldReset) {
                 options.routeParamList[route.name] = {
                     ...options.routeParamList[route.name],
-                    ...trigger.action.payload.params,
                 };
-                return rnTabRouter.getStateForAction(state, trigger.action, options);
+                return rnTabRouter.getStateForAction(state, action, options);
             }
             else {
                 return rnTabRouter.getStateForRouteFocus(state, route.key);

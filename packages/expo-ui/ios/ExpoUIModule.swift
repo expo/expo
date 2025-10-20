@@ -33,7 +33,10 @@ public final class ExpoUIModule: Module {
     View(ListView.self)
     View(PickerView.self)
     View(ProgressView.self)
-    View(SectionView.self)
+    View(ExpoUI.SectionView.self)
+    View(ExpoUI.SectionContent.self)
+    View(ExpoUI.SectionHeader.self)
+    View(ExpoUI.SectionFooter.self)
     View(SecureFieldView.self) {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)

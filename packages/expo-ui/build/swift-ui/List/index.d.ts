@@ -25,6 +25,7 @@ export interface ListProps extends CommonViewModifierProps {
      * Makes the list scrollable.
      * @default true
      * @platform ios 16.0+
+     * @platform tvos 16.0+
      */
     scrollEnabled?: boolean;
     /**
@@ -53,7 +54,6 @@ export interface ListProps extends CommonViewModifierProps {
  * A list component that renders its children using a native SwiftUI list.
  * @param {ListProps} props - The properties for the list component.
  * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
- * @platform ios
  */
 export declare function List(props: ListProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

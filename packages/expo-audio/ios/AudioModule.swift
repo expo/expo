@@ -531,7 +531,7 @@ public class AudioModule: Module {
 
 #if !os(tvOS)
       if category == .playAndRecord {
-#if compiler(>=6.0)
+#if compiler(>=6.2) // Xcode 26
         categoryOptions.insert(.allowBluetoothHFP)
 #else
         categoryOptions.insert(.allowBluetooth)

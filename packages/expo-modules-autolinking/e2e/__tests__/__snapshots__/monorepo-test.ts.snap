@@ -13,7 +13,7 @@ import ExpoModulesCore
 
 @objc(file)
 public class file: ModulesProvider {
-  public override func getModuleClasses() -> [AnyModule.Type] {
+  public override func getModuleClasses() -> [ExpoModuleTupleType] {
     return [
     ]
   }
@@ -48,7 +48,7 @@ import ExpoModulesCore
 
 @objc(file)
 public class file: ModulesProvider {
-  public override func getModuleClasses() -> [AnyModule.Type] {
+  public override func getModuleClasses() -> [ExpoModuleTupleType] {
     return [
     ]
   }
@@ -83,7 +83,7 @@ import ExpoModulesCore
 
 @objc(file)
 public class file: ModulesProvider {
-  public override func getModuleClasses() -> [AnyModule.Type] {
+  public override func getModuleClasses() -> [ExpoModuleTupleType] {
     return [
     ]
   }
