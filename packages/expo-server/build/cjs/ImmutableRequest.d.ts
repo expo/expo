@@ -24,7 +24,7 @@ export type _ImmutableRequest = Omit<Request, 'body' | 'bodyUsed' | 'arrayBuffer
 /**
  * An immutable version of the Fetch API's [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) object which prevents mutations to the request body and headers.
  */
-export declare class ImmutableRequest implements _ImmutableRequest {
+export declare class ImmutableRequest implements _ImmutableRequest, RequestInit {
     #private;
     constructor(request: Request);
     get cache(): RequestCache;
@@ -42,10 +42,8 @@ export declare class ImmutableRequest implements _ImmutableRequest {
     get bodyUsed(): boolean;
     get duplex(): "half" | undefined;
     get headers(): ImmutableHeaders;
-    /**
-     * The request body is not accessible in immutable requests.
-     */
-    get body(): void;
+    /** The request body is not accessible in immutable requests. */
+    get body(): never;
     arrayBuffer(): Promise<void>;
     blob(): Promise<void>;
     bytes(): Promise<void>;
