@@ -39,7 +39,7 @@ function useStaticFonts(map) {
 }
 // @needsAudit
 /**
- * Load a map of fonts at runtime with [`loadAsync`](#loadasyncfontfamilyorfontmap-source). This returns a `boolean` if the fonts are
+ * Load a map of fonts at runtime with [`loadAsync`](#loadasyncfontfamilyorfontmap-source). This returns `true` if the fonts are
  * loaded and ready to use. It also returns an error if something went wrong, to use in development.
  *
  * > Note, the fonts are not "reloaded" when you dynamically change the font map.
