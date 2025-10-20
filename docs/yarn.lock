@@ -1328,6 +1328,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kapaai/react-sdk@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "@kapaai/react-sdk@npm:0.9.0"
+  dependencies:
+    "@fingerprintjs/fingerprintjs-pro-react": "npm:^2.7.0"
+    "@hcaptcha/react-hcaptcha": "npm:^1.12.0"
+    "@tanstack/react-query": "npm:^5.74.3"
+    js-cookie: "npm:^3.0.5"
+    tldts: "npm:^7.0.7"
+  peerDependencies:
+    react: ">=17.0.0"
+    react-dom: ">=17.0.0"
+  checksum: 10c0/d3fc9de9b2b5e176d2905ef75d012b130320be281cab236154e8faac8b5e0cc574c4b23c07da7ffd2bdccbf2ea281828ec222c2d80d6214092ec4295896f5c09
+  languageName: node
+  linkType: hard
+
 "@mdx-js/loader@npm:^3.1.1":
   version: 3.1.1
   resolution: "@mdx-js/loader@npm:3.1.1"
@@ -6899,7 +6915,7 @@ __metadata:
     "@expo/styleguide-base": "npm:^2.0.3"
     "@expo/styleguide-icons": "npm:^2.2.3"
     "@expo/styleguide-search-ui": "npm:^3.2.1"
-    "@kapaai/react-sdk": "npm:^0.5.1"
+    "@kapaai/react-sdk": "npm:^0.9.0"
     "@mdx-js/loader": "npm:^3.1.1"
     "@mdx-js/mdx": "npm:^3.1.1"
     "@mdx-js/react": "npm:^3.1.1"
@@ -6957,7 +6973,7 @@ __metadata:
     postcss: "npm:^8.5.6"
     postcss-import: "npm:^16.1.1"
     prettier: "npm:^3.6.2"
-    prettier-plugin-tailwindcss: "npm:^0.6.14"
+    prettier-plugin-tailwindcss: "npm:^0.7.1"
     prism-react-renderer: "npm:^2.4.1"
     prismjs: "npm:^1.30.0"
     prop-types: "npm:^15.8.1"
@@ -11456,9 +11472,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-tailwindcss@npm:^0.6.14":
-  version: 0.6.14
-  resolution: "prettier-plugin-tailwindcss@npm:0.6.14"
+"prettier-plugin-tailwindcss@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "prettier-plugin-tailwindcss@npm:0.7.1"
   peerDependencies:
     "@ianvs/prettier-plugin-sort-imports": "*"
     "@prettier/plugin-hermes": "*"
@@ -11470,14 +11486,12 @@ __metadata:
     prettier: ^3.0
     prettier-plugin-astro: "*"
     prettier-plugin-css-order: "*"
-    prettier-plugin-import-sort: "*"
     prettier-plugin-jsdoc: "*"
     prettier-plugin-marko: "*"
     prettier-plugin-multiline-arrays: "*"
     prettier-plugin-organize-attributes: "*"
     prettier-plugin-organize-imports: "*"
     prettier-plugin-sort-imports: "*"
-    prettier-plugin-style-order: "*"
     prettier-plugin-svelte: "*"
   peerDependenciesMeta:
     "@ianvs/prettier-plugin-sort-imports":
@@ -11498,8 +11512,6 @@ __metadata:
       optional: true
     prettier-plugin-css-order:
       optional: true
-    prettier-plugin-import-sort:
-      optional: true
     prettier-plugin-jsdoc:
       optional: true
     prettier-plugin-marko:
@@ -11512,11 +11524,9 @@ __metadata:
       optional: true
     prettier-plugin-sort-imports:
       optional: true
-    prettier-plugin-style-order:
-      optional: true
     prettier-plugin-svelte:
       optional: true
-  checksum: 10c0/1bf635be28b30b3f171a184497eecf512601d19328e402dd2eb1ede52aa57b4f5b605eae2929f4916de9ba22526f3d730d9afa90334db09d17c59f463f7b26d8
+  checksum: 10c0/915a0fdff68fd86f809719fef883a1eb314d2cdf0ef571d9547780d06815ad2158a30a101dd1476752c0975c370d3f1ca73643ced18bfa12647ca3f205a709e2
   languageName: node
   linkType: hard
 
