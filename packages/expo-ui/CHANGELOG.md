@@ -41,6 +41,7 @@
 
 - [iOS] Make `ContextMenu` more composable. ([#40254](https://github.com/expo/expo/pull/40254) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [docs] Improve consistency and remove invalid platform checks. ([#40362](https://github.com/expo/expo/pull/40362) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Refactored `CommonViewProps` to `UIBaseViewProps` and reduced duplicated code. ([#40492](https://github.com/expo/expo/pull/40492) by [@kudo](https://github.com/kudo))
 
 ## 0.2.0-beta.5 - 2025-10-01
 
