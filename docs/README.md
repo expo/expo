@@ -347,7 +347,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 ### Add video links from Expo's YouTube channel
 
-To reference a video from Expo's YouTube channel, use the `VideBoxLink` component. This component is imported from `~/ui/components/VideBoxLink`.
+To reference a video from Expo's YouTube channel, use the `VideoBoxLink` component. This component is imported from `~/ui/components/VideoBoxLink`.
 
 ```tsx
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
