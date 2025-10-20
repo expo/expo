@@ -264,7 +264,7 @@ export * as default from './Animated';
       caller,
     };
 
-    const code = babel.transformFileSync(samplesPath, options)!.code || '';
+    const code = babel.transformFileSync(samplesPath, options)!.code;
     expect(code).toContain("'worklet';");
     expect(code).toMatchSnapshot();
   });
@@ -285,7 +285,7 @@ export * as default from './Animated';
     function stablePaths(src) {
       return src
         .replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js')
-        .replace(/__pluginVersion="\d+(?:\.\d+){2}"/, '__pluginVersion="[GLOBAL]"');
+        .replace(/version:".*"/, 'version:"[GLOBAL]"');
     }
 
     const code = stablePaths(babel.transformFileSync(samplesPath, options)!.code);
