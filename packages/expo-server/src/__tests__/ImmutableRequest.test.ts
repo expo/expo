@@ -21,6 +21,12 @@ describe(ImmutableRequest, () => {
       expect(immutableRequest.url).toBe('https://expo.dev/');
       expect(immutableRequest.method).toBe('POST');
     });
+
+    it('should allow itself to be recreated as a regular request', () => {
+      const request = new Request(immutableRequest.url, immutableRequest as RequestInit);
+      expect(request.url).toBe(immutableRequest.url);
+      expect(request.body).toBe(null);
+    });
   });
 
   describe('headers', () => {
@@ -48,15 +54,8 @@ describe(ImmutableRequest, () => {
   });
 
   describe('body', () => {
-    const expectError = (fn: () => void) => {
-      expect(fn).toThrow('This operation is not allowed on immutable requests.');
-    };
-
-    it('should block access to body property', () => {
-      expectError(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const body = immutableRequest.body;
-      });
+    it('should return evaluate to `null` for body access', () => {
+      expect(immutableRequest.body).toBe(null);
     });
 
     it('should block text() method', async () => {
