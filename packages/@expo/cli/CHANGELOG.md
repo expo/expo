@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.12 — 2025-10-20
+
+### 💡 Others
+
 - Add `--api-only` as an alias for `--ssg-only` to `expo export -p web` ([#39709](https://github.com/expo/expo/pull/39709) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@54.1.0` and `metro@0.83.2` ([#39826](https://github.com/expo/expo/pull/39826) by [@kitten](https://github.com/kitten))
 

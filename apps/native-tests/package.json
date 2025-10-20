@@ -9,10 +9,10 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~54.0.13",
+    "expo": "~54.0.14",
     "expo-clipboard": "8.0.7",
     "expo-dev-client": "~6.0.15",
-    "expo-image": "~3.0.9",
+    "expo-image": "~3.0.10",
     "expo-media-library": "18.2.0",
     "expo-notifications": "~0.32.12",
     "expo-splash-screen": "~31.0.10",

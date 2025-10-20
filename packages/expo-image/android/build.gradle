@@ -8,7 +8,7 @@ android {
   namespace "expo.modules.image"
   defaultConfig {
     versionCode 1
-    versionName "3.0.9"
+    versionName "3.0.10"
     consumerProguardFiles("proguard-rules.pro")
 
     buildConfigField("boolean", "ALLOW_GLIDE_LOGS", project.properties.get("EXPO_ALLOW_GLIDE_LOGS", "false"))

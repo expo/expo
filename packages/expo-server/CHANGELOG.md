@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.0.2 — 2025-10-20
+
+### 🎉 New features
+
 - Allow `deferTask(fn)` function to return undefined ([#40370](https://github.com/expo/expo/pull/40370) by [@kitten](https://github.com/kitten))
 - Return `Response` if it's thrown from request handler ([#40370](https://github.com/expo/expo/pull/40370) by [@kitten](https://github.com/kitten))
 - Add `setResponseHeaders()` runtime API ([#40370](https://github.com/expo/expo/pull/40370) by [@kitten](https://github.com/kitten))
@@ -13,8 +21,6 @@
 ### 🐛 Bug fixes
 
 - Fix libraries copying `ImmutableRequest`s via `new Request(url, immutableRequest)` failing with immutability errors ([#40494](https://github.com/expo/expo/pull/40494) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 1.0.1 — 2025-10-09
 
