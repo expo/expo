@@ -3,12 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal class DividerProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
+internal class DividerProps: UIBaseViewProps {
 }
 
 internal struct DividerView: ExpoSwiftUI.View {
@@ -16,6 +11,5 @@ internal struct DividerView: ExpoSwiftUI.View {
 
   var body: some View {
     Divider()
-      .modifier(CommonViewModifiers(props: props))
   }
 }

@@ -3,12 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class GlassEffectContainerViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
+internal final class GlassEffectContainerViewProps: UIBaseViewProps {
   @Field var spacing: Double?
 }
 
@@ -21,7 +16,6 @@ internal struct GlassEffectContainerView: ExpoSwiftUI.View {
       GlassEffectContainer(spacing: CGFloat(props.spacing ?? 0.0)) {
         Children()
       }
-      .modifier(CommonViewModifiers(props: props))
       #else
       Children()
       #endif

@@ -12,31 +12,8 @@ public final class ExpoUIModule: Module {
       }
     }
 
-    View(BottomSheetView.self)
-    View(Button.self)
-    View(ChartView.self)
-    View(ColorPickerView.self)
-    View(DateTimePickerView.self)
-    View(DisclosureGroupView.self)
-    View(ExpoUI.ContentUnavailableView.self)
-    View(ExpoUI.ContextMenu.self)
-    View(ExpoUI.ContextMenuActivationElement.self)
-    View(ExpoUI.ContextMenuPreview.self)
-    View(ExpoUI.ContextMenuContent.self)
-    View(FormView.self)
-    View(GaugeView.self)
-    View(GroupView.self)
-    View(HStackView.self)
-    View(HostView.self)
-    View(ImageView.self)
-    View(LabelView.self)
-    View(ListView.self)
-    View(PickerView.self)
-    View(ProgressView.self)
-    View(ExpoUI.SectionView.self)
-    View(ExpoUI.SectionContent.self)
-    View(ExpoUI.SectionHeader.self)
-    View(ExpoUI.SectionFooter.self)
+    // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`
+
     View(SecureFieldView.self) {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
@@ -48,12 +25,6 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
     }
-    View(ShareLinkView.self)
-    View(SliderView.self)
-    View(SpacerView.self)
-    View(StepperView.self)
-    View(SwitchView.self)
-    View(TextView.self)
     View(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
@@ -68,21 +39,59 @@ public final class ExpoUIModule: Module {
        view.setSelection(start: start, end: end)
       }
     }
-    View(VStackView.self)
-    View(ZStackView.self)
+
+    // MARK: - Views don't support common view modifiers
+
+    View(ContextMenuActivationElement.self)
+    View(ContextMenuPreview.self)
+    View(ContextMenuContent.self)
     View(NamespaceView.self)
-    View(GlassEffectContainerView.self)
-    View(LabeledContentView.self)
-    View(RectangleView.self)
-    View(RoundedRectangleView.self)
-    View(EllipseView.self)
-    View(UnevenRoundedRectangleView.self)
-    View(CapsuleView.self)
-    View(CircleView.self)
-    View(ConcentricRectangleView.self)
-    View(DividerView.self)
-    View(ExpoUI.PopoverView.self)
-    View(ExpoUI.PopoverViewContent.self)
-    View(ExpoUI.PopoverViewPopContent.self)
+    View(PopoverViewContent.self)
+    View(PopoverViewPopContent.self)
+    View(SectionContent.self)
+    View(SectionHeader.self)
+    View(SectionFooter.self)
+
+    View(HostView.self)
+
+    // MARK: - Expo UI Views
+
+    ExpoUIView(BottomSheetView.self)
+    ExpoUIView(ExpoUI.Button.self)
+    ExpoUIView(ChartView.self)
+    ExpoUIView(ColorPickerView.self)
+    ExpoUIView(DateTimePickerView.self)
+    ExpoUIView(DisclosureGroupView.self)
+    ExpoUIView(ExpoUI.ContentUnavailableView.self)
+    ExpoUIView(ExpoUI.ContextMenu.self)
+    ExpoUIView(FormView.self)
+    ExpoUIView(GaugeView.self)
+    ExpoUIView(GroupView.self)
+    ExpoUIView(HStackView.self)
+    ExpoUIView(ImageView.self)
+    ExpoUIView(LabelView.self)
+    ExpoUIView(ListView.self)
+    ExpoUIView(PickerView.self)
+    ExpoUIView(ExpoUI.ProgressView.self)
+    ExpoUIView(SectionView.self)
+    ExpoUIView(ShareLinkView.self)
+    ExpoUIView(SliderView.self)
+    ExpoUIView(SpacerView.self)
+    ExpoUIView(StepperView.self)
+    ExpoUIView(SwitchView.self)
+    ExpoUIView(TextView.self)
+    ExpoUIView(VStackView.self)
+    ExpoUIView(ZStackView.self)
+    ExpoUIView(GlassEffectContainerView.self)
+    ExpoUIView(LabeledContentView.self)
+    ExpoUIView(RectangleView.self)
+    ExpoUIView(RoundedRectangleView.self)
+    ExpoUIView(EllipseView.self)
+    ExpoUIView(UnevenRoundedRectangleView.self)
+    ExpoUIView(CapsuleView.self)
+    ExpoUIView(CircleView.self)
+    ExpoUIView(ConcentricRectangleView.self)
+    ExpoUIView(DividerView.self)
+    ExpoUIView(PopoverView.self)
   }
 }
