@@ -159,11 +159,6 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
 
         consumerFlavors.create(appFlavor.name).apply {
           this.dimension = dimension
-          appFlavor.applicationIdSuffix?.let { this.applicationIdSuffix = it }
-          appFlavor.versionNameSuffix?.let { this.versionNameSuffix = it }
-          if (appFlavor.manifestPlaceholders.isNotEmpty()) {
-            this.manifestPlaceholders.putAll(appFlavor.manifestPlaceholders)
-          }
         }
 
         project.logger.quiet("  -> Created flavor '${appFlavor.name}' (dimension='$dimension') in :${project.path}")

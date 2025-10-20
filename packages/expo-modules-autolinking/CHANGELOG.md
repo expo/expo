@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `library projects cannot set applicationIdSuffix`. ([#40477](https://github.com/expo/expo/pull/40477) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 3.0.17 — 2025-10-21
