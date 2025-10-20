@@ -57,11 +57,6 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
       }
     }, []);
 
-    const animate = {
-      transition: { type: 'tween' },
-      height: isOpen ? 'auto' : 0,
-    };
-
     return (
       <details
         ref={detailsRef}
@@ -112,7 +107,13 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           </LinkBase>
           <div />
         </summary>
-        <motion.div initial={false} animate={animate} className="overflow-hidden">
+        <motion.div
+          initial={false}
+          animate={{
+            transition: { type: 'tween' },
+            height: isOpen ? 'auto' : 0,
+          }}
+          className="overflow-hidden">
           <div
             className={mergeClasses('px-5 py-4', 'last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0')}>
             {children}

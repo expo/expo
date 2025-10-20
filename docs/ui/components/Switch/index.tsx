@@ -45,7 +45,7 @@ export function Switch({ value = false, size = 'md', onChange, disabled }: Props
         )}
         layout
         transition={{
-          type: 'linear',
+          ease: 'linear',
         }}
       />
     </ButtonBase>

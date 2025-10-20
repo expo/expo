@@ -56,12 +56,6 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
         setIsOpen(true);
       }
     }, [open]);
-
-    const animate = {
-      transition: { type: 'tween' },
-      height: isOpen ? 'auto' : 0,
-    };
-
     return (
       <details
         id={anchorId}
@@ -119,7 +113,13 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             </p>
           </div>
         </summary>
-        <motion.div initial={false} animate={animate} className="overflow-hidden">
+        <motion.div
+          initial={false}
+          animate={{
+            transition: { type: 'tween' },
+            height: isOpen ? 'auto' : 0,
+          }}
+          className="overflow-hidden">
           <div>{children}</div>
         </motion.div>
       </details>
