@@ -26,6 +26,7 @@
 - [iOS] Added `header` and `footer` props for sections, support for collapsible sections, and headerProminence modifier ([#40340](https://github.com/expo/expo/pull/40340) by [@doombladeoff](https://github.com/doombladeoff))
 - [iOS] Add new modifiers (`listRowInsets`, `listSectionMargins`, `badgeProminence`, `badge`) ([#40329](https://github.com/expo/expo/pull/40329) by [@doombladeoff](https://github.com/doombladeoff))
 - Add Interpolated string support in button ([#40416](https://github.com/expo/expo/pull/40416) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Add Grid component and modifiers `gridCellUnsizedAxes`, `gridCellColumns` ([#40485](https://github.com/expo/expo/pull/40485) by [@doombladeoff](https://github.com/doombladeoff))
 
 ### 🐛 Bug fixes
 
