@@ -20,7 +20,9 @@ export default function Page({
 
   return (
     <div className="bg-slate-100 rounded-xl flex flex-1 flex-col gap-8">
-      <p className="text-lg text-blue-900 font-medium">Top platform: {process.env.EXPO_TOP_OS}</p>
+      <p className="text-lg text-blue-900 font-medium">
+        Top platform: {process.env.EXPO_DOM_HOST_OS}
+      </p>
       <p
         className="text-lg text-blue-900 font-medium"
         onClick={() => {
