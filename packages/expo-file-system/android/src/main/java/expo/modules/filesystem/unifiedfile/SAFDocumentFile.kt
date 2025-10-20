@@ -72,7 +72,7 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
 
   override fun inputStream(): InputStream {
     return context.contentResolver.openInputStream(uri)
-      ?: throw IllegalStateException("Unable to open output stream for URI: $uri")
+      ?: throw IllegalStateException("Unable to open input stream for URI: $uri")
   }
 
   override fun length(): Long {
