@@ -78,6 +78,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
   external fun registerClass(
     name: String,
     prototypeDecorator: JSDecoratorsBridgingObject,
+    constructorDecorator: JSDecoratorsBridgingObject,
     takesOwner: Boolean,
     ownerClass: Class<*>?,
     isSharedRef: Boolean,
@@ -172,11 +173,16 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
   ) {
     trace("Attaching class $name") {
       val prototypeDecorator = JSDecoratorsBridgingObject(runtimeContext.jniDeallocator)
+      val constructorDecorator = JSDecoratorsBridgingObject(runtimeContext.jniDeallocator)
 
       prototypeDecorator.apply {
         objectDefinition.exportConstants()
         objectDefinition.exportFunctions(name, appContext)
         objectDefinition.exportProperties(appContext)
+      }
+
+      constructorDecorator.apply {
+        exportStaticFunctions(name, appContext)
       }
 
       val constructor = constructor
@@ -185,12 +191,26 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
       registerClass(
         name,
         prototypeDecorator,
+        constructorDecorator,
         constructor.takesOwner,
         ownerClass,
         isSharedRef,
         constructor.getCppRequiredTypes().toTypedArray(),
         constructor.getJNIFunctionBody(name, appContext)
       )
+    }
+  }
+
+  fun ClassDefinitionData.exportStaticFunctions(objectName: String, appContext: AppContext) {
+    val staticFunctions = staticFunctions
+    if (!staticFunctions.hasNext()) {
+      return
+    }
+
+    trace("Attaching static functions") {
+      staticFunctions.forEach { staticFunction ->
+        staticFunction.attachToJSObject(appContext, this@JSDecoratorsBridgingObject, objectName)
+      }
     }
   }
 
