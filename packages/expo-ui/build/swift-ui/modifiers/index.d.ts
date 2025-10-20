@@ -9,6 +9,12 @@ import { createModifier, ModifierConfig } from './createModifier';
 type NamedColor = 'primary' | 'secondary' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'white' | 'gray' | 'black' | 'clear' | 'mint' | 'teal' | 'cyan' | 'indigo' | 'brown';
 type Color = string | ColorValue | NamedColor;
 /**
+ * Sets the spacing between adjacent sections.
+ * @param spacing - The spacing to apply
+ * @platform ios 17.0+
+ */
+export declare const listSectionSpacing: (spacing: "default" | "compact" | number) => ModifierConfig;
+/**
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
  * @see https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)
@@ -526,10 +532,7 @@ export declare const lineSpacing: (value: number) => ModifierConfig;
 export declare const headerProminence: (prominence: "standard" | "increased") => ModifierConfig;
 /**
  * Applies an inset to the rows in a list.
- * @param top - The amount of inset to apply to the **top** edge of each row.
- * @param leading - The amount of inset to apply to the **leading (left)** edge of each row.
- * @param bottom - The amount of inset to apply to the **bottom** edge of each row.
- * @param trailing - The amount of inset to apply to the **trailing (right)** edge of each row.
+ * @param params - The inset to apply to the rows in a list.
  * @see https://developer.apple.com/documentation/swiftui/view/listrowinsets(_:)
  */
 export declare const listRowInsets: (params: {
@@ -553,9 +556,7 @@ export declare const badge: (value?: string) => ModifierConfig;
 /**
  * Allows a view to ignore safe area constraints.
  * @platform iOS 26+
- * @param length - An amount, given in points, to pad section on the specified edges.
- * @param edges - The edges to expand into ('all', 'top', 'bottom', 'leading', 'trailing', 'horizontal', 'vertical')
- * @default edges: 'all'
+ * @param params - The margins to apply to the section in a list.
  * @see https://developer.apple.com/documentation/swiftui/view/listsectionmargins(_:_:)
  */
 export declare const listSectionMargins: (params?: {
@@ -567,7 +568,7 @@ export declare const listSectionMargins: (params?: {
  * This provides type safety for the modifiers array.
  * @hidden
  */
-export type BuiltInModifier = ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof listRowBackground> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins>;
+export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof listRowBackground> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.

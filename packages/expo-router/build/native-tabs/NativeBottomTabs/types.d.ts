@@ -212,11 +212,17 @@ export interface NativeTabsProps extends PropsWithChildren {
     /**
      * The style of the every tab label in the tab bar.
      */
-    labelStyle?: NativeTabsLabelStyle;
+    labelStyle?: NativeTabsLabelStyle | {
+        default?: NativeTabsLabelStyle;
+        selected?: NativeTabsLabelStyle;
+    };
     /**
      * The color of every tab icon in the tab bar.
      */
-    iconColor?: ColorValue;
+    iconColor?: ColorValue | {
+        default?: ColorValue;
+        selected?: ColorValue;
+    };
     /**
      * The tint color of the tab icon.
      *

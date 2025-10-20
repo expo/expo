@@ -11,7 +11,7 @@ final class TypedArraysSpec: ExpoSpec {
       let runtime = try! appContext.runtime
 
       beforeSuite {
-        appContext.moduleRegistry.register(moduleType: TypedArraysModule.self)
+        appContext.moduleRegistry.register(moduleType: TypedArraysModule.self, name: "TypedArrays")
       }
 
       // Gets the value at index 3 from the array

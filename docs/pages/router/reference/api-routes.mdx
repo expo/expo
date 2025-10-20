@@ -217,8 +217,16 @@ Route handlers are executed in a sandboxed environment that is isolated from the
 
 ## Deployment
 
-When you're ready to deploy to production, run [`npx expo export --platform web`](/more/expo-cli#exporting) to create the server bundle in the **dist** directory. This server can be tested locally with `npx expo serve` (available in Expo SDK 52 and later), visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
+When you're ready to deploy to production, run the following command to create the server bundle in the **dist** directory (see the [Expo CLI documentation](/more/expo-cli#exporting) for more details):
+
+<Terminal cmd={['$ npx expo export --platform web']} />
+
+This server can be tested locally with `npx expo serve` (available in Expo SDK 52 and later), visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
 You can deploy the server for production using [EAS Hosting](/eas/hosting/get-started) or another third-party service.
+
+If you want to export API routes and skip generating a website version of your app, you can use the following command, which will generate a **dist** directory containing only the server code of your project.
+
+<Terminal cmd={['$ npx expo export --platform web --no-ssg']} />
 
 <BoxLink
   title="Deploy instantly with EAS"

@@ -132,11 +132,9 @@ it('navigating to the same route with a hash will only rerender the screen', () 
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => router.navigate('/?#hash1'));

@@ -34,6 +34,7 @@ export declare const StoreContext: import("react").Context<{
     readonly linking: import("../getLinkingConfig").ExpoLinkingOptions | undefined;
     setFocusedState(state: import("./router-store").FocusedRouteState): void;
     onReady(): void;
+    onStateChange(newState: import("./router-store").ReactNavigationState | undefined): void;
     assertIsReady(): void;
 } | null>;
 export declare const useExpoRouterStore: () => {
@@ -72,6 +73,7 @@ export declare const useExpoRouterStore: () => {
     readonly linking: import("../getLinkingConfig").ExpoLinkingOptions | undefined;
     setFocusedState(state: import("./router-store").FocusedRouteState): void;
     onReady(): void;
+    onStateChange(newState: import("./router-store").ReactNavigationState | undefined): void;
     assertIsReady(): void;
 };
 //# sourceMappingURL=storeContext.d.ts.map

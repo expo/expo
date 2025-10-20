@@ -146,6 +146,15 @@ export function getUpdatesUseEmbeddedUpdate(config: Pick<ExpoConfigUpdates, 'upd
   return true;
 }
 
+export function getUpdatesBsdiffPatchSupportEnabled(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): boolean {
+  if (config.updates?.enableBsdiffPatchSupport !== undefined) {
+    return config.updates.enableBsdiffPatchSupport;
+  }
+  return true;
+}
+
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {
   return config.updates?.fallbackToCacheTimeout ?? 0;
 }

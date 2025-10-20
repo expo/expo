@@ -50,11 +50,15 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...
     if ((0, react_1.use)(exports.NativeTabsContext)) {
         throw new Error('Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.');
     }
+    const selectedLabelStyle = (0, utils_1.convertLabelStylePropToObject)(rest.labelStyle).selected;
+    const selectedIconColor = (0, utils_1.convertIconColorPropToObject)(rest.iconColor).selected;
     const builder = (0, native_1.useNavigationBuilder)(NativeBottomTabsRouter_1.NativeBottomTabsRouter, {
         children,
         backBehavior,
         screenOptions: {
             disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
+            selectedLabelStyle,
+            selectedIconColor,
         },
     });
     const { state, descriptors, NavigationContent } = builder;

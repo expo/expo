@@ -116,6 +116,7 @@ void JSDecoratorsBridgingObject::registerObject(
 void JSDecoratorsBridgingObject::registerClass(
   jni::alias_ref<jstring> name,
   jni::alias_ref<JSDecoratorsBridgingObject::javaobject> jsDecoratorsBridgingObject,
+  jni::alias_ref<JSDecoratorsBridgingObject::javaobject> jsDecoratorsConstructor,
   jboolean takesOwner,
   jni::alias_ref<jclass> ownerClass,
   jboolean isSharedRef,
@@ -129,6 +130,7 @@ void JSDecoratorsBridgingObject::registerClass(
   classDecorator->registerClass(
     name,
     jsDecoratorsBridgingObject,
+    jsDecoratorsConstructor,
     takesOwner,
     ownerClass,
     isSharedRef,

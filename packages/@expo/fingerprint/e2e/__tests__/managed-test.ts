@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import rimraf from 'rimraf';
 
-import getFingerprintHashFromCLIAsync from './utils/CLIUtils';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import {
   createFingerprintAsync,
   createProjectHashAsync,
