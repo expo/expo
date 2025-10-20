@@ -66,7 +66,7 @@ function getRoutes(contextModule, options = {}) {
                 return {
                     ...defaults,
                     loadRoute() {
-                        return require('./getRoutesRedirects').getRedirectModule(redirectConfig);
+                        return require('expo-router/build/getRoutesRedirects').getRedirectModule(redirectConfig);
                     },
                 };
             }
