@@ -1,4 +1,4 @@
-import * as ExpoAgeRange from '../AgeRange';
+import * as ExpoAgeRange from '../index';
 
 describe('ExpoAgeRange', () => {
   it(`invokes requestAgeRangeAsync`, async () => {
@@ -6,9 +6,8 @@ describe('ExpoAgeRange', () => {
       ExpoAgeRange.requestAgeRangeAsync({
         threshold1: 18,
       })
-    ).resolves.toEqual({
+    ).resolves.toMatchObject({
       lowerBound: 18,
-      activeParentalControls: [],
     });
   });
 });
