@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix libraries copying `ImmutableRequest`s via `new Request(url, immutableRequest)` failing with immutability errors ([#40494](https://github.com/expo/expo/pull/40494) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 1.0.1 — 2025-10-09
