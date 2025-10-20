@@ -33,7 +33,7 @@ function App() {
     "var _jsxDevRuntime = require("react/jsx-dev-runtime");var _jsxFileName = "/unknown";
     function App() {
       return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)("div", {}, void 0, false, { fileName: _jsxFileName, lineNumber: 3, columnNumber: 12 }, this);
-    }"
+    }_c = App;var _c;$RefreshReg$(_c, "App");"
   `);
 
   const productionOptions = {
@@ -91,7 +91,7 @@ describe('classic runtime', () => {
 
       export default function App() {
         return /*#__PURE__*/React.createElement(View, { __self: this, __source: { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 } });
-      }"
+      }_c = App;var _c;$RefreshReg$(_c, "App");"
     `);
   });
   it(`compiles for Webpack in prod`, () => {
@@ -201,7 +201,10 @@ it(`supports nested React components in destructured props in Metro + developmen
       return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(_jsxDevRuntime.Fragment, {
         children: button()
       }, void 0, false);
-    }"
+    }
+    _c = Foo;
+    var _c;
+    $RefreshReg$(_c, "Foo");"
   `);
 });
 
@@ -232,7 +235,7 @@ describe('auto runtime (default)', () => {
 
       export default function App() {
         return /*#__PURE__*/_jsxDEV(View, {}, void 0, false, { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 }, this);
-      }"
+      }_c = App;var _c;$RefreshReg$(_c, "App");"
     `);
   });
   it(`compiles for Webpack in prod`, () => {

@@ -65,7 +65,9 @@ function getBabelCaller({ filename, options, }) {
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot,
         isNodeModule,
-        isHMREnabled: options.hot,
+        // TODO(@kitten): Removed and the default; however, we set this to be always enabled to imitate the
+        // new default, in case this is used against an older version of `babel-preset-expo`
+        isHMREnabled: true,
         // Pass on the input type. Scripts shall be transformed to avoid dependencies (imports/requires),
         // for example by polyfills or Babel runtime
         metroSourceType: options.type,
