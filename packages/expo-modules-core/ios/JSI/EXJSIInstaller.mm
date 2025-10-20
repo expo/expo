@@ -53,8 +53,8 @@ static NSString *modulesHostObjectPropertyName = @"modules";
   }
 
   return [[EXRuntime alloc] initWithRuntime:jsiRuntime
-                                  callInvoker:bridge.jsCallInvoker
-                             runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
+                                callInvoker:bridge.jsCallInvoker
+                           runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
 }
 
 #if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
@@ -79,8 +79,8 @@ static NSString *modulesHostObjectPropertyName = @"modules";
   }
 
   return [[EXRuntime alloc] initWithRuntime:jsiRuntime
-                                  callInvoker:callInvoker
-                             runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
+                                callInvoker:callInvoker
+                           runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
 }
 #endif // React Native >=0.74
 
