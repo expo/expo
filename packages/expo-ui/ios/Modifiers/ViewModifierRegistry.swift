@@ -1165,6 +1165,48 @@ internal struct ListSectionMargins: ViewModifier, Record {
   }
 }
 
+internal enum AxisOptions: String, Enumerable {
+  case horizontal
+  case vertical
+}
+
+internal struct GridCellUnsizedAxes: ViewModifier, Record {
+  @Field var axes: AxisOptions?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let axes {
+        switch axes {
+        case .horizontal:
+          content.gridCellUnsizedAxes(.horizontal)
+        case .vertical:
+          content.gridCellUnsizedAxes(.vertical)
+        }
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal struct GridCellColumns: ViewModifier, Record {
+  @Field var count: Int?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let count {
+          content.gridCellColumns(count)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Registry
 
 /**
@@ -1553,6 +1595,14 @@ extension ViewModifierRegistry {
 
     register("headerProminence") { params, appContext, _ in
       return try HeaderProminence(from: params, appContext: appContext)
+    }
+
+    register("gridCellUnsizedAxes") { params, appContext, _ in
+      return try GridCellUnsizedAxes(from: params, appContext: appContext)
+    }
+
+    register("gridCellColumns") { params, appContext, _ in
+      return try GridCellColumns(from: params, appContext: appContext)
     }
   }
 }

@@ -78,5 +78,8 @@ public final class ExpoUIModule: Module {
     View(CircleView.self)
     View(ConcentricRectangleView.self)
     View(DividerView.self)
+    View(ExpoUI.GridView.self)
+    View(ExpoUI.GridRowView.self)
+    View(ExpoUI.GridContentView.self)
   }
 }

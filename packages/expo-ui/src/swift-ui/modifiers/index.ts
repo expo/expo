@@ -686,6 +686,19 @@ export const listSectionMargins = (params?: {
   length?: number;
   edges?: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical';
 }) => createModifier('listSectionMargins', params);
+/**
+ * Asks grid layouts not to offer the view extra size in the specified axes.
+ * @param axes - The dimensions in which the grid shouldn’t offer the view a share of any available space. This prevents a flexible view like a Spacer, Divider, or Color from defining the size of a row or column.
+ * @returns A view that doesn’t ask an enclosing grid for extra size in one or more axes.
+ */
+export const gridCellUnsizedAxes = (axes?: 'horizontal' | 'vertical') =>
+  createModifier('gridCellUnsizedAxes', { axes });
+/**
+ * Tells a view that acts as a cell in a grid to span the specified number of columns.
+ * @param count - The number of columns that the view should consume when placed in a grid row.
+ * @returns A view that occupies the specified number of columns in a grid row.
+ */
+export const gridCellColumns = (count?: number) => createModifier('gridCellColumns', { count });
 
 // =============================================================================
 // Type Definitions
@@ -757,7 +770,9 @@ export type BuiltInModifier =
   | ReturnType<typeof listRowInsets>
   | ReturnType<typeof badgeProminence>
   | ReturnType<typeof badge>
-  | ReturnType<typeof listSectionMargins>;
+  | ReturnType<typeof listSectionMargins>
+  | ReturnType<typeof gridCellUnsizedAxes>
+  | ReturnType<typeof gridCellColumns>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

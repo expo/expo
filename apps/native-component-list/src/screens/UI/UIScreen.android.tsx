@@ -138,6 +138,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./JetpackComposePrimitivesScreen'));
     },
   },
+  {
+    name: 'Grid component',
+    route: 'ui/grid',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GridScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
