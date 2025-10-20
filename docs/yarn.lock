@@ -7000,7 +7000,7 @@ __metadata:
     sitemap: "npm:^8.0.1"
     tailwindcss: "npm:^3.4.18"
     tippy.js: "npm:^6.3.7"
-    typescript: "npm:^5.9.3"
+    typescript: "npm:^5.8.3"
     unist-builder: "npm:^4.0.0"
     unist-util-visit: "npm:^5.0.0"
     user-agent-data-types: "npm:^0.4.2"
@@ -13841,7 +13841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.9.3":
+"typescript@npm:^5.8.3":
   version: 5.9.3
   resolution: "typescript@npm:5.9.3"
   bin:
@@ -13851,7 +13851,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.9.3#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>":
   version: 5.9.3
   resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
   bin:
