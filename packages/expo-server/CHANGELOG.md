@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix libraries copying `ImmutableRequest`s via `new Request(url, immutableRequest)` failing with immutability errors ([#40494](https://github.com/expo/expo/pull/40494) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Update tsdoc documentation ([#40128](https://github.com/expo/expo/pull/40128) by [@kitten](https://github.com/kitten))
