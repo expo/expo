@@ -14,7 +14,7 @@ import { renderRsc } from './rsc-renderer';
 
 declare const $$require_external: typeof require;
 
-const debug = require('debug')('expo:server:rsc-renderer');
+const debug = require('debug')('expo:router:server:rsc-renderer');
 
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map<string, any>();
