@@ -2,7 +2,6 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as React from 'react';
-import { getScreenIdForLinking } from 'test-suite/screens/getScreenIdForLinking';
 
 import { optionalRequire } from './routeBuilder';
 import { TabBackground } from '../components/TabBackground';
@@ -11,11 +10,12 @@ import getStackNavWithConfig from '../navigation/StackConfig';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
 import { BlobScreens } from '../screens/Blob/BlobScreen';
 import { CalendarsScreens } from '../screens/CalendarsScreen';
+import { apiScreensToListElements } from '../screens/ComponentListScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
-import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
+import { type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createNativeStackNavigator();
 
@@ -461,11 +461,7 @@ export const Screens: ScreenConfig[] = [
   ...CalendarsScreens,
 ];
 
-export const screenApiItems: ScreenApiItem[] = ScreensList.map((config) => ({
-  name: config.name,
-  route: '/apis/' + getScreenIdForLinking(config),
-  isAvailable: true,
-}));
+export const screenApiItems = apiScreensToListElements(ScreensList);
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
   const { theme } = useTheme();

@@ -1,5 +1,5 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 
 export const BlobScreens = [
   {
@@ -61,12 +61,6 @@ export const BlobScreens = [
 ];
 
 export default function BlobScreen() {
-  const apis: ListElement[] = BlobScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/apis/${screen.route}`,
-    };
-  });
+  const apis = apiScreensToListElements(BlobScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }
