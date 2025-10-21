@@ -48,6 +48,13 @@ function _sortObject() {
   };
   return data;
 }
+function _Paths() {
+  const data = require("../android/Paths");
+  _Paths = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const {
   readFile,
@@ -381,6 +388,54 @@ const defaultProviders = {
       }
       if (!styles.resources.$?.['xmlns:tools']) {
         styles.resources.$['xmlns:tools'] = 'http://schemas.android.com/tools';
+      }
+      return styles;
+    },
+    async write(filePath, {
+      modResults,
+      modRequest: {
+        introspect
+      }
+    }) {
+      if (introspect) return;
+      await (0, _XML().writeXMLAsync)({
+        path: filePath,
+        xml: modResults
+      });
+    }
+  }),
+  attrs: (0, _createBaseMod().provider)({
+    isIntrospective: true,
+    async getFilePath({
+      modRequest: {
+        projectRoot,
+        introspect
+      }
+    }) {
+      try {
+        return await (0, _Paths().getResourceXMLPathAsync)(projectRoot, {
+          name: 'attrs'
+        });
+      } catch (error) {
+        if (!introspect) {
+          throw error;
+        }
+      }
+      return '';
+    },
+    async read(filePath, config) {
+      let styles = {
+        resources: {}
+      };
+      try {
+        styles = await _android().Resources.readResourcesXMLAsync({
+          path: filePath,
+          fallback: `<?xml version="1.0" encoding="utf-8"?><resources></resources>`
+        });
+      } catch (error) {
+        if (!config.modRequest.introspect) {
+          throw error;
+        }
       }
       return styles;
     },

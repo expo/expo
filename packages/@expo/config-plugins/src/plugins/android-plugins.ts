@@ -122,6 +122,20 @@ export const withAndroidStyles: ConfigPlugin<Mod<Resources.ResourceXML>> = (conf
 };
 
 /**
+ * Provides the `android/app/src/main/res/values/attrs.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
+ *
+ * @param config
+ * @param action
+ */
+export const withAndroidAttrs: ConfigPlugin<Mod<Resources.ResourceXML>> = (config, action) => {
+  return withMod(config, {
+    platform: 'android',
+    mod: 'attrs',
+    action,
+  });
+};
+
+/**
  * Provides the project MainActivity for modification.
  *
  * @param config

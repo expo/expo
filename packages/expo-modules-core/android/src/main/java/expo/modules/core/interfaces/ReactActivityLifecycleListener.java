@@ -41,4 +41,6 @@ public interface ReactActivityLifecycleListener {
    * This method is called when the {@link Activity#setContentView} method is invoked on an Activity.
    */
   default void onContentChanged(Activity activity) {}
+
+  default void onConfigurationChanged(Activity activity) {}
 }

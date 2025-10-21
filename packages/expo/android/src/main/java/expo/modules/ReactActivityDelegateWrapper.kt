@@ -383,6 +383,7 @@ class ReactActivityDelegateWrapper(
   override fun onConfigurationChanged(newConfig: Configuration) {
     launchLifecycleScopeWithLock {
       loadAppReady.await()
+      reactActivityLifecycleListeners.forEach { listener -> listener.onConfigurationChanged(activity) }
       delegate.onConfigurationChanged(newConfig)
     }
   }

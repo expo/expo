@@ -323,6 +323,10 @@ export interface ExpoConfig {
      * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
      */
     reactServerFunctions?: boolean;
+    /**
+     * Enable Material3 Dynamic Colors theme on Android 12+ devices.
+     */
+    material3DynamicColorsTheme?: boolean;
   };
   /**
    * Internal properties for developer tools

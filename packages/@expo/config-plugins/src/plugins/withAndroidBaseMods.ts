@@ -7,6 +7,7 @@ import { Colors, Manifest, Paths, Properties, Resources, Strings, Styles } from 
 import { AndroidManifest } from '../android/Manifest';
 import { parseXMLAsync, writeXMLAsync } from '../utils/XML';
 import { reverseSortString, sortObject, sortObjWithOrder } from '../utils/sortObject';
+import { getResourceXMLPathAsync } from '../android/Paths';
 
 const { readFile, writeFile } = promises;
 
@@ -273,6 +274,40 @@ const defaultProviders = {
       if (!styles.resources.$?.['xmlns:tools']) {
         styles.resources.$['xmlns:tools'] = 'http://schemas.android.com/tools';
       }
+      return styles;
+    },
+    async write(filePath, { modResults, modRequest: { introspect } }) {
+      if (introspect) return;
+      await writeXMLAsync({ path: filePath, xml: modResults });
+    },
+  }),
+  attrs: provider<Resources.ResourceXML>({
+    isIntrospective: true,
+
+    async getFilePath({ modRequest: { projectRoot, introspect } }) {
+      try {
+        return await getResourceXMLPathAsync(projectRoot, { name: 'attrs' });
+      } catch (error: any) {
+        if (!introspect) {
+          throw error;
+        }
+      }
+      return '';
+    },
+    async read(filePath, config) {
+      let styles: Resources.ResourceXML = { resources: {} };
+
+      try {
+        styles = await Resources.readResourcesXMLAsync({
+          path: filePath,
+          fallback: `<?xml version="1.0" encoding="utf-8"?><resources></resources>`,
+        });
+      } catch (error: any) {
+        if (!config.modRequest.introspect) {
+          throw error;
+        }
+      }
+
       return styles;
     },
     async write(filePath, { modResults, modRequest: { introspect } }) {

@@ -17,6 +17,12 @@ class SystemUIReactActivityLifecycleListener : ReactActivityLifecycleListener {
     SystemUI.setUserInterfaceStyle(getUserInterfaceStyle(activity))
   }
 
+  override fun onConfigurationChanged(activity: Activity?) {
+    if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      DynamicColors.applyToActivityIfAvailable(activity)
+    }
+  }
+
 
   private fun getUserInterfaceStyle(context: Context): String =
     context.getString(R.string.expo_system_ui_user_interface_style).lowercase()

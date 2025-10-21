@@ -12,6 +12,7 @@ declare const defaultProviders: {
     colors: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     colorsNight: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     styles: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    attrs: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     projectBuildGradle: import("./createBaseMod").BaseModProviderMethods<Paths.GradleProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     settingsGradle: import("./createBaseMod").BaseModProviderMethods<Paths.GradleProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     appBuildGradle: import("./createBaseMod").BaseModProviderMethods<Paths.GradleProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
@@ -31,6 +32,7 @@ export declare function getAndroidModFileProviders(): {
     colors: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     colorsNight: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     styles: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    attrs: import("./createBaseMod").BaseModProviderMethods<Resources.ResourceXML, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     projectBuildGradle: import("./createBaseMod").BaseModProviderMethods<Paths.GradleProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     settingsGradle: import("./createBaseMod").BaseModProviderMethods<Paths.GradleProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     appBuildGradle: import("./createBaseMod").BaseModProviderMethods<Paths.GradleProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
