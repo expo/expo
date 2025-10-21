@@ -42,15 +42,6 @@ const GridRowNativeView: React.ComponentType<{ children: React.ReactNode }> = re
   'GridRowView'
 );
 
-const GridConentNativeView: React.ComponentType<{ children: React.ReactNode }> = requireNativeView(
-  'ExpoUI',
-  'GridContentView'
-);
-
-const GridContentView: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <GridConentNativeView>{children}</GridConentNativeView>;
-};
-
 const GridRow: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <GridRowNativeView>{children}</GridRowNativeView>;
 };
@@ -68,7 +59,7 @@ export function Grid(props: GridProps) {
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      <GridContentView>{children}</GridContentView>
+      {children}
     </GridNativeView>
   );
 }

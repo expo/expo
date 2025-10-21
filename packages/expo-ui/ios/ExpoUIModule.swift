@@ -80,6 +80,5 @@ public final class ExpoUIModule: Module {
     View(DividerView.self)
     View(ExpoUI.GridView.self)
     View(ExpoUI.GridRowView.self)
-    View(ExpoUI.GridContentView.self)
   }
 }
