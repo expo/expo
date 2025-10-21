@@ -22,7 +22,7 @@ function ScrollViewStyleReset() {
             __html: `#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}`,
         }}/>);
 }
-function InnerRoot({ children, loadedData }) {
+function InnerRoot({ children, loadedData, }) {
     const ref = react_1.default.createRef();
     return (<ServerDataLoaderContext_1.ServerDataLoaderContext value={loadedData}>
       <native_1.ServerContainer ref={ref}>{children}</native_1.ServerContainer>

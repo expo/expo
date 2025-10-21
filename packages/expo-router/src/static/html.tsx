@@ -7,7 +7,7 @@
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
 import React, { PropsWithChildren } from 'react';
 
-import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
+import { ServerDataLoaderContext, ServerDataLoaderData } from '../loaders/ServerDataLoaderContext';
 
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
@@ -23,7 +23,10 @@ export function ScrollViewStyleReset() {
   );
 }
 
-export function InnerRoot({ children, loadedData }: PropsWithChildren<{ loadedData: any }>) {
+export function InnerRoot({
+  children,
+  loadedData,
+}: PropsWithChildren<{ loadedData: ServerDataLoaderData }>) {
   const ref = React.createRef<ServerContainerRef>();
 
   return (
