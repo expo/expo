@@ -40,7 +40,6 @@
     "react-dom": "*",
     "react-native-web": "*",
     "expo": "*",
-    "expo-constants": "^18.0.9",
     "expo-font": "*",
     "expo-router": "*",
     "expo-server": "*",
