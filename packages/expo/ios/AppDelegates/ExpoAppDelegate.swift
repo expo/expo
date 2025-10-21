@@ -66,6 +66,10 @@ open class ExpoAppDelegate: NSObject, UIApplicationDelegate {
   open func applicationWillTerminate(_ application: UIApplication) {
     ExpoAppDelegateSubscriberManager.applicationWillTerminate(application)
   }
+  
+  open func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+    ExpoAppDelegateSubscriberManager.applicationDidReceiveMemoryWarning(application)
+  }
 
 #elseif os(macOS)
   @objc
@@ -89,6 +93,10 @@ open class ExpoAppDelegate: NSObject, UIApplicationDelegate {
 
   open func applicationWillTerminate(_ notification: Notification) {
     ExpoAppDelegateSubscriberManager.applicationWillTerminate(notification)
+  }
+  
+  open func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+    ExpoAppDelegateSubscriberManager.applicationDidReceiveMemoryWarning(application)
   }
 #endif
 

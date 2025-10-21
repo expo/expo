@@ -103,6 +103,13 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
       .subscribers
       .forEach { $0.applicationWillTerminate?(application) }
   }
+  
+  @objc
+  public static func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+    ExpoAppDelegateSubscriberRepository
+      .subscribers
+      .forEach { $0.applicationDidReceiveMemoryWarning?(application) }
+  }
 
 #elseif os(macOS)
   @objc
@@ -138,6 +145,13 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationWillTerminate?(notification) }
+  }
+  
+  @objc
+  public static func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+    ExpoAppDelegateSubscriberRepository
+      .subscribers
+      .forEach { $0.applicationDidReceiveMemoryWarning?(application) }
   }
 #endif
 
