@@ -4,7 +4,8 @@
   "description": "Test suite for the Expo SDK",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "author": "",
   "license": "MIT",
