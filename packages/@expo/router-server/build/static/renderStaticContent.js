@@ -45,18 +45,17 @@ exports.getStaticContent = getStaticContent;
  * LICENSE file in the root directory of this source tree.
  */
 require("@expo/metro-runtime");
-const native_1 = require("@react-navigation/native");
 const Font = __importStar(require("expo-font/build/server"));
 const expo_router_1 = require("expo-router");
 const _ctx_1 = require("expo-router/_ctx");
-const ServerDataLoaderContext_1 = require("expo-router/build/loaders/ServerDataLoaderContext");
+const html_1 = require("expo-router/build/static/html");
 const head_1 = __importDefault(require("expo-router/head"));
 const react_1 = __importDefault(require("react"));
 const server_node_1 = __importDefault(require("react-dom/server.node"));
 // @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)
 const react_native_web_1 = require("react-native-web");
 const getRootComponent_1 = require("./getRootComponent");
-const html_1 = require("./html");
+const html_2 = require("./html");
 const debug = require('debug')('expo:router:server:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => expo_router_1.ExpoRoot);
 function resetReactNavigationContexts() {
@@ -69,7 +68,6 @@ function resetReactNavigationContexts() {
 }
 async function getStaticContent(location, options) {
     const headContext = {};
-    const ref = react_1.default.createRef();
     const { 
     // NOTE: The `element` that's returned adds two extra Views and
     // the seemingly unused `RootTagContext.Provider`.
@@ -91,9 +89,7 @@ async function getStaticContent(location, options) {
     resetReactNavigationContexts();
     const loadedData = options?.loader?.data ? { [location.pathname]: options.loader.data } : null;
     const html = await server_node_1.default.renderToString(<head_1.default.Provider context={headContext}>
-      <ServerDataLoaderContext_1.ServerDataLoaderContext value={loadedData}>
-        <native_1.ServerContainer ref={ref}>{element}</native_1.ServerContainer>
-      </ServerDataLoaderContext_1.ServerDataLoaderContext>
+      <html_1.InnerRoot loadedData={loadedData}>{element}</html_1.InnerRoot>
     </head_1.default.Provider>);
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
     const css = server_node_1.default.renderToStaticMarkup(getStyleElement());
@@ -105,7 +101,7 @@ async function getStaticContent(location, options) {
     // Inject static fonts loaded with expo-font
     output = output.replace('</head>', `${fonts.join('')}</head>`);
     if (loadedData) {
-        const loaderDataScript = server_node_1.default.renderToStaticMarkup(<html_1.PreloadedDataScript data={loadedData}/>);
+        const loaderDataScript = server_node_1.default.renderToStaticMarkup(<html_2.PreloadedDataScript data={loadedData}/>);
         output = output.replace('</head>', `${loaderDataScript}</head>`);
     }
     return '<!DOCTYPE html>' + output;

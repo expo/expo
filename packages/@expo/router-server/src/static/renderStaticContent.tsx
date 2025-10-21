@@ -6,11 +6,10 @@
  */
 import '@expo/metro-runtime';
 
-import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
 import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
-import { ServerDataLoaderContext } from 'expo-router/build/loaders/ServerDataLoaderContext';
+import { InnerRoot } from 'expo-router/build/static/html';
 import Head from 'expo-router/head';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server.node';
@@ -46,8 +45,6 @@ export async function getStaticContent(
 ): Promise<string> {
   const headContext: { helmet?: any } = {};
 
-  const ref = React.createRef<ServerContainerRef>();
-
   const {
     // NOTE: The `element` that's returned adds two extra Views and
     // the seemingly unused `RootTagContext.Provider`.
@@ -79,9 +76,7 @@ export async function getStaticContent(
 
   const html = await ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
-      <ServerDataLoaderContext value={loadedData}>
-        <ServerContainer ref={ref}>{element}</ServerContainer>
-      </ServerDataLoaderContext>
+      <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
     </Head.Provider>
   );
 
