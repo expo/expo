@@ -2,7 +2,6 @@ package expo.modules.filesystem
 
 import android.net.Uri
 import android.util.Base64
-import expo.modules.filesystem.legacy.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
