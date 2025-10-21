@@ -88,7 +88,7 @@ async function getStaticContent(location, options) {
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
     const loadedData = options?.loader?.data ? { [location.pathname]: options.loader.data } : null;
-    const html = await server_node_1.default.renderToString(<head_1.default.Provider context={headContext}>
+    const html = server_node_1.default.renderToString(<head_1.default.Provider context={headContext}>
       <html_1.InnerRoot loadedData={loadedData}>{element}</html_1.InnerRoot>
     </head_1.default.Provider>);
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order

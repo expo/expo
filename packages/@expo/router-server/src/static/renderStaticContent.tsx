@@ -74,7 +74,7 @@ export async function getStaticContent(
 
   const loadedData = options?.loader?.data ? { [location.pathname]: options.loader.data } : null;
 
-  const html = await ReactDOMServer.renderToString(
+  const html = ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
       <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
     </Head.Provider>
