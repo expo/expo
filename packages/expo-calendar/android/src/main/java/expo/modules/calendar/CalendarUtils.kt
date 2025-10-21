@@ -13,6 +13,17 @@ internal object CalendarUtils {
 
   /**
    * [SimpleDateFormat] used in native recurrence rule string.
+   * The format corresponds to the 'date-time' type defined by RFC-5455 section 3.3.5.
    */
-  val recurrenceRuleSDF = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
+  val recurrenceRuleSDF = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'").apply {
+    timeZone = TimeZone.getTimeZone("GMT")
+  }
+
+  /**
+   * [SimpleDateFormat] used in native recurrence rule string for all-day events.
+   * The format corresponds to the 'date' type defined by RFC-5455 section 3.3.4.
+   */
+  val allDayRecurrenceSDF = SimpleDateFormat("yyyyMMdd").apply {
+    timeZone = TimeZone.getTimeZone("GMT")
+  }
 }
