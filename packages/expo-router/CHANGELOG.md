@@ -30,6 +30,7 @@
 - Move state update logic from addListener to onStateChange ([#40261](https://github.com/expo/expo/pull/40261) by [@Ubax](https://github.com/Ubax))
 - Modify navigation action to compute target on action dispatch ([#39682](https://github.com/expo/expo/pull/39682) by [@Ubax](https://github.com/Ubax))
 - Migrate static rendering logic from `expo-router` to `@expo/router-server` ([#39374](https://github.com/expo/expo/pull/39374) by [@hassankhan](https://github.com/hassankhan))
+- Migrate RSC logic from `expo-router` to `@expo/router-server` ([#40484](https://github.com/expo/expo/pull/40484) by [@hassankhan](https://github.com/hassankhan))
 
 ## 6.0.9 - 2025-10-01
 
