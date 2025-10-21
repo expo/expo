@@ -699,6 +699,63 @@ export const gridCellUnsizedAxes = (axes?: 'horizontal' | 'vertical') =>
  * @returns A view that occupies the specified number of columns in a grid row.
  */
 export const gridCellColumns = (count?: number) => createModifier('gridCellColumns', { count });
+/**
+ * Overrides the default horizontal alignment of the grid column that the view appears in.
+ * @param alignment - The HorizontalAlignment guide to use for the grid column that the view appears in.
+ * @returns A view that uses the specified horizontal alignment, and that causes all cells in the same column of a grid to use the same alignment.
+ * @platform iOS 16+
+ */
+export const gridColumnAlignment = (
+  alignment?:
+    | 'leading'
+    | 'center'
+    | 'trailing'
+    | 'listRowSeparatorLeading'
+    | 'listRowSeparatorTrailing'
+) => createModifier('gridColumnAlignment', { alignment });
+/**
+ * Specifies a custom alignment anchor for a view that acts as a grid cell.
+ * @param anchor - The unit point that defines how to align the view within the bounds of its grid cell.
+ * @returns A view that uses the specified anchor point to align its content.
+ * @platform iOS 16+
+ *
+ * @example
+ * ```tsx
+ * // Using a preset anchor
+ * <Rectangle
+ *   modifiers={[
+ *     gridCellAnchor({ type: 'preset', anchor: 'center' }),
+ *   ]}
+ * />
+ *
+ * // Using a custom anchor point
+ * <Rectangle
+ *   modifiers={[
+ *     gridCellAnchor({ type: 'custom', points: { x: 0.3, y: 0.8 } }),
+ *   ]}
+ * />
+ * ```
+ */
+export const gridCellAnchor = (
+  anchor:
+    | {
+        type: 'preset';
+        anchor:
+          | 'zero'
+          | 'leading'
+          | 'center'
+          | 'trailing'
+          | 'topLeading'
+          | 'top'
+          | 'topTrailing'
+          | 'bottomLeading'
+          | 'bottom'
+          | 'bottomTrailing'
+          | 'listRowSeparatorLeading'
+          | 'listRowSeparatorTrailing';
+      }
+    | { type: 'custom'; points: { x: number; y: number } }
+) => createModifier('gridCellAnchor', anchor);
 
 // =============================================================================
 // Type Definitions
@@ -772,7 +829,9 @@ export type BuiltInModifier =
   | ReturnType<typeof badge>
   | ReturnType<typeof listSectionMargins>
   | ReturnType<typeof gridCellUnsizedAxes>
-  | ReturnType<typeof gridCellColumns>;
+  | ReturnType<typeof gridCellColumns>
+  | ReturnType<typeof gridColumnAlignment>
+  | ReturnType<typeof gridCellAnchor>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
