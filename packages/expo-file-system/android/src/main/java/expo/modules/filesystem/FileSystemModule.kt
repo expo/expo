@@ -6,6 +6,8 @@ import android.os.Build
 import android.util.Base64
 import android.webkit.URLUtil
 import androidx.annotation.RequiresApi
+import expo.modules.filesystem.unifiedfile.JavaFile
+import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.apifeatures.EitherType
@@ -19,7 +21,6 @@ import expo.modules.kotlin.types.Either
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
-import java.io.FileOutputStream
 import java.net.URI
 import java.util.EnumSet
 
@@ -73,22 +74,25 @@ class FileSystemModule : Module() {
       val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
 
       val destination = if (to is FileSystemDirectory) {
-        File(to.javaFile, fileName)
+        if (to.file is JavaFile) {
+          JavaFile(to.file.uri.buildUpon().appendPath(fileName).build())
+        } else {
+          to.file.createFile(contentType ?: "text/plain", fileName) ?: throw UnableToCreateException("file could not be created")
+        }
       } else {
-        to.javaFile
+        to.file
       }
 
-      if (options?.idempotent != true && destination.exists()) {
+      // SAFDocumentFile auto-resolves filename conflicts by appending a number, so we ignore idempotent in that case.
+      if (options?.idempotent != true && destination.exists() && destination !is SAFDocumentFile) {
         throw DestinationAlreadyExistsException()
       }
 
       val body = response.body ?: throw UnableToDownloadException("response body is null")
       body.byteStream().use { input ->
-        FileOutputStream(destination).use { output ->
-          input.copyTo(output)
-        }
+        input.copyTo(destination.outputStream())
       }
-      return@Coroutine destination.toURI()
+      return@Coroutine destination.uri
     }
 
     lateinit var filePickerLauncher: AppContextActivityResultLauncher<FilePickerContractOptions, FilePickerContractResult>
