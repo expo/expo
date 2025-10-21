@@ -47,7 +47,7 @@ const GridConentNativeView: React.ComponentType<{ children: React.ReactNode }> =
   'GridContentView'
 );
 
-const GridContentiew: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const GridContentView: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <GridConentNativeView>{children}</GridConentNativeView>;
 };
 
@@ -68,7 +68,7 @@ export function Grid(props: GridProps) {
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      <GridContentiew>{children}</GridContentiew>
+      <GridContentView>{children}</GridContentView>
     </GridNativeView>
   );
 }

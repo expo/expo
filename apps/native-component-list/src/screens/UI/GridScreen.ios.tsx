@@ -25,7 +25,9 @@ import {
 } from '@expo/ui/swift-ui/modifiers';
 import { Image as ExpoImage } from 'expo-image';
 import * as React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
+
+type AnchorType = 'custom' | 'preset';
 
 export default function GridScreen() {
   const gridCellAxesOptions = ['vertical', 'horizontal'] as const;
@@ -82,7 +84,7 @@ export default function GridScreen() {
   const [gridAnchor, setGridAnchor] = React.useState({ x: 0.25, y: 0.25 });
   const [alignmentIndex, setAlignmentIndex] = React.useState(0);
   const [anchorIndex, setAnchorIndex] = React.useState(0);
-  const [anchorType, setAnchorType] = React.useState(0);
+  const [anchorType, setAnchorType] = React.useState<AnchorType>('custom');
   const [disclosureGroupExpanded, setDisclosureGroupExpanded] = React.useState<{
     example1: boolean;
     example2: boolean;
@@ -188,123 +190,130 @@ export default function GridScreen() {
             <Text size={16} weight="bold">
               Grid settings
             </Text>
-            {['Horizontal', 'Vertical'].map((axis, idx) => (
-              <HStack key={axis} spacing={30}>
-                <Text>{`${axis}: ${axis === 'Horizontal' ? gridSpacing.horizontal.toFixed(1) : gridSpacing.vertical.toFixed(1)}`}</Text>
-                <Spacer minLength={40} />
-                <Slider
-                  min={0}
-                  max={10}
-                  value={axis === 'Horizontal' ? gridSpacing.horizontal : gridSpacing.vertical}
-                  onValueChange={(v) =>
-                    setGridSpacing((prev) => ({
-                      ...prev,
-                      [axis.toLowerCase()]: v,
-                    }))
-                  }
-                />
-              </HStack>
-            ))}
+            <VStack
+              alignment="center"
+              modifiers={[background('white'), clipShape('roundedRectangle')]}>
+              <VStack modifiers={[padding({ all: 5 })]} alignment="center" spacing={20}>
+                {(['horizontal', 'vertical'] as const).map((axis) => (
+                  <HStack key={axis} spacing={30} alignment="center">
+                    <Text>{`${axis}: ${gridSpacing[axis].toFixed(1)}`}</Text>
+                    <Spacer minLength={40} />
+                    <Slider
+                      min={0}
+                      max={10}
+                      value={gridSpacing[axis]}
+                      onValueChange={(v) => setGridSpacing((prev) => ({ ...prev, [axis]: v }))}
+                    />
+                  </HStack>
+                ))}
+                <HStack>
+                  <Text>Alignment</Text>
+                  <Spacer />
+                  <Picker
+                    options={[...alignmentOptions]}
+                    selectedIndex={alignmentIndex}
+                    onOptionSelected={(e) => setAlignmentIndex(e.nativeEvent.index)}
+                    variant="menu"
+                  />
+                </HStack>
 
-            <HStack>
-              <Text>Alignment</Text>
-              <Spacer />
-              <Picker
-                options={[...alignmentOptions]}
-                selectedIndex={alignmentIndex}
-                onOptionSelected={(e) => setAlignmentIndex(e.nativeEvent.index)}
-                variant="menu"
-              />
-            </HStack>
-          </VStack>
-
-          {/* Colored Rectangles Grid */}
-          <HStack modifiers={[background('lightgray'), clipShape('roundedRectangle')]}>
-            <Grid
-              alignment={alignmentOptions[alignmentIndex]}
-              verticalSpacing={gridSpacing.vertical}
-              horizontalSpacing={gridSpacing.horizontal}
-              modifiers={[padding({ all: 5 })]}>
-              {renderRectangleRow('Row 1', 2, 'red')}
-              {renderRectangleRow('Row 2', 5, 'green')}
-              {renderRectangleRow('Row 3', 4, 'blue')}
-            </Grid>
-          </HStack>
-
-          {/* Example small Grid */}
-          <VStack alignment="leading">
-            <Text weight="bold">Anchor</Text>
-            <Picker
-              variant="segmented"
-              options={['Custom', 'Preset']}
-              selectedIndex={anchorType}
-              onOptionSelected={(event) => setAnchorType(event.nativeEvent.index)}
-            />
-            <VStack alignment="center">
-              {anchorType === 0 ? (
-                <Picker
-                  options={[...anchorOptions]}
-                  onOptionSelected={(event) => setAnchorIndex(event.nativeEvent.index)}
-                  selectedIndex={anchorIndex}
-                  variant="menu"
-                />
-              ) : (
-                <VStack>
-                  {['X', 'Y'].map((anchor, idx) => (
-                    <HStack key={anchor} spacing={30}>
-                      <Text>{`${anchor}: ${anchor === 'X' ? gridAnchor.x.toFixed(2) : gridAnchor.y.toFixed(2)}`}</Text>
-                      <Spacer minLength={40} />
-                      <Slider
-                        min={0}
-                        max={1}
-                        value={anchor === 'X' ? gridAnchor.x : gridAnchor.y}
-                        onValueChange={(v) =>
-                          setGridAnchor((prev) => ({
-                            ...prev,
-                            [anchor.toLowerCase()]: v,
-                          }))
-                        }
-                      />
-                    </HStack>
-                  ))}
-                </VStack>
-              )}
+                {/* Colored Rectangles Grid */}
+                <HStack modifiers={[background('lightgray'), clipShape('roundedRectangle')]}>
+                  <Grid
+                    alignment={alignmentOptions[alignmentIndex]}
+                    verticalSpacing={gridSpacing.vertical}
+                    horizontalSpacing={gridSpacing.horizontal}
+                    modifiers={[padding({ all: 5 })]}>
+                    {renderRectangleRow('Row 1', 2, 'red')}
+                    {renderRectangleRow('Row 2', 5, 'green')}
+                    {renderRectangleRow('Row 3', 4, 'blue')}
+                  </Grid>
+                </HStack>
+              </VStack>
             </VStack>
           </VStack>
-          <Grid alignment="center" horizontalSpacing={1} verticalSpacing={1}>
-            <Grid.Row>
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Rectangle
-                  key={i}
-                  modifiers={[
-                    foregroundStyle({ type: 'color', color: 'red' }),
-                    frame({ width: 60, height: 60 }),
-                  ]}
+
+          {/* Example small Grid */}
+          <VStack alignment="leading" spacing={5}>
+            <Text weight="bold">Anchor</Text>
+            <VStack
+              alignment="leading"
+              modifiers={[background('white'), clipShape('roundedRectangle')]}>
+              <VStack modifiers={[padding({ all: 5 })]} alignment="center" spacing={20}>
+                <Picker
+                  variant="segmented"
+                  options={['Custom', 'Preset']}
+                  selectedIndex={anchorType === 'custom' ? 0 : 1}
+                  onOptionSelected={({ nativeEvent }) =>
+                    setAnchorType(nativeEvent.index === 0 ? 'custom' : 'preset')
+                  }
                 />
-              ))}
-            </Grid.Row>
-            <Grid.Row>
-              <Rectangle
-                modifiers={[
-                  foregroundStyle({ type: 'color', color: 'red' }),
-                  frame({ width: 60, height: 60 }),
-                ]}
-              />
-              <Rectangle
-                modifiers={[
-                  gridCellColumns(2),
-                  foregroundStyle({ type: 'color', color: 'blue' }),
-                  frame({ width: 10, height: 10 }),
-                  anchorType === 1
-                    ? gridCellAnchor({
-                        type: 'custom',
-                        points: { x: gridAnchor.x, y: gridAnchor.y },
-                      })
-                    : gridCellAnchor({ type: 'preset', anchor: anchorOptions[anchorIndex] }),
-                ]}
-              />
-            </Grid.Row>
-          </Grid>
+                <VStack alignment="center">
+                  {anchorType === 'preset' ? (
+                    <Picker
+                      options={[...anchorOptions]}
+                      onOptionSelected={(event) => setAnchorIndex(event.nativeEvent.index)}
+                      selectedIndex={anchorIndex}
+                      variant="menu"
+                    />
+                  ) : (
+                    <VStack spacing={12}>
+                      {(['x', 'y'] as const).map((anchor) => (
+                        <HStack key={anchor} spacing={30} alignment="center">
+                          <Text>{`${anchor.toUpperCase()}: ${gridAnchor[anchor].toFixed(2)}`}</Text>
+                          <Spacer minLength={40} />
+                          <Slider
+                            min={0}
+                            max={1}
+                            value={gridAnchor[anchor]}
+                            onValueChange={(v) =>
+                              setGridAnchor((prev) => ({ ...prev, [anchor]: v }))
+                            }
+                          />
+                        </HStack>
+                      ))}
+                    </VStack>
+                  )}
+                </VStack>
+                <Grid alignment="center" horizontalSpacing={1} verticalSpacing={1}>
+                  <Grid.Row>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <Rectangle
+                        key={i}
+                        modifiers={[
+                          foregroundStyle({ type: 'color', color: 'red' }),
+                          frame({ width: 60, height: 60 }),
+                        ]}
+                      />
+                    ))}
+                  </Grid.Row>
+                  <Grid.Row>
+                    <Rectangle
+                      modifiers={[
+                        foregroundStyle({ type: 'color', color: 'red' }),
+                        frame({ width: 60, height: 60 }),
+                      ]}
+                    />
+                    <Rectangle
+                      modifiers={[
+                        gridCellColumns(2),
+                        foregroundStyle({ type: 'color', color: 'blue' }),
+                        frame({ width: 10, height: 10 }),
+                        anchorType === 'custom'
+                          ? gridCellAnchor({
+                              type: 'custom',
+                              points: { x: gridAnchor.x, y: gridAnchor.y },
+                            })
+                          : gridCellAnchor({ type: 'preset', anchor: anchorOptions[anchorIndex] }),
+                      ]}
+                    />
+                  </Grid.Row>
+                </Grid>
+              </VStack>
+            </VStack>
+          </VStack>
+
+          {/* Example 1 */}
           <DisclosureGroup
             onStateChange={(v) => setDisclosureGroupExpanded((prev) => ({ ...prev, example1: v }))}
             isExpanded={disclosureGroupExpanded.example1}
@@ -323,29 +332,13 @@ export default function GridScreen() {
                     <HStack spacing={10} alignment="top" modifiers={[frame({ height: 300 })]}>
                       {index % 2 === 0 ? (
                         <HStack spacing={10}>
-                          <ExpoImage
-                            source={item.img}
-                            style={{
-                              height: 300,
-                              width: 250,
-                              borderRadius: 12,
-                              objectFit: 'cover',
-                            }}
-                          />
+                          <ExpoImage source={item.img} style={styles.imageExaple1} />
                           <Text>{item.description}</Text>
                         </HStack>
                       ) : (
                         <HStack spacing={10}>
                           <Text>{item.description}</Text>
-                          <ExpoImage
-                            source={item.img}
-                            style={{
-                              height: 300,
-                              width: 250,
-                              borderRadius: 12,
-                              objectFit: 'cover',
-                            }}
-                          />
+                          <ExpoImage source={item.img} style={styles.imageExaple1} />
                         </HStack>
                       )}
                     </HStack>
@@ -355,6 +348,8 @@ export default function GridScreen() {
               ))}
             </Grid>
           </DisclosureGroup>
+
+          {/* Example 2 */}
           <DisclosureGroup
             onStateChange={(v) => setDisclosureGroupExpanded((prev) => ({ ...prev, example2: v }))}
             isExpanded={disclosureGroupExpanded.example2}
@@ -362,15 +357,7 @@ export default function GridScreen() {
             <Grid verticalSpacing={5} horizontalSpacing={5} alignment="center">
               <Grid.Row>
                 <HStack modifiers={[frame({ height: 100 }), gridCellColumns(4)]}>
-                  <ExpoImage
-                    source={items[1].img}
-                    style={{
-                      height: 100,
-                      width: '100%',
-                      borderRadius: 12,
-                      objectFit: 'cover',
-                    }}
-                  />
+                  <ExpoImage source={items[1].img} style={styles.imageExaple2} />
                 </HStack>
               </Grid.Row>
               <Grid.Row>
@@ -383,12 +370,13 @@ export default function GridScreen() {
                 />
                 <ExpoImage
                   source={items[0].img}
-                  style={{
-                    height: 300,
-                    width: 250,
-                    borderRadius: 12,
-                    objectFit: 'cover',
-                  }}
+                  style={[
+                    styles.imageExaple2,
+                    {
+                      height: 300,
+                      width: 250,
+                    },
+                  ]}
                 />
                 <Rectangle
                   modifiers={[
@@ -400,39 +388,24 @@ export default function GridScreen() {
               </Grid.Row>
               <Text>Some text</Text>
               <Grid.Row>
-                <Rectangle
-                  modifiers={[
-                    frame({ height: 150 }),
-                    gridCellColumns(1),
-                    foregroundStyle({ type: 'color', color: 'lightgreen' }),
-                  ]}
-                />
-                <Rectangle
-                  modifiers={[
-                    frame({ height: 150 }),
-                    gridCellColumns(2),
-                    foregroundStyle({ type: 'color', color: 'orange' }),
-                  ]}
-                />
-                <Rectangle
-                  modifiers={[
-                    frame({ height: 150 }),
-                    gridCellColumns(1),
-                    foregroundStyle({ type: 'color', color: 'red' }),
-                  ]}
-                />
+                {[
+                  { color: 'lightgreen', columns: 1 },
+                  { color: 'orange', columns: 2 },
+                  { color: 'red', columns: 1 },
+                ].map(({ color, columns }, index) => (
+                  <Rectangle
+                    key={index}
+                    modifiers={[
+                      frame({ height: 150 }),
+                      gridCellColumns(columns),
+                      foregroundStyle({ type: 'color', color }),
+                    ]}
+                  />
+                ))}
               </Grid.Row>
               <Grid.Row>
                 <HStack modifiers={[frame({ height: 100 }), gridCellColumns(3)]}>
-                  <ExpoImage
-                    source={items[1].img}
-                    style={{
-                      height: 100,
-                      width: '100%',
-                      borderRadius: 12,
-                      objectFit: 'cover',
-                    }}
-                  />
+                  <ExpoImage source={items[1].img} style={styles.imageExaple2} />
                 </HStack>
                 <Rectangle
                   modifiers={[
@@ -449,6 +422,19 @@ export default function GridScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  imageExaple1: {
+    height: 300,
+    width: 250,
+    borderRadius: 12,
+  },
+  imageExaple2: {
+    height: 100,
+    width: '100%',
+    borderRadius: 12,
+  },
+});
 
 GridScreen.navigationOptions = {
   title: 'Grid',
