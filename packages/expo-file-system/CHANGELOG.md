@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add contentUri property. ([#40002](https://github.com/expo/expo/pull/40002) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix recursive file deletion. ([#40248](https://github.com/expo/expo/pull/40248) by [@aleqsio](https://github.com/aleqsio))
