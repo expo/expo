@@ -16,9 +16,14 @@ jest.mock('glob');
 const mockGlob = glob as jest.MockedFunction<typeof glob>;
 const mockGlobStream = glob.stream as jest.MockedFunction<typeof glob.stream>;
 
-function registerGlobStreamMockOnce(results: (string | Path)[]) {
+function registerGlobStreamMockOnce(results: string[]) {
   // NOTE: Cast to any since any async iterable is accepted here
-  mockGlobStream.mockReturnValueOnce(results as any);
+  mockGlobStream.mockReturnValueOnce(
+    results.map((outputPath) => ({
+      isFile: () => true,
+      fullpath: () => outputPath,
+    })) as any
+  );
 }
 
 describe(resolveDependencyConfigImplAndroidAsync, () => {
@@ -387,21 +392,13 @@ describe(parseComponentDescriptorsAsync, () => {
   });
 
   it('should parse component descriptors', async () => {
-    registerGlobStreamMockOnce(
-      [
-        'Test.ts',
-        'SearchBarNativeComponent.js',
-        'ScreenNativeComponent.ts',
-        'specs/SpecComponent.ts',
-        'node_modules/ScreenNested.tsx',
-      ].map(
-        (pth) =>
-          ({
-            fullpath: () => pth,
-            isFile: () => true,
-          }) as Path
-      )
-    );
+    registerGlobStreamMockOnce([
+      'Test.ts',
+      'SearchBarNativeComponent.js',
+      'ScreenNativeComponent.ts',
+      'specs/SpecComponent.ts',
+      'node_modules/ScreenNested.tsx',
+    ]);
     vol.fromJSON({
       // not matched: no `codegenNativeComponent` pattern
       '/app/node_modules/test/Test.ts': `export default {};`,
