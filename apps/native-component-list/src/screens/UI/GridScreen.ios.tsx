@@ -58,8 +58,6 @@ export default function GridScreen() {
     'bottomLeading',
     'bottom',
     'bottomTrailing',
-    'listRowSeparatorLeading',
-    'listRowSeparatorTrailing',
   ] as const;
 
   const items = [

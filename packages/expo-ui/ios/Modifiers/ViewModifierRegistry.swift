@@ -1211,17 +1211,12 @@ internal enum GridColumnAlignmentType: String, Enumerable {
   case leading
   case center
   case trailing
-  case listRowSeparatorLeading
-  case listRowSeparatorTrailing
 
-  @available(iOS 16.0, macOS 13.0, tvOS 16.0, *)
   var alignment: HorizontalAlignment {
     switch self {
       case .center: return .center
       case .leading: return .leading
       case .trailing: return .trailing
-      case .listRowSeparatorLeading: return .listRowSeparatorLeading
-      case .listRowSeparatorTrailing: return .listRowSeparatorTrailing
     }
   }
 }

@@ -581,7 +581,7 @@ export declare const gridCellColumns: (count?: number) => ModifierConfig;
  * @returns A view that uses the specified horizontal alignment, and that causes all cells in the same column of a grid to use the same alignment.
  * @platform iOS 16+
  */
-export declare const gridColumnAlignment: (alignment?: "leading" | "center" | "trailing" | "listRowSeparatorLeading" | "listRowSeparatorTrailing") => ModifierConfig;
+export declare const gridColumnAlignment: (alignment?: "leading" | "center" | "trailing") => ModifierConfig;
 /**
  * Specifies a custom alignment anchor for a view that acts as a grid cell.
  * @param anchor - The unit point that defines how to align the view within the bounds of its grid cell.
@@ -607,7 +607,7 @@ export declare const gridColumnAlignment: (alignment?: "leading" | "center" | "t
  */
 export declare const gridCellAnchor: (anchor: {
     type: "preset";
-    anchor: "zero" | "leading" | "center" | "trailing" | "topLeading" | "top" | "topTrailing" | "bottomLeading" | "bottom" | "bottomTrailing" | "listRowSeparatorLeading" | "listRowSeparatorTrailing";
+    anchor: "zero" | "leading" | "center" | "trailing" | "topLeading" | "top" | "topTrailing" | "bottomLeading" | "bottom" | "bottomTrailing";
 } | {
     type: "custom";
     points: {
