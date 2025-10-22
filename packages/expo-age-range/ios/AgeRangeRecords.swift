@@ -1,11 +1,11 @@
 import ExpoModulesCore
 import DeclaredAgeRange
 
-@available(iOS 26.0, *)
 internal enum AgeRangeDeclaration: String, Enumerable {
   case selfDeclared
   case guardianDeclared
 
+  @available(iOS 26.0, *)
   public init(_ range: AgeRangeService.AgeRangeDeclaration) {
     switch range {
     case .selfDeclared:
@@ -19,7 +19,6 @@ internal enum AgeRangeDeclaration: String, Enumerable {
   }
 }
 
-@available(iOS 26.0, *)
 internal struct AgeRangeResponse: Record {
   @Field
   var lowerBound: Int?
@@ -31,8 +30,11 @@ internal struct AgeRangeResponse: Record {
   var activeParentalControls: [String] = []
 
   public init() {
+    // limited response used by iOS < 26, simulating an adult
+    self.lowerBound = 18
   }
 
+  @available(iOS 26.0, *)
   public init(_ range: AgeRangeService.AgeRange) {
     self.lowerBound = range.lowerBound
     self.upperBound = range.upperBound

@@ -1,4 +1,4 @@
 export async function requestAgeRangeAsync(_) {
-    throw new Error('AgeRange module is not supported on web platform.');
+    return { lowerBound: 18, activeParentalControls: [] };
 }
 //# sourceMappingURL=AgeRange.web.js.map

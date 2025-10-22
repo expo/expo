@@ -1,6 +1,6 @@
 # expo-age-range
 
-A native module for age range functionality
+A native module for age range functionality. Exposes [Play Age Signals API](https://developer.android.com/google/play/age-signals/use-age-signals-api) on Android and [Declared Age Range framework](https://developer.apple.com/documentation/declaredagerange/) on iOS.
 
 # API documentation
 
@@ -19,6 +19,20 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ```
 npx expo install expo-age-range
+```
+
+Add `com.apple.developer.declared-age-range` entitlement according to [app.json / app.config.js docs](https://docs.expo.dev/versions/latest/config/app/#entitlements). Example:
+
+```json
+{
+  "expo": {
+	"ios": {
+	  "entitlements": {
+		"com.apple.developer.declared-age-range": true
+	  }
+	}
+  }
+}
 ```
 
 # Contributing

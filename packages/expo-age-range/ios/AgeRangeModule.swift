@@ -8,7 +8,7 @@ public class AgeRangeModule: Module {
 
     AsyncFunction("requestAgeRangeAsync") { (opts: AgeRangeRequestParams) in
       guard #available(iOS 26.0, *) else {
-        throw AgeRangeException("Declared Age Range APIs requires iOS 26+", code: AgeRangeErrorCodes.featureUnsupported)
+        return AgeRangeResponse()
       }
 
       let currentVc: UIViewController? = await MainActor.run { [appContext] in
@@ -16,23 +16,23 @@ public class AgeRangeModule: Module {
       }
 
       guard let currentVc else {
-        throw AgeRangeException("No current view controller available")
+        throw AgeRangeNoViewControllerException()
       }
 
       do {
         let response = try await AgeRangeService.shared.requestAgeRange(ageGates: opts.threshold1, opts.threshold2, opts.threshold3, in: currentVc)
         switch response {
-        case .declinedSharing:
-          throw AgeRangeException("User declined sharing age range", code: AgeRangeErrorCodes.userDeclined)
         case .sharing(let range):
           return AgeRangeResponse(range)
+        case .declinedSharing:
+          throw AgeRangeUserDeclinedException()
         @unknown default:
-          throw AgeRangeException("Unknown age range response type", code: AgeRangeErrorCodes.unknown)
+          throw AgeRangeUnknownResponseException()
         }
       } catch AgeRangeService.Error.notAvailable {
-        throw AgeRangeException("AgeRangeService not available", code: AgeRangeErrorCodes.notAvailable)
+        throw AgeRangeNotAvailableException()
       } catch AgeRangeService.Error.invalidRequest {
-        throw AgeRangeException("Invalid age range request", code: AgeRangeErrorCodes.invalidRequest)
+        throw AgeRangeInvalidRequestException()
       }
     }
   }
