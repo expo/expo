@@ -7,6 +7,7 @@
   "main": "src/server.ts",
   "scripts": {
     "start": "bun run src/server.ts",
+    "dev": "bun --watch --no-clear-screen ./src/server.ts",
     "test": "bun test",
     "compare": "bun run src/compareImages.ts",
     "debug-viewshot": "bun run src/debug-viewshot.ts"

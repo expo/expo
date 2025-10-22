@@ -61,7 +61,7 @@ const __dirname = dirname(__filename);
       });
 
       await retryAsync((retryNumber) => {
-        console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
+        console.log(`Native modules test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
         return testAsync(
           maestroNativeModulesFlowFilePath,
           deviceId,
