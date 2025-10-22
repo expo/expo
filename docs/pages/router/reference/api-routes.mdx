@@ -517,7 +517,7 @@ You will want to make a clean build before sending to the store to ensure no tra
 
 ## Hosting on third-party services
 
-> **important** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+> **important** The `expo-server` package was added in SDK 54. Use `@expo/server` for older SDKs instead.
 
 Every cloud hosting provider needs a custom adapter to support the Expo server runtime. The following third-party providers have unofficial or experimental support from the Expo team.
 
@@ -528,6 +528,10 @@ Before deploying to these providers, it may be good to be familiar with the basi
 - The `expo-server` package is a server-side runtime for exported Expo web and API route artifacts.
 - `expo-server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
+
+The `expo-server` package contains adapters for various providers and runtimes. Before proceeding with any of the below sections, install the `expo-server` package first.
+
+<Terminal cmd={['$ npx expo install expo-server']} />
 
 ### Bun
 
@@ -659,7 +663,7 @@ Start the server with `node` command:
 
 ### Netlify
 
-> **important** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+> **important** Third-party adapters are subject to breaking changes. We have no continuous tests against them.
 
 <Step label="1">
 
@@ -739,7 +743,7 @@ If you're using any environment variables or **.env** files, add them to Netlify
 
 ### Vercel
 
-> **important** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+> **important** Third-party adapters are subject to breaking changes. We have no continuous tests against them.
 
 <Step label="1">
 
