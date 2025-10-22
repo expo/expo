@@ -7,6 +7,7 @@ describe('ExpoAgeRange', () => {
         threshold1: 18,
       })
     ).resolves.toMatchObject({
+      // response for an adult user
       lowerBound: 18,
     });
   });
