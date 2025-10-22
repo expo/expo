@@ -288,7 +288,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: bare-expo-android-builds
-          path: apps/bare-expo/android/app/build/outputs/apk
+          path: apps/bare-expo/android/app/build/outputs/apk/release
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
