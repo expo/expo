@@ -24,3 +24,14 @@
 
 -keepnames class * extends expo.modules.core.BasePackage
 -keepnames class * implements expo.modules.core.interfaces.Package
+
+# Keep edge-to-edge methods in WindowUtilKt
+-keep class com.facebook.react.views.view.WindowUtilKt {
+    *** enableEdgeToEdge(...);
+    *** isEdgeToEdgeFeatureFlagOn(...);
+}
+
+# For React Native WindowUtilKt edge-to-edge support
+-keep class com.facebook.react.views.view.WindowUtilKt {
+  *;
+}
