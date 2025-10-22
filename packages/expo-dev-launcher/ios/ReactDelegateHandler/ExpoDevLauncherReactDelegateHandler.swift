@@ -8,9 +8,9 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   private weak var reactNativeFactory: RCTReactNativeFactory?
   private weak var reactDelegate: ExpoReactDelegate?
   private var launchOptions: [AnyHashable: Any]?
-  private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
+  private weak var rootViewController: UIViewController?
 
   public override func createReactRootView(
     reactDelegate: ExpoReactDelegate,
@@ -24,7 +24,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
-    EXDevLauncherController.sharedInstance().autoSetupPrepare(self, launchOptions: launchOptions)
+    EXDevLauncherController.sharedInstance().start(self, launchOptions: launchOptions)
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
@@ -33,8 +33,22 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
-    self.deferredRootView = EXDevLauncherDeferredRCTRootView()
-    return self.deferredRootView
+
+    let viewController = EXDevLauncherController.sharedInstance().createRootViewController()
+    rootViewController = viewController
+
+    // We need to create a wrapper View because React Native Factory will reassign rootViewController later
+    let wrapperView = UIView()
+    wrapperView.addSubview(viewController.view)
+    viewController.view.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      viewController.view.topAnchor.constraint(equalTo: wrapperView.topAnchor),
+      viewController.view.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor),
+      viewController.view.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor),
+      viewController.view.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor)
+    ])
+
+    return wrapperView
   }
 
   @objc
@@ -71,29 +85,13 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       launchOptions: developmentClientController.getLaunchOptions()
     )
     developmentClientController.appBridge = RCTBridge.current()
-    rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
-    let window = getWindow()
 
-    // NOTE: this order of assignment seems to actually have an effect on behaviour
-    // direct assignment of window.rootViewController.view = rootView does not work
-    guard let rootViewController = self.reactDelegate?.createRootViewController() else {
+    guard let rootViewController = rootViewController ?? self.reactDelegate?.createRootViewController() else {
       fatalError("Invalid rootViewController returned from ExpoReactDelegate")
     }
     rootViewController.view = rootView
-    window.rootViewController = rootViewController
-    window.makeKeyAndVisible()
-
     // it is purposeful that we don't clean up saved properties here, because we may initialize
     // several React instances over a single app lifetime and we want them all to have the same
     // initial properties
-  }
-
-  // MARK: Internals
-
-  private func getWindow() -> UIWindow {
-    guard let window = UIApplication.shared.windows.filter(\.isKeyWindow).first ?? UIApplication.shared.delegate?.window as? UIWindow else {
-      fatalError("Cannot find the current window.")
-    }
-    return window
   }
 }
