@@ -46,7 +46,9 @@ await rm(appBundlePath, { force: true });
 await rm(indexHtmlPath, { force: true });
 
 // The entry html will be the dom component
-const htmlPaths = globSync(join(outputDir, defaultDomComponentsBundle, '*.html'));
+const htmlPaths = globSync(
+  join(outputDir, defaultDomComponentsBundle, '*.html').replace(/\\/g, '/')
+);
 if (htmlPaths.length !== 1) {
   console.error('Expected exactly one HTML file in the bundle output directory.');
   process.exit(1);
