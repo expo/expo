@@ -145,21 +145,13 @@ async function generatePackageListFileContentAsync(
     .concat(...debugOnlyModules.map((module) => module.swiftModuleNames))
     .filter(Boolean);
 
-<<<<<<< HEAD
-  const modulesClassNames = ([] as ModuleIosConfig[])
-    .concat(...modulesToImport.map((module) => module.modules))
-    .filter(Boolean);
-
-  const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
-=======
-  let modulesClassNames = ([] as string[])
+  let modulesClassNames = ([] as ModuleIosConfig[])
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
 
   modulesClassNames = modulesClassNames.concat(await getIosLocalModulesClassNames(watchedDirs));
 
-  const debugOnlyModulesClassNames = ([] as string[])
->>>>>>> 791042b51b (inline modules expo-modules-autolinking)
+  const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
     .concat(...debugOnlyModules.map((module) => module.modules))
     .filter(Boolean);
 
