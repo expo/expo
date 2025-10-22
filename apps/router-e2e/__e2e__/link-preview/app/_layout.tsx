@@ -4,7 +4,10 @@ const isAllowed = false;
 
 export default function Layout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}>
       <Stack.Screen name="index" />
       <Stack.Protected guard={isAllowed}>
         <Stack.Screen name="protected" />

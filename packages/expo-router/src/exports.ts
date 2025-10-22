@@ -47,3 +47,5 @@ export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 
 export type * from './types';
+
+export { StackWithButtons } from './layouts/StackWithButtons';

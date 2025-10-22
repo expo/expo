@@ -14,6 +14,7 @@ const HomeIndex = () => {
         <Text>Home - Index</Text>
         <Text>Current Path: {pathname}</Text>
       </View>
+      <CaseLink href="/new-stack" text="New stack API" />
       <CaseLink href="/js-only" text="JS Only" />
       <CaseLink href="/js-only/tabs" text="JS Only Tabs" />
       <CaseLink href="/modals" text="Modals" />
