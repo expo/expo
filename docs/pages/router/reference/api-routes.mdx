@@ -129,7 +129,9 @@ Deploy the website and server to a [hosting provider](#deployment) to access the
 
 ## Requests
 
-Requests use the global, standard [`Request`](https://fetch.spec.whatwg.org/#request) object.
+<a id="requests" />
+
+Requests use the global, standard [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) object.
 
 ```ts app/blog/[post]+api.ts
 export async function GET(request: Request, { post }: Record<string, string>) {
@@ -175,11 +177,11 @@ export function GET() {
 }
 ```
 
-## Errors
+### Errors
 
-You can respond to server errors by using the `Response` object.
+`Response`s can be created with any status code and response bodies, for example, for errors.
 
-```ts app/blog/[post].ts
+```ts app/blog/[post]+api.ts
 export async function GET(request: Request, { post }: Record<string, string>) {
   if (!post) {
     return new Response('No post found', {
@@ -195,6 +197,161 @@ export async function GET(request: Request, { post }: Record<string, string>) {
 ```
 
 Making requests with an undefined method will automatically return `405: Method not allowed`. If an error is thrown during the request, it will automatically return `500: Internal server error`.
+
+## Runtime API
+
+You can use the `expo-server` package to use several utilities and code patterns that work in any server-side Expo code. This includes utilities to get request metadata, for scheduling tasks, and for error handling.
+
+<Terminal cmd={['$ npx expo install expo-server']} />
+
+Using `expo-server` is not limited to API routes and it can be used in any other server code as well, for example in [server middleware](/router/reference/middleware/).
+
+### Error handling
+
+You can abort a request and instead return an error `Response` by throwing a [`StatusError`](/versions/latest/sdk/server/#statuserror). This is a special `Error` instance that will be replaced with an HTTP response replacing the error itself.
+
+```ts app/blog/[post]+api.ts
+import { StatusError } from 'expo-server';
+
+export async function GET(request: Request, { post }: Record<string, string>) {
+  if (!post) {
+    throw new StatusError(404, 'No post found');
+  }
+  // ...
+}
+```
+
+When composing your own server utilities and helpers, the `StatusError` is a more convenient way to handle exceptions, since throwing them interrupts any API functions and instead returns an error early.
+
+`StatusError`s accept a status code and an error message, which can also optionally be passed as a JSON, or `Error` object, and will always return a `Response` with a JSON body with an `error` key set to their error message.
+
+This can be restrictive, and isn't suitable for all cases. Sometimes it might be beneficial to instead `throw` a `Response` object, which interrupts your logic as well, but replaces the resolved `Response` from your API route directly, without a `StatusError` wrapper.
+For example, this can be used to create redirect responses.
+
+```ts app/blog/[post]+api.ts
+import { StatusError } from 'expo-server';
+
+export async function GET(request: Request, { post }: Record<string, string>) {
+  if (!post) {
+    throw Response.redirect('https://expo.dev', 302);
+  }
+  // ...
+}
+```
+
+### Request metadata
+
+Requests typically carry most metadata you'll need in their headers. However, `expo-server` provides some helpers functions to retrieve common values more easily.
+
+Any helper function that `expo-server` exports return values that are scoped to the current `Request`. You can only call these functions in server-side code and only during ongoing requests.
+
+A common value that you may need to access is the request's origin URL. The origin URL - typically transmitted on a request's `Origin` header, represents the URL that a user used to access your API route. This may differ from any internal deployment URL that your server sees when the request is being proxied. You can use `expo-server`'s [`origin()`](/versions/latest/sdk/server/#origin) helper to access this value.
+
+```ts app/help+api.ts
+import { origin } from 'expo-server';
+
+export async function GET(request: Request) {
+  const target = new URL('/help', origin() ?? request.url);
+  return Response.redirect('https://expo.dev', 302);
+}
+```
+
+Most runtimes that you deploy your server code to have a concept of environments, to differentiate between production or staging deployments. You can use `expo-server`'s [`environment()`](/versions/latest/sdk/server/#environment) helper to get an environment name. This value will differ depending on how you're running your server code.
+
+```ts app/env+api.ts
+import { environment } from 'expo-server';
+
+export async function GET(request: Request) {
+  const env = environment();
+  if (env === 'staging') {
+    return Response.json({ isStaging: true });
+  } else if (!env) {
+    return Response.json({ isProduction: true });
+  } else {
+    return Response.json({ env });
+  }
+}
+```
+
+### Task scheduling
+
+In your request handlers, you may sometimes feel the need to run asynchronous tasks in parallel to your server logic.
+
+```ts app/tasks+api.ts
+export async function GET(request: Request) {
+  // This will delay the response:
+  await pingAnalytics(...);
+
+  const data = await fetchExampleData(...);
+  return Response.json({ data });
+}
+```
+
+In the above example, we have an `await`-ed function call that delays the rest of the API route's execution. If we don't want to delay a `Response` then `await`-ing this call isn't suitable. However, calling the function without `await` wouldn't guarantee that this task keeps a serverless function running.
+
+Instead, you can use `expo-server`'s [`runTask()`](/versions/latest/sdk/server/#runtaskfn) helper to run concurrent tasks. This is equivalent to the [`waitUntil()`](https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil) method that you see in service worker code or other serverless runtimes.
+
+```ts app/tasks+api.ts
+import { runTask } from 'expo-server';
+
+export async function GET(request: Request) {
+  // This will NOT delay the response:
+  runTask(async () => {
+    await pingAnalytics(...);
+  });
+
+  const data = await fetchExampleData(...);
+  return Response.json({ data });
+}
+```
+
+With `runTask`, you have a compromise between `await`-ing and not `await`-ing asynchronous functions. They'll be run concurrently, and don't delay the API route's response or execution, but are also making sure the runtime is aware of them, and don't quit early.
+
+However, sometimes you might also want to delay a task until after the API route has returned a `Response` and don't want to run it if the API route has rejected or only run a function after a time-sensitive task has completed, to avoid concurrent code from delaying computation heavy tasks in your API route.
+
+You can use `expo-server`'s [`deferTask()`](/versions/latest/sdk/server/#defertaskfn) helper to schedule tasks to run after a `Response` has been resolved by your API route.
+
+```ts app/tasks+api.ts
+import { deferTask } from 'expo-server';
+
+export async function GET(request: Request) {
+  // This will run after this entire function resolves:
+  deferTask(async () => {
+    await pingAnalytics(...);
+  });
+
+  const data = await fetchExampleData(...);
+  return Response.json({ data });
+}
+```
+
+### Response headers
+
+When structuring and splitting server logic into separate helper functions and files, it may be necessary to modify `Response` headers before a `Response` has been created.
+
+For example, you may need to add metadata in [server middleware](/router/reference/middleware/) to a `Response` before your API route code is running.
+
+```ts app/+middleware.ts
+import { setResponseHeaders } from 'expo-server';
+
+export default function middleware(request: Request) {
+  // Rate limiters typically add a `Retry-After` header
+  setResponseHeaders({ 'Retry-After': '3600' });
+}
+```
+
+In the above example, we're adding a `Retry-After` header to a future `Response` that an API route may be creating. This can also be extended for authentication and cookies.
+
+```ts app/+middleware.ts
+import { setResponseHeaders } from 'expo-server';
+
+export default function middleware(request: Request) {
+  // Append cookie to future response
+  setResponseHeaders(headers => {
+    headers.append('Set-Cookie', 'token=123; Secure');
+  });
+}
+```
 
 ## Bundling
 
