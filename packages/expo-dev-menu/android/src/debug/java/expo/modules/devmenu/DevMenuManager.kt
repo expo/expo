@@ -6,10 +6,7 @@ import android.hardware.SensorManager
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.view.children
-import com.facebook.react.ReactActivity
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.LifecycleEventListener
@@ -25,9 +22,8 @@ import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
-import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
-import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
+import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,7 +60,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun getDevToolsDelegate(): DevMenuDevToolsDelegate? {
     val reactHost = getReactHost() ?: return null
-    return DevMenuDevToolsDelegate(this, reactHost)
+    val devSupportManager = reactHost.devSupportManager ?: return null
+    return DevMenuDevToolsDelegate(devSupportManager.weak())
   }
 
   private val delegateReactContext: ReactContext?
@@ -79,15 +76,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private fun setUpReactInstance(reactHost: ReactHost) {
     currentReactInstance = WeakReference(reactHost)
-
-    val handlers = DevMenuCommandHandlersProvider(this, reactHost)
-      .createCommandHandlers()
-
-    DevMenuPackagerCommandHandlersSwapper()
-      .swapPackagerCommandHandlers(
-        reactHost,
-        handlers
-      )
 
     DevMenuShakeDetectorListenerSwapper()
       .swapShakeDetectorListener(
@@ -211,27 +199,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   //endregion
 
-  //region DevMenuManagerProtocol
-
-  fun findBidingView(activity: Activity): BindingView? {
-    val reactActivity = activity as? ReactActivity ?: return null
-    val rootView = reactActivity.reactDelegate?.reactRootView ?: return null
-    val parent = rootView.parent as? ViewGroup ?: return null
-    val potentialBindingViews = parent
-      .children
-      .filter { it is BindingView }
-      .map { it as BindingView }
-      .toList()
-
-    if (potentialBindingViews.size != 1) {
-      Log.e(DEV_MENU_TAG, "There should be only one BindingView in the hierarchy, but found: ${potentialBindingViews.size}")
-      return null
-    }
-
-    return potentialBindingViews.first()
-  }
-
-  fun updateStateIfNeeded(activity: Activity, bindingView: BindingView) {
+  fun updateStateIfNeeded(bindingView: BindingView) {
     val currentReactInstance = currentReactInstance.get() ?: return
     val appInfo = AppInfo.getAppInfo(currentReactInstance)
     bindingView.viewModel.updateAppInfo(appInfo)
@@ -243,8 +211,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     crossinline action: (BindingView) -> Unit
   ) {
     activity.runOnUiThread {
-      findBidingView(activity)?.let { bindingView ->
-        updateStateIfNeeded(activity, bindingView)
+      BindingView.findIn(activity)?.let { bindingView ->
+        updateStateIfNeeded(bindingView)
         action(bindingView)
       } ?: Log.e(DEV_MENU_TAG, "BindingView not found in the activity hierarchy.")
     }
@@ -300,7 +268,9 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     )
 
     if (keyCommand == KeyCommand(KeyEvent.KEYCODE_MENU)) {
-      delegateActivity?.let { openMenu(it) }
+      delegateActivity?.let {
+        openMenu(activity = it)
+      }
       return true
     }
 
@@ -327,9 +297,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun togglePerformanceMonitor() {
     val devToolsDelegate = getDevToolsDelegate()
-    delegateActivity?.let {
-      devToolsDelegate?.togglePerformanceMonitor(it)
-    }
+    devToolsDelegate?.togglePerformanceMonitor()
   }
 
   fun toggleInspector() {
@@ -339,11 +307,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun openJSInspector() {
     val devToolsDelegate = getDevToolsDelegate()
-    // TOOD(@lukmccall): figure out if that's needed
-//    // If internal setting aren't available we can't open inspector
-//    if (devToolsDelegate?.devInternalSettings == null) {
-//      return
-//    }
     devToolsDelegate?.openJSInspector()
   }
 
@@ -421,5 +384,4 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       }
     }
   }
-//endregion
 }

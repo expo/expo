@@ -2,6 +2,7 @@ package expo.modules.devmenu
 
 import com.facebook.react.ReactHost
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
+import expo.modules.kotlin.weak
 
 data class DevToolsSettings(
   val isElementInspectorShown: Boolean = false,
@@ -11,7 +12,7 @@ data class DevToolsSettings(
 
 object DevMenuDevSettings {
   fun getDevSettings(reactHost: ReactHost): DevToolsSettings {
-    val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactHost)
+    val devDelegate = DevMenuDevToolsDelegate(requireNotNull(reactHost.devSupportManager).weak())
     val devSettings = devDelegate.devSettings
 
     return DevToolsSettings(

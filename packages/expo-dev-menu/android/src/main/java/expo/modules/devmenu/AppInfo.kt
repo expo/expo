@@ -68,11 +68,11 @@ object AppInfo {
     }
 
     val reactHostDelegateField: Field =
-        ReactHostImpl::class.java.getDeclaredField("reactHostDelegate")
-      reactHostDelegateField.isAccessible = true
+      ReactHostImpl::class.java.getDeclaredField("reactHostDelegate")
+    reactHostDelegateField.isAccessible = true
     val reactHostDelegate = reactHostDelegateField.get(reactHost) as ReactHostDelegate
     val className = reactHostDelegate.jsRuntimeFactory::class.simpleName.toString()
-    val jsExecutorName =  className.removeSuffix("Instance").removeSuffix("Runtime")
+    val jsExecutorName = className.removeSuffix("Instance").removeSuffix("Runtime")
 
     val engine = when {
       jsExecutorName.contains("Hermes") -> "Hermes"
