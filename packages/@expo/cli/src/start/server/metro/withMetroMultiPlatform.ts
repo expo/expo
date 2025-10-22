@@ -13,6 +13,7 @@ import type {
   CustomResolutionContext,
 } from '@expo/metro/metro-resolver';
 import { resolve as metroResolver } from '@expo/metro/metro-resolver';
+import { SourceFileResolution } from '@expo/metro/metro-resolver/types';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -719,6 +720,14 @@ export function withExtendedResolver(
             };
           }
         }
+
+        const hmrSwap = safeSwap(
+          'react-native/Libraries/Utilities/HMRClient.js',
+          'expo/src/async-require/hmr.ts',
+          normal,
+          doResolve
+        );
+        if (hmrSwap) return hmrSwap;
       }
 
       return result;
@@ -802,6 +811,26 @@ export function withExtendedResolver(
   return withMetroErrorReportingResolver(
     withMetroSupervisingTransformWorker(metroConfigWithCustomContext)
   );
+}
+
+function safeSwap(
+  from: string,
+  to: string,
+  current: string,
+  doResolve: StrictResolver
+): SourceFileResolution | undefined {
+  if (current.endsWith(from)) {
+    try {
+      const hmrModule = doResolve(to);
+      if (hmrModule.type === 'sourceFile') {
+        debug(`Using \`${to}\` implementation.`);
+        return hmrModule;
+      }
+    } catch {
+      // Fallback to the default `from` implementation.
+    }
+  }
+  return undefined;
 }
 
 /** @returns `true` if the incoming resolution should be swapped. */
