@@ -96,7 +96,7 @@ describe('server', () => {
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
       // TODO(@hassankhan): remove @expo/router-server after publishing
-      linkExpoPackages: ['@expo/router-server'],
+      linkExpoPackages: ['@expo/router-server', 'expo'],
     });
     await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
     await expo.startAsync();

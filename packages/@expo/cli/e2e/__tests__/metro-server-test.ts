@@ -9,7 +9,9 @@ const expo = createExpoStart({
 });
 
 beforeAll(async () => {
-  expo.options.cwd = await setupTestProjectWithOptionsAsync('metro-server', 'with-assets');
+  expo.options.cwd = await setupTestProjectWithOptionsAsync('metro-server', 'with-assets', {
+    linkExpoPackages: ['expo'],
+  });
   await expo.startAsync();
 });
 afterAll(async () => {
