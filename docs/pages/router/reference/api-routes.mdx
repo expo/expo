@@ -179,7 +179,7 @@ export function GET() {
 
 ### Errors
 
-`Response`s can be created with any status code and response bodies, for example, for errors.
+For error cases, you can create `Response`s with any status code and response body.
 
 ```ts app/blog/[post]+api.ts
 export async function GET(request: Request, { post }: Record<string, string>) {
@@ -243,9 +243,9 @@ export async function GET(request: Request, { post }: Record<string, string>) {
 
 ### Request metadata
 
-Requests typically carry most metadata you'll need in their headers. However, `expo-server` provides some helpers functions to retrieve common values more easily.
+Requests typically carry most metadata you'll need in their headers. However, `expo-server` provides some helper functions to retrieve common values more easily.
 
-Any helper function that `expo-server` exports return values that are scoped to the current `Request`. You can only call these functions in server-side code and only during ongoing requests.
+Helper functions from `expo-server` return values that are scoped to the current `Request`. You can only call these functions in server-side code and only during ongoing requests.
 
 A common value that you may need to access is the request's origin URL. The origin URL - typically transmitted on a request's `Origin` header, represents the URL that a user used to access your API route. This may differ from any internal deployment URL that your server sees when the request is being proxied. You can use `expo-server`'s [`origin()`](/versions/latest/sdk/server/#origin) helper to access this value.
 
@@ -277,7 +277,7 @@ export async function GET(request: Request) {
 
 ### Task scheduling
 
-In your request handlers, you may sometimes feel the need to run asynchronous tasks in parallel to your server logic.
+In your request handlers, you may need to run asynchronous tasks in parallel to your server logic.
 
 ```ts app/tasks+api.ts
 export async function GET(request: Request) {
