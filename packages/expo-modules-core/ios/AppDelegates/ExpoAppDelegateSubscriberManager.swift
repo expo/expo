@@ -104,13 +104,6 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
       .forEach { $0.applicationWillTerminate?(application) }
   }
   
-  @objc
-  public static func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
-    ExpoAppDelegateSubscriberRepository
-      .subscribers
-      .forEach { $0.applicationDidReceiveMemoryWarning?(application) }
-  }
-
 #elseif os(macOS)
   @objc
   public static func applicationDidBecomeActive(_ notification: Notification) {
@@ -146,16 +139,20 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
       .subscribers
       .forEach { $0.applicationWillTerminate?(notification) }
   }
-  
+#endif
+
+  // MARK: - Responding to Environment Changes
+
+#if os(iOS) || os(tvOS)
+
   @objc
   public static func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationDidReceiveMemoryWarning?(application) }
   }
-#endif
 
-  // TODO: - Responding to Environment Changes
+#endif
 
   // TODO: - Managing App State Restoration
 
