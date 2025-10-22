@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix edge-to-edge when `enableMinifyInReleaseBuilds` is `true` by ([#40515](https://github.com/expo/expo/pull/40515) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 54.0.18 — 2025-10-21
