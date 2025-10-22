@@ -15,9 +15,16 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "target": "ESNext",
-    "rootDirs": ["${configDir}", "${configDir}/.expo/localModules/types"]
+    "rootDirs": ["${configDir}", "${configDir}/.expo/inlineModules/types"]
   },
   "include": ["${configDir}"],
-  "files": ["./localModules.d.ts"],
-  "exclude": ["${configDir}/node_modules", "${configDir}/babel.config.js", "${configDir}/metro.config.js", "${configDir}/jest.config.js", "${configDir}/android", "${configDir}/ios"]
+  "files": ["./inlineModules.d.ts"],
+  "exclude": [
+    "${configDir}/node_modules",
+    "${configDir}/babel.config.js",
+    "${configDir}/metro.config.js",
+    "${configDir}/jest.config.js",
+    "${configDir}/android",
+    "${configDir}/ios"
+  ]
 }

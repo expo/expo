@@ -103,8 +103,8 @@ function findUpTSProjectRootOrThrow(dir) {
     }
     return tsProjectRoot;
 }
-function resolveLocalModules(projectRoot, context, moduleName, platform) {
-    const localModulesModulesPath = path_1.default.resolve(projectRoot, './.expo/localModules/modules');
+function resolveInlineModules(projectRoot, context, moduleName, platform) {
+    const inlineModulesModulesPath = path_1.default.resolve(projectRoot, './.expo/inlineModules/modules');
     let localModuleFileExtension = null;
     if (moduleName.endsWith('.module')) {
         localModuleFileExtension = '.module.js';
@@ -115,7 +115,7 @@ function resolveLocalModules(projectRoot, context, moduleName, platform) {
     if (localModuleFileExtension) {
         const tsProjectRoot = findUpTSProjectRootOrThrow(path_1.default.dirname(context.originModulePath));
         const modulePathRelativeToTSRoot = path_1.default.relative(tsProjectRoot, fs_1.default.realpathSync(path_1.default.dirname(context.originModulePath)));
-        const modulePath = path_1.default.resolve(localModulesModulesPath, modulePathRelativeToTSRoot, moduleName.substring(0, moduleName.lastIndexOf('.')) + localModuleFileExtension);
+        const modulePath = path_1.default.resolve(inlineModulesModulesPath, modulePathRelativeToTSRoot, moduleName.substring(0, moduleName.lastIndexOf('.')) + localModuleFileExtension);
         return {
             filePath: modulePath,
             type: 'sourceFile',
@@ -232,8 +232,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
     const expoConfig = (0, config_1.getConfig)(projectRoot, { skipSDKVersionRequirement: true });
-    const resolveLocalModulesWithRoot = (context, moduleName, platform) => {
-        return resolveLocalModules(projectRoot, context, moduleName, platform);
+    const resolveInlineModulesWithRoot = (context, moduleName, platform) => {
+        return resolveInlineModules(projectRoot, context, moduleName, platform);
     };
     const contextResolveRequest = (context, moduleName, platform) => context.resolveRequest(context, moduleName, platform);
     const defaultResolveRequest = metroDefaultValues.resolver.resolveRequest ?? contextResolveRequest;
@@ -260,8 +260,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 .filter((assetExt) => !sourceExts.includes(assetExt)),
             sourceExts,
             nodeModulesPaths,
-            resolveRequest: expoConfig.exp.experiments?.localModules === true
-                ? resolveLocalModulesWithRoot
+            resolveRequest: expoConfig.exp.experiments?.inlineModules === true
+                ? resolveInlineModulesWithRoot
                 : defaultResolveRequest,
             blockList: [
                 // .expo/types contains generated declaration files which are not and should not be processed by Metro.

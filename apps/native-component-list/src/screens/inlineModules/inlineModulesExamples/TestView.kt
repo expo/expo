@@ -1,4 +1,4 @@
-package localModulesExamples
+package inlineModulesExamples
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition

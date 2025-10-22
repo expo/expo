@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-import { getMirrorStateObject } from './localModules';
+import { getMirrorStateObject } from './inlineModules';
 
 export async function createSymlinksToKotlinFiles(mirrorPath: string, watchedDirs: string[]) {
-  const localModulesObject = await getMirrorStateObject(watchedDirs);
+  const inlineModulesObject = await getMirrorStateObject(watchedDirs);
 
-  for (const { filePath, watchedDirRoot } of localModulesObject.files) {
+  for (const { filePath, watchedDirRoot } of inlineModulesObject.files) {
     if (!filePath.endsWith('.kt')) {
       continue;
     }
@@ -26,12 +26,12 @@ function getClassName(classNameWithPackage: string): string {
   return classNameWithPackage.substring(index + 1);
 }
 
-export async function generateLocalModulesListFile(
-  localModulesListPath: string,
+export async function generateInlineModulesListFile(
+  inlineModulesListPath: string,
   watchedDirs: string[]
 ) {
-  const localModulesObject = await getMirrorStateObject(watchedDirs);
-  const fileContent = `package local.modules;
+  const inlineModulesObject = await getMirrorStateObject(watchedDirs);
+  const fileContent = `package inline.modules;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,12 +40,12 @@ import java.util.Map;
 import expo.modules.kotlin.ModulesProvider;
 import expo.modules.kotlin.modules.Module;
 
-public class ExpoLocalModulesList implements ModulesProvider {
+public class ExpoInlineModulesList implements ModulesProvider {
 
   @Override
   public Map<Class<? extends Module>, String> getModulesMap() {
     return Map.of(
-${localModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.class, "${getClassName(moduleClass)}"`).join(',\n')}
+${inlineModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.class, "${getClassName(moduleClass)}"`).join(',\n')}
     );
   }
 
@@ -53,6 +53,6 @@ ${localModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.cl
 
 `;
 
-  fs.mkdirSync(localModulesListPath, { recursive: true });
-  fs.writeFileSync(path.resolve(localModulesListPath, 'ExpoLocalModulesList.java'), fileContent);
+  fs.mkdirSync(inlineModulesListPath, { recursive: true });
+  fs.writeFileSync(path.resolve(inlineModulesListPath, 'ExpoInlineModulesList.java'), fileContent);
 }
