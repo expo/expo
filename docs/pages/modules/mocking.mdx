@@ -34,7 +34,7 @@ Now, in a unit test, calling `ExpoClipboard.hasStringAsync()` returns `false`.
 
 ## Automatic generation of mocks
 
-Maintaining mocks for native modules can be a lot of work if the native module has multiple methods. To make this easier, we provide a script that automatically generates mocks for all native functions in a module. It works for generating mocks in TypeScript and JavaScript based on the Swift implementation in your module.
+Maintaining mocks for native modules can be a lot of work if the native module has multiple methods. To make this easier, we provide a script that automatically generates mocks for all native functions in a module's **mocks** directory. It works for generating mocks in TypeScript and JavaScript based on the Swift implementation in your module. Methods that exist only on Android (for example, Kotlin-only APIs) will not be generated automatically. In those cases, manually add or adjust the mock in the **mocks** directory.
 
 To use this script, you have to install [SourceKitten](https://github.com/jpsim/SourceKitten) framework. Then, navigate to the module directory (where your module's **expo-module.config.json** is located) and run the `generate-ts-mocks` command.
 
