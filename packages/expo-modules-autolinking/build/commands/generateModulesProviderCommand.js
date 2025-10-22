@@ -27,6 +27,9 @@ function generateModulesProviderCommand(cli) {
         const includeModules = new Set(commandArguments.packages ?? []);
         const filteredModules = expoModulesResolveResults.filter((module) => includeModules.has(module.packageName));
         const watchedDirs = JSON.parse(watchedDirsSerialized);
+        for (const dir of watchedDirs) {
+            console.log('!' + dir);
+        }
         await (0, generatePackageList_1.generateModulesProviderAsync)(filteredModules, {
             platform,
             targetPath: commandArguments.target,

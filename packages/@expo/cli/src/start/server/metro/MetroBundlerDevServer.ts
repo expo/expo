@@ -62,7 +62,7 @@ import type {
   ExportAssetDescriptor,
   ExportAssetMap,
 } from '../../../export/saveAssets';
-import { startModuleGenerationAsync } from '../../../localModules/generation';
+import { startModuleGenerationAsync } from '../../../inlineModules/generation';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -1504,7 +1504,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     const { exp } = getConfig(this.projectRoot);
-    if (exp.experiments?.localModules === true) {
+    if (exp.experiments?.inlineModules === true) {
       return Promise.all([
         startTypescriptTypeGenerationPromise,
         startModuleGenerationAsync({ projectRoot, metro }),

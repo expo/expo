@@ -55,32 +55,32 @@ function isValidLocalModuleFileName(fileName: string): boolean {
 }
 
 function getMirrorDirectories(projectRoot: string): {
-  localModulesModulesPath: string;
-  localModulesTypesPath: string;
+  inlineModulesModulesPath: string;
+  inlineModulesTypesPath: string;
 } {
   const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
-  const localModulesPath = path.resolve(dotExpoDir, './localModules/');
+  const inlineModulesPath = path.resolve(dotExpoDir, './inlineModules/');
 
-  const localModulesModulesPath = path.resolve(localModulesPath, 'modules');
-  const localModulesTypesPath = path.resolve(localModulesPath, 'types');
+  const inlineModulesModulesPath = path.resolve(inlineModulesPath, 'modules');
+  const inlineModulesTypesPath = path.resolve(inlineModulesPath, 'types');
 
   return {
-    localModulesModulesPath,
-    localModulesTypesPath,
+    inlineModulesModulesPath,
+    inlineModulesTypesPath,
   };
 }
 
 function createFreshMirrorDirectories(projectRoot: string): void {
-  const { localModulesModulesPath, localModulesTypesPath } = getMirrorDirectories(projectRoot);
+  const { inlineModulesModulesPath, inlineModulesTypesPath } = getMirrorDirectories(projectRoot);
 
-  if (fs.existsSync(localModulesModulesPath)) {
-    fs.rmSync(localModulesModulesPath, { recursive: true, force: true });
+  if (fs.existsSync(inlineModulesModulesPath)) {
+    fs.rmSync(inlineModulesModulesPath, { recursive: true, force: true });
   }
-  if (fs.existsSync(localModulesTypesPath)) {
-    fs.rmSync(localModulesTypesPath, { recursive: true, force: true });
+  if (fs.existsSync(inlineModulesTypesPath)) {
+    fs.rmSync(inlineModulesTypesPath, { recursive: true, force: true });
   }
-  fs.mkdirSync(localModulesModulesPath, { recursive: true });
-  fs.mkdirSync(localModulesTypesPath, { recursive: true });
+  fs.mkdirSync(inlineModulesModulesPath, { recursive: true });
+  fs.mkdirSync(inlineModulesTypesPath, { recursive: true });
 }
 
 function trimExtension(fileName: string): string {
@@ -98,7 +98,7 @@ function typesAndLocalModulePathsForFile(
   moduleExportPath: string;
   moduleName: string;
 } {
-  const { localModulesModulesPath, localModulesTypesPath } = getMirrorDirectories(projectRoot);
+  const { inlineModulesModulesPath, inlineModulesTypesPath } = getMirrorDirectories(projectRoot);
   const fileName = path.basename(absoluteFilePath);
   const moduleName = trimExtension(fileName);
 
@@ -109,19 +109,19 @@ function typesAndLocalModulePathsForFile(
   );
 
   const moduleTypesFilePath = path.resolve(
-    localModulesTypesPath,
+    inlineModulesTypesPath,
     filePathRelativeToTSProjectRootWithoutExtension + '.module.d.ts'
   );
   const viewTypesFilePath = path.resolve(
-    localModulesTypesPath,
+    inlineModulesTypesPath,
     filePathRelativeToTSProjectRootWithoutExtension + '.view.d.ts'
   );
   const moduleExportPath = path.resolve(
-    localModulesModulesPath,
+    inlineModulesModulesPath,
     filePathRelativeToTSProjectRootWithoutExtension + '.module.js'
   );
   const viewExportPath = path.resolve(
-    localModulesModulesPath,
+    inlineModulesModulesPath,
     filePathRelativeToTSProjectRootWithoutExtension + '.view.js'
   );
   return {
@@ -173,7 +173,7 @@ export function updateXCodeProject(projectRoot: string): void {
     return false;
   };
 
-  const swiftWatchedDirectories = getConfig(projectRoot).exp.localModules?.watchedDirs ?? [];
+  const swiftWatchedDirectories = getConfig(projectRoot).exp.inlineModules?.watchedDirs ?? [];
   for (const dir of swiftWatchedDirectories) {
     if (dirEntryExists(dir)) {
       continue;
@@ -215,7 +215,7 @@ function getWatchedDirAncestorAbsolutePath(
   projectRoot: string,
   filePathAbsolute: string
 ): string | null {
-  const watchedDirs = getConfig(projectRoot).exp.localModules?.watchedDirs ?? [];
+  const watchedDirs = getConfig(projectRoot).exp.inlineModules?.watchedDirs ?? [];
   const realRoot = path.resolve(projectRoot);
   for (const dir of watchedDirs) {
     const dirPathAbsolute = path.resolve(realRoot, dir);
@@ -303,7 +303,7 @@ async function generateMirrorDirectories(
     }
   };
 
-  const watchedDirs = getConfig(projectRoot).exp.localModules?.watchedDirs ?? [];
+  const watchedDirs = getConfig(projectRoot).exp.inlineModules?.watchedDirs ?? [];
   for (const watchedDir of watchedDirs) {
     await generateExportsAndTypesForDirectory(
       path.resolve(projectRoot, watchedDir),
@@ -318,8 +318,8 @@ function excludePathsGlobs(projectRoot: string): string[] {
     path.resolve(projectRoot, '.expo', './**/*'),
     path.resolve(projectRoot, 'node_modules'),
     path.resolve(projectRoot, 'node_modules', './**/*'),
-    path.resolve(projectRoot, 'localModules'),
-    path.resolve(projectRoot, 'localModules', './**/*'),
+    path.resolve(projectRoot, 'inlineModules'),
+    path.resolve(projectRoot, 'inlineModules', './**/*'),
     path.resolve(projectRoot, 'android'),
     path.resolve(projectRoot, 'android', './**/*'),
     path.resolve(projectRoot, 'ios'),

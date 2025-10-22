@@ -94,10 +94,10 @@
       "./plugins/withBenchmarkModules"
     ],
     "experiments": {
-      "localModules": true
+      "inlineModules": true
     },
-    "localModules": {
-      "watchedDirs": ["../native-component-list/src/screens/LocalModules/localModulesExamples"]
+    "inlineModules": {
+      "watchedDirs": ["../native-component-list/src/screens/inlineModules/inlineModulesExamples"]
     }
   }
 }

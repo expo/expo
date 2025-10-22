@@ -16,12 +16,12 @@
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "rootDirs": ["./", "../bare-expo/.expo/localModules/types"]
+    "rootDirs": ["./", "../bare-expo/.expo/inlineModules/types"]
   },
   "include": [
     "App.tsx",
     "src/**/*",
     "ts-declarations/**/*",
-    "../bare-expo/.expo/localModules/types/**/*"
+    "../bare-expo/.expo/inlineModules/types/**/*"
   ]
 }

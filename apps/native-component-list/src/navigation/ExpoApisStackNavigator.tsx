@@ -145,9 +145,9 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/LocalModules/LocalModulesScreen'));
+      return optionalRequire(() => require('../screens/inlineModules/InlineModulesScreen'));
     },
-    name: 'LocalModules',
+    name: 'InlineModules',
   },
   {
     getComponent() {

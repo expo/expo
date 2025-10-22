@@ -1,9 +1,9 @@
 import { Text } from 'react-native';
 
-import SimpleModule from './localModulesExamples/SimpleModule.module';
-import TestView from './localModulesExamples/TestView.view';
+import SimpleModule from './inlineModulesExamples/SimpleModule.module';
+import TestView from './inlineModulesExamples/TestView.view';
 
-export default function LocalModulesScreen() {
+export default function InlineModulesScreen() {
   return (
     <>
       <Text>{SimpleModule.test}</Text>

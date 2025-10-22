@@ -92,9 +92,9 @@ function _expoDocumentPicker() {
   };
   return data;
 }
-function _withLocalModules() {
-  const data = _interopRequireDefault(require("./unversioned/expo-local-modules/withLocalModules"));
-  _withLocalModules = function () {
+function _withInlineModules() {
+  const data = _interopRequireDefault(require("./unversioned/expo-inline-modules/withInlineModules"));
+  _withInlineModules = function () {
     return data;
   };
   return data;
@@ -219,7 +219,7 @@ const withVersionedExpoSDKPlugins = config => {
   return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, _expoUpdates().default, _expoDocumentPicker().default,
   // System UI must come before splash screen as they overlap
   // and splash screen will warn about conflicting rules.
-  _expoSystemUi().default, _expoSplashScreen().default, _expoNavigationBar().default, _withLocalModules().default]);
+  _expoSystemUi().default, _expoSplashScreen().default, _expoNavigationBar().default, _withInlineModules().default]);
 };
 exports.withVersionedExpoSDKPlugins = withVersionedExpoSDKPlugins;
 function getAutoPlugins() {

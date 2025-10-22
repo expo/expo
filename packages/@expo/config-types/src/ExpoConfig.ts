@@ -327,7 +327,7 @@ export interface ExpoConfig {
     /**
      * Enable support for local modules in Expo CLI and Expo Modules Autolinking.
      */
-    localModules?: boolean;
+    inlineModules?: boolean;
   };
   /**
    * Internal properties for developer tools
@@ -345,7 +345,7 @@ export interface ExpoConfig {
   /**
    * Configuration for local modules
    */
-  localModules?: {
+  inlineModules?: {
     /**
      * List of directories watched for local modules.
      */

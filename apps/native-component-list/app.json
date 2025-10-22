@@ -83,10 +83,10 @@
       }
     },
     "experiments": {
-      "localModules": true
+      "inlineModules": true
     },
-    "localModules": {
-      "watchedDirs": ["src/screens/LocalModules/localModulesExamples/"]
+    "inlineModules": {
+      "watchedDirs": ["src/screens/inlineModules/inlineModulesExamples/"]
     }
   }
 }

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-export type LocalModulesMirror = {
+export type InlineModulesMirror = {
   files: { filePath: string; watchedDirRoot: string }[];
   swiftModuleClassNames: string[];
   kotlinClasses: string[];
@@ -68,9 +68,9 @@ function getSwiftModuleClassName(absoluteFilePath: string): string {
   return trimExtension(path.basename(absoluteFilePath));
 }
 
-export async function getMirrorStateObject(watchedDirs: string[]): Promise<LocalModulesMirror> {
+export async function getMirrorStateObject(watchedDirs: string[]): Promise<InlineModulesMirror> {
   const appRoot = await getAppRoot();
-  const localModulesMirror: LocalModulesMirror = {
+  const inlineModulesMirror: InlineModulesMirror = {
     kotlinClasses: [],
     swiftModuleClassNames: [],
     files: [],
@@ -89,12 +89,12 @@ export async function getMirrorStateObject(watchedDirs: string[]): Promise<Local
 
       if (/\.(kt)$/.test(dirent.name)) {
         const kotlinFileWithPackage = getKotlinFileNameWithItsPackage(absoluteDirentPath);
-        localModulesMirror.kotlinClasses.push(kotlinFileWithPackage);
-        localModulesMirror.files.push({ filePath: absoluteDirentPath, watchedDirRoot });
+        inlineModulesMirror.kotlinClasses.push(kotlinFileWithPackage);
+        inlineModulesMirror.files.push({ filePath: absoluteDirentPath, watchedDirRoot });
       } else if (/\.(swift)$/.test(dirent.name)) {
         const swiftClassName = getSwiftModuleClassName(absoluteDirentPath);
-        localModulesMirror.swiftModuleClassNames.push(swiftClassName);
-        localModulesMirror.files.push({ filePath: absoluteDirentPath, watchedDirRoot });
+        inlineModulesMirror.swiftModuleClassNames.push(swiftClassName);
+        inlineModulesMirror.files.push({ filePath: absoluteDirentPath, watchedDirRoot });
       }
     }
   };
@@ -105,5 +105,5 @@ export async function getMirrorStateObject(watchedDirs: string[]): Promise<Local
       fs.realpathSync(path.resolve(appRoot, dir))
     );
   }
-  return localModulesMirror;
+  return inlineModulesMirror;
 }

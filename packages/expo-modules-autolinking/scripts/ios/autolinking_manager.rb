@@ -20,8 +20,8 @@ module Expo
 
       podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
       @watched_dirs = '[]'
-      if podfile_properties['expo.localModules.enabled'] == 'true' && podfile_properties["expo.localModules.watchedDirs"] != nil then
-        @watched_dirs = JSON.generate(podfile_properties['expo.localModules.watchedDirs'])
+      if podfile_properties['expo.inlineModules.enabled'] == 'true' && podfile_properties["expo.inlineModules.watchedDirs"] != nil then
+        @watched_dirs = JSON.generate(podfile_properties['expo.inlineModules.watchedDirs'])
       end
 
       validate_target_definition()
@@ -31,6 +31,10 @@ module Expo
 
       @packages = resolve_result['modules'].map { |json_package| Package.new(json_package) }
       @extraPods = resolve_result['extraDependencies']
+    end
+
+    public def watched_dirs!
+      @watched_dirs
     end
 
     public def use_expo_modules!
