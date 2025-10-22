@@ -731,32 +731,18 @@ export function withExtendedResolver(
         );
         if (hmrModule) return hmrModule;
 
-        if (normalizedPath.endsWith('react-native/Libraries/LogBox/LogBoxInspectorContainer.js')) {
-          if (env.EXPO_UNSTABLE_LOG_BOX) {
-            try {
-              const expoLogBox = doResolve('@expo/log-box/swap-rn-logbox.js');
-              if (expoLogBox.type === 'sourceFile') {
-                debug('Using `@expo/log-box` implementation.');
-                return expoLogBox;
-              }
-            } catch {
-              // Fallback to the default LogBox implementation.
-            }
-          } else {
-            debug('Using React Native LogBox implementation.');
-          }
-        }
+        if (env.EXPO_UNSTABLE_LOG_BOX) {
+          const logBoxModule = doReplace(
+            'react-native/Libraries/LogBox/LogBoxInspectorContainer.js',
+            '@expo/log-box/swap-rn-logbox.js'
+          );
+          if (logBoxModule) return logBoxModule;
 
-        if (normalizedPath.endsWith('react-native/Libraries/LogBox/Data/parseLogBoxLog.js')) {
-          if (env.EXPO_UNSTABLE_LOG_BOX) {
-            try {
-              const expoLogBox = doResolve('@expo/log-box/swap-rn-logbox-parser.js');
-              if (expoLogBox.type === 'sourceFile') {
-                return expoLogBox;
-              }
-            } catch {}
-          } else {
-          }
+          const logBoxParserModule = doReplace(
+            'react-native/Libraries/LogBox/Data/parseLogBoxLog.js',
+            '@expo/log-box/swap-rn-logbox-parser.js'
+          );
+          if (logBoxParserModule) return logBoxParserModule;
         }
       }
 
