@@ -653,19 +653,24 @@ export function withExtendedResolver(
 
       const normalizedPath = normalizeSlashes(result.filePath);
 
-      if (normalizedPath.endsWith('expo-router/build/layouts/_web-modal.js')) {
-        if (env.EXPO_UNSTABLE_WEB_MODAL) {
-          try {
-            const webModal = doResolve('expo-router/build/layouts/ExperimentalModalStack.js');
-            if (webModal.type === 'sourceFile') {
-              debug('Using `_unstable-web-modal` implementation.');
-              return webModal;
-            }
-          } catch (error) {
-            // Fallback to react-navigation web modal implementation.
-          }
+      const doReplace = (from: string, to: string | undefined, options?: { throws?: boolean }) =>
+        doReplaceHelper(from, to, {
+          normalizedPath,
+          doResolve,
+          ...options,
+        });
+      const doReplaceStrict = (from: string, to: string | undefined) =>
+        doReplace(from, to, { throws: true });
+
+      if (env.EXPO_UNSTABLE_WEB_MODAL) {
+        const webModalModule = doReplace(
+          'expo-router/build/layouts/_web-modal.js',
+          'expo-router/build/layouts/ExperimentalModalStack.js'
+        );
+        if (webModalModule) {
+          debug('Using `_unstable-web-modal` implementation.');
+          return webModalModule;
         }
-        debug("Using React Navigation's web modal implementation.");
       }
 
       if (platform === 'web') {
@@ -713,21 +718,18 @@ export function withExtendedResolver(
 
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          if (normalizedPath.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
+          const emptyModule = doReplace('react-native/Libraries/Core/InitializeCore.js', undefined);
+          if (emptyModule) {
             debug('Shimming out InitializeCore for React Native in native SSR bundle');
-            return {
-              type: 'empty',
-            };
+            return emptyModule;
           }
         }
 
-        const hmrSwap = safeSwap(
+        const hmrModule = doReplaceStrict(
           'react-native/Libraries/Utilities/HMRClient.js',
-          'expo/src/async-require/hmr.ts',
-          normal,
-          doResolve
+          'expo/src/async-require/hmr.ts'
         );
-        if (hmrSwap) return hmrSwap;
+        if (hmrModule) return hmrModule;
       }
 
       return result;
@@ -813,22 +815,43 @@ export function withExtendedResolver(
   );
 }
 
-function safeSwap(
+function doReplaceHelper(
   from: string,
-  to: string,
-  current: string,
-  doResolve: StrictResolver
-): SourceFileResolution | undefined {
-  if (current.endsWith(from)) {
-    try {
-      const hmrModule = doResolve(to);
-      if (hmrModule.type === 'sourceFile') {
-        debug(`Using \`${to}\` implementation.`);
-        return hmrModule;
-      }
-    } catch {
-      // Fallback to the default `from` implementation.
+  to: string | undefined,
+  {
+    throws = false,
+    normalizedPath,
+    doResolve,
+  }: {
+    throws?: boolean;
+    normalizedPath: string;
+    doResolve: StrictResolver;
+  }
+): SourceFileResolution | { type: 'empty' } | undefined {
+  if (!normalizedPath.endsWith(from)) {
+    return undefined;
+  }
+
+  if (to === undefined) {
+    return {
+      type: 'empty',
+    };
+  }
+
+  try {
+    const hmrModule = doResolve(to);
+    if (hmrModule.type === 'sourceFile') {
+      debug(`Using \`${to}\` implementation.`);
+      return hmrModule;
     }
+  } catch (resolutionError) {
+    if (throws) {
+      throw new Error(`Failed to replace ${from} with ${to}. Resolution of ${to} failed.`, {
+        cause: resolutionError,
+      });
+    }
+
+    debug(`Failed to resolve ${to} when swapping from ${from}: ${resolutionError}`);
   }
   return undefined;
 }
