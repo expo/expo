@@ -15,6 +15,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix edge-to-edge when `enableMinifyInReleaseBuilds` is `true` by ([#40515](https://github.com/expo/expo/pull/40515) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 - [android] Add getDefaultReactHost to ExpoReactHostFactory ([#40086](https://github.com/expo/expo/pull/40086) by [@gabrieldonadel](https://github.com/gabrieldonadel))
