@@ -200,13 +200,13 @@ Making requests with an undefined method will automatically return `405: Method 
 
 ## Runtime API
 
-> **important** The server runtime API and `expo-server` are available in SDK 54 and later, and require a deployed server for production use.
+> **important** The server runtime API and `expo-server` are available in SDK 54 and later and require a deployed server for production use.
 
-You can use the `expo-server` package to use several utilities and code patterns that work in any server-side Expo code. This includes utilities to get request metadata, for scheduling tasks, and for error handling.
+You can use the [`expo-server`](/versions/latest/sdk/server/) library to use several utilities and code patterns that work in any server-side Expo code. This includes utilities to get request metadata, for scheduling tasks, and for error handling.
 
 <Terminal cmd={['$ npx expo install expo-server']} />
 
-Using `expo-server` is not limited to API routes and it can be used in any other server code as well, for example in [server middleware](/router/reference/middleware/).
+Using `expo-server` is not limited to API routes and it can be used in any other server code as well, for example, in [server middleware](/router/reference/middleware/).
 
 ### Error handling
 
@@ -223,12 +223,11 @@ export async function GET(request: Request, { post }: Record<string, string>) {
 }
 ```
 
-When composing your own server utilities and helpers, the `StatusError` is a more convenient way to handle exceptions, since throwing them interrupts any API functions and instead returns an error early.
+When composing your own server utilities and helpers, the `StatusError` is a more convenient way to handle exceptions, since throwing them interrupts any API functions and returns an error early.
 
 `StatusError`s accept a status code and an error message, which can also optionally be passed as a JSON, or `Error` object, and will always return a `Response` with a JSON body with an `error` key set to their error message.
 
-This can be restrictive, and isn't suitable for all cases. Sometimes it might be beneficial to instead `throw` a `Response` object, which interrupts your logic as well, but replaces the resolved `Response` from your API route directly, without a `StatusError` wrapper.
-For example, this can be used to create redirect responses.
+This can be restrictive, and isn't suitable for all cases. Sometimes it might be beneficial to instead `throw` a `Response` object, which interrupts your logic as well, but replaces the resolved `Response` from your API route directly, without a `StatusError` wrapper. For example, this can be used to create redirect responses.
 
 ```ts app/blog/[post]+api.ts
 import { StatusError } from 'expo-server';
@@ -247,7 +246,7 @@ Requests typically carry most metadata you'll need in their headers. However, `e
 
 Helper functions from `expo-server` return values that are scoped to the current `Request`. You can only call these functions in server-side code and only during ongoing requests.
 
-A common value that you may need to access is the request's origin URL. The origin URL - typically transmitted on a request's `Origin` header, represents the URL that a user used to access your API route. This may differ from any internal deployment URL that your server sees when the request is being proxied. You can use `expo-server`'s [`origin()`](/versions/latest/sdk/server/#origin) helper to access this value.
+A common value that you may need to access is the request's origin URL. The origin URL, typically transmitted on a request's `Origin` header, represents the URL that a user used to access your API route. This may differ from any internal deployment URL that your server sees when the request is being proxied. You can use `expo-server`'s [`origin()`](/versions/latest/sdk/server/#origin) helper method to access this value.
 
 ```ts app/help+api.ts
 import { origin } from 'expo-server';
@@ -289,9 +288,9 @@ export async function GET(request: Request) {
 }
 ```
 
-In the above example, we have an `await`-ed function call that delays the rest of the API route's execution. If we don't want to delay a `Response` then `await`-ing this call isn't suitable. However, calling the function without `await` wouldn't guarantee that this task keeps a serverless function running.
+In the above example, an `await`-ed function call delays the rest of the API route's execution. If we don't want to delay a `Response`, then `await`-ing this call isn't suitable. However, calling the function without `await` wouldn't guarantee that this task keeps a serverless function running.
 
-Instead, you can use `expo-server`'s [`runTask()`](/versions/latest/sdk/server/#runtaskfn) helper to run concurrent tasks. This is equivalent to the [`waitUntil()`](https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil) method that you see in service worker code or other serverless runtimes.
+Instead, you can use `expo-server`'s [`runTask()`](/versions/latest/sdk/server/#runtaskfn) helper function to run concurrent tasks. This is equivalent to the [`waitUntil()`](https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil) method that you see in service worker code or other serverless runtimes.
 
 ```ts app/tasks+api.ts
 import { runTask } from 'expo-server';
@@ -309,9 +308,9 @@ export async function GET(request: Request) {
 
 With `runTask`, you have a compromise between `await`-ing and not `await`-ing asynchronous functions. They'll be run concurrently, and don't delay the API route's response or execution, but are also making sure the runtime is aware of them, and don't quit early.
 
-However, sometimes you might also want to delay a task until after the API route has returned a `Response` and don't want to run it if the API route has rejected or only run a function after a time-sensitive task has completed, to avoid concurrent code from delaying computation heavy tasks in your API route.
+However, sometimes you may want to delay a task until after the API route has returned a `Response`. In such cases, you might prefer not to execute the task if the API has rejected it. Additionally, you may want to run a function only after a time-sensitive task has been completed to prevent concurrent code from delaying computation-heavy tasks in your API route.
 
-You can use `expo-server`'s [`deferTask()`](/versions/latest/sdk/server/#defertaskfn) helper to schedule tasks to run after a `Response` has been resolved by your API route.
+You can use `expo-server`'s [`deferTask()`](/versions/latest/sdk/server/#defertaskfn) helper function to schedule tasks to run after a `Response` has been resolved by your API route.
 
 ```ts app/tasks+api.ts
 import { deferTask } from 'expo-server';
@@ -342,7 +341,7 @@ export default function middleware(request: Request) {
 }
 ```
 
-In the above example, we're adding a `Retry-After` header to a future `Response` that an API route may be creating. This can also be extended for authentication and cookies.
+In the above example, a `Retry-After` header is added to a future `Response` that an API route may be creating. This can also be extended for authentication and cookies.
 
 ```ts app/+middleware.ts
 import { setResponseHeaders } from 'expo-server';
@@ -519,7 +518,7 @@ You will want to make a clean build before sending to the store to ensure no tra
 
 ## Hosting on third-party services
 
-> **important** The `expo-server` package was added in SDK 54. Use `@expo/server` for older SDKs instead.
+> **important** The `expo-server` library was added in SDK 54. Use `@expo/server` for older SDKs instead.
 
 Every cloud hosting provider needs a custom adapter to support the Expo server runtime. The following third-party providers have unofficial or experimental support from the Expo team.
 
@@ -531,7 +530,7 @@ Before deploying to these providers, it may be good to be familiar with the basi
 - `expo-server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
 
-The `expo-server` package contains adapters for various providers and runtimes. Before proceeding with any of the below sections, install the `expo-server` package first.
+The `expo-server` library contains adapters for various providers and runtimes. Before proceeding with any of the below sections, install the `expo-server` library.
 
 <Terminal cmd={['$ npx expo install expo-server']} />
 
