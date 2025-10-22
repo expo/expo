@@ -150,8 +150,15 @@
   return _errorManager;
 }
 
-- (void)start
+- (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
+  _delegate = delegate;
+  _launchOptions = launchOptions;
+  NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
+  if (lastOpenedApp != nil) {
+    _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
+  }
+  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
   void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
@@ -182,19 +189,6 @@
     return;
   }
   [self navigateToLauncher];
-}
-
-- (void)autoSetup:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
-{
-  _delegate = delegate;
-  _launchOptions = launchOptions;
-  NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
-  if (lastOpenedApp != nil) {
-    _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
-  }
-  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
-
-  [self start];
 }
 
 - (void)navigateToLauncher

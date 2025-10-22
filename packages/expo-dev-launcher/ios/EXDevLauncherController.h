@@ -49,9 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
-- (void)startWithWindow:(UIWindow *)window;
-
-- (void)autoSetup:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
+- (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
 
 - (nullable NSURL *)sourceUrl;
 
