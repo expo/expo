@@ -75,10 +75,6 @@ export type TextFieldProps = {
      */
     allowNewlines?: boolean;
     /**
-     * A callback triggered when user submits the TextField by pressing the return key.
-     */
-    onSubmitEditing?: (value: string) => void;
-    /**
      * The number of lines to display when `multiline` is set to true.
      * If the number of lines in the view is above this number, the view scrolls.
      * @default undefined, which means unlimited lines.
