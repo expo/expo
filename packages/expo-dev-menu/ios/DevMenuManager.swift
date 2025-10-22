@@ -267,7 +267,14 @@ open class DevMenuManager: NSObject {
     }
     if visible {
       setCurrentScreen(screen)
-      DispatchQueue.main.async { self.window?.makeKeyAndVisible() }
+      DispatchQueue.main.async {
+        if self.window?.windowScene == nil {
+          let windowScene = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+          self.window?.windowScene = windowScene
+        }
+        self.window?.makeKeyAndVisible()
+      }
     } else {
       DispatchQueue.main.async { self.window?.closeBottomSheet(nil) }
     }
