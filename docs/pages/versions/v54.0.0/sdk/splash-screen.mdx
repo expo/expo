@@ -16,7 +16,7 @@ import {
 } from '~/ui/components/ConfigSection';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-The `SplashScreen` module from the `expo-splash-screen` library is used to tell the splash screen to remain visible until it has been explicitly told to hide. This is useful to do tasks that will happen behind the scenes such as making API calls, pre-loading fonts, animating the splash screen and so on.
+The `SplashScreen` module from the `expo-splash-screen` library provides control over the native splash screen behavior. By default, the splash screen will automatically hide when your app is ready, but you can also manually control its visibility for advanced use cases.
 
 > From **SDK 52**, due to changes supporting the latest Android splash screen API, Expo Go and development builds cannot fully replicate the splash screen experience your users will see in your [standalone app](/more/glossary-of-terms/#standalone-app). Expo Go will show your app icon instead of the splash screen, and the splash screen on development builds will not reflect all properties set in the config plugin. **It is highly recommended that you test your splash screen on a release build to ensure it looks as expected.**
 
@@ -28,7 +28,59 @@ Also, see the guide on [creating a splash screen image](/develop/user-interface/
 
 ## Usage
 
-This example shows how to keep the splash screen visible while loading app resources and then hide the splash screen when the app has rendered some initial content.
+For most apps, you don't need to do anything special with the splash screen. It will automatically hide when your app is ready. You can optionally configure animation options:
+
+<Tabs>
+
+<Tab label="With Expo Router">
+
+```jsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Set the animation options. This is optional.
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+
+export default function RootLayout() {
+  return <Stack />;
+}
+```
+
+</Tab>
+
+<Tab label="Without Expo Router">
+
+```jsx App.js
+import { Text, View } from 'react-native';
+import Entypo from '@expo/vector-icons/Entypo';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Set the animation options. This is optional.
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>SplashScreen Demo! 👋</Text>
+      <Entypo name="rocket" size={30} />
+    </View>
+  );
+}
+```
+
+</Tab>
+
+</Tabs>
+
+### Delay hiding the splash screen
+
+In some cases, it may be necessary to delay hiding the splash screen until certain resources are loaded. For example, if you need to load fonts or API data before displaying the app content, you can use `preventAutoHideAsync()` to manually control when the splash screen hides. The goal should be to hide the splash screen as soon as possible.
 
 <Tabs>
 
@@ -40,12 +92,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
-// Set the animation options. This is optional.
-SplashScreen.setOptions({
-  duration: 1000,
-  fade: true,
-});
-
+// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -80,12 +127,6 @@ import * as Font from 'expo-font';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
-
-// Set the animation options. This is optional.
-SplashScreen.setOptions({
-  duration: 1000,
-  fade: true,
-});
 
 export default function App() {
   const [loaded] = useFonts({
