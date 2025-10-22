@@ -80,14 +80,13 @@ export default function App() {
 
 ### Delay hiding the splash screen
 
-In some cases, it may be necessary to delay hiding the splash screen until certain resources are loaded. For example, if you need to load fonts or API data before displaying the app content, you can use `preventAutoHideAsync()` to manually control when the splash screen hides. The goal should be to hide the splash screen as soon as possible.
+In some cases, it may be necessary to delay hiding the splash screen until certain resources are loaded. For example, if you need to load API data before displaying the app content, you can use `preventAutoHideAsync()` to manually control when the splash screen hides. The goal should be to hide the splash screen as soon as possible.
 
 <Tabs>
 
 <Tab label="With Expo Router">
 
 ```jsx app/_layout.tsx
-import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -96,17 +95,29 @@ import { useEffect } from 'react';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (loaded) {
+    async function doAsyncStuff() {
+      try {
+        // do something async here
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+      }
+    }
+
+    doAsyncStuff();
+  }, []);
+
+  useEffect(() => {
+    if (isReady) {
       SplashScreen.hide();
     }
-  }, [loaded]);
+  }, [isReady]);
 
-  if (!loaded) {
+  if (!isReady) {
     return null;
   }
 
@@ -123,23 +134,34 @@ import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (loaded) {
+    async function doAsyncStuff() {
+      try {
+        // do something async here
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+      }
+    }
+
+    doAsyncStuff();
+  }, []);
+
+  useEffect(() => {
+    if (isReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [isReady]);
 
-  if (!loaded) {
+  if (!isReady) {
     return null;
   }
 
