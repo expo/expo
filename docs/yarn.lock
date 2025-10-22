@@ -604,9 +604,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "@expo/styleguide-search-ui@npm:3.2.1"
+"@expo/styleguide-search-ui@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "@expo/styleguide-search-ui@npm:3.2.2"
   dependencies:
     "@expo/styleguide": "npm:^9.2.2"
     "@expo/styleguide-icons": "npm:^2.2.3"
@@ -616,10 +616,12 @@ __metadata:
     cmdk: "npm:^0.2.1"
     lodash.groupby: "npm:^4.6.0"
     markdown-to-jsx: "npm:^7.7.10"
+    prism-react-renderer: "npm:^2.4.1"
+    prismjs: "npm:^1.30.0"
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/6b692644e45526fc322687971431f2551e05cbada26db5413bc00d955cc54b07833362e60cdb402a97967c74f1875aede5caa4dab48915d1f1ecf2f160360a36
+  checksum: 10c0/dfc5bc9c162e397d41560ae45d809800b03364ce6d1e0e3ea7e95af4aa41530a07d380ecf29ecdca62839e15b7f3813b889905c6af7cac91904380fe89844a64
   languageName: node
   linkType: hard
 
@@ -6914,7 +6916,7 @@ __metadata:
     "@expo/styleguide": "npm:^9.2.2"
     "@expo/styleguide-base": "npm:^2.0.3"
     "@expo/styleguide-icons": "npm:^2.2.3"
-    "@expo/styleguide-search-ui": "npm:^3.2.1"
+    "@expo/styleguide-search-ui": "npm:^3.2.2"
     "@kapaai/react-sdk": "npm:^0.9.0"
     "@mdx-js/loader": "npm:^3.1.1"
     "@mdx-js/mdx": "npm:^3.1.1"
