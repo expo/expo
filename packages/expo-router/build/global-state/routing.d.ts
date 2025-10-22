@@ -3,17 +3,24 @@ import { type RefObject } from 'react';
 import { ResultState } from '../fork/getStateFromPath';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
+interface LinkAction {
+    type: 'ROUTER_LINK';
+    payload: {
+        options: LinkToOptions;
+        href: string;
+    };
+}
 export declare const routingQueue: {
-    queue: NavigationAction[];
+    queue: (NavigationAction | LinkAction)[];
     subscribers: Set<() => void>;
     subscribe(callback: () => void): () => void;
-    snapshot(): Readonly<{
+    snapshot(): (Readonly<{
         type: string;
         payload?: object;
         source?: string;
         target?: string;
-    }>[];
-    add(action: NavigationAction): void;
+    }> | LinkAction)[];
+    add(action: NavigationAction | LinkAction): void;
     run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>): void;
 };
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
@@ -76,4 +83,5 @@ export declare function findDivergentState(_actionState: ResultState, _navigatio
     actionStateRoute: PartialRoute<any> | undefined;
     navigationRoutes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
 };
+export {};
 //# sourceMappingURL=routing.d.ts.map

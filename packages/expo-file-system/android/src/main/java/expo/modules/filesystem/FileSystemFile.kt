@@ -126,6 +126,12 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
+  fun asContentUri(): Uri {
+    validateType()
+    validatePermission(Permission.READ)
+    return file.getContentUri(appContext ?: throw MissingAppContextException())
+  }
+
   @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
     validatePermission(Permission.READ)

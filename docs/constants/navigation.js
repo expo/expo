@@ -76,15 +76,7 @@ export const home = [
   ]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
-    makeGroup(
-      'Navigation',
-      [
-        makePage('develop/file-based-routing.mdx'),
-        makePage('develop/dynamic-routes.mdx'),
-        makePage('develop/next-steps.mdx'),
-      ],
-      { expanded: false }
-    ),
+    makePage('develop/app-navigation.mdx'),
     makeGroup(
       'User interface',
       [

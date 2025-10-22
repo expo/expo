@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Change `reset` props to `resetOnFocus` in headless tabs ([#40349](https://github.com/expo/expo/pull/40349) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 - Add support for server data loaders in development ([#39570](https://github.com/expo/expo/pull/39570) by [@hassankhan](https://github.com/hassankhan))
@@ -12,6 +14,7 @@
 - Allow specifying user-defined headers for all routes ([#40173](https://github.com/expo/expo/pull/40173) by [@hassankhan](https://github.com/hassankhan))
 - popToTop when tapping active bottom tab on web ([#40174](https://github.com/expo/expo/pull/40174) by [@juliesaia](https://github.com/juliesaia))
 - Add selected option to labelStyle and iconColor in NativeTabs container ([#40155](https://github.com/expo/expo/pull/40155) by [@Ubax](https://github.com/Ubax)
+- Add environmental variable to enable experimental web modal implementation ([#40231](https://github.com/expo/expo/pull/40231) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -25,7 +28,8 @@
 
 - Remove unnecessary ModalContextProvider ([#40179](https://github.com/expo/expo/pull/40179) by [@Ubax](https://github.com/Ubax))
 - Move state update logic from addListener to onStateChange ([#40261](https://github.com/expo/expo/pull/40261) by [@Ubax](https://github.com/Ubax))
-
+- Modify navigation action to compute target on action dispatch ([#39682](https://github.com/expo/expo/pull/39682) by [@Ubax](https://github.com/Ubax))
+- Migrate static rendering logic from `expo-router` to `@expo/router-server` ([#39374](https://github.com/expo/expo/pull/39374) by [@hassankhan](https://github.com/hassankhan))
 
 ## 6.0.9 - 2025-10-01
 

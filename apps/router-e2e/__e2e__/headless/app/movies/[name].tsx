@@ -3,12 +3,16 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { MovieList } from '../../components/MovieList';
 
+export async function generateStaticParams(): Promise<Record<string, string>[]> {
+  return [{ name: 'Toy Story' }];
+}
+
 export default function Movie() {
   const { name } = useLocalSearchParams();
   const title = name.toString();
 
   return (
-    <View style={styles.root}>
+    <View style={styles.root} testID="tab-movie-details">
       <Stack.Screen options={{ title }} />
       <Text style={styles.header}>{name}</Text>
       <View style={styles.listRoot}>
