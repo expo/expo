@@ -44,3 +44,16 @@ URL: ${serverHost}
 Error: ${e.message}
   `.trim();
 }
+
+export function handleCompileError(message: string | null = null) {
+  if (message === null) {
+    return;
+  }
+
+  const error = new Error(message);
+  // Symbolicating compile errors is wasted effort
+  // because the stack trace is meaningless:
+  // @ts-expect-error
+  error.preventSymbolication = true;
+  throw error;
+}

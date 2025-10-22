@@ -9,4 +9,5 @@ export declare function getFullBundlerUrl({ serverScheme, serverHost, bundleEntr
     platform: string;
 }): string;
 export declare function getConnectionError(serverHost: string, e: Error): string;
+export declare function handleCompileError(message?: string | null): void;
 //# sourceMappingURL=hmrUtils.native.d.ts.map

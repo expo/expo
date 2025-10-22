@@ -76,3 +76,23 @@ function dismissRedbox() {
       NativeExceptionsManager.dismissRedbox();
   }
 }
+
+export function handleCompileError(message: string | null = null) {
+  if (message === null) {
+    return;
+  }
+
+  dismissRedbox();
+
+  const LogBox = require('react-native/Libraries/LogBox/LogBox').default;
+  LogBox.addException({
+    message,
+    originalMessage: message,
+    name: undefined,
+    componentStack: undefined,
+    stack: [],
+    id: -1,
+    isFatal: true,
+    isComponentError: false,
+  });
+}

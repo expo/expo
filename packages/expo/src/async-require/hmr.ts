@@ -14,6 +14,7 @@ import prettyFormat, { plugins } from 'pretty-format';
 import {
   getConnectionError,
   getFullBundlerUrl,
+  handleCompileError,
   hideLoading,
   resetErrorOverlay,
   showLoading,
@@ -329,42 +330,14 @@ function flushEarlyLogs() {
   }
 }
 
-function dismissRedbox() {
-  // TODO(EvanBacon): Error overlay for web.
-}
-
 function showCompileError() {
   if (currentCompileErrorMessage === null) {
     return;
   }
 
-  // Even if there is already a redbox, syntax errors are more important.
-  // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
-  dismissRedbox();
-
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;
-
-  if (process.env.EXPO_OS === 'web') {
-    const error = new Error(message);
-    // Symbolicating compile errors is wasted effort
-    // because the stack trace is meaningless:
-    // @ts-expect-error
-    error.preventSymbolication = true;
-    throw error;
-  } else {
-    const LogBox = require('react-native/Libraries/LogBox/LogBox').default;
-    LogBox.addException({
-      message,
-      originalMessage: message,
-      name: undefined,
-      componentStack: undefined,
-      stack: [],
-      id: -1,
-      isFatal: true,
-      isComponentError: false,
-    });
-  }
+  handleCompileError(message);
 }
 
 export default HMRClient;
