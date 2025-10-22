@@ -730,6 +730,34 @@ export function withExtendedResolver(
           'expo/src/async-require/hmr.ts'
         );
         if (hmrModule) return hmrModule;
+
+        if (normalizedPath.endsWith('react-native/Libraries/LogBox/LogBoxInspectorContainer.js')) {
+          if (env.EXPO_UNSTABLE_LOG_BOX) {
+            try {
+              const expoLogBox = doResolve('@expo/log-box/swap-rn-logbox.js');
+              if (expoLogBox.type === 'sourceFile') {
+                debug('Using `@expo/log-box` implementation.');
+                return expoLogBox;
+              }
+            } catch {
+              // Fallback to the default LogBox implementation.
+            }
+          } else {
+            debug('Using React Native LogBox implementation.');
+          }
+        }
+
+        if (normalizedPath.endsWith('react-native/Libraries/LogBox/Data/parseLogBoxLog.js')) {
+          if (env.EXPO_UNSTABLE_LOG_BOX) {
+            try {
+              const expoLogBox = doResolve('@expo/log-box/swap-rn-logbox-parser.js');
+              if (expoLogBox.type === 'sourceFile') {
+                return expoLogBox;
+              }
+            } catch {}
+          } else {
+          }
+        }
       }
 
       return result;
