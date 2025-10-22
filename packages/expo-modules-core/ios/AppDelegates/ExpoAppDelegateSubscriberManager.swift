@@ -103,7 +103,7 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
       .subscribers
       .forEach { $0.applicationWillTerminate?(application) }
   }
-  
+
 #elseif os(macOS)
   @objc
   public static func applicationDidBecomeActive(_ notification: Notification) {
