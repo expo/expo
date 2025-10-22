@@ -42,17 +42,9 @@ Its default value is set to `max-age=31536000; includeSubDomains; preload`.
 
 For more information on why this header is a good default, improves security, and performance, [read this article on `web.dev`](https://web.dev/blog/bbc-hsts) and read more about [Strict-Transport-Security](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security) header in the MDN documentation.
 
-## Common version headers
+## Common headers
 
 By default, EAS Hosting will remove and not forward any `X-Powered-By` and `X-Aspnet-Version` headers. With API routes, this header does not serve much of a purpose and we don't recommend you add alternative headers like `X-Powered-By` to your API routes as it unnecessarily exposes internal information on the code you're running.
-
-## Frame Content-Security Policy (CSP)
-
-By default, browsers allow any webpage to render in an iframe. Unfortunately, this allows phishing attacks such as clickjacking which is used by malicious actors to overlay a page with their own controls and inputs, to steal credentials or coerce users to perform certain actions.
-
-To prevent this, EAS Hosting adds a `frame-ancestors 'self'` directive by default, telling browsers to not embed EAS Hosting in iframes on other domains that you don't control.
-
-This is equivalent to setting the (older) `X-Frame-Options` header to `SAMEORIGIN`.This default directive is only applied to responses with `text/html` content types, so it will only be applied to HTML pages.
 
 If your API routes respond with custom `X-Frame-Options` headers, these headers will automatically be converted to `Content-Security-Policy` directives in your response.
 
