@@ -90,13 +90,20 @@ for (const args of [
   });
 }
 
-describe('server', () => {
+// Due to change in `expo` package the tests suit will fail on Windows, as npm pack fails to execute `expo` prepare on Windows.
+const describeSkipWin = process.platform === 'win32' ? describe.skip : describe;
+
+describeSkipWin('server', () => {
   const expo = createExpoStart();
 
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
       // TODO(@hassankhan): remove @expo/router-server after publishing
-      linkExpoPackages: ['@expo/router-server', 'expo'],
+      linkExpoPackages: [
+        '@expo/router-server',
+        // 
+        'expo',
+      ],
     });
     await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
     await expo.startAsync();
