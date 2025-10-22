@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRoutesManifest = createRoutesManifest;
-const getRoutesSSR_1 = require("expo-router/build/getRoutesSSR");
+const getRoutesSSR_1 = require("./getRoutesSSR");
 const getServerManifest_1 = require("./getServerManifest");
 function createMockContextModule(map = []) {
     const contextModule = (_key) => ({ default() { } });

@@ -40,10 +40,30 @@
     "react-dom": "*",
     "react-native-web": "*",
     "expo": "*",
+    "expo-constants": "^18.0.9",
     "expo-font": "*",
-    "expo-router": "*"
+    "expo-router": "*",
+    "expo-server": "*",
+    "react-server-dom-webpack": ">= 19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-web": {
+      "optional": true
+    },
+    "react-server-dom-webpack": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "react-server-dom-webpack": "~19.0.0"
   },
   "dependencies": {
     "debug": "^4.3.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

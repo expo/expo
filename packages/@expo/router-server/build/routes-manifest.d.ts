@@ -1,4 +1,4 @@
-import { type Options } from 'expo-router/build/getRoutesSSR';
+import { type Options } from './getRoutesSSR';
 export { Options };
 export type RouteInfo<TRegex = string> = {
     file: string;
