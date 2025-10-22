@@ -37,7 +37,6 @@
     "@expo/metro-runtime": "^6.1.2",
     "react": "*",
     "react-dom": "*",
-    "react-native-web": "*",
     "expo": "*",
     "expo-constants": "^18.0.9",
     "expo-font": "*",

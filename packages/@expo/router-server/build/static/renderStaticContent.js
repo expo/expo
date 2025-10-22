@@ -49,15 +49,13 @@ const Font = __importStar(require("expo-font/build/server"));
 const expo_router_1 = require("expo-router");
 const _ctx_1 = require("expo-router/_ctx");
 const html_1 = require("expo-router/build/static/html");
+const registerRootComponent_1 = require("expo-router/build/static/registerRootComponent");
 const head_1 = __importDefault(require("expo-router/head"));
 const react_1 = __importDefault(require("react"));
 const server_node_1 = __importDefault(require("react-dom/server.node"));
-// @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)
-const react_native_web_1 = require("react-native-web");
 const getRootComponent_1 = require("./getRootComponent");
 const html_2 = require("./html");
 const debug = require('debug')('expo:router:server:renderStaticContent');
-react_native_web_1.AppRegistry.registerComponent('App', () => expo_router_1.ExpoRoot);
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -68,19 +66,17 @@ function resetReactNavigationContexts() {
 }
 async function getStaticContent(location, options) {
     const headContext = {};
+    const Root = (0, getRootComponent_1.getRootComponent)();
     const { 
     // NOTE: The `element` that's returned adds two extra Views and
     // the seemingly unused `RootTagContext.Provider`.
-    element, getStyleElement, } = react_native_web_1.AppRegistry.getApplication('App', {
-        initialProps: {
-            location,
-            context: _ctx_1.ctx,
-            wrapper: ({ children }) => (<Root>
-          <div id="root">{children}</div>
-        </Root>),
-        },
+    element, getStyleElement, } = (0, registerRootComponent_1.registerStaticRootComponent)(expo_router_1.ExpoRoot, {
+        location,
+        context: _ctx_1.ctx,
+        wrapper: ({ children }) => (<Root>
+        <div id="root">{children}</div>
+      </Root>),
     });
-    const Root = (0, getRootComponent_1.getRootComponent)();
     // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
     // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
     Font.resetServerContext();
