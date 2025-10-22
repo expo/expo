@@ -1,0 +1,170 @@
+/* Wasalni - Prototype (React Native, single-file App.js)
+
+هذا ملف React Native جاهز كـ App.js لنسخة أولية تفاعلية (Prototype) تعمل عبر Expo. المميزات المشمولة في النسخة الأولية:
+
+شاشات الراكب: طلب رحلة، استقبال عروض (Mock)، تتبع العرض، قبول العرض.
+
+شاشات السائق: استقبال إشعار طلب، تقديم عرض.
+
+تبديل اللغة (العربية / الإنجليزية) للمحتوى النموذجي.
+
+تصميم واجهة حديث ومبسّط قابلة للتجربة.
+
+
+تعليمات التشغيل (باستخدام Expo):
+
+1. إذا لم يكن لديك مشروع Expo، أنشئ واحداً: expo init wasalni-proto --template blank
+
+
+2. انسخ هذا الملف وألصق محتواه في App.js داخل مجلد المشروع.
+
+
+3. ثبّت الحزم اللازمة: expo install react-native-gesture-handler react-native-reanimated react-native-screens react-native-safe-area-context @react-native-community/masked-view npm install @react-navigation/native @react-navigation/stack
+
+
+4. شغّل التطبيق: expo start
+
+ثم اختر تشغيل على Android (Expo Go) أو على محاكي iOS/Android.
+
+
+
+
+ملاحظة: هذه النسخة نموذجية (واجهة وسلوكيات محاكاة). لربطها بخادم حقيقي وقاعدة بيانات وخرائط فعلية ستحتاج إلى إضافة API وخدمات مثل:
+
+Firebase / Supabase للمصادقة وبيانات المستخدم.
+
+خريطة (Google Maps SDK أو Mapbox) لموقع السائقين والمتابعة في الوقت الحقيقي.
+
+بوابات دفع (PayMob / Stripe / local gateways) لعمليات الدفع الإلكتروني.
+
+
+*/
+
+import React, {useState} from 'react'; import { SafeAreaView, View, Text, TouchableOpacity, TextInput, StyleSheet, FlatList, I18nManager, Alert } from 'react-native'; import { NavigationContainer } from '@react-navigation/native'; import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
+
+// Mock data helpers const mockOffers = [ { id: '1', driver: 'Ali', price: 3.50, eta: '4 min', rating: 4.8 }, { id: '2', driver: 'Sara', price: 2.80, eta: '6 min', rating: 4.5 }, { id: '3', driver: 'Hassan', price: 4.00, eta: '3 min', rating: 4.9 }, ];
+
+const strings = { en: { passengerHome: 'Passenger - Request Ride', driverHome: 'Driver - Dashboard', pickup: 'Pickup', dropoff: 'Destination', requestRide: 'Request Ride', offersTitle: 'Offers from drivers', accept: 'Accept', giveOffer: 'Make Offer', price: 'Price', eta: 'ETA', rating: 'Rating', submit: 'Submit Offer', language: 'Language', rolePassenger: 'Passenger', roleDriver: 'Driver', }, ar: { passengerHome: 'الراكب - طلب رحلة', driverHome: 'السائق - لوحة التحكم', pickup: 'نقطة الانطلاق', dropoff: 'الوجهة', requestRide: 'اطلب رحلة', offersTitle: 'عروض من السائقين', accept: 'قبول', giveOffer: 'قدم عرض', price: 'السعر', eta: 'وقت الوصول', rating: 'التقييم', submit: 'إرسال العرض', language: 'اللغة', rolePassenger: 'راكب', roleDriver: 'سائق', } };
+
+function HomeScreen({ navigation, route }){ const [lang, setLang] = useState('ar'); const t = strings[lang]; const [role, setRole] = useState('passenger');
+
+return ( <SafeAreaView style={styles.container}> <View style={styles.header}> <Text style={styles.title}>وصلني — Wasalni</Text> <View style={{flexDirection:'row', gap:8}}> <TouchableOpacity onPress={() => setLang(lang==='ar'?'en':'ar')} style={styles.langBtn}> <Text style={styles.langText}>{lang==='ar'?'EN':'ع'}</Text> </TouchableOpacity> <TouchableOpacity onPress={() => setRole(role==='passenger'?'driver':'passenger')} style={styles.toggleBtn}> <Text style={styles.toggleText}>{role==='passenger'?t.rolePassenger:t.roleDriver}</Text> </TouchableOpacity> </View> </View>
+
+<View style={styles.card}>
+    <Text style={styles.cardTitle}>{role==='passenger'?t.passengerHome:t.driverHome}</Text>
+
+    {role === 'passenger' ? (
+      <View>
+        <TouchableOpacity style={styles.input} onPress={() => navigation.navigate('RequestRide', {lang})}>
+          <Text style={{color:'#666'}}>{t.pickup} — {t.dropoff}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.primaryBtn} onPress={() => navigation.navigate('RequestRide', {lang})}>
+          <Text style={styles.primaryBtnText}>{t.requestRide}</Text>
+        </TouchableOpacity>
+      </View>
+    ) : (
+      <View>
+        <TouchableOpacity style={styles.primaryBtn} onPress={() => navigation.navigate('DriverOffer', {lang})}>
+          <Text style={styles.primaryBtnText}>{t.giveOffer}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.secondaryBtn, {marginTop:12}]} onPress={() => Alert.alert('Mock', 'هنا سترى الطلبات الواردة للسائق في النسخة الحية')}>
+          <Text style={styles.secondaryBtnText}>طلبات قريبة (Mock)</Text>
+        </TouchableOpacity>
+      </View>
+    )}
+  </View>
+
+</SafeAreaView>
+
+); }
+
+function RequestRideScreen({ navigation, route }){ const lang = route.params?.lang || 'ar'; const t = strings[lang]; const [pickup, setPickup] = useState('موقعي'); const [dropoff, setDropoff] = useState('الوجهة');
+
+return ( <SafeAreaView style={styles.container}> <View style={styles.headerSmall}> <Text style={styles.titleSmall}>{t.requestRide}</Text> </View>
+
+<View style={styles.card}>
+    <Text style={styles.label}>{t.pickup}</Text>
+    <TextInput style={styles.textInput} value={pickup} onChangeText={setPickup} />
+
+    <Text style={[styles.label, {marginTop:12}]}>{t.dropoff}</Text>
+    <TextInput style={styles.textInput} value={dropoff} onChangeText={setDropoff} />
+
+    <TouchableOpacity style={styles.primaryBtn} onPress={() => navigation.navigate('Offers', {lang, pickup, dropoff})}>
+      <Text style={styles.primaryBtnText}>{t.requestRide}</Text>
+    </TouchableOpacity>
+  </View>
+</SafeAreaView>
+
+); }
+
+function OffersScreen({ navigation, route }){ const lang = route.params?.lang || 'ar'; const t = strings[lang]; const offers = mockOffers;
+
+return ( <SafeAreaView style={styles.container}> <View style={styles.headerSmall}> <Text style={styles.titleSmall}>{t.offersTitle}</Text> </View>
+
+<FlatList
+    data={offers}
+    keyExtractor={i=>i.id}
+    contentContainerStyle={{padding:16}}
+    renderItem={({item}) => (
+      <View style={styles.offerCard}>
+        <View>
+          <Text style={styles.offerDriver}>{item.driver}</Text>
+          <Text style={styles.offerMeta}>{t.price}: ${item.price.toFixed(2)} • {t.eta}: {item.eta} • {t.rating}: {item.rating}</Text>
+        </View>
+        <TouchableOpacity style={styles.acceptBtn} onPress={() => navigation.navigate('Tracking', {driver:item, lang})}>
+          <Text style={styles.acceptText}>{t.accept}</Text>
+        </TouchableOpacity>
+      </View>
+    )}
+  />
+</SafeAreaView>
+
+); }
+
+function TrackingScreen({ navigation, route }){ const lang = route.params?.lang || 'ar'; const t = strings[lang]; const driver = route.params?.driver || {driver:'Unknown'};
+
+return ( <SafeAreaView style={styles.container}> <View style={styles.headerSmall}> <Text style={styles.titleSmall}>Tracking — {driver.driver}</Text> </View>
+
+<View style={styles.card}>
+    <Text style={{marginBottom:8}}>تتبع السائق (محاكاة)</Text>
+    <View style={{height:200, backgroundColor:'#f2f2f2', borderRadius:12, justifyContent:'center', alignItems:'center'}}>
+      <Text>خريطة / موقع السائق (Mock)</Text>
+    </View>
+
+    <TouchableOpacity style={[styles.primaryBtn, {marginTop:16}]} onPress={() => Alert.alert('تم الوصول', 'انتهت الرحلة (محاكاة)')}>
+      <Text style={styles.primaryBtnText}>تم الوصول</Text>
+    </TouchableOpacity>
+  </View>
+</SafeAreaView>
+
+); }
+
+function DriverOfferScreen({ navigation, route }){ const lang = route.params?.lang || 'ar'; const t = strings[lang]; const [price, setPrice] = useState('3.00'); const [eta, setEta] = useState('5 min');
+
+return ( <SafeAreaView style={styles.container}> <View style={styles.headerSmall}> <Text style={styles.titleSmall}>{t.driverHome}</Text> </View>
+
+<View style={styles.card}>
+    <Text style={styles.label}>{t.price} (USD)</Text>
+    <TextInput style={styles.textInput} value={price} onChangeText={setPrice} keyboardType="numeric" />
+
+    <Text style={[styles.label, {marginTop:12}]}>{t.eta}</Text>
+    <TextInput style={styles.textInput} value={eta} onChangeText={setEta} />
+
+    <TouchableOpacity style={styles.primaryBtn} onPress={() => {
+      Alert.alert('Offer Sent', `Price: ${price} • ETA: ${eta}`)
+      navigation.goBack();
+    }}>
+      <Text style={styles.primaryBtnText}>{t.submit}</Text>
+    </TouchableOpacity>
+  </View>
+</SafeAreaView>
+
+); }
+
+export default function App(){ return ( <NavigationContainer> <Stack.Navigator screenOptions={{headerShown:false}}> <Stack.Screen name="Home" component={HomeScreen} /> <Stack.Screen name="RequestRide" component={RequestRideScreen} /> <Stack.Screen name="Offers" component={OffersScreen} /> <Stack.Screen name="Tracking" component={TrackingScreen} /> <Stack.Screen name="DriverOffer" component={DriverOfferScreen} /> </Stack.Navigator> </NavigationContainer> ); }
+
+const styles = StyleSheet.create({ container: { flex:1, backgroundColor:'#ffffff' }, header: { padding:16, flexDirection:'row', justifyContent:'space-between', alignItems:'center' }, headerSmall: { padding:16, borderBottomWidth:1, borderColor:'#eee' }, title: { fontSize:20, fontWeight:'700' }, titleSmall: { fontSize:18, fontWeight:'700' }, langBtn: { padding:8, borderRadius:8, backgroundColor:'#eee' }, langText: { fontWeight:'700' }, toggleBtn: { marginLeft:8, padding:8, borderRadius:8, backgroundColor:'#0b5cff' }, toggleText: { color:'#fff', fontWeight:'700' }, card: { margin:16, padding:16, borderRadius:12, backgroundColor:'#fafafa', shadowColor:'#000', shadowOpacity:0.05 }, cardTitle: { fontSize:16, fontWeight:'700', marginBottom:12 }, input: { padding:12, borderRadius:8, backgroundColor:'#fff', borderWidth:1, borderColor:'#eee', marginBottom:12 }, textInput: { padding:12, borderRadius:8, backgroundColor:'#fff', borderWidth:1, borderColor:'#eee' }, primaryBtn: { marginTop:12, backgroundColor:'#0b5cff', padding:12, borderRadius:10, alignItems:'center' }, primaryBtnText: { color:'#fff', fontWeight:'700' }, secondaryBtn: { padding:12, borderRadius:10, alignItems:'center', borderWidth:1, borderColor:'#0b5cff' }, secondaryBtnText: { color:'#0b5cff', fontWeight:'700' }, label: { fontWeight:'700', marginBottom:6 }, offerCard: { backgroundColor:'#fff', padding:12, borderRadius:10, marginBottom:12, flexDirection:'row', justifyContent:'space-between', alignItems:'center', borderWidth:1, borderColor:'#eee' }, offerDriver: { fontSize:16, fontWeight:'800' }, offerMeta: { color:'#666', marginTop:4 }, acceptBtn: { backgroundColor:'#1abc9c', paddingVertical:8, paddingHorizontal:12, borderRadius:8 }, acceptText: { color:'#fff', fontWeight:'700' } });
