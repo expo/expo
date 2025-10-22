@@ -36,6 +36,10 @@ class DevMenuPackage : Package, ReactPackage {
   }
 
   override fun createReactNativeHostHandlers(context: Context?): List<ReactNativeHostHandler?>? {
+    if (!BuildConfig.DEBUG) {
+      return emptyList()
+    }
+  
     return listOf(
       object : ReactNativeHostHandler {
         override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
