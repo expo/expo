@@ -11,7 +11,6 @@ exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const iosLocalModules_1 = require("../../localModules/iosLocalModules");
 const utils_1 = require("../../utils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
@@ -78,6 +77,11 @@ async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
  * Generates Swift file that contains all autolinked Swift packages.
  */
 async function generateModulesProviderAsync(modules, targetPath, entitlementPath, watchedDirs) {
+    for (const s of watchedDirs) {
+        console.log('!!' + s);
+    }
+    console.log(targetPath);
+    console.log(entitlementPath);
     const className = path_1.default.basename(targetPath, path_1.default.extname(targetPath));
     const entitlements = await parseEntitlementsAsync(entitlementPath);
     const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements, watchedDirs);
@@ -103,7 +107,7 @@ async function generatePackageListFileContentAsync(modules, className, entitleme
     let modulesClassNames = []
         .concat(...modulesToImport.map((module) => module.modules))
         .filter(Boolean);
-    modulesClassNames = modulesClassNames.concat(await (0, iosLocalModules_1.getIosLocalModulesClassNames)(watchedDirs));
+    modulesClassNames = modulesClassNames.concat(await getIosInlineModulesClassNames(watchedDirs));
     const debugOnlyModulesClassNames = []
         .concat(...debugOnlyModules.map((module) => module.modules))
         .filter(Boolean);

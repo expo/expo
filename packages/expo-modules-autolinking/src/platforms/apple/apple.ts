@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
-import { getIosLocalModulesClassNames } from '../../localModules/iosLocalModules';
+import { getIosInlineModulesClassNames } from '../../inlineModules/iosInlineModules';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
@@ -100,6 +100,11 @@ export async function generateModulesProviderAsync(
   entitlementPath: string | null,
   watchedDirs: string[]
 ): Promise<void> {
+  for (const s of watchedDirs) {
+    console.log('!!' + s);
+  }
+  console.log(targetPath);
+  console.log(entitlementPath);
   const className = path.basename(targetPath, path.extname(targetPath));
   const entitlements = await parseEntitlementsAsync(entitlementPath);
   const generatedFileContent = await generatePackageListFileContentAsync(
@@ -144,7 +149,7 @@ async function generatePackageListFileContentAsync(
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
 
-  modulesClassNames = modulesClassNames.concat(await getIosLocalModulesClassNames(watchedDirs));
+  modulesClassNames = modulesClassNames.concat(await getIosInlineModulesClassNames(watchedDirs));
 
   const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
     .concat(...debugOnlyModules.map((module) => module.modules))

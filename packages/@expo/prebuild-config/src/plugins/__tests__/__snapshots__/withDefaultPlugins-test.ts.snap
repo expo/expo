@@ -793,12 +793,12 @@ exports[`built-in plugins introspects mods 1`] = `
 ",
           },
           {
-            "key": "expo.localModules.enabled",
+            "key": "expo.inlineModules.enabled",
             "type": "property",
             "value": "false",
           },
           {
-            "key": "expo.localModules.watchedDirs",
+            "key": "expo.inlineModules.watchedDirs",
             "type": "property",
             "value": "[]",
           },
@@ -1244,8 +1244,8 @@ exports[`built-in plugins introspects mods 1`] = `
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.jsEngine": "hermes",
-          "expo.localModules.enabled": "false",
-          "expo.localModules.watchedDirs": "[]",
+          "expo.inlineModules.enabled": "false",
+          "expo.inlineModules.watchedDirs": "[]",
         },
         "splashScreenStoryboard": {
           "document": {
@@ -1805,12 +1805,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             "value": "true",
           },
           {
-            "key": "expo.localModules.enabled",
+            "key": "expo.inlineModules.enabled",
             "type": "property",
             "value": "false",
           },
           {
-            "key": "expo.localModules.watchedDirs",
+            "key": "expo.inlineModules.watchedDirs",
             "type": "property",
             "value": "[]",
           },
@@ -2247,8 +2247,8 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "podfileProperties": {
           "expo.jsEngine": "hermes",
-          "expo.localModules.enabled": "false",
-          "expo.localModules.watchedDirs": "[]",
+          "expo.inlineModules.enabled": "false",
+          "expo.inlineModules.watchedDirs": "[]",
         },
         "splashScreenStoryboard": {
           "document": {

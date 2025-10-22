@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -46,17 +46,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		A5FAB6AC4D254E6886C74D8C /* ../../native-component-list/src/screens/LocalModules/localModulesExamples */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = "../../native-component-list/src/screens/LocalModules/localModulesExamples";
-			sourceTree = SOURCE_ROOT;
-		};
+		BDA56DE284754F748719E00E /* ../native-component-list/src/screens/inlineModules/inlineModulesExamples */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); name = "../native-component-list/src/screens/inlineModules/inlineModulesExamples"; path = "../../native-component-list/src/screens/inlineModules/inlineModulesExamples"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,7 +119,7 @@
 				D65327D7A22EEC0BE12398D9 /* Pods */,
 				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
 				AC3B6E5EB4FE4A6AACD31066 /* Resources */,
-				A5FAB6AC4D254E6886C74D8C /* ../../native-component-list/src/screens/LocalModules/localModulesExamples */,
+				BDA56DE284754F748719E00E /* ../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -234,7 +224,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				A5FAB6AC4D254E6886C74D8C /* ../../native-component-list/src/screens/LocalModules/localModulesExamples */,
+				BDA56DE284754F748719E00E /* ../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
 			);
 			name = BareExpo;
 			productName = BareExpo;
