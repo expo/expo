@@ -8,7 +8,12 @@ project_root = File.join(__dir__, '../../minimal-tester')
 ENV['PROJECT_ROOT'] = project_root
 
 target 'BrownfieldTester' do
-  use_expo_modules!({ projectRoot: project_root })
+  use_expo_modules!({
+    projectRoot: project_root,
+    exclude: [
+      'expo-splash-screen'
+    ],
+  })
 
   config_command = [
     'npx',
