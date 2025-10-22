@@ -34,7 +34,7 @@ For most apps, you don't need to do anything special with the splash screen. It 
 
 <Tab label="With Expo Router">
 
-```jsx app/_layout.tsx
+```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -53,7 +53,7 @@ export default function RootLayout() {
 
 <Tab label="Without Expo Router">
 
-```jsx App.js
+```tsx App.tsx
 import { Text, View } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
@@ -86,7 +86,7 @@ In some cases, it may be necessary to delay hiding the splash screen until certa
 
 <Tab label="With Expo Router">
 
-```jsx app/_layout.tsx
+```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -129,7 +129,7 @@ export default function RootLayout() {
 
 <Tab label="Without Expo Router">
 
-```jsx App.js
+```tsx App.tsx
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -273,7 +273,7 @@ See how to configure the native projects in the [installation instructions in th
 
 `SplashScreen` provides an out-of-the-box fade animation. It can be configured using the `setOptions` method.
 
-```js
+```tsx
 SplashScreen.setOptions({
   duration: 1000,
   fade: true,
@@ -284,7 +284,7 @@ If you prefer to use custom animation, see the [`with-splash-screen`](https://gi
 
 ## API
 
-```js
+```tsx
 import * as SplashScreen from 'expo-splash-screen';
 ```
 
