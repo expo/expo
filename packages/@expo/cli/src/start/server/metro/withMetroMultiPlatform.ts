@@ -13,7 +13,7 @@ import type {
   CustomResolutionContext,
 } from '@expo/metro/metro-resolver';
 import { resolve as metroResolver } from '@expo/metro/metro-resolver';
-import { SourceFileResolution } from '@expo/metro/metro-resolver/types';
+import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
