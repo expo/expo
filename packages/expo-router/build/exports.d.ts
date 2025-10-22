@@ -23,4 +23,5 @@ export type { ResultState } from './fork/getStateFromPath';
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 export type * from './types';
+export { StackWithButtons } from './layouts/StackWithButtons';
 //# sourceMappingURL=exports.d.ts.map
