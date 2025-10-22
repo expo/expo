@@ -132,6 +132,7 @@ const HMRClient: HMRClientNativeInterface = {
           : undefined;
       hmrClient.send(
         JSON.stringify({
+          // TODO: Type this properly.
           ...webMetadata,
           type: 'log',
           level,

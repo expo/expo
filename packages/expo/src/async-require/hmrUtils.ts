@@ -1,22 +1,14 @@
 import { DeviceEventEmitter } from 'react-native';
 
+import { getFullBundlerUrl as getFullBundlerUrlHelper } from './getFullBundlerUrl';
+
 export function getFullBundlerUrl(_: {
   serverScheme?: string;
   serverHost?: string;
   bundleEntry?: string;
   platform?: string;
 }): string {
-  const currentScript = document?.currentScript;
-  const bundleUrl = new URL(
-    currentScript && 'src' in currentScript ? currentScript.src : location.href,
-    location.href
-  );
-
-  if (!bundleUrl.searchParams.has('platform')) {
-    bundleUrl.searchParams.set('platform', process.env.EXPO_OS ?? 'web');
-  }
-
-  return bundleUrl.toString();
+  return getFullBundlerUrlHelper();
 }
 
 export function showLoading(message: string, _type: 'load' | 'refresh') {
