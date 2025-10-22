@@ -5,7 +5,7 @@ A native module for age range functionality
 # API documentation
 
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/age-range/)
-- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/application/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/age-range/)
 
 # Installation in managed Expo projects
 
