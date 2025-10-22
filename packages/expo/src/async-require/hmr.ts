@@ -10,18 +10,15 @@
  */
 import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
-import { DeviceEventEmitter } from 'react-native';
 
-// Ensure events are sent so custom Fast Refresh views are shown.
-function showLoading(message: string, _type: 'load' | 'refresh') {
-  DeviceEventEmitter.emit('devLoadingView:showMessage', {
-    message,
-  });
-}
-
-function hideLoading() {
-  DeviceEventEmitter.emit('devLoadingView:hide', {});
-}
+import {
+  getConnectionError,
+  getFullBundlerUrl,
+  handleCompileError,
+  hideLoading,
+  resetErrorOverlay,
+  showLoading,
+} from './hmrUtils';
 
 const pendingEntryPoints: string[] = [];
 
@@ -127,12 +124,19 @@ const HMRClient: HMRClientNativeInterface = {
       return;
     }
     try {
+      const webMetadata =
+        process.env.EXPO_OS === 'web'
+          ? {
+              platform: 'web',
+              mode: 'BRIDGE',
+            }
+          : undefined;
       hmrClient.send(
         JSON.stringify({
+          // TODO: Type this properly.
+          ...webMetadata,
           type: 'log',
           level,
-          platform: 'web',
-          mode: 'BRIDGE',
           data: data.map((item) =>
             typeof item === 'string'
               ? item
@@ -154,46 +158,59 @@ const HMRClient: HMRClientNativeInterface = {
 
   // Called once by the bridge on startup, even if Fast Refresh is off.
   // It creates the HMR client but doesn't actually set up the socket yet.
-  setup({ isEnabled }: { isEnabled: boolean }) {
-    assert(!hmrClient, 'Cannot initialize hmrClient twice');
+  setup(
+    platformOrOptions: string | { isEnabled: boolean },
+    bundleEntry?: string,
+    host?: string,
+    port?: number | string,
+    isEnabledOrUndefined?: boolean,
+    scheme: string = 'http'
+  ) {
+    let isEnabled = !!isEnabledOrUndefined;
+    let serverScheme: string;
+    let serverHost: string;
 
-    const serverScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const client = new MetroHMRClient(`${serverScheme}://${window.location.host}/hot`);
-    hmrClient = client;
-
-    const fullBundleUrl = (() => {
-      const currentScript = document?.currentScript;
-      const bundleUrl = new URL(
-        currentScript && 'src' in currentScript ? currentScript.src : location.href,
-        location.href
+    if (process.env.EXPO_OS === 'web') {
+      assert(
+        platformOrOptions && typeof platformOrOptions === 'object',
+        'Expected platformOrOptions to be an options object on web.'
       );
+      assert(!hmrClient, 'Cannot initialize hmrClient twice');
+      isEnabled = platformOrOptions.isEnabled;
 
-      if (!bundleUrl.searchParams.has('platform')) {
-        bundleUrl.searchParams.set('platform', process.env.EXPO_OS ?? 'web');
-      }
+      serverScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      serverHost = window.location.host;
+    } else {
+      assert(
+        platformOrOptions && typeof platformOrOptions === 'string',
+        'Missing required parameter `platform`'
+      );
+      assert(bundleEntry, 'Missing required parameter `bundleEntry`');
+      assert(host, 'Missing required parameter `host`');
+      assert(!hmrClient, 'Cannot initialize hmrClient twice');
 
-      return bundleUrl.toString();
-    })();
+      serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
+      serverScheme = scheme;
+    }
+
+    const origin = `${serverScheme}://${serverHost}`;
+    const client = new MetroHMRClient(`${origin}/hot`);
+    hmrClient = client;
 
     pendingEntryPoints.push(
       // HMRServer understands regular bundle URLs, so prefer that in case
       // there are any important URL parameters we can't reconstruct from
       // `setup()`'s arguments.
-      fullBundleUrl
+      getFullBundlerUrl({
+        serverScheme,
+        serverHost,
+        bundleEntry,
+        platform: typeof platformOrOptions === 'string' ? platformOrOptions : undefined,
+      })
     );
 
     client.on('connection-error', (e: Error) => {
-      let error = `Cannot connect to Metro.
- 
- Try the following to fix the issue:
- - Ensure the Metro dev server is running and available on the same network as this device`;
-      error += `
- 
- URL: ${window.location.host}
- 
- Error: ${e.message}`;
-
-      setHMRUnavailableReason(error);
+      setHMRUnavailableReason(getConnectionError(serverHost, e));
     });
 
     client.on('update-start', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
@@ -207,10 +224,7 @@ const HMRClient: HMRClientNativeInterface = {
 
     client.on('update', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
       if (client.isEnabled() && !isInitialUpdate) {
-        dismissRedbox();
-        // @ts-expect-error
-        globalThis.__expo_dev_resetErrors?.();
-        // LogBox.clearAllLogs();
+        resetErrorOverlay();
       }
     });
 
@@ -316,28 +330,14 @@ function flushEarlyLogs() {
   }
 }
 
-function dismissRedbox() {
-  // TODO(EvanBacon): Error overlay for web.
-}
-
 function showCompileError() {
   if (currentCompileErrorMessage === null) {
     return;
   }
 
-  // Even if there is already a redbox, syntax errors are more important.
-  // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
-  dismissRedbox();
-
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;
-
-  const error = new Error(message);
-  // Symbolicating compile errors is wasted effort
-  // because the stack trace is meaningless:
-  // @ts-expect-error
-  error.preventSymbolication = true;
-  throw error;
+  handleCompileError(message);
 }
 
 export default HMRClient;

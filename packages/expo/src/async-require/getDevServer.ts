@@ -1,3 +1,5 @@
+import { getFullBundlerUrl } from './getFullBundlerUrl';
+
 const getDevServer = () => {
   // Disable for SSR
   if (typeof window === 'undefined') {
@@ -14,15 +16,7 @@ const getDevServer = () => {
 
     /** URL but ensures that platform query param is added. */
     get fullBundleUrl() {
-      if (document?.currentScript && 'src' in document.currentScript) {
-        return document.currentScript.src;
-      }
-
-      const bundleUrl = new URL(location.href);
-
-      bundleUrl.searchParams.set('platform', 'web');
-
-      return bundleUrl.toString();
+      return getFullBundlerUrl();
     },
     url: location.origin + location.pathname,
   };
