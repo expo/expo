@@ -97,6 +97,13 @@ module.exports = defineConfig([
 
       'no-useless-constructor': 'off',
       '@typescript-eslint/no-useless-constructor': 'warn',
+      '@typescript-eslint/consistent-type-imports': [
+        'warn',
+        {
+          disallowTypeAnnotations: false,
+          fixStyle: 'inline-type-imports',
+        },
+      ],
       'no-undef': 'off',
 
       // TODO (Kadi): Enable this. Disabling for now because import/recommended adds it, but we didn't use to have it enabled
