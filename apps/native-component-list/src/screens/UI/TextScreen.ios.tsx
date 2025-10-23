@@ -20,52 +20,26 @@ export default function TextScreen() {
             Hello {'world'} {123}
           </Text>
         </Section>
-        
+
         <Section title="Custom Font Families">
-          <Text modifiers={[font({ family: 'Inter-Bold', size: 18 })]}>
-            Inter Bold Font
-          </Text>
-          <Text modifiers={[font({ family: 'Inter-Medium', size: 16 })]}>
-            Inter Medium Font
-          </Text>
-          <Text modifiers={[font({ family: 'Inter-Light', size: 14 })]}>
-            Inter Light Font
-          </Text>
-          <Text modifiers={[font({ family: 'Inter-Regular', size: 15 })]}>
-            Inter Regular Font
-          </Text>
+          <Text modifiers={[font({ family: 'Inter-Bold', size: 18 })]}>Inter Bold Font</Text>
+          <Text modifiers={[font({ family: 'Inter-Medium', size: 16 })]}>Inter Medium Font</Text>
+          <Text modifiers={[font({ family: 'Inter-Light', size: 14 })]}>Inter Light Font</Text>
+          <Text modifiers={[font({ family: 'Inter-Regular', size: 15 })]}>Inter Regular Font</Text>
         </Section>
-        
+
         <Section title="System Font Weights">
-          <Text modifiers={[font({ weight: 'ultraLight', size: 16 })]}>
-            Ultra Light Weight
-          </Text>
-          <Text modifiers={[font({ weight: 'thin', size: 16 })]}>
-            Thin Weight
-          </Text>
-          <Text modifiers={[font({ weight: 'light', size: 16 })]}>
-            Light Weight
-          </Text>
-          <Text modifiers={[font({ weight: 'regular', size: 16 })]}>
-            Regular Weight
-          </Text>
-          <Text modifiers={[font({ weight: 'medium', size: 16 })]}>
-            Medium Weight
-          </Text>
-          <Text modifiers={[font({ weight: 'semibold', size: 16 })]}>
-            Semibold Weight
-          </Text>
-          <Text modifiers={[font({ weight: 'bold', size: 16 })]}>
-            Bold Weight
-          </Text>
-          <Text modifiers={[font({ weight: 'heavy', size: 16 })]}>
-            Heavy Weight
-          </Text>
-          <Text modifiers={[font({ weight: 'black', size: 16 })]}>
-            Black Weight
-          </Text>
+          <Text modifiers={[font({ weight: 'ultraLight', size: 16 })]}>Ultra Light Weight</Text>
+          <Text modifiers={[font({ weight: 'thin', size: 16 })]}>Thin Weight</Text>
+          <Text modifiers={[font({ weight: 'light', size: 16 })]}>Light Weight</Text>
+          <Text modifiers={[font({ weight: 'regular', size: 16 })]}>Regular Weight</Text>
+          <Text modifiers={[font({ weight: 'medium', size: 16 })]}>Medium Weight</Text>
+          <Text modifiers={[font({ weight: 'semibold', size: 16 })]}>Semibold Weight</Text>
+          <Text modifiers={[font({ weight: 'bold', size: 16 })]}>Bold Weight</Text>
+          <Text modifiers={[font({ weight: 'heavy', size: 16 })]}>Heavy Weight</Text>
+          <Text modifiers={[font({ weight: 'black', size: 16 })]}>Black Weight</Text>
         </Section>
-        
+
         <Section title="System Font Designs">
           <Text modifiers={[font({ design: 'default', weight: 'medium', size: 16 })]}>
             Default Design
@@ -80,28 +54,16 @@ export default function TextScreen() {
             Monospaced Design
           </Text>
         </Section>
-        
+
         <Section title="Font Sizes">
-          <Text modifiers={[font({ size: 12, weight: 'regular' })]}>
-            12pt Font Size
-          </Text>
-          <Text modifiers={[font({ size: 14, weight: 'regular' })]}>
-            14pt Font Size
-          </Text>
-          <Text modifiers={[font({ size: 16, weight: 'regular' })]}>
-            16pt Font Size
-          </Text>
-          <Text modifiers={[font({ size: 18, weight: 'regular' })]}>
-            18pt Font Size
-          </Text>
-          <Text modifiers={[font({ size: 20, weight: 'regular' })]}>
-            20pt Font Size
-          </Text>
-          <Text modifiers={[font({ size: 24, weight: 'regular' })]}>
-            24pt Font Size
-          </Text>
+          <Text modifiers={[font({ size: 12, weight: 'regular' })]}>12pt Font Size</Text>
+          <Text modifiers={[font({ size: 14, weight: 'regular' })]}>14pt Font Size</Text>
+          <Text modifiers={[font({ size: 16, weight: 'regular' })]}>16pt Font Size</Text>
+          <Text modifiers={[font({ size: 18, weight: 'regular' })]}>18pt Font Size</Text>
+          <Text modifiers={[font({ size: 20, weight: 'regular' })]}>20pt Font Size</Text>
+          <Text modifiers={[font({ size: 24, weight: 'regular' })]}>24pt Font Size</Text>
         </Section>
-        
+
         <Section title="Combined Examples">
           <Text modifiers={[font({ family: 'Inter-ExtraBold', size: 20 })]}>
             Custom Font: Inter Extra Bold 20pt
