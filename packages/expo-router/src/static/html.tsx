@@ -27,6 +27,7 @@ export function InnerRoot({
   children,
   loadedData,
 }: PropsWithChildren<{ loadedData: ServerDataLoaderData }>) {
+  // NOTE(@hassankhan): This ref seems to be unnecessary, double-check SSR/SSG code paths and remove
   const ref = React.createRef<ServerContainerRef>();
 
   return (

@@ -23,6 +23,7 @@ function ScrollViewStyleReset() {
         }}/>);
 }
 function InnerRoot({ children, loadedData, }) {
+    // NOTE(@hassankhan): This ref seems to be unnecessary, double-check SSR/SSG code paths and remove
     const ref = react_1.default.createRef();
     return (<ServerDataLoaderContext_1.ServerDataLoaderContext value={loadedData}>
       <native_1.ServerContainer ref={ref}>{children}</native_1.ServerContainer>
