@@ -11,6 +11,8 @@ import { type CommonViewModifierProps } from '../types';
  */
 export type SecureFieldRef = {
   setText: (newText: string) => Promise<void>;
+  focus: () => Promise<void>;
+  blur: () => Promise<void>;
 };
 
 export type SecureFieldProps = {
@@ -28,17 +30,27 @@ export type SecureFieldProps = {
    */
   onChangeText?: (value: string) => void;
   /**
+   * A callback triggered when user submits the TextField by pressing the return key.
+   */
+  onSubmit?: (value: string) => void;
+  /**
    * A callback triggered when user focuses or blurs the SecureField.
    */
   onChangeFocus?: (focused: boolean) => void;
   keyboardType?: TextFieldKeyboardType;
+  /**
+   * If true, the text input will be focused automatically when the component is mounted.
+   * @default false
+   */
+  autoFocus?: boolean;
 } & CommonViewModifierProps;
 
-type NativeSecureFieldProps = Omit<SecureFieldProps, 'onChangeText'> & {} & ViewEvent<
+type NativeSecureFieldProps = Omit<SecureFieldProps, 'onChangeText' | 'onSubmit'> & {} & ViewEvent<
     'onValueChanged',
     { value: string }
   > &
-  ViewEvent<'onFocusChanged', { value: boolean }>;
+  ViewEvent<'onFocusChanged', { value: boolean }> &
+  ViewEvent<'onSubmit', { value: string }>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 const SecureFieldNativeView: React.ComponentType<NativeSecureFieldProps> = requireNativeView(
@@ -57,6 +69,9 @@ function transformSecureFieldProps(props: SecureFieldProps): NativeSecureFieldPr
     },
     onFocusChanged: (event) => {
       props.onChangeFocus?.(event.nativeEvent.value);
+    },
+    onSubmit: (event) => {
+      props.onSubmit?.(event.nativeEvent.value);
     },
   };
 }
