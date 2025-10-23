@@ -2,10 +2,6 @@ import { type CommonViewModifierProps } from '../types';
 export type PopoverViewProps = {
     children: React.ReactNode;
     /**
-     * A closure returning the content of the popover.
-     */
-    popoverView?: React.ReactNode;
-    /**
      * A binding to a Boolean value that determines whether to present the popover content that you return from the modifier’s content closure.
      */
     isPresented?: boolean;
@@ -22,5 +18,15 @@ export type PopoverViewProps = {
      */
     arrowEdge?: 'leading' | 'trailing' | 'top' | 'bottom' | 'none';
 } & CommonViewModifierProps;
+export declare function PopoverTrigger(props: {
+    children: React.ReactNode;
+}): import("react").JSX.Element;
+export declare function PopoverContent(props: {
+    children: React.ReactNode;
+}): import("react").JSX.Element;
 export declare function Popover(props: PopoverViewProps): import("react").JSX.Element;
+export declare namespace Popover {
+    var Trigger: typeof PopoverTrigger;
+    var Content: typeof PopoverContent;
+}
 //# sourceMappingURL=index.d.ts.map

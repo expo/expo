@@ -7,10 +7,6 @@ import { type CommonViewModifierProps } from '../types';
 export type PopoverViewProps = {
   children: React.ReactNode;
   /**
-   * A closure returning the content of the popover.
-   */
-  popoverView?: React.ReactNode;
-  /**
    * A binding to a Boolean value that determines whether to present the popover content that you return from the modifier’s content closure.
    */
   isPresented?: boolean;
@@ -45,8 +41,19 @@ const PopoverViewPopContent: React.ComponentType<object> = requireNativeView(
   'PopoverViewPopContent'
 );
 
+export function PopoverTrigger(props: { children: React.ReactNode }) {
+  return <PopoverViewContent {...props} />;
+}
+
+export function PopoverContent(props: { children: React.ReactNode }) {
+  return <PopoverViewPopContent {...props} />;
+}
+
+Popover.Trigger = PopoverTrigger;
+Popover.Content = PopoverContent;
+
 export function Popover(props: PopoverViewProps) {
-  const { onStateChange, modifiers, children, popoverView, isPresented, ...restProps } = props;
+  const { onStateChange, modifiers, children, isPresented, ...restProps } = props;
 
   const handleIsPresentedChange = (event: NativeSyntheticEvent<{ isPresented: boolean }>) => {
     onStateChange?.({ isPresented: event.nativeEvent.isPresented });
@@ -58,8 +65,7 @@ export function Popover(props: PopoverViewProps) {
       {...restProps}
       isPresented={isPresented}
       onIsPresentedChange={handleIsPresentedChange}>
-      {popoverView && <PopoverViewPopContent>{popoverView}</PopoverViewPopContent>}
-      <PopoverViewContent>{children}</PopoverViewContent>
+      {children}
     </PopoverNativeView>
   );
 }

@@ -46,26 +46,28 @@ export default function PopoverScreen() {
             <Popover
               isPresented={showPop}
               onStateChange={(e) => setShowPop(e.isPresented)}
-              popoverView={
+              attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
+              arrowEdge={arrowEdgeOptions[arrowEdge]}>
+              <Popover.Content>
                 <VStack modifiers={[padding({ all: 20 })]}>
                   <Text size={16}>Hello is button popover</Text>
                 </VStack>
-              }
-              attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
-              arrowEdge={arrowEdgeOptions[arrowEdge]}>
-              <Button variant="borderedProminent" onPress={() => setShowPop(true)}>
-                Button Popover
-              </Button>
+              </Popover.Content>
+              <Popover.Trigger>
+                <Button variant="borderedProminent" onPress={() => setShowPop(true)}>
+                  Button Popover
+                </Button>
+              </Popover.Trigger>
             </Popover>
-            <Popover
-              isPresented={textShowPop}
-              onStateChange={(e) => setTextShowPop(e.isPresented)}
-              popoverView={
+            <Popover isPresented={textShowPop} onStateChange={(e) => setTextShowPop(e.isPresented)}>
+              <Popover.Content>
                 <VStack modifiers={[padding({ all: 20 })]}>
                   <Text size={16}>Hello is text popover</Text>
                 </VStack>
-              }>
-              <Text modifiers={[onTapGesture(() => setTextShowPop(true))]}>Text Popover</Text>
+              </Popover.Content>
+              <Popover.Trigger>
+                <Text modifiers={[onTapGesture(() => setTextShowPop(true))]}>Text Popover</Text>
+              </Popover.Trigger>
             </Popover>
           </HStack>
         </VStack>
@@ -74,7 +76,9 @@ export default function PopoverScreen() {
           <Popover
             isPresented={iconShowPop}
             onStateChange={(e) => setIconShowPop(e.isPresented)}
-            popoverView={
+            attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
+            arrowEdge={arrowEdgeOptions[arrowEdge]}>
+            <Popover.Content>
               <VStack modifiers={[padding({ all: 20 })]} spacing={10}>
                 <HStack alignment="center" spacing={6}>
                   <Image systemName="star.fill" size={24} color="green" />
@@ -86,16 +90,16 @@ export default function PopoverScreen() {
                   Press me
                 </Button>
               </VStack>
-            }
-            attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
-            arrowEdge={arrowEdgeOptions[arrowEdge]}>
-            <VStack modifiers={[background('gray'), clipShape('circle')]}>
-              <Image
-                systemName="house"
-                size={24}
-                modifiers={[padding({ all: 10 }), onTapGesture(() => setIconShowPop(true))]}
-              />
-            </VStack>
+            </Popover.Content>
+            <Popover.Trigger>
+              <VStack modifiers={[background('gray'), clipShape('circle')]}>
+                <Image
+                  systemName="house"
+                  size={24}
+                  modifiers={[padding({ all: 10 }), onTapGesture(() => setIconShowPop(true))]}
+                />
+              </VStack>
+            </Popover.Trigger>
           </Popover>
         </HStack>
 
@@ -103,7 +107,9 @@ export default function PopoverScreen() {
           <Popover
             isPresented={scrollShowPop}
             onStateChange={(e) => setScrollShowPop(e.isPresented)}
-            popoverView={
+            attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
+            arrowEdge={arrowEdgeOptions[arrowEdge]}>
+            <Popover.Content>
               <VStack modifiers={[frame({ width: 200, height: 150 })]}>
                 <ScrollView contentContainerStyle={{ width: 200, padding: 20, gap: 4 }}>
                   <RNText style={{ fontSize: 16, fontWeight: '700' }}>
@@ -130,29 +136,31 @@ export default function PopoverScreen() {
                   </Host>
                 </ScrollView>
               </VStack>
-            }
-            attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
-            arrowEdge={arrowEdgeOptions[arrowEdge]}>
-            <Button variant="borderedProminent" onPress={() => setScrollShowPop(true)}>
-              ScrollView Popover
-            </Button>
+            </Popover.Content>
+            <Popover.Trigger>
+              <Button variant="borderedProminent" onPress={() => setScrollShowPop(true)}>
+                ScrollView Popover
+              </Button>
+            </Popover.Trigger>
           </Popover>
           <Popover
             isPresented={imageShowPop}
             onStateChange={(e) => setImageShowPop(e.isPresented)}
-            popoverView={
+            attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
+            arrowEdge={arrowEdgeOptions[arrowEdge]}>
+            <Popover.Content>
               <VStack modifiers={[frame({ width: 400, height: 200 })]}>
                 <ExpoImage
                   source={require('../../../assets/images/example2.jpg')}
                   style={{ width: 400, height: 200 }}
                 />
               </VStack>
-            }
-            attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
-            arrowEdge={arrowEdgeOptions[arrowEdge]}>
-            <Button variant="borderedProminent" onPress={() => setImageShowPop(true)}>
-              Image popover
-            </Button>
+            </Popover.Content>
+            <Popover.Trigger>
+              <Button variant="borderedProminent" onPress={() => setImageShowPop(true)}>
+                Image popover
+              </Button>
+            </Popover.Trigger>
           </Popover>
         </HStack>
       </VStack>
