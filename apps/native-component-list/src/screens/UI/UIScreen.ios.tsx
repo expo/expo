@@ -201,15 +201,15 @@ export const UIScreens = [
     getComponent() {
       return optionalRequire(() => require('./PopoverScreen'));
     },
-   },
-   {
-     name: 'RTL Layout',
-     route: 'ui/rtl',
-     options: {},
-     getComponent() {
-       return optionalRequire(() => require('./RTLScreen'));
-     },
-   },
+  },
+  {
+    name: 'RTL Layout',
+    route: 'ui/rtl',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RTLScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
