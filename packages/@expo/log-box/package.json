@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box",
-  "version": "0.0.13-canary-20251008-6acbc1c",
+  "version": "0.0.13-canary-20251023-4c86f95",
   "main": "app/index.ts",
   "scripts": {
     "start": "expo start",
