@@ -1,9 +1,4 @@
-//
-//  BrownfieldTesterApp.swift
-//  BrownfieldTester
-//
-//  Created by Gabriel Donadel on 22/10/25.
-//
+// Copyright 2024-present 650 Industries. All rights reserved.
 
 import SwiftUI
 
