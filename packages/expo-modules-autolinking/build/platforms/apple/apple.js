@@ -80,11 +80,6 @@ async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
  * Generates Swift file that contains all autolinked Swift packages.
  */
 async function generateModulesProviderAsync(modules, targetPath, entitlementPath, watchedDirs) {
-    for (const s of watchedDirs) {
-        console.log('!!' + s);
-    }
-    console.log(targetPath);
-    console.log(entitlementPath);
     const className = path_1.default.basename(targetPath, path_1.default.extname(targetPath));
     const entitlements = await parseEntitlementsAsync(entitlementPath);
     const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements, watchedDirs);
