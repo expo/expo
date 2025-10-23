@@ -13,7 +13,7 @@ internal enum FontWeight: String, Enumerable {
   case bold
   case heavy
   case black
-  
+
   func toSwiftUI() -> Font.Weight {
     switch self {
     case .ultraLight: return .ultraLight
@@ -34,7 +34,7 @@ internal enum FontDesign: String, Enumerable {
   case rounded
   case serif
   case monospaced
-  
+
   func toSwiftUI() -> Font.Design {
     switch self {
     case .default: return .default
