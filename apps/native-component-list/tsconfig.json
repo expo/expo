@@ -16,13 +16,7 @@
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "rootDirs": ["./", "../bare-expo/.expo/inlineModules/types"]
+    "noImplicitReturns": true
   },
-  "include": [
-    "App.tsx",
-    "src/**/*",
-    "ts-declarations/**/*",
-    "../bare-expo/.expo/inlineModules/types/**/*"
-  ]
+  "include": ["App.tsx", "src/**/*", "ts-declarations/**/*"]
 }
