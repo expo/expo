@@ -106,25 +106,6 @@ class AudioControlsService : MediaSessionService() {
   private fun buildNotification(): Notification? {
     val session = mediaSession ?: return null
 
-    // Calculate which action indices should be shown in compact view
-    // This must match the order of buttons in the custom layout
-    val compactViewIndices = mutableListOf<Int>()
-    var actionCount = 0
-
-    // Count actions in the same order as updateSessionCustomLayout
-    if (currentOptions?.showSeekBackward == true) {
-      compactViewIndices.add(actionCount)
-      actionCount++
-    }
-    // Play/pause is always shown in compact view
-    compactViewIndices.add(actionCount)
-    actionCount++
-
-    if (currentOptions?.showSeekForward == true) {
-      compactViewIndices.add(actionCount)
-      actionCount++
-    }
-
     val builder = NotificationCompat.Builder(this, CHANNEL_ID)
       .setSmallIcon(androidx.media3.session.R.drawable.media3_icon_circular_play)
       .setContentTitle(currentMetadata?.title ?: "\u200E")
@@ -135,13 +116,9 @@ class AudioControlsService : MediaSessionService() {
       .setAutoCancel(false)
       .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
 
-    // Only set compact view indices if they're within valid range
-    // MediaStyle pulls actions from the session's custom layout
-    val style = MediaStyleNotificationHelper.MediaStyle(session)
-    if (compactViewIndices.isNotEmpty() && compactViewIndices.all { it < actionCount }) {
-      style.setShowActionsInCompactView(*compactViewIndices.toIntArray())
-    }
-    builder.setStyle(style)
+    // Using only session custom layout: do NOT call setShowActionsInCompactView.
+    // The compact layout will follow the order of the custom layout provided to the session.
+    builder.setStyle(MediaStyleNotificationHelper.MediaStyle(session))
 
     return builder.build()
   }
@@ -182,9 +159,9 @@ class AudioControlsService : MediaSessionService() {
     }
 
     session.setCustomLayout(customLayout)
-  }
+ }
 
-  private fun postOrStartForegroundNotification(startInForeground: Boolean) {
+ private fun postOrStartForegroundNotification(startInForeground: Boolean) {
     val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val notification = buildNotification() ?: return
 
