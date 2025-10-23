@@ -1,4 +1,4 @@
-import commander from 'commander';
+import commander, { command } from 'commander';
 
 import {
   AutolinkingCommonArguments,
@@ -58,9 +58,6 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           includeModules.has(module.packageName)
         );
         const watchedDirs = JSON.parse(watchedDirsSerialized);
-        for (const dir of watchedDirs) {
-          console.log('!' + dir);
-        }
         await generateModulesProviderAsync(
           filteredModules,
           {
