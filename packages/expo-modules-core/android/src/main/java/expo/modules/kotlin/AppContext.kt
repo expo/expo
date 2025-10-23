@@ -118,8 +118,8 @@ class AppContext(
 
       registry.register(modulesProvider)
 
-      // Register local modules
-      registerLocalModulesList()
+      // Register inline modules
+      registerInlineModulesList()
 
       logger.info("✅ AppContext was initialized")
     }
@@ -129,11 +129,11 @@ class AppContext(
     registry.postOnCreate()
   }
 
-  private fun registerLocalModulesList() {
+  private fun registerInlineModulesList() {
     try {
-      val localModulesList = Class.forName("local.modules.ExpoLocalModulesList").getConstructor()
+      val inlineModulesList = Class.forName("inline.modules.ExpoInlineModulesList").getConstructor()
         .newInstance() as ModulesProvider
-      registry.register(localModulesList)
+      registry.register(inlineModulesList)
     } catch (_: ClassNotFoundException) {}
   }
 
