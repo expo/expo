@@ -73,6 +73,12 @@ public interface ReactActivityHandler {
   }
 
   /**
+   * Gives modules a chance to override invoke side-effects when activity delegate is created.
+   */
+  default void onDidCreateReactActivityDelegateNotification(ReactActivity activity, ReactActivityDelegate delegate) {
+  }
+
+  /**
    * For modules to delay the call for react-native `loadApp`.
    * This gives modules a chance to do some early and heavy initialization in background thread and avoid ANR.
    * Right now it is for expo-updates only.
