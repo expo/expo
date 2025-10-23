@@ -34,10 +34,10 @@ class ExpoCalendarAttendee(
       cleanNullableFields(attendeeValues, nullableFields)
       if (this@ExpoCalendarAttendee.attendeeRecord?.id == null) {
         if (eventId == null) {
-          throw AttendeeCouldNotBeCreatedException( "Event ID must be provided when creating a new attendee")
+          throw AttendeeCouldNotBeCreatedException("Event ID must be provided when creating a new attendee")
         }
         val attendeeUri = contentResolver.insert(CalendarContract.Attendees.CONTENT_URI, attendeeValues)
-          ?: throw AttendeeCouldNotBeCreatedException( "Failed to insert attendee into the database")
+          ?: throw AttendeeCouldNotBeCreatedException("Failed to insert attendee into the database")
         val attendeeId = attendeeUri.lastPathSegment
           ?: throw AttendeeCouldNotBeCreatedException("Failed to retrieve attendee ID after insertion")
         attendeeId
@@ -87,7 +87,7 @@ class ExpoCalendarAttendee(
 
   private fun cleanNullableFields(attendeeBuilder: ContentValues, nullableFields: List<String>?) {
     val nullableSet = nullableFields?.toSet() ?: emptySet()
-    
+
     val fieldMappings = mapOf(
       "email" to CalendarContract.Attendees.ATTENDEE_EMAIL,
       "name" to CalendarContract.Attendees.ATTENDEE_NAME,
@@ -95,7 +95,7 @@ class ExpoCalendarAttendee(
       "type" to CalendarContract.Attendees.ATTENDEE_TYPE,
       "status" to CalendarContract.Attendees.ATTENDEE_STATUS
     )
-    
+
     fieldMappings.forEach { (fieldName, columnName) ->
       if (fieldName in nullableSet) {
         attendeeBuilder.putNull(columnName)

@@ -12,7 +12,7 @@ class CalendarBuilderNext() {
   }
 
   fun put(key: String, value: Int?) = apply {
-    value?.let { eventValues.put(key, it)}
+    value?.let { eventValues.put(key, it) }
   }
 
   fun put(key: String, value: Long?) = apply {

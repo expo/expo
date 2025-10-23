@@ -9,24 +9,24 @@ class CalendarPermissionsDelegate(private val appContext: AppContext) {
     return appContext.permissions
       ?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR) == true
   }
-  
+
   private fun hasWritePermissions(): Boolean {
     return appContext.permissions
-      ?.hasGrantedPermissions( Manifest.permission.WRITE_CALENDAR) == true
+      ?.hasGrantedPermissions(Manifest.permission.WRITE_CALENDAR) == true
   }
-  
+
   fun requireReadPermissions() {
     if (!hasReadPermissions()) {
       throw CalendarPermissionException("Read permission not found")
     }
   }
-  
+
   fun requireWritePermissions() {
     if (!hasWritePermissions()) {
       throw CalendarPermissionException("Write permission not found")
     }
   }
-  
+
   fun requireSystemPermissions(isWritePermissionRequired: Boolean = true) {
     if (isWritePermissionRequired) {
       requireWritePermissions()

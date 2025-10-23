@@ -22,63 +22,63 @@ import expo.modules.calendar.next.records.Source
 import expo.modules.calendar.next.utils.sdf
 import java.util.Calendar
 
-fun Cursor.toCalendarRecord() : CalendarRecord {
-  val accessLevel = optInt( CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
-  
+fun Cursor.toCalendarRecord(): CalendarRecord {
+  val accessLevel = optInt(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
+
   return CalendarRecord(
-    id = optString( CalendarContract.Calendars._ID),
-    title = optString( CalendarContract.Calendars.CALENDAR_DISPLAY_NAME),
-    isPrimary = optInt( CalendarContract.Calendars.IS_PRIMARY) == 1,
-    name = optString( CalendarContract.Calendars.NAME),
-    color = optInt( CalendarContract.Calendars.CALENDAR_COLOR),
-    ownerAccount = optString( CalendarContract.Calendars.OWNER_ACCOUNT),
-    timeZone = optString( CalendarContract.Calendars.CALENDAR_TIME_ZONE),
-    isVisible = optInt( CalendarContract.Calendars.VISIBLE) != 0,
-    isSynced = optInt( CalendarContract.Calendars.SYNC_EVENTS) != 0,
+    id = optString(CalendarContract.Calendars._ID),
+    title = optString(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME),
+    isPrimary = optInt(CalendarContract.Calendars.IS_PRIMARY) == 1,
+    name = optString(CalendarContract.Calendars.NAME),
+    color = optInt(CalendarContract.Calendars.CALENDAR_COLOR),
+    ownerAccount = optString(CalendarContract.Calendars.OWNER_ACCOUNT),
+    timeZone = optString(CalendarContract.Calendars.CALENDAR_TIME_ZONE),
+    isVisible = optInt(CalendarContract.Calendars.VISIBLE) != 0,
+    isSynced = optInt(CalendarContract.Calendars.SYNC_EVENTS) != 0,
     allowsModifications = isModificationAllowed(accessLevel),
-    accessLevel = CalendarAccessLevel.fromAccessLevelString(optString( CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)),
-    allowedReminders = AlarmMethod.fromReminderString(optString( CalendarContract.Calendars.ALLOWED_REMINDERS)),
-    allowedAttendeeTypes = AttendeeType.fromAttendeeTypesString(optString( CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)),
+    accessLevel = CalendarAccessLevel.fromAccessLevelString(optString(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)),
+    allowedReminders = AlarmMethod.fromReminderString(optString(CalendarContract.Calendars.ALLOWED_REMINDERS)),
+    allowedAttendeeTypes = AttendeeType.fromAttendeeTypesString(optString(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)),
     source = createSource(this)
   )
 }
 
 fun Cursor.toAttendeeRecord(): AttendeeRecord {
   return AttendeeRecord(
-    id = optString( CalendarContract.Attendees._ID),
-    name = optString( CalendarContract.Attendees.ATTENDEE_NAME),
-    role = AttendeeRole.fromAndroidValue(optInt( CalendarContract.Attendees.ATTENDEE_RELATIONSHIP) ?: 0),
-    status = AttendeeStatus.fromAndroidValue(optInt( CalendarContract.Attendees.ATTENDEE_STATUS) ?: 0),
-    type = AttendeeType.fromAndroidValue(optInt( CalendarContract.Attendees.ATTENDEE_TYPE) ?: 0),
-    email = optString( CalendarContract.Attendees.ATTENDEE_EMAIL)
+    id = optString(CalendarContract.Attendees._ID),
+    name = optString(CalendarContract.Attendees.ATTENDEE_NAME),
+    role = AttendeeRole.fromAndroidValue(optInt(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP) ?: 0),
+    status = AttendeeStatus.fromAndroidValue(optInt(CalendarContract.Attendees.ATTENDEE_STATUS) ?: 0),
+    type = AttendeeType.fromAndroidValue(optInt(CalendarContract.Attendees.ATTENDEE_TYPE) ?: 0),
+    email = optString(CalendarContract.Attendees.ATTENDEE_EMAIL)
   )
 }
 
 fun Cursor.toEventRecord(contentResolver: ContentResolver): EventRecord {
   val eventId = getEventId()
   val (startDate, endDate) = getEventDates()
-  
+
   return EventRecord(
     id = eventId,
-    calendarId = optString( CalendarContract.Events.CALENDAR_ID),
-    title = optString( CalendarContract.Events.TITLE),
-    notes = optString( CalendarContract.Events.DESCRIPTION),
+    calendarId = optString(CalendarContract.Events.CALENDAR_ID),
+    title = optString(CalendarContract.Events.TITLE),
+    notes = optString(CalendarContract.Events.DESCRIPTION),
     alarms = eventId?.let { serializeAlarms(contentResolver, it)?.toList() },
-    recurrenceRule = RecurrenceRuleRecord.fromRrFormat(optString( CalendarContract.Events.RRULE)),
+    recurrenceRule = RecurrenceRuleRecord.fromRrFormat(optString(CalendarContract.Events.RRULE)),
     startDate = dateToString(startDate?.toLongOrNull()),
     endDate = dateToString(endDate?.toLongOrNull()),
-    allDay = optInt( CalendarContract.Events.ALL_DAY) != 0,
-    location = optString( CalendarContract.Events.EVENT_LOCATION),
-    availability = EventAvailability.fromAndroidValue(optInt( CalendarContract.Events.AVAILABILITY)),
-    timeZone = optString( CalendarContract.Events.EVENT_TIMEZONE),
-    endTimeZone = optString( CalendarContract.Events.EVENT_END_TIMEZONE),
-    status = EventStatus.fromAndroidValue(optInt( CalendarContract.Events.STATUS) ?: 0),
-    organizerEmail = optString( CalendarContract.Events.ORGANIZER),
-    accessLevel = EventAccessLevel.fromAndroidValue(optInt( CalendarContract.Events.ACCESS_LEVEL) ?: 0),
-    guestsCanModify = optInt( CalendarContract.Events.GUESTS_CAN_MODIFY) != 0,
-    guestsCanInviteOthers = optInt( CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0,
+    allDay = optInt(CalendarContract.Events.ALL_DAY) != 0,
+    location = optString(CalendarContract.Events.EVENT_LOCATION),
+    availability = EventAvailability.fromAndroidValue(optInt(CalendarContract.Events.AVAILABILITY)),
+    timeZone = optString(CalendarContract.Events.EVENT_TIMEZONE),
+    endTimeZone = optString(CalendarContract.Events.EVENT_END_TIMEZONE),
+    status = EventStatus.fromAndroidValue(optInt(CalendarContract.Events.STATUS) ?: 0),
+    organizerEmail = optString(CalendarContract.Events.ORGANIZER),
+    accessLevel = EventAccessLevel.fromAndroidValue(optInt(CalendarContract.Events.ACCESS_LEVEL) ?: 0),
+    guestsCanModify = optInt(CalendarContract.Events.GUESTS_CAN_MODIFY) != 0,
+    guestsCanInviteOthers = optInt(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0,
     guestsCanSeeGuests = optInt(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0,
-    originalId = optString( CalendarContract.Events.ORIGINAL_ID),
+    originalId = optString(CalendarContract.Events.ORIGINAL_ID),
     instanceId = getInstanceId()
   )
 }
@@ -102,8 +102,8 @@ private fun Cursor.optInt(columnName: String): Int? {
 }
 
 private fun Cursor.getEventId(): String? {
-  return optString( CalendarContract.Instances.EVENT_ID)
-    ?: optString( CalendarContract.Instances._ID)
+  return optString(CalendarContract.Instances.EVENT_ID)
+    ?: optString(CalendarContract.Instances._ID)
 }
 
 private fun Cursor.getEventDates(): Pair<String?, String?> {
@@ -113,7 +113,7 @@ private fun Cursor.getEventDates(): Pair<String?, String?> {
 }
 
 private fun Cursor.getInstanceId(): String? {
-  return optString( CalendarContract.Instances._ID)
+  return optString(CalendarContract.Instances._ID)
 }
 
 private fun isModificationAllowed(accessLevel: Int?): Boolean {
@@ -149,10 +149,10 @@ private fun serializeAlarms(contentResolver: ContentResolver, eventId: String): 
     eventId.toLong(),
     projection
   )
-  
+
   val minutesIndex = cursor.getColumnIndex(CalendarContract.Reminders.MINUTES)
   val methodIndex = cursor.getColumnIndex(CalendarContract.Reminders.METHOD)
-  
+
   while (cursor.moveToNext()) {
     val method = cursor.getInt(methodIndex)
     val thisAlarm = AlarmRecord(

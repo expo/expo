@@ -52,14 +52,14 @@ data class EventRecord(
   @Field
   val originalId: String? = null,
   @Field
-  val instanceId: String? = null,
+  val instanceId: String? = null
 ) : Record
 
 data class AlarmRecord(
   @Field
   val relativeOffset: Int?,
   @Field
-  val method: AlarmMethod?,
+  val method: AlarmMethod?
 ) : Record
 
 data class RecurrenceRuleRecord(
@@ -70,7 +70,7 @@ data class RecurrenceRuleRecord(
   @Field
   val interval: Int? = null,
   @Field
-  val occurrence: Int? = null,
+  val occurrence: Int? = null
 ) : Record {
 
   /**

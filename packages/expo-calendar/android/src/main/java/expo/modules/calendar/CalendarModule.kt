@@ -641,9 +641,9 @@ class CalendarModule : Module() {
       eventID.toLong(),
       projection
     )
-    
+
     val idIndex = cursor.getColumnIndex(CalendarContract.Reminders._ID)
-    
+
     while (cursor.moveToNext()) {
       val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(idIndex))
       contentResolver.delete(reminderUri, null, null)

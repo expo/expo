@@ -55,7 +55,8 @@ class CalendarNextModule : Module() {
 
     AsyncFunction("requestCalendarPermissions") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
-        appContext.permissions, promise,
+        appContext.permissions,
+        promise,
         Manifest.permission.READ_CALENDAR,
         Manifest.permission.WRITE_CALENDAR
       )
@@ -65,7 +66,6 @@ class CalendarNextModule : Module() {
       permissionsDelegate.requireSystemPermissions(false)
       listEvents(appContext, calendarIds, startDate, endDate)
     }
-
 
     AsyncFunction("createCalendar") Coroutine { calendarRecord: CalendarRecord ->
       permissionsDelegate.requireSystemPermissions(true)

@@ -20,7 +20,7 @@ data class AttendeeRecord(
   @Field
   val type: AttendeeType? = null,
   @Field
-  val email: String? = null,
+  val email: String? = null
 ) : Record
 
 enum class AttendeeRole(val value: String) : Enumerable {

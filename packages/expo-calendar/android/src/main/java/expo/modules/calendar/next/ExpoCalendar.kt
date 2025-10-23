@@ -40,7 +40,8 @@ class ExpoCalendar(
       }
       val contentResolver = reactContext.contentResolver
 
-      return findEvents(contentResolver,
+      return findEvents(
+        contentResolver,
         startDate,
         endDate,
         listOf(calendarRecord?.id ?: "")
@@ -64,8 +65,11 @@ class ExpoCalendar(
 
   suspend fun createEvent(record: EventRecord): ExpoCalendarEvent? {
     try {
-      val event = ExpoCalendarEvent(appContext
-        ?: throw Exceptions.AppContextLost(), record)
+      val event = ExpoCalendarEvent(
+        appContext
+          ?: throw Exceptions.AppContextLost(),
+        record
+      )
       val calendarId = calendarRecord?.id
         ?: throw EventsCouldNotBeCreatedException("Calendar id is null")
       val newEventId = event.saveEvent(record, calendarId)
@@ -187,8 +191,10 @@ class ExpoCalendar(
           }
         }
 
-        val contentResolver = (appContext.reactContext
-          ?: throw Exceptions.ReactContextLost()).contentResolver
+        val contentResolver = (
+          appContext.reactContext
+            ?: throw Exceptions.ReactContextLost()
+          ).contentResolver
 
         if (isNew) {
           val uriBuilder = CalendarContract.Calendars.CONTENT_URI
@@ -218,8 +224,10 @@ class ExpoCalendar(
           if (type != null && type == "reminder") {
             throw CalendarNotSupportedException("Calendars of type `reminder` are not supported on Android")
           }
-          val contentResolver = (context.reactContext
-            ?: throw Exceptions.ReactContextLost()).contentResolver
+          val contentResolver = (
+            context.reactContext
+              ?: throw Exceptions.ReactContextLost()
+            ).contentResolver
           val uri = CalendarContract.Calendars.CONTENT_URI
           val cursor = contentResolver.query(uri, findCalendarsQueryParameters, null, null, null)
           requireNotNull(cursor) { "Cursor shouldn't be null" }
@@ -233,8 +241,10 @@ class ExpoCalendar(
     suspend fun findExpoCalendarById(context: AppContext, calendarID: String): ExpoCalendar? {
       return withContext(Dispatchers.IO) {
         val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toInt().toLong())
-        val contentResolver = (context.reactContext
-          ?: throw Exceptions.ReactContextLost()).contentResolver
+        val contentResolver = (
+          context.reactContext
+            ?: throw Exceptions.ReactContextLost()
+          ).contentResolver
         val cursor = contentResolver.query(
           uri,
           findCalendarByIdQueryFields,
@@ -256,8 +266,10 @@ class ExpoCalendar(
 
     suspend fun listEvents(context: AppContext, calendarIds: List<String>, startDate: String, endDate: String): List<ExpoCalendarEvent> {
       try {
-        val contentResolver = (context.reactContext
-          ?: throw Exceptions.ReactContextLost()).contentResolver
+        val contentResolver = (
+          context.reactContext
+            ?: throw Exceptions.ReactContextLost()
+          ).contentResolver
         val allEvents = mutableListOf<ExpoCalendarEvent>()
         val cursor = findEvents(contentResolver, startDate, endDate, calendarIds)
         cursor.use {

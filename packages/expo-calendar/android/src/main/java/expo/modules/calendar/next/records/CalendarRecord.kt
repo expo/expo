@@ -34,7 +34,7 @@ data class CalendarRecord(
   @Field
   var ownerAccount: String? = null,
   @Field
-  val accessLevel: CalendarAccessLevel? = null,
+  val accessLevel: CalendarAccessLevel? = null
 ) : Record
 
 enum class CalendarAccessLevel(val value: String) {

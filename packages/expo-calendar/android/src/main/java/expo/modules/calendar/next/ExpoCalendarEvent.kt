@@ -153,7 +153,6 @@ class ExpoCalendarEvent(
           ?.let {
             eventRecord = null
           } ?: throw EventCouldNotBeDeletedException("Event could not be deleted")
-
       } else {
         // Get the exact occurrence and create an exception for it
         val exceptionValues = ContentValues()
@@ -228,7 +227,7 @@ class ExpoCalendarEvent(
 
   private fun cleanNullableFields(eventBuilder: CalendarBuilderNext, nullableFields: List<String>?) {
     val nullableSet = nullableFields?.toSet() ?: emptySet()
-    
+
     val fieldMappings = mapOf(
       "location" to CalendarContract.Events.EVENT_LOCATION,
       "timeZone" to CalendarContract.Events.EVENT_TIMEZONE,
@@ -246,7 +245,7 @@ class ExpoCalendarEvent(
       "startDate" to CalendarContract.Events.DTSTART,
       "endDate" to CalendarContract.Events.DTEND
     )
-    
+
     fieldMappings.forEach { (fieldName, columnName) ->
       if (fieldName in nullableSet) {
         eventBuilder.putNull(columnName)
@@ -276,9 +275,11 @@ class ExpoCalendarEvent(
     val results = mutableListOf<ExpoCalendarAttendee>()
 
     while (cursor.moveToNext()) {
-      results.add(ExpoCalendarAttendee(
-        appContext ?: throw Exceptions.AppContextLost(),
-        attendeeRecord = cursor.toAttendeeRecord())
+      results.add(
+        ExpoCalendarAttendee(
+          appContext ?: throw Exceptions.AppContextLost(),
+          attendeeRecord = cursor.toAttendeeRecord()
+        )
       )
     }
     return results
