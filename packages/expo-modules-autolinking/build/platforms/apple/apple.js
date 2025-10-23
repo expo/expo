@@ -77,10 +77,10 @@ async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
-async function generateModulesProviderAsync(modules, targetPath, entitlementPath, watchedDirs) {
+async function generateModulesProviderAsync(modules, targetPath, entitlementPath, watchedDirectories) {
     const className = path_1.default.basename(targetPath, path_1.default.extname(targetPath));
     const entitlements = await parseEntitlementsAsync(entitlementPath);
-    const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements, watchedDirs);
+    const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements, watchedDirectories);
     const parentPath = path_1.default.dirname(targetPath);
     await fs_1.default.promises.mkdir(parentPath, { recursive: true });
     await fs_1.default.promises.writeFile(targetPath, generatedFileContent, 'utf8');
@@ -88,7 +88,7 @@ async function generateModulesProviderAsync(modules, targetPath, entitlementPath
 /**
  * Generates the string to put into the generated package list.
  */
-async function generatePackageListFileContentAsync(modules, className, entitlements, watchedDirs) {
+async function generatePackageListFileContentAsync(modules, className, entitlements, watchedDirectories) {
     const iosModules = modules.filter((module) => module.modules.length ||
         module.appDelegateSubscribers.length ||
         module.reactDelegateHandlers.length);
@@ -103,7 +103,7 @@ async function generatePackageListFileContentAsync(modules, className, entitleme
     let modulesClassNames = []
         .concat(...modulesToImport.map((module) => module.modules))
         .filter(Boolean);
-    modulesClassNames = modulesClassNames.concat(await (0, iosInlineModules_1.getIosInlineModulesClassNames)(watchedDirs));
+    modulesClassNames = modulesClassNames.concat(await (0, iosInlineModules_1.getIosInlineModulesClassNames)(watchedDirectories));
     const debugOnlyModulesClassNames = []
         .concat(...debugOnlyModules.map((module) => module.modules))
         .filter(Boolean);

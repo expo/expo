@@ -9,8 +9,8 @@ const path_1 = __importDefault(require("path"));
 const autolinkingOptions_1 = require("./autolinkingOptions");
 const androidInlineModules_1 = require("../inlineModules/androidInlineModules");
 function mirrorKotlinInlineModulesCommand(cli) {
-    return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('mirror-kotlin-inline-modules <kotlinFilesMirrorDirectory> <inlineModulesListPath> <watchedDirsSerialized>')).action(async (kotlinFilesMirrorDirectory, inlineModulesListPath, watchedDirsSerialized) => {
-        const watchedDirs = JSON.parse(watchedDirsSerialized);
+    return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('mirror-kotlin-inline-modules <kotlinFilesMirrorDirectory> <inlineModulesListPath> <watchedDirectoriesSerialized>')).action(async (kotlinFilesMirrorDirectory, inlineModulesListPath, watchedDirectoriesSerialized) => {
+        const watchedDirectories = JSON.parse(watchedDirectoriesSerialized);
         if (!kotlinFilesMirrorDirectory || !inlineModulesListPath) {
             throw new Error('Need to provide kotlinFilesMirrorDirectory and inlineModulesListPath!');
         }
@@ -22,8 +22,8 @@ function mirrorKotlinInlineModulesCommand(cli) {
             throw new Error('Need to provide the absolute path to both the local modules src mirror and generated mirror directory!');
         }
         fs_1.default.rmSync(kotlinFilesMirrorDirectory, { recursive: true, force: true });
-        await (0, androidInlineModules_1.createSymlinksToKotlinFiles)(kotlinFilesMirrorDirectory, watchedDirs);
-        await (0, androidInlineModules_1.generateInlineModulesListFile)(inlineModulesListPath, watchedDirs);
+        await (0, androidInlineModules_1.createSymlinksToKotlinFiles)(kotlinFilesMirrorDirectory, watchedDirectories);
+        await (0, androidInlineModules_1.generateInlineModulesListFile)(inlineModulesListPath, watchedDirectories);
     });
 }
 //# sourceMappingURL=mirrorKotlinInlineModulesCommand.js.map

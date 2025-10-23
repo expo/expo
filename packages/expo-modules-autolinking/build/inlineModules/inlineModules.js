@@ -58,7 +58,7 @@ function getKotlinFileNameWithItsPackage(absoluteFilePath) {
 function getSwiftModuleClassName(absoluteFilePath) {
     return trimExtension(path_1.default.basename(absoluteFilePath));
 }
-async function getMirrorStateObject(watchedDirs) {
+async function getMirrorStateObject(watchedDirectories) {
     const appRoot = await getAppRoot();
     const inlineModulesMirror = {
         kotlinClasses: [],
@@ -87,7 +87,7 @@ async function getMirrorStateObject(watchedDirs) {
             }
         }
     };
-    for (const dir of watchedDirs ?? []) {
+    for (const dir of watchedDirectories ?? []) {
         const absoluteDirPath = path_1.default.resolve(appRoot, dir);
         const watchedDirRoot = fs_1.default.realpathSync(path_1.default.resolve(appRoot, dir));
         await recursivelyScanDirectory(absoluteDirPath, watchedDirRoot);

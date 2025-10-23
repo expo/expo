@@ -8,8 +8,8 @@ exports.generateInlineModulesListFile = generateInlineModulesListFile;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const inlineModules_1 = require("./inlineModules");
-async function createSymlinksToKotlinFiles(mirrorPath, watchedDirs) {
-    const inlineModulesObject = await (0, inlineModules_1.getMirrorStateObject)(watchedDirs);
+async function createSymlinksToKotlinFiles(mirrorPath, watchedDirectories) {
+    const inlineModulesObject = await (0, inlineModules_1.getMirrorStateObject)(watchedDirectories);
     for (const { filePath, watchedDirRoot } of inlineModulesObject.files) {
         if (!filePath.endsWith('.kt')) {
             continue;
@@ -27,8 +27,8 @@ function getClassName(classNameWithPackage) {
     }
     return classNameWithPackage.substring(index + 1);
 }
-async function generateInlineModulesListFile(inlineModulesListPath, watchedDirs) {
-    const inlineModulesObject = await (0, inlineModules_1.getMirrorStateObject)(watchedDirs);
+async function generateInlineModulesListFile(inlineModulesListPath, watchedDirectories) {
+    const inlineModulesObject = await (0, inlineModules_1.getMirrorStateObject)(watchedDirectories);
     const fileContent = `package inline.modules;
 
 import java.util.Arrays;

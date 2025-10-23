@@ -223,7 +223,7 @@ gradle.projectsEvaluated {
         "mirror-kotlin-inline-modules",
         file('src/main/java/local/modules/').absolutePath,
         file('build/inline/modules/').absolutePath,
-        project.properties["expo.inlineModules.watchedDirs"]
+        project.properties["expo.inlineModules.watchedDirectories"]
       )
     }.standardOutput.asText.get()
   }

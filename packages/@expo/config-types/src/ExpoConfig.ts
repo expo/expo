@@ -349,7 +349,7 @@ export interface ExpoConfig {
     /**
      * List of directories watched for local modules.
      */
-    watchedDirs: [string];
+    watchedDirectories: [string];
   };
 }
 /**

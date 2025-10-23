@@ -7,4 +7,4 @@ export type InlineModulesMirror = {
     kotlinClasses: string[];
 };
 export declare function getAppRoot(): Promise<string>;
-export declare function getMirrorStateObject(watchedDirs: string[]): Promise<InlineModulesMirror>;
+export declare function getMirrorStateObject(watchedDirectories: string[]): Promise<InlineModulesMirror>;
