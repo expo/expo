@@ -139,7 +139,18 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
   }
 #endif
 
-  // TODO: - Responding to Environment Changes
+  // MARK: - Responding to Environment Changes
+
+#if os(iOS) || os(tvOS)
+
+  @objc
+  public static func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+    ExpoAppDelegateSubscriberRepository
+      .subscribers
+      .forEach { $0.applicationDidReceiveMemoryWarning?(application) }
+  }
+
+#endif
 
   // TODO: - Managing App State Restoration
 

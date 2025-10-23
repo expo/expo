@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `applicationDidReceiveMemoryWarning` subscribing to ExpoAppDelegateSubscriberManager ([#40504](https://github.com/expo/expo/pull/40504) by [@szydlovsky](https://github.com/szydlovsky))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
