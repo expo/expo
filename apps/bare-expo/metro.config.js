@@ -40,7 +40,9 @@ function findUpTSConfig(cwd) {
 function findUpTSProjectRootOrThrow(dir) {
   const tsProjectRoot = findUpTSConfig(dir);
   if (!tsProjectRoot) {
-    throw new Error('Local modules watched dir needs to be inside a TS project with tsconfig.json');
+    throw new Error(
+      'Inline modules watched dir needs to be inside a TS project with tsconfig.json'
+    );
   }
   return tsProjectRoot;
 }
@@ -55,15 +57,15 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     return context.resolveRequest(context, newModuleName, platform);
   }
 
-  const localModulesModulesPath = path.resolve(__dirname, './.expo/localModules/modules');
+  const inlineModulesModulesPath = path.resolve(__dirname, './.expo/inlineModules/modules');
 
-  let localModuleFileExtension = null;
+  let inlineModuleFileExtension = null;
   if (moduleName.endsWith('.module')) {
-    localModuleFileExtension = '.module.js';
+    inlineModuleFileExtension = '.module.js';
   } else if (moduleName.endsWith('.view')) {
-    localModuleFileExtension = '.view.js';
+    inlineModuleFileExtension = '.view.js';
   }
-  if (localModuleFileExtension) {
+  if (inlineModuleFileExtension) {
     const tsProjectRoot = findUpTSProjectRootOrThrow(path.dirname(context.originModulePath));
     const modulePathRelativeToTSRoot = path.relative(
       tsProjectRoot,
@@ -71,9 +73,9 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     );
 
     const modulePath = path.resolve(
-      localModulesModulesPath,
+      inlineModulesModulesPath,
       modulePathRelativeToTSRoot,
-      moduleName.substring(0, moduleName.lastIndexOf('.')) + localModuleFileExtension
+      moduleName.substring(0, moduleName.lastIndexOf('.')) + inlineModuleFileExtension
     );
 
     return {
