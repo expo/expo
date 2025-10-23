@@ -37,6 +37,22 @@ public final class GlassEffectModule: Module {
         view.setBorderRadius(border)
       }
 
+      Prop("borderBottomLeftRadius") { (view, radius: CGFloat?) in
+        view.setBorderBottomLeftRadius(radius)
+      }
+
+      Prop("borderBottomRightRadius") { (view, radius: CGFloat?) in
+        view.setBorderBottomRightRadius(radius)
+      }
+
+      Prop("borderTopLeftRadius") { (view, radius: CGFloat?) in
+        view.setBorderTopLeftRadius(radius)
+      }
+
+      Prop("borderTopRightRadius") { (view, radius: CGFloat?) in
+        view.setBorderTopRightRadius(radius)
+      }
+
       Prop("borderCurve") { (view, curve: String?) in
         view.setBorderCurve(curve)
       }
