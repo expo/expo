@@ -8,7 +8,7 @@ import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
-import { updateXCodeProject } from '../localModules/generation';
+import { updateXCodeProject } from '../inlineModules/generation';
 import { Log } from '../log';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -174,8 +174,8 @@ export async function prebuildAsync(
   } else {
     debug('Skipped pod install');
   }
-  const localModulesEnabled = exp.experiments?.localModules === true;
-  if (localModulesEnabled && options.platforms.includes('ios')) {
+  const inlineModulesEnabled = exp.experiments?.inlineModules === true;
+  if (inlineModulesEnabled && options.platforms.includes('ios')) {
     await updateXCodeProject(projectRoot);
   }
 
