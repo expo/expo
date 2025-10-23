@@ -201,7 +201,7 @@ export const UIScreens = [
     getComponent() {
       return optionalRequire(() => require('./RTLScreen'));
     },
-  }
+  },
 ];
 
 export default function UIScreen() {
