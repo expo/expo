@@ -1,0 +1,13 @@
+{
+  "extends": "expo-module-scripts/tsconfig.node",
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "react",
+    "plugins": [
+      { "name": "typescript-plugin-css-modules" }
+    ],
+    "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS"]
+  },
+  "include": ["src/**/*", "app/**/*"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}

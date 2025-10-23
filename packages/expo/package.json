@@ -83,6 +83,7 @@
     "@expo/metro": "~54.1.0",
     "@expo/metro-config": "54.0.3",
     "@expo/vector-icons": "^15.0.2",
+    "@expo/log-box": "0.0.13-canary-20251023-4c86f95",
     "@ungap/structured-clone": "^1.3.0",
     "babel-preset-expo": "~54.0.1",
     "expo-asset": "~12.0.8",

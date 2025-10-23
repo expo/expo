@@ -291,6 +291,11 @@ class Env {
     }
     return value;
   }
+
+  /** Enable Expo Log Box for iOS and Android (Web is enabled by default) */
+  get EXPO_UNSTABLE_LOG_BOX(): boolean {
+    return boolish('EXPO_UNSTABLE_LOG_BOX', false);
+  }
 }
 
 export const env = new Env();
