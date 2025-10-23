@@ -578,12 +578,11 @@ export declare const listSectionMargins: (params?: {
  * // System font with weight and design
  * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>System Font Text</Text>
  * ```
- *
  * @see https://developer.apple.com/documentation/swiftui/font/custom(_:size:)
  * @see https://developer.apple.com/documentation/swiftui/font/system(size:weight:design:)
  */
 export declare const font: (params: {
-    /** Custom font family name */
+    /** Custom font family name. If provided, uses Font.custom() */
     family?: string;
     /** Font size in points */
     size?: number;
