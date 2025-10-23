@@ -13,7 +13,7 @@ exports.renderRsc = renderRsc;
 // This file must remain platform agnostic for production exports.
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
 require("@expo/metro-runtime/rsc/runtime");
-const utils_1 = require("expo-router/build/rsc/router/utils");
+const rsc_1 = require("expo-router/internal/rsc");
 const server_1 = require("react-server-dom-webpack/server");
 const path_1 = require("./path");
 const server_2 = require("./server");
@@ -126,7 +126,7 @@ async function renderRsc(args, opts) {
             decodedBody = await (0, server_1.decodeReply)(bodyStr, serverConfig);
         }
     }
-    const actionId = (0, utils_1.decodeActionId)(input);
+    const actionId = (0, rsc_1.decodeActionId)(input);
     if (actionId) {
         if (!opts.isExporting &&
             // @ts-ignore

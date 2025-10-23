@@ -2,9 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getServerManifest = getServerManifest;
 exports.parseParameter = parseParameter;
-const matchers_1 = require("expo-router/build/matchers");
-const sortRoutes_1 = require("expo-router/build/sortRoutes");
-const url_1 = require("expo-router/build/utils/url");
+/**
+ * Copyright © 2023 650 Industries.
+ * Copyright © 2023 Vercel, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
+ */
+const routing_1 = require("expo-router/internal/routing");
+const utils_1 = require("expo-router/internal/utils");
 function isNotFoundRoute(route) {
     return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
 }
@@ -41,7 +49,7 @@ function getServerManifest(route, options) {
     }
     // Remove duplicates from the runtime manifest which expands array syntax.
     const flat = getFlatNodes(route)
-        .sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(b, a))
+        .sort(([, , a], [, , b]) => (0, routing_1.sortRoutes)(b, a))
         .reverse();
     const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api'), ([path]) => path);
     const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route' ||
@@ -50,7 +58,7 @@ function getServerManifest(route, options) {
         .map((redirect) => {
         // TODO(@hassankhan): ENG-16577
         // For external redirects, use `destinationContextKey` as the destination URL
-        if ((0, url_1.shouldLinkExternally)(redirect[2].destinationContextKey)) {
+        if ((0, utils_1.shouldLinkExternally)(redirect[2].destinationContextKey)) {
             redirect[1] = redirect[2].destinationContextKey;
         }
         else {
@@ -186,7 +194,7 @@ function getNamedParametrizedRoute(route) {
                     : `/(?<${cleanedKey}>[^/]+?)`;
             }
             else if (/^\(.*\)$/.test(segment)) {
-                const groupName = (0, matchers_1.matchGroupName)(segment)
+                const groupName = (0, routing_1.matchGroupName)(segment)
                     .split(',')
                     .map((group) => group.trim())
                     .filter(Boolean);
@@ -233,6 +241,6 @@ function parseParameter(param) {
     return { name, repeat, optional };
 }
 function getNormalizedContextKey(contextKey) {
-    return (0, matchers_1.getContextKey)(contextKey).replace(/\/index$/, '') ?? '/';
+    return (0, routing_1.getContextKey)(contextKey).replace(/\/index$/, '') ?? '/';
 }
 //# sourceMappingURL=getServerManifest.js.map
