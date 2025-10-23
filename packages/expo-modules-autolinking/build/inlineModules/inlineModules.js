@@ -88,7 +88,9 @@ async function getMirrorStateObject(watchedDirs) {
         }
     };
     for (const dir of watchedDirs ?? []) {
-        await recursivelyScanDirectory(path_1.default.resolve(appRoot, dir), fs_1.default.realpathSync(path_1.default.resolve(appRoot, dir)));
+        const absoluteDirPath = path_1.default.resolve(appRoot, dir);
+        const watchedDirRoot = fs_1.default.realpathSync(path_1.default.resolve(appRoot, dir));
+        await recursivelyScanDirectory(absoluteDirPath, watchedDirRoot);
     }
     return inlineModulesMirror;
 }

@@ -33,10 +33,6 @@ module Expo
       @extraPods = resolve_result['extraDependencies']
     end
 
-    public def watched_dirs!
-      @watched_dirs
-    end
-
     public def use_expo_modules!
       if has_packages?
         return

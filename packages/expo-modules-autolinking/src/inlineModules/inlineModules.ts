@@ -100,10 +100,10 @@ export async function getMirrorStateObject(watchedDirs: string[]): Promise<Inlin
   };
 
   for (const dir of watchedDirs ?? []) {
-    await recursivelyScanDirectory(
-      path.resolve(appRoot, dir),
-      fs.realpathSync(path.resolve(appRoot, dir))
-    );
+    const absoluteDirPath = path.resolve(appRoot, dir);
+    const watchedDirRoot = fs.realpathSync(path.resolve(appRoot, dir));
+
+    await recursivelyScanDirectory(absoluteDirPath, watchedDirRoot);
   }
   return inlineModulesMirror;
 }

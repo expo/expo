@@ -100,11 +100,6 @@ export async function generateModulesProviderAsync(
   entitlementPath: string | null,
   watchedDirs: string[]
 ): Promise<void> {
-  for (const s of watchedDirs) {
-    console.log('!!' + s);
-  }
-  console.log(targetPath);
-  console.log(entitlementPath);
   const className = path.basename(targetPath, path.extname(targetPath));
   const entitlements = await parseEntitlementsAsync(entitlementPath);
   const generatedFileContent = await generatePackageListFileContentAsync(
