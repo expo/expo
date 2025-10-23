@@ -4,6 +4,7 @@ import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { TaskArgs } from '../types';
+import { pushSdkBranches } from './pushSdkBranches';
 import { updateState } from './updateState';
 import { verifyCherrypicks } from './verifyCherrypicks';
 
@@ -15,7 +16,7 @@ const { yellow, bold, blue } = chalk;
 export const fixCherrypicksContinue = new Task<TaskArgs>(
   {
     name: 'fixCherrypicksContinue',
-    dependsOn: [verifyCherrypicks, updateState],
+    dependsOn: [verifyCherrypicks, updateState, pushSdkBranches],
   },
   async (state, options): Promise<void | symbol> => {
     const toCherrypick = [...state.pullRequests.toCherrypick];
