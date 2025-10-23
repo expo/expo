@@ -28,9 +28,26 @@ export default class TestScreen extends React.Component {
   _results = '';
   _failures = '';
 
-  componentDidMount() {
-    const selectionQuery = this.props.route.params?.tests ?? '';
+  getSelectionQuery = () => {
+    return this.props.route.params?.tests ?? '';
+  };
 
+  componentDidMount() {
+    this._isMounted = true;
+    this._handleTestsParam(this.getSelectionQuery());
+  }
+
+  componentDidUpdate(prevProps) {
+    const currentTestsParam = this.getSelectionQuery();
+    const previousTestsParam = prevProps.route.params?.tests ?? '';
+
+    // Re-run tests if the tests param has changed
+    if (currentTestsParam !== previousTestsParam) {
+      this._handleTestsParam(currentTestsParam);
+    }
+  }
+
+  _handleTestsParam(selectionQuery) {
     const selectedTestNames = getSelectedTestNames(selectionQuery);
     // We get test modules here to make sure that React Native will reload this component when tests were changed.
     const selectedModules = getTestModules().filter((m) =>
@@ -47,7 +64,6 @@ export default class TestScreen extends React.Component {
     }
 
     this._runTests(selectedModules);
-    this._isMounted = true;
   }
 
   componentWillUnmount() {
@@ -290,7 +306,13 @@ export default class TestScreen extends React.Component {
     }
     return (
       <View testID="test_suite_container" style={styles.container}>
-        <Suites numFailed={numFailed} results={results} done={done} suites={state.get('suites')} />
+        <Suites
+          numFailed={numFailed}
+          results={results}
+          done={done}
+          suites={state.get('suites')}
+          selectionQuery={this.getSelectionQuery()}
+        />
         <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>
       </View>
     );

@@ -44,20 +44,21 @@ appId: ${appId}
 - tapOn:
     text: "Open"
     optional: true
-- stopApp
 `);
   }
 
   for (const testCase of testCases) {
     contents.push(`\
 - openLink: bareexpo://test-suite/run?tests=${testCase}
+# make sure we're running the right test
+- assertVisible:
+    text: "${testCase}"
 - extendedWaitUntil:
     visible:
       id: "test_suite_text_results"
     timeout: 120000
 - assertVisible:
     text: "Success!"
-- stopApp
 `);
   }
 
