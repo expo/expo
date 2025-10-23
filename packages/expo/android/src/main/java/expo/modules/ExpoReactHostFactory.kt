@@ -133,7 +133,6 @@ object ExpoReactHostFactory {
           true,
           useDevSupport
         )
-
       hostHandlers.forEach { handler ->
         handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
       }

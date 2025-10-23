@@ -21,7 +21,9 @@ export function evaluateJsFromCdpAsync(
       reject(new Error('Request timeout'));
       settled = true;
       ws.close();
-    }, timeoutMs);
+      // NOTE(@hassankhan): The cast to `NodeJS.Timeout` below is a hack to work around an issue
+      // with TypeScript where React Native's types are being imported before Node types
+    }, timeoutMs) as unknown as NodeJS.Timeout;
 
     ws.on('open', () => {
       ws.send(

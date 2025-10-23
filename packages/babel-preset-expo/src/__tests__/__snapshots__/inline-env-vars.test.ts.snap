@@ -33,7 +33,7 @@ var foo = _env2.env.EXPO_PUBLIC_URL;
 
 function App() {
   console.log(_env2.env.EXPO_PUBLIC_NODE_ENV);
-}",
+}_c = App;var _c;$RefreshReg$(_c, "App");",
   "hasCjsExports": undefined,
   "metadata": {
     "publicEnvVars": [

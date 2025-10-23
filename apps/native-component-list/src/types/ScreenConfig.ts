@@ -6,9 +6,3 @@ export type ScreenConfig = {
   route?: string;
   options?: object;
 };
-
-export type ScreenApiItem = {
-  name: string;
-  route: string;
-  isAvailable: boolean;
-};

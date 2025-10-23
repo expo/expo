@@ -4,13 +4,14 @@ import * as React from 'react';
 
 import { TestStackNavigator } from './TestStackNavigator';
 import { ThemeProvider } from '../common/ThemeProvider';
+import { routeNames } from './constants/routeNames';
 
 const linking = {
   prefixes: [Linking.createURL('/')],
   config: {
     screens: {
-      select: '',
-      run: 'run',
+      [routeNames.select]: '',
+      [routeNames.run]: routeNames.run,
     },
   },
 };

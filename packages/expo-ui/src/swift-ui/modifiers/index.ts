@@ -549,7 +549,8 @@ export const glassEffect = (params?: {
     interactive?: boolean;
     tint?: Color;
   };
-  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
+  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse' | 'roundedRectangle';
+  cornerRadius?: number;
 }) => createModifier('glassEffect', params);
 
 /**
@@ -686,6 +687,44 @@ export const listSectionMargins = (params?: {
   length?: number;
   edges?: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical';
 }) => createModifier('listSectionMargins', params);
+
+/**
+ * Sets the font properties of a view.
+ * Supports both custom font families and system fonts with weight and design options.
+ *
+ * @param params - The font configuration. When `family` is provided, it uses Font.custom().
+ * When `family` is not provided, it uses Font.system() with the specified weight and design.
+ *
+ * @example
+ * ```typescript
+ * // Custom font family
+ * <Text modifiers={[font({ family: 'Helvetica', size: 18 })]}>Custom Font Text</Text>
+ *
+ * // System font with weight and design
+ * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>System Font Text</Text>
+ * ```
+ * @see https://developer.apple.com/documentation/swiftui/font/custom(_:size:)
+ * @see https://developer.apple.com/documentation/swiftui/font/system(size:weight:design:)
+ */
+export const font = (params: {
+  /** Custom font family name. If provided, uses Font.custom() */
+  family?: string;
+  /** Font size in points */
+  size?: number;
+  /** Font weight for system fonts */
+  weight?:
+    | 'ultraLight'
+    | 'thin'
+    | 'light'
+    | 'regular'
+    | 'medium'
+    | 'semibold'
+    | 'bold'
+    | 'heavy'
+    | 'black';
+  /** Font design for system fonts */
+  design?: 'default' | 'rounded' | 'serif' | 'monospaced';
+}) => createModifier('font', params);
 /**
  * Asks grid layouts not to offer the view extra size in the specified axes.
  * @param axes - The dimensions in which the grid shouldn’t offer the view a share of any available space. This prevents a flexible view like a Spacer, Divider, or Color from defining the size of a row or column.
@@ -820,6 +859,7 @@ export type BuiltInModifier =
   | ReturnType<typeof badgeProminence>
   | ReturnType<typeof badge>
   | ReturnType<typeof listSectionMargins>
+  | ReturnType<typeof font>
   | ReturnType<typeof gridCellUnsizedAxes>
   | ReturnType<typeof gridCellColumns>
   | ReturnType<typeof gridColumnAlignment>

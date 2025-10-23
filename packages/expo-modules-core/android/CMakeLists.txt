@@ -20,7 +20,8 @@ set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
 file(GLOB sources_android_types "${SRC_DIR}/main/cpp/types/*.cpp")
 file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/javaclasses/*.cpp")
-file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/decorators/*.cpp")
+file(GLOB sources_android_decorators "${SRC_DIR}/main/cpp/decorators/*.cpp")
+file(GLOB sources_android_worklets "${SRC_DIR}/main/cpp/worklets/*.cpp")
 file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
@@ -42,6 +43,8 @@ add_library(
   ${sources_android}
   ${sources_android_types}
   ${sources_android_javaclasses}
+  ${sources_android_decorators}
+  ${sources_android_worklets}
 )
 
 target_precompile_headers(${PACKAGE_NAME} PRIVATE ${SRC_DIR}/main/cpp/ExpoHeader.pch)
@@ -53,6 +56,12 @@ if(IS_NEW_ARCHITECTURE_ENABLED)
 else()
   set(NEW_ARCHITECTURE_DEPENDENCIES "")
   set(NEW_ARCHITECTURE_COMPILE_OPTIONS "")
+endif()
+
+if (REACT_NATIVE_WORKLETS_DIR)
+  set(WORKLETS_INTEGRATION_COMPILE_OPTIONS "-DWORKLETS_ENABLED=1")
+else()
+  set(WORKLETS_INTEGRATION_COMPILE_OPTIONS "")
 endif()
 
 createVarAsBoolToInt("USE_HERMES_INT" ${USE_HERMES})
@@ -67,6 +76,7 @@ target_compile_options(CommonSettings INTERFACE
   -DUSE_HERMES=${USE_HERMES_INT}
   -DUNIT_TEST=${UNIT_TEST_INT}
   ${NEW_ARCHITECTURE_COMPILE_OPTIONS}
+  ${WORKLETS_INTEGRATION_COMPILE_OPTIONS}
 )
 
 # tests
@@ -113,6 +123,8 @@ if (REACT_NATIVE_WORKLETS_DIR)
   target_include_directories(
     ${PACKAGE_NAME}
     PRIVATE
+    "${REACT_NATIVE_DIR}/ReactCommon"
+    "${REACT_NATIVE_DIR}/ReactCommon/jsiexecutor"
     "${REACT_NATIVE_WORKLETS_DIR}/Common/cpp"
     "${REACT_NATIVE_WORKLETS_DIR}/android/src/main/cpp"
   )
@@ -147,6 +159,12 @@ target_link_libraries(
 
 if (REACT_NATIVE_WORKLETS_DIR)
   add_library(worklets SHARED IMPORTED)
+
+  if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    set(BUILD_TYPE "debug")
+  else()
+    set(BUILD_TYPE "release")
+  endif()
 
   set_target_properties(
     worklets

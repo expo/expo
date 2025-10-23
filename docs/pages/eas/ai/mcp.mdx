@@ -1,8 +1,7 @@
 ---
 title: Using Model Context Protocol (MCP) with Expo
-sidebar_title: MCP
+sidebar_title: MCP Server
 description: A guide on integrating Model Context Protocol with Expo projects to enhance AI model capabilities.
-isPreview: true
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -11,28 +10,62 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-> **important** Expo MCP Server is currently in **private beta**. Access is limited to a select group of [EAS paid plan subscribers](https://expo.dev/pricing) who have been invited to participate, as well as other invited individuals. The broader availability is coming soon.
+> **info** Expo MCP Server requires an [EAS paid plan](https://expo.dev/pricing).
 
-[Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is a standard protocol that allows AI models to integrate with external data sources, providing enhanced context for more precise responses. It enables AI tools to understand your development environment more deeply, allowing them to provide better assistance with your codebase.
+[Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is a standard protocol that allows AI models to integrate with external data sources, providing enhanced context for more precise responses. It enables AI-assisted tools like agents to understand your development environment more deeply, allowing them to provide better assistance with your codebase.
 
-The Expo MCP server is a remote MCP server hosted at [mcp.expo.dev](https://mcp.expo.dev) that integrates with popular AI tools such as Claude Code, Cursor, VS Code, and others, enabling them to interact directly with your Expo projects.
+Expo MCP Server is a remote MCP server hosted by Expo that integrates with popular AI-assisted tools such as Claude Code, Cursor, VS Code, and others, enabling them to interact directly with your Expo projects.
+
+<VideoBoxLink
+  videoId="dp9dpIgDxZQ"
+  title="Introducing Expo MCP Server: for accurate, context-aware AI responses"
+  description="Enhance your AI-assisted tools for building apps with Expo."
+/>
+
+## What does Expo MCP Server do?
+
+Expo MCP Server teaches your AI-assisted tools about the Expo SDK and lets them interact with mobile simulators and the React Native DevTools. These are three examples of the tasks Expo MCP Server enhances:
+
+**Learn about developing with Expo.** Your AI-assisted tools can fetch the latest official Expo documentation on demand and use it to reply to prompts like:
+
+- "Add [AGENTS.md](https://agents.md/)/CLAUDE.md to my project"
+- "How do I use Expo Router?"
+- "Search the Expo docs for implementing deep linking"
+- "What is Expo CNG?"
+
+**Manage dependencies.** Expo MCP Server guides you towards installing our recommended packages and uses `npx expo install` to install known, compatible versions.
+
+- "Add SQLite with basic CRUD operations"
+- "Install `expo-camera` and show me how to take photos"
+- "Add `expo-notifications` for push notifications"
+
+**Automate visual verification and testing.** Multimodal AI-assisted tools can screenshot and interact with your running app in a simulator. Expo MCP Server includes local capabilities enabled by adding the `expo-mcp` package to your project's dependencies.
+
+- "Add a blue circle view and make sure it renders correctly"
+- "Add a button and tap it to verify the interaction works"
+- "Add a counter button that increments on tap and verify the state updates correctly"
+
+Your AI-assisted tools can autonomously write the code, capture screenshots to verify the UI is correct, test interactions, and fix issues they find.
+
+The complete table of [MCP capabilities](#available-mcp-capabilities) documents the tools and prompts Expo MCP Server provides to AI-assisted tools.
 
 ## Prerequisites
 
-Before using the Expo MCP server, ensure you have:
+Before using Expo MCP Server, ensure you have:
 
-- An expo.dev account (MCP server access is currently available for EAS paid plan subscribers only)
+- An Expo account with an EAS paid plan
 - An Expo project with Expo SDK 54 and the latest `expo` package version
-- AI tools with remote MCP server support (Claude Code, Cursor, VS Code and so on)
+- AI-assisted tools with remote MCP server support (Claude Code, Cursor, VS Code, and so on)
 
 ## Installation and setup
 
 <Step label="1">
 
-### Install the Expo MCP server
+### Install Expo MCP Server
 
-The Expo MCP server supports integration with various AI tools. Use the general settings below or expand your specific tool for detailed instructions:
+Expo MCP Server supports integration with various AI-assisted tools. Use the general settings below or expand your specific tool for detailed instructions:
 
 - **Server type**: Streamable HTTP
 - **URL**: `https://mcp.expo.dev/mcp`
@@ -108,24 +141,25 @@ For the full MCP experience with advanced features like taking screenshots from 
   cmd={[
     '$ cd /path/to/your-project',
     '',
-    '# Install expo-mcp package',
+    '# Install the expo-mcp package',
     '$ npx expo install expo-mcp --dev',
     '',
-    '# Ensure you are logged in from CLI with the same account as the one used to authenticate with MCP server',
+    '# Ensure you are logged in to Expo CLI with the same account as the one used to',
+    '# authenticate with the MCP server',
     '$ npx expo whoami || npx expo login',
     '',
-    '# Start dev server with MCP capabilities',
+    '# Start the dev server with MCP capabilities',
     '$ EXPO_UNSTABLE_MCP_SERVER=1 npx expo start',
   ]}
 />
 
-> **important** Whenever you start or stop the development server, you need to **reconnect or restart** your MCP server connection in your AI tool to ensure the AI tool gets refreshed capabilities.
+> **important** Whenever you start or stop the development server, you need to **reconnect or restart** your MCP server connection in your AI-assisted tool to ensure the AI-assisted tool gets refreshed capabilities.
 
 </Step>
 
-## Server capabilities vs local capabilities
+## Server capabilities versus local capabilities
 
-The Expo MCP server provides two types of capabilities depending on your setup:
+Expo MCP Server provides two types of capabilities depending on your setup:
 
 ### Server capabilities
 
@@ -164,7 +198,7 @@ These capabilities enable more sophisticated workflows like automated testing, v
 
 ### Prompts
 
-If your AI tool supports [MCP prompts](https://modelcontextprotocol.io/specification/2025-06-18/server/prompts), you may see additional menu options, such as [slash commands in Claude Code](https://docs.claude.com/en/docs/claude-code/mcp#use-mcp-prompts-as-slash-commands):
+If your AI-assisted tool supports [MCP prompts](https://modelcontextprotocol.io/specification/2025-06-18/server/prompts), you may see additional menu options, such as [slash commands in Claude Code](https://docs.claude.com/en/docs/claude-code/mcp#use-mcp-prompts-as-slash-commands):
 
 | Tool                  | Description                                    | Availability                           |
 | --------------------- | ---------------------------------------------- | -------------------------------------- |
