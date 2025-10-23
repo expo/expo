@@ -128,7 +128,9 @@ function appendLabelOptions(options, props) {
     }
     else {
         options.title = props.children;
-        options.selectedLabelStyle = props.selectedStyle;
+        if (props.selectedStyle) {
+            options.selectedLabelStyle = props.selectedStyle;
+        }
     }
 }
 function appendIconOptions(options, props) {
@@ -159,11 +161,18 @@ function appendIconOptions(options, props) {
                 : undefined;
         }
     }
+    else if ('androidSrc' in props && process.env.EXPO_OS === 'android') {
+        const icon = convertIconSrcToIconOption({ src: props.androidSrc });
+        options.icon = icon?.icon;
+        options.selectedIcon = icon?.selectedIcon;
+    }
     else if ('drawable' in props && process.env.EXPO_OS === 'android') {
         options.icon = { drawable: props.drawable };
         options.selectedIcon = undefined;
     }
-    options.selectedIconColor = props.selectedColor;
+    if (props.selectedColor) {
+        options.selectedIconColor = props.selectedColor;
+    }
 }
 function convertIconSrcToIconOption(icon) {
     if (icon && icon.src) {
@@ -195,7 +204,7 @@ function convertSrcOrComponentToSrc(src) {
     return undefined;
 }
 function appendTabBarOptions(options, props) {
-    const { backgroundColor, blurEffect, iconColor, disableTransparentOnScrollEdge, badgeBackgroundColor, badgeTextColor, indicatorColor, labelStyle, } = props;
+    const { backgroundColor, blurEffect, iconColor, disableTransparentOnScrollEdge, badgeBackgroundColor, badgeTextColor, indicatorColor, labelStyle, shadowColor, } = props;
     if (backgroundColor) {
         options.backgroundColor = backgroundColor;
     }
@@ -204,6 +213,9 @@ function appendTabBarOptions(options, props) {
     if (process.env.EXPO_OS !== 'android') {
         if (blurEffect) {
             options.blurEffect = blurEffect;
+        }
+        if (shadowColor) {
+            options.shadowColor = shadowColor;
         }
         if (iconColor) {
             options.iconColor = iconColor;

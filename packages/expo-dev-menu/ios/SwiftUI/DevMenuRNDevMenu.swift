@@ -7,12 +7,10 @@ struct DevMenuRNDevMenu: View {
     Button {
       onOpenRNDevMenu()
     } label: {
-      HStack {
-        Text("Open React Native dev menu")
-          .foregroundColor(.primary)
-        Spacer()
-      }
-      .padding()
+      Text("Open React Native dev menu")
+        .padding()
+        .foregroundColor(.primary)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     .background(Color.expoSecondarySystemBackground)
     .cornerRadius(18)

@@ -86,11 +86,8 @@ function getExportsThatAreNotUsedInModule(ast) {
     });
     // Second pass: find all used identifiers
     (0, core_1.traverse)(ast, {
-        Identifier(path) {
-            if (path.isReferencedIdentifier()) {
-                // console.log('referenced:', path.node.name);
-                usedIdentifiers.add(path.node.name);
-            }
+        ReferencedIdentifier(path) {
+            usedIdentifiers.add(path.node.name);
         },
     });
     // Determine which exports are unused
@@ -200,7 +197,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             }
             return graphEntryForTargetImport;
         }
-        const exportNames = [];
+        const exportNames = new Set();
         // Indicates that the module does not have any dynamic exports, e.g. `module.exports`, `Object.assign(exports)`, etc.
         let isStatic = true;
         let hasUnresolvableStarExport = false;
@@ -216,6 +213,38 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             if (outputItem.data.hasCjsExports) {
                 isStatic = false;
             }
+            // Collect export names
+            (0, core_1.traverse)(ast, {
+                ExportNamedDeclaration(path) {
+                    const { declaration, specifiers } = path.node;
+                    if (declaration) {
+                        if ('declarations' in declaration && declaration.declarations) {
+                            declaration.declarations.forEach((decl) => {
+                                if (core_1.types.isIdentifier(decl.id)) {
+                                    exportNames.add(decl.id.name);
+                                }
+                            });
+                        }
+                        else if ('id' in declaration && core_1.types.isIdentifier(declaration.id)) {
+                            exportNames.add(declaration.id.name);
+                        }
+                    }
+                    specifiers.forEach((spec) => {
+                        if (core_1.types.isIdentifier(spec.exported)) {
+                            exportNames.add(spec.exported.name);
+                        }
+                    });
+                },
+                ExportDefaultDeclaration(path) {
+                    // Default exports need to be handled separately
+                    // Assuming the default export is a function or class declaration
+                    if ('id' in path.node.declaration && core_1.types.isIdentifier(path.node.declaration.id)) {
+                        exportNames.add(path.node.declaration.id.name);
+                    }
+                    // If it's an expression, then it's a static export.
+                    isStatic = true;
+                },
+            });
             (0, core_1.traverse)(ast, {
                 // export * from 'a'
                 // NOTE: This only runs on normal `* from` syntax as `* as X from` is converted to an import.
@@ -237,10 +266,15 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                             // export { a, b, c } from 'a';
                             // ```
                             // NOTE: It's important we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
-                            path.replaceWithMultiple([
-                                // @ts-expect-error: missing type
-                                core_1.types.ExportNamedDeclaration(null, exportResults.exportNames.map((exportName) => core_1.types.exportSpecifier(core_1.types.identifier(exportName), core_1.types.identifier(exportName))), core_1.types.stringLiteral(path.node.source.value)),
-                            ]);
+                            // The `default` specifier isn't re-exported by export-all, as per the spec
+                            const exportSpecifiers = [];
+                            for (const exportName of exportResults.exportNames) {
+                                if (exportName !== 'default' && !exportNames.has(exportName)) {
+                                    exportNames.add(exportName);
+                                    exportSpecifiers.push(core_1.types.exportSpecifier(core_1.types.identifier(exportName), core_1.types.identifier(exportName)));
+                                }
+                            }
+                            path.replaceWith(core_1.types.exportNamedDeclaration(null, exportSpecifiers, core_1.types.stringLiteral(path.node.source.value)));
                             // TODO: Update deps
                             populateModuleWithImportUsage(value);
                         }
@@ -251,38 +285,6 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                         // Collect all exports from the module.
                         // If list of exports does not contain any CJS, then re-write the export all as named exports.
                     }
-                },
-            });
-            // Collect export names
-            (0, core_1.traverse)(ast, {
-                ExportNamedDeclaration(path) {
-                    const { declaration, specifiers } = path.node;
-                    if (declaration) {
-                        if ('declarations' in declaration && declaration.declarations) {
-                            declaration.declarations.forEach((decl) => {
-                                if (core_1.types.isIdentifier(decl.id)) {
-                                    exportNames.push(decl.id.name);
-                                }
-                            });
-                        }
-                        else if ('id' in declaration && core_1.types.isIdentifier(declaration.id)) {
-                            exportNames.push(declaration.id.name);
-                        }
-                    }
-                    specifiers.forEach((spec) => {
-                        if (core_1.types.isIdentifier(spec.exported)) {
-                            exportNames.push(spec.exported.name);
-                        }
-                    });
-                },
-                ExportDefaultDeclaration(path) {
-                    // Default exports need to be handled separately
-                    // Assuming the default export is a function or class declaration
-                    if ('id' in path.node.declaration && core_1.types.isIdentifier(path.node.declaration.id)) {
-                        exportNames.push(path.node.declaration.id.name);
-                    }
-                    // If it's an expression, then it's a static export.
-                    isStatic = true;
                 },
             });
         }
@@ -319,7 +321,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
     function getDependencyHashIdForImportModuleId(graphModule, importModuleId) {
         // Unlink the module in the graph
         // The hash key for the dependency instance in the module.
-        const depId = [...graphModule.dependencies.entries()].find(([key, dep]) => {
+        const depId = [...graphModule.dependencies.entries()].find(([_key, dep]) => {
             return dep.data.name === importModuleId;
         })?.[0];
         // // Should never happen but we're playing with fire here.
@@ -547,9 +549,11 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                             });
                             if (removeRequest.removed) {
                                 dirtyImports.push(removeRequest.path);
-                                // TODO: Update source maps
-                                markUnused(path);
                             }
+                            // TODO: Update source maps
+                            // We still want to remove the empty `export {} from 'a'` declaration even if the graph node was kept
+                            // due to the duplicate default export
+                            markUnused(path);
                         }
                     }
                 },
@@ -600,7 +604,9 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             },
             Identifier(path) {
                 // Make sure this identifier isn't coming from an import specifier
-                if (!path.scope.bindingIdentifierEquals(path.node.name, path.node)) {
+                if (!path.scope.bindingIdentifierEquals(path.node.name, path.node) &&
+                    // `import { Foo as Bar } from 'bax'` Foo should not be marked as used.
+                    path.parent.type !== 'ImportSpecifier') {
                     usedIdentifiers.add(path.node.name);
                 }
             },
@@ -621,19 +627,11 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         const unusedImports = [...importedIdentifiers].filter((identifier) => !usedIdentifiers.has(identifier));
         // Remove the unused imports from the AST
         importDecs.forEach((path) => {
+            const importModuleId = path.node.source.value;
             const originalSize = path.node.specifiers.length;
             const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
-            path.node.specifiers = path.node.specifiers.filter((specifier) => {
-                if (specifier.type === 'ImportDefaultSpecifier' ||
-                    specifier.type === 'ImportNamespaceSpecifier') {
-                    return !unusedImports.includes(specifier.local.name);
-                }
-                else if (core_1.types.isIdentifier(specifier.imported)) {
-                    return !unusedImports.includes(specifier.imported.name);
-                }
-                return false;
-            });
-            const importModuleId = path.node.source.value;
+            const isUsed = (specifier) => !unusedImports.includes(specifier.local.name);
+            path.node.specifiers = path.node.specifiers.filter(isUsed);
             if (originalSize !== path.node.specifiers.length) {
                 // The hash key for the dependency instance in the module.
                 const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);

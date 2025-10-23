@@ -5,6 +5,7 @@ sidebar_title: Authentication
 hasVideoLink: true
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -65,6 +66,13 @@ If you're building this flow yourself, be sure to review the [Authentication Che
 > **info** Adding email and password authentication is usually enough to pass App Store and Play Store review. You can submit your app with this method first. If you include "Sign in with Google," Apple may reject your app unless you also support "Sign in with Apple." The same rule applies in reverse on Google Play.
 
 </Collapsible>
+
+<BoxLink
+  title="Better Auth Example"
+  description="An example demonstrating email and password authentication with Better Auth."
+  href="https://github.com/expo/examples/tree/master/with-better-auth"
+  Icon={GithubIcon}
+/>
 
 ## Passwordless login
 

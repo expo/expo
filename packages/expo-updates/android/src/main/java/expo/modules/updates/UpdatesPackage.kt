@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import com.facebook.react.ReactActivity
-import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.core.interfaces.Package
@@ -33,7 +33,7 @@ class UpdatesPackage : Package {
       }
 
       override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {
-        UpdatesController.initialize(context)
+        UpdatesController.initialize(context, useDeveloperSupport)
       }
 
       override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
@@ -53,16 +53,16 @@ class UpdatesPackage : Package {
 
   override fun createReactActivityHandlers(activityContext: Context): List<ReactActivityHandler> {
     val handler = object : ReactActivityHandler {
-      override fun getDelayLoadAppHandler(activity: ReactActivity, reactNativeHost: ReactNativeHost): ReactActivityHandler.DelayLoadAppHandler? {
+      override fun getDelayLoadAppHandler(activity: ReactActivity, reactHost: ReactHost): ReactActivityHandler.DelayLoadAppHandler? {
         if (!BuildConfig.EX_UPDATES_ANDROID_DELAY_LOAD_APP || isUsingCustomInit) {
           return null
         }
         val context = activity.applicationContext
-        val useDeveloperSupport = reactNativeHost.useDeveloperSupport
+        val useDeveloperSupport = reactHost.devSupportManager?.devSupportEnabled ?: false
         if (!useDeveloperSupport || isUsingNativeDebug) {
           return ReactActivityHandler.DelayLoadAppHandler { whenReadyRunnable ->
             CoroutineScope(Dispatchers.IO).launch {
-              startUpdatesController(context)
+              startUpdatesController(context, useDeveloperSupport)
               invokeReadyRunnable(whenReadyRunnable)
             }
           }
@@ -71,10 +71,10 @@ class UpdatesPackage : Package {
       }
 
       @WorkerThread
-      private suspend fun startUpdatesController(context: Context) {
+      private suspend fun startUpdatesController(context: Context, useDeveloperSupport: Boolean) {
         withContext(Dispatchers.IO) {
           if (!UpdatesPackage.isUsingCustomInit) {
-            UpdatesController.initialize(context)
+            UpdatesController.initialize(context, useDeveloperSupport)
             // Call the synchronous `launchAssetFile()` function to wait for updates ready
             UpdatesController.instance.launchAssetFile
           }

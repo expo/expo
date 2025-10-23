@@ -69,6 +69,7 @@ To control the `StatusBar` visibility, you can set the [`hidden`](/versions/late
 On Android devices, the Navigation Bar appears at the bottom of the screen. You can customize it using the [`expo-navigation-bar`](/versions/latest/sdk/navigation-bar) library. It provides a `NavigationBar` component that you can use to set the style of the navigation bar using the [`setStyle`](/versions/latest/sdk/navigation-bar/#navigationbarsetstylestyle) method:
 
 ```tsx app/_layout.tsx
+import { Platform } from 'react-native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { useEffect } from 'react';
 

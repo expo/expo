@@ -53,7 +53,7 @@ exports.collectDependenciesForShaking = collectDependenciesForShaking;
  */
 const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
-const JsFileWrapping_1 = __importDefault(require("@expo/metro/metro/ModuleGraph/worker/JsFileWrapping"));
+const JsFileWrapping = __importStar(require("@expo/metro/metro/ModuleGraph/worker/JsFileWrapping"));
 const generateImportNames_1 = __importDefault(require("@expo/metro/metro/ModuleGraph/worker/generateImportNames"));
 const importLocationsPlugin_1 = require("@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin");
 const metro_cache_1 = require("@expo/metro/metro-cache");
@@ -66,7 +66,7 @@ const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
 const count_lines_1 = require("./count-lines");
 const resolveOptions_1 = require("./resolveOptions");
-const import_export_plugin_1 = require("../transform-plugins/import-export-plugin");
+const transform_plugins_1 = require("../transform-plugins");
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -167,16 +167,10 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
     // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
     if (options.experimentalImportSupport === true) {
-        plugins.push(
-        // Ensure the iife "globals" don't have conflicting variables in the module.
-        renameTopLevelModuleVariables, 
-        //
-        [
-            import_export_plugin_1.importExportPlugin,
-            {
-                ...babelPluginOpts,
-                liveBindings: options.customTransformOptions?.liveBindings !== 'false',
-            },
+        const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
+        plugins.push([
+            liveBindings ? transform_plugins_1.importExportLiveBindingsPlugin : transform_plugins_1.importExportPlugin,
+            { ...babelPluginOpts },
         ]);
     }
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
@@ -298,7 +292,7 @@ async function transformJS(file, { config, options }) {
     let collectDependenciesOptions;
     if (file.type === 'js/script') {
         dependencies = [];
-        wrappedAst = JsFileWrapping_1.default.wrapPolyfill(ast);
+        wrappedAst = JsFileWrapping.wrapPolyfill(ast);
     }
     else {
         try {
@@ -349,7 +343,7 @@ async function transformJS(file, { config, options }) {
         }
         else {
             // TODO: Replace this with a cheaper transform that doesn't require AST.
-            ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix, 
+            ({ ast: wrappedAst } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix, 
             // TODO: This config is optional to allow its introduction in a minor
             // release. It should be made non-optional in ConfigT or removed in
             // future.
@@ -494,8 +488,8 @@ async function transformJSWithBabel(file, context) {
 }
 async function transformJSON(file, { options, config }) {
     let code = config.unstable_disableModuleWrapping === true
-        ? JsFileWrapping_1.default.jsonToCommonJS(file.code)
-        : JsFileWrapping_1.default.wrapJson(file.code, config.globalPrefix);
+        ? JsFileWrapping.jsonToCommonJS(file.code)
+        : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
     let map = [];
     const minify = (0, resolveOptions_1.shouldMinify)(options);
     if (minify) {

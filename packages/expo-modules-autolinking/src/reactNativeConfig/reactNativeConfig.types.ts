@@ -24,6 +24,11 @@ export interface RNConfigDependencyIos {
   scriptPhases: any[];
 }
 
+/** Dependency configuration for Web platform. */
+export interface RNConfigDependencyWeb {
+  version: string;
+}
+
 /** Dependency configuration. */
 export interface RNConfigDependency {
   root: string;
@@ -31,6 +36,7 @@ export interface RNConfigDependency {
   platforms: {
     android?: RNConfigDependencyAndroid;
     ios?: RNConfigDependencyIos;
+    web?: RNConfigDependencyWeb;
   };
 }
 
@@ -48,12 +54,14 @@ export interface RNConfigResult {
 
 export type RNConfigReactNativePlatformsConfigAndroid = any;
 export type RNConfigReactNativePlatformsConfigIos = any;
+export type RNConfigReactNativePlatformsConfigWeb = any;
 
-interface RNConfigReactNativePlatformsConfig {
+export interface RNConfigReactNativePlatformsConfig {
   root?: string;
   platforms?: {
     android?: RNConfigReactNativePlatformsConfigAndroid;
     ios?: RNConfigReactNativePlatformsConfigIos;
+    web?: RNConfigReactNativePlatformsConfigWeb;
   };
 }
 

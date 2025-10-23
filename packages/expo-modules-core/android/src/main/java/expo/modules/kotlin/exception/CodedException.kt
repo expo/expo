@@ -71,8 +71,8 @@ inline fun <reified T : CodedException> errorCodeOf(): String =
   CodedException.inferCode(T::class.java)
 
 internal class IncompatibleArgTypeException(
-  argumentType: KType,
-  desiredType: KType,
+  argumentType: KClass<*>,
+  desiredType: KClass<*>,
   cause: Throwable? = null
 ) : CodedException(
   message = "Argument type '$argumentType' is not compatible with expected type '$desiredType'.",

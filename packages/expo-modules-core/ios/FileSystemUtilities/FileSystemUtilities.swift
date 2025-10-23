@@ -59,7 +59,7 @@ public struct FileSystemUtilities {
     return getExternalPathPermissions(path, appContext)
   }
 
-  private static func getInternalPathPermissions(_ appContext: AppContext?, for url: URL) -> [FileSystemPermissionFlags] {
+  public static func getInternalPathPermissions(_ appContext: AppContext?, for url: URL) -> [FileSystemPermissionFlags] {
     guard let appContext else {
       return [.none]
     }
@@ -88,17 +88,9 @@ public struct FileSystemUtilities {
     if appContext?.config.scoped ?? false && url.path.contains("ExponentExperienceData") {
       return []
     }
-    var filePermissions: [FileSystemPermissionFlags] = []
 
-    if FileManager.default.isReadableFile(atPath: url.path) {
-      filePermissions.append(.read)
-    }
-
-    if FileManager.default.isWritableFile(atPath: url.path) {
-      filePermissions.append(.write)
-    }
-
-    return filePermissions
+    // Defer permission checks for external paths to the underlying system at the time of file operations
+    return [.read, .write]
   }
 
   private static func getAppGroupSharedDirectories(_ appContext: AppContext) -> [String] {

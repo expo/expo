@@ -9,6 +9,8 @@ internal protocol CommonViewModifierProps: ObservableObject {
   var padding: PaddingOptions? { get }
   var testID: String? { get }
   var modifiers: ModifierArray? { get }
+
+  var appContext: AppContext? { get }
   var globalEventDispatcher: EventDispatcher { get }
 }
 
@@ -22,6 +24,6 @@ internal struct CommonViewModifiers<Props: CommonViewModifierProps>: ViewModifie
       .applyFrame(props.frame, defaultAlignment: defaultFrameAlignment)
       .applyPadding(props.padding)
       .applyAccessibilityIdentifier(props.testID)
-      .applyModifiers(props.modifiers, globalEventDispatcher: props.globalEventDispatcher)
+      .applyModifiers(props.modifiers, appContext: props.appContext, globalEventDispatcher: props.globalEventDispatcher)
   }
 }

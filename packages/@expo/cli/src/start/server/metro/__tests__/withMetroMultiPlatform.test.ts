@@ -6,7 +6,7 @@ import { vol } from 'memfs';
 import assert from 'node:assert';
 
 import { AutolinkingModuleResolverInput } from '../createExpoAutolinkingResolver';
-import { shouldCreateVirtualCanary, shouldCreateVirtualShim } from '../externals';
+import { shouldCreateVirtualShim } from '../externals';
 import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => config as any;
@@ -29,7 +29,6 @@ jest.mock('@expo/metro/metro-resolver', () => {
 
 jest.mock('../externals', () => ({
   ...jest.requireActual('../externals'),
-  shouldCreateVirtualCanary: jest.fn(() => false),
   shouldCreateVirtualShim: jest.fn(() => false),
 }));
 
@@ -711,7 +710,6 @@ describe(withExtendedResolver, () => {
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: {},
       isTsconfigPathsEnabled: false,
-      isReactCanaryEnabled: true,
       getMetroBundler: getMetroBundlerGetter(),
     });
 
@@ -740,7 +738,6 @@ describe(withExtendedResolver, () => {
         tsconfig: {},
         isExporting: props.isExporting,
         isTsconfigPathsEnabled: false,
-        isReactCanaryEnabled: false,
         getMetroBundler: getMetroBundlerGetter(),
       });
     }
@@ -800,6 +797,12 @@ describe(withExtendedResolver, () => {
             'inline-style-prefixer/index.js',
           ].forEach((name) => {
             it(`externs ${name} to virtual node shim`, () => {
+              jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+                return context.originModulePath === '/root/package.json'
+                  ? { type: 'sourceFile', filePath: `mock:${moduleName}` }
+                  : { type: 'empty' };
+              });
+
               const result = config.resolver.resolveRequest!(
                 // Context
                 getNodeResolverContext(),
@@ -815,11 +818,17 @@ describe(withExtendedResolver, () => {
                 `\0node:${name}`
               );
 
-              expect(getResolveFunc()).toHaveBeenCalledTimes(0);
+              expect(getResolveFunc()).toHaveBeenCalledTimes(1);
             });
           });
 
           it(`externs @babel/runtime/xxx subpaths `, () => {
+            jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+              return context.originModulePath === '/root/package.json'
+                ? { type: 'sourceFile', filePath: `mock:${moduleName}` }
+                : { type: 'empty' };
+            });
+
             const result = config.resolver.resolveRequest!(
               getNodeResolverContext(),
               '@babel/runtime/xxx/foo.js',
@@ -832,7 +841,7 @@ describe(withExtendedResolver, () => {
               '\0node:@babel/runtime/xxx/foo.js'
             );
 
-            expect(getResolveFunc()).toHaveBeenCalledTimes(0);
+            expect(getResolveFunc()).toHaveBeenCalledTimes(1);
           });
         });
       });
@@ -897,71 +906,11 @@ describe(withExtendedResolver, () => {
     });
   });
 
-  it(`aliases React Native renderer modules to canaries on native`, async () => {
-    vol.fromJSON(
-      {
-        'node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js':
-          '',
-
-        'node_modules/@react-native/assets-registry/registry.js': '',
-
-        mock: '',
-      },
-      '/'
-    );
-
-    ['ios', 'android'].forEach((platform) => {
-      jest
-        .mocked(shouldCreateVirtualCanary)
-        .mockClear()
-        .mockImplementationOnce((path: string) =>
-          path.includes('Libraries/Renderer/implementations') ? '/mock' : null
-        );
-      // Emulate throwing when the module doesn't exist...
-      jest
-        .mocked(getResolveFunc())
-        .mockClear()
-        .mockImplementationOnce(() => {
-          return {
-            type: 'sourceFile',
-            filePath:
-              '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
-          };
-        });
-
-      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
-        isTsconfigPathsEnabled: false,
-        isReactCanaryEnabled: true,
-        getMetroBundler: getMetroBundlerGetter(),
-      });
-
-      const result = modified.resolver.resolveRequest!(
-        getDefaultRequestContext(),
-        '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
-        platform
-      );
-
-      expect(result).toEqual({
-        filePath: '/mock',
-        type: 'sourceFile',
-      });
-
-      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-      expect(getResolveFunc()).toHaveBeenCalledWith(
-        expect.anything(),
-        '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
-        platform
-      );
-    });
-  });
-
   describe('with fallback module resolver', () => {
     function getModifiedConfig() {
       return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         tsconfig: {},
         isTsconfigPathsEnabled: false,
-        isReactCanaryEnabled: true,
         getMetroBundler: getMetroBundlerGetter() as any,
       });
     }
@@ -1027,7 +976,7 @@ describe(withExtendedResolver, () => {
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         3,
         expect.objectContaining({
-          originModulePath: '/node_modules/expo',
+          originModulePath: '/node_modules/expo/index.js',
           nodeModulesPaths: ['/node_modules/expo'],
         }),
         '@babel/runtime/helpers/interopRequireDefault',
@@ -1105,7 +1054,7 @@ describe(withExtendedResolver, () => {
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         4,
         expect.objectContaining({
-          originModulePath: '/node_modules/expo-router',
+          originModulePath: '/node_modules/expo-router/index.js',
           nodeModulesPaths: ['/node_modules/expo-router'],
         }),
         'example',
@@ -1213,7 +1162,6 @@ describe(withExtendedResolver, () => {
         tsconfig: {},
         autolinkingModuleResolverInput: input,
         isTsconfigPathsEnabled: false,
-        isReactCanaryEnabled: true,
         getMetroBundler: getMetroBundlerGetter() as any,
       });
     }

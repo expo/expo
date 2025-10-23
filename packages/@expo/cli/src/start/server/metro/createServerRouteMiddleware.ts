@@ -6,13 +6,19 @@
  */
 
 import type { ProjectConfig } from '@expo/config';
+import type { MiddlewareSettings } from 'expo-server';
+import { createRequestHandler } from 'expo-server/adapter/http';
 import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
-import { fetchManifest } from './fetchRouterManifest';
-import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
-import { warnInvalidWebOutput, warnInvalidMiddlewareOutput } from './router';
+import { fetchManifest, type ExpoRouterServerManifestV1Route } from './fetchRouterManifest';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import {
+  warnInvalidWebOutput,
+  warnInvalidMiddlewareOutput,
+  warnInvalidMiddlewareMatcherSettings,
+} from './router';
 import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
@@ -27,21 +33,22 @@ export function createRouteHandlerMiddleware(
   options: {
     appDir: string;
     routerRoot: string;
-    getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
+    getStaticPageAsync: (
+      pathname: string,
+      route: ExpoRouterServerManifestV1Route<RegExp>
+    ) => Promise<{ content: string }>;
     bundleApiRoute: (
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;
     config: ProjectConfig;
-  } & import('expo-router/build/routes-manifest').Options
+    headers: Record<string, string | string[]>;
+  } & import('@expo/router-server/build/routes-manifest').Options
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {
     throw new CommandError(
-      `static and server rendering requires the expo-router package to be installed in your project. Either install the expo-router package or change 'web.output' to 'static' in your app.json.`
+      `static and server rendering requires the expo-router package to be installed in your project. Either install the expo-router package or change 'web.output' to 'single' in your app.json.`
     );
   }
-
-  const { createRequestHandler } =
-    require('@expo/server/adapter/http') as typeof import('@expo/server/adapter/http');
 
   return createRequestHandler(
     { build: '' },
@@ -69,9 +76,9 @@ export function createRouteHandlerMiddleware(
           }
         );
       },
-      async getHtml(request) {
+      async getHtml(request, route) {
         try {
-          const { content } = await options.getStaticPageAsync(request.url);
+          const { content } = await options.getStaticPageAsync(request.url, route);
           return content;
         } catch (error: any) {
           // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
@@ -110,9 +117,8 @@ export function createRouteHandlerMiddleware(
         }
       },
       async handleRouteError(error) {
-        const { ExpoError } = require('@expo/server') as typeof import('@expo/server');
-
-        if (ExpoError.isExpoError(error)) {
+        // NOTE(@kitten): ExpoError is currently not exposed by expo-server just yet
+        if (error && typeof error === 'object' && error.name === 'ExpoError') {
           // TODO(@krystofwoldrich): Can we show code snippet of the handler?
           // NOTE(@krystofwoldrich): Removing stack since to avoid confusion. The error is not in the server code.
           delete error.stack;
@@ -188,7 +194,13 @@ export function createRouteHandlerMiddleware(
 
         try {
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
-          return await options.bundleApiRoute(resolvedFunctionPath!);
+          const middlewareModule = (await options.bundleApiRoute(resolvedFunctionPath!)) as any;
+
+          if ((middlewareModule.unstable_settings as MiddlewareSettings)?.matcher) {
+            warnInvalidMiddlewareMatcherSettings(middlewareModule.unstable_settings?.matcher);
+          }
+
+          return middlewareModule;
         } catch (error: any) {
           return new Response(
             'Failed to load middleware: ' + resolvedFunctionPath + '\n\n' + error.message,

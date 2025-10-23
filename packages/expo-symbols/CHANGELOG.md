@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- [Android] Add support for MaterialSymbol symbols on Android and Web. ([#39516](https://github.com/expo/expo/pull/39516) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.0.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
 
 ## 1.0.5 — 2025-08-31
 

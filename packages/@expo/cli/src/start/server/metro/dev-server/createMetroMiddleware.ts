@@ -68,7 +68,7 @@ function createMetroStatusMiddleware(
   metroConfig: Pick<MetroConfig, 'projectRoot'>
 ): connect.NextHandleFunction {
   return (_req, res) => {
-    res.setHeader('X-React-Native-Project-Root', metroConfig.projectRoot!);
+    res.setHeader('X-React-Native-Project-Root', encodeURI(metroConfig.projectRoot!));
     res.end('packager-status:running');
   };
 }

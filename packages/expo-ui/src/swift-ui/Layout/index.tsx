@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
 
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -11,7 +12,7 @@ type TapEvent = ViewEvent<'onTap', object> & {
 interface StackBaseProps extends CommonViewModifierProps {
   children: React.ReactNode;
   spacing?: number;
-  backgroundColor?: string;
+  backgroundColor?: ColorValue;
 
   /**
    * Callback triggered when the view is pressed.
@@ -88,5 +89,35 @@ function transformGroupProps(props: GroupProps): NativeGroupProps {
 
 export function Group(props: GroupProps) {
   return <GroupNativeView {...transformGroupProps(props)} />;
+}
+//#endregion
+
+//#region ZStack Component
+export interface ZStackProps extends StackBaseProps {
+  alignment?:
+    | 'center'
+    | 'leading'
+    | 'trailing'
+    | 'top'
+    | 'bottom'
+    | 'topLeading'
+    | 'topTrailing'
+    | 'bottomLeading'
+    | 'bottomTrailing'
+    | 'centerFirstTextBaseline'
+    | 'centerLastTextBaseline'
+    | 'leadingFirstTextBaseline'
+    | 'leadingLastTextBaseline'
+    | 'trailingFirstTextBaseline'
+    | 'trailingLastTextBaseline';
+}
+
+const ZStackNativeView: React.ComponentType<NativeStackProps> = requireNativeView(
+  'ExpoUI',
+  'ZStackView'
+);
+
+export function ZStack(props: ZStackProps) {
+  return <ZStackNativeView {...transformNativeProps(props)} />;
 }
 //#endregion

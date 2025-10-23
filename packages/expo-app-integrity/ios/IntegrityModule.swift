@@ -12,7 +12,7 @@ public class IntegrityModule: Module {
       return service.isSupported
     }
 
-    AsyncFunction("generateKey") {
+    AsyncFunction("generateKeyAsync") {
       do {
         return try await service.generateKey()
       } catch let error {
@@ -20,30 +20,24 @@ public class IntegrityModule: Module {
       }
     }
 
-    AsyncFunction("attestKey") { (key: String, challenge: String) in
+    AsyncFunction("attestKeyAsync") { (key: String, challenge: String) in
       let data = Data(challenge.utf8)
       let clientDataHash = Data(SHA256.hash(data: data))
 
       do {
         let result = try await service.attestKey(key, clientDataHash: clientDataHash)
-        guard let attestation = String(data: result, encoding: .utf8) else {
-          throw IntegrityException("Failed to decode attestation result from data", code: IntegrityErrorCodes.decodeFailed)
-        }
-        return attestation
+        return result.base64EncodedString()
       } catch let error {
         throw handleIntegrityCheckError(error)
       }
     }
 
-    AsyncFunction("generateAssertion") { (key: String, challenge: String) -> String in
+    AsyncFunction("generateAssertionAsync") { (key: String, challenge: String) -> String in
       let data = Data(challenge.utf8)
       let clientDataHash = Data(SHA256.hash(data: data))
       do {
         let result = try await service.generateAssertion(key, clientDataHash: clientDataHash)
-        guard let assertion = String(data: result, encoding: .utf8) else {
-          throw IntegrityException("Failed to decode assertion result from data", code: IntegrityErrorCodes.decodeFailed)
-        }
-        return assertion
+        return result.base64EncodedString()
       } catch let error {
         throw handleIntegrityCheckError(error)
       }

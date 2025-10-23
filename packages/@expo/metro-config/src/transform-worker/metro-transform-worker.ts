@@ -11,7 +11,7 @@
 import { transformFromAstSync, parse, types as t, template } from '@babel/core';
 import type { ParseResult, PluginItem, NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
 import {
   importLocationsPlugin,
@@ -49,7 +49,7 @@ import collectDependencies, {
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
-import { importExportPlugin } from '../transform-plugins/import-export-plugin';
+import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 
 export { JsTransformOptions };
 
@@ -240,18 +240,11 @@ export function applyImportSupport<TFile extends t.File>(
   // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
   // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
   if (options.experimentalImportSupport === true) {
-    plugins.push(
-      // Ensure the iife "globals" don't have conflicting variables in the module.
-      renameTopLevelModuleVariables,
-      //
-      [
-        importExportPlugin,
-        {
-          ...babelPluginOpts,
-          liveBindings: options.customTransformOptions?.liveBindings !== 'false',
-        },
-      ]
-    );
+    const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
+    plugins.push([
+      liveBindings ? importExportLiveBindingsPlugin : importExportPlugin,
+      { ...babelPluginOpts },
+    ]);
   }
 
   // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and

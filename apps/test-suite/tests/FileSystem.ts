@@ -49,47 +49,93 @@ export async function test({ describe, expect, it, ...t }) {
       t.afterAll(() => {
         t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
       });
-      it('Supports some operations on SAF directories', async () => {
-        const safDirectory = await Directory.pickDirectoryAsync();
 
-        safDirectory.list().forEach((sd) => {
-          sd.delete();
+      if (Platform.OS === 'android') {
+        it('Supports some operations on SAF directories', async () => {
+          const safDirectory = await Directory.pickDirectoryAsync();
+
+          safDirectory.list().forEach((sd) => {
+            sd.delete();
+          });
+          expect(safDirectory.list().length).toBe(0);
+
+          safDirectory.createFile('newFile', 'text/plain');
+          expect(safDirectory.list().length).toBe(1);
+
+          safDirectory.list().forEach((sd) => {
+            sd.delete();
+          });
+          expect(safDirectory.list().length).toBe(0);
+
+          const file = safDirectory.createFile('newFile', 'text/plain');
+          file.write('test');
+          expect(file.textSync()).toBe('test');
+          expect(file.bytesSync()).toEqual(new Uint8Array([116, 101, 115, 116]));
+          expect(file.base64Sync()).toBe('dGVzdA==');
+          const file2 = safDirectory.createFile('newFile2', 'text/plain');
+
+          file2.write(new Uint8Array([116, 101, 115, 116]));
+          expect(file2.textSync()).toBe('test');
+          expect(file2.size).toBe(4);
+          expect(safDirectory.size).toBe(8);
+
+          const result = await File.pickFileAsync(safDirectory.uri);
+          const safFile = Array.isArray(result) ? result[0] : result;
+          expect(safFile.textSync()).toBe('test');
         });
-        expect(safDirectory.list().length).toBe(0);
 
-        safDirectory.createFile('newFile', 'text/plain');
-        expect(safDirectory.list().length).toBe(1);
+        it('allows picking files from cache directory', async () => {
+          const result = await File.pickFileAsync(Paths.cache.uri);
+          const safFile = Array.isArray(result) ? result[0] : result;
 
-        safDirectory.list().forEach((sd) => {
-          sd.delete();
+          expect(safFile.exists).toBe(true);
         });
-        expect(safDirectory.list().length).toBe(0);
 
-        const file = safDirectory.createFile('newFile', 'text/plain');
-        file.write('test');
-        expect(file.textSync()).toBe('test');
-        expect(file.bytesSync()).toEqual(new Uint8Array([116, 101, 115, 116]));
-        expect(file.base64Sync()).toBe('dGVzdA==');
-        const file2 = safDirectory.createFile('newFile2', 'text/plain');
+        it('allows picking directories from cache directory', async () => {
+          const dir = await Directory.pickDirectoryAsync(Paths.cache.uri);
+          expect(dir.exists).toBe(true);
+        });
+      }
 
-        file2.write(new Uint8Array([116, 101, 115, 116]));
-        expect(file2.textSync()).toBe('test');
-        expect(file2.size).toBe(4);
-        expect(safDirectory.size).toBe(8);
+      if (Platform.OS === 'ios') {
+        it('allows picking files', async () => {
+          const file = new File(testDirectory, 'selectMe.txt');
+          file.write('test');
+          const result = await File.pickFileAsync(testDirectory);
+          const safFile = Array.isArray(result) ? result[0] : result;
 
-        const safFile = await File.pickFileAsync(safDirectory.uri);
-        expect(safFile.textSync()).toBe('test');
-      });
+          expect(safFile.exists).toBe(true);
+          expect(safFile.textSync()).toBe('test');
+        });
 
-      it('allows picking files from cache directory', async () => {
-        const file = await File.pickFileAsync(Paths.cache.uri);
-        expect(file.exists).toBe(true);
-      });
+        it('allows picking directories', async () => {
+          const directory = new Directory(testDirectory);
+          expect(directory.exists).toBe(true);
 
-      it('allows picking directories from cache directory', async () => {
-        const dir = await Directory.pickDirectoryAsync(Paths.cache.uri);
-        expect(dir.exists).toBe(true);
-      });
+          const file = new File(directory, 'test.txt');
+          file.write('test');
+          expect(file.exists).toBe(true);
+
+          const selectedDirectory = await Directory.pickDirectoryAsync(testDirectory);
+
+          expect(selectedDirectory.exists).toBe(true);
+          expect(selectedDirectory.uri).toBe(testDirectory);
+          expect(selectedDirectory.list().length).toBe(1);
+          expect(selectedDirectory.list()[0].uri).toBe(file.uri);
+          expect(selectedDirectory.list()[0] instanceof File).toBe(true);
+          expect((selectedDirectory.list()[0] as File).textSync()).toBe('test');
+
+          // Create a file in the selected directory
+          const file2 = new File(directory.uri, 'newFile.txt');
+          file2.write('test');
+          expect(file2.exists).toBe(true);
+          expect(file2.textSync()).toBe('test');
+
+          // Delete the file
+          file2.delete();
+          expect(file2.exists).toBe(false);
+        });
+      }
     });
 
     it('Creates a lazy file reference', () => {
@@ -241,6 +287,13 @@ export async function test({ describe, expect, it, ...t }) {
       expect(outputFile.exists).toBe(true);
     });
 
+    it('Writes a base64 encoded string to a file reference', () => {
+      const outputFile = new File(testDirectory, 'file.txt');
+      expect(outputFile.exists).toBe(false);
+      outputFile.write('SGVsbG8gd29ybGQh', { encoding: 'base64' });
+      expect(outputFile.textSync()).toEqual('Hello world!');
+    });
+
     it('Writes a string to a file reference', async () => {
       const outputFile = new File(testDirectory, 'file.txt');
       outputFile.create();
@@ -269,6 +322,34 @@ export async function test({ describe, expect, it, ...t }) {
 
       outputFile.delete();
       expect(outputFile.exists).toBe(false);
+    });
+
+    // write 2 tests that tests recursive directory deletion both for regular and for a saf directory
+    it('recursively deletes a regular directory', () => {
+      const parentDir = new Directory(testDirectory, 'parent');
+      parentDir.create();
+      const childDir = new Directory(parentDir, 'child');
+      childDir.create();
+      const file = new File(childDir, 'file.txt');
+      file.write('Hello world');
+      expect(parentDir.exists).toBe(true);
+      parentDir.delete();
+      expect(parentDir.exists).toBe(false);
+      expect(childDir.exists).toBe(false);
+      expect(file.exists).toBe(false);
+    });
+
+    it('recursively deletes a SAF directory (Android only)', async () => {
+      if (Platform.OS === 'android' && !shouldSkipTestsRequiringPermissions) {
+        const safDir = (await Directory.pickDirectoryAsync()).createDirectory('test_case_deletion');
+        const childFile = safDir.createDirectory('child').createFile('childFile', 'text/plain');
+        expect(safDir.exists).toBe(true);
+        expect(childFile.exists).toBe(true);
+
+        safDir.delete();
+        expect(safDir.exists).toBe(false);
+        expect(childFile.exists).toBe(false);
+      }
     });
 
     it('Throws if a file does not exist', () => {

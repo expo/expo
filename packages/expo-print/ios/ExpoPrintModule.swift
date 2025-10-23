@@ -21,12 +21,10 @@ public class ExpoPrintModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoPrint")
 
-    Constants {
+    Constant("Orientation") {
       [
-        "Orientation": [
-          "portrait": PrintOrientation.portrait.rawValue,
-          "landscape": PrintOrientation.landscape.rawValue
-        ]
+        "portrait": PrintOrientation.portrait.rawValue,
+        "landscape": PrintOrientation.landscape.rawValue
       ]
     }
 

@@ -14,7 +14,7 @@ struct AccountSheet: View {
         Spacer()
         Image("expo-go-logo", bundle: getDevLauncherBundle())
           .resizable()
-          .aspectRatio(contentMode: .fit)
+          .scaledToFit()
           .frame(width: 180)
         Spacer()
       }
@@ -208,7 +208,7 @@ struct AccountSheet: View {
       Avatar(url: url) { image in
         image
           .resizable()
-          .aspectRatio(contentMode: .fill)
+          .scaledToFill()
       } placeholder: {
         Circle()
         #if !os(tvOS)

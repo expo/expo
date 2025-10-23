@@ -1,6 +1,6 @@
 {
   "name": "expo-apple-authentication",
-  "version": "8.0.5",
+  "version": "8.0.7",
   "description": "A package that provides 'Sign in with Apple' capability for Expo and React Native apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/apple-authentication/",
   "devDependencies": {
-    "expo-module-scripts": "^5.0.6"
+    "expo-module-scripts": "^5.0.7"
   },
   "peerDependencies": {
     "expo": "*",

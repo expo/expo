@@ -10,7 +10,7 @@ import { types as t } from '@babel/core';
 import type { Dependency } from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
 import collectDependencies from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
 
-import { importExportPlugin } from '../import-export-plugin';
+import { importExportPlugin } from '../index';
 import { transformToAst } from './__mocks__/test-helpers-upstream';
 
 const default_opts = {

@@ -12,6 +12,10 @@ interface Destructible {
 
 @DoNotStrip
 class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) : AutoCloseable {
+  private inner class DeallocatorThread : Thread("Expo JNI deallocator") {
+    override fun run() = deallocator()
+  }
+
   /**
    * A [PhantomReference] queue managed by JVM
    */
@@ -27,24 +31,7 @@ class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) : AutoCloseab
    * to not store invalid references to every created object.
    */
   private val destructorThread = if (shouldCreateDestructorThread) {
-    object : Thread("Expo JNI deallocator") {
-      override fun run() {
-        while (!isInterrupted) {
-          try {
-            // Referent of PhantomReference were garbage collected so we can remove it from our registry.
-            // Note that we don't have to call `deallocate` method - it was called [com.facebook.jni.HybridData].
-            val current = referenceQueue.remove()
-            synchronized(this@JNIDeallocator) {
-              destructorMap.remove(current)
-            }
-          } catch (e: InterruptedException) {
-            return
-          }
-        }
-      }
-    }.also {
-      it.start()
-    }
+    DeallocatorThread().apply { start() }
   } else {
     null
   }
@@ -78,6 +65,21 @@ class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) : AutoCloseab
    */
   fun inspectMemory() = synchronized(this) {
     destructorMap.values.mapNotNull { it.get() }
+  }
+
+  private fun Thread.deallocator() {
+    while (!isInterrupted) {
+      try {
+        // Referent of PhantomReference were garbage collected so we can remove it from our registry.
+        // Note that we don't have to call `deallocate` method - it was called [com.facebook.jni.HybridData].
+        val current = referenceQueue.remove()
+        synchronized(this@JNIDeallocator) {
+          destructorMap.remove(current)
+        }
+      } catch (_: InterruptedException) {
+        return
+      }
+    }
   }
 
   override fun close() {

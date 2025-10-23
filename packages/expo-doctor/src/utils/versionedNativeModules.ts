@@ -1,26 +1,30 @@
-import type { BundledNativeModules } from '@expo/cli/src/api/getNativeModuleVersions';
 import { getVersionedNativeModulesAsync } from '@expo/cli/src/start/doctor/dependencies/bundledNativeModules';
 
 import { Log } from '../utils/log';
 
-let _getBundledNativeModules: Promise<BundledNativeModules | null> | undefined;
-
-export async function getVersionedNativeModuleNamesAsync(
-  projectRoot: string,
-  expoSdkVersion: string
-): Promise<string[] | null> {
-  if (!_getBundledNativeModules) {
-    _getBundledNativeModules = getVersionedNativeModulesAsync(projectRoot, expoSdkVersion).catch(
-      () => {
-        Log.error('Warning: Could not fetch bundled native modules');
-        return null;
-      }
-    );
-  }
-  try {
-    const bundledNativeModules = await _getBundledNativeModules;
-    return bundledNativeModules ? Object.keys(bundledNativeModules) : null;
-  } catch (error) {
-    return null;
-  }
+export interface VersionedNativeModuleNamesCache {
+  nativeModuleNames?: Promise<string[] | null>;
 }
+
+export const getVersionedNativeModuleNamesAsync = (
+  cache: VersionedNativeModuleNamesCache,
+  params: {
+    projectRoot: string;
+    sdkVersion: string | undefined;
+  }
+): Promise<string[] | null> => {
+  const _task = async () => {
+    try {
+      const bundledNativeModules = await getVersionedNativeModulesAsync(
+        params.projectRoot,
+        params.sdkVersion!
+      );
+      return bundledNativeModules ? Object.keys(bundledNativeModules) : null;
+    } catch {
+      Log.error('Warning: Could not fetch bundled native modules');
+      return null;
+    }
+  };
+
+  return cache.nativeModuleNames || (cache.nativeModuleNames = _task());
+};

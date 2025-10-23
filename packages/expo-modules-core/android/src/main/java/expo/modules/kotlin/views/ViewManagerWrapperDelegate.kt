@@ -28,7 +28,9 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, int
   fun onViewDidUpdateProps(view: View) {
     definition.onViewDidUpdateProps?.let {
       try {
-        exceptionDecorator({ OnViewDidUpdatePropsException(view.javaClass.kotlin, it) }) {
+        exceptionDecorator(
+          { exception -> OnViewDidUpdatePropsException(view.javaClass.kotlin, exception) }
+        ) {
           it.invoke(view)
         }
       } catch (exception: Throwable) {
@@ -62,7 +64,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, int
       val key = iterator.nextKey()
       expoProps[key]?.let { expoProp ->
         try {
-          expoProp.set(propsMap.getDynamic(key), view, moduleHolder.module._runtimeContext?.appContext)
+          expoProp.set(propsMap.getDynamic(key), view, moduleHolder.module.appContext)
         } catch (exception: Throwable) {
           // The view wasn't constructed correctly, so errors are expected.
           // We can ignore them.
@@ -103,17 +105,15 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, int
     }
   }
 
-  fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    return buildMap<String, Any> {
-      definition
-        .callbacksDefinition
-        ?.names
-        ?.forEach {
-          put(
-            normalizeEventName(it),
-            mapOf("registrationName" to it)
-          )
-        }
-    }
+  fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? = buildMap {
+    definition
+      .callbacksDefinition
+      ?.names
+      ?.forEach {
+        put(
+          normalizeEventName(it),
+          mapOf("registrationName" to it)
+        )
+      }
   }
 }

@@ -7,7 +7,7 @@ struct NotSignedInView: View {
     VStack(spacing: 16) {
       Image(systemName: "square.and.arrow.down")
         .resizable()
-        .aspectRatio(contentMode: .fit)
+        .scaledToFit()
         .frame(width: 44, height: 44)
         .rotationEffect(.degrees(-90))
         .foregroundColor(.blue)

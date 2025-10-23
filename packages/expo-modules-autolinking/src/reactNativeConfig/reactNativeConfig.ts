@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 
 import type { SupportedPlatform } from '../types';
@@ -12,6 +13,7 @@ import type {
   RNConfigDependency,
   RNConfigDependencyAndroid,
   RNConfigDependencyIos,
+  RNConfigDependencyWeb,
   RNConfigReactNativeAppProjectConfig,
   RNConfigReactNativeLibraryConfig,
   RNConfigReactNativeProjectConfig,
@@ -27,6 +29,17 @@ import {
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
+import { checkDependencyWebAsync } from './webResolver';
+
+const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
+  const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
+  try {
+    const stat = await fs.promises.lstat(generatedDir);
+    return !stat.isDirectory();
+  } catch {
+    return true;
+  }
+};
 
 export async function resolveReactNativeModule(
   resolution: DependencyResolution,
@@ -36,9 +49,17 @@ export async function resolveReactNativeModule(
 ): Promise<RNConfigDependency | null> {
   if (excludeNames.has(resolution.name)) {
     return null;
+  } else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
+    // Starting from version 0.76, the `react-native` package only defines platforms
+    // when @react-native-community/cli-platform-android/ios is installed.
+    // Therefore, we need to manually filter it out.
+    // NOTE(@kitten): `loadConfigAsync` is skipped too, because react-native's config is too slow
+    return null;
   }
 
-  const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(resolution.path);
+  const libraryConfig = (await loadConfigAsync(
+    resolution.path
+  )) as RNConfigReactNativeLibraryConfig;
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
     ...projectConfig?.dependencies?.[resolution.name],
@@ -47,11 +68,6 @@ export async function resolveReactNativeModule(
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
-    return null;
-  } else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
-    // Starting from version 0.76, the `react-native` package only defines platforms
-    // when @react-native-community/cli-platform-android/ios is installed.
-    // Therefore, we need to manually filter it out.
     return null;
   }
 
@@ -69,7 +85,11 @@ export async function resolveReactNativeModule(
     }
   }
 
-  let platformData: RNConfigDependencyAndroid | RNConfigDependencyIos | null = null;
+  let platformData:
+    | RNConfigDependencyAndroid
+    | RNConfigDependencyIos
+    | RNConfigDependencyWeb
+    | null = null;
   if (platform === 'android') {
     platformData = await resolveDependencyConfigImplAndroidAsync(
       resolution.path,
@@ -80,6 +100,12 @@ export async function resolveReactNativeModule(
     platformData = await resolveDependencyConfigImplIosAsync(
       resolution,
       reactNativeConfig.platforms?.ios,
+      maybeExpoModuleConfig
+    );
+  } else if (platform === 'web') {
+    platformData = await checkDependencyWebAsync(
+      resolution,
+      reactNativeConfig,
       maybeExpoModuleConfig
     );
   }
@@ -109,7 +135,7 @@ export async function createReactNativeConfigAsync({
   autolinkingOptions,
 }: CreateRNConfigParams): Promise<RNConfigResult> {
   const excludeNames = new Set(autolinkingOptions.exclude);
-  const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(appRoot);
+  const projectConfig = (await loadConfigAsync(appRoot)) as RNConfigReactNativeProjectConfig;
 
   // custom native modules should be resolved first so that they can override other modules
   const searchPaths = autolinkingOptions.nativeModulesDir
@@ -129,6 +155,31 @@ export async function createReactNativeConfigAsync({
   const dependencies = await filterMapResolutionResult(resolutions, (resolution) =>
     resolveReactNativeModule(resolution, projectConfig, autolinkingOptions.platform, excludeNames)
   );
+
+  // See: https://github.com/facebook/react-native/pull/53690
+  // When we're building react-native from source without these generated files, we need to force them to be generated
+  // Every published react-native version (or out-of-tree version) should have these files, but building from the raw repo won't (e.g. Expo Go)
+  const reactNativeResolution = resolutions['react-native'];
+  if (
+    reactNativeResolution &&
+    autolinkingOptions.platform === 'ios' &&
+    (await isMissingFBReactNativeSpecCodegenOutput(reactNativeResolution.path))
+  ) {
+    dependencies['react-native'] = {
+      root: reactNativeResolution.path,
+      name: 'react-native',
+      platforms: {
+        ios: {
+          // This will trigger a warning in list_native_modules but will trigger the artifacts
+          // codegen codepath as expected
+          podspecPath: '',
+          version: reactNativeResolution.version,
+          configurations: [],
+          scriptPhases: [],
+        },
+      },
+    };
+  }
 
   return {
     root: appRoot,

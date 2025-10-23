@@ -47,12 +47,10 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       }
 
       sListenersReferences[listener] = WeakReference(listener)
-      if (sPendingNotificationResponses.isNotEmpty()) {
-        val responseIterator = sPendingNotificationResponses.iterator()
-        while (responseIterator.hasNext()) {
-          listener.onNotificationResponseReceived(responseIterator.next())
-          responseIterator.remove()
-        }
+      val responseIterator = sPendingNotificationResponses.iterator()
+      while (responseIterator.hasNext()) {
+        listener.onNotificationResponseReceived(responseIterator.next())
+        responseIterator.remove()
       }
     }
 
@@ -62,7 +60,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
      *   - the foreground main Activity
      *   - the background [NotificationForwarderActivity] Activity that send notification clicked events through broadcast
      */
-    fun createPendingIntentForOpeningApp(context: Context, broadcastIntent: Intent, notificationResponse: NotificationResponse): PendingIntent {
+    fun createPendingIntentForOpeningApp(context: Context, broadcastIntent: Intent): PendingIntent {
       var intentFlags = PendingIntent.FLAG_UPDATE_CURRENT
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         // The intent may include `RemoteInput` from `TextInputNotificationAction`.

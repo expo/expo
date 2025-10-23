@@ -84,6 +84,18 @@ describe(createReactNativeConfigAsync, () => {
     expect(result).toMatchInlineSnapshot(`
       {
         "dependencies": {
+          "react-native": {
+            "name": "react-native",
+            "platforms": {
+              "ios": {
+                "configurations": [],
+                "podspecPath": "",
+                "scriptPhases": [],
+                "version": "",
+              },
+            },
+            "root": "/app/node_modules/react-native",
+          },
           "react-native-test": {
             "name": "react-native-test",
             "platforms": {

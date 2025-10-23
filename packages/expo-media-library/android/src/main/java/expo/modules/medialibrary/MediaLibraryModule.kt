@@ -69,12 +69,16 @@ class MediaLibraryModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoMediaLibrary")
 
-    Constants {
-      return@Constants mapOf(
-        "MediaType" to MediaType.getConstants(),
-        "SortBy" to SortBy.getConstants(),
-        "CHANGE_LISTENER_NAME" to LIBRARY_DID_CHANGE_EVENT
-      )
+    Constant("MediaType") {
+      MediaType.getConstants()
+    }
+
+    Constant("SortBy") {
+      SortBy.getConstants()
+    }
+
+    Constant("CHANGE_LISTENER_NAME") {
+      LIBRARY_DID_CHANGE_EVENT
     }
 
     Events(LIBRARY_DID_CHANGE_EVENT)

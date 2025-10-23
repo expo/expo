@@ -100,7 +100,6 @@ module.exports = {
             argumentsCount: 0,
             key: 'setSystemBrightnessModeAsync',
           },
-          { name: 'useSystemBrightnessAsync', argumentsCount: 0, key: 'useSystemBrightnessAsync' },
         ],
         ExpoCalendar: [
           {
@@ -981,6 +980,9 @@ module.exports = {
         ExpoLinearGradient: {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
+        },
+        ExpoGlassEffect: {
+          isLiquidGlassAvailable: { type: 'string' },
         },
         ExpoLivePhoto: { addListener: { type: 'function' }, removeListeners: { type: 'function' } },
         ExpoLocalAuthentication: {

@@ -12,7 +12,6 @@ import { Terminal } from '@expo/metro/metro-core';
 import { getDefaultConfig, type LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
-import util from 'node:util';
 import path from 'path';
 
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
@@ -41,13 +40,13 @@ class LogRespectingTerminal extends Terminal {
   constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
     super(stream, { ttyPrint: true });
 
-    const sendLog = (...args: any[]) => {
-      this._logLines.push(
-        // format args like console.log
-        util.format(...args)
-      );
-      this._scheduleUpdate();
-
+    const sendLog = (...msg: any[]) => {
+      if (!msg.length) {
+        this.log('');
+      } else {
+        const [format, ...args] = msg;
+        this.log(format, ...args);
+      }
       // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
       this.flush();
     };
@@ -86,11 +85,9 @@ export async function loadMetroConfigAsync(
     process.env.EXPO_USE_METRO_REQUIRE = '1';
   }
 
-  const isReactCanaryEnabled =
-    (exp.experiments?.reactServerComponentRoutes ||
-      serverActionsEnabled ||
-      exp.experiments?.reactCanary) ??
-    false;
+  if (exp.experiments?.reactCanary) {
+    Log.warn(`React 19 is enabled by default. Remove unused experiments.reactCanary flag.`);
+  }
 
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
@@ -147,6 +144,9 @@ export async function loadMetroConfigAsync(
   if (env.EXPO_UNSTABLE_TREE_SHAKING) {
     Log.warn(`Experimental tree shaking is enabled.`);
   }
+  if (env.EXPO_UNSTABLE_LOG_BOX) {
+    Log.warn(`Experimental Expo LogBox is enabled.`);
+  }
   if (autolinkingModuleResolutionEnabled) {
     Log.warn(`Experimental Expo Autolinking module resolver is enabled.`);
   }
@@ -165,7 +165,6 @@ export async function loadMetroConfigAsync(
     isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,

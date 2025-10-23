@@ -113,13 +113,13 @@ class JSIContext : Destructible, AutoCloseable {
   @Suppress("unused")
   @DoNotStrip
   fun getJavaScriptModuleObject(name: String): JavaScriptModuleObject? {
-    return runtimeContextHolder.get()?.registry?.getModuleHolder(name)?.jsObject
+    return runtimeContextHolder.get()?.appContext?.registry?.getModuleHolder(name)?.jsObject
   }
 
   @Suppress("unused")
   @DoNotStrip
   fun hasModule(name: String): Boolean {
-    return runtimeContextHolder.get()?.registry?.hasModule(name) ?: false
+    return runtimeContextHolder.get()?.appContext?.registry?.hasModule(name) ?: false
   }
 
   /**
@@ -128,7 +128,7 @@ class JSIContext : Destructible, AutoCloseable {
   @Suppress("unused")
   @DoNotStrip
   fun getJavaScriptModulesName(): Array<String> {
-    return runtimeContextHolder.get()?.registry?.registry?.keys?.toTypedArray() ?: emptyArray()
+    return runtimeContextHolder.get()?.appContext?.registry?.registry?.keys?.toTypedArray() ?: emptyArray()
   }
 
   @Suppress("unused")

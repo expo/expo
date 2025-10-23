@@ -204,6 +204,11 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
+    // TODO: @behenate (SDK 55) completely remove support for synchronous `replaceCurrentItem` - it's not practical in any circumstance
+    if let url = videoSource.uri, url.isPHAssetUrl {
+      throw PlayerItemLoadException("The provided uri \(url) is a local PHAsset URL. This kind of URL can only be loaded asynchrynously. Use `VideoPlayer.replaceAsync` in order to load this item")
+    }
+
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()
       contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
@@ -263,9 +268,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   private func clearCurrentItem() {
-    DispatchQueue.main.async { [ref, videoSourceLoader, dangerousPropertiesStore] in
+    videoSourceLoader.cancelCurrentTask()
+
+    DispatchQueue.main.async { [ref, dangerousPropertiesStore] in
       ref.replaceCurrentItem(with: nil)
-      videoSourceLoader.cancelCurrentTask()
       dangerousPropertiesStore.reset()
       dangerousPropertiesStore.ownerIsReplacing = false
     }

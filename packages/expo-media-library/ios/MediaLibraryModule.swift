@@ -13,26 +13,30 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
     Events("mediaLibraryDidChange")
 
-    Constants {
+    Constant("MediaType") {
       [
-        "MediaType": [
-          "audio": "audio",
-          "photo": "photo",
-          "video": "video",
-          "unknown": "unknown",
-          "all": "all"
-        ],
-        "SortBy": [
-          "default": "default",
-          "creationTime": "creationTime",
-          "modificationTime": "modificationTime",
-          "mediaType": "mediaType",
-          "width": "width",
-          "height": "height",
-          "duration": "duration"
-        ],
-        "CHANGE_LISTENER_NAME": "mediaLibraryDidChange"
+        "audio": "audio",
+        "photo": "photo",
+        "video": "video",
+        "unknown": "unknown",
+        "all": "all"
       ]
+    }
+
+    Constant("SortBy") {
+      [
+        "default": "default",
+        "creationTime": "creationTime",
+        "modificationTime": "modificationTime",
+        "mediaType": "mediaType",
+        "width": "width",
+        "height": "height",
+        "duration": "duration"
+      ]
+    }
+
+    Constant("CHANGE_LISTENER_NAME") {
+      "mediaLibraryDidChange"
     }
 
     OnCreate {

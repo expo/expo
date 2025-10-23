@@ -7,7 +7,7 @@
  */
 // Copy of the upstream test to ensure compatible behavior.
 
-import { importExportPlugin } from '../import-export-plugin';
+import { importExportPlugin } from '../index';
 import { compare } from './__mocks__/test-helpers-upstream';
 import { showTransformedDeps } from './utils';
 

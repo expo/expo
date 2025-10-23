@@ -14,6 +14,7 @@ function createStandardAppearanceFromOptions(options, baseStandardAppearance) {
         blurEffect: options.blurEffect,
         badgeBackgroundColor: options.badgeBackgroundColor,
         titlePositionAdjustment: options.titlePositionAdjustment,
+        shadowColor: options.shadowColor,
     }, baseStandardAppearance, ['normal', 'focused', 'selected']);
     return appendSelectedStyleToAppearance({
         ...(options.selectedLabelStyle ?? {}),
@@ -28,6 +29,7 @@ function createScrollEdgeAppearanceFromOptions(options, baseScrollEdgeAppearance
         iconColor: options.iconColor,
         blurEffect: options.disableTransparentOnScrollEdge ? options.blurEffect : 'none',
         backgroundColor: options.disableTransparentOnScrollEdge ? options.backgroundColor : null,
+        shadowColor: options.disableTransparentOnScrollEdge ? options.shadowColor : 'transparent',
         badgeBackgroundColor: options.badgeBackgroundColor,
         titlePositionAdjustment: options.titlePositionAdjustment,
     }, baseScrollEdgeAppearance, ['normal', 'focused', 'selected']);
@@ -71,6 +73,7 @@ function appendStyleToAppearance(style, appearance, states) {
             ? undefined
             : (style.backgroundColor ?? appearance.tabBarBackgroundColor),
         tabBarBlurEffect: styleAppearance.tabBarBlurEffect ?? appearance.tabBarBlurEffect,
+        tabBarShadowColor: styleAppearance.tabBarShadowColor ?? appearance.tabBarShadowColor,
     };
 }
 function convertStyleToAppearance(style) {
@@ -90,6 +93,7 @@ function convertStyleToAppearance(style) {
         compactInline: itemAppearance,
         tabBarBackgroundColor: style?.backgroundColor ?? undefined,
         tabBarBlurEffect: style?.blurEffect,
+        tabBarShadowColor: style?.shadowColor,
     };
 }
 function convertStyleToItemStateAppearance(style) {

@@ -4,17 +4,17 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.0.5'
+version = '14.0.7'
 
 android {
   namespace "expo.modules.taskmanager"
   defaultConfig {
     versionCode 23
-    versionName "14.0.5"
+    versionName "14.0.7"
   }
 }
 
 dependencies {
   implementation project(':unimodules-app-loader')
-  api "androidx.core:core:1.0.0"
+  api "androidx.core:core:1.17.0"
 }

@@ -7,12 +7,10 @@ public final class VideoViewModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideoView")
 
-    Constants([
-      "ScaleNone": AVLayerVideoGravity.resizeAspect,
-      "ScaleToFill": AVLayerVideoGravity.resize,
-      "ScaleAspectFit": AVLayerVideoGravity.resizeAspect,
-      "ScaleAspectFill": AVLayerVideoGravity.resizeAspectFill
-    ])
+    Constant("ScaleNone") { AVLayerVideoGravity.resizeAspect.rawValue }
+    Constant("ScaleToFill") { AVLayerVideoGravity.resize.rawValue }
+    Constant("ScaleAspectFit") { AVLayerVideoGravity.resizeAspect.rawValue }
+    Constant("ScaleAspectFill") { AVLayerVideoGravity.resizeAspectFill.rawValue }
 
     AsyncFunction("setFullscreen") { (viewTag: Int, value: Bool, promise: Promise) in
       self.runBlockForView(viewTag) { view in

@@ -1,35 +1,42 @@
 import MIcons from '@expo/vector-icons/MaterialIcons';
-import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { Badge, Icon, Label, NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
-import { Appearance, Platform } from 'react-native';
+import { Appearance, Platform, useColorScheme } from 'react-native';
 
 import { ActiveTabsContext } from '../utils/active-tabs-context';
 
 if (process.env.EXPO_OS !== 'web') {
-  Appearance.setColorScheme('dark');
+  Appearance.setColorScheme('unspecified');
 }
 
 export default function Layout() {
   const [activeTabs, setActiveTabs] = useState<string[]>([]);
+  const scheme = useColorScheme();
   return (
-    <ThemeProvider value={DarkTheme}>
+    <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ActiveTabsContext.Provider value={{ activeTabs, setActiveTabs }}>
         <NativeTabs
         // Both platforms
         // labelStyle={{
-        //   fontSize: 16,
-        //   fontWeight: 700,
-        //   fontStyle: 'italic',
-        //   // fontFamily: 'Courier New',
-        //   color: Platform.OS === 'android' ? '#888' : undefined,
+        //   default: {
+        //     fontSize: 16,
+        //     fontWeight: 700,
+        //     fontStyle: 'italic',
+        //     // fontFamily: 'Courier New',
+        //     color: Platform.OS === 'android' ? '#888' : undefined,
+        //   },
+        //   selected: {
+        //     fontSize: 32,
+        //     color: 'red',
+        //   },
         // }}
         // backgroundColor={Platform.OS === 'android' ? 'black' : undefined}
         // badgeBackgroundColor="green"
         // tintColor="orange"
-        // iconColor={Platform.OS === 'android' ? '#888' : undefined}
+        // iconColor={Platform.OS === 'android' ? '#888' : { selected: 'purple' }}
         // iOS only
-        // blurEffect="systemDefault"
+        // blurEffect="systemChromeMaterial"
         // minimizeBehavior="onScrollDown"
         // disableTransparentOnScrollEdge
         // Android only
@@ -46,7 +53,7 @@ export default function Layout() {
             <Icon
               // selectedColor="deepNavy"
               sf="applewatch.side.right"
-              drawable="ic_phone"
+              androidSrc={<VectorIcon family={MIcons} name="watch" />}
             />
           </NativeTabs.Trigger>
           {activeTabs.map((tab, index) => (

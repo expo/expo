@@ -13,6 +13,12 @@ internal final class UnableToDownloadException: GenericException<String> {
   }
 }
 
+internal final class UnableToWriteBase64DataException: GenericException<String> {
+  override var reason: String {
+    "Unable to write base64 data to a file: \(param)"
+  }
+}
+
 internal final class InvalidTypeFileException: Exception {
   override var reason: String {
     "A folder with the same name already exists in the file location"
@@ -70,5 +76,35 @@ internal final class DestinationAlreadyExistsException: Exception {
 internal final class MissingPermissionException: GenericException<String> {
   override var reason: String {
     "Missing permission for uri: \(param)"
+  }
+}
+
+internal final class PickingInProgressException: Exception {
+  override var reason: String {
+    "File picking is already in progress"
+  }
+}
+
+internal final class MissingViewControllerException: Exception {
+  override var reason: String {
+    "No view controller available for presenting file picker"
+  }
+}
+
+internal final class FilePickingCancelledException: Exception {
+  override var reason: String {
+    "File picking was cancelled by the user"
+  }
+}
+
+internal final class NotImplementedException: Exception {
+  override var reason: String {
+    "Not implemented"
+  }
+}
+
+internal final class FeatureNotAvailableOnPlatformException: Exception {
+  override var reason: String {
+    "This feature is not available on this platform"
   }
 }

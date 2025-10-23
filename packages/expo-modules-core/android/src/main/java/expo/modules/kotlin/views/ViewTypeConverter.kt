@@ -19,9 +19,7 @@ class ViewTypeConverter<T : View>(
 
     val viewTag = value as Int
     val view = appContext.findView<T>(viewTag)
-    if (view == null) {
-      throw Exceptions.ViewNotFound(type.classifier as KClass<*>, viewTag)
-    }
+      ?: throw Exceptions.ViewNotFound(type.classifier as KClass<*>, viewTag)
 
     return view
   }

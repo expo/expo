@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScrollViewStyleReset = ScrollViewStyleReset;
-exports.Html = Html;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -19,16 +18,5 @@ function ScrollViewStyleReset() {
     return (<style id="expo-reset" dangerouslySetInnerHTML={{
             __html: `#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}`,
         }}/>);
-}
-function Html({ children }) {
-    return (<html lang="en">
-      <head>
-        <meta charSet="utf-8"/>
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-        <ScrollViewStyleReset />
-      </head>
-      <body>{children}</body>
-    </html>);
 }
 //# sourceMappingURL=html.js.map

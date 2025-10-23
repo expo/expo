@@ -15,10 +15,8 @@ public final class DeviceMotionModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExponentDeviceMotion")
 
-    Constants {
-      return [
-        "Gravity": GRAVITY
-      ]
+    Constant("Gravity") {
+      GRAVITY
     }
 
     Events(EVENT_DEVICE_MOTION_DID_UPDATE)

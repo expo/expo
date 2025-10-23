@@ -23,7 +23,6 @@ import com.composables.core.DialogState
 import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
-import com.composeunstyled.Text
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -92,7 +91,7 @@ fun AppLoadingErrorDialog(
         Divider()
 
         Row(modifier = Modifier.padding(NewAppTheme.spacing.`3`)) {
-          Text(currentError ?: "No error message available.")
+          NewText(currentError ?: "No error message available.")
         }
       }
     }

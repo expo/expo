@@ -9,7 +9,8 @@ class DevMenuViewModel : ViewModel() {
   private val menuPreferences = DevMenuPreferencesHandle
   private val _state = mutableStateOf(
     DevMenuState(
-      devToolsSettings = DevMenuManager.getDevSettings()
+      devToolsSettings = DevMenuManager.getDevSettings(),
+      customItems = mapCallbacks(DevMenuManager.registeredCallbacks)
     )
   )
 
@@ -38,6 +39,10 @@ class DevMenuViewModel : ViewModel() {
     )
   }
 
+  fun updateCustomItems(callbacks: List<DevMenuManager.Callback>) {
+    _state.value = _state.value.copy(customItems = mapCallbacks(callbacks))
+  }
+
   private fun closeMenu() {
     _state.value = _state.value.copy(isOpen = false)
   }
@@ -50,22 +55,40 @@ class DevMenuViewModel : ViewModel() {
     )
   }
 
+  private fun toggleMenu() {
+    _state.value = _state.value.copy(isOpen = !state.isOpen)
+  }
+
+  private fun toggleFastRefresh() {
+    DevMenuManager.toggleFastRefresh()
+    _state.value = _state.value.copy(devToolsSettings = DevMenuManager.getDevSettings())
+  }
+
+  private fun finishOnboarding() {
+    DevMenuManager.getSettings()?.isOnboardingFinished = true
+    _state.value = _state.value.copy(isOnboardingFinished = true)
+  }
+
   fun onAction(action: DevMenuAction) = with(DevMenuManager) {
     when (action) {
       DevMenuAction.Open -> this@DevMenuViewModel.openMenu()
       DevMenuAction.Close -> this@DevMenuViewModel.closeMenu()
+      DevMenuAction.Toggle -> this@DevMenuViewModel.toggleMenu()
       DevMenuAction.Reload -> reload()
       DevMenuAction.GoHome -> goToHome()
       DevMenuAction.TogglePerformanceMonitor -> togglePerformanceMonitor()
       DevMenuAction.OpenJSDebugger -> openJSInspector()
       DevMenuAction.OpenReactNativeDevMenu -> getReactHost()?.devSupportManager?.showDevOptionsDialog()
       DevMenuAction.ToggleElementInspector -> toggleInspector()
-      is DevMenuAction.ToggleFastRefresh -> toggleFastRefresh()
+      is DevMenuAction.ToggleFastRefresh -> this@DevMenuViewModel.toggleFastRefresh()
       is DevMenuAction.ToggleFab -> toggleFab()
-      DevMenuAction.FinishOnboarding -> {
-        DevMenuManager.getSettings()?.isOnboardingFinished = true
-        _state.value = _state.value.copy(isOnboardingFinished = true)
-      }
+      DevMenuAction.FinishOnboarding -> finishOnboarding()
+      is DevMenuAction.TriggerCustomCallback -> sendEventToDelegateBridge("registeredCallbackFired", action.name)
     }
+  }
+
+  companion object {
+    private fun mapCallbacks(callbacks: List<DevMenuManager.Callback>) =
+      callbacks.map { DevMenuState.CustomItem(name = it.name, shouldCollapse = it.shouldCollapse) }
   }
 }

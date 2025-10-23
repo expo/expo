@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **important** Web modals are available in SDK 54 and above.
+> **important** Web modals are available in SDK 54 and later.
 
 Modern web apps require a flexible modal experience that adapts to different content sizes and user interactions. Expo Router provides various modal presentation patterns for modern web experiences. These patterns leverage `presentation` with `modal`, `formSheet`, `transparentModal`, or `containedTransparentModal` to present either a modal based on different screen widths, and provide customizable styling props using `webModalStyle`.
 
@@ -113,7 +113,7 @@ export const unstable_settings = {
 };
 ```
 
-In the above example, the `anchor: index` tells the Expo Router that it should maintain the specified anchor route in the background when presenting a modal.
+In the above example, the `anchor: 'index'` tells the Expo Router that it should maintain the specified anchor route in the background when presenting a modal.
 
 ## Modal presentation style
 

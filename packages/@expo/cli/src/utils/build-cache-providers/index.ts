@@ -11,7 +11,7 @@ import { CommandError } from '../errors';
 const debug = require('debug')('expo:run:build-cache-provider') as typeof console.log;
 
 export const resolveBuildCacheProvider = async (
-  provider: Required<Required<ExpoConfig>['experiments']>['buildCacheProvider'] | undefined,
+  provider: Required<ExpoConfig>['buildCacheProvider'] | undefined,
   projectRoot: string
 ): Promise<BuildCacheProvider | undefined> => {
   if (!provider) {

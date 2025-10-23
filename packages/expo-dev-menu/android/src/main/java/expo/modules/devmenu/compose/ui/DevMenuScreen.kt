@@ -22,7 +22,9 @@ import expo.modules.devmenu.compose.primitives.Spacer
 fun DevMenuScreen(
   appInfo: DevMenuState.AppInfo,
   devToolsSettings: DevToolsSettings,
+  customItems: List<DevMenuState.CustomItem> = emptyList(),
   shouldShowOnboarding: Boolean = false,
+  showFab: Boolean = false,
   onAction: DevMenuActionHandler = {}
 ) {
   if (shouldShowOnboarding) {
@@ -60,10 +62,23 @@ fun DevMenuScreen(
 
     Spacer(NewAppTheme.spacing.`5`)
 
-    ToolsSection(onAction, devToolsSettings)
+    if (customItems.isNotEmpty()) {
+      CustomItemsSection(
+        items = customItems,
+        onItemClick = { item ->
+          onAction(DevMenuAction.TriggerCustomCallback(item.name, item.shouldCollapse))
+        }
+      )
+
+      Spacer(NewAppTheme.spacing.`5`)
+    }
+
+    ToolsSection(onAction, devToolsSettings, showFab)
 
     Box(modifier = Modifier.padding(vertical = NewAppTheme.spacing.`6`)) {
-      Warning("Debugging not working? Try manually reloading first")
+      if (appInfo.engine == "Hermes") {
+        Tip("Debugging not working? Try manually reloading first.")
+      }
     }
 
     SystemSection(

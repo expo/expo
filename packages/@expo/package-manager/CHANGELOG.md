@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 1.9.8 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- Sort dependencies when installing a dependency with expo-cli and NPM ([#39660](https://github.com/expo/expo/pull/39660) by [@blazejkustra](https://github.com/blazejkustra))
+
+## 1.9.7 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 1.9.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
 ## 1.9.5 — 2025-08-31
 
 _This version does not introduce any user-facing changes._

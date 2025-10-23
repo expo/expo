@@ -9,7 +9,7 @@ import type {
   Module,
   ReadOnlyGraph,
   Options as GraphOptions,
-} from '@expo/metro/metro/DeltaBundler/types.flow';
+} from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
 import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
 import chalk from 'chalk';
@@ -65,6 +65,7 @@ export interface DefaultConfigOptions {
 }
 
 let hasWarnedAboutExotic = false;
+let hasWarnedAboutReactNative = false;
 
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
@@ -207,7 +208,18 @@ export function getDefaultConfig(
     );
   }
 
-  const reactNativePath = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
+  const reactNativePath = path.dirname(
+    resolveFrom.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json'
+  );
+  if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
+    hasWarnedAboutReactNative = true;
+    console.log(
+      chalk.yellow(
+        `\u203A Could not resolve react-native! Is it installed and a project dependency?`
+      )
+    );
+  }
+
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
@@ -215,6 +227,7 @@ export function getDefaultConfig(
   sourceExts.push('cjs');
 
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
+  const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
   const babelRuntimeVersion = getPkgVersion(projectRoot, '@babel/runtime');
 
   let sassVersion: string | null = null;
@@ -225,7 +238,19 @@ export function getDefaultConfig(
     sourceExts.push('scss', 'sass', 'css');
   }
 
-  const pkg = getPackageJson(projectRoot);
+  let pkg: ReturnType<typeof getPackageJson> | undefined;
+  try {
+    pkg = getPackageJson(projectRoot);
+  } catch (error: any) {
+    if (error && error.name === 'ConfigError') {
+      console.log(
+        chalk.yellow(`\u203A Could not find a package.json at the project root! ("${projectRoot}")`)
+      );
+    } else {
+      throw error;
+    }
+  }
+
   const watchFolders = getWatchFolders(projectRoot);
   const nodeModulesPaths = getModulesPaths(projectRoot);
   if (env.EXPO_DEBUG) {
@@ -240,6 +265,7 @@ export function getDefaultConfig(
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
+    console.log(`- Worklets: ${workletsVersion}`);
     console.log(`- Babel Runtime: ${babelRuntimeVersion}`);
     console.log();
   }
@@ -281,6 +307,11 @@ export function getDefaultConfig(
         .filter((assetExt: string) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
+      blockList: [
+        // .expo/types contains generated declaration files which are not and should not be processed by Metro.
+        // This prevents unwanted fast refresh on the declaration files changes.
+        /\.expo[\\/]types/,
+      ].concat(metroDefaultValues.resolver.blockList ?? []),
     },
     cacheStores: [cacheStore],
     watcher: {
@@ -314,16 +345,16 @@ export function getDefaultConfig(
         if (stdRuntime) {
           preModules.push(stdRuntime);
         } else {
-          debug('@expo/metro-runtime not found, this may cause issues');
+          debug('"expo/src/winter" not found, this may cause issues');
         }
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
-        const metroRuntime = resolveFrom.silent(projectRoot, '@expo/metro-runtime');
+        const metroRuntime = getExpoMetroRuntimeOptional(projectRoot);
         if (metroRuntime) {
           preModules.push(metroRuntime);
         } else {
-          debug('@expo/metro-runtime not found, this may cause issues');
+          debug('"@expo/metro-runtime" not found, this may cause issues');
         }
 
         return preModules;
@@ -356,12 +387,13 @@ export function getDefaultConfig(
       // @ts-expect-error: not on type.
       _expoRouterPath: routerPackageRoot ? path.relative(serverRoot, routerPackageRoot) : undefined,
       postcssHash: getPostcssConfigHash(projectRoot),
-      browserslistHash: pkg.browserslist
-        ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
+      browserslistHash: pkg?.browserslist
+        ? stableHash(JSON.stringify(pkg?.browserslist)).toString('hex')
         : null,
       sassVersion,
-      // Ensure invalidation when the version changes due to the Babel plugin.
+      // Ensure invalidation when the version changes due to the Reanimated and Worklets Babel plugins.
       reanimatedVersion,
+      workletsVersion,
       // Ensure invalidation when using identical projects in monorepos
       _expoRelativeProjectRoot: path.relative(serverRoot, projectRoot),
       // `require.context` support
@@ -422,4 +454,21 @@ function findUpPackageJson(cwd: string): string | null {
     return found;
   }
   return findUpPackageJson(path.dirname(cwd));
+}
+
+function getExpoMetroRuntimeOptional(projectRoot: string): string | undefined {
+  const EXPO_METRO_RUNTIME = '@expo/metro-runtime';
+  let metroRuntime = resolveFrom.silent(projectRoot, EXPO_METRO_RUNTIME);
+  if (!metroRuntime) {
+    // NOTE(@kitten): While `@expo/metro-runtime` is a peer, auto-installing this peer is valid and expected
+    // When it's auto-installed it may not be hoisted or not accessible from the project root, so we need to
+    // try to also resolve it via `expo-router`, where it's a required peer
+    const baseExpoRouter = resolveFrom.silent(projectRoot, 'expo-router/package.json');
+    // When expo-router isn't installed, however, we instead try to resolve it from `expo`, where it's an
+    // optional peer dependency
+    metroRuntime = baseExpoRouter
+      ? resolveFrom.silent(baseExpoRouter, EXPO_METRO_RUNTIME)
+      : resolveFrom.silent(require.resolve('expo/package.json'), EXPO_METRO_RUNTIME);
+  }
+  return metroRuntime;
 }

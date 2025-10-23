@@ -40,7 +40,7 @@ console.log('Hello on iOS');
 
 This optimization is production only and runs on a per-file basis. If you re-export `Platform.OS` from a different module, it will not be removed from the production bundle.
 
-Starting in SDK 51, `process.env.EXPO_OS` can be used to detect the platform that the JavaScript was bundled for (cannot change at runtime). This value does not support platform shaking imports due to how Metro minifies code after dependency resolution.
+The `process.env.EXPO_OS` can be used to detect the platform that the JavaScript was bundled for (cannot change at runtime). This value does not support platform shaking imports due to how Metro minifies code after dependency resolution.
 
 ## Remove development-only code
 
@@ -135,8 +135,6 @@ The above code snippet is then minified, which removes the unused conditional:
 
 ## Removing server code
 
-> SDK 51 and greater
-
 It's common to use `typeof window === 'undefined'` to conditionally enable or disable code for server and client environments.
 
 `babel-preset-expo` will transform `typeof window === 'undefined'` to `true` when bundling for server environments. By default, this check remains unchanged when bundling for web client environments. This transform runs in both development and production but only removes conditional requires in production.
@@ -229,7 +227,7 @@ const { View, Image } = require('react-native-web');
 
 ## Remove unused imports and exports
 
-> Experimentally available in SDK 52 and above.
+> Experimentally available in SDK 52 and later.
 
 You can experimentally enable support for automatically removing unused imports and exports across modules. This is useful for speeding up native OTA downloads and optimizing web performance where JavaScript must be parsed and executed using a standard JavaScript engine.
 
@@ -279,13 +277,13 @@ This system scales up to automatically optimize all `import` and `export` syntax
 
 ## Enabling tree shaking
 
-> Experimentally available in SDK 52 and above.
+> Experimentally available in SDK 52 and later.
 
 <Step label="1">
 
 Ensure `experimentalImportSupport` and ensure your app builds and runs as expected.
 
-> **info** **Note**: Enabled by default in SDK 54 and above.
+> **info** **Note**: Enabled by default in SDK 54 and later.
 
 <Collapsible summary="How to enable import support in older SDK versions?">
 
@@ -345,7 +343,7 @@ This feature is very experimental because it changes the fundamental structure o
 
 ## Barrel files
 
-> Experimentally available in SDK 52 and above.
+> Experimentally available in SDK 52 and later.
 
 With Expo tree shaking, star exports will automatically be expanded and shaken based on usage. For example, consider the following code snippet:
 
@@ -367,7 +365,7 @@ You can use this strategy with libraries like `lucide-react` to remove all icons
 
 ## Recursive optimizations
 
-> Experimentally available in SDK 52 and above.
+> Experimentally available in SDK 52 and later.
 
 Expo optimizes a module by recursing through the graph exhaustively to find unused imports. Consider the following code snippet:
 

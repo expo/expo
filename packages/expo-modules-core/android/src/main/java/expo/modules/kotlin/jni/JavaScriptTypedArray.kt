@@ -30,7 +30,7 @@ class JavaScriptTypedArray @DoNotStrip constructor(hybridData: HybridData) :
 
   override val kind: TypedArrayKind by lazy {
     val rawKind = getRawKind()
-    TypedArrayKind.values().first { it.value == rawKind }
+    TypedArrayKind.entries.first { it.value == rawKind }
   }
 
   override val length: Int by lazy {

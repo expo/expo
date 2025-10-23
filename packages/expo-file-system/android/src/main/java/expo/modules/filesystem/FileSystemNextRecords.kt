@@ -2,6 +2,7 @@ package expo.modules.filesystem
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 
 data class InfoOptions(
   @Field
@@ -17,9 +18,21 @@ data class CreateOptions(
   val idempotent: Boolean = false
 ) : Record
 
+enum class EncodingType(val value: String) : Enumerable {
+  UTF8("utf8"),
+  BASE64("base64")
+}
+
+data class WriteOptions(
+  @Field
+  val encoding: EncodingType = EncodingType.UTF8
+) : Record
+
 data class DownloadOptions(
   @Field
-  val headers: Map<String, String> = emptyMap()
+  val headers: Map<String, String> = emptyMap(),
+  @Field
+  val idempotent: Boolean = false
 ) : Record
 
 data class FileInfo(

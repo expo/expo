@@ -5,12 +5,11 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.EnumNoSuchValueException
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
+import expo.modules.kotlin.fastPrimaryConstructor
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.toKType
+import expo.modules.kotlin.toKClass
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.primaryConstructor
 
 class EnumTypeConverter(
   private val enumClass: KClass<Enum<*>>
@@ -23,7 +22,9 @@ class EnumTypeConverter(
     }
   }
 
-  private val primaryConstructor = requireNotNull(enumClass.primaryConstructor) {
+  private val primaryConstructor = requireNotNull(
+    enumClass.fastPrimaryConstructor
+  ) {
     "Cannot convert js value to enum without the primary constructor"
   }
 
@@ -39,7 +40,10 @@ class EnumTypeConverter(
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
-      return convertEnumWithoutParameter(value.asString() ?: throw DynamicCastException(String::class), enumConstants)
+      return convertEnumWithoutParameter(
+        value.asString() ?: throw DynamicCastException(String::class),
+        enumConstants
+      )
     } else if (primaryConstructor.parameters.size == 1) {
       return convertEnumWithParameter(
         value,
@@ -48,7 +52,7 @@ class EnumTypeConverter(
       )
     }
 
-    throw IncompatibleArgTypeException(value.type.toKType(), enumClass.createType())
+    throw IncompatibleArgTypeException(value.type.toKClass(), enumClass)
   }
 
   override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Enum<*> {
@@ -62,7 +66,7 @@ class EnumTypeConverter(
       )
     }
 
-    throw IncompatibleArgTypeException(value::class.createType(), enumClass.createType())
+    throw IncompatibleArgTypeException(value::class, enumClass)
   }
 
   /**
@@ -92,28 +96,32 @@ class EnumTypeConverter(
     filed.isAccessible = true
 
     val parameterType = filed.type
-    val jsUnwrapValue = if (jsValue is Dynamic) {
-      if (parameterType == String::class.java) {
-        jsValue.asString()
-      } else {
-        jsValue.asInt()
-      }
-    } else {
-      if (parameterType == String::class.java) {
-        jsValue as String
-      } else {
-        if (jsValue is Double) {
-          jsValue.toInt()
-        } else {
-          jsValue as Int
-        }
-      }
-    }
+    val jsUnwrapValue = jsValue.unwrapValue(parameterType)
 
     return requireNotNull(
       enumConstants.find {
         filed.get(it) == jsUnwrapValue
       }
     ) { "Couldn't convert '$jsValue' to ${enumClass.simpleName} where $parameterName is the enum parameter" }
+  }
+
+  private fun Any.unwrapValue(parameterType: Class<*>): Any? {
+    if (this is Dynamic) {
+      if (parameterType == String::class.java) {
+        return asString()
+      }
+
+      return asInt()
+    }
+
+    if (parameterType == String::class.java) {
+      return this as String
+    }
+
+    if (this is Double) {
+      return toInt()
+    }
+
+    return this as Int
   }
 }

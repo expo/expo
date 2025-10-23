@@ -4,7 +4,7 @@ import { MaybeNotificationResponse, NotificationResponse } from './Notifications
 import {
   addNotificationResponseReceivedListener,
   addNotificationResponseClearedListener,
-  getLastNotificationResponseAsync,
+  getLastNotificationResponse,
 } from './NotificationsEmitter';
 
 /**
@@ -51,15 +51,9 @@ export default function useLastNotificationResponse() {
 
   // useLayoutEffect ensures the listener is registered as soon as possible
   useLayoutEffect(() => {
-    let isMounted = true;
     // Get the last response first, in case it was set earlier (even in native code on startup)
-    getLastNotificationResponseAsync().then((response) => {
-      if (isMounted) {
-        setLastNotificationResponse((prevResponse) =>
-          determineNextResponse(prevResponse, response)
-        );
-      }
-    });
+    const response = getLastNotificationResponse();
+    setLastNotificationResponse((prevResponse) => determineNextResponse(prevResponse, response));
 
     // Set up listener for responses that come in, and set the last response if needed
     const subscription = addNotificationResponseReceivedListener((response) =>
@@ -69,7 +63,6 @@ export default function useLastNotificationResponse() {
       setLastNotificationResponse(null);
     });
     return () => {
-      isMounted = false;
       subscription.remove();
       clearResponseSubscription.remove();
     };

@@ -1,12 +1,13 @@
 import fs from 'fs';
-import { createRequire } from 'node:module';
+import * as Module from 'node:module';
 import path from 'node:path';
 
 import { REACT_NATIVE_TRANSITIVE_DEPENDENCIES } from './Packages.js';
 import { runAsync } from './Processes.js';
 
-const require = createRequire(import.meta.url);
-const { default: JsonFile } = require('@expo/json-file') as typeof import('@expo/json-file');
+const { default: JsonFile } = Module.createRequire(import.meta.url)(
+  '@expo/json-file'
+) as typeof import('@expo/json-file');
 
 /**
  * Clone the expo/expo repository and install dependencies.

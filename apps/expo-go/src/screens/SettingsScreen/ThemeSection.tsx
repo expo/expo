@@ -30,8 +30,8 @@ export function ThemeSection() {
         <RadioListItem
           icon={<ThemeAutoIcon color={theme.icon.default} size={iconSize.regular} />}
           title="Automatic"
-          checked={preferredAppearance === undefined}
-          onPress={() => onSelectAppearance(undefined)}
+          checked={preferredAppearance === 'unspecified'}
+          onPress={() => onSelectAppearance('unspecified')}
         />
         <Divider style={{ height: 1 }} />
         <RadioListItem

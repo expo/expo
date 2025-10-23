@@ -3,21 +3,30 @@ import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { Log } from '../utils/log';
-import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModules';
+import {
+  getVersionedNativeModuleNamesAsync,
+  VersionedNativeModuleNamesCache,
+} from '../utils/versionedNativeModules';
 
 interface PackageJson {
   name: string;
   version: string;
+  dependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
   peerDependenciesMeta?: Record<string, { optional?: boolean }>;
 }
 
-export class PeerDependencyChecks implements DoctorCheck {
+type DoctorCache = VersionedNativeModuleNamesCache;
+
+export class PeerDependencyChecks implements DoctorCheck<DoctorCache> {
   description = 'Check that required peer dependencies are installed';
 
   sdkVersionRange = '*';
 
-  async runAsync({ pkg, projectRoot, exp }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync(
+    { pkg, projectRoot, exp }: DoctorCheckParams,
+    cache: DoctorCache
+  ): Promise<DoctorCheckResult> {
     const issues: string[] = [];
     const advice: string[] = [];
 
@@ -34,10 +43,10 @@ export class PeerDependencyChecks implements DoctorCheck {
       };
     }
 
-    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(
+    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(cache, {
       projectRoot,
-      exp.sdkVersion!
-    );
+      sdkVersion: exp.sdkVersion,
+    });
     if (!bundledNativeModules) {
       // If we can't get bundled native modules, return early to avoid false positives
       return {
@@ -120,9 +129,13 @@ export class PeerDependencyChecks implements DoctorCheck {
 
       await Promise.all(
         Object.keys(packageJson.peerDependencies).map(async (peerDepName) => {
-          const isOptional = packageJson.peerDependenciesMeta?.[peerDepName]?.optional;
+          // NOTE(@kitten): A peer dependency can be optional or it can also be a regular dependency
+          // - If it's also a regular dependency, it's always auto-installed
+          // - If it's optional, it isn't strictly required to be installed
+          const isRegularDep = !!packageJson.dependencies?.[peerDepName];
+          const isOptional = !!packageJson.peerDependenciesMeta?.[peerDepName]?.optional;
 
-          if (!isOptional && !installedDependencies[peerDepName]) {
+          if (!isOptional && !isRegularDep && !installedDependencies[peerDepName]) {
             issues.push({
               missingPeerDependency: peerDepName,
               requiredBy: packageName,

@@ -6,6 +6,12 @@ public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
+    OnDestroy {
+      Task { @MainActor in
+        NamespaceRegistry.shared.removeAll()
+      }
+    }
+
     View(BottomSheetView.self)
     View(Button.self)
     View(ChartView.self)
@@ -16,6 +22,7 @@ public final class ExpoUIModule: Module {
     View(ExpoUI.ContextMenu.self)
     View(ExpoUI.ContextMenuActivationElement.self)
     View(ExpoUI.ContextMenuPreview.self)
+    View(ExpoUI.ContextMenuContent.self)
     View(FormView.self)
     View(GaugeView.self)
     View(GroupView.self)
@@ -26,22 +33,56 @@ public final class ExpoUIModule: Module {
     View(ListView.self)
     View(PickerView.self)
     View(ProgressView.self)
-    View(SectionView.self)
+    View(ExpoUI.SectionView.self)
+    View(ExpoUI.SectionContent.self)
+    View(ExpoUI.SectionHeader.self)
+    View(ExpoUI.SectionFooter.self)
     View(SecureFieldView.self) {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("blur") { (view: SecureFieldView) in
+        view.blur()
+      }
+      AsyncFunction("focus") { (view: SecureFieldView) in
+        view.focus()
       }
     }
     View(ShareLinkView.self)
     View(SliderView.self)
     View(SpacerView.self)
+    View(StepperView.self)
     View(SwitchView.self)
     View(TextView.self)
     View(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
       }
+      AsyncFunction("blur") { (view: TextFieldView) in
+        view.blur()
+      }
+      AsyncFunction("focus") { (view: TextFieldView) in
+        view.focus()
+      }
+      AsyncFunction("setSelection") { (view: TextFieldView, start: Int, end: Int) in
+       view.setSelection(start: start, end: end)
+      }
     }
     View(VStackView.self)
+    View(ZStackView.self)
+    View(NamespaceView.self)
+    View(GlassEffectContainerView.self)
+    View(LabeledContentView.self)
+    View(RectangleView.self)
+    View(RoundedRectangleView.self)
+    View(EllipseView.self)
+    View(UnevenRoundedRectangleView.self)
+    View(CapsuleView.self)
+    View(CircleView.self)
+    View(ConcentricRectangleView.self)
+    View(DividerView.self)
+    View(ExpoUI.PopoverView.self)
+    View(ExpoUI.PopoverViewContent.self)
+    View(ExpoUI.PopoverViewPopContent.self)
   }
 }

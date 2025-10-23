@@ -10,6 +10,7 @@ struct CreateOptions: Record {
 
 struct DownloadOptions: Record {
   @Field var headers: [String: String]?
+  @Field var idempotent: Bool = false
 }
 
 struct FileInfo: Record {
@@ -33,4 +34,13 @@ struct DirectoryInfo: Record {
   @Field var size: Int64?
   @Field var modificationTime: Int64?
   @Field var creationTime: Int64?
+}
+
+enum WriteEncoding: String, Enumerable {
+  case utf8
+  case base64
+}
+
+struct WriteOptions: Record {
+  @Field var encoding: WriteEncoding?
 }

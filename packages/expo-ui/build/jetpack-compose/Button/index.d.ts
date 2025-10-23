@@ -1,6 +1,7 @@
 import { StyleProp, ViewStyle } from 'react-native';
 import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
+import { ShapeJSXElement, ShapeProps } from '../Shape';
 /**
  * The built-in button styles available on Android.
  * - `outlined` - A button with an outline.
@@ -22,8 +23,19 @@ export type ButtonProps = {
      */
     onPress?: () => void;
     /**
+     * A string describing the leading icon to display in the button.
+     * Uses Material Icons on Android.
+     */
+    leadingIcon?: MaterialIcon;
+    /**
+     * A string describing the trailing icon to display in the button.
+     * Uses Material Icons on Android.
+     */
+    trailingIcon?: MaterialIcon;
+    /**
      * A string describing the system image to display in the button.
      * Uses Material Icons on Android.
+     * @deprecated Use `leadingIcon` instead.
      */
     systemImage?: MaterialIcon;
     /**
@@ -37,7 +49,7 @@ export type ButtonProps = {
     /**
      * The text to display inside the button.
      */
-    children: string;
+    children?: string | string[] | React.JSX.Element;
     /**
      * Colors for button's core elements.
      * @platform android
@@ -47,6 +59,7 @@ export type ButtonProps = {
      * Button color.
      */
     color?: string;
+    shape?: ShapeJSXElement;
     /**
      * Disabled state of the button.
      */
@@ -57,9 +70,11 @@ export type ButtonProps = {
 /**
  * @hidden
  */
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage'> & {
+export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'leadingIcon' | 'trailingIcon' | 'systemImage' | 'shape'> & {
     text: string;
-    systemImage?: string;
+    leadingIcon?: string;
+    trailingIcon?: string;
+    shape: ShapeProps;
 } & ViewEvent<'onButtonPressed', void>;
 /**
  * @hidden

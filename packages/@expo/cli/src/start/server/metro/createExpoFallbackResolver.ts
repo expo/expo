@@ -179,7 +179,10 @@ export function createFallbackModuleResolver({
         const context: ResolutionContext = {
           ...immutableContext,
           nodeModulesPaths: [moduleDescription.originModulePath],
-          originModulePath: moduleDescription.originModulePath,
+          // NOTE(@kitten): We need to add a fake filename here. Metro performs a `path.dirname` on this path
+          // and then searches `${path.dirname(originModulePath)}/node_modules`. If we don't add it, we miss
+          // fallback resolution for packages that failed to hoist
+          originModulePath: path.join(moduleDescription.originModulePath, 'index.js'),
         };
         const res = getStrictResolver(context, platform)(moduleName);
         debug(

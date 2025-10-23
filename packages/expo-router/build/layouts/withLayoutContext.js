@@ -78,14 +78,10 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                 return;
             }
             if ((0, Protected_1.isProtectedReactElement)(child)) {
-                if (child.props.guard) {
-                    react_1.Children.forEach(child.props.children, (protectedChild) => flattenChild(protectedChild));
-                }
-                else {
-                    react_1.Children.forEach(child.props.children, (protectedChild) => {
-                        flattenChild(protectedChild, true);
-                    });
-                }
+                const excludeChildren = exclude || !child.props.guard;
+                react_1.Children.forEach(child.props.children, (protectedChild) => {
+                    flattenChild(protectedChild, excludeChildren);
+                });
                 return;
             }
             if (isCustomNavigator) {

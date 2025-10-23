@@ -4,16 +4,16 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '15.0.5'
+version = '15.0.7'
 
 android {
   namespace "expo.modules.blur"
   defaultConfig {
     versionCode 1
-    versionName "15.0.5"
+    versionName "15.0.7"
   }
 }
 
 dependencies {
-  implementation 'com.github.Dimezis:BlurView:version-2.0.6'
+  implementation 'com.github.Dimezis:BlurView:version-3.1.0'
 }

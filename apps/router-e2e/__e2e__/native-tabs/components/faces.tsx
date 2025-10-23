@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import { useMemo } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 const colors = [
   '#1e3a8a',
@@ -27,11 +27,12 @@ export function Faces(props: { numberOfFaces: number }) {
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
       {faces.map((face) => (
-        <Link
-          key={face.id}
-          href={`/faces/${face.color.split('#')[1]}`}
-          style={{ backgroundColor: face.color, width: 100, height: 100, borderRadius: 16 }}>
-          <Link.Trigger />
+        <Link key={face.id} href={`/faces/${face.color.split('#')[1]}`} asChild>
+          <Link.Trigger>
+            <Pressable style={{ borderRadius: 16, overflow: 'hidden' }}>
+              <View style={{ backgroundColor: face.color, width: 100, height: 100 }} />
+            </Pressable>
+          </Link.Trigger>
           <Link.Preview />
         </Link>
       ))}

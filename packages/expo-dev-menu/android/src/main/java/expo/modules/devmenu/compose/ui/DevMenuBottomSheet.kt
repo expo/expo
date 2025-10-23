@@ -71,7 +71,9 @@ fun DevMenuBottomSheet(
     DevMenuScreen(
       appInfo = appInfo,
       devToolsSettings = state.devToolsSettings,
+      customItems = state.customItems,
       shouldShowOnboarding = shouldShowOnboarding.value,
+      showFab = state.showFab,
       onAction = wrappedOnAction
     )
   }

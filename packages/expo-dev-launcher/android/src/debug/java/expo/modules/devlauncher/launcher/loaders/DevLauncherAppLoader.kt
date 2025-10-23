@@ -5,9 +5,9 @@ import android.content.Intent
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.facebook.react.ReactActivity
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,7 +35,7 @@ import kotlin.coroutines.suspendCoroutine
  * - `onReactContext` - is called after the `ReactContext` was loaded.
  */
 abstract class DevLauncherAppLoader(
-  private val appHost: ReactHostWrapper,
+  private val appHost: ReactHost,
   private val context: Context,
   private val controller: DevLauncherControllerInterface
 ) {

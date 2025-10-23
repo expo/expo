@@ -14,6 +14,8 @@ import java.net.URL
 
 private data class RequestHolder(var request: Request?)
 
+internal val METHODS_REQUIRING_BODY = arrayOf("POST", "PUT", "PATCH")
+
 internal class NativeRequest(appContext: AppContext, internal val response: NativeResponse) :
   SharedObject(appContext) {
   private val requestHolder = RequestHolder(null)
@@ -34,9 +36,20 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
 
     val headers = requestInit.headers.toHeaders()
     val mediaType = headers["Content-Type"]?.toMediaTypeOrNull()
+    val reqBody = requestBody?.toRequestBody(mediaType) ?: run {
+      // OkHttp requires a non-null body for POST, PATCH, and PUT requests.
+      // WinterTC fetch, however, does not have this limitation.
+      // Provide an empty body to make OkHttp behave like WinterTC fetch.
+      // Ref: https://github.com/expo/expo/issues/35950#issuecomment-3245173248
+      if (requestInit.method in METHODS_REQUIRING_BODY) {
+        byteArrayOf(0).toRequestBody(mediaType)
+      } else {
+        null
+      }
+    }
     val request = Request.Builder()
       .headers(headers)
-      .method(requestInit.method, requestBody?.toRequestBody(mediaType))
+      .method(requestInit.method, reqBody)
       .url(OkHttpFileUrlInterceptor.handleFileUrl(url))
       .build()
     this.requestHolder.request = request

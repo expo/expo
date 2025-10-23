@@ -13,10 +13,8 @@ public class LinkPreviewNativeModule: Module {
         view.tabPath = tabPath
       }
 
-      Prop("borderRadius") { (view, borderRadius: Double?) in
-        if let borderRadius = borderRadius {
-          view.triggerBorderRadius = borderRadius
-        }
+      Prop("disableForceFlatten") { (_: NativeLinkPreviewView, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }
 
       Events(
@@ -50,13 +48,13 @@ public class LinkPreviewNativeModule: Module {
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
-      Prop("icon") { (view: LinkPreviewNativeActionView, icon: String) in
+      Prop("icon") { (view: LinkPreviewNativeActionView, icon: String?) in
         view.icon = icon
       }
-      Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool) in
+      Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool?) in
         view.disabled = disabled
       }
-      Prop("destructive") { (view: LinkPreviewNativeActionView, destructive: Bool) in
+      Prop("destructive") { (view: LinkPreviewNativeActionView, destructive: Bool?) in
         view.destructive = destructive
       }
       Prop("singleSelection") { (view: LinkPreviewNativeActionView, singleSelection: Bool) in
@@ -65,10 +63,10 @@ public class LinkPreviewNativeModule: Module {
       Prop("displayAsPalette") { (view: LinkPreviewNativeActionView, displayAsPalette: Bool) in
         view.displayAsPalette = displayAsPalette
       }
-      Prop("isOn") { (view: LinkPreviewNativeActionView, isOn: Bool) in
+      Prop("isOn") { (view: LinkPreviewNativeActionView, isOn: Bool?) in
         view.isOn = isOn
       }
-      Prop("keepPresented") { (view: LinkPreviewNativeActionView, keepPresented: Bool) in
+      Prop("keepPresented") { (view: LinkPreviewNativeActionView, keepPresented: Bool?) in
         view.keepPresented = keepPresented
       }
       Prop("displayInline") { (view: LinkPreviewNativeActionView, displayInline: Bool) in

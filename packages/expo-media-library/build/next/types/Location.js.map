@@ -1,0 +1,1 @@
+{"version":3,"file":"Location.js","sourceRoot":"","sources":["../../../src/next/types/Location.ts"],"names":[],"mappings":"","sourcesContent":["export type Location = {\n  latitude: number;\n  longitude: number;\n};\n"]}

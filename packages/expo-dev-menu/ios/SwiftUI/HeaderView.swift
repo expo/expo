@@ -16,7 +16,7 @@ struct HeaderView: View {
         let image = loadAppIcon(from: iconPath) {
         Image(uiImage: image)
           .resizable()
-          .aspectRatio(contentMode: .fit)
+          .scaledToFit()
           .frame(width: 38, height: 38)
           .clipShape(RoundedRectangle(cornerRadius: 16))
       }
@@ -30,7 +30,11 @@ struct HeaderView: View {
       } label: {
         ZStack {
           Circle()
+          #if os(tvOS)
+            .fill(Color.expoSystemGray4.opacity(0.2))
+          #else
             .fill(Color.expoSystemGray6)
+          #endif
             .frame(width: 36, height: 36)
 
           Image(systemName: "xmark")

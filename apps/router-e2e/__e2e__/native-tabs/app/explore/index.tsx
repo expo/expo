@@ -1,11 +1,14 @@
+import { useTheme } from '@react-navigation/native';
 import { ScrollView } from 'react-native';
+
 import { Post } from '../../components/Post';
 
 export default function Index() {
+  const { colors } = useTheme();
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      style={{ flex: 1, backgroundColor: '#000' }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       contentContainerStyle={{
         padding: 32,
         gap: 16,

@@ -1,6 +1,7 @@
 import {
   AndroidConfig,
   ConfigPlugin,
+  WarningAggregator,
   withAndroidColors,
   withAndroidManifest,
   withDangerousMod,
@@ -77,6 +78,12 @@ export async function setNotificationIconAsync(config: ExpoConfig, projectRoot: 
 export function setNotificationConfig(config: ExpoConfig, manifest: AndroidManifest) {
   const icon = getNotificationIcon(config);
   const color = getNotificationColor(config);
+  if (config.notification) {
+    WarningAggregator.addWarningAndroid(
+      'config.notification',
+      'The `notification` property in app config is deprecated. Use the `expo-notifications` config plugin instead.'
+    );
+  }
   const mainApplication = getMainApplicationOrThrow(manifest);
   if (icon) {
     addMetaDataItemToMainApplication(

@@ -20,6 +20,35 @@ internal enum ButtonRole: String, Enumerable {
   }
 }
 
+internal enum ButtonControlSize: String, Enumerable {
+  case mini
+  case small
+  case regular
+  case large
+  case extraLarge
+  
+  func toNativeControlSize() -> SwiftUI.ControlSize {
+    switch self {
+    case .mini:
+      return .mini
+    case .small:
+      return .small
+    case .regular:
+      return .regular
+    case .large:
+      return .large
+    case .extraLarge:
+      if #available(iOS 17.0, tvOS 17.0, *) {
+        return .extraLarge
+      } else {
+        return .large
+      }
+    @unknown default:
+      return .regular
+    }
+  }
+}
+
 internal enum ButtonVariant: String, Enumerable {
   case `default`
   case bordered
@@ -45,7 +74,9 @@ final class ButtonProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps, Observa
   @Field var systemImage: String?
   @Field var color: Color?
   @Field var buttonRole: ButtonRole? = .default
+  @Field var controlSize: ButtonControlSize? = .regular
   @Field var variant: ButtonVariant? = .default
   @Field var disabled: Bool = false
   var onButtonPressed = EventDispatcher()
 }
+

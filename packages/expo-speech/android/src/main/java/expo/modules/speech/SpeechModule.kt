@@ -32,7 +32,9 @@ class SpeechModule : Module() {
       speakingErrorEvent
     )
 
-    Constants("maxSpeechInputLength" to TextToSpeech.getMaxSpeechInputLength())
+    Constant("maxSpeechInputLength") {
+      TextToSpeech.getMaxSpeechInputLength()
+    }
 
     OnActivityDestroys {
       textToSpeech.shutdown()

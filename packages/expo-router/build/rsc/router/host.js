@@ -35,8 +35,8 @@ const url_1 = require("../../head/url");
 const { createFromFetch, encodeReply } = client_1.default;
 // TODO: Maybe this could be a bundler global instead.
 const IS_DOM = 
-// @ts-expect-error: Added via react-native-webview
-typeof ReactNativeWebView !== 'undefined';
+// @ts-expect-error: Added via expo/dom
+typeof $$EXPO_INITIAL_PROPS !== 'undefined';
 // NOTE: Ensured to start with `/`.
 const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
 // Using base URL for remote hosts isn't currently supported in DOM components as we use it for offline assets.
