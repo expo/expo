@@ -20,6 +20,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix edge-to-edge when `enableMinifyInReleaseBuilds` is `true` by ([#40515](https://github.com/expo/expo/pull/40515) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fixed DOM Components entry not found from updates on Android. ([#40574](https://github.com/expo/expo/pull/40574) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
