@@ -23,6 +23,7 @@
 - Migrate static rendering logic from `expo-router` to `@expo/router-server` ([#39374](https://github.com/expo/expo/pull/39374) by [@hassankhan](https://github.com/hassankhan))
 - Migrate RSC logic from `expo-router` to `@expo/router-server` ([#40484](https://github.com/expo/expo/pull/40484) by [@hassankhan](https://github.com/hassankhan))
 - Migrate UI code back to `expo-router` ([#40510](https://github.com/expo/expo/pull/40510) by [@hassankhan](https://github.com/hassankhan))
+- [docs] Update redirectSystemPath to include information about null return ([#40555](https://github.com/expo/expo/pull/40555) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.13 - 2025-10-20
 
