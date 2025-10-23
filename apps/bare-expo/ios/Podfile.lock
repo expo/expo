@@ -3700,7 +3700,7 @@ SPEC CHECKSUMS:
   React: ade831e2e38887292c2c7d40f2f4098826a9dda4
   React-callinvoker: 0496e88932950260bbced6f84c633c40ec865f7f
   React-Core: c039131635f507742ca871a0f130aabdb7a2c57b
-  React-Core-prebuilt: bfd90883151c7ca03c3f14e7a8bbc211a5a1b8c8
+  React-Core-prebuilt: 265a5ea421d251f0caf7b834230aa1044b1395db
   React-CoreModules: 89efc8cd313843796b11ef62caf9f73169d79a94
   React-cxxreact: 532f14ce8e3490a6053f96a2fe964f29b0b530de
   React-debug: c1ec6ee07de860f9113e88d96fb3dad6a69d4afd
