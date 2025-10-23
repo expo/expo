@@ -329,6 +329,94 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   ]);
 });
 
+// This change below causes issues with monorepos and relative Windows paths.
+// We expect the paths to be absolute, and convert it back to relative in specific Metro cases.
+// In monorepos the server root is different than the project root, so it messes up relative paths through the command flags.
+// See: https://github.com/facebook/react-native/commit/bb02ccf13f76f46b8572e2a85d578fd8d4fd9467
+it('runs `npx expo export:embed --platform android` with relative paths', async () => {
+  const projectRoot = ensureTesterReady('static-rendering');
+  const output = 'dist-export-embed-relative-paths-android';
+  await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
+
+  // These are the relative paths React Native uses for Android builds on Windows
+  const bundleOutputDir = 'android/app/build/generated/assets/createBundleReleaseJsAndAssets';
+  const assetsDestDir = 'android/app/build/generated/res/createBundleReleaseJsAndAssets';
+  const sourcemapOutputDir = 'android/app/build/intermediates/sourcemaps/react/release';
+  // Create all paths that React Native normally creates through Gradle
+  for (const dir of [bundleOutputDir, assetsDestDir, sourcemapOutputDir]) {
+    await fs.promises.mkdir(path.join(projectRoot, output, dir), { recursive: true });
+  }
+
+  // `npx expo export:embed`
+  const { stdout } = await executeExpoAsync(
+    projectRoot,
+    // yarn expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
+    // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
+    [
+      'export:embed',
+      '--entry-file',
+      // This has to be the relative entry path, pointing to any file within the workspace
+      // It's also what React Native will provide by default.
+      'index.js',
+      '--bundle-output',
+      // This is what React Native provides by default, prefixed by `output`
+      `${output}/${bundleOutputDir}/index.android.bundle`,
+      '--assets-dest',
+      // This is what React Native provides by default, prefixed by `output`
+      `${output}/${assetsDestDir}`,
+      '--platform',
+      'android',
+      // Not provided by React Native by default on Windows
+      // '--dev', 'false',
+      '--sourcemap-output',
+      // This is what React Native provides by default, prefixed by `output`
+      `${output}/${sourcemapOutputDir}/index.android.bundle.packager.map`,
+      // Not provided by React Native by default on Windows
+      // '--sourcemap-sources-root', projectRoot,
+    ],
+    {
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_ASYNC: 'development',
+      },
+    }
+  );
+
+  // Ensure the experimental module resolution warning is logged
+  expect(stdout).toMatch('Fast resolver is enabled.');
+
+  const outputDir = path.join(projectRoot, output);
+
+  // Ensure output.js is a utf8 encoded file
+  const outputJS = fs.readFileSync(
+    path.join(outputDir, bundleOutputDir, 'index.android.bundle'),
+    'utf8'
+  );
+  expect(outputJS.slice(0, 5)).toBe('var _');
+  // Ensure no `//# sourceURL=` comment
+  expect(outputJS).not.toContain('//# sourceURL=');
+  // Ensure `//# sourceMappingURL=index.android.bundle.packager.map`
+  expect(outputJS).toContain('//# sourceMappingURL=index.android.bundle.packager.map');
+
+  expect(findProjectFiles(path.join(outputDir, assetsDestDir))).toEqual([
+    'drawable-mdpi/__packages_expo_logbox_assets_alerttriangle.png',
+    'drawable-mdpi/__packages_expo_logbox_assets_loader.png',
+    'drawable-mdpi/__packages_exporouter_assets_arrow_down.png',
+    'drawable-mdpi/__packages_exporouter_assets_error.png',
+    'drawable-mdpi/__packages_exporouter_assets_file.png',
+    'drawable-mdpi/__packages_exporouter_assets_forward.png',
+    'drawable-mdpi/__packages_exporouter_assets_logotype.png',
+    'drawable-mdpi/__packages_exporouter_assets_pkg.png',
+    'drawable-mdpi/__packages_exporouter_assets_sitemap.png',
+    'drawable-mdpi/__packages_exporouter_assets_unmatched.png',
+    'drawable-mdpi/assets_icon.png',
+    'raw/__e2e___staticrendering_sweet.ttf',
+    'raw/keep.xml',
+  ]);
+});
+
 it('runs `npx expo export:embed --bytecode`', async () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const output = 'dist-export-embed';
