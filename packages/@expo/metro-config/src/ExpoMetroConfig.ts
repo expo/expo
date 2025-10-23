@@ -163,21 +163,21 @@ function findUpTSProjectRootOrThrow(dir: string): string {
   return tsProjectRoot;
 }
 
-function resolveLocalModules(
+function resolveinlineModules(
   projectRoot: string,
   context: CustomResolutionContext,
   moduleName: string,
   platform: string | null
 ): Resolution {
-  const localModulesModulesPath = path.resolve(projectRoot, './.expo/localModules/modules');
+  const inlineModulesModulesPath = path.resolve(projectRoot, './.expo/inlineModules/modules');
 
-  let localModuleFileExtension = null;
+  let inlineModuleFileExtension = null;
   if (moduleName.endsWith('.module')) {
-    localModuleFileExtension = '.module.js';
+    inlineModuleFileExtension = '.module.js';
   } else if (moduleName.endsWith('.view')) {
-    localModuleFileExtension = '.view.js';
+    inlineModuleFileExtension = '.view.js';
   }
-  if (localModuleFileExtension) {
+  if (inlineModuleFileExtension) {
     const tsProjectRoot = findUpTSProjectRootOrThrow(path.dirname(context.originModulePath));
     const modulePathRelativeToTSRoot = path.relative(
       tsProjectRoot,
@@ -185,9 +185,9 @@ function resolveLocalModules(
     );
 
     const modulePath = path.resolve(
-      localModulesModulesPath,
+      inlineModulesModulesPath,
       modulePathRelativeToTSRoot,
-      moduleName.substring(0, moduleName.lastIndexOf('.')) + localModuleFileExtension
+      moduleName.substring(0, moduleName.lastIndexOf('.')) + inlineModuleFileExtension
     );
 
     return {
@@ -346,12 +346,12 @@ export function getDefaultConfig(
 
   const serverRoot = getMetroServerRoot(projectRoot);
   const expoConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  const resolveLocalModulesWithRoot = (
+  const resolveinlineModulesWithRoot = (
     context: CustomResolutionContext,
     moduleName: string,
     platform: string | null
   ) => {
-    return resolveLocalModules(projectRoot, context, moduleName, platform);
+    return resolveinlineModules(projectRoot, context, moduleName, platform);
   };
 
   const contextResolveRequest = (
@@ -386,8 +386,8 @@ export function getDefaultConfig(
       sourceExts,
       nodeModulesPaths,
       resolveRequest:
-        expoConfig.exp.experiments?.localModules === true
-          ? resolveLocalModulesWithRoot
+        expoConfig.exp.experiments?.inlineModules === true
+          ? resolveinlineModulesWithRoot
           : defaultResolveRequest,
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
