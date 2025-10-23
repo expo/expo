@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add support to SwiftUI apps ([#40542](https://github.com/expo/expo/pull/40542) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
