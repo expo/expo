@@ -86,7 +86,7 @@
       "inlineModules": true
     },
     "inlineModules": {
-      "watchedDirs": ["src/screens/inlineModules/inlineModulesExamples/"]
+      "watchedDirectories": ["src/screens/inlineModules/inlineModulesExamples/"]
     }
   }
 }

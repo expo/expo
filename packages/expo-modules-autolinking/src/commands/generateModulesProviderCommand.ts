@@ -19,7 +19,7 @@ interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
 /** Generates a source file listing all packages to link in the runtime */
 export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
   return registerAutolinkingArguments(
-    cli.command('generate-modules-provider <watchedDirsSerialized> [searchPaths...]')
+    cli.command('generate-modules-provider <watchedDirectoriesSerialized> [searchPaths...]')
   )
     .option(
       '-t, --target <path>',
@@ -33,7 +33,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
     .option('--app-root <path>', 'Path to the app root directory.')
     .action(
       async (
-        watchedDirsSerialized: string,
+        watchedDirectoriesSerialized: string,
         searchPaths: string[] | null,
         commandArguments: GenerateModulesProviderArguments
       ) => {
@@ -57,7 +57,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         const filteredModules = expoModulesResolveResults.filter((module) =>
           includeModules.has(module.packageName)
         );
-        const watchedDirs = JSON.parse(watchedDirsSerialized);
+        const watchedDirectories = JSON.parse(watchedDirectoriesSerialized);
         await generateModulesProviderAsync(
           filteredModules,
           {
@@ -65,7 +65,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
             targetPath: commandArguments.target,
             entitlementPath: commandArguments.entitlement ?? null,
           },
-          watchedDirs
+          watchedDirectories
         );
       }
     );

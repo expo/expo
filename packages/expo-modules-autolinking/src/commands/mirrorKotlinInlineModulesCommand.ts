@@ -11,15 +11,15 @@ import {
 export function mirrorKotlinInlineModulesCommand(cli: commander.CommanderStatic) {
   return registerAutolinkingArguments(
     cli.command(
-      'mirror-kotlin-inline-modules <kotlinFilesMirrorDirectory> <inlineModulesListPath> <watchedDirsSerialized>'
+      'mirror-kotlin-inline-modules <kotlinFilesMirrorDirectory> <inlineModulesListPath> <watchedDirectoriesSerialized>'
     )
   ).action(
     async (
       kotlinFilesMirrorDirectory: string,
       inlineModulesListPath: string,
-      watchedDirsSerialized: string
+      watchedDirectoriesSerialized: string
     ) => {
-      const watchedDirs = JSON.parse(watchedDirsSerialized);
+      const watchedDirectories = JSON.parse(watchedDirectoriesSerialized);
       if (!kotlinFilesMirrorDirectory || !inlineModulesListPath) {
         throw new Error('Need to provide kotlinFilesMirrorDirectory and inlineModulesListPath!');
       }
@@ -36,8 +36,8 @@ export function mirrorKotlinInlineModulesCommand(cli: commander.CommanderStatic)
       }
 
       fs.rmSync(kotlinFilesMirrorDirectory, { recursive: true, force: true });
-      await createSymlinksToKotlinFiles(kotlinFilesMirrorDirectory, watchedDirs);
-      await generateInlineModulesListFile(inlineModulesListPath, watchedDirs);
+      await createSymlinksToKotlinFiles(kotlinFilesMirrorDirectory, watchedDirectories);
+      await generateInlineModulesListFile(inlineModulesListPath, watchedDirectories);
     }
   );
 }

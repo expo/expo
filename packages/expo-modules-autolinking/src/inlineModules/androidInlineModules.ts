@@ -3,8 +3,11 @@ import path from 'path';
 
 import { getMirrorStateObject } from './inlineModules';
 
-export async function createSymlinksToKotlinFiles(mirrorPath: string, watchedDirs: string[]) {
-  const inlineModulesObject = await getMirrorStateObject(watchedDirs);
+export async function createSymlinksToKotlinFiles(
+  mirrorPath: string,
+  watchedDirectories: string[]
+) {
+  const inlineModulesObject = await getMirrorStateObject(watchedDirectories);
 
   for (const { filePath, watchedDirRoot } of inlineModulesObject.files) {
     if (!filePath.endsWith('.kt')) {
@@ -28,9 +31,9 @@ function getClassName(classNameWithPackage: string): string {
 
 export async function generateInlineModulesListFile(
   inlineModulesListPath: string,
-  watchedDirs: string[]
+  watchedDirectories: string[]
 ) {
-  const inlineModulesObject = await getMirrorStateObject(watchedDirs);
+  const inlineModulesObject = await getMirrorStateObject(watchedDirectories);
   const fileContent = `package inline.modules;
 
 import java.util.Arrays;
