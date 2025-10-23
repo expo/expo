@@ -1,58 +1,30 @@
 package expo.modules.devmenu.websockets
 
 import android.util.Log
-import com.facebook.react.ReactHost
-import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
-import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 
 class DevMenuCommandHandlersProvider(
-  private val manager: DevMenuManagerInterface,
-  reactHost: ReactHost
+  weakDevSupportManager: WeakReference<out DevSupportManager>
 ) {
-  private val _host = WeakReference(reactHost)
-  private val host
-    get() = _host.get()
+  private val devToolsDelegate = DevMenuDevToolsDelegate(weakDevSupportManager)
 
-  private val onReload = object : NotificationOnlyHandler() {
-    override fun onNotification(params: Any?) {
-      manager.closeMenu()
-      UiThreadUtil.runOnUiThread {
-        host?.devSupportManager?.handleReloadJS()
-      }
-    }
-  }
+  private val onReload = createHandler { devToolsDelegate.reload() }
+  private val onDevMenu = createHandler { devToolsDelegate.toggleMenu() }
+  private val onDevCommand = createHandler { params ->
+    if (params is JSONObject) {
+      val command = params.optString("name") ?: return@createHandler
 
-  private val onDevMenu = object : NotificationOnlyHandler() {
-    override fun onNotification(params: Any?) {
-      val activity = host?.currentReactContext?.currentActivity ?: return
-      manager.toggleMenu(activity)
-    }
-  }
-
-  private val onDevCommand = object : NotificationOnlyHandler() {
-    override fun onNotification(params: Any?) {
-      val host = host ?: return
-      val devDelegate = DevMenuDevToolsDelegate(manager, host)
-
-      if (params is JSONObject) {
-        val command = params.optString("name") ?: return
-
+      with(devToolsDelegate) {
         when (command) {
-          "reload" -> devDelegate.reload()
-          "toggleDevMenu" -> {
-            val activity = host.currentReactContext?.currentActivity ?: return
-            manager.toggleMenu(activity)
-          }
-          "toggleElementInspector" -> devDelegate.toggleElementInspector()
-          "togglePerformanceMonitor" -> {
-            val activity = host.currentReactContext?.currentActivity ?: return
-            devDelegate.togglePerformanceMonitor(activity)
-          }
-          "openJSInspector" -> devDelegate.openJSInspector()
+          "reload" -> reload()
+          "toggleDevMenu" -> toggleMenu()
+          "toggleElementInspector" -> toggleElementInspector()
+          "togglePerformanceMonitor" -> togglePerformanceMonitor()
+          "openJSInspector" -> openJSInspector()
           else -> Log.w("DevMenu", "Unknown command: $command")
         }
       }
@@ -65,5 +37,13 @@ class DevMenuCommandHandlersProvider(
       "devMenu" to onDevMenu,
       "sendDevCommand" to onDevCommand
     )
+  }
+
+  private fun createHandler(action: (params: Any?) -> Unit): NotificationOnlyHandler {
+    return object : NotificationOnlyHandler() {
+      override fun onNotification(params: Any?) {
+        action(params)
+      }
+    }
   }
 }

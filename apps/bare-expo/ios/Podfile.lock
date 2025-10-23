@@ -444,6 +444,8 @@ PODS:
     - ExpoModulesCore
   - ExpoLocation (19.0.7):
     - ExpoModulesCore
+  - ExpoLogBox (0.0.13-canary-20251023-4c86f95):
+    - React-Core
   - ExpoMailComposer (15.0.7):
     - ExpoModulesCore
   - ExpoMaps (0.12.7):
@@ -654,7 +656,7 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - lottie-ios (4.5.0)
-  - lottie-react-native (7.3.1):
+  - lottie-react-native (7.3.4):
     - hermes-engine
     - lottie-ios (= 4.5.0)
     - RCTRequired
@@ -3050,6 +3052,7 @@ DEPENDENCIES:
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoLocation (from `../../../packages/expo-location/ios`)
+  - "ExpoLogBox (from `../../../packages/@expo/log-box`)"
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMaps (from `../../../packages/expo-maps/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
@@ -3337,6 +3340,9 @@ EXTERNAL SOURCES:
   ExpoLocation:
     inhibit_warnings: false
     :path: "../../../packages/expo-location/ios"
+  ExpoLogBox:
+    inhibit_warnings: false
+    :path: "../../../packages/@expo/log-box"
   ExpoMailComposer:
     inhibit_warnings: false
     :path: "../../../packages/expo-mail-composer/ios"
@@ -3654,6 +3660,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: 8f11d958b956fa372c0a49975f54ed1dc617ae1d
   ExpoLocalization: 6c6f0f89ad2822001ab0bc2eb6d4d980c77f080c
   ExpoLocation: 1dc9e4c06ef66ed081348a11eb637d1dfecc7d61
+  ExpoLogBox: b4c81de3f21bbe2e9467a26455563c76c7709efb
   ExpoMailComposer: 8771121c8d5e6e0e194537fab79360d0f443f70d
   ExpoMaps: ac5024fd6b3db82da997bdc4074bda5c3e2e7764
   ExpoMediaLibrary: 648cee3f5dcba13410ec9cc8ac9a426e89a61a31
@@ -3689,7 +3696,7 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: a881093fab623c467d3bce374367755c272bdd59
-  lottie-react-native: 29a3610e350f54856048ff5e408032596c45fb26
+  lottie-react-native: 97a11537edc72d0763edab0c83e8cc8a0b9d8484
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: 83e25bf349dd84f894b024f48033274512d6129b

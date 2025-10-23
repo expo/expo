@@ -203,6 +203,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'RTL Layout',
+    route: 'ui/rtl',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RTLScreen'));
+    },
+  },
+  {
     name: 'Grid component',
     route: 'ui/grid',
     options: {},

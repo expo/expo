@@ -1,85 +1,80 @@
 package expo.modules.devmenu.devtools
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import android.util.Log
 import androidx.core.net.toUri
-import com.facebook.react.ReactHost
 import com.facebook.react.bridge.UiThreadUtil
-import expo.interfaces.devmenu.DevMenuManagerInterface
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.devmenu.DEV_MENU_TAG
 import expo.modules.devmenu.DevMenuManager
+import expo.modules.devmenu.compose.BindingView
+import expo.modules.devmenu.compose.DevMenuAction
+import expo.modules.devmenu.compose.DevMenuViewModel
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
 class DevMenuDevToolsDelegate(
-  private val manager: DevMenuManagerInterface,
-  reactHost: ReactHost
+  private val weakDevSupportManager: WeakReference<out DevSupportManager>
 ) {
-  private val _reactDevManager = WeakReference(
-    reactHost.devSupportManager
-  )
-  private val _reactContext = WeakReference(
-    reactHost.currentReactContext
-  )
+  private val devSupportManager: DevSupportManager?
+    get() = weakDevSupportManager.get()
 
-  val reactDevManager
-    get() = _reactDevManager.get()
+  private val currentActivity: Activity?
+    get() = devSupportManager?.currentActivity
+
+  private val context: Context?
+    get() = devSupportManager?.currentReactContext ?: currentActivity
+
+  private fun findDevMenuModel(): DevMenuViewModel? {
+    return currentActivity?.let { BindingView.findIn(activity = it)?.viewModel }
+  }
 
   val devSettings
-    get() = reactDevManager?.devSettings
+    get() = devSupportManager?.devSettings
 
-  val reactContext
-    get() = _reactContext.get()
+  fun toggleMenu() {
+    findDevMenuModel()
+      ?.onAction(DevMenuAction.Toggle)
+  }
 
   fun reload() {
-    val reactDevManager = reactDevManager ?: return
-    manager.closeMenu()
+    findDevMenuModel()
+      ?.onAction(DevMenuAction.Close)
+
     UiThreadUtil.runOnUiThread {
-      reactDevManager.handleReloadJS()
+      devSupportManager?.handleReloadJS()
     }
   }
 
-  fun toggleElementInspector() = runWithDevSupportEnabled {
-    reactDevManager?.toggleElementInspector()
+  fun toggleElementInspector() {
+    devSupportManager?.toggleElementInspector()
   }
 
-  fun togglePerformanceMonitor(context: Context) {
-    val reactDevManager = reactDevManager ?: return
+  fun togglePerformanceMonitor() {
+    val devSupportManager = devSupportManager ?: return
     val devSettings = devSettings ?: return
+    val context = context ?: return
 
     requestOverlaysPermission(context)
-    runWithDevSupportEnabled {
-      reactDevManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
-    }
+    devSupportManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
   }
 
-  fun openJSInspector() = runWithDevSupportEnabled {
+  fun openJSInspector() {
     val devSettings = devSettings ?: return
-    val reactContext = reactContext ?: return
+    val context = context ?: return
+
     val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
 
-    manager.coroutineScope.launch {
+    DevMenuManager.coroutineScope.launch {
       try {
-        DevMenuManager.metroClient.openJSInspector(metroHost, reactContext.packageName)
+        DevMenuManager.metroClient.openJSInspector(metroHost, context.packageName)
       } catch (e: Exception) {
         Log.w(DEV_MENU_TAG, "Unable to open js inspector: ${e.message}", e)
       }
     }
-  }
-
-  /**
-   * RN will temporary disable `devSupport` if the current activity isn't active.
-   * Because of that we can't call some functions like `toggleElementInspector`.
-   * However, we can temporary set the `devSupport` flag to true and run needed methods.
-   */
-  private inline fun runWithDevSupportEnabled(action: () -> Unit) {
-    val reactDevManager = reactDevManager ?: return
-    val currentSetting = reactDevManager.devSupportEnabled
-    reactDevManager.devSupportEnabled = true
-    action()
-    reactDevManager.devSupportEnabled = currentSetting
   }
 
   /**

@@ -3,6 +3,7 @@ package expo.modules.devmenu.compose
 sealed class DevMenuAction(val shouldCloseMenu: Boolean = false) {
   object Open : DevMenuAction()
   object Close : DevMenuAction()
+  object Toggle : DevMenuAction()
   object Reload : DevMenuAction(shouldCloseMenu = true)
   object GoHome : DevMenuAction(shouldCloseMenu = true)
   object TogglePerformanceMonitor : DevMenuAction(shouldCloseMenu = true)
