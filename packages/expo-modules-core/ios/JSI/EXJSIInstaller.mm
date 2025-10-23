@@ -10,6 +10,8 @@
 #import <ExpoModulesCore/EventEmitter.h>
 #import <ExpoModulesCore/NativeModule.h>
 #import <ExpoModulesCore/Swift.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 namespace jsi = facebook::jsi;
 
@@ -32,10 +34,27 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 
 @implementation EXJavaScriptRuntimeManager
 
++ (std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeSchedulerFromRuntime:(jsi::Runtime *)jsiRuntime
+{
+  if (jsiRuntime == nullptr) {
+    return nullptr;
+  }
+  if (auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(*jsiRuntime)) {
+    return binding->getRuntimeScheduler();
+  }
+  return nullptr;
+}
+
 + (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
 {
   jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(bridge.runtime);
-  return jsiRuntime ? [[EXRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
+  if (!jsiRuntime) {
+    return nil;
+  }
+
+  return [[EXRuntime alloc] initWithRuntime:jsiRuntime
+                                callInvoker:bridge.jsCallInvoker
+                           runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
 }
 
 #if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
@@ -44,16 +63,24 @@ static NSString *modulesHostObjectPropertyName = @"modules";
   jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(bridge.runtime);
 
   // Create a call invoker based on the given runtime executor.
-  auto callInvoker = std::make_shared<expo::BridgelessJSCallInvoker>([executor](std::function<void(jsi::Runtime &runtime)> &&callback) {
+  auto runtimeExecutor = [executor](std::function<void(jsi::Runtime &runtime)> &&callback) {
     // Convert to Objective-C block so it can be captured properly.
     __block auto callbackBlock = callback;
 
     [executor execute:^(jsi::Runtime &runtime) {
       callbackBlock(runtime);
     }];
-  });
+  };
 
-  return jsiRuntime ? [[EXRuntime alloc] initWithRuntime:jsiRuntime callInvoker:callInvoker] : nil;
+  auto callInvoker = std::make_shared<expo::BridgelessJSCallInvoker>(runtimeExecutor);
+
+  if (!jsiRuntime) {
+    return nil;
+  }
+
+  return [[EXRuntime alloc] initWithRuntime:jsiRuntime
+                                callInvoker:callInvoker
+                           runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
 }
 #endif // React Native >=0.74
 

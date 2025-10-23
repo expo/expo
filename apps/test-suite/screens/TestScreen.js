@@ -2,10 +2,11 @@
 import Immutable from 'immutable';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 
 import ExponentTest from '../ExponentTest';
 import { getTestModules } from '../TestModules';
+import { getScreenIdForLinking, getSelectedTestNames } from './getScreenIdForLinking';
 import Portal from '../components/Portal';
 import RunnerError from '../components/RunnerError';
 import Suites from '../components/Suites';
@@ -26,17 +27,23 @@ export default class TestScreen extends React.Component {
   state = initialState;
   _results = '';
   _failures = '';
-  _scrollViewRef = null;
 
   componentDidMount() {
     const selectionQuery = this.props.route.params?.tests ?? '';
-    const selectedTestNames = selectionQuery.split(/[,\s]/);
 
+    const selectedTestNames = getSelectedTestNames(selectionQuery);
     // We get test modules here to make sure that React Native will reload this component when tests were changed.
-    const selectedModules = getTestModules().filter((m) => selectedTestNames.includes(m.name));
+    const selectedModules = getTestModules().filter((m) =>
+      selectedTestNames.includes(getScreenIdForLinking(m))
+    );
 
     if (!selectedModules.length) {
       console.warn('[TEST_SUITE]', 'No selected modules', selectedTestNames);
+    }
+    if (selectedTestNames.length !== selectedModules.length) {
+      const selectedModuleNames = selectedModules.map((m) => getScreenIdForLinking(m));
+      const missing = selectedTestNames.filter((n) => !selectedModuleNames.includes(n));
+      throw new Error(`[TEST_SUITE]: Some selected modules were not found: ${missing}`);
     }
 
     this._runTests(selectedModules);
@@ -267,11 +274,15 @@ export default class TestScreen extends React.Component {
       selectedModules,
     } = this.state;
     if (!selectedModules?.length) {
+      const moduleLinks = getTestModules().map(getScreenIdForLinking);
+
       return (
-        <RunnerError>
-          No tests were selected. Please provide a correct query to select tests to run.
-          SelectionQuery: "{this.props.route?.params?.tests}"
-        </RunnerError>
+        <ScrollView>
+          <RunnerError>
+            No tests were found for link: "{this.props.route?.params?.tests}"{'\n'}
+            Available links: {JSON.stringify(moduleLinks, null, 2)}
+          </RunnerError>
+        </ScrollView>
       );
     }
     if (testRunnerError) {

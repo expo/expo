@@ -549,7 +549,8 @@ export const glassEffect = (params?: {
     interactive?: boolean;
     tint?: Color;
   };
-  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
+  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse' | 'roundedRectangle';
+  cornerRadius?: number;
 }) => createModifier('glassEffect', params);
 
 /**

@@ -16,7 +16,7 @@ import type {
   Module,
   DeltaResult,
   TransformInputOptions,
-} from '@expo/metro/metro/DeltaBundler/types.flow';
+} from '@expo/metro/metro/DeltaBundler/types';
 import type {
   default as MetroHmrServer,
   Client as MetroHmrClient,
@@ -100,7 +100,7 @@ import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
 export type ExpoRouterRuntimeManifest = Awaited<
-  ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
+  ReturnType<typeof import('@expo/router-server/build/static/renderStaticContent').getManifest>
 >;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
@@ -364,8 +364,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { exp } = getConfig(this.projectRoot);
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync, getManifest } = await this.ssrLoadModule<
-      typeof import('expo-router/build/static/getServerManifest')
-    >('expo-router/build/static/getServerManifest.js', {
+      typeof import('@expo/router-server/build/static/getServerManifest')
+    >('@expo/router-server/build/static/getServerManifest.js', {
       // Only use react-server environment when the routes are using react-server rendering by default.
       environment: this.isReactServerRoutesEnabled ? 'react-server' : 'node',
     });
@@ -387,14 +387,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const url = this.getDevServerUrlOrAssert();
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
-      await this.ssrLoadModule<typeof import('expo-router/build/static/renderStaticContent')>(
-        'expo-router/node/render.js',
-        {
-          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
-          // the previous React SSG utilities which aren't available in React 19.
-          environment: 'node',
-        }
-      );
+      await this.ssrLoadModule<
+        typeof import('@expo/router-server/build/static/renderStaticContent')
+      >('@expo/router-server/node/render.js', {
+        // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+        // the previous React SSG utilities which aren't available in React 19.
+        environment: 'node',
+      });
 
     const { exp } = getConfig(this.projectRoot);
 
@@ -496,8 +495,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const bundleStaticHtml = async (): Promise<string> => {
       const { getStaticContent } = await this.ssrLoadModule<
-        typeof import('expo-router/build/static/renderStaticContent')
-      >('expo-router/node/render.js', {
+        typeof import('@expo/router-server/build/static/renderStaticContent')
+      >('@expo/router-server/node/render.js', {
         // This must always use the legacy rendering resolution (no `react-server`) because it leverages
         // the previous React SSG utilities which aren't available in React 19.
         environment: 'node',
@@ -630,7 +629,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const transformOptions: TransformInputOptions = {
       dev: expoBundleOptions.dev ?? true,
-      hot: true,
       minify: expoBundleOptions.minify ?? false,
       type: 'module',
       unstable_transformProfile:
@@ -1820,44 +1818,48 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       const serializer = this.getMetroSerializer();
 
+      const options = {
+        asyncRequireModulePath: await this.metro._resolveRelativePath(
+          config.transformer.asyncRequireModulePath,
+          {
+            relativeTo: 'project',
+            resolverOptions,
+            transformOptions,
+          }
+        ),
+        // ...serializerOptions,
+        processModuleFilter: config.serializer.processModuleFilter,
+        createModuleId: this.metro._createModuleId,
+        getRunModuleStatement: config.serializer.getRunModuleStatement,
+        globalPrefix: config.transformer.globalPrefix,
+        includeAsyncPaths: graphOptions.lazy,
+        dev: transformOptions.dev,
+        projectRoot: config.projectRoot,
+        modulesOnly: serializerOptions.modulesOnly,
+        runBeforeMainModule: config.serializer.getModulesRunBeforeMainModule(
+          resolvedEntryFilePath
+          // path.relative(config.projectRoot, entryFile)
+        ),
+        runModule: serializerOptions.runModule,
+        sourceMapUrl: serializerOptions.sourceMapUrl,
+        sourceUrl: serializerOptions.sourceUrl,
+        inlineSourceMap: serializerOptions.inlineSourceMap,
+        serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
+        shouldAddToIgnoreList,
+
+        // TODO(@kitten): This is incoherently typed. The target should be typed to accept this coherently
+        // but we have no type overrides or a proper type chain for this
+        serializerOptions,
+      };
+
+      // TODO(@kitten): Yearns for a refactor. The typings here were and are questionable
       const bundle = await serializer(
         // NOTE: Using absolute path instead of relative input path is a breaking change.
         // entryFile,
         resolvedEntryFilePath,
-
-        revision.prepend as any,
-        revision.graph as any,
-        {
-          asyncRequireModulePath: await this.metro._resolveRelativePath(
-            config.transformer.asyncRequireModulePath,
-            {
-              relativeTo: 'project',
-              resolverOptions,
-              transformOptions,
-            }
-          ),
-          // ...serializerOptions,
-          processModuleFilter: config.serializer.processModuleFilter,
-          createModuleId: this.metro._createModuleId,
-          getRunModuleStatement: config.serializer.getRunModuleStatement,
-          includeAsyncPaths: graphOptions.lazy,
-          dev: transformOptions.dev,
-          projectRoot: config.projectRoot,
-          modulesOnly: serializerOptions.modulesOnly,
-          runBeforeMainModule: config.serializer.getModulesRunBeforeMainModule(
-            resolvedEntryFilePath
-            // path.relative(config.projectRoot, entryFile)
-          ),
-          runModule: serializerOptions.runModule,
-          sourceMapUrl: serializerOptions.sourceMapUrl,
-          sourceUrl: serializerOptions.sourceUrl,
-          inlineSourceMap: serializerOptions.inlineSourceMap,
-          serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
-          shouldAddToIgnoreList,
-
-          // @ts-expect-error: passed to our serializer to enable non-serial return values.
-          serializerOptions,
-        }
+        revision.prepend,
+        revision.graph,
+        options
       );
 
       this.metro._reporter.update({

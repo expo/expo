@@ -27,7 +27,11 @@ test.describe('router-e2e with spaces', () => {
       // We're installing the @expo/cli from our workspace source into the newly
       // created project. This is required to be able to execute the SSR bundle
       // outside the Expo monorepo module
-      { linkExpoPackagesDev: ['@expo/cli', 'expo-server'] },
+      {
+        // TODO(@hassankhan): remove expo-router and @expo/router-server after publishing
+        linkExpoPackages: ['@expo/router-server', 'expo-router'],
+        linkExpoPackagesDev: ['@expo/cli', 'expo-server'],
+      }
     );
 
     expoStart = createExpoStart({

@@ -25,7 +25,7 @@ internal class FileSystemPath: SharedObject {
 
   func validateCanCreate(_ options: CreateOptions) throws {
     if try !options.overwrite && exists {
-      throw FileAlreadyExistsException("File already exists")
+      throw FileAlreadyExistsException(url.absoluteString)
     }
   }
 

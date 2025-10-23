@@ -30,12 +30,11 @@ This means, many Node.js APIs that you might be used to or some dependencies you
 | `node:constants`           | <YesIcon />   |                                                                                    |
 | `node:diagnostics_channel` | <YesIcon />   | Select deprecated algorithms are not implemented                                   |
 | `node:dns`                 | <YesIcon />   | `Resolver` is unimplemented, all DNS requests are sent to Cloudflare               |
-| `node:dns/promises`        | <YesIcon />   | All DNS requests are sent to Cloudflare                                            |
 | `node:events`              | <YesIcon />   |                                                                                    |
-| `node:fs`                  | <NoIcon />    | Provided as JS stubs, since workers have no file system                            |
-| `node:fs/promises`         | <NoIcon />    | Provided as JS stubs, since workers have no file system                            |
-| `node:http`                | <AlertIcon /> | Provided as partially functional JS shims based on `fetch`                         |
-| `node:https`               | <AlertIcon /> | Provided as partially functional JS shims based on `fetch`                         |
+| `node:fs`                  | <YesIcon />   | Supported, with in-memory filesystem                                               |
+| `node:http`                | <YesIcon />   | Supported, except for server functionality                                         |
+| `node:http2`               | <AlertIcon /> | Partially supported. Server functionality unsupported                              |
+| `node:https`               | <YesIcon />   | Supported, except for server functionality                                         |
 | `node:module`              | <AlertIcon /> | `SourceMap` is unimplemented, partially supported otherwise                        |
 | `node:net`                 | <AlertIcon /> | `Server` and `BlockList` are unimplemented, client sockets are partially supported |
 | `node:os`                  | <YesIcon />   | Provided as JS stubs that provide mock values matching Node.js on Linux            |
@@ -46,15 +45,13 @@ This means, many Node.js APIs that you might be used to or some dependencies you
 | `node:punycode`            | <NoIcon />    |                                                                                    |
 | `node:querystring`         | <YesIcon />   |                                                                                    |
 | `node:readline`            | <NoIcon />    | Provided as non-functional JS stubs, since workers have no `stdin`                 |
-| `node:readline/promises`   | <NoIcon />    | Provided as non-functional JS stubs, since workers have no `stdin`                 |
 | `node:stream`              | <YesIcon />   |                                                                                    |
 | `node:stream/consumers`    | <YesIcon />   |                                                                                    |
-| `node:stream/promises`     | <YesIcon />   |                                                                                    |
 | `node:stream/web`          | <YesIcon />   |                                                                                    |
 | `node:string_decoder`      | <YesIcon />   |                                                                                    |
+| `node:test`                | <YesIcon />   |                                                                                    |
 | `node:timers`              | <YesIcon />   |                                                                                    |
-| `node:timers/promises`     | <YesIcon />   |                                                                                    |
-| `node:tls`                 | <AlertIcon /> | `Server` is unimplemented, client sockets are partially supported                  |
+| `node:tls`                 | <YesIcon />   | Supported, except for server functionality                                         |
 | `node:trace_events`        | <AlertIcon /> | Provided as non-functional JS stubs                                                |
 | `node:tty`                 | <YesIcon />   | Provided as JS shims redirecting output to the Console API                         |
 | `node:url`                 | <YesIcon />   |                                                                                    |
@@ -64,7 +61,7 @@ This means, many Node.js APIs that you might be used to or some dependencies you
 | `node:zlib`                | <YesIcon />   |                                                                                    |
 
 These modules generally provide a lower-accuracy polyfill or approximation of their Node.js counterparts.
-For example, the `http` and `https` modules only provide thin Node.js compatibility wrappers around the `fetch` API and cannot be used to make arbitrary HTTP requests.
+For example, the `fs`, `http`, and `https` modules have additional restrictions in place and are Node.js compatibility layers, which aren't equivalent to running them in a Node.js process.
 
 Any of the above listed Node.js modules can be used in API routes or dependencies of your API routes as usual and will use appropriate compatibility modules. However, some of these modules may not provide any practical functionality and only exist to shim APIs to prevent runtime crashes.
 

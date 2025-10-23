@@ -311,16 +311,7 @@ tasks.register("prepareKotlinBuildScriptModel") {
 
 if (workletsProject != null) {
   afterEvaluate {
-    tasks.named("externalNativeBuildDebug") { externalNativeBuildTask ->
-      workletsProject.tasks.named("externalNativeBuildDebug") { workletsExternalNativeBuildTask ->
-        externalNativeBuildTask.dependsOn(workletsExternalNativeBuildTask)
-      }
-    }
-
-    tasks.named("externalNativeBuildRelease") { externalNativeBuildTask ->
-      workletsProject.tasks.named("externalNativeBuildRelease") { workletsExternalNativeBuildTask ->
-        externalNativeBuildTask.dependsOn(workletsExternalNativeBuildTask)
-      }
-    }
+    tasks.getByName("externalNativeBuildDebug").dependsOn(findProject(":react-native-worklets").tasks.getByName("externalNativeBuildDebug"))
+    tasks.getByName("externalNativeBuildRelease").dependsOn(findProject(":react-native-worklets").tasks.getByName("externalNativeBuildRelease"))
   }
 }
