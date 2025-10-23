@@ -89,7 +89,7 @@ export async function resolveModuleAsync(
         ? path.join(revision.path, project.shouldUsePublicationScriptPath)
         : undefined;
 
-      const packages: string[] = [];
+      const packages = new Set<string>();
       const files =
         (await glob('**/*Package.{java,kt}', {
           cwd: projectPath,
@@ -109,7 +109,7 @@ export async function resolveModuleAsync(
 
         if (classPathMatches) {
           const basename = path.basename(file, path.extname(file));
-          packages.push(`${classPathMatches[1]}.${basename}`);
+          packages.add(`${classPathMatches[1]}.${basename}`);
         }
       }
 
@@ -117,7 +117,7 @@ export async function resolveModuleAsync(
         name: project.name,
         sourceDir: projectPath,
         modules: project.modules ?? [],
-        packages,
+        packages: [...packages],
         ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
         ...(publication ? { publication } : {}),
         ...(aarProjects?.length > 0 ? { aarProjects } : {}),
