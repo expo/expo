@@ -123,7 +123,7 @@ const EventsScreen = ({ route }: Props) => {
 
   const getAttendees = async (event: ExpoCalendarEvent) => {
     try {
-      const attendees = await event.getAttendeesAsync();
+      const attendees = await event.getAttendees();
       Alert.alert('Attendees found using getAttendees', JSON.stringify(attendees));
     } catch (e) {
       Alert.alert('Error finding attendees', e.message);
@@ -165,7 +165,7 @@ const EventsScreen = ({ route }: Props) => {
     };
     try {
       event
-        .getOccurrence({
+        .getOccurrenceSync({
           futureEvents: false,
         })
         .update(newEvent);
@@ -179,7 +179,7 @@ const EventsScreen = ({ route }: Props) => {
   const deleteEvent = async (event: ExpoCalendarEvent) => {
     try {
       event
-        .getOccurrence({
+        .getOccurrenceSync({
           futureEvents: false,
           instanceStartDate: event.recurrenceRule ? event.startDate : undefined,
         })
@@ -194,7 +194,7 @@ const EventsScreen = ({ route }: Props) => {
   };
 
   const openEventInCalendar = async (event: ExpoCalendarEvent) => {
-    const result = await event.openInCalendarAsync({
+    const result = await event.openInCalendar({
       startNewActivityTask: false,
       allowsEditing: true,
       allowsCalendarPreview: true,
@@ -207,7 +207,7 @@ const EventsScreen = ({ route }: Props) => {
   };
 
   const editEventInCalendar = async (event: ExpoCalendarEvent) => {
-    const result = await event.editInCalendarAsync();
+    const result = await event.editInCalendar();
     setTimeout(() => {
       Alert.alert('editEventInCalendarAsync result', JSON.stringify(result), undefined, {
         cancelable: true,

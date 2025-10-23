@@ -118,7 +118,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
     };
 
     try {
-      const calendar = createCalendar(newCalendar);
+      const calendar = await createCalendar(newCalendar);
       Alert.alert('Calendar saved successfully with id: ' + calendar.id);
       findCalendars();
     } catch (e) {
