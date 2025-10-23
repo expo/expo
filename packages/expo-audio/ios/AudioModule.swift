@@ -554,6 +554,16 @@ public class AudioModule: Module {
   }
 
   private func deactivateSession() {
+    // After ample discussion, testing and consideration, it makes no sense to constantly
+    // disable AVAudioSession as it is a synchronous and blocking process. This was causing
+    // 3+ second delays when switching between playing and recording audio on iOS.
+    // With this change, transitions between play/record modes are effectively instant
+    // without frame drops. To avoid triggering unnecessary setActive(true) calls, we update
+    // the internal sessionIsActive flag without actually disabling the session.
+    // This matches the approach used in expo-av that resolved a similar issue.
+    // See: https://github.com/expo/expo/issues/15873
+    // See: https://github.com/expo/expo/issues/40531
+
     // We need to give isPlaying time to update before running this
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
       guard let self else {
@@ -561,11 +571,17 @@ public class AudioModule: Module {
       }
       let hasActivePlayers = self.registry.allPlayers.values.contains { $0.isPlaying }
       if !hasActivePlayers {
+        // Only update the internal flag, do not call setActive(false) to avoid blocking delays
+        self.sessionIsActive = false
+
+        // Original blocking code commented out to prevent 3+ second delays:
+        /*
         do {
           try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
         } catch {
           print("Failed to deactivate audio session: \(error)")
         }
+        */
       }
     }
   }
