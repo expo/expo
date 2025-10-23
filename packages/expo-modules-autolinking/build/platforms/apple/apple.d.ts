@@ -8,7 +8,7 @@ export declare function resolveExtraBuildDependenciesAsync(projectNativeRoot: st
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
-export declare function generateModulesProviderAsync(modules: ModuleDescriptorIos[], targetPath: string, entitlementPath: string | null, watchedDirs: string[]): Promise<void>;
+export declare function generateModulesProviderAsync(modules: ModuleDescriptorIos[], targetPath: string, entitlementPath: string | null, watchedDirectories: string[]): Promise<void>;
 /**
  * Formats an array of modules to Swift's array containing ReactDelegateHandlers
  */
