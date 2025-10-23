@@ -64,6 +64,9 @@ public final class ExpoUIModule: Module {
       AsyncFunction("focus") { (view: TextFieldView) in
         view.focus()
       }
+      AsyncFunction("setSelection") { (view: TextFieldView, start: Int, end: Int) in
+       view.setSelection(start: start, end: end)
+      }
     }
     View(VStackView.self)
     View(ZStackView.self)
@@ -78,5 +81,8 @@ public final class ExpoUIModule: Module {
     View(CircleView.self)
     View(ConcentricRectangleView.self)
     View(DividerView.self)
+    View(ExpoUI.PopoverView.self)
+    View(ExpoUI.PopoverViewContent.self)
+    View(ExpoUI.PopoverViewPopContent.self)
   }
 }

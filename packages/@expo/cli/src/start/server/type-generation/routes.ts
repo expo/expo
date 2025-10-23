@@ -153,7 +153,9 @@ function debounce<U, T extends (this: U, ...args: any[]) => void>(fn: T, delay: 
   let timeoutId: NodeJS.Timeout | undefined;
   return function (this: U, ...args: any[]) {
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), delay);
+    // NOTE(@hassankhan): The cast to `NodeJS.Timeout` below is a hack to work around an issue
+    // with TypeScript where React Native's types are being imported before Node types
+    timeoutId = setTimeout(() => fn.apply(this, args), delay) as unknown as NodeJS.Timeout;
   } as T;
 }
 

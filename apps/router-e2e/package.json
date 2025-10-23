@@ -15,6 +15,8 @@
     "start:05-use-dom": "E2E_ROUTER_SRC=05-use-dom expo start -d",
     "export:05-use-dom": "E2E_ROUTER_SRC=05-use-dom expo export -p web",
     "ios:05-use-dom": "E2E_ROUTER_SRC=05-use-dom expo run:ios",
+    "start:06-errors": "E2E_ROUTER_SRC=06-errors expo start",
+    "export:06-errors": "E2E_ROUTER_SRC=06-errors expo export",
     "start:react-native-canary": "E2E_RSC_ENABLED=1 E2E_ROUTER_SRC=react-native-canary expo start",
     "start:web-workers": "E2E_ROUTER_ASYNC=development E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo start",
     "export:web-workers": "E2E_ROUTER_ASYNC=true E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo export -p web",
@@ -49,7 +51,7 @@
     "expo-sqlite": "~16.0.8",
     "jose": "^5",
     "react": "19.1.1",
-    "react-native": "0.82.0",
+    "react-native": "0.82.1",
     "react-native-safe-area-context": "5.6.0",
     "react-native-screens": "4.16.0",
     "react-native-webview": "13.15.0"

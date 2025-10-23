@@ -1,11 +1,11 @@
-import { act, fireEvent, screen } from '@testing-library/react-native';
+import { act, fireEvent, screen, userEvent } from '@testing-library/react-native';
 import React, { forwardRef, Ref, useState } from 'react';
 import { ViewProps, View, Text, Button } from 'react-native';
 
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
-import { type RenderRouterOptions, renderRouter } from '../testing-library';
+import { type RenderRouterOptions, renderRouter, waitFor } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs } from '../ui';
 import { Pressable, PressableProps } from '../views/Pressable';
 
@@ -439,4 +439,172 @@ it('can update href dynamically', () => {
   fireEvent.press(screen.getByText('/b'));
   expect(screen.getByTestId('page')).toBeVisible();
   expect(screen.getByTestId('page')).toHaveTextContent('b');
+});
+
+it('does not reset on focus when resetOnFocus is false', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" testID="goto-index" href="/">
+            <Text>Index</Text>
+          </TabTrigger>
+          <TabTrigger name="stack" testID="goto-stack" href="/stack">
+            <Text>Stack</Text>
+          </TabTrigger>
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    index: () => <Text testID="index">Index</Text>,
+    'stack/_layout': () => <Stack />,
+    'stack/index': () => <Text testID="stack-index">Index</Text>,
+    'stack/page': () => <Text testID="stack-page">Page</Text>,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHaveSegments([]);
+
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  expect(screen.getByTestId('stack-index')).toBeVisible();
+  expect(screen).toHaveSegments(['stack']);
+
+  act(() => router.push('/stack/page'));
+  expect(screen.getByTestId('stack-page')).toBeVisible();
+  expect(screen).toHaveSegments(['stack', 'page']);
+
+  // Go back to index
+  fireEvent.press(screen.getByTestId('goto-index'));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHaveSegments([]);
+
+  // Go to stack, should reset to index
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  expect(screen.getByTestId('stack-page')).toBeVisible();
+  expect(screen).toHaveSegments(['stack', 'page']);
+});
+
+it('resets on focus when resetOnFocus is true', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" testID="goto-index" href="/">
+            <Text>Index</Text>
+          </TabTrigger>
+          <TabTrigger name="stack" testID="goto-stack" href="/stack" resetOnFocus>
+            <Text>Stack</Text>
+          </TabTrigger>
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    'stack/_layout': () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    'stack/index': () => <Text testID="stack-index">Index</Text>,
+    'stack/page': () => <Text testID="stack-page">Page</Text>,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHaveSegments([]);
+
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  expect(screen.getByTestId('stack-index')).toBeVisible();
+  expect(screen).toHaveSegments(['stack']);
+
+  act(() => router.push('/stack/page'));
+  expect(screen.getByTestId('stack-page')).toBeVisible();
+  expect(screen).toHaveSegments(['stack', 'page']);
+
+  // Go back to index
+  fireEvent.press(screen.getByTestId('goto-index'));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHaveSegments([]);
+
+  // Go to stack, should reset to index
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  expect(screen.getByTestId('stack-index')).toBeVisible();
+  expect(screen).toHaveSegments(['stack']);
+});
+
+it('resets when focused tab is pressed again', async () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" testID="goto-index" href="/">
+            <Text>Index</Text>
+          </TabTrigger>
+          <TabTrigger name="stack" testID="goto-stack" href="/stack">
+            <Text>Stack</Text>
+          </TabTrigger>
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    'stack/_layout': () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    'stack/index': () => <Text testID="stack-index">Index</Text>,
+    'stack/page': () => <Text testID="stack-page">Page</Text>,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHaveSegments([]);
+
+  await userEvent.press(screen.getByTestId('goto-stack'));
+  expect(screen.getByTestId('stack-index')).toBeVisible();
+  expect(screen).toHaveSegments(['stack']);
+
+  act(() => router.push('/stack/page'));
+  expect(screen.getByTestId('stack-page')).toBeVisible();
+  expect(screen).toHaveSegments(['stack', 'page']);
+
+  await userEvent.press(screen.getByTestId('goto-stack'));
+  // Need to wait, because react-navigation handles this async
+  // https://github.com/react-navigation/react-navigation/blob/6f68ca674b5f36382edae220187db3db55f406bb/packages/native-stack/src/navigators/createNativeStackNavigator.tsx#L60
+  await waitFor(() => expect(screen.getByTestId('stack-index')).toBeVisible());
+  expect(screen).toHaveSegments(['stack']);
+});
+
+it('does not reset when focused tab is pressed again, but the press is prevented', async () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" testID="goto-index" href="/">
+            <Text>Index</Text>
+          </TabTrigger>
+          <TabTrigger
+            name="stack"
+            testID="goto-stack"
+            href="/stack"
+            onPress={(e) => e.preventDefault()}>
+            <Text>Stack</Text>
+          </TabTrigger>
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    'stack/_layout': () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    'stack/index': () => <Text testID="stack-index">Index</Text>,
+    'stack/page': () => <Text testID="stack-page">Page</Text>,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHaveSegments([]);
+
+  await userEvent.press(screen.getByTestId('goto-stack'));
+  expect(screen.getByTestId('stack-index')).toBeVisible();
+  expect(screen).toHaveSegments(['stack']);
+
+  act(() => router.push('/stack/page'));
+  expect(screen.getByTestId('stack-page')).toBeVisible();
+  expect(screen).toHaveSegments(['stack', 'page']);
+
+  await userEvent.press(screen.getByTestId('goto-stack'));
+  // Need to wait, because react-navigation handles this async
+  // https://github.com/react-navigation/react-navigation/blob/6f68ca674b5f36382edae220187db3db55f406bb/packages/native-stack/src/navigators/createNativeStackNavigator.tsx#L60
+  await waitFor(() => expect(screen.getByTestId('stack-index')).toBeVisible());
+  expect(screen).toHaveSegments(['stack']);
 });

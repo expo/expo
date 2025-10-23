@@ -30,10 +30,10 @@ const TabTriggerSlot = react_slot_1.Slot;
  * </Tabs>
  * ```
  */
-function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
+function TabTrigger({ asChild, name, href, resetOnFocus, ...props }) {
     const { trigger, triggerProps } = useTabTrigger({
         name,
-        reset,
+        resetOnFocus,
         ...props,
     });
     // Pressable doesn't accept the extra props, so only pass them if we are using asChild
@@ -61,7 +61,7 @@ function isTabTrigger(child) {
  */
 function useTabTrigger(options) {
     const { state, navigation } = (0, Navigator_1.useNavigatorContext)();
-    const { name, reset, onPress, onLongPress } = options;
+    const { name, resetOnFocus, onPress, onLongPress } = options;
     const triggerMap = (0, react_1.use)(TabContext_1.TabTriggerMapContext);
     const getTrigger = (0, react_1.useCallback)((name) => {
         const config = triggerMap[name];
@@ -115,8 +115,8 @@ function useTabTrigger(options) {
         });
         if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
             return;
-        switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
-    }, [onPress, name, reset, trigger]);
+        switchTab(name, { resetOnFocus });
+    }, [onPress, name, resetOnFocus, trigger]);
     const handleOnLongPress = (0, react_1.useCallback)((event) => {
         onLongPress?.(event);
         if (!trigger)
@@ -130,9 +130,9 @@ function useTabTrigger(options) {
         if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
             return;
         switchTab(name, {
-            reset: reset === 'onLongPress' ? 'always' : reset,
+            resetOnFocus,
         });
-    }, [onLongPress, name, reset, trigger]);
+    }, [onLongPress, name, resetOnFocus, trigger]);
     const triggerProps = {
         isFocused: Boolean(trigger?.isFocused),
         onPress: handleOnPress,

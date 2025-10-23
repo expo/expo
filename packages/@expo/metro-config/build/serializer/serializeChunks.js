@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chunk = void 0;
 exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 exports.getSortedModules = getSortedModules;
-const sourceMapString_1 = __importDefault(require("@expo/metro/metro/DeltaBundler/Serializers/sourceMapString"));
+const sourceMapString_1 = require("@expo/metro/metro/DeltaBundler/Serializers/sourceMapString");
 const bundleToString_1 = __importDefault(require("@expo/metro/metro/lib/bundleToString"));
 const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const assert_1 = __importDefault(require("assert"));
@@ -27,9 +27,6 @@ function pathToRegex(path) {
     // Create a RegExp object with the modified string
     return new RegExp('^' + regexSafePath + '$');
 }
-const sourceMapString = typeof sourceMapString_1.default !== 'function'
-    ? sourceMapString_1.default.sourceMapString
-    : sourceMapString_1.default;
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
@@ -401,7 +398,7 @@ class Chunk {
                 return module;
             });
             // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
-            const sourceMap = mutateSourceMapWithDebugId(sourceMapString(modules, {
+            const sourceMap = mutateSourceMapWithDebugId((0, sourceMapString_1.sourceMapString)(modules, {
                 excludeSource: false,
                 ...this.options,
             }));

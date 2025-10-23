@@ -1,5 +1,5 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
 export const UIScreens = [
   {
@@ -195,23 +195,25 @@ export const UIScreens = [
     },
   },
   {
-    name: 'RTL Layout',
-    route: 'ui/rtl',
+    name: 'Popover component',
+    route: 'ui/popover',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./RTLScreen'));
+      return optionalRequire(() => require('./PopoverScreen'));
     },
-  },
+   },
+   {
+     name: 'RTL Layout',
+     route: 'ui/rtl',
+     options: {},
+     getComponent() {
+       return optionalRequire(() => require('./RTLScreen'));
+     },
+   },
 ];
 
 export default function UIScreen() {
-  const apis: ListElement[] = UIScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/components/${screen.route}`,
-    };
-  });
+  const apis = componentScreensToListElements(UIScreens);
   return <ComponentListScreen apis={apis} sort />;
 }
 

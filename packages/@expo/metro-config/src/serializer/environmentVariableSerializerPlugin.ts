@@ -9,7 +9,7 @@ import type {
   MixedOutput,
   Module,
   SerializerOptions,
-} from '@expo/metro/metro/DeltaBundler/types.flow';
+} from '@expo/metro/metro/DeltaBundler/types';
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import countLines from '@expo/metro/metro/lib/countLines';
 

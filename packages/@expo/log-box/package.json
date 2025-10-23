@@ -1,0 +1,51 @@
+{
+  "name": "@expo/log-box",
+  "version": "0.0.13-canary-20251023-4c86f95",
+  "main": "app/index.ts",
+  "scripts": {
+    "start": "expo start",
+    "lint": "expo-module lint",
+    "typecheck": "expo-module typecheck",
+    "clean": "run-p clean:lib clean:bundle",
+    "clean:lib": "rimraf build",
+    "clean:bundle": "rimraf dist",
+    "watch": "run-p watch:lib watch:bundle",
+    "watch:lib": "tsc -p tsconfig.lib.json --watch",
+    "watch:bundle": "node ./scripts/watch-bundle.mjs",
+    "prepare": "run-s clean build",
+    "build": "run-s build:lib build:bundle",
+    "build:lib": "tsc -p tsconfig.lib.json",
+    "build:bundle": "node ./scripts/build-bundle.mjs",
+    "export:web": "expo export -p web --no-minify",
+    "prepublishOnly": "run-s clean:bundle build:bundle"
+  },
+  "dependencies": {
+    "@expo/dom-webview": "*",
+    "anser": "^1.4.9",
+    "stacktrace-parser": "^0.1.10"
+  },
+  "devDependencies": {
+    "@expo/spawn-async": "^1.7.2",
+    "@types/react": "~19.1.0",
+    "expo-module-scripts": "^5.0.7",
+    "glob": "^10.4.2",
+    "npm-run-all2": "^8.0.4",
+    "react": "19.1.1",
+    "react-native": "0.82.0",
+    "rimraf": "^6.0.1",
+    "typescript": "~5.9.2",
+    "typescript-plugin-css-modules": "^5.2.0"
+  },
+  "peerDependencies": {
+    "@expo/dom-webview": "*",
+    "expo": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "license": "MIT",
+  "author": "Expo",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box",
+  "description": "Error overlay for universal Expo apps."
+}

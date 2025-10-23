@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function RunnerError({ children }) {
-  const { top } = useSafeArea();
+  const { top } = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, top || 18]}>
