@@ -86,8 +86,7 @@
     "babel-preset-expo": "~54.0.1",
     "expo-module-scripts": "^5.0.7",
     "glob": "^11.0.3",
-    "jest": "^29.3.1",
-    "pixelmatch": "^7.1.0"
+    "jest": "^29.3.1"
   },
   "codegenConfig": {
     "name": "LocalModules",

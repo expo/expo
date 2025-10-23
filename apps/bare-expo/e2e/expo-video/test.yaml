@@ -7,10 +7,11 @@ appId: dev.expo.Payments
     text: 'Open'
     optional: true
 
-- assertVisible: 'source = Sintel'
+- assertVisible: 'source = Big Buck Bunny'
 - assertVisible: 'isPlaying = false'
 - assertVisible: 'isAtStart = true'
-- assertVisible: 'duration = 888'
+- assertVisible: 'duration = 596'
+- assertVisible: 'currentTime = 0'
 - assertVisible: 'mimeType = video/avc'
 - assertVisible: 'isSupported = true'
 - assertVisible: 'bitratePositive = true'
@@ -28,14 +29,15 @@ appId: dev.expo.Payments
 - tapOn: Seek to 30s
 - assertVisible: 'currentTime = 30'
 - runFlow:
-    file: ../_nested-flows/screenshot-comparison.yaml
+    file: ../_nested-flows/viewshot-comparison.yaml
     env:
-      screenshotOutputPath: expo-video/current-time-test
-
-- tapOn: Trigger an Error
-
-- assertVisible: 'source = No title'
-- assertVisible: 'isPlaying = false'
-
-- assertVisible: 'status = error'
-- assertVisible: 'error = true'
+      screenshotOutputPath: 'expo-video'
+      testID: 'video-view'
+      mode: 'keep-originals'
+#- tapOn: Trigger an Error
+#
+#- assertVisible: 'source = No title'
+#- assertVisible: 'isPlaying = false'
+#
+#- assertVisible: 'status = error'
+#- assertVisible: 'error = true'

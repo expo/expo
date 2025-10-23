@@ -31,7 +31,8 @@ cd e2e/image-comparison/src && bun --watch --no-clear-screen ./server.ts
 #### Do's and don'ts of authoring E2E tests
 
 - Don't use too specific assertions. Example: don't assert that video resolution is exactly 1920x1080 — player could choose a different resolution based on network conditions or hardware. When in doubt, maybe assert on a different parameter entirely or use conservative ranges.
-- Don't assert on looong visible text. Example: when you're using `assertVisible` with a multiline string, that assertion will be hard to maintain.
+- Don't assert on long visible text. Example: when you're using `assertVisible` with a multiline string, that assertion will be hard to maintain.
+- use the `E2EViewShotContainer` and `E2EKeyValueBox` components to render pieces of UI and get maestro yaml assertions for what you place in them
 - Consider both platforms early on. It can save time later.
 - Limit interactivity. It's not great to say this, but every tapping of a button or scrolling takes time and reduces reliability. The best tests are the ones that deep link to a screen and then do a few assertions.
 - View shots "focus" on a specific view and can work cross-platform (view shots taken on different platforms can be normalized to allow their comparison even though they have different sizes). They are the main tool for visual verification, but they add to test time and may need to be updated when the UI, OS or device changes, so don't overuse them.
@@ -72,7 +73,6 @@ The shots, as well as diffs against the base images are stored as GH artifacts i
 
 - When running in CI, the artifacts (logs, screenshots, view shot diffs) are uploaded as artifacts and you can download them directly from slack failure message. Also the workflow run logs have a `Artifacts download URL` where you can download them.
 
-- There's also a maestro slack channel.
 
 - Notable durations (iOS device startup, time to run a test) are present in the logs - search for "duration".
 

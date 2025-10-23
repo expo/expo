@@ -6,7 +6,7 @@ import { RequestBody } from './schema';
 
 const pngSuffix = '.png';
 
-export const transformPaths = (e2eDir: string, parsedBody: RequestBody, homeDir?: string) => {
+export function transformPaths(e2eDir: string, parsedBody: RequestBody, homeDir?: string) {
   const { baseImage, currentScreenshot, platform, diffOutputPath } = parsedBody;
   const testID = 'testID' in parsedBody ? parsedBody.testID : undefined;
   const mode = 'mode' in parsedBody ? parsedBody.mode : undefined;
@@ -72,7 +72,7 @@ export const transformPaths = (e2eDir: string, parsedBody: RequestBody, homeDir?
     diffOutputFilePath: processedOutputPath,
     currentScreenshotArtifactPath,
   };
-};
+}
 
 function expandTilde(filePath: string, homeDir?: string): string {
   if (filePath.startsWith('~/')) {
