@@ -25,17 +25,9 @@ const pendingEntryPoints: string[] = [];
 // @ts-expect-error: Account for multiple versions of pretty-format inside of a monorepo.
 const prettyFormatFunc = typeof prettyFormat === 'function' ? prettyFormat : prettyFormat.default;
 
-type HMRClientType = {
-  send: (msg: string) => void;
-  isEnabled: () => boolean;
-  disable: () => void;
-  enable: () => void;
-  hasPendingUpdates: () => boolean;
-};
-
-let hmrClient: HMRClientType | null = null;
+let hmrClient: MetroHMRClient | null = null;
 let hmrUnavailableReason: string | null = null;
-let currentCompileErrorMessage: string | null = null;
+const buildErrorQueue = new Set<unknown>();
 let didConnect: boolean = false;
 const pendingLogs: [LogLevel, any[]][] = [];
 
@@ -50,14 +42,6 @@ type LogLevel =
   | 'groupEnd'
   | 'debug';
 
-export type HMRClientNativeInterface = {
-  enable(): void;
-  disable(): void;
-  registerBundle(requestUrl: string): void;
-  log(level: LogLevel, data: any[]): void;
-  setup(props: { isEnabled: boolean }): void;
-};
-
 function assert(foo: any, msg: string): asserts foo {
   if (!foo) throw new Error(msg);
 }
@@ -66,7 +50,7 @@ function assert(foo: any, msg: string): asserts foo {
  * HMR Client that receives from the server HMR updates and propagates them
  * runtime to reflects those changes.
  */
-const HMRClient: HMRClientNativeInterface = {
+const HMRClient = {
   enable() {
     if (hmrUnavailableReason !== null) {
       // If HMR became unavailable while you weren't using it,
@@ -214,7 +198,7 @@ const HMRClient: HMRClientNativeInterface = {
     });
 
     client.on('update-start', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
-      currentCompileErrorMessage = null;
+      buildErrorQueue.clear();
       didConnect = true;
 
       if (client.isEnabled() && !isInitialUpdate) {
@@ -232,22 +216,7 @@ const HMRClient: HMRClientNativeInterface = {
       hideLoading();
     });
 
-    client.on('error', (data: { type: string; message: string }) => {
-      hideLoading();
-
-      if (data.type === 'GraphNotFoundError') {
-        client.close();
-        setHMRUnavailableReason('Metro has restarted since the last edit. Reload to reconnect.');
-      } else if (data.type === 'RevisionNotFoundError') {
-        client.close();
-        setHMRUnavailableReason('Metro and the client are out of sync. Reload to reconnect.');
-      } else {
-        currentCompileErrorMessage = `${data.type} ${data.message}`;
-        if (client.isEnabled()) {
-          showCompileError();
-        }
-      }
-    });
+    client.on('error', (data) => this._onMetroError(data));
 
     client.on('close', (closeEvent: { code: number; reason: string }) => {
       hideLoading();
@@ -258,19 +227,19 @@ const HMRClient: HMRClientNativeInterface = {
         closeEvent == null ||
         closeEvent.code === 1000 ||
         closeEvent.code === 1005 ||
+        closeEvent.code === 1006 ||
         closeEvent.code == null;
 
       setHMRUnavailableReason(
         `${
           isNormalOrUnsetCloseReason
-            ? 'Disconnected from Metro.'
-            : `Disconnected from Metro (${closeEvent.code}: "${closeEvent.reason}").`
+            ? 'Disconnected from Expo CLI.'
+            : `Disconnected from Expo CLI (${closeEvent.code}: "${closeEvent.reason}").`
         }
 
 To reconnect:
-- Ensure that Metro is running and available on the same network
-- Reload this app (will trigger further help if Metro cannot be connected to)
-      `
+- Start the dev server with: npx expo
+- Reload the ${process.env.EXPO_OS === 'web' ? 'page' : 'app'}`
       );
     });
 
@@ -282,6 +251,37 @@ To reconnect:
 
     registerBundleEntryPoints(hmrClient);
     flushEarlyLogs();
+  },
+
+  // Related Metro error's formatting
+  // https://github.com/facebook/metro/blob/34bb8913ec4b5b02690b39d2246599faf094f721/packages/metro/src/lib/formatBundlingError.js#L36
+  _onMetroError(error: unknown) {
+    if (!hmrClient) {
+      return;
+    }
+
+    assert(typeof error === 'object' && error != null, 'Expected data to be an object');
+
+    hideLoading();
+
+    if ('type' in error) {
+      if (error.type === 'GraphNotFoundError') {
+        hmrClient.close();
+        setHMRUnavailableReason('Expo CLI has restarted since the last edit. Reload to reconnect.');
+        return;
+      } else if (error.type === 'RevisionNotFoundError') {
+        hmrClient.close();
+        setHMRUnavailableReason(
+          `Expo CLI and the ${process.env.EXPO_OS} client are out of sync. Reload to reconnect.`
+        );
+        return;
+      }
+    }
+
+    buildErrorQueue.add(error);
+    if (hmrClient.isEnabled()) {
+      showCompileError();
+    }
   },
 };
 
@@ -302,7 +302,7 @@ function setHMRUnavailableReason(reason: string) {
   }
 }
 
-function registerBundleEntryPoints(client: HMRClientType | null) {
+function registerBundleEntryPoints(client: MetroHMRClient | null) {
   if (hmrUnavailableReason != null) {
     // "Bundle Splitting – Metro disconnected"
     window.location.reload();
@@ -331,13 +331,13 @@ function flushEarlyLogs() {
 }
 
 function showCompileError() {
-  if (currentCompileErrorMessage === null) {
+  if (buildErrorQueue.size === 0) {
     return;
   }
 
-  const message = currentCompileErrorMessage;
-  currentCompileErrorMessage = null;
-  handleCompileError(message);
+  const cause: any = buildErrorQueue.values().next().value;
+  buildErrorQueue.clear();
+  handleCompileError(cause);
 }
 
 export default HMRClient;

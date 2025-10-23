@@ -1,9 +1,14 @@
 // A webview without babel to test faster.
+//
+// Keep in sync with ExpoLogBox native webview wrappers.
+// Android https://github.com/expo/expo/blob/main/packages/%40expo/log-box/android/src/main/expo/modules/logbox/ExpoLogBoxWebViewWrapper.kt
+// iOS https://github.com/expo/expo/blob/main/packages/%40expo/log-box/ios/ExpoLogBoxWebViewWrapper.swift
 import React from 'react';
 import { AppState } from 'react-native';
 
 import { getBaseURL } from './base';
-import type { BridgeMessage, DOMProps, WebViewProps, WebViewRef } from './dom.types';
+import { DOMPropsInternal } from './dom-internal.types';
+import type { BridgeMessage, WebViewProps, WebViewRef } from './dom.types';
 import { _emitGlobalEvent } from './global-events';
 import {
   getInjectBodySizeObserverScript,
@@ -22,7 +27,7 @@ type RawWebViewProps = React.ComponentProps<Exclude<typeof ExpoDomWebView, undef
 
 interface Props {
   children?: any;
-  dom?: DOMProps;
+  dom?: DOMPropsInternal;
   filePath: string;
   ref: React.Ref<object>;
   [propName: string]: unknown;
@@ -130,7 +135,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
         subscription.remove();
       });
     },
-    ...dom,
+    ...domProps,
     containerStyle: [containerStyle, debugZeroHeightStyle, dom?.containerStyle],
     onLayout: __DEV__ ? debugOnLayout : dom?.onLayout,
     injectedJavaScriptBeforeContentLoaded: [

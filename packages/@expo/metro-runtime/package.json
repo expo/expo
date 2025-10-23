@@ -15,8 +15,6 @@
     "rsc",
     "async-require.js",
     "async-require.d.ts",
-    "error-overlay.js",
-    "error-overlay.d.ts",
     "assets",
     "!**/__tests__"
   ],
@@ -45,6 +43,7 @@
     }
   },
   "dependencies": {
+    "@expo/log-box": "0.0.13-canary-20251023-4c86f95",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
     "pretty-format": "^29.7.0",

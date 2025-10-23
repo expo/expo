@@ -7,6 +7,8 @@ import LogBox from 'react-native/Libraries/LogBox/LogBox';
 import NativeRedBox from 'react-native/Libraries/NativeModules/specs/NativeRedBox';
 import DevSettings from 'react-native/Libraries/Utilities/DevSettings';
 
+import { HMRMetroBuildError } from './buildErrors';
+
 export function showLoading(message: string, type: 'load' | 'refresh') {
   const DevLoadingView = require('react-native/Libraries/Utilities/DevLoadingView').default;
   DevLoadingView.showMessage(message, type);
@@ -77,22 +79,19 @@ function dismissRedbox() {
   }
 }
 
-export function handleCompileError(message: string | null = null) {
-  if (message === null) {
+export function handleCompileError(cause: any) {
+  if (cause === null) {
     return;
   }
 
+  // Even if there is already a redbox, syntax errors are more important.
+  // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
   dismissRedbox();
 
   const LogBox = require('react-native/Libraries/LogBox/LogBox').default;
-  LogBox.addException({
-    message,
-    originalMessage: message,
-    name: undefined,
-    componentStack: undefined,
-    stack: [],
-    id: -1,
-    isFatal: true,
-    isComponentError: false,
-  });
+  // The error is passed thru LogBox APIs directly to the parsing function.
+  // Won't log the error in devtools console
+  // (using throw would mangle the error message and print with ANSI
+  // because throw on native is processed as console.error)
+  LogBox.addException(new HMRMetroBuildError(cause.message, cause.type, cause.cause));
 }

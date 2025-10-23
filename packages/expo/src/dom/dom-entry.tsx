@@ -1,7 +1,6 @@
 // Entry file for a DOM Component.
 import '@expo/metro-runtime';
 
-import { withErrorOverlay } from '@expo/metro-runtime/error-overlay';
 import React from 'react';
 
 import { JSONValue } from './dom.types';
@@ -110,12 +109,12 @@ export function registerDOMComponent(AppModule: any) {
   }
 
   try {
+    if (process.env.NODE_ENV !== 'production') {
+      require('@expo/log-box/lib').setupLogBox();
+    }
+
     React.startTransition(() => {
-      if (process.env.NODE_ENV !== 'production') {
-        registerRootComponent(withErrorOverlay(DOMComponentRoot));
-      } else {
-        registerRootComponent(DOMComponentRoot);
-      }
+      registerRootComponent(DOMComponentRoot);
     });
   } catch (e) {
     const error = convertError(e);

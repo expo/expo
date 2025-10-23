@@ -78,6 +78,7 @@
   ],
   "peerDependencies": {
     "@expo/metro-runtime": "^6.1.2",
+    "@expo/log-box": "0.0.13-canary-20251023-4c86f95",
     "@react-navigation/drawer": "^7.5.0",
     "@testing-library/react-native": ">= 12.0.0",
     "expo": "*",

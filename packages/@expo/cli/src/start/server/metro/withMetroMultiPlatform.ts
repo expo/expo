@@ -730,6 +730,20 @@ export function withExtendedResolver(
           'expo/src/async-require/hmr.ts'
         );
         if (hmrModule) return hmrModule;
+
+        if (env.EXPO_UNSTABLE_LOG_BOX) {
+          const logBoxModule = doReplace(
+            'react-native/Libraries/LogBox/LogBoxInspectorContainer.js',
+            '@expo/log-box/swap-rn-logbox.js'
+          );
+          if (logBoxModule) return logBoxModule;
+
+          const logBoxParserModule = doReplace(
+            'react-native/Libraries/LogBox/Data/parseLogBoxLog.js',
+            '@expo/log-box/swap-rn-logbox-parser.js'
+          );
+          if (logBoxParserModule) return logBoxParserModule;
+        }
       }
 
       return result;

@@ -97,6 +97,7 @@ import {
   getMetroDirectBundleOptions,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
 export type ExpoRouterRuntimeManifest = Awaited<
@@ -1131,7 +1132,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Maybe put behind a flag for now?
       middleware.use(domComponentRenderer);
 
+      // TODO: Disable both of these when tunneling to prevent security issues
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
+
+      // For providing info to the error overlay.
+      middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+        // Use by `@expo/log-box` https://github.com/expo/expo/blob/f29b9f3715e42dca87bf3eebf11f7e7dd1ff73c1/packages/%40expo/log-box/src/utils/devServerEndpoints.ts#L82
+        if (req.url?.startsWith('/_expo/error-overlay-meta')) {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(
+            JSON.stringify({
+              projectRoot: this.projectRoot,
+              serverRoot,
+              sdkVersion: exp.sdkVersion,
+            })
+          );
+          return;
+        }
+        return next();
+      });
 
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {

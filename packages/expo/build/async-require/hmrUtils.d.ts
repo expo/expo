@@ -9,5 +9,5 @@ export declare function hideLoading(): void;
 export declare function resetErrorOverlay(): void;
 export declare function reload(): void;
 export declare function getConnectionError(serverHost: string, e: Error): string;
-export declare function handleCompileError(message?: string | null): void;
+export declare function handleCompileError(cause: any): void;
 //# sourceMappingURL=hmrUtils.d.ts.map

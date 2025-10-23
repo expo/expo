@@ -1,5 +1,6 @@
 import { DeviceEventEmitter } from 'react-native';
 
+import { HMRMetroBuildError } from './buildErrors';
 import { getFullBundlerUrl as getFullBundlerUrlHelper } from './getFullBundlerUrl';
 
 export function getFullBundlerUrl(_: {
@@ -45,15 +46,9 @@ Error: ${e.message}
   `.trim();
 }
 
-export function handleCompileError(message: string | null = null) {
-  if (message === null) {
+export function handleCompileError(cause: any) {
+  if (!cause) {
     return;
   }
-
-  const error = new Error(message);
-  // Symbolicating compile errors is wasted effort
-  // because the stack trace is meaningless:
-  // @ts-expect-error
-  error.preventSymbolication = true;
-  throw error;
+  throw new HMRMetroBuildError(cause.message, cause.type, cause.cause);
 }
