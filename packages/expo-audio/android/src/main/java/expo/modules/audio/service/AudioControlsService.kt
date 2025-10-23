@@ -106,21 +106,23 @@ class AudioControlsService : MediaSessionService() {
   private fun buildNotification(): Notification? {
     val session = mediaSession ?: return null
 
-    // Build list of action indices to show in compact view
+    // Calculate which action indices should be shown in compact view
+    // This must match the order of buttons in the custom layout
     val compactViewIndices = mutableListOf<Int>()
-    var currentIndex = 0
+    var actionCount = 0
 
-    // Map the same order as updateSessionCustomLayout
+    // Count actions in the same order as updateSessionCustomLayout
     if (currentOptions?.showSeekBackward == true) {
-      compactViewIndices.add(currentIndex)
-      currentIndex++
+      compactViewIndices.add(actionCount)
+      actionCount++
     }
-    // Always show play/pause in compact view
-    compactViewIndices.add(currentIndex)
-    currentIndex++
+    // Play/pause is always shown in compact view
+    compactViewIndices.add(actionCount)
+    actionCount++
 
     if (currentOptions?.showSeekForward == true) {
-      compactViewIndices.add(currentIndex)
+      compactViewIndices.add(actionCount)
+      actionCount++
     }
 
     val builder = NotificationCompat.Builder(this, CHANNEL_ID)
@@ -132,10 +134,14 @@ class AudioControlsService : MediaSessionService() {
       .setContentIntent(buildContentIntent())
       .setAutoCancel(false)
       .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
-      .setStyle(
-        MediaStyleNotificationHelper.MediaStyle(session)
-          .setShowActionsInCompactView(*compactViewIndices.toIntArray())
-      )
+
+    // Only set compact view indices if they're within valid range
+    // MediaStyle pulls actions from the session's custom layout
+    val style = MediaStyleNotificationHelper.MediaStyle(session)
+    if (compactViewIndices.isNotEmpty() && compactViewIndices.all { it < actionCount }) {
+      style.setShowActionsInCompactView(*compactViewIndices.toIntArray())
+    }
+    builder.setStyle(style)
 
     return builder.build()
   }

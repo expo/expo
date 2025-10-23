@@ -53,8 +53,8 @@
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
-@property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, strong) EXDevLauncherReactNativeFactory *reactNativeFactory;
+@property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 
 @end
@@ -144,27 +144,22 @@
   return _possibleManifestURL;
 }
 
-- (UIWindow *)currentWindow
-{
-  return _window;
-}
 
 - (EXDevLauncherErrorManager *)errorManage
 {
   return _errorManager;
 }
 
-- (void)startWithWindow:(UIWindow *)window
+- (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
-  _isStarted = YES;
-  _window = window;
-  EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
-
-  if (_launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
-    [_window makeKeyWindow];
-    return;
+  _delegate = delegate;
+  _launchOptions = launchOptions;
+  NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
+  if (lastOpenedApp != nil) {
+    _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
   }
+  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
+  EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
   void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
     __weak typeof(self) weakSelf = self;
@@ -196,26 +191,6 @@
   [self navigateToLauncher];
 }
 
-- (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
-{
-  _delegate = delegate;
-  _launchOptions = launchOptions;
-  NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
-  if (lastOpenedApp != nil) {
-    _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
-  }
-  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
-}
-
-- (void)autoSetupStart:(UIWindow *)window
-{
-  if (_delegate != nil) {
-    [self startWithWindow:window];
-  } else {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"[EXDevLauncherController autoSetupStart:] was called before autoSetupPrepare:. Make sure you've set up expo-modules correctly in AppDelegate and are using ReactDelegate to create a bridge before calling [super application:didFinishLaunchingWithOptions:]." userInfo:nil];
-  }
-}
-
 - (void)navigateToLauncher
 {
   NSAssert([NSThread isMainThread], @"This function must be called on main thread");
@@ -234,15 +209,9 @@
 #if RCT_DEV
   [self _addInitModuleObserver];
 #endif
-
-  DevLauncherViewController *swiftUIViewController = [[DevLauncherViewController alloc] init];
-
-  _window.rootViewController = swiftUIViewController;
-  [_window makeKeyAndVisible];
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self onAppContentDidAppear];
-  });
+  if (_devLauncherViewController != nil) {
+    [_devLauncherViewController resetHostingController];
+  }
 }
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
@@ -759,7 +728,10 @@
 
 - (UIViewController *)createRootViewController
 {
-  return [[DevLauncherViewController alloc] init];
+  if (_devLauncherViewController == nil){
+    _devLauncherViewController = [[DevLauncherViewController alloc] init];
+  }
+  return _devLauncherViewController;
 }
 
 - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController

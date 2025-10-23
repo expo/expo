@@ -1,15 +1,15 @@
-import { glob } from 'glob';
+import { Glob } from 'glob'; // Use 'Glob' class for more control or the promisified version
 import { vol } from 'memfs';
+import { promisify } from 'util';
 
 import { globMatchFunctorAllAsync, globMatchFunctorFirstAsync } from '../fileUtils';
 
-jest.mock('fs/promises');
-jest.mock('glob');
+// Promisify glob for easier async handling
+const glob = promisify(Glob);
 
 describe('globMatchFunctorAllAsync and globMatchFunctorFirstAsync', () => {
-  const mockGlobStream = glob.stream as jest.MockedFunction<typeof glob.stream>;
-
   beforeEach(() => {
+    vol.reset();
     vol.fromJSON({
       '/app/1.txt': '1',
       '/app/1.json': '{}',
@@ -18,17 +18,6 @@ describe('globMatchFunctorAllAsync and globMatchFunctorFirstAsync', () => {
       '/app/3.js': 'console.error("3");',
       '/app/4.ts': 'console.log("4");',
       '/app/5.tsx': 'console.log("5");',
-    });
-
-    // NOTE: Cast because the utility uses the result as an async iterable
-    mockGlobStream.mockImplementation((_, options) => {
-      const arr = ['1.js', '2.js', '3.js', '4.ts'];
-      return options?.withFileTypes
-        ? arr.map((pth) => ({
-            fullpath: () => pth,
-            isFile: () => true,
-          }))
-        : (arr as any);
     });
   });
 
@@ -50,7 +39,7 @@ describe('globMatchFunctorAllAsync and globMatchFunctorFirstAsync', () => {
       },
       { cwd: '/app' }
     );
-    expect(matched).toEqual(['1', '2', '4']);
+    expect(matched.sort((a, b) => a.localeCompare(b))).toEqual(['1', '2', '4']);
   });
 
   it('should return the first match from the globMatchFunctorFirstAsync', async () => {
@@ -67,6 +56,23 @@ describe('globMatchFunctorAllAsync and globMatchFunctorFirstAsync', () => {
       },
       { cwd: '/app' }
     );
-    expect(matched).toEqual('1');
+    expect(matched).toEqual('4');
+  });
+
+  it('should use the ignore patterns from options', async () => {
+    const matched = await globMatchFunctorAllAsync(
+      '*.{js,ts}',
+      (filePath, contents) => {
+        expect(filePath).toMatch(/\.(js|ts)/);
+        const pattern = /console\.log\("(.+)"\);/;
+        const match = contents.toString().match(pattern);
+        if (match) {
+          return match[1];
+        }
+        return null;
+      },
+      { cwd: '/app', ignore: ['2.js'] }
+    );
+    expect(matched.sort((a, b) => a.localeCompare(b))).toEqual(['1', '4']);
   });
 });

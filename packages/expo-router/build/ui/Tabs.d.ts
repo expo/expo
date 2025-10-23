@@ -7,7 +7,6 @@ export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
-export { ExpoTabsResetValue } from './TabRouter';
 /**
  * Options to provide to the Tab Router.
  */
