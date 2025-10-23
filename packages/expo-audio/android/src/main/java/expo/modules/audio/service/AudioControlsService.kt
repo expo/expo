@@ -159,9 +159,9 @@ class AudioControlsService : MediaSessionService() {
     }
 
     session.setCustomLayout(customLayout)
- }
+  }
 
- private fun postOrStartForegroundNotification(startInForeground: Boolean) {
+  private fun postOrStartForegroundNotification(startInForeground: Boolean) {
     val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val notification = buildNotification() ?: return
 
