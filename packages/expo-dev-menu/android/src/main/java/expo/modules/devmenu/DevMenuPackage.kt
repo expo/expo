@@ -12,24 +12,63 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.devsupport.DevSupportManagerBase
+import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devmenu.compose.BindingView
 import expo.modules.devmenu.compose.DevMenuViewModel
+import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
+import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
+import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
+import expo.modules.kotlin.weak
 
 class DevMenuPackage : Package, ReactPackage {
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
+  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> {
     return emptyList()
   }
 
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> {
-    return emptyList()
+  override fun createReactNativeHostHandlers(context: Context?): List<ReactNativeHostHandler?>? {
+    if (!BuildConfig.DEBUG) {
+      return emptyList()
+    }
+  
+    return listOf(
+      object : ReactNativeHostHandler {
+        override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+          super.onDidCreateDevSupportManager(devSupportManager)
+
+          if (devSupportManager !is DevSupportManagerBase) {
+            return
+          }
+
+          val currentCommandHandlers =
+            DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue<_, Map<String, RequestHandler>?>(
+              "customPackagerCommandHandlers",
+              devSupportManager
+            ) ?: emptyMap()
+
+          val weakDevSupportManager = devSupportManager.weak()
+          val handlers = DevMenuCommandHandlersProvider(weakDevSupportManager)
+            .createCommandHandlers()
+
+          val newCommandHandlers = currentCommandHandlers + handlers
+
+          DevSupportManagerBase::class.java.setPrivateDeclaredFieldValue(
+            "customPackagerCommandHandlers",
+            devSupportManager,
+            newCommandHandlers
+          )
+        }
+      }
+    )
   }
 
   override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
