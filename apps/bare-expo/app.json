@@ -97,7 +97,9 @@
       "inlineModules": true
     },
     "inlineModules": {
-      "watchedDirs": ["../native-component-list/src/screens/inlineModules/inlineModulesExamples"]
+      "watchedDirectories": [
+        "../native-component-list/src/screens/inlineModules/inlineModulesExamples"
+      ]
     }
   }
 }

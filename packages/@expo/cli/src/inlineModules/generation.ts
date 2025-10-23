@@ -173,7 +173,8 @@ export function updateXCodeProject(projectRoot: string): void {
     return false;
   };
 
-  const swiftWatchedDirectories = getConfig(projectRoot).exp.inlineModules?.watchedDirs ?? [];
+  const swiftWatchedDirectories =
+    getConfig(projectRoot).exp.inlineModules?.watchedDirectories ?? [];
   for (const dir of swiftWatchedDirectories) {
     if (dirEntryExists(dir)) {
       continue;
@@ -215,9 +216,9 @@ function getWatchedDirAncestorAbsolutePath(
   projectRoot: string,
   filePathAbsolute: string
 ): string | null {
-  const watchedDirs = getConfig(projectRoot).exp.inlineModules?.watchedDirs ?? [];
+  const watchedDirectories = getConfig(projectRoot).exp.inlineModules?.watchedDirectories ?? [];
   const realRoot = path.resolve(projectRoot);
-  for (const dir of watchedDirs) {
+  for (const dir of watchedDirectories) {
     const dirPathAbsolute = path.resolve(realRoot, dir);
     if (filePathAbsolute.startsWith(dirPathAbsolute)) {
       return dirPathAbsolute;
@@ -303,11 +304,11 @@ async function generateMirrorDirectories(
     }
   };
 
-  const watchedDirs = getConfig(projectRoot).exp.inlineModules?.watchedDirs ?? [];
-  for (const watchedDir of watchedDirs) {
+  const watchedDirectories = getConfig(projectRoot).exp.inlineModules?.watchedDirectories ?? [];
+  for (const watchedDirectory of watchedDirectories) {
     await generateExportsAndTypesForDirectory(
-      path.resolve(projectRoot, watchedDir),
-      fs.realpathSync(watchedDir)
+      path.resolve(projectRoot, watchedDirectory),
+      fs.realpathSync(watchedDirectory)
     );
   }
 }

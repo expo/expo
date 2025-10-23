@@ -103,7 +103,7 @@ export async function generateModulesProviderAsync(
   modules: ModuleDescriptorIos[],
   targetPath: string,
   entitlementPath: string | null,
-  watchedDirs: string[]
+  watchedDirectories: string[]
 ): Promise<void> {
   const className = path.basename(targetPath, path.extname(targetPath));
   const entitlements = await parseEntitlementsAsync(entitlementPath);
@@ -111,7 +111,7 @@ export async function generateModulesProviderAsync(
     modules,
     className,
     entitlements,
-    watchedDirs
+    watchedDirectories
   );
   const parentPath = path.dirname(targetPath);
   await fs.promises.mkdir(parentPath, { recursive: true });
@@ -125,7 +125,7 @@ async function generatePackageListFileContentAsync(
   modules: ModuleDescriptorIos[],
   className: string,
   entitlements: AppleCodeSignEntitlements,
-  watchedDirs: string[]
+  watchedDirectories: string[]
 ): Promise<string> {
   const iosModules = modules.filter(
     (module) =>
@@ -149,7 +149,9 @@ async function generatePackageListFileContentAsync(
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
 
-  modulesClassNames = modulesClassNames.concat(await getIosInlineModulesClassNames(watchedDirs));
+  modulesClassNames = modulesClassNames.concat(
+    await getIosInlineModulesClassNames(watchedDirectories)
+  );
 
   const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
     .concat(...debugOnlyModules.map((module) => module.modules))

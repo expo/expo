@@ -12,7 +12,7 @@ interface GenerateModulesProviderParams {
 export async function generateModulesProviderAsync(
   modules: ModuleDescriptor[],
   params: GenerateModulesProviderParams,
-  watchedDirs: string[]
+  watchedDirectories: string[]
 ) {
   const platformLinking = getLinkingImplementationForPlatform(params.platform);
   if (!('generateModulesProviderAsync' in platformLinking)) {
@@ -24,6 +24,6 @@ export async function generateModulesProviderAsync(
     modules as ModuleDescriptorIos[],
     params.targetPath,
     params.entitlementPath,
-    watchedDirs
+    watchedDirectories
   );
 }
