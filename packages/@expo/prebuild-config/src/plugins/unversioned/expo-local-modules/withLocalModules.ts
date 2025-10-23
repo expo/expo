@@ -16,7 +16,7 @@ export const withLocalModules = (config: ExpoConfig, props: any) => {
           if (conf.experiments?.localModules !== true) {
             return JSON.stringify([]);
           }
-          return JSON.stringify(conf.localModules?.watchedDirs ?? []);
+          return JSON.stringify(conf.inlineModules?.watchedDirs ?? []);
         },
       },
     ],
@@ -35,7 +35,7 @@ export const withLocalModules = (config: ExpoConfig, props: any) => {
           if (conf.experiments?.localModules !== true) {
             return JSON.stringify([]);
           }
-          return JSON.stringify(conf.localModules?.watchedDirs ?? []);
+          return JSON.stringify(conf.inlineModules?.watchedDirs ?? []);
         },
       },
     ],
