@@ -120,8 +120,10 @@ struct TextFieldView: ExpoSwiftUI.View {
   func setSelection(start: Int, end: Int) {
     #if !os(tvOS)
     if #available(iOS 18.0, macOS 15.0, *) {
-      let startIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(start, textManager.text.count))
-      let endIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(end, textManager.text.count))
+      let lowerBound = min(start, end)
+      let upperBound = max(start, end)
+      let startIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(lowerBound, textManager.text.count))
+      let endIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(upperBound, textManager.text.count))
       textManager.selection = SwiftUI.TextSelection(range: startIndex..<endIndex)
     }
     #endif
