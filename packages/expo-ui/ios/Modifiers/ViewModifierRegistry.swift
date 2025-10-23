@@ -1554,5 +1554,9 @@ extension ViewModifierRegistry {
     register("headerProminence") { params, appContext, _ in
       return try HeaderProminence(from: params, appContext: appContext)
     }
+
+    register("font") { params, appContext, _ in
+      return try FontModifier(from: params, appContext: appContext)
+    }
   }
 }
