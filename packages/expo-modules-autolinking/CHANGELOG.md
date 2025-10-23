@@ -20,6 +20,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Moved our special build phase script initialization from run_podfile_post_install_hooks -> perform_post_install_actions to fix issue with wrong UUIDs in Pods.pbproj file. ([#40572](https://github.com/expo/expo/pull/40572) by [@chrfalch](https://github.com/chrfalch))
 - fix globMatchFunctorAllAsync to check if globbed path is a file to prevent errors ([#40437](https://github.com/expo/expo/pull/40437) by [@artus9033](https://github.com/artus9033)) ([#40501](https://github.com/expo/expo/pull/40501) by [@kitten](https://github.com/kitten))
 
 ## 3.0.16 — 2025-10-20
