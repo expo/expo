@@ -94,6 +94,30 @@ class EventRecurrenceUtilsTest {
     assertEquals(recurrence.endDate, null)
     assertEquals(recurrence.occurrence, null)
   }
+
+  @Test
+  fun testParseRecurrenceRule_withAllDayDate() {
+    val rrule = "FREQ=DAILY;INTERVAL=1;UNTIL=20251024"
+
+    val recurrence = RecurrenceRuleEntity.fromRuleString(rrule)
+
+    assertEquals(recurrence.frequency, "daily")
+    assertEquals(recurrence.interval, 1)
+    assertEquals(recurrence.endDate, "2025-10-24T00:00:00.000Z")
+    assertEquals(recurrence.occurrence, null)
+  }
+
+  @Test
+  fun testParseRecurrenceRule_withCustomOrderAndUnknownFields() {
+    val rrule = "FREQ=DAILY;UNTIL=20251024;INTERVAL=1;WKST=SU"
+
+    val recurrence = RecurrenceRuleEntity.fromRuleString(rrule)
+
+    assertEquals(recurrence.frequency, "daily")
+    assertEquals(recurrence.interval, 1)
+    assertEquals(recurrence.endDate, "2025-10-24T00:00:00.000Z")
+    assertEquals(recurrence.occurrence, null)
+  }
 }
 
 @OptIn(EitherType::class)
