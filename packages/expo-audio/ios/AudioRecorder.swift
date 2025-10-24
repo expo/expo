@@ -80,7 +80,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       // try session.setActive(true)
     } catch {
       currentState = .error
-      throw AudioRecordingException( "Failed to configure audio session: \(error.localizedDescription)")
+      throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
     }
 
     if let options {
@@ -180,7 +180,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "isFinished": true,
       "hasError": false,
       "error": nil,
-      "url": recorder.url.absoluteString,
+      "url": recorder.url.absoluteString
     ])
   }
 
@@ -194,7 +194,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "isFinished": true,
       "hasError": true,
       "error": error?.localizedDescription,
-      "url": nil,
+      "url": nil
     ])
   }
 

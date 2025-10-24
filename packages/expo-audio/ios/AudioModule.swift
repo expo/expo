@@ -339,7 +339,7 @@ public class AudioModule: Module {
     do {
       var options: AVAudioSession.CategoryOptions = [.mixWithOthers]
       #if !os(tvOS)
-        #if compiler(>=6.2)  // Xcode 26
+        #if compiler(>=6.2) // Xcode 26
           options.insert(.allowBluetoothHFP)
         #else
           options.insert(.allowBluetooth)
@@ -533,8 +533,8 @@ public class AudioModule: Module {
     } else {
       registry.allRecorders.values.forEach { recorder in
         recorder.allowsRecording = true
-        }
       }
+    }
     #endif
 
     // Original category-changing code commented out to prevent blocking delays:
@@ -551,7 +551,7 @@ public class AudioModule: Module {
       sessionOptions = []
     } else {
       category = mode.allowsRecording ? .playAndRecord : .playback
-    
+ 
       var categoryOptions: AVAudioSession.CategoryOptions = []
       switch mode.interruptionMode {
       case .doNotMix:
@@ -574,7 +574,7 @@ public class AudioModule: Module {
 
       sessionOptions = categoryOptions
     }
-    
+
     if sessionOptions.isEmpty {
       try session.setCategory(category, mode: .default)
     } else {
