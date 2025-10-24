@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed DOM Components entry not found from updates on Android. ([#40574](https://github.com/expo/expo/pull/40574) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 54.0.21 — 2025-10-28
