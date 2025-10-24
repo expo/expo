@@ -295,9 +295,9 @@ export function createSourceId(source: HashSource): string {
     case 'contents':
       return source.id;
     case 'file':
-      return source.filePath;
+      return source.overrideHashKey ?? source.filePath;
     case 'dir':
-      return source.filePath;
+      return source.overrideHashKey ?? source.filePath;
     default:
       throw new Error('Unsupported source type');
   }
