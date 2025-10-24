@@ -11,6 +11,13 @@ extension ExpoSwiftUI {
     }
 
     /**
+     Accepts `ViewName` definition element of `View`.
+     */
+    public static func buildExpression(_ element: ViewNameDefinition) -> AnyViewDefinitionElement {
+      return element
+    }
+
+    /**
      Accepts functions as a view definition elements.
      */
     public static func buildExpression<ElementType: ViewDefinitionFunctionElement>(

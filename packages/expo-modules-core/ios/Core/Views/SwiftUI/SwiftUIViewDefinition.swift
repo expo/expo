@@ -113,7 +113,7 @@ extension ExpoSwiftUI {
     }
 
     public override func getSupportedPropNames() -> [String] {
-      return dummyPropsMirror.children.compactMap { (label: String?, value: Any) in
+      return allMirrorChildren(dummyPropsMirror).compactMap { (label: String?, value: Any) in
         guard let field = value as? AnyFieldInternal else {
           return nil
         }
@@ -122,14 +122,13 @@ extension ExpoSwiftUI {
     }
 
     public override func getSupportedEventNames() -> [String] {
-      let builtInEventNames = [GLOBAL_EVENT_NAME]
-      let propEventNames: [String] = dummyPropsMirror.children.compactMap { (label: String?, value: Any) in
+      let propEventNames: [String] = allMirrorChildren(dummyPropsMirror).compactMap { (label: String?, value: Any) in
         guard let event = value as? EventDispatcher else {
           return nil
         }
         return event.customName ?? convertLabelToKey(label)
       }
-      return builtInEventNames + propEventNames
+      return propEventNames
     }
   }
 }
