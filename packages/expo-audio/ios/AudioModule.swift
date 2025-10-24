@@ -18,9 +18,9 @@ public class AudioModule: Module {
 
     OnCreate {
       #if os(iOS)
-        self.appContext?.permissions?.register([
-          AudioRecordingRequester()
-        ])
+      self.appContext?.permissions?.register([
+        AudioRecordingRequester()
+      ])
       #endif
 
       setupInterruptionHandling()
@@ -31,37 +31,31 @@ public class AudioModule: Module {
       try setAudioMode(mode: mode)
     }
 
-    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool) in
+    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool)  in
       try setIsAudioActive(isActive)
     }
 
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
       #if os(iOS)
-        appContext?.permissions?.askForPermission(
-          usingRequesterClass: AudioRecordingRequester.self,
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter
+      appContext?.permissions?.askForPermission(
+        usingRequesterClass: AudioRecordingRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter
         )
       #else
-        promise.reject(
-          Exception.init(
-            name: "UnsupportedOperation",
-            description: "Audio recording is not supported on this platform."))
+        promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
       #endif
     }
 
     AsyncFunction("getRecordingPermissionsAsync") { (promise: Promise) in
       #if os(iOS)
-        appContext?.permissions?.getPermissionUsingRequesterClass(
-          AudioRecordingRequester.self,
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter
-        )
+      appContext?.permissions?.getPermissionUsingRequesterClass(
+        AudioRecordingRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter
+      )
       #else
-        promise.reject(
-          Exception.init(
-            name: "UnsupportedOperation",
-            description: "Audio recording is not supported on this platform."))
+        promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
       #endif
     }
 
@@ -84,9 +78,7 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor {
-        (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool) -> AudioPlayer
-        in
+      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool) -> AudioPlayer in
         let avPlayer = AudioUtils.createAVPlayer(from: source)
         let player = AudioPlayer(avPlayer, interval: updateInterval)
         player.owningRegistry = self.registry
@@ -174,8 +166,7 @@ public class AudioModule: Module {
         player.play(at: rate)
       }
 
-      Function("setPlaybackRate") {
-        (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
+      Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
         player.currentRate = playerRate
 
@@ -212,8 +203,7 @@ public class AudioModule: Module {
         }
       }
 
-      Function("setActiveForLockScreen") {
-        (player: AudioPlayer, active: Bool, metadata: Metadata?, options: LockScreenOptions?) in
+      Function("setActiveForLockScreen") { (player: AudioPlayer, active: Bool, metadata: Metadata?, options: LockScreenOptions?) in
         player.setActiveForLockScreen(active, metadata: metadata, options: options)
       }
 
@@ -232,11 +222,7 @@ public class AudioModule: Module {
         }
       }
 
-      AsyncFunction("seekTo") {
-        (
-          player: AudioPlayer, seconds: Double, toleranceMillisBefore: Double?,
-          toleranceMillisAfter: Double?
-        ) in
+      AsyncFunction("seekTo") { ( player: AudioPlayer, seconds: Double, toleranceMillisBefore: Double?, toleranceMillisAfter: Double?) in
         await player.seekTo(
           seconds: seconds,
           toleranceMillisBefore: toleranceMillisBefore,
@@ -246,38 +232,38 @@ public class AudioModule: Module {
     }
 
     #if os(iOS)
-      // swiftlint:disable:next closure_body_length
-      Class(AudioRecorder.self) {
-        Constructor { (options: RecordingOptions) -> AudioRecorder in
-          let recordingDir = try recordingDirectory()
-          let avRecorder = AudioUtils.createRecorder(directory: recordingDir, with: options)
-          let recorder = AudioRecorder(avRecorder)
-          recorder.owningRegistry = self.registry
-          recorder.allowsRecording = allowsRecording
-          self.registry.add(recorder)
+    // swiftlint:disable:next closure_body_length
+    Class(AudioRecorder.self) {
+      Constructor { (options: RecordingOptions) -> AudioRecorder in
+        let recordingDir = try recordingDirectory()
+        let avRecorder = AudioUtils.createRecorder(directory: recordingDir, with: options)
+        let recorder = AudioRecorder(avRecorder)
+        recorder.owningRegistry = self.registry
+        recorder.allowsRecording = allowsRecording
+        self.registry.add(recorder)
 
-          return recorder
-        }
+        return recorder
+      }
 
-        Property("id") { recorder in
-          recorder.id
-        }
+      Property("id") { recorder in
+        recorder.id
+      }
 
-        Property("isRecording") { recorder in
-          recorder.isRecording
-        }
+      Property("isRecording") { recorder in
+        recorder.isRecording
+      }
 
-        Property("currentTime") { recorder in
-          recorder.ref.currentTime
-        }
+      Property("currentTime") { recorder in
+        recorder.ref.currentTime
+      }
 
-        Property("uri") { recorder in
-          recorder.uri
-        }
+      Property("uri") { recorder in
+        recorder.uri
+      }
 
-        AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
-          try recorder.prepare(options: options, sessionOptions: sessionOptions)
-        }
+      AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
+        try recorder.prepare(options: options, sessionOptions: sessionOptions)
+      }
 
         Function("record") { (recorder: AudioRecorder, options: RecordOptions?) in
           try checkPermissions()
