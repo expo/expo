@@ -44,7 +44,7 @@ cat > "$FRAMEWORK_DIR/Info.plist" << EOF
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>com.example.IOSScreenInspectorFramework</string>
+    <string>dev.expo.IOSScreenInspectorFramework</string>
     <key>CFBundleName</key>
     <string>IOSScreenInspectorFramework</string>
     <key>CFBundleVersion</key>

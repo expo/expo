@@ -1,11 +1,13 @@
 import Foundation
+import OSLog
 import UIKit
 
+private let logger = Logger()
 private let LOG_TAG = "ScreenInspector"
 
 // Helper to log with proper string conversion
 private func log(_ message: String) {
-    message.withCString { c_syslog($0) }
+    logger.log("\(message)")
 }
 
 @objc public class ScreenInspector: NSObject {
@@ -220,9 +222,6 @@ private func log(_ message: String) {
 private let screenInspector = ScreenInspector()
 
 // Declare C function
-@_silgen_name("c_syslog")
-func c_syslog(_ message: UnsafePointer<CChar>)
-
 @_cdecl("screen_inspector_dylib_init")
 public func screen_inspector_dylib_init() {
     log("[\(LOG_TAG)] Dylib loaded! Starting screenInspector server...")

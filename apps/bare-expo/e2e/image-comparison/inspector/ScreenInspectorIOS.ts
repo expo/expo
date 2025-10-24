@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
 import spawnAsync from '@expo/spawn-async';
-import * as fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 interface CoordinatesRequest {
   action: 'getCoordinates';
