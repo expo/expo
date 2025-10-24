@@ -6,7 +6,7 @@ export function resolveSource(source) {
     }
     if (typeof source === 'number') {
         const asset = Asset.fromModule(source);
-        return { uri: asset.uri, assetId: source };
+        return { uri: asset.localUri ?? asset.uri, assetId: source };
     }
     return source ?? null;
 }
