@@ -3,7 +3,6 @@ import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
-import { fileExistsAsync } from '../../fileUtils';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
@@ -17,6 +16,11 @@ const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
 
 const indent = '  ';
+
+const fileExistsAsync = async (file: string): Promise<string | null> => {
+  const stat = await fs.promises.stat(file).catch(() => null);
+  return stat?.isFile() ? file : null;
+};
 
 async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
   const configPodspecPaths = revision.config?.applePodspecPaths();
