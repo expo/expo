@@ -9,8 +9,6 @@ import {
   resolveModuleAsync,
 } from '../apple/apple';
 
-jest.mock('glob');
-
 afterEach(() => {
   vol.reset();
   jest.resetAllMocks();
