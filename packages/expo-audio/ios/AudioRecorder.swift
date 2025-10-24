@@ -75,8 +75,6 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       try session.setCategory(.playAndRecord, mode: .default, options: sessionOptions)
       // Commenting out setActive(true) to avoid 3+ second blocking delay when switching modes.
       // The audio session is managed by AudioModule and should remain active.
-      // See: https://github.com/expo/expo/issues/15873
-      // See: https://github.com/expo/expo/issues/40531
       // try session.setActive(true)
     } catch {
       currentState = .error
