@@ -34,10 +34,11 @@ appId: dev.expo.Payments
       screenshotOutputPath: 'expo-video'
       testID: 'video-view'
       mode: 'keep-originals'
-#- tapOn: Trigger an Error
-#
-#- assertVisible: 'source = No title'
-#- assertVisible: 'isPlaying = false'
-#
-#- assertVisible: 'status = error'
-#- assertVisible: 'error = true'
+
+- tapOn: Trigger an Error
+
+- assertVisible: 'source = No title'
+- assertVisible: 'isPlaying = false'
+
+- assertVisible: 'status = error'
+- assertVisible: 'error = true'

@@ -14,7 +14,7 @@ export function E2EViewShotContainer({
   testID,
   style,
   children,
-  screenshotOutputPath = 'TODO',
+  screenshotOutputPath = 'TODO_specify_output_path',
   mode = 'normalize',
 }: Props) {
   const handleCopyViewShotYaml = async () => {

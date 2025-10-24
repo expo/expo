@@ -3,6 +3,7 @@ import Jimp from 'jimp-compact';
 import fs from 'node:fs';
 
 import { MAESTRO_ENV_VARS } from '../../../scripts/lib/e2e-common';
+import { ScreenInspectorIOS } from '../inspector/ScreenInspectorIOS';
 
 interface Bounds {
   x: number;
@@ -14,7 +15,6 @@ interface Bounds {
 interface ElementProperties {
   resource_id: string;
   bounds: Bounds;
-  text: string;
 }
 
 interface Attributes {
@@ -73,7 +73,6 @@ function parseJsonElementProperties(node: ViewNode, displayScaleFactor: number):
   return {
     resource_id: attrs['resource-id'] || '',
     bounds,
-    text: attrs.text || '',
   };
 }
 
@@ -108,11 +107,55 @@ function searchJsonNodes(
   return null;
 }
 
+async function getCoordinatesViaDylib(
+  testID: string,
+  displayScaleFactor: number,
+  timeoutMs: number = 3000
+): Promise<Bounds | null> {
+  const screenInspectorIOS = new ScreenInspectorIOS();
+
+  try {
+    const label = `Duration of getting coordinates for "${testID}" testID via dylib`;
+    console.time(label);
+
+    const bounds = await Promise.race([
+      screenInspectorIOS.getCoordinates(testID),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Dylib timeout')), timeoutMs)
+      ),
+    ]);
+    console.timeEnd(label);
+
+    return {
+      x: bounds.x * displayScaleFactor,
+      y: bounds.y * displayScaleFactor,
+      width: bounds.width * displayScaleFactor,
+      height: bounds.height * displayScaleFactor,
+    };
+  } catch (error: any) {
+    console.log(`⚠️  Dylib method failed: ${error.message}`);
+    return null;
+  }
+}
+
 async function findElementByTestID(
   testID: string,
   platform: 'ios' | 'android',
   displayScaleFactor: number
 ): Promise<ElementProperties> {
+  // For iOS, try dylib first (fast path)
+  if (platform === 'ios') {
+    const dylibBounds = await getCoordinatesViaDylib(testID, displayScaleFactor);
+    if (dylibBounds) {
+      return {
+        resource_id: testID,
+        bounds: dylibBounds,
+      };
+    }
+    console.log('⚠️  Falling back to maestro for iOS coordinate lookup');
+  }
+
+  // Fallback to maestro (or primary method for Android)
   const jsonViewHierarchy = await dumpViewHierarchy(platform);
   const element = searchJsonNodes(jsonViewHierarchy, testID, displayScaleFactor);
 

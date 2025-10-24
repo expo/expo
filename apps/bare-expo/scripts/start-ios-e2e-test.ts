@@ -16,7 +16,10 @@ import {
   runCustomMaestroFlowsAsync,
   MAESTRO_ENV_VARS,
   TEST_DURATION_LABEL,
+  startGroup,
+  endGroup,
 } from './lib/e2e-common';
+import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
 const TARGET_DEVICE_IOS_VERSION = 26;
@@ -56,7 +59,7 @@ const __dirname = dirname(__filename);
       });
 
       await retryAsync((retryNumber) => {
-        console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
+        console.log(`Native modules test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
         return testAsync(maestroNativeModulesFlowFilePath, deviceId, appBinaryPath, e2eDir);
       }, NUM_OF_RETRIES);
     }
@@ -188,12 +191,29 @@ async function testAsync(
   appBinaryPath: string,
   maestroWorkspaceRoot: string
 ): Promise<void> {
+  startGroup(maestroFlowFilePath);
   const stopLogCollectionController = new AbortController();
 
   try {
     await startSimulatorAsync(deviceId);
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
+
+    // Launch app with dylib injected
+    const dylibPath = getDylibPath();
+    console.log(`\n💉 Launching app with dylib injected - dylibPath[${dylibPath}]`);
+
+    try {
+      await spawnAsync('xcrun', ['simctl', 'launch', deviceId, APP_ID], {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          SIMCTL_CHILD_DYLD_INSERT_LIBRARIES: dylibPath,
+        },
+      });
+    } catch (error: any) {
+      console.warn('⚠️  App launch with dylib failed:', error.message);
+    }
 
     const getTestSuiteLogs = setupLogger(
       '(subsystem == "com.facebook.react.log")',
@@ -245,6 +265,7 @@ async function testAsync(
     console.error('Uncaught Error', e);
     throw e;
   } finally {
+    endGroup();
     stopLogCollectionController.abort();
   }
 }

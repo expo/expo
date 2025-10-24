@@ -11,7 +11,7 @@ if (import.meta.main) {
   const [platformArg, testID, outputFolder, resizingFactorArg] = process.argv.slice(2);
 
   if (!platformArg || !testID || !outputFolder) {
-    console.error('Usage: debug-screenshot.ts <platform> <testID> <outputFolder> [resizingFactor]');
+    console.error('Usage: debug-viewshot.ts <platform> <testID> <outputFolder> [resizingFactor]');
     process.exit(1);
   }
 

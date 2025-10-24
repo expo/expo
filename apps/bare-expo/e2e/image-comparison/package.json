@@ -6,10 +6,13 @@
   "type": "module",
   "main": "src/server.ts",
   "scripts": {
+		"buildInspector": "./inspector/scripts/build.sh",
+    "dev": "bun --watch --no-clear-screen ./src/server.ts",
     "start": "bun run src/server.ts",
     "test": "bun test",
     "compare": "bun run src/compareImages.ts",
-    "debug-viewshot": "bun run src/debug-viewshot.ts"
+    "debug-viewshot": "bun run src/debug-viewshot.ts",
+    "debug-inspector": "bun run inspector/ScreenInspectorIOS.ts"
   },
   "dependencies": {
     "jimp-compact": "^0.16.1-2",

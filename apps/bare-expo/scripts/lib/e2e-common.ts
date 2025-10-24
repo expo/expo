@@ -204,3 +204,17 @@ export const runCustomMaestroFlowsAsync = async (
     }, retriesForCustomTests);
   }
 };
+
+export function startGroup(filePath: string) {
+  if (process.env.CI) {
+    const parts = filePath.split(path.sep).filter(Boolean);
+    const lastTwoComponents = parts.slice(-2).join(path.sep);
+    console.log(`::group::${lastTwoComponents}`);
+  }
+}
+
+export function endGroup() {
+  if (process.env.CI) {
+    console.log('::endgroup::');
+  }
+}

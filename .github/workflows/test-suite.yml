@@ -163,6 +163,9 @@ jobs:
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
+      - name: Build Screen Inspector
+        run: ./scripts/build.sh
+        working-directory: apps/bare-expo/e2e/image-comparison/inspector
       - name: 🖼️ Start image comparison server
         run: |
           mkdir -p ~/.maestro/tests
