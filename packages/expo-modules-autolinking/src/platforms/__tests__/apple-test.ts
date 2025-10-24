@@ -1,9 +1,7 @@
-import { glob } from 'glob';
 import { vol } from 'memfs';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
-import { registerGlobMock } from '../../__tests__/mockHelpers';
 import {
   formatArrayOfReactDelegateHandler,
   getSwiftModuleNames,
@@ -110,17 +108,19 @@ describe(resolveModuleAsync, () => {
     const podName = 'RNThirdParty';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, [`ios/${podName}.podspec`], pkgDir);
+    vol.fromJSON({ [`ios/${podName}.podspec`]: '' }, pkgDir);
 
     const result = await resolveModuleAsync(
       name,
       {
+        name: '',
         path: pkgDir,
         version: '0.0.1',
         config: new ExpoModuleConfig({ platforms: ['ios'] }),
       },
-      { searchPaths: [expoRoot], platform: 'ios' }
+      {}
     );
+
     expect(result).toEqual({
       packageName: 'react-native-third-party',
       pods: [
@@ -143,16 +143,17 @@ describe(resolveModuleAsync, () => {
     const podName = 'RNThirdParty';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, [`ios/${podName}.podspec`], pkgDir);
+    vol.fromJSON({ [`ios/${podName}.podspec`]: '' }, pkgDir);
 
     const result = await resolveModuleAsync(
       name,
       {
+        name: '',
         path: pkgDir,
         version: '0.0.1',
         config: new ExpoModuleConfig({ platforms: ['ios'], coreFeatures: ['swiftui'] }),
       },
-      { searchPaths: [expoRoot], platform: 'ios' }
+      {}
     );
     expect(result).toEqual({
       packageName: 'react-native-third-party',
@@ -178,16 +179,23 @@ describe(resolveModuleAsync, () => {
     const podName2 = 'RNThirdParty2';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, [`ios/${podName}.podspec`, `pod2/${podName2}.podspec`], pkgDir);
+    vol.fromJSON(
+      {
+        [`ios/${podName}.podspec`]: '',
+        [`pod2/${podName2}.podspec`]: '',
+      },
+      pkgDir
+    );
 
     const result = await resolveModuleAsync(
       name,
       {
+        name: '',
         path: pkgDir,
         version: '0.0.1',
         config: new ExpoModuleConfig({ platforms: ['ios'] }),
       },
-      { searchPaths: [expoRoot], platform: 'ios' }
+      {}
     );
     expect(result).toEqual({
       packageName: 'react-native-third-party',

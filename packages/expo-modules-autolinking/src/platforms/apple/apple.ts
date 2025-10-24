@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
-import { glob } from 'glob';
 import path from 'path';
 
 import type {
@@ -27,13 +26,20 @@ async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
   if (configPodspecPaths && configPodspecPaths.length) {
     return configPodspecPaths;
   }
-
-  const podspecFiles = await glob('*/*.podspec', {
-    cwd: revision.path,
-    ignore: ['**/node_modules/**'],
-  });
-
-  return podspecFiles;
+  return (
+    await Promise.all(
+      (await fs.promises.readdir(revision.path, { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules')
+        .map(async (directory) => {
+          const entries = await fs.promises.readdir(path.join(revision.path, directory.name), {
+            withFileTypes: true,
+          });
+          return entries
+            .filter((entry) => entry.isFile() && entry.name.endsWith('.podspec'))
+            .map((entry) => path.join(directory.name, entry.name));
+        })
+    )
+  ).flat(1);
 }
 
 export function getSwiftModuleNames(
