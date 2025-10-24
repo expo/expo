@@ -41,9 +41,9 @@ public class AudioModule: Module {
         usingRequesterClass: AudioRecordingRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
-        )
+      )
       #else
-        promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
+      promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
       #endif
     }
 
@@ -55,7 +55,7 @@ public class AudioModule: Module {
         reject: promise.legacyRejecter
       )
       #else
-        promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
+      promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
       #endif
     }
 
@@ -222,7 +222,7 @@ public class AudioModule: Module {
         }
       }
 
-      AsyncFunction("seekTo") { ( player: AudioPlayer, seconds: Double, toleranceMillisBefore: Double?, toleranceMillisAfter: Double?) in
+      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double, toleranceMillisBefore: Double?, toleranceMillisAfter: Double?) in
         await player.seekTo(
           seconds: seconds,
           toleranceMillisBefore: toleranceMillisBefore,
@@ -265,67 +265,67 @@ public class AudioModule: Module {
         try recorder.prepare(options: options, sessionOptions: sessionOptions)
       }
 
-        Function("record") { (recorder: AudioRecorder, options: RecordOptions?) in
-          try checkPermissions()
+      Function("record") { (recorder: AudioRecorder, options: RecordOptions?) in
+        try checkPermissions()
 
-          switch (options?.atTime, options?.forDuration) {
-          case let (atTime?, forDuration?):
-            // Convert relative delay to absolute device time
-            let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
-            recorder.ref.record(atTime: absoluteTime, forDuration: TimeInterval(forDuration))
-            recorder.updateStateForDirectRecording()
-            return recorder.getRecordingStatus()
-          case let (atTime?, nil):
-            // Convert relative delay to absolute device time
-            let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
-            recorder.ref.record(atTime: absoluteTime)
-            recorder.updateStateForDirectRecording()
-            return recorder.getRecordingStatus()
-          case let (nil, forDuration?):
-            recorder.ref.record(forDuration: TimeInterval(forDuration))
-            recorder.updateStateForDirectRecording()
-            return recorder.getRecordingStatus()
-          case (nil, nil):
-            return try recorder.startRecording()
-          }
-        }
-
-        Function("pause") { recorder in
-          try checkPermissions()
-          recorder.pauseRecording()
-        }
-
-        AsyncFunction("stop") { recorder in
-          try checkPermissions()
-          recorder.stopRecording()
-        }
-
-        Function("getStatus") { recorder -> [String: Any] in
-          recorder.getRecordingStatus()
-        }
-
-        Function("startRecordingAtTime") { (recorder, seconds: Double) in
-          try checkPermissions()
-          recorder.ref.record(atTime: TimeInterval(seconds))
-        }
-
-        Function("recordForDuration") { (recorder, seconds: Double) in
-          try checkPermissions()
-          recorder.ref.record(forDuration: TimeInterval(seconds))
-        }
-
-        Function("getAvailableInputs") {
-          RecordingUtils.getAvailableInputs()
-        }
-
-        Function("getCurrentInput") { () -> [String: Any] in
-          try RecordingUtils.getCurrentInput()
-        }
-
-        Function("setInput") { (input: String) in
-          try RecordingUtils.setInput(input)
+        switch (options?.atTime, options?.forDuration) {
+        case let (atTime?, forDuration?):
+          // Convert relative delay to absolute device time
+          let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
+          recorder.ref.record(atTime: absoluteTime, forDuration: TimeInterval(forDuration))
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        case let (atTime?, nil):
+          // Convert relative delay to absolute device time
+          let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
+          recorder.ref.record(atTime: absoluteTime)
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        case let (nil, forDuration?):
+          recorder.ref.record(forDuration: TimeInterval(forDuration))
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        case (nil, nil):
+          return try recorder.startRecording()
         }
       }
+
+      Function("pause") { recorder in
+        try checkPermissions()
+        recorder.pauseRecording()
+      }
+
+      AsyncFunction("stop") { recorder in
+        try checkPermissions()
+        recorder.stopRecording()
+      }
+
+      Function("getStatus") { recorder -> [String: Any] in
+        recorder.getRecordingStatus()
+      }
+
+      Function("startRecordingAtTime") { (recorder, seconds: Double) in
+        try checkPermissions()
+        recorder.ref.record(atTime: TimeInterval(seconds))
+      }
+
+      Function("recordForDuration") { (recorder, seconds: Double) in
+        try checkPermissions()
+        recorder.ref.record(forDuration: TimeInterval(seconds))
+      }
+
+      Function("getAvailableInputs") {
+        RecordingUtils.getAvailableInputs()
+      }
+
+      Function("getCurrentInput") { () -> [String: Any] in
+        try RecordingUtils.getCurrentInput()
+      }
+
+      Function("setInput") { (input: String) in
+        try RecordingUtils.setInput(input)
+      }
+    }
     #endif
   }
 
@@ -412,13 +412,13 @@ public class AudioModule: Module {
       }
     }
 
-    #if os(iOS)
-      registry.allRecorders.values.forEach { recorder in
-        if recorder.isRecording {
-          recorder.pauseRecording()
-        }
+  #if os(iOS)
+    registry.allRecorders.values.forEach { recorder in
+      if recorder.isRecording {
+        recorder.pauseRecording()
       }
-    #endif
+    }
+#endif
   }
 
   private func handleInterruptionEnded(with options: AVAudioSession.InterruptionOptions) {
@@ -435,8 +435,7 @@ public class AudioModule: Module {
   @objc private func handleAudioSessionRouteChange(_ notification: Notification) {
     guard let userInfo = notification.userInfo,
       let reasonRaw = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
-      let reason = AVAudioSession.RouteChangeReason(rawValue: reasonRaw)
-    else {
+      let reason = AVAudioSession.RouteChangeReason(rawValue: reasonRaw) else {
       return
     }
 
@@ -462,13 +461,13 @@ public class AudioModule: Module {
       }
     }
 
-    #if os(iOS)
-      registry.allRecorders.values.forEach { recorder in
-        if recorder.allowsRecording && !recorder.isRecording {
-          _ = try? recorder.startRecording()
-        }
+  #if os(iOS)
+    registry.allRecorders.values.forEach { recorder in
+      if recorder.allowsRecording && !recorder.isRecording {
+        _ = try? recorder.startRecording()
       }
-    #endif
+    }
+  #endif
 
     interruptedPlayers.removeAll()
     playerVolumes.removeAll()
@@ -505,8 +504,7 @@ public class AudioModule: Module {
     }
 
     do {
-      try AVAudioSession.sharedInstance().setActive(
-        isActive, options: [.notifyOthersOnDeactivation])
+      try AVAudioSession.sharedInstance().setActive(isActive, options: [.notifyOthersOnDeactivation])
       sessionIsActive = isActive
     } catch {
       throw AudioStateException(error.localizedDescription)
@@ -526,16 +524,16 @@ public class AudioModule: Module {
     self.allowsRecording = mode.allowsRecording
 
     #if os(iOS)
-      if !mode.allowsRecording {
-        registry.allRecorders.values.forEach { recorder in
-          if recorder.isRecording {
-            recorder.ref.stop()
-          }
-          recorder.allowsRecording = false
+    if !mode.allowsRecording {
+      registry.allRecorders.values.forEach { recorder in
+        if recorder.isRecording {
+          recorder.ref.stop()
         }
-      } else {
-        registry.allRecorders.values.forEach { recorder in
-          recorder.allowsRecording = true
+        recorder.allowsRecording = false
+      }
+    } else {
+      registry.allRecorders.values.forEach { recorder in
+        recorder.allowsRecording = true
         }
       }
     #endif
@@ -564,17 +562,17 @@ public class AudioModule: Module {
       case .mixWithOthers:
         categoryOptions.insert(.mixWithOthers)
       }
-    
-      #if !os(tvOS)
-        if category == .playAndRecord {
-          #if compiler(>=6.2)  // Xcode 26
-            categoryOptions.insert(.allowBluetoothHFP)
-          #else
-            categoryOptions.insert(.allowBluetooth)
-          #endif
-        }
-      #endif
-    
+ 
+#if !os(tvOS)
+      if category == .playAndRecord {
+#if compiler(>=6.2)  // Xcode 26
+        categoryOptions.insert(.allowBluetoothHFP)
+#else
+        categoryOptions.insert(.allowBluetooth)
+#endif
+      }
+#endif
+
       sessionOptions = categoryOptions
     }
     
@@ -625,21 +623,21 @@ public class AudioModule: Module {
 
   private func checkPermissions() throws {
     #if os(iOS)
-      if #available(iOS 17.0, *) {
-        switch AVAudioApplication.shared.recordPermission {
-        case .denied, .undetermined:
-          throw AudioPermissionsException()
-        default:
-          break
-        }
-      } else {
-        switch AVAudioSession.sharedInstance().recordPermission {
-        case .denied, .undetermined:
-          throw AudioPermissionsException()
-        default:
-          break
-        }
+    if #available(iOS 17.0, *) {
+      switch AVAudioApplication.shared.recordPermission {
+      case .denied, .undetermined:
+        throw AudioPermissionsException()
+      default:
+        break
       }
+    } else {
+      switch AVAudioSession.sharedInstance().recordPermission {
+      case .denied, .undetermined:
+        throw AudioPermissionsException()
+      default:
+        break
+      }
+    }
     #endif
   }
 }
