@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { type PropsWithChildren } from 'react';
+import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
+import React, { PropsWithChildren } from 'react';
 
-import { escapeUnsafeCharacters } from '../utils/html';
+import { ServerDataLoaderContext, ServerDataLoaderData } from '../loaders/ServerDataLoaderContext';
 
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
@@ -22,36 +23,16 @@ export function ScrollViewStyleReset() {
   );
 }
 
-/**
- * Injects loader data into the HTML as a script tag for client-side hydration.
- * The data is serialized as JSON and made available on the `globalThis.__EXPO_ROUTER_LOADER_DATA__` global.
- */
-export function PreloadedDataScript({ data }: { data: Record<string, unknown> }) {
-  const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
+export function InnerRoot({
+  children,
+  loadedData,
+}: PropsWithChildren<{ loadedData: ServerDataLoaderData }>) {
+  // NOTE(@hassankhan): This ref seems to be unnecessary, double-check SSR/SSG code paths and remove
+  const ref = React.createRef<ServerContainerRef>();
 
   return (
-    <script
-      id="expo-router-data"
-      type="module"
-      dangerouslySetInnerHTML={{
-        // NOTE(@hassankhan): The double serialization used here isn't as much of a problem server-side, but allows faster
-        // client-side parsing using native `JSON.parse()`. See https://v8.dev/blog/cost-of-javascript-2019#json
-        __html: `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`,
-      }}
-    />
-  );
-}
-
-export function Html({ children }: PropsWithChildren) {
-  return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <ScrollViewStyleReset />
-      </head>
-      <body>{children}</body>
-    </html>
+    <ServerDataLoaderContext value={loadedData}>
+      <ServerContainer ref={ref}>{children}</ServerContainer>
+    </ServerDataLoaderContext>
   );
 }

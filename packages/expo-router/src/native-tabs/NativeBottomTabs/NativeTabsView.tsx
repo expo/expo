@@ -23,7 +23,11 @@ import {
   type NativeTabOptions,
   type NativeTabsViewProps,
 } from './types';
-import { shouldTabBeVisible } from './utils';
+import {
+  convertIconColorPropToObject,
+  convertLabelStylePropToObject,
+  shouldTabBeVisible,
+} from './utils';
 
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
@@ -31,6 +35,7 @@ featureFlags.experiment.controlledBottomTabs = false;
 
 const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
 
+// TODO(ubax): refactor this component, so that testing options passed to screen is easier
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { builder, minimizeBehavior, disableIndicator, focusedIndex } = props;
   const { state, descriptors, navigation } = builder;
@@ -46,6 +51,9 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     blurEffect = undefined;
   }
 
+  const defaultIconColor = convertIconColorPropToObject(props.iconColor).default;
+  const defaultLabelStyle = convertLabelStylePropToObject(props.labelStyle).default;
+
   const deferredFocusedIndex = useDeferredValue(focusedIndex);
   // We need to check if the deferred index is not out of bounds
   // This can happen when the focused index is the last tab, and user removes that tab
@@ -55,8 +63,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     deferredFocusedIndex < routes.length ? deferredFocusedIndex : focusedIndex;
 
   let standardAppearance = convertStyleToAppearance({
-    ...props.labelStyle,
-    iconColor: props.iconColor,
+    ...defaultLabelStyle,
+    iconColor: defaultIconColor,
     blurEffect,
     backgroundColor: props.backgroundColor,
     badgeBackgroundColor: props.badgeBackgroundColor,
@@ -68,8 +76,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     );
   }
   const scrollEdgeAppearance = convertStyleToAppearance({
-    ...props.labelStyle,
-    iconColor: props.iconColor,
+    ...defaultLabelStyle,
+    iconColor: defaultIconColor,
     blurEffect,
     backgroundColor: props.backgroundColor,
     badgeBackgroundColor: props.badgeBackgroundColor,

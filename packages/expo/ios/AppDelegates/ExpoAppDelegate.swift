@@ -92,7 +92,15 @@ open class ExpoAppDelegate: NSObject, UIApplicationDelegate {
   }
 #endif
 
-  // TODO: - Responding to Environment Changes
+  // MARK: - Responding to Environment Changes
+  
+#if os(iOS) || os(tvOS)
+
+  open func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+    ExpoAppDelegateSubscriberManager.applicationDidReceiveMemoryWarning(application)
+  }
+
+#endif
 
   // TODO: - Managing App State Restoration
 

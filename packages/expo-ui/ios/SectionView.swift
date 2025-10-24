@@ -3,13 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SectionProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class SectionProps: UIBaseViewProps {
   @Field var title: String?
   @Field var collapsible: Bool = false
 }
@@ -48,10 +42,8 @@ internal struct SectionView: ExpoSwiftUI.View {
   var body: some View {
     if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *), props.collapsible {
       collapsibleSection
-        .modifier(CommonViewModifiers(props: props))
     } else {
       regularSection
-        .modifier(CommonViewModifiers(props: props))
     }
   }
 

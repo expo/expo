@@ -3,13 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class UnevenRoundedRectangleViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+internal final class UnevenRoundedRectangleViewProps: UIBaseViewProps {
   @Field var topLeadingRadius: CGFloat = 0
   @Field var topTrailingRadius: CGFloat = 0
   @Field var bottomLeadingRadius: CGFloat = 0
@@ -27,7 +21,6 @@ internal struct UnevenRoundedRectangleView: ExpoSwiftUI.View {
         bottomTrailingRadius: props.bottomTrailingRadius,
         topTrailingRadius: props.topTrailingRadius
       )
-      .modifier(CommonViewModifiers(props: props))
     } else {
       EmptyView()
     }

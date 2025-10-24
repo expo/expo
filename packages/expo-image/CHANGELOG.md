@@ -8,12 +8,21 @@
 
 - [Android] Upgrades Glide to `5.0.5`. ([#39713](https://github.com/expo/expo/pull/39713) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added support for HDR images ([#40242](https://github.com/expo/expo/pull/40242) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Adopted Swift 6 ([#40369](https://github.com/expo/expo/pull/40369) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.10 - 2025-10-20
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.9 - 2025-10-07
 
 ### 🐛 Bug fixes
 
 - [Android] Fixed `You can't start or clear loads in RequestListener or Target callbacks`. ([#40212](https://github.com/expo/expo/pull/40212) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ## 3.0.8 — 2025-09-11
 

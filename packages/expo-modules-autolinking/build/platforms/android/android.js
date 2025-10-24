@@ -66,7 +66,7 @@ async function resolveModuleAsync(packageName, revision) {
         const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
             ? path_1.default.join(revision.path, project.shouldUsePublicationScriptPath)
             : undefined;
-        const packages = [];
+        const packages = new Set();
         const files = (await (0, glob_1.glob)('**/*Package.{java,kt}', {
             cwd: projectPath,
         })) || [];
@@ -79,14 +79,14 @@ async function resolveModuleAsync(packageName, revision) {
             const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
             if (classPathMatches) {
                 const basename = path_1.default.basename(file, path_1.default.extname(file));
-                packages.push(`${classPathMatches[1]}.${basename}`);
+                packages.add(`${classPathMatches[1]}.${basename}`);
             }
         }
         return {
             name: project.name,
             sourceDir: projectPath,
             modules: project.modules ?? [],
-            packages,
+            packages: [...packages],
             ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
             ...(publication ? { publication } : {}),
             ...(aarProjects?.length > 0 ? { aarProjects } : {}),

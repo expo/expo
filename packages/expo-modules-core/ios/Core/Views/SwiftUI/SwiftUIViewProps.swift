@@ -15,7 +15,7 @@ extension ExpoSwiftUI {
     /**
      An array of views passed by React as children.
      */
-    @Field public var children: [any AnyChild]?
+    public var children: [any AnyChild]?
 
     public internal(set) weak var appContext: AppContext?
 
@@ -37,7 +37,8 @@ extension ExpoSwiftUI {
         dispatcher(GLOBAL_EVENT_NAME, payload)
       }
 
-      Mirror(reflecting: self).children.forEach { (label: String?, value: Any) in
+      let mirror = Mirror(reflecting: self)
+      allMirrorChildren(mirror).forEach { (label: String?, value: Any) in
         guard let event = value as? EventDispatcher else {
           return
         }

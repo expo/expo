@@ -1,7 +1,6 @@
 // Entry file for a DOM Component.
 import '@expo/metro-runtime';
 
-import { withErrorOverlay } from '@expo/metro-runtime/error-overlay';
 import React from 'react';
 
 import { JSONValue } from './dom.types';
@@ -15,6 +14,7 @@ interface MarshalledProps {
 }
 
 interface WindowType {
+  $$EXPO_DOM_HOST_OS?: string;
   $$EXPO_INITIAL_PROPS?: MarshalledProps;
 }
 
@@ -65,6 +65,13 @@ function convertError(error: any) {
 }
 
 export function registerDOMComponent(AppModule: any) {
+  if (typeof window.$$EXPO_DOM_HOST_OS === 'undefined') {
+    throw new Error(
+      'Top OS ($$EXPO_DOM_HOST_OS) is not defined. This is a bug in the DOM Component runtime.'
+    );
+  }
+  process.env.EXPO_DOM_HOST_OS = window.$$EXPO_DOM_HOST_OS;
+
   function DOMComponentRoot(props: Record<string, unknown>) {
     // Props listeners
     const [marshalledProps, setProps] = React.useState(() => {
@@ -102,12 +109,12 @@ export function registerDOMComponent(AppModule: any) {
   }
 
   try {
+    if (process.env.NODE_ENV !== 'production') {
+      require('@expo/log-box/lib').setupLogBox();
+    }
+
     React.startTransition(() => {
-      if (process.env.NODE_ENV !== 'production') {
-        registerRootComponent(withErrorOverlay(DOMComponentRoot));
-      } else {
-        registerRootComponent(DOMComponentRoot);
-      }
+      registerRootComponent(DOMComponentRoot);
     });
   } catch (e) {
     const error = convertError(e);

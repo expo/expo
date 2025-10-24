@@ -28,8 +28,8 @@ class ModuleRegistrySpec: ExpoSpec {
       }
 
       let moduleRegistry = appContext.moduleRegistry
-      moduleRegistry.register(moduleType: TestModule.self, preventModuleOverriding: true)
-      moduleRegistry.register(moduleType: TestModule2.self)
+      moduleRegistry.register(moduleType: TestModule.self, name: "TestModule", preventModuleOverriding: true)
+      moduleRegistry.register(moduleType: TestModule2.self, name: "TestModule")
 
       expect(moduleRegistry.has(moduleWithName: "TestModule")).to(beTrue())
       expect(moduleRegistry.get(moduleWithName: "TestModule")).to(beAnInstanceOf(TestModule.self))
@@ -38,7 +38,7 @@ class ModuleRegistrySpec: ExpoSpec {
     func testRegister<ModuleType: AnyModule>(moduleType: ModuleType.Type, name: String) {
       let moduleRegistry = appContext.moduleRegistry
 
-      moduleRegistry.register(moduleType: moduleType)
+      moduleRegistry.register(moduleType: moduleType, name: name)
 
       expect(moduleRegistry.has(moduleWithName: name)).to(beTrue())
     }

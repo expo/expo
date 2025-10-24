@@ -46,7 +46,7 @@ import java.io.File
 class DatabaseLauncher(
   private val context: Context,
   private val configuration: UpdatesConfiguration,
-  private val updatesDirectory: File?,
+  private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val logger: UpdatesLogger,
@@ -94,7 +94,7 @@ class DatabaseLauncher(
     }
 
     val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
-    val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate?.updateEntity, launchedUpdate)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate?.updateEntity, null)
 
     val embeddedLaunchAsset = if (!shouldCopyEmbeddedAssets) {
       embeddedUpdate?.assetEntityList
@@ -249,7 +249,9 @@ class DatabaseLauncher(
         val result = fileDownloader.downloadAsset(
           asset,
           updatesDirectory,
-          extraHeaders
+          extraHeaders,
+          launchedUpdate,
+          null
         )
 
         database.assetDao().updateAsset(result.assetEntity)

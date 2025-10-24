@@ -1,18 +1,14 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SecureFieldProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class SecureFieldProps: UIBaseViewProps {
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var keyboardType: KeyboardType = KeyboardType.defaultKeyboard
+  @Field var autoFocus: Bool = false
   var onValueChanged = EventDispatcher()
   var onFocusChanged = EventDispatcher()
+  var onSubmit = EventDispatcher()
 }
 
 struct SecureFieldView: ExpoSwiftUI.View {
@@ -41,10 +37,18 @@ struct SecureFieldView: ExpoSwiftUI.View {
       props.placeholder,
       text: $textManager.text
     )
-      .modifier(CommonViewModifiers(props: props))
+      .modifier(UIBaseViewModifier(props: props))
       .fixedSize(horizontal: false, vertical: true)
-      .onAppear { textManager.text = props.defaultValue }
       .focused($isFocused)
+      .onSubmit({
+        props.onSubmit(["value": textManager.text])
+      })
+      .onAppear {
+        textManager.text = props.defaultValue
+        if props.autoFocus {
+          isFocused = true
+        }
+      }
       .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])
       }

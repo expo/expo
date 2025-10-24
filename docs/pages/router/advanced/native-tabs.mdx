@@ -147,19 +147,21 @@ export default function TabLayout() {
           dark: 'white',
           light: 'black',
         }),
-        // For the selected icon color
-        tintColor: DynamicColorIOS({
-          dark: 'white',
-          light: 'black',
-        }),
-      }}>
+      }}
+      // For the selected icon color
+      tintColor={DynamicColorIOS({
+        dark: 'white',
+        light: 'black',
+      })}>
       <NativeTabs.Trigger name="index">
         <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon
-          src={require('../../../assets/setting_icon.png')}
-          selectedSrc={require('../../../assets/selected_setting_icon.png')}
+          src={{
+            default: require('../../../assets/setting_icon.png'),
+            selected: require('../../../assets/selected_setting_icon.png'),
+          }}
         />
       </NativeTabs.Trigger>
     </NativeTabs>
@@ -410,7 +412,7 @@ export default function TabLayout() {
 
 ### Integration with `@expo/vector-icons`
 
-> **info** **Recommended**: Use [SF Symbols on iOS](#icon). They offer higher quality and a native platform feeling than vector icons.
+> **info** **Recommended**: Use [SF Symbols on iOS](#icon). They offer a more native platform feeling compared to vector icons.
 
 To use icons from `@expo/vector-icons`, you can use `VectorIcon` component.
 
@@ -426,7 +428,7 @@ export default function TabLayout() {
         <Label>Home</Label>
         {Platform.select({
           ios: <Icon sf="house.fill" />,
-          android: <Icon src={<VectorIcon family={MIcons} name="home" />} />,
+          android: <Icon src={<VectorIcon family={MaterialIcons} name="home" />} />,
         })}
       </NativeTabs.Trigger>
     </NativeTabs>
@@ -464,10 +466,6 @@ The JavaScript `<Tabs />` have a mock stack header which is not present in the n
 ### A limit of 5 tabs on Android
 
 On Android, there is a limitation of having a maximum of 5 tabs in the tab bar. This restriction comes from the platform's Material Tabs component.
-
-### Android does not support custom images
-
-This is in active development. At the moment, you can only use build-time drawables on Android.
 
 ### Cannot measure the tab bar height
 

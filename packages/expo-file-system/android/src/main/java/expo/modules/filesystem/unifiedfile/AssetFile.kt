@@ -4,7 +4,9 @@ import android.content.Context
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.core.net.toUri
+import expo.modules.kotlin.AppContext
 import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -22,6 +24,21 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
       context.assets.open(path).use { true }
     }.getOrElse {
       false
+    }
+  }
+
+  // Cache the content URI to avoid redundant file writes – assets are read-only
+  var contentUri: Uri? = null
+  override fun getContentUri(appContext: AppContext): Uri {
+    inputStream().use { inputStream ->
+      val outputFile = File(context.cacheDir, "expo_shared_assets/$fileName")
+      outputFile.parentFile?.mkdirs() // Create directories if needed
+      FileOutputStream(outputFile).use { outputStream ->
+        inputStream.copyTo(outputStream)
+      }
+      val newContentUri = JavaFile(outputFile.toUri()).getContentUri(appContext)
+      contentUri = newContentUri
+      return newContentUri
     }
   }
 

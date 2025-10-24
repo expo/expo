@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "ExpoLogBox",
+    "slug": "expo-log-box",
+    "web": {
+      "output": "single"
+    },
+    "experiments": {
+      "reactCompiler": true,
+      "autolinkingModuleResolution": true,
+      "baseUrl": "."
+    }
+  }
+}

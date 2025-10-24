@@ -162,6 +162,7 @@ function ContextNavigator({
         initialState={store.state}
         linking={store.linking as LinkingOptions<any>}
         onUnhandledAction={onUnhandledAction}
+        onStateChange={store.onStateChange}
         documentTitle={documentTitle}
         onReady={store.onReady}>
         <ServerContext.Provider value={serverContext}>

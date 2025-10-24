@@ -190,7 +190,8 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
       database: self.database,
       config: self.config,
       selectionPolicy: self.selectionPolicy,
-      logger: self.logger
+      logger: self.logger,
+      updatesDirectory: self.updatesDirectoryInternal
     ) {
       return self.startupProcedure.launchedUpdate()
     } successBlock: { checkForUpdateResult in

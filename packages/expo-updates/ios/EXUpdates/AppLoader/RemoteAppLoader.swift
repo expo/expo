@@ -20,7 +20,12 @@ public final class RemoteAppLoader: AppLoader {
     launchedUpdate: Update?,
     completionQueue: DispatchQueue
   ) {
-    self.downloader = FileDownloader(config: config, logger: logger)
+    self.downloader = FileDownloader(
+      config: config,
+      logger: logger,
+      updatesDirectory: directory,
+      database: database
+    )
     self.completionQueue = completionQueue
     super.init(config: config, logger: logger, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
   }
@@ -122,11 +127,22 @@ public final class RemoteAppLoader: AppLoader {
           )
           return
         }
+        let combinedHeaders = extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { current, _ in current }
+
+        let canApplyPatch = asset.isLaunchAsset &&
+          self.launchedUpdate != nil &&
+          self.requestedUpdate != nil &&
+          self.launchedUpdate!.updateId != self.requestedUpdate!.updateId
+
         self.downloader.downloadAsset(
+          asset: asset,
           fromURL: assetUrl,
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,
-          extraHeaders: extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { current, _ in current },
+          extraHeaders: combinedHeaders,
+          allowPatch: canApplyPatch,
+          launchedUpdate: self.launchedUpdate,
+          requestedUpdate: canApplyPatch ? self.requestedUpdate : nil,
           progressBlock: progressBlock,
           successBlock: { data, response, _ in
             DispatchQueue.global().async {

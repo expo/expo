@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { ColorValue, Platform } from 'react-native';
 
 import { ExpoModifier } from '../types';
+import { getTextFromChildren } from '../utils';
 
 export type PrimitiveBaseProps = {
   /** Modifiers for the component */
@@ -104,7 +105,11 @@ export type TextFontWeight =
   | '900';
 
 export type TextProps = {
-  children: string;
+  /**
+   * The children of the text.
+   * Only string and number are supported.
+   */
+  children?: React.ReactNode;
   color?: ColorValue;
   fontSize?: number;
   fontWeight?: TextFontWeight;
@@ -117,9 +122,10 @@ type NativeTextProps = Omit<TextProps, 'children'> & {
 };
 function transformTextProps(props: TextProps): NativeTextProps {
   const { children, ...restProps } = props;
+  const text = getTextFromChildren(children);
   return {
     ...restProps,
-    text: children ?? '',
+    text: text ?? '',
     // @ts-ignore
     modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };

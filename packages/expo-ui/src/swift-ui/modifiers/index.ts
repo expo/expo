@@ -47,6 +47,22 @@ type Color = string | ColorValue | NamedColor;
 // =============================================================================
 
 /**
+ * Sets the spacing between adjacent sections.
+ * @param spacing - The spacing to apply
+ * @platform ios 17.0+
+ */
+export const listSectionSpacing = (spacing: 'default' | 'compact' | number) => {
+  if (typeof spacing === 'number') {
+    return createModifier('listSectionSpacing', {
+      spacing: 'custom',
+      value: spacing,
+    });
+  }
+
+  return createModifier('listSectionSpacing', { spacing });
+};
+
+/**
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
  * @see https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)
@@ -533,7 +549,8 @@ export const glassEffect = (params?: {
     interactive?: boolean;
     tint?: Color;
   };
-  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
+  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse' | 'roundedRectangle';
+  cornerRadius?: number;
 }) => createModifier('glassEffect', params);
 
 /**
@@ -638,10 +655,7 @@ export const headerProminence = (prominence: 'standard' | 'increased') =>
   createModifier('headerProminence', { prominence });
 /**
  * Applies an inset to the rows in a list.
- * @param top - The amount of inset to apply to the **top** edge of each row.
- * @param leading - The amount of inset to apply to the **leading (left)** edge of each row.
- * @param bottom - The amount of inset to apply to the **bottom** edge of each row.
- * @param trailing - The amount of inset to apply to the **trailing (right)** edge of each row.
+ * @param params - The inset to apply to the rows in a list.
  * @see https://developer.apple.com/documentation/swiftui/view/listrowinsets(_:)
  */
 export const listRowInsets = (params: {
@@ -666,15 +680,51 @@ export const badge = (value?: string) => createModifier('badge', { value });
 /**
  * Allows a view to ignore safe area constraints.
  * @platform iOS 26+
- * @param length - An amount, given in points, to pad section on the specified edges.
- * @param edges - The edges to expand into ('all', 'top', 'bottom', 'leading', 'trailing', 'horizontal', 'vertical')
- * @default edges: 'all'
+ * @param params - The margins to apply to the section in a list.
  * @see https://developer.apple.com/documentation/swiftui/view/listsectionmargins(_:_:)
  */
 export const listSectionMargins = (params?: {
   length?: number;
   edges?: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical';
 }) => createModifier('listSectionMargins', params);
+
+/**
+ * Sets the font properties of a view.
+ * Supports both custom font families and system fonts with weight and design options.
+ *
+ * @param params - The font configuration. When `family` is provided, it uses Font.custom().
+ * When `family` is not provided, it uses Font.system() with the specified weight and design.
+ *
+ * @example
+ * ```typescript
+ * // Custom font family
+ * <Text modifiers={[font({ family: 'Helvetica', size: 18 })]}>Custom Font Text</Text>
+ *
+ * // System font with weight and design
+ * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>System Font Text</Text>
+ * ```
+ * @see https://developer.apple.com/documentation/swiftui/font/custom(_:size:)
+ * @see https://developer.apple.com/documentation/swiftui/font/system(size:weight:design:)
+ */
+export const font = (params: {
+  /** Custom font family name. If provided, uses Font.custom() */
+  family?: string;
+  /** Font size in points */
+  size?: number;
+  /** Font weight for system fonts */
+  weight?:
+    | 'ultraLight'
+    | 'thin'
+    | 'light'
+    | 'regular'
+    | 'medium'
+    | 'semibold'
+    | 'bold'
+    | 'heavy'
+    | 'black';
+  /** Font design for system fonts */
+  design?: 'default' | 'rounded' | 'serif' | 'monospaced';
+}) => createModifier('font', params);
 
 // =============================================================================
 // Type Definitions
@@ -686,6 +736,7 @@ export const listSectionMargins = (params?: {
  * @hidden
  */
 export type BuiltInModifier =
+  | ReturnType<typeof listSectionSpacing>
   | ReturnType<typeof background>
   | ReturnType<typeof cornerRadius>
   | ReturnType<typeof shadow>
@@ -745,7 +796,8 @@ export type BuiltInModifier =
   | ReturnType<typeof listRowInsets>
   | ReturnType<typeof badgeProminence>
   | ReturnType<typeof badge>
-  | ReturnType<typeof listSectionMargins>;
+  | ReturnType<typeof listSectionMargins>
+  | ReturnType<typeof font>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

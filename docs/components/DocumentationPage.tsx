@@ -190,7 +190,21 @@ export default function DocumentationPage({
   const flattenStructure = routes
     .map(route => appendSectionToRoute(route))
     .flat()
-    .map(route => (route?.type === 'page' ? route : appendSectionToRoute(route)))
+    .map(route => {
+      if (route?.type === 'page') {
+        return route;
+      } else {
+        const sectionRoutes = appendSectionToRoute(route);
+        if (Array.isArray(sectionRoutes)) {
+          return sectionRoutes
+            .map(subRoute =>
+              subRoute?.type === 'page' ? subRoute : appendSectionToRoute(subRoute)
+            )
+            .flat();
+        }
+        return sectionRoutes;
+      }
+    })
     .flat();
 
   const pageIndex = flattenStructure.findIndex(page =>
