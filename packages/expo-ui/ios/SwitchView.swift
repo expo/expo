@@ -3,13 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SwitchProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class SwitchProps: UIBaseViewProps {
   @Field var value: Bool
   @Field var variant: String?
   @Field var label: String?
@@ -36,7 +30,6 @@ struct SwitchView: ExpoSwiftUI.View {
       ])
     })
     .tint(props.color)
-    .modifier(CommonViewModifiers(props: props))
     .onReceive(props.objectWillChange, perform: {
       checked = props.value
     })

@@ -3,13 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class DisclosureGroupViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+internal final class DisclosureGroupViewProps: UIBaseViewProps {
   @Field var label: String
   @Field var isExpanded: Bool = true
   var onStateChange = EventDispatcher()
@@ -26,7 +20,6 @@ internal struct DisclosureGroupView: ExpoSwiftUI.View {
     DisclosureGroup(props.label, isExpanded: $isExpanded) {
       Children()
     }
-    .modifier(CommonViewModifiers(props: props))
     .onAppear {
       isExpanded = props.isExpanded
     }
