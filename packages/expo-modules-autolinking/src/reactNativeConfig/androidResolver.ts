@@ -177,7 +177,7 @@ export async function parseNativePackageClassNameAsync(
   androidDir: string
 ): Promise<string | null> {
   // Search for *Package.{java,kt} files first
-  for await (const entry of scanFilesRecursively(androidDir)) {
+  for await (const entry of scanFilesRecursively(androidDir, undefined, true)) {
     if (entry.name.endsWith('Package.java') || entry.name.endsWith('Package.kt')) {
       try {
         const contents = await fs.readFile(entry.path);
@@ -197,7 +197,7 @@ export async function parseNativePackageClassNameAsync(
   }
 
   // Search all *.{java,kt} files
-  for await (const entry of scanFilesRecursively(androidDir)) {
+  for await (const entry of scanFilesRecursively(androidDir, undefined, true)) {
     if (entry.name.endsWith('.java') || entry.name.endsWith('.kt')) {
       const contents = await fs.readFile(entry.path);
       const matched = matchNativePackageClassName(entry.path, contents);
@@ -288,7 +288,7 @@ export async function parseComponentDescriptorsAsync(
       }
     }
   }
-  return [...results];
+  return [...results].sort((a, b) => a.localeCompare(b));
 }
 
 let lazyCodegenComponentRegex: RegExp | null = null;

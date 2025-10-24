@@ -359,7 +359,7 @@ export default codegenNativeComponent<NativeProps>('RNSSearchBar', {});
     });
 
     const results = await parseComponentDescriptorsAsync('/app/node_modules/test', {});
-    expect(results).toEqual(['RNSSearchBarComponentDescriptor', 'RNSpecComponentDescriptor']);
+    expect(results).toEqual(['RNSpecComponentDescriptor', 'RNSSearchBarComponentDescriptor']);
   });
 
   describe(matchNativePackageClassName, () => {
