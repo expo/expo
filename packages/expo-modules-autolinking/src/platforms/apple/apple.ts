@@ -26,7 +26,7 @@ async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
   if (configPodspecPaths && configPodspecPaths.length) {
     return configPodspecPaths;
   }
-  return (
+  const podspecFiles = (
     await Promise.all(
       (await fs.promises.readdir(revision.path, { withFileTypes: true }))
         .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules')
@@ -40,6 +40,7 @@ async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
         })
     )
   ).flat(1);
+  return podspecFiles.sort((a, b) => a.localeCompare(b));
 }
 
 export function getSwiftModuleNames(
