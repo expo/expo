@@ -2,15 +2,7 @@
 
 import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs';
-import os from 'os';
 import path from 'path';
-
-interface ViewShotRequest {
-  action: 'viewshot';
-  accessibilityId: string;
-  outputPath: string;
-  captureMode?: 'visible' | 'full'; // 'visible' = only visible portion, 'full' = entire scrollable content
-}
 
 interface CoordinatesRequest {
   action: 'getCoordinates';
@@ -70,7 +62,6 @@ export class ScreenInspectorIOS {
         throw new Error('No bounds returned in response');
       }
 
-      console.log('✅ Coordinates retrieved successfully');
       return response.bounds;
     } catch (error: any) {
       console.error('❌ iOS get coordinates failed:', error.message);
@@ -78,43 +69,7 @@ export class ScreenInspectorIOS {
     }
   }
 
-  async takeViewShotByAccessibilityId({
-    accessibilityId,
-    outputPath,
-    captureMode = 'full',
-  }: {
-    accessibilityId: string;
-    outputPath: string;
-    captureMode?: 'visible' | 'full';
-  }): Promise<string> {
-    await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
-
-    const request: ViewShotRequest = {
-      action: 'viewshot',
-      accessibilityId,
-      outputPath,
-      captureMode,
-    };
-
-    try {
-      await this.writeToNamedPipe(this.requestPipePath, request);
-      const response = await this.readFromNamedPipe(this.responsePipePath);
-
-      if (!response.success) {
-        throw new Error(`View shot failed: ${response.error}`);
-      }
-
-      return outputPath;
-    } catch (error: any) {
-      console.error('❌ iOS screenshot failed:', error.message);
-      throw error;
-    }
-  }
-
-  private async writeToNamedPipe(
-    pipePath: string,
-    request: ViewShotRequest | CoordinatesRequest
-  ): Promise<void> {
+  private async writeToNamedPipe(pipePath: string, request: CoordinatesRequest): Promise<void> {
     return new Promise((resolve, reject) => {
       // Open the FIFO for writing
       fs.open(pipePath, 'w', (err: any, fd: number) => {
@@ -176,8 +131,9 @@ export class ScreenInspectorIOS {
           }
 
           const data = buffer.subarray(0, bytesRead).toString('utf8');
-          console.log(`📨 Response received: ${data}`);
-          resolve(JSON.parse(data));
+          const json = JSON.parse(data);
+          console.log(`📨 Response received: ${JSON.stringify(json, null, 2)}`);
+          resolve(json);
         });
       });
     });
@@ -207,6 +163,14 @@ export class ScreenInspectorIOS {
         stdio: 'inherit',
         env,
       });
+      await spawnAsync(
+        `xcrun`,
+        ['simctl', 'openurl', deviceID, 'bareexpo://components/image/comparison'],
+        {
+          stdio: 'inherit',
+          env,
+        }
+      );
 
       // just wait a bit for the app to start
       await new Promise((resolve) => setTimeout(resolve, launchTimeoutMs));
@@ -225,41 +189,28 @@ export class ScreenInspectorIOS {
 
 // Example usage
 if (require.main === module) {
-  async function example() {
-    const deviceId = 'iPhone 17 Pro'; // Get from xcrun simctl list
+  async function example(deviceName: string = 'iPhone 17 Pro') {
     const inspector = new ScreenInspectorIOS();
 
     try {
-      await inspector.startSimulatorAppWithDylib(deviceId, 'dev.expo.Payments');
+      await inspector.startSimulatorAppWithDylib(deviceName, 'dev.expo.Payments');
 
       // Get coordinates only
-      const coords = await inspector.getCoordinates('image-comparison-list');
-      console.log(
-        `Element coordinates: x=${coords.x}, y=${coords.y}, width=${coords.width}, height=${coords.height}`
-      );
-
-      // Take screenshot - full scrollable content (default)
-      const outputPath = path.join(os.tmpdir(), 'ios-element-screenInspector-full.png');
-      await inspector.takeViewShotByAccessibilityId({
-        accessibilityId: 'image-comparison-list',
-        outputPath,
-        captureMode: 'full', // Captures entire scrollable content
-      });
-      console.log(`Screenshot saved to: ${outputPath}`);
-
-      // Take viewshot - visible portion only
-      const outputPathVisible = path.join(os.tmpdir(), 'ios-element-viewshot-visible.png');
-      await inspector.takeViewShotByAccessibilityId({
-        accessibilityId: 'image-comparison-list',
-        outputPath: outputPathVisible,
-        captureMode: 'visible', // Captures only visible portion
-      });
-
-      console.log(`View shot saved to: ${outputPathVisible}`);
+      const ids = ['image-comparison-list', 'header-Appearance'];
+      for (const id of ids) {
+        const coords = await inspector.getCoordinates(id);
+        console.log(
+          `${id} coordinates: x=${coords.x}, y=${coords.y}, width=${coords.width}, height=${coords.height}`
+        );
+      }
     } catch (error) {
       console.error('Error:', error);
     }
   }
 
-  example();
+  // Usage: ./ScreenInspectorIOS.ts [deviceName]
+  // Example: ./ScreenInspectorIOS.ts "iPhone 15 Pro"
+  // Default: iPhone 17 Pro
+  const deviceName = process.argv[2];
+  example(deviceName);
 }

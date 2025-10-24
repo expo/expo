@@ -5,8 +5,7 @@ A dynamic library (dylib) that enables fast UI element coordinate lookup (compar
 ## What it does
 
 This tool injects into a running iOS Simulator app (with `xcrun simctl launch`) and provides:
-- **Fast coordinate lookup** - Get element bounds by accessibility ID
-- **Screenshot capture** - Take screenshots of specific UI elements, including offscreen parts (tested with FlatList)
+- **UI element coordinate lookup** - Get element bounds by accessibility ID
 
 ## Architecture
 
@@ -23,7 +22,7 @@ cd /path/to/inspector
 
 This creates: `bin/IOSScreenInspectorFramework.framework/IOSScreenInspectorFramework`
 
-The built framework is checked into git for convenience in CI.
+The built framework is checked into git for convenience.
 
 ## Usage from TypeScript
 
@@ -44,8 +43,8 @@ Look for `[ScreenInspector]` prefix in logs.
 ## Files
 
 - `Package.swift` - Swift package manifest
-- `src/ScreenshotServer.swift` - Main server implementation
-- `src/UICapture.swift` - Screenshot capture logic
+- `src/ScreenInspector.swift` - Main server implementation
+- `src/UICapture.swift` - UI element finding logic
 - `src/constructor.c` - C constructor for dylib initialization
 - `scripts/build.sh` - Build script for creating the framework
 - `ScreenInspectorIOS.ts` - TypeScript client for communicating with the dylib

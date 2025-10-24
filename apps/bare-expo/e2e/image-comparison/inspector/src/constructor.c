@@ -2,7 +2,7 @@
 #include <syslog.h>
 
 // Forward declare the Swift function
-extern void screenshot_dylib_init(void);
+extern void screen_inspector_dylib_init(void);
 
 // C function to write to syslog that Swift can call
 // these logs are visible via Console.app
@@ -16,5 +16,5 @@ static void customConstructor(int argc, const char **argv)
      syslog(LOG_ERR, "[ScreenInspector] Dylib injection successful in %s\n", argv[0]);
 
      // Call Swift initialization directly
-     screenshot_dylib_init();
+     screen_inspector_dylib_init();
 }

@@ -20,7 +20,7 @@ let package = Package(
             dependencies: [],
             path: "src",
             sources: [
-                "ScreenshotServer.swift",
+                "ScreenInspector.swift",
                 "UICapture.swift"
             ],
             publicHeadersPath: "../include"

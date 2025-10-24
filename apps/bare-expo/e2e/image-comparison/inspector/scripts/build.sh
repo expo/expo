@@ -10,7 +10,7 @@ SRC_DIR="$PROJECT_ROOT/src"
 # Create bin directory
 mkdir -p "$BIN_DIR"
 
-echo "Building iOS screenInspector Framework..."
+echo "Building iOS ScreenInspector Framework..."
 
 # Create framework directories
 FRAMEWORK_DIR="$BIN_DIR/IOSScreenInspectorFramework.framework"
@@ -23,7 +23,7 @@ xcrun -sdk iphonesimulator swiftc \
     -emit-library \
     -module-name IOSScreenInspectorFramework \
     -o "$BIN_DIR/IOSScreenInspectorFramework_sim_arm64" \
-    "$SRC_DIR/ScreenshotServer.swift" \
+    "$SRC_DIR/ScreenInspector.swift" \
     "$SRC_DIR/UICapture.swift" \
     "$SRC_DIR/constructor.c" \
     -Xlinker -install_name -Xlinker @rpath/IOSScreenInspectorFramework.framework/IOSScreenInspectorFramework

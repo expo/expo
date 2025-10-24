@@ -16,6 +16,8 @@ import {
   runCustomMaestroFlowsAsync,
   MAESTRO_ENV_VARS,
   TEST_DURATION_LABEL,
+  startGroup,
+  endGroup,
 } from './lib/e2e-common';
 import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 
@@ -189,6 +191,7 @@ async function testAsync(
   appBinaryPath: string,
   maestroWorkspaceRoot: string
 ): Promise<void> {
+  startGroup(maestroFlowFilePath);
   const stopLogCollectionController = new AbortController();
 
   try {
@@ -262,6 +265,7 @@ async function testAsync(
     console.error('Uncaught Error', e);
     throw e;
   } finally {
+    endGroup();
     stopLogCollectionController.abort();
   }
 }

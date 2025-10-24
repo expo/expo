@@ -16,6 +16,8 @@ import {
   runCustomMaestroFlowsAsync,
   MAESTRO_ENV_VARS,
   TEST_DURATION_LABEL,
+  startGroup,
+  endGroup,
 } from './lib/e2e-common';
 
 const APP_ID = 'dev.expo.payments';
@@ -96,6 +98,7 @@ async function testAsync(
   adbPath: string,
   maestroWorkspaceRoot: string
 ): Promise<void> {
+  startGroup(maestroFlowFilePath);
   const stopLogCollectionController = new AbortController();
 
   console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
@@ -137,6 +140,7 @@ async function testAsync(
     console.log('\n\n');
     throw new Error('e2e tests have failed.');
   } finally {
+    endGroup();
     stopLogCollectionController.abort();
   }
 }

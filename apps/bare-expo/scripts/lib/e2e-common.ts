@@ -204,3 +204,15 @@ export const runCustomMaestroFlowsAsync = async (
     }, retriesForCustomTests);
   }
 };
+
+export function startGroup(name: string) {
+  if (process.env.CI) {
+    console.log(`::group::${name}`);
+  }
+}
+
+export function endGroup() {
+  if (process.env.CI) {
+    console.log('::endgroup::');
+  }
+}

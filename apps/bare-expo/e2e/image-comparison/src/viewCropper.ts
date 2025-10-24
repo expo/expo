@@ -109,7 +109,8 @@ function searchJsonNodes(
 
 async function getCoordinatesViaDylib(
   testID: string,
-  timeoutMs: number = 6000
+  displayScaleFactor: number,
+  timeoutMs: number = 3000
 ): Promise<Bounds | null> {
   const screenshotIOS = new ScreenInspectorIOS();
 
@@ -126,10 +127,10 @@ async function getCoordinatesViaDylib(
     console.timeEnd(label);
 
     return {
-      x: bounds.x * 3,
-      y: bounds.y * 3,
-      width: bounds.width * 3,
-      height: bounds.height * 3,
+      x: bounds.x * displayScaleFactor,
+      y: bounds.y * displayScaleFactor,
+      width: bounds.width * displayScaleFactor,
+      height: bounds.height * displayScaleFactor,
     };
   } catch (error: any) {
     console.log(`⚠️  Dylib method failed: ${error.message}`);
@@ -144,7 +145,7 @@ async function findElementByTestID(
 ): Promise<ElementProperties> {
   // For iOS, try dylib first (fast path)
   if (platform === 'ios') {
-    const dylibBounds = await getCoordinatesViaDylib(testID);
+    const dylibBounds = await getCoordinatesViaDylib(testID, displayScaleFactor);
     if (dylibBounds) {
       return {
         resource_id: testID,

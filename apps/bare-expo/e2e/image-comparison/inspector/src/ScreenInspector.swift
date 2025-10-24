@@ -8,7 +8,7 @@ private func log(_ message: String) {
     message.withCString { c_syslog($0) }
 }
 
-@objc public class ScreenshotServer: NSObject {
+@objc public class ScreenInspector: NSObject {
     private var isRunning = false
     private var serverQueue: DispatchQueue
     private let requestPipePath = "/tmp/ios_screen_inspector_request"
@@ -81,53 +81,54 @@ private func log(_ message: String) {
         log("[\(LOG_TAG)] Server loop started, waiting for requests...")
 
         while isRunning {
-            guard let requestData = readFromPipe(requestPipePath) else {
-                // Wait a bit before trying again if pipe read fails
-                usleep(100000) // 100ms
+            // Open request pipe - blocks until a writer connects
+            log("[\(LOG_TAG)] Opening request pipe...")
+            let requestFd = open(requestPipePath, O_RDONLY)
+            guard requestFd != -1 else {
+                let error = errno
+                log("[\(LOG_TAG)] Failed to open request pipe, errno: \(error)")
+                usleep(100000) // Wait before retrying
                 continue
             }
+
+            log("[\(LOG_TAG)] Request pipe opened, reading request...")
+
+            // Read request - blocks until data arrives
+            guard let requestData = readFromPipe(fd: requestFd) else {
+                log("[\(LOG_TAG)] Read failed or EOF, closing pipe")
+                close(requestFd)
+                continue
+            }
+
+            close(requestFd)
 
             log("[\(LOG_TAG)] Received request: \(String(data: requestData, encoding: .utf8) ?? "invalid UTF8")")
 
             let response = processRequest(requestData)
             writeToPipe(responsePipePath, data: response)
 
-            log("[\(LOG_TAG)] Sent response")
+            log("[\(LOG_TAG)] Sent response, ready for next request")
         }
 
         log("[\(LOG_TAG)] Server loop ended")
     }
 
-    private func readFromPipe(_ path: String) -> Data? {
-        let fd = open(path, O_RDONLY | O_NONBLOCK)
-        guard fd != -1 else {
-            let error = errno
-            log("[\(LOG_TAG)] Failed to open pipe for reading, errno: \(error)")
-            return nil
-        }
-
-        // Remove non-blocking flag after opening
-        let flags = fcntl(fd, F_GETFL)
-        let _ = fcntl(fd, F_SETFL, flags & ~O_NONBLOCK)
-
-        log("[\(LOG_TAG)] Pipe opened successfully, attempting to read")
-        defer {
-            close(fd)
-            log("[\(LOG_TAG)] Pipe closed")
-        }
-
+    private func readFromPipe(fd: Int32) -> Data? {
         var buffer = [UInt8](repeating: 0, count: 4096)
         let bytesRead = read(fd, &buffer, buffer.count)
 
-        log("[\(LOG_TAG)] Read \(bytesRead) bytes from pipe")
-
         guard bytesRead > 0 else {
+            if bytesRead == 0 {
+                log("[\(LOG_TAG)] EOF on pipe")
+            } else {
+                let error = errno
+                log("[\(LOG_TAG)] Read error, errno: \(error)")
+            }
             return nil
         }
 
-        let data = Data(buffer.prefix(bytesRead))
-        log("[\(LOG_TAG)] Data read successfully")
-        return data
+        log("[\(LOG_TAG)] Read \(bytesRead) bytes from pipe")
+        return Data(buffer.prefix(bytesRead))
     }
 
     private func writeToPipe(_ path: String, data: Data) {
@@ -159,13 +160,6 @@ private func log(_ message: String) {
         }
 
         switch action {
-        case "viewshot":
-            guard let outputPath = json["outputPath"] as? String else {
-                return createErrorResponse("outputPath is required for viewshot action")
-            }
-            let captureMode = json["captureMode"] as? String ?? "full"
-            return takeElementScreenshot(accessibilityId: accessibilityId, outputPath: outputPath, captureMode: captureMode)
-
         case "getCoordinates":
             return getElementCoordinates(accessibilityId: accessibilityId)
 
@@ -175,18 +169,29 @@ private func log(_ message: String) {
     }
 
     private func getElementCoordinates(accessibilityId: String) -> Data {
+        guard Thread.isMainThread else {
+            var result: Data!
+            DispatchQueue.main.sync {
+                result = getElementCoordinates(accessibilityId: accessibilityId)
+            }
+            return result
+        }
+
         guard let element = self.findElementByAccessibilityId(accessibilityId) else {
             return createErrorResponse("Element with accessibilityId '\(accessibilityId)' not found")
         }
 
-        let bounds = element.accessibilityFrame
+        // Convert element bounds to window coordinates (**visible portion only!**)
+        let frameInWindow = element.convert(element.bounds, to: nil)
+
         let response: [String: Any] = [
             "success": true,
+            "description": element.description,
             "bounds": [
-                "x": Int(bounds.origin.x),
-                "y": Int(bounds.origin.y),
-                "width": Int(bounds.size.width),
-                "height": Int(bounds.size.height)
+                "x": Int(frameInWindow.origin.x),
+                "y": Int(frameInWindow.origin.y),
+                "width": Int(frameInWindow.size.width),
+                "height": Int(frameInWindow.size.height),
             ],
             "error": ""
         ]
@@ -195,53 +200,6 @@ private func log(_ message: String) {
             return try JSONSerialization.data(withJSONObject: response, options: [])
         } catch {
             return createErrorResponse("Failed to serialize coordinates: \(error.localizedDescription)")
-        }
-    }
-
-    private func takeElementScreenshot(accessibilityId: String, outputPath: String, captureMode: String) -> Data {
-        guard let element = self.findElementByAccessibilityId(accessibilityId) else {
-            return createErrorResponse("Element with accessibilityId '\(accessibilityId)' not found")
-        }
-
-        let screenshot: UIImage?
-        if captureMode == "visible" {
-            screenshot = self.captureElementBounds(element: element)
-        } else {
-            screenshot = self.captureElementScreenshot(element: element) // This tries full content first
-        }
-
-        guard let screenshot = screenshot else {
-            return createErrorResponse("Failed to capture screenshot")
-        }
-
-        let url = URL(fileURLWithPath: outputPath)
-
-        do {
-            try FileManager.default.createDirectory(at: url.deletingLastPathComponent(),
-                                                  withIntermediateDirectories: true,
-                                                  attributes: nil)
-
-            // Save screenshot
-            guard let pngData = screenshot.pngData() else {
-                return createErrorResponse("Failed to convert screenshot to PNG data")
-            }
-            try pngData.write(to: url)
-
-            let bounds = element.accessibilityFrame
-            let response: [String: Any] = [
-                "success": true,
-                "bounds": [
-                    "x": Int(bounds.origin.x),
-                    "y": Int(bounds.origin.y),
-                    "width": Int(bounds.size.width),
-                    "height": Int(bounds.size.height)
-                ],
-                "error": ""
-            ]
-
-            return try JSONSerialization.data(withJSONObject: response, options: [])
-        } catch {
-            return createErrorResponse("Failed to save screenshot: \(error.localizedDescription)")
         }
     }
 
@@ -259,14 +217,14 @@ private func log(_ message: String) {
     }
 }
 
-private let screenshotServer = ScreenshotServer()
+private let screenInspector = ScreenInspector()
 
 // Declare C function
 @_silgen_name("c_syslog")
 func c_syslog(_ message: UnsafePointer<CChar>)
 
-@_cdecl("screenshot_dylib_init")
-public func screenshot_dylib_init() {
+@_cdecl("screen_inspector_dylib_init")
+public func screen_inspector_dylib_init() {
     log("[\(LOG_TAG)] Dylib loaded! Starting screenInspector server...")
-    screenshotServer.start()
+    screenInspector.start()
 }
