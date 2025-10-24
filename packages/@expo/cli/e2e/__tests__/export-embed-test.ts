@@ -48,7 +48,7 @@ it('runs `npx expo export:embed --help`', async () => {
 
       Options
         <dir>                                  Directory of the Expo project. Default: Current working directory
-        --entry-file <path>                    Path to the root JS file, either absolute or relative to JS root
+        --entry-file <path>                    Path to the root JS file, either absolute or relative to current working directory
         --platform <string>                    Either "ios" or "android" (default: "ios")
         --transformer <string>                 Specify a custom transformer to be used
         --dev [boolean]                        If false, warnings are disabled and the bundle is minified (default: true)
