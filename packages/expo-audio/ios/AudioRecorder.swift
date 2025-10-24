@@ -65,9 +65,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
   }
 
-  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = [])
-    throws
-  {
+  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = []) throws {
     if currentState == .recording {
       ref.stop()
     }
@@ -82,8 +80,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       // try session.setActive(true)
     } catch {
       currentState = .error
-      throw AudioRecordingException(
-        "Failed to configure audio session: \(error.localizedDescription)")
+      throw AudioRecordingException( "Failed to configure audio session: \(error.localizedDescription)")
     }
 
     if let options {
@@ -162,7 +159,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
       "mediaServicesDidReset": false,
-      "url": ref.url.absoluteString,
+      "url": ref.url.absoluteString
     ]
 
     if ref.isMeteringEnabled {
@@ -178,15 +175,13 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     currentState = .stopped
     resetDurationTracking()
 
-    emit(
-      event: recordingStatus,
-      arguments: [
-        "id": id,
-        "isFinished": true,
-        "hasError": false,
-        "error": nil,
-        "url": recorder.url.absoluteString,
-      ])
+    emit(event: recordingStatus, arguments: [
+      "id": id,
+      "isFinished": true,
+      "hasError": false,
+      "error": nil,
+      "url": recorder.url.absoluteString,
+    ])
   }
 
   func encodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
@@ -194,15 +189,13 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     currentState = .error
     resetDurationTracking()
 
-    emit(
-      event: recordingStatus,
-      arguments: [
-        "id": id,
-        "isFinished": true,
-        "hasError": true,
-        "error": error?.localizedDescription,
-        "url": nil,
-      ])
+    emit(event: recordingStatus, arguments: [
+      "id": id,
+      "isFinished": true,
+      "hasError": true,
+      "error": error?.localizedDescription,
+      "url": nil,
+    ])
   }
 
   private var recordingDirectory: URL? {

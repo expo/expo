@@ -373,8 +373,7 @@ public class AudioModule: Module {
   @objc private func handleAudioSessionInterruption(_ notification: Notification) {
     guard let userInfo = notification.userInfo,
       let interruptionTypeRaw = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
-      let interruptionType = AVAudioSession.InterruptionType(rawValue: interruptionTypeRaw)
-    else {
+      let interruptionType = AVAudioSession.InterruptionType(rawValue: interruptionTypeRaw) else {
       return
     }
 
@@ -412,7 +411,7 @@ public class AudioModule: Module {
       }
     }
 
-  #if os(iOS)
+#if os(iOS)
     registry.allRecorders.values.forEach { recorder in
       if recorder.isRecording {
         recorder.pauseRecording()
@@ -461,13 +460,13 @@ public class AudioModule: Module {
       }
     }
 
-  #if os(iOS)
+#if os(iOS)
     registry.allRecorders.values.forEach { recorder in
       if recorder.allowsRecording && !recorder.isRecording {
         _ = try? recorder.startRecording()
       }
     }
-  #endif
+#endif
 
     interruptedPlayers.removeAll()
     playerVolumes.removeAll()
