@@ -73,8 +73,8 @@ function normalizeArgs(
   blobFilename: string | undefined
 ): [string, File | string] {
   if (value instanceof Blob) {
-    // @ts-expect-error: `Blob.data.blobId` is react-native's proprietary property.
-    value.name = blobFilename ?? blob.name ?? 'blob';
+    // @ts-expect-error: `name` is not accessible in blob
+    value.name = blobFilename ?? value.name ?? 'blob';
   } else if (typeof value !== 'object') {
     value = String(value);
   }
