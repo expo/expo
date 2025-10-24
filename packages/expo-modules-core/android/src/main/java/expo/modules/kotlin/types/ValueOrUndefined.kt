@@ -1,6 +1,7 @@
 package expo.modules.kotlin.types
 
 import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.types.ValueOrUndefined.Companion.getUndefined
 
 @DoNotStrip
 sealed interface ValueOrUndefined<T> {
@@ -29,3 +30,10 @@ sealed interface ValueOrUndefined<T> {
     inline fun <reified T> Undefined(): ValueOrUndefined<T> = getUndefined<T>()
   }
 }
+
+inline fun <T, reified R> ValueOrUndefined<T>.flatMap(transform: (T) -> ValueOrUndefined<R>): ValueOrUndefined<R> =
+  when (this) {
+    is ValueOrUndefined.Value -> transform(value)
+    is ValueOrUndefined.Undefined -> getUndefined<R>()
+  }
+
