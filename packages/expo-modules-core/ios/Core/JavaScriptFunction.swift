@@ -3,7 +3,7 @@
 /**
  Represents a JavaScript function that can be called by the native code and that must return the given generic `ReturnType`.
  */
-public final class JavaScriptFunction<ReturnType>: AnyArgument, AnyJavaScriptValue {
+public final class JavaScriptFunction<ReturnType>: AnyArgument, AnyJavaScriptValue, @unchecked Sendable {
   /**
    Raw representation of the JavaScript function that doesn't impose any restrictions on the returned type.
    */

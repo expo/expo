@@ -9,6 +9,10 @@
 
 #ifdef __cplusplus
 
+namespace facebook::react {
+class RuntimeScheduler;
+}
+
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 #endif // __cplusplus
@@ -21,8 +25,8 @@ typedef void (^JSRuntimeExecutionBlock)(void);
 
 typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue *_Nonnull thisValue,
                                      NSArray<EXJavaScriptValue *> *_Nonnull arguments,
-                                     RCTPromiseResolveBlock _Nonnull resolve,
-                                     RCTPromiseRejectBlock _Nonnull reject);
+                                     NS_SWIFT_SENDABLE RCTPromiseResolveBlock _Nonnull resolve,
+                                     NS_SWIFT_SENDABLE RCTPromiseRejectBlock _Nonnull reject);
 
 typedef EXJavaScriptValue *_Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue *_Nonnull thisValue,
                                                             NSArray<EXJavaScriptValue *> *_Nonnull arguments,
@@ -47,6 +51,9 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 - (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
+- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
+                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+                       runtimeScheduler:(std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeScheduler;
 
 /**
  Returns the underlying runtime object.

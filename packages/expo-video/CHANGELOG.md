@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
-- [iOS] Add support for playing PHAsset uris. ([#39371](https://github.com/expo/expo/pull/39371) by [@behenate](https://github.com/behenate))
-
 ### 🐛 Bug fixes
+
+- Fix `FOREGROUND_SERVICE_MEDIA_PLAYBACK` being always present in the manifest. ([#40074](https://github.com/expo/expo/pull/40074) by [@behenate](https://github.com/behenate))
+- [iOS] Fix crashes when rapidly replacing HLS sources. ([#40265](https://github.com/expo/expo/pull/40265) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [Android] Remove @UnstableReactNativeAPI annotations. ([#39921](https://github.com/expo/expo/pull/39921) by [@jakex7](https://github.com/jakex7))
+
+## 3.0.11 — 2025-09-10
+
+### 🎉 New features
+
+- [iOS] Add support for playing PHAsset uris. ([#39371](https://github.com/expo/expo/pull/39371) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

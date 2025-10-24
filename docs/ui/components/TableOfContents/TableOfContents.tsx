@@ -137,6 +137,60 @@ export const TableOfContents = forwardRef<
     }
   }
 
+  function focusHeadingElement(ref?: Heading['ref']) {
+    if (!ref?.current || typeof window === 'undefined') {
+      return;
+    }
+
+    const element = ref.current;
+
+    if (!(element instanceof HTMLElement)) {
+      return;
+    }
+
+    const headingElement = element.closest('[data-heading]');
+    const focusTarget = headingElement instanceof HTMLElement ? headingElement : element;
+
+    const hadTabIndex = focusTarget.hasAttribute('tabindex');
+
+    if (!hadTabIndex) {
+      focusTarget.setAttribute('tabindex', '-1');
+    }
+
+    try {
+      focusTarget.focus({ preventScroll: true });
+    } catch {
+      focusTarget.focus();
+    }
+
+    if (!hadTabIndex) {
+      const removeTabIndex = () => {
+        focusTarget.removeAttribute('tabindex');
+        focusTarget.removeEventListener('blur', removeTabIndex);
+      };
+      focusTarget.addEventListener('blur', removeTabIndex);
+    }
+  }
+
+  function queueHeadingFocus(ref?: Heading['ref']) {
+    if (!ref?.current || typeof window === 'undefined') {
+      return;
+    }
+
+    const applyFocus = () => {
+      focusHeadingElement(ref);
+    };
+
+    if (typeof window.requestAnimationFrame === 'function') {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(applyFocus);
+      });
+      return;
+    }
+
+    setTimeout(applyFocus, 0);
+  }
+
   function handleLinkClick(event: MouseEvent, { slug, ref, type }: Heading) {
     event.preventDefault();
 
@@ -152,6 +206,8 @@ export const TableOfContents = forwardRef<
     if (history?.replaceState) {
       history.replaceState(history.state, '', '#' + slug);
     }
+
+    queueHeadingFocus(ref);
   }
 
   function handleTopClick(event: MouseEvent) {
@@ -165,6 +221,8 @@ export const TableOfContents = forwardRef<
     if (history?.replaceState) {
       history.replaceState(history.state, '', ' ');
     }
+
+    queueHeadingFocus(headings[0]?.ref);
   }
 
   const toggleH3 = (slug: string, event: SyntheticEvent) => {

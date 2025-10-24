@@ -7,7 +7,6 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.util.UnstableApi
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.functions.Coroutine
@@ -33,7 +32,6 @@ import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
-@UnstableReactNativeAPI
 @androidx.annotation.OptIn(UnstableApi::class)
 class VideoModule : Module() {
   override fun definition() = ModuleDefinition {

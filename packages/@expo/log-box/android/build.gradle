@@ -1,0 +1,45 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '0.0.13'
+
+expoModule {
+  canBePublished false
+}
+
+def isEnabled = System.getenv('EXPO_UNSTABLE_LOG_BOX') == '1' || System.getenv('EXPO_UNSTABLE_LOG_BOX')?.toLowerCase() == 'true'
+
+android {
+  namespace "expo.modules.logbox"
+  defaultConfig {
+    versionCode 1
+    versionName "0.0.13"
+    buildConfigField "boolean", "EXPO_UNSTABLE_LOG_BOX", isEnabled ? "true" : "false"
+  }
+
+  sourceSets {
+    main {
+      java.srcDirs += "src/main"
+    }
+    if (isEnabled) {
+      debug {
+        // dist contains only ExpoLogBox.bundle
+        assets.srcDirs += "${projectDir}/../dist"
+      }
+    }
+  }
+
+  aaptOptions {
+    ignoreAssetsPattern '!._expo'
+  }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.google.android.material:material:1.13.0'
+  implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+  implementation 'com.google.code.gson:gson:2.8.6'
+}

@@ -910,6 +910,18 @@ if (__DEV__) {
     }
   };
 
+  // NOTE(@kitten): This is a modification we slot in for the getter check because
+  // ES Modules with live bindings have getters. Accessing getters on ES Modules is
+  // required and always safe
+  var isSpecifierSafeToCheck = (moduleExports: Exports, key: string): boolean => {
+    if (moduleExports && moduleExports.__esModule) {
+      return true;
+    } else {
+      const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
+      return !desc || !desc.get;
+    }
+  };
+
   // Modules that only export components become React Refresh boundaries.
   var isReactRefreshBoundary = function (Refresh: any, moduleExports: Exports): boolean {
     if (Refresh.isLikelyComponentType(moduleExports)) {
@@ -925,9 +937,7 @@ if (__DEV__) {
       hasExports = true;
       if (key === '__esModule') {
         continue;
-      }
-      const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
-      if (desc && desc.get) {
+      } else if (!isSpecifierSafeToCheck(moduleExports, key)) {
         // Don't invoke getters as they may have side effects.
         return false;
       }
@@ -970,9 +980,7 @@ if (__DEV__) {
     for (const key in moduleExports) {
       if (key === '__esModule') {
         continue;
-      }
-      const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
-      if (desc && desc.get) {
+      } else if (!isSpecifierSafeToCheck(moduleExports, key)) {
         continue;
       }
       const exportValue = moduleExports[key];
@@ -994,9 +1002,7 @@ if (__DEV__) {
       return;
     }
     for (const key in moduleExports) {
-      const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
-      if (desc && desc.get) {
-        // Don't invoke getters as they may have side effects.
+      if (!isSpecifierSafeToCheck(moduleExports, key)) {
         continue;
       }
       const exportValue = moduleExports[key];

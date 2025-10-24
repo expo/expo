@@ -17,7 +17,7 @@ To create a new app using Bun, [install Bun on your local machine](https://bun.s
 
 To create a new project, run the command:
 
-<Terminal cmd={['$ bun create expo my-app']} />
+<Terminal cmd={['$ bun create expo-app my-app']} />
 
 You can also run any **package.json** script with `bun run`:
 
@@ -66,7 +66,10 @@ To add a trusted dependency in your **package.json**, add:
 
 Then, remove your lockfile and re-install the dependencies:
 
-<Terminal cmd={['$ rm -rf node_modules', '$ rm bun.lockb', '$ bun install']} />
+<Terminal
+  cmd={['$ rm -rf node_modules', '$ rm bun.lockb', '$ bun install']}
+  cmdCopy="rm -rf node_modules && rm bun.lockb && bun install"
+/>
 
 ## Common errors
 

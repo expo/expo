@@ -7,6 +7,8 @@ struct ExpoDeviceType {
 
 public extension UIDevice {
   // Credit: https://stackoverflow.com/a/26962452
+  // Added support for iPhone 17 from https://deviceatlas.com/resources/clientside/ios-hardware-identification
+  // and https://gist.github.com/adamawolf/3048717
   static let modelIdentifier: String = {
     var systemInfo = utsname()
     uname(&systemInfo)
@@ -94,6 +96,14 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPhone 16 Pro", deviceYearClass: 2024)
       case "iPhone17,2":
         return ExpoDeviceType(modelName: "iPhone 16 Pro Max", deviceYearClass: 2024)
+      case "iPhone18,1":
+        return ExpoDeviceType(modelName: "iPhone 17 Pro", deviceYearClass: 2025)
+      case "iPhone18,2":
+        return ExpoDeviceType(modelName: "iPhone 17 Pro Max", deviceYearClass: 2025)
+      case "iPhone18,3":
+        return ExpoDeviceType(modelName: "iPhone 17", deviceYearClass: 2025)
+      case "iPhone18,4":
+        return ExpoDeviceType(modelName: "iPhone Air", deviceYearClass: 2025)
       case "iPhone8,4":
         return ExpoDeviceType(modelName: "iPhone SE", deviceYearClass: 2016)
       case "iPhone12,8":

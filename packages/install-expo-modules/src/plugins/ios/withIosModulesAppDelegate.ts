@@ -158,14 +158,6 @@ export function updateModulesAppDelegateSwift(
     /\b(func application\([\s\S]+?didFinishLaunchingWithOptions launchOptions[\s\S]+?\{[\s\S]+?)(return true)([\s\S]+?\})/m,
     'override $1return super.application(application, didFinishLaunchingWithOptions: launchOptions)$3'
   );
-  // Add `bindReactNativeFactory`
-  if (!contents.match(/\bbindReactNativeFactory\(/)) {
-    contents = contents.replace(
-      /(\breactNativeFactory\s+?=\s+?factory$)/m,
-      `$1
-    bindReactNativeFactory(factory)`
-    );
-  }
 
   // Use Expo classes
   contents = contents.replace(/\b(RCTReactNativeFactory)(\()/, 'ExpoReactNativeFactory$2');

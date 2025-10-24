@@ -21,8 +21,8 @@ Then, update your **app.json** to include the `buildCacheProvider` property and 
 ```json app.json
 {
   "expo": {
-    ...
     "buildCacheProvider": "eas"
+    /* @hide ... */ /* @end */
   }
 }
 ```
@@ -138,7 +138,7 @@ At the root of your project, run `npm run build provider` to start the TypeScrip
 ```json example/app.json
 {
   "expo": {
-    ...
+    /* @hide ... */ /* @end */
     "buildCacheProvider": {
       "plugin": "./provider.plugin.js"
     }
@@ -165,7 +165,7 @@ To inject custom options to your plugin you can use the `options` field and it w
 ```json example/app.json
 {
   "expo": {
-    ...
+    /* @hide ... */ /* @end */
     "buildCacheProvider": {
       "plugin": "./provider.plugin.js",
       "options": {

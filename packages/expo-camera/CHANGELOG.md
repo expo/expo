@@ -6,11 +6,23 @@
 
 ### 🎉 New features
 
+- Allow disabling the barcode scanner functionality via config plugin. ([#40444](https://github.com/expo/expo/pull/40444) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 17.0.8 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- [Android] Fix barcode scanner on devices without access to Google Play Services. ([#39612](https://github.com/expo/expo/pull/39612) by [@behenate](https://github.com/behenate))
+
+## 17.0.7 — 2025-09-10
+
 ### 🐛 Bug fixes
 
 - [Android] Fix errors on devices that do not have Google Play Services installed. ([#39455](https://github.com/expo/expo/pull/39455) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
 
 ## 17.0.6 — 2025-09-02
 

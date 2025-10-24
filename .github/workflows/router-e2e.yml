@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/router-e2e.yml
       - packages/@expo/cli/**
+      - packages/@expo/router-server/**
       - packages/expo-router/**
 
 jobs:

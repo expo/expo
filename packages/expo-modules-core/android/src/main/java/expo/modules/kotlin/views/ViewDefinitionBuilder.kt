@@ -33,7 +33,7 @@ class ViewDefinitionBuilder<T : View>(
   @PublishedApi internal val converters: TypeConverterProvider? = null
 ) {
   @PublishedApi
-  internal var name = viewClass.simpleName
+  internal var name: String = viewClass.simpleName ?: viewClass.java.simpleName
 
   @PublishedApi
   internal var props = mutableMapOf<String, AnyViewProp>()

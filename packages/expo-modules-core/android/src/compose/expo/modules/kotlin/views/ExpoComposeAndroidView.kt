@@ -14,7 +14,7 @@ import expo.modules.kotlin.AppContext
  */
 internal class ExpoComposeAndroidView(private val view: View, appContext: AppContext) : ExpoComposeView<ComposeProps>(view.context, appContext) {
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     AndroidView(
       factory = { view },
       modifier = Modifier.size(view.width.toFloat().pxToDp().dp, view.height.toFloat().pxToDp().dp)

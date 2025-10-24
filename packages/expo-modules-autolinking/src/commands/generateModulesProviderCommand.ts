@@ -13,6 +13,7 @@ interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;
   entitlement?: string;
   packages?: string[] | null;
+  appRoot?: string;
 }
 
 /** Generates a source file listing all packages to link in the runtime */
@@ -27,6 +28,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
       '-p, --packages <packages...>',
       'Names of the packages to include in the generated modules provider.'
     )
+    .option('--app-root <path>', 'Path to the app root directory.')
     .action(
       async (searchPaths: string[] | null, commandArguments: GenerateModulesProviderArguments) => {
         const platform = commandArguments.platform ?? 'apple';
@@ -38,7 +40,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
 
         const expoModulesSearchResults = await findModulesAsync({
           autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
-          appRoot: await autolinkingOptionsLoader.getAppRoot(),
+          appRoot: commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
         });
         const expoModulesResolveResults = await resolveModulesAsync(
           expoModulesSearchResults,

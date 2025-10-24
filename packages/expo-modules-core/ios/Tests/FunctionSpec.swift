@@ -245,6 +245,22 @@ class FunctionSpec: ExpoSpec {
         @Field var property: String = "expo"
       }
 
+      struct TestURLRecord: Record {
+        static let defaultURLString = "https://expo.dev"
+        static let defaultURL = URL(string: defaultURLString)!
+
+        @Field var url: URL = defaultURL
+      }
+
+      struct WithUndefinedRecord: Record {
+        @Field var a: ValueOrUndefined<Double> = .value(unwrapped: 1.0)
+        @Field var b: ValueOrUndefined<Double> = .undefined
+      }
+
+      afterEach {
+        try runtime.eval("globalThis.result = undefined")
+      }
+
       beforeSuite {
         appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
           Name("TestModule")
@@ -286,10 +302,22 @@ class FunctionSpec: ExpoSpec {
             return "\(f.property)"
           }
 
+          Function("withURL") {
+            return TestURLRecord.defaultURL
+          }
+
+          Function("withUndefined") {
+            return WithUndefinedRecord()
+          }
+
+          Function("withNestedURL") {
+            return TestURLRecord()
+          }
+
           Function("withOptionalRecord") { (f: TestRecord?) in
             return "\(f?.property ?? "no value")"
           }
-          
+
           Function("withSharedObject") {
             return SharedString("Test")
           }
@@ -305,7 +333,19 @@ class FunctionSpec: ExpoSpec {
           AsyncFunction("withSharedObjectPromise") { (p: Promise) in
             p.resolve(SharedString("Test with Promise"))
           }
-          
+
+          AsyncFunction("withURLAsync") {
+            return TestURLRecord.defaultURL
+          }
+
+          AsyncFunction("withUndefinedAsync") {
+            return WithUndefinedRecord()
+          }
+
+          AsyncFunction("withNestedURLAsync") {
+            return TestURLRecord()
+          }
+
           Class("Shared", SharedString.self) {
             Property("value") { shared in
               return shared.ref
@@ -360,7 +400,70 @@ class FunctionSpec: ExpoSpec {
       it("accepts optional record") {
         expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString()) == "123"
       }
-      
+
+      it("returns URL (sync)") {
+        let result = try runtime.eval("globalThis.result = expo.modules.TestModule.withURL()")
+        expect(result.kind) == .string
+        expect(result.getString()) == TestURLRecord.defaultURLString
+      }
+
+      it("returns URL (async)") {
+        try runtime.eval("expo.modules.TestModule.withURLAsync().then((result) => { globalThis.result = result; })")
+        expect(safeBoolEval("!!globalThis.result")).toEventually(beTrue(), timeout: .milliseconds(2000))
+
+        let urlValue = try runtime.eval("url = globalThis.result")
+        expect(urlValue.kind) == .string
+        expect(urlValue.getString()) == TestURLRecord.defaultURLString
+      }
+
+      it("returns value or undefined (sync)") {
+        let object = try runtime.eval("globalThis.result = expo.modules.TestModule.withUndefined()")
+        expect(object.kind) == .object
+
+        expect(object.getObject().hasProperty("a")) == true
+        expect(object.getObject().getProperty("a").kind) == .number
+        expect(object.getObject().getProperty("a").getDouble()) == 1.0
+
+        expect(object.getObject().hasProperty("b")) == true
+        expect(object.getObject().getProperty("b").kind) == .undefined
+      }
+
+      it("returns value or undefined (async)") {
+        try runtime.eval("expo.modules.TestModule.withUndefinedAsync().then((result) => { globalThis.result = result; })")
+        expect(safeBoolEval("!!globalThis.result")).toEventually(beTrue(), timeout: .milliseconds(2000))
+
+        let object = try runtime.eval("object = globalThis.result")
+        expect(object.kind) == .object
+
+        expect(object.getObject().hasProperty("a")) == true
+        expect(object.getObject().getProperty("a").kind) == .number
+        expect(object.getObject().getProperty("a").getDouble()) == 1.0
+
+        expect(object.getObject().hasProperty("b")) == true
+        expect(object.getObject().getProperty("b").kind) == .undefined
+      }
+
+      it("returns a record wit url (sync)") {
+        let object = try runtime.eval("globalThis.result = expo.modules.TestModule.withNestedURL()")
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("url")) == true
+        expect(object.getObject().getProperty("url").getString()) == TestURLRecord.defaultURLString
+      }
+
+      it("returns a record with url (async)") {
+        try runtime.eval("expo.modules.TestModule.withNestedURLAsync().then((result) => { globalThis.result = result; })")
+
+        expect(safeBoolEval("!!globalThis.result.url")).toEventually(beTrue(), timeout: .milliseconds(2000))
+
+        let object = try runtime.eval("object = globalThis.result")
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("url")) == true
+
+        let urlValue = try runtime.eval("object.url")
+        expect(urlValue.kind) == .string
+        expect(urlValue.getString()) == TestURLRecord.defaultURLString
+      }
+
       it("returns a SharedObject (sync)") {
         let object = try runtime.eval("expo.modules.TestModule.withSharedObject()")
         
@@ -385,7 +488,7 @@ class FunctionSpec: ExpoSpec {
         expect(result.kind) == .string
         expect(result.getString()) == "Test"
       }
-      
+
       it("returns an Array of SharedObjects (async)") {
         try runtime
           .eval(

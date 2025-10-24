@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 1.17.11 - 2025-10-20
+
+### 💡 Others
+
+- Bump to `@expo/metro@54.1.0` and `metro@0.83.2` ([#39826](https://github.com/expo/expo/pull/39826) by [@kitten](https://github.com/kitten))
+
+## 1.17.10 - 2025-10-09
+
+### 🎉 New features
+
+- Update autolinking messages to be clearer about isolated dependencies and add note on corrupted installations ([#40279](https://github.com/expo/expo/pull/40279) by [@kitten](https://github.com/kitten))
+
+## 1.17.9 - 2025-10-01
+
+### 🐛 Bug fixes
+
+- Prevent peer dependency check from warning on peer/regular hybrid dependency ([#39916](https://github.com/expo/expo/pull/39916) by [@kitten](https://github.com/kitten))
+
+## 1.17.8 - 2025-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 1.17.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.17.6 — 2025-09-10
+
+### 💡 Others
+
 - Remove `expo-dev-launcher`, `expo-dev-menu`, `expo-dev-menu-interface`, `expo-updates-interface`, and `expo-eas-client` to ignore RN Directory packages ([#39409](https://github.com/expo/expo/pull/39409) by [@kitten](https://github.com/kitten))
 
 ## 1.17.5 — 2025-09-04

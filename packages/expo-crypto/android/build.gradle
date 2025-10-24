@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '15.0.6'
+version = '15.0.7'
 
 android {
   namespace "expo.modules.crypto"
   defaultConfig {
     versionCode 25
-    versionName "15.0.6"
+    versionName "15.0.7"
   }
 }
 
@@ -19,5 +19,5 @@ dependencies {
     testImplementation project(':expo-modules-test-core')
   }
   testImplementation 'junit:junit:4.13.2'
-  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation "org.robolectric:robolectric:4.16"
 }

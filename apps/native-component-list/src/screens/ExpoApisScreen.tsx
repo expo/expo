@@ -1,9 +1,8 @@
 import { memo } from 'react';
 import { Platform } from 'react-native';
 
-import ComponentListScreen from './ComponentListScreen';
+import ComponentListScreen, { type ListElement } from './ComponentListScreen';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import { type ScreenApiItem } from '../types/ScreenConfig';
 
 if (Platform.OS !== 'web') {
   // Optionally require expo-notifications as we cannot assume that the module is linked.
@@ -26,7 +25,7 @@ if (Platform.OS !== 'web') {
   });
 }
 
-export default memo(function ExpoApisScreen({ apis }: { apis: ScreenApiItem[] }) {
+export default memo(function ExpoApisScreen({ apis }: { apis: ListElement[] }) {
   return (
     <ComponentListScreen
       renderItemRight={({ name }: { name: string }) => (

@@ -10,11 +10,11 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **important** Experimentally available in SDK 52 and above.
+> **important** Experimentally available in SDK 52 and later.
 
 Expo Router offers a set of components to create custom tab layouts via the submodule [`expo-router/ui`](/versions/latest/sdk/router-ui/). Unlike the React Navigation styled `Tabs`, these components are unstyled and flexible. They are designed to allow you build complex UI patterns from scratch in your project.
 
-For other tab-layouts see:
+For other tab layouts see:
 
 <BoxLink
   title="Native tabs"
@@ -251,9 +251,9 @@ export function TabButton({ icon, children, isFocused, ...props }: TabButtonProp
 }
 ```
 
-<Collapsible summary="Expo SDK 52 / React 18 and below">
+<Collapsible summary="Expo SDK 52 / React 18 and earlier">
 
-In Expo SDK 52 and below (React 18), use the legacy `forwardRef` function to access the `ref` handle.
+In Expo SDK 52 and earlier (React 18), use the legacy `forwardRef` function to access the `ref` handle.
 
 ```diff
 - import { ComponentProps, Ref } from 'react';

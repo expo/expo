@@ -1,6 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-open class Exception: CodedError, ChainableException, CustomStringConvertible, CustomDebugStringConvertible {
+open class Exception: CodedError, ChainableException, CustomStringConvertible, CustomDebugStringConvertible, @unchecked Sendable {
   open lazy var name: String = String(describing: Self.self)
 
   /**
@@ -75,3 +75,4 @@ private func concatDescription(_ description: String, withCause cause: Error?, d
     return description
   }
 }
+

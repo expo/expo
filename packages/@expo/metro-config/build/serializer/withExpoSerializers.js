@@ -7,7 +7,7 @@ exports.withExpoSerializers = withExpoSerializers;
 exports.withSerializerPlugins = withSerializerPlugins;
 exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
-const sourceMapString_1 = __importDefault(require("@expo/metro/metro/DeltaBundler/Serializers/sourceMapString"));
+const sourceMapString_1 = require("@expo/metro/metro/DeltaBundler/Serializers/sourceMapString");
 const bundleToString_1 = __importDefault(require("@expo/metro/metro/lib/bundleToString"));
 const jsc_safe_url_1 = require("jsc-safe-url");
 const debugId_1 = require("./debugId");
@@ -17,9 +17,6 @@ const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerial
 const serializeChunks_1 = require("./serializeChunks");
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const env_1 = require("../env");
-const sourceMapString = typeof sourceMapString_1.default !== 'function'
-    ? sourceMapString_1.default.sourceMapString
-    : sourceMapString_1.default;
 function withExpoSerializers(config, options = {}) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);
@@ -46,7 +43,9 @@ function withSerializerPlugins(config, processors, options = {}) {
 }
 function createDefaultExportCustomSerializer(config, configOptions = {}) {
     return async (entryPoint, preModules, graph, inputOptions) => {
-        const isPossiblyDev = graph.transformOptions.hot;
+        // NOTE(@kitten): My guess is that this was supposed to always be disabled for `node` since we set `hot: true` manually for it
+        const isPossiblyDev = graph.transformOptions.dev ||
+            graph.transformOptions.customTransformOptions?.environment === 'node';
         // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
         const enableDebugId = inputOptions.inlineSourceMap !== true && !isPossiblyDev;
         const context = {
@@ -107,7 +106,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
             })).code;
         }
         const getEnsuredMaps = () => {
-            bundleMap ??= sourceMapString([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
+            bundleMap ??= (0, sourceMapString_1.sourceMapString)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
                 // TODO: Surface this somehow.
                 excludeSource: false,
                 // excludeSource: options.serializerOptions?.excludeSource,

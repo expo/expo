@@ -21,7 +21,7 @@ public final class GlassEffectModule: Module {
     }
 
     View(GlassView.self) {
-      Prop("glassEffectStyle") { (view, style: GlassStyle) in
+      Prop("glassEffectStyle", .regular) { (view, style: GlassStyle) in
         view.setGlassStyle(style)
       }
 

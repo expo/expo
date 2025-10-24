@@ -189,11 +189,9 @@ export async function setupTestProjectWithOptionsAsync(
   fixtureName: string,
   {
     reuseExisting = testingLocally,
-    sdkVersion = '52.0.0',
     linkExpoPackages,
     linkExpoPackagesDev,
   }: {
-    sdkVersion?: string;
     reuseExisting?: boolean;
     linkExpoPackages?: string[];
     linkExpoPackagesDev?: string[];
@@ -207,15 +205,6 @@ export async function setupTestProjectWithOptionsAsync(
     linkExpoPackages,
     linkExpoPackagesDev,
   });
-
-  // Many of the factors in this test are based on the expected SDK version that we're testing against.
-  const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  if (!linkExpoPackages?.includes('expo')) {
-    assert(
-      exp.sdkVersion === sdkVersion,
-      `Expected exp.sdkVersion to be ${sdkVersion}, but it is set to ${exp.sdkVersion} for ${projectRoot} project.`
-    );
-  }
   return projectRoot;
 }
 

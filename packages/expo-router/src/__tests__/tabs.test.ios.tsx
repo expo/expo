@@ -1,10 +1,10 @@
 import { fireEvent, act, screen } from '@testing-library/react-native';
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { router } from '../exports';
 import { store } from '../global-state/router-store';
-import { useSegments } from '../hooks';
+import { useLocalSearchParams, useSegments } from '../hooks';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
@@ -455,4 +455,143 @@ it('does not re-render when navigating to different tab', () => {
   expect(screen.getByTestId('one')).toBeVisible();
   expect(onOneRender).toHaveBeenCalledTimes(1);
   expect(onTwoRender).toHaveBeenCalledTimes(0);
+});
+
+it('updates route info, when going back to initial screen', () => {
+  renderRouter({
+    _layout: function Layout() {
+      const segments = useSegments();
+      return (
+        <View>
+          <Text testID="layout">{JSON.stringify(segments)}</Text>
+          <Stack />
+        </View>
+      );
+    },
+    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/index': function Index() {
+      const segments = useSegments();
+      return <Text testID="index">{JSON.stringify(segments)}</Text>;
+    },
+    second: function Second() {
+      const segments = useSegments();
+      return <Text testID="second">{JSON.stringify(segments)}</Text>;
+    },
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('index')).toHaveTextContent('["(tabs)"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["(tabs)"]');
+
+  act(() => router.push('/second'));
+  expect(screen.getByTestId('second')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('second')).toHaveTextContent('["second"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["second"]');
+
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('index')).toHaveTextContent('["(tabs)"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["(tabs)"]');
+
+  act(() => router.push('/second'));
+  expect(screen.getByTestId('second')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('second')).toHaveTextContent('["second"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["second"]');
+
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('index')).toHaveTextContent('["(tabs)"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["(tabs)"]');
+});
+
+it('can set params for dynamic routes using href', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="[id]" options={{ href: '/1234' }} />
+      </Tabs>
+    ),
+    index: () => <Text testID="index">Index</Text>,
+    '[id]': function Id() {
+      const { id } = useLocalSearchParams();
+      return <Text testID="id">{id}</Text>;
+    },
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByLabelText('index, tab, 1 of 2')).toBeVisible();
+  expect(screen.getByLabelText('[id], tab, 2 of 2')).toBeVisible();
+
+  fireEvent.press(screen.getByLabelText('[id], tab, 2 of 2'));
+
+  expect(screen.getByTestId('id')).toBeVisible();
+  expect(screen.getByTestId('id')).toHaveTextContent('1234');
+});
+
+it('can set params for dynamic routes using href in nested folder', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="[id]/index" options={{ href: '/1234' }} />
+        <Tabs.Screen name="[id]/second" options={{ href: '/2345/second' }} />
+      </Tabs>
+    ),
+    index: () => <Text testID="index">Index</Text>,
+    '[id]/index': function Id() {
+      const { id } = useLocalSearchParams();
+      return <Text testID="id-index">{id}</Text>;
+    },
+    '[id]/second': function Id() {
+      const { id } = useLocalSearchParams();
+      return <Text testID="id-second">{id}</Text>;
+    },
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByLabelText('index, tab, 1 of 3')).toBeVisible();
+  expect(screen.getByLabelText('[id]/index, tab, 2 of 3')).toBeVisible();
+  expect(screen.getByLabelText('[id]/second, tab, 3 of 3')).toBeVisible();
+
+  fireEvent.press(screen.getByLabelText('[id]/index, tab, 2 of 3'));
+
+  expect(screen.getByTestId('id-index')).toBeVisible();
+  expect(screen.getByTestId('id-index')).toHaveTextContent('1234');
+
+  fireEvent.press(screen.getByLabelText('[id]/second, tab, 3 of 3'));
+
+  expect(screen.getByTestId('id-second')).toBeVisible();
+  expect(screen.getByTestId('id-second')).toHaveTextContent('2345');
+});
+
+it('can set params for dynamic routes using href when nested stack is used', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="[id]" options={{ href: '/1234' }} />
+      </Tabs>
+    ),
+    index: () => <Text testID="index">Index</Text>,
+    '[id]/_layout': () => <Stack />,
+    '[id]/index': function Id() {
+      const { id } = useLocalSearchParams();
+      return <Text testID="id-index">{id}</Text>;
+    },
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByLabelText('index, tab, 1 of 2')).toBeVisible();
+  expect(screen.getByLabelText('[id], tab, 2 of 2')).toBeVisible();
+
+  fireEvent.press(screen.getByLabelText('[id], tab, 2 of 2'));
+
+  expect(screen.getByTestId('id-index')).toBeVisible();
+  expect(screen.getByTestId('id-index')).toHaveTextContent('1234');
 });

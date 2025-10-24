@@ -483,3 +483,43 @@ describe('middleware', () => {
     process.env.NODE_ENV = originalEnv;
   });
 });
+
+describe('loaders', () => {
+  it('should include routes with loaders', async () => {
+    const routes = getRoutes(
+      inMemoryContext({
+        '(app)/index': {
+          default: () => null,
+          loader: () => Promise.resolve({ data: 'Loader for index' }),
+        },
+      }),
+      { skipGenerated: true }
+    );
+
+    const indexRoute = routes.children.find((route) => route.route === '(app)/index');
+    expect(indexRoute).toBeDefined();
+    const loadedIndexRoute = indexRoute.loadRoute();
+    expect(await loadedIndexRoute.loader({ params: {} })).toEqual({ data: 'Loader for index' });
+  });
+
+  it('should validate loader is a function in development mode', () => {
+    process.env.NODE_ENV = 'development';
+
+    expect(() => {
+      getRoutes(
+        inMemoryContext({
+          '(app)/index': {
+            default: () => null,
+            // This is intentionally not a function to trigger an error
+            loader: 'not a function',
+          },
+        }),
+        {
+          skipGenerated: true,
+          importMode: 'sync',
+          ignoreRequireErrors: false,
+        }
+      );
+    }).toThrow('Route "./(app)/index.js" exports a loader that is not a function.');
+  });
+});

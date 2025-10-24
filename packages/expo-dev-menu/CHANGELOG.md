@@ -6,9 +6,50 @@
 
 ### 🎉 New features
 
+- [iOS] Add support to SwiftUI apps ([#40542](https://github.com/expo/expo/pull/40542) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- change debugger connection "warning" to a "tip" ([#39942](https://github.com/expo/expo/pull/39942) by [@vonovak](https://github.com/vonovak))
+- Remove unused dev dependencies ([#39987](https://github.com/expo/expo/pull/39987) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [android] Make reactNativeHost optional in ReactHostWrapper ([#40085](https://github.com/expo/expo/pull/40085) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Remove `ReactHostWrapper` ([#40295](https://github.com/expo/expo/pull/40295) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 7.0.15 - 2025-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.14 - 2025-10-09
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.13 - 2025-10-01
+
+### 🐛 Bug fixes
+
+- [iOS] Adjust tvOS colors. ([#40006](https://github.com/expo/expo/pull/40006) by [@douglowder](https://github.com/douglowder))
+- [Android] Render registered custom Dev Menu items and allow invoking callbacks ([#39995](https://github.com/expo/expo/pull/39995) by [@Jc-Cloete](https://github.com/Jc-Cloete))
+
+## 7.0.12 - 2025-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.11 — 2025-09-11
+
+### 🐛 Bug fixes
+
+- [Android] Fix desynchronization issue between UI and state. ([#39553](https://github.com/expo/expo/pull/39553) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix UI on iPad. ([#39549](https://github.com/expo/expo/pull/39549) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 7.0.10 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
 
 ## 7.0.9 — 2025-09-08
 

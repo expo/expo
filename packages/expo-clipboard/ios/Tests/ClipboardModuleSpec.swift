@@ -8,7 +8,7 @@ import MobileCoreServices
 class ClipboardModuleSpec: ExpoSpec {
   override class func spec() {
     let appContext = AppContext.create()
-    let holder = ModuleHolder(appContext: appContext, module: ClipboardModule(appContext: appContext))
+    let holder = ModuleHolder(appContext: appContext, module: ClipboardModule(appContext: appContext), name: "ExpoClipboard")
 
     func testModuleFunction<T>(_ functionName: String, args: [Any], _ block: @escaping (T?) -> Void) {
       waitUntil(timeout: .seconds(3)) { done in

@@ -80,6 +80,23 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
+  fun write(content: ByteArray) {
+    validateType()
+    validatePermission(Permission.WRITE)
+    if (!exists) {
+      create()
+    }
+    if (uri.isContentUri) {
+      file.outputStream().use { outputStream ->
+        outputStream.write(content)
+      }
+    } else {
+      FileOutputStream(javaFile).use {
+        it.write(content)
+      }
+    }
+  }
+
   fun asString(): String {
     val uriString = file.uri.toString()
     return if (uriString.endsWith("/")) uriString.dropLast(1) else uriString
@@ -107,6 +124,12 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     file.inputStream().use {
       return it.readBytes()
     }
+  }
+
+  fun asContentUri(): Uri {
+    validateType()
+    validatePermission(Permission.READ)
+    return file.getContentUri(appContext ?: throw MissingAppContextException())
   }
 
   @OptIn(ExperimentalStdlibApi::class)

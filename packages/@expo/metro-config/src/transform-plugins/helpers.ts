@@ -7,31 +7,6 @@ export const defaultWrapHelper = ({ statement }: typeof template, name: string):
     }
   `)({ name });
 
-export const strictNamespaceWrapHelper = (
-  { statement }: typeof template,
-  name: string
-): types.Statement => {
-  return statement(`
-    function %%name%%(e) {
-      if (e && e.__esModule) return e;
-      var n = Object.create(null);
-      if (e) {
-        Object.keys(e).forEach(function (k) {
-          if (k !== 'default') {
-            var d = Object.getOwnPropertyDescriptor(e, k);
-            Object.defineProperty(n, k, d.get ? d : {
-              enumerable: true,
-              get: function () { return e[k]; }
-            });
-          }
-        });
-      }
-      n.default = e;
-      return Object.freeze(n);
-    }
-  `)({ name });
-};
-
 export const namespaceWrapHelper = (
   { statement }: typeof template,
   name: string
@@ -42,7 +17,11 @@ export const namespaceWrapHelper = (
       if (e && e.__esModule) return e;
       var n = {};
       if (e) Object.keys(e).forEach(function (k) {
-        n[k] = e[k];
+        var d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: function () { return e[k]; }
+        });
       });
       n.default = e;
       return n;

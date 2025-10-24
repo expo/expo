@@ -81,6 +81,12 @@ internal final class FileSystemFile: FileSystemPath {
     }
   }
 
+  func write(_ data: Data) throws {
+    try withCorrectTypeAndScopedAccess(permission: .write) {
+      try data.write(to: url)
+    }
+  }
+
   // TODO: blob support
   func write(_ content: TypedArray) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {

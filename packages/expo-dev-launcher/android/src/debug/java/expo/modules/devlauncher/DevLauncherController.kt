@@ -7,13 +7,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.UiThread
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.DevLauncherUrl
@@ -62,7 +64,7 @@ class DevLauncherController private constructor() :
   private val context: Context by lazy {
     DevLauncherKoinContext.app.koin.get()
   }
-  override val appHost: ReactHostWrapper by inject()
+  override val appHost: ReactHost by inject()
   private val httpClient: OkHttpClient by inject()
   private val lifecycle: DevLauncherLifecycle by inject()
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
@@ -107,6 +109,10 @@ class DevLauncherController private constructor() :
 
   private var appIsLoading = false
 
+  private val _isLoadingToBundler = mutableStateOf(false)
+  val isLoadingToBundler: State<Boolean>
+    get() = _isLoadingToBundler
+
   private var networkInterceptor: DevLauncherNetworkInterceptor? = null
   private var pendingIntentExtras: Bundle? = null
 
@@ -130,6 +136,7 @@ class DevLauncherController private constructor() :
         return
       }
       appIsLoading = true
+      _isLoadingToBundler.value = true
     }
 
     try {
@@ -163,6 +170,7 @@ class DevLauncherController private constructor() :
       lifecycle.addListener(appLoaderListener)
       mode = Mode.APP
 
+      _isLoadingToBundler.value = false
       // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
       if (appLoader.launch(appIntent)) {
         recentlyOpedAppsRegistry.appWasOpened(parsedUrl.toString(), devLauncherUrl.queryParams, manifest)
@@ -179,6 +187,7 @@ class DevLauncherController private constructor() :
     } catch (e: Exception) {
       synchronized(this) {
         appIsLoading = false
+        _isLoadingToBundler.value = false
       }
       throw e
     }
@@ -234,7 +243,7 @@ class DevLauncherController private constructor() :
         // used by appetize for snack
         if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
           canLaunchDevMenuOnStart = false
-          this.devMenuManager.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
+          this.devMenuManager.setCanLaunchDevMenuOnStart(false)
         }
 
         if (!isDevLauncherUrl(uri)) {
@@ -293,8 +302,8 @@ class DevLauncherController private constructor() :
     return false
   }
 
-  private fun ensureHostWasCleared(host: ReactHostWrapper, activityToBeInvalidated: ReactActivity? = null) {
-    if (host.hasInstance) {
+  private fun ensureHostWasCleared(host: ReactHost, activityToBeInvalidated: ReactActivity? = null) {
+    if (host.currentReactContext?.hasActiveReactInstance() == true) {
       runBlockingOnMainThread {
         networkInterceptor?.close()
         networkInterceptor = null
@@ -319,8 +328,8 @@ class DevLauncherController private constructor() :
   }
 
   @UiThread
-  private fun clearHost(host: ReactHostWrapper, activityToBeInvalidated: ReactActivity?) {
-    host.destroy()
+  private fun clearHost(host: ReactHost, activityToBeInvalidated: ReactActivity?) {
+    host.destroy("DevLauncher reloading app", null)
     activityToBeInvalidated?.let {
       invalidateActivity(it)
     }
@@ -414,7 +423,7 @@ class DevLauncherController private constructor() :
       }
 
     @JvmStatic
-    internal fun initialize(context: Context, reactHost: ReactHostWrapper) {
+    internal fun initialize(context: Context, reactHost: ReactHost) {
       try {
         val splashScreenManagerClass = Class.forName("expo.modules.splashscreen.SplashScreenManager")
         val splashScreenManager = splashScreenManagerClass
@@ -455,14 +464,19 @@ class DevLauncherController private constructor() :
     }
 
     @JvmStatic
-    fun initialize(context: Context, reactHost: ReactHostWrapper, launcherClass: Class<*>? = null) {
+    fun initialize(context: Context, reactHost: ReactHost, launcherClass: Class<*>? = null) {
       initialize(context, reactHost)
       sLauncherClass = launcherClass
     }
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
-      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, { reactApplication.reactHost }))
+      val reactHost = reactApplication.reactHost
+      checkNotNull(reactHost) {
+        "DevLauncherController.initialize() was called before reactHost was initialized"
+      }
+
+      initialize(reactApplication as Context, reactHost)
       sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }
