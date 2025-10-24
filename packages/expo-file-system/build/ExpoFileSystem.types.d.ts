@@ -167,7 +167,7 @@ export type FilePickerOptions = {
      *
      * @platform ios
      */
-    openAsCopy?: boolean;
+    copyToCacheDirectory?: boolean;
     /**
      * Allows multiple files to be selected from the system UI.
      * @default false
@@ -295,7 +295,7 @@ export declare class File {
     /**
      * A static method that opens a file picker to select a single file of specified type. On iOS, it returns a temporary copy of the file leaving the original file untouched.
      *
-     * On iOS, by default, this method returns a temporary copy of the selected file, ensuring the original remains unchanged. To open the original file in place (without copying), set `openAsCopy` to `false` in the options.
+     * On iOS, by default, this method returns a temporary copy of the selected file, ensuring the original remains unchanged. To open the original file in place (without copying), set `copyToCacheDirectory` to `false` in the options.
      *
      * @param options An optional [`FilePickerOptions`](#filepickeroptions) object containing options for the file picker.
      * @returns a `File` instance or an array of `File` instances if `multiple` option is `true`.
