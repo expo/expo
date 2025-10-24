@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import React
 
 public final class GlassEffectModule: Module {
   public func definition() -> ModuleDefinition {
@@ -51,6 +52,43 @@ public final class GlassEffectModule: Module {
 
       Prop("borderTopRightRadius") { (view, radius: CGFloat?) in
         view.setBorderTopRightRadius(radius)
+      }
+
+      // Start/End alternatives that respect RTL layout
+      Prop("borderTopStartRadius") { (view, radius: CGFloat?) in
+        let isRTL = RCTI18nUtil.sharedInstance()?.isRTL() ?? false
+        if isRTL {
+          view.setBorderTopRightRadius(radius)
+        } else {
+          view.setBorderTopLeftRadius(radius)
+        }
+      }
+
+      Prop("borderTopEndRadius") { (view, radius: CGFloat?) in
+        let isRTL = RCTI18nUtil.sharedInstance()?.isRTL() ?? false
+        if isRTL {
+          view.setBorderTopLeftRadius(radius)
+        } else {
+          view.setBorderTopRightRadius(radius)
+        }
+      }
+
+      Prop("borderBottomStartRadius") { (view, radius: CGFloat?) in
+        let isRTL = RCTI18nUtil.sharedInstance()?.isRTL() ?? false
+        if isRTL {
+          view.setBorderBottomRightRadius(radius)
+        } else {
+          view.setBorderBottomLeftRadius(radius)
+        }
+      }
+
+      Prop("borderBottomEndRadius") { (view, radius: CGFloat?) in
+        let isRTL = RCTI18nUtil.sharedInstance()?.isRTL() ?? false
+        if isRTL {
+          view.setBorderBottomLeftRadius(radius)
+        } else {
+          view.setBorderBottomRightRadius(radius)
+        }
       }
 
       Prop("borderCurve") { (view, curve: String?) in
