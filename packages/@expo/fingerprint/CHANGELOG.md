@@ -19,6 +19,7 @@
 - Ensure AAR file paths in expo fingerprint are relative for SDK 53 and later. ([#40319](https://github.com/expo/expo/pull/40319) by [@jonemilnik](https://github.com/jonemilnik))
 - Fixed unstable fingerprint from `shouldUsePublicationScriptPath`. ([#40412](https://github.com/expo/expo/pull/40412) by [@kudo](https://github.com/kudo))
 - Fixed unstable fingerprint from `expo-sqlite` and `expo-updates`. ([#40524](https://github.com/expo/expo/pull/40524) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint for Google services files using EAS environment secrets. ([#40540](https://github.com/expo/expo/pull/40540) by [@kudo](https://github.com/kudo))
 
 ## 0.15.1 — 2025-09-16
 
