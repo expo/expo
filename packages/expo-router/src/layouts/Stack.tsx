@@ -1,7 +1,8 @@
 import Stack from './StackClient';
-import { Screen } from '../views/Screen';
+import { StackScreen, StackHeader } from './StackElements';
 
-Stack.Screen = Screen;
+Stack.Screen = StackScreen;
+Stack.Header = StackHeader;
 
 export { Stack };
 
