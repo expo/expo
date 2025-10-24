@@ -145,7 +145,7 @@ const versionedExpoSDKPackages: string[] = [
   'expo-document-picker',
   'expo-splash-screen',
   'expo-system-ui',
-  'expo-local-modules',
+  'expo-inline-modules',
 ];
 
 export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
