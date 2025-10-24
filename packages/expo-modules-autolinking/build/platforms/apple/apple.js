@@ -10,22 +10,31 @@ exports.generateModulesProviderAsync = generateModulesProviderAsync;
 exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs_1 = __importDefault(require("fs"));
-const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
-const fileUtils_1 = require("../../fileUtils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
 const indent = '  ';
+const fileExistsAsync = async (file) => {
+    const stat = await fs_1.default.promises.stat(file).catch(() => null);
+    return stat?.isFile() ? file : null;
+};
+/** Find all *.podspec files in top-level directories */
 async function findPodspecFiles(revision) {
     const configPodspecPaths = revision.config?.applePodspecPaths();
     if (configPodspecPaths && configPodspecPaths.length) {
         return configPodspecPaths;
     }
-    const podspecFiles = await (0, glob_1.glob)('*/*.podspec', {
-        cwd: revision.path,
-        ignore: ['**/node_modules/**'],
-    });
-    return podspecFiles;
+    const podspecFiles = (await Promise.all((await fs_1.default.promises.readdir(revision.path, { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules')
+        .map(async (directory) => {
+        const entries = await fs_1.default.promises.readdir(path_1.default.join(revision.path, directory.name), {
+            withFileTypes: true,
+        });
+        return entries
+            .filter((entry) => entry.isFile() && entry.name.endsWith('.podspec'))
+            .map((entry) => path_1.default.join(directory.name, entry.name));
+    }))).flat(1);
+    return podspecFiles.sort((a, b) => a.localeCompare(b));
 }
 function getSwiftModuleNames(pods, swiftModuleNames) {
     if (swiftModuleNames && swiftModuleNames.length) {
@@ -211,7 +220,7 @@ function wrapInDebugConfigurationCheck(indentationLevel, debugBlock, releaseBloc
     return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(indentationLevel)}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
 }
 async function parseEntitlementsAsync(entitlementPath) {
-    if (!entitlementPath || !(await (0, fileUtils_1.fileExistsAsync)(entitlementPath))) {
+    if (!entitlementPath || !(await fileExistsAsync(entitlementPath))) {
         return {};
     }
     const { stdout } = await (0, spawn_async_1.default)('plutil', ['-convert', 'json', '-o', '-', entitlementPath]);
