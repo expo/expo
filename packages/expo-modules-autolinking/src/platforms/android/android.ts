@@ -1,20 +1,34 @@
 import fs from 'fs';
-import { glob } from 'glob';
 import path from 'path';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
-import type {
-  ExtraDependencies,
-  ModuleAndroidProjectInfo,
-  ModuleDescriptorAndroid,
-  PackageRevision,
-} from '../../types';
+import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
 
 interface AndroidConfigurationOutput {
   buildFromSource: string[];
+}
+
+async function* scanFilesRecursively(parentPath: string) {
+  const queue = [parentPath];
+  let targetPath: string | undefined;
+  while (queue.length > 0 && (targetPath = queue.shift()) != null) {
+    let entries: AsyncIterable<import('fs').Dirent> | Iterable<import('fs').Dirent>;
+    try {
+      entries = await fs.promises.opendir(targetPath);
+    } catch {
+      continue;
+    }
+    for await (const entry of entries) {
+      if (entry.isDirectory() && entry.name !== 'node_modules') {
+        queue.push(path.join(targetPath, entry.name));
+      } else if (entry.isFile()) {
+        yield path.join(targetPath, entry.name);
+      }
+    }
+  }
 }
 
 export function getConfiguration(
@@ -90,13 +104,11 @@ export async function resolveModuleAsync(
         : undefined;
 
       const packages = new Set<string>();
-      const files =
-        (await glob('**/*Package.{java,kt}', {
-          cwd: projectPath,
-        })) || [];
-
-      for (const file of files) {
-        const fileContent = await fs.promises.readFile(path.join(projectPath, file), 'utf8');
+      for await (const file of scanFilesRecursively(projectPath)) {
+        if (!file.endsWith('Package.java') && !file.endsWith('Package.kt')) {
+          continue;
+        }
+        const fileContent = await fs.promises.readFile(file, 'utf8');
 
         // Very naive check to skip non-expo packages
         if (
@@ -117,7 +129,7 @@ export async function resolveModuleAsync(
         name: project.name,
         sourceDir: projectPath,
         modules: project.modules ?? [],
-        packages: [...packages],
+        packages: [...packages].sort((a, b) => a.localeCompare(b)),
         ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
         ...(publication ? { publication } : {}),
         ...(aarProjects?.length > 0 ? { aarProjects } : {}),
