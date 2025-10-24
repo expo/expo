@@ -205,9 +205,11 @@ export const runCustomMaestroFlowsAsync = async (
   }
 };
 
-export function startGroup(name: string) {
+export function startGroup(filePath: string) {
   if (process.env.CI) {
-    console.log(`::group::${name}`);
+    const parts = filePath.split(path.sep).filter(Boolean);
+    const lastTwoComponents = parts.slice(-2).join(path.sep);
+    console.log(`::group::${lastTwoComponents}`);
   }
 }
 

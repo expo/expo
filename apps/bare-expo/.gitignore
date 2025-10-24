@@ -9,6 +9,9 @@
 !/e2e/**/*.base.android.png
 !/e2e/**/*.base.png
 !/e2e/image-comparison/test-fixtures/*.png
+# screen inspector is built from source
+/e2e/image-comparison/inspector/bin/
+
 .kotlin/
 dist/
 

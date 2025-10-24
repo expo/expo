@@ -27,7 +27,7 @@ export function getDylibPath(): string {
 
   if (!fs.existsSync(binaryPath)) {
     throw new Error(
-      `Dylib not found at ${binaryPath}. Please build it first by running: cd ${path.dirname(frameworkPath)} && ./scripts/build.sh`
+      `Dylib not found at ${binaryPath}. Build it first by running: cd ${path.dirname(path.join(frameworkPath, '..'))} && ./scripts/build.sh`
     );
   }
 

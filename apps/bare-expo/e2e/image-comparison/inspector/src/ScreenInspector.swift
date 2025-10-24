@@ -7,7 +7,7 @@ private let LOG_TAG = "ScreenInspector"
 
 // Helper to log with proper string conversion
 private func log(_ message: String) {
-    logger.log("\(message)")
+    logger.log("[\(LOG_TAG)] \(message)")
 }
 
 @objc public class ScreenInspector: NSObject {
@@ -23,12 +23,12 @@ private func log(_ message: String) {
 
     @objc public func start() {
         guard !isRunning else {
-            log("[\(LOG_TAG)] Server already running")
+            log("Server already running")
             return
         }
         isRunning = true
 
-        log("[\(LOG_TAG)] Starting screenInspector server...")
+        log("Starting screenInspector server...")
 
         createPipes()
 
@@ -37,7 +37,7 @@ private func log(_ message: String) {
             self?.runServer()
         }
 
-        log("[\(LOG_TAG)] server started successfully")
+        log("server started successfully")
     }
 
     @objc public func stop() {
@@ -48,7 +48,7 @@ private func log(_ message: String) {
     }
 
     private func createPipes() {
-        log("[\(LOG_TAG)] Creating named pipes...")
+        log("Creating named pipes...")
 
         // Remove existing pipes
         unlink(requestPipePath)
@@ -60,59 +60,59 @@ private func log(_ message: String) {
 
         if requestResult != 0 {
             let error = errno
-            log("[\(LOG_TAG)] Failed to create request pipe, errno: \(error)")
+            log("Failed to create request pipe, errno: \(error)")
         } else {
-            log("[\(LOG_TAG)] Created request pipe successfully")
+            log("Created request pipe successfully")
         }
 
         if responseResult != 0 {
             let error = errno
-            log("[\(LOG_TAG)] Failed to create response pipe, errno: \(error)")
+            log("Failed to create response pipe, errno: \(error)")
         } else {
-            log("[\(LOG_TAG)] Created response pipe successfully")
+            log("Created response pipe successfully")
         }
 
         // Verify pipes exist on filesystem
         let requestExists = access(requestPipePath, F_OK) == 0
         let responseExists = access(responsePipePath, F_OK) == 0
-        log("[\(LOG_TAG)] Request pipe exists on filesystem: \(requestExists)")
-        log("[\(LOG_TAG)] Response pipe exists on filesystem: \(responseExists)")
+        log("Request pipe exists on filesystem: \(requestExists)")
+        log("Response pipe exists on filesystem: \(responseExists)")
     }
 
     private func runServer() {
-        log("[\(LOG_TAG)] Server loop started, waiting for requests...")
+        log("Server loop started, waiting for requests...")
 
         while isRunning {
             // Open request pipe - blocks until a writer connects
-            log("[\(LOG_TAG)] Opening request pipe...")
+            log("Opening request pipe...")
             let requestFd = open(requestPipePath, O_RDONLY)
             guard requestFd != -1 else {
                 let error = errno
-                log("[\(LOG_TAG)] Failed to open request pipe, errno: \(error)")
+                log("Failed to open request pipe, errno: \(error)")
                 usleep(100000) // Wait before retrying
                 continue
             }
 
-            log("[\(LOG_TAG)] Request pipe opened, reading request...")
+            log("Request pipe opened, reading request...")
 
             // Read request - blocks until data arrives
             guard let requestData = readFromPipe(fd: requestFd) else {
-                log("[\(LOG_TAG)] Read failed or EOF, closing pipe")
+                log("Read failed or EOF, closing pipe")
                 close(requestFd)
                 continue
             }
 
             close(requestFd)
 
-            log("[\(LOG_TAG)] Received request: \(String(data: requestData, encoding: .utf8) ?? "invalid UTF8")")
+            log("Received request: \(String(data: requestData, encoding: .utf8) ?? "invalid UTF8")")
 
             let response = processRequest(requestData)
             writeToPipe(responsePipePath, data: response)
 
-            log("[\(LOG_TAG)] Sent response, ready for next request")
+            log("Sent response, ready for next request")
         }
 
-        log("[\(LOG_TAG)] Server loop ended")
+        log("Server loop ended")
     }
 
     private func readFromPipe(fd: Int32) -> Data? {
@@ -121,36 +121,36 @@ private func log(_ message: String) {
 
         guard bytesRead > 0 else {
             if bytesRead == 0 {
-                log("[\(LOG_TAG)] EOF on pipe")
+                log("EOF on pipe")
             } else {
                 let error = errno
-                log("[\(LOG_TAG)] Read error, errno: \(error)")
+                log("Read error, errno: \(error)")
             }
             return nil
         }
 
-        log("[\(LOG_TAG)] Read \(bytesRead) bytes from pipe")
+        log("Read \(bytesRead) bytes from pipe")
         return Data(buffer.prefix(bytesRead))
     }
 
     private func writeToPipe(_ path: String, data: Data) {
-        log("[\(LOG_TAG)] Attempting to open pipe for writing")
+        log("Attempting to open pipe for writing")
 
         let fd = open(path, O_WRONLY)
         guard fd != -1 else {
-            log("[\(LOG_TAG)] Failed to open pipe for writing")
+            log("Failed to open pipe for writing")
             return
         }
 
-        log("[\(LOG_TAG)] Pipe opened for writing, sending \(data.count) bytes")
+        log("Pipe opened for writing, sending \(data.count) bytes")
         defer {
             close(fd)
-            log("[\(LOG_TAG)] Write pipe closed")
+            log("Write pipe closed")
         }
 
         data.withUnsafeBytes { bytes in
             let written = write(fd, bytes.bindMemory(to: UInt8.self).baseAddress, data.count)
-            log("[\(LOG_TAG)] Wrote \(written) bytes to pipe")
+            log("Wrote \(written) bytes to pipe")
         }
     }
 
@@ -224,6 +224,5 @@ private let screenInspector = ScreenInspector()
 // Declare C function
 @_cdecl("screen_inspector_dylib_init")
 public func screen_inspector_dylib_init() {
-    log("[\(LOG_TAG)] Dylib loaded! Starting screenInspector server...")
     screenInspector.start()
 }

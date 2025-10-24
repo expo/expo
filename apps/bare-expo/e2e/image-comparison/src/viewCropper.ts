@@ -112,14 +112,14 @@ async function getCoordinatesViaDylib(
   displayScaleFactor: number,
   timeoutMs: number = 3000
 ): Promise<Bounds | null> {
-  const screenshotIOS = new ScreenInspectorIOS();
+  const screenInspectorIOS = new ScreenInspectorIOS();
 
   try {
-    const label = `Duration of coordinate fetch for ${testID} via dylib`;
+    const label = `Duration of getting coordinates for "${testID}" testID via dylib`;
     console.time(label);
 
     const bounds = await Promise.race([
-      screenshotIOS.getCoordinates(testID),
+      screenInspectorIOS.getCoordinates(testID),
       new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Dylib timeout')), timeoutMs)
       ),
