@@ -1,7 +1,7 @@
 import { isRunningInExpoGo } from 'expo';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 
 export const ModulesCoreScreens = [
   {
@@ -31,12 +31,6 @@ if (!isRunningInExpoGo()) {
 }
 
 export default function ModulesCoreScreen() {
-  const apis: ListElement[] = ModulesCoreScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/apis/${screen.route}`,
-    };
-  });
+  const apis = apiScreensToListElements(ModulesCoreScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

@@ -51,10 +51,20 @@ async function resolveDependencies(
   shouldIncludeDependency: (dependencyName: string) => boolean
 ): Promise<DependencyResolution[]> {
   const modules: DependencyResolution[] = [];
-  const dependencies =
+  let dependencies =
     packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
       ? packageJson.dependencies
       : {};
+
+  // NOTE(@kitten): Also traverse devDependencies for top-level package.json
+  const devDependencies =
+    packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
+      ? (packageJson.devDependencies as Record<string, string>)
+      : null;
+  if (depth === 0 && devDependencies) {
+    dependencies = { ...dependencies, ...devDependencies };
+  }
+
   for (const dependencyName in dependencies) {
     if (!shouldIncludeDependency(dependencyName)) {
       continue;
@@ -200,48 +210,3 @@ const isOptionalPeerDependencyMeta = (
     !!peerDependenciesMeta[packageName].optional
   );
 };
-
-export async function scanDevDependenciesShallowly(
-  rawPath: string,
-  { shouldIncludeDependency = defaultShouldIncludeDependency }: ResolutionOptions = {}
-): Promise<ResolutionResult> {
-  const rootPath = await maybeRealpath(rawPath);
-  if (!rootPath) {
-    return {};
-  }
-
-  const getNodeModulePaths = createNodeModulePathsCreator();
-  const searchResults: ResolutionResult = Object.create(null);
-  const nodeModulePaths = await getNodeModulePaths(rootPath);
-  const packageJson = await loadPackageJson(fastJoin(rootPath, 'package.json'));
-  if (!packageJson) {
-    return searchResults;
-  }
-
-  const devDependencies =
-    packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
-      ? packageJson.devDependencies
-      : {};
-  for (const dependencyName in devDependencies) {
-    if (!shouldIncludeDependency(dependencyName)) {
-      continue;
-    }
-    for (let idx = 0; idx < nodeModulePaths.length; idx++) {
-      const originPath = fastJoin(nodeModulePaths[idx], dependencyName);
-      const nodeModulePath = await maybeRealpath(originPath);
-      if (nodeModulePath != null) {
-        searchResults[dependencyName] = {
-          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
-          name: dependencyName,
-          version: '',
-          path: nodeModulePath,
-          originPath,
-          duplicates: null,
-          depth: 0,
-        };
-        break;
-      }
-    }
-  }
-  return searchResults;
-}

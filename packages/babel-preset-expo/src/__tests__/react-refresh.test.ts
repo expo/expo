@@ -5,7 +5,6 @@ import preset from '..';
 type Caller = {
   name: string;
   platform: string;
-  isHMREnabled: boolean;
   isDev: boolean;
   isServer: boolean;
   isNodeModule: boolean;
@@ -14,7 +13,6 @@ type Caller = {
 const ENABLED_CALLER: Caller = {
   name: 'metro',
   platform: 'ios',
-  isHMREnabled: true,
   isDev: true,
   isServer: false,
   isNodeModule: false,
@@ -38,9 +36,6 @@ const DEF_OPTIONS = {
 
 (
   [
-    {
-      isHMREnabled: false,
-    },
     {
       isServer: true,
     },

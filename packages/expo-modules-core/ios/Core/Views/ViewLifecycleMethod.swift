@@ -3,7 +3,7 @@
 /**
  An enum that identifies lifecycle method types.
  */
-public enum ViewLifecycleMethodType {
+public enum ViewLifecycleMethodType: Sendable {
   case didUpdateProps
 }
 

@@ -487,3 +487,29 @@ export default function Layout() {
 ```
 
 For more information on available options, see [`@react-navigation/stack` documentation](https://reactnavigation.org/docs/stack-navigator).
+
+## iOS 26 Liquid Glass headers
+
+Starting from iOS 26, navigation headers adopt the system's "Liquid Glass" effect by default. It cannot be disabled per screen, so you need to opt out using a global configuration.
+
+### Method 1: Use `UIDesignRequiresCompatibility`
+
+> **Note**: Not supported in Expo Go.This method is a temporary workaround. From iOS 27, this option will be removed by Apple and you cannot opt out of the Liquid Glass effect.
+
+Create a [development build](/develop/development-builds/create-a-build/#prerequisites) and set the [`UIDesignRequiresCompatibility`](https://developer.apple.com/documentation/BundleResources/Information-Property-List/UIDesignRequiresCompatibility) property to `true` in [app config](/workflow/configuration/):
+
+```json app.json
+{
+  "ios": {
+    "infoPlist": {
+      "UIDesignRequiresCompatibility": true
+    }
+  }
+}
+```
+
+### Method 2: Use JavaScript-based navigation stack
+
+Switch from native navigation library ([`@react-navigation/native`](https://reactnavigation.org/docs/native-stack-navigator/)) to a JavaScript-based stack navigator library such as [`@react-navigation/stack`](https://reactnavigation.org/docs/stack-navigator/), which gives you full control over the header UI but at the cost of performance benefits of using the highly optimized iOS navigation views/controllers.
+
+For more information, see [JavaScript stack with `@react-navigation/stack`](#javascript-stack-with-react-navigationstack).

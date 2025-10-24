@@ -32,6 +32,7 @@ import java.util.UUID
 
 private const val PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate"
 private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
+private const val SEEK_JUMP_INTERVAL_MS: Long = 10_000
 
 @UnstableApi
 class AudioPlayer(
@@ -43,11 +44,13 @@ class AudioPlayer(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .setAudioAttributes(AudioAttributes.DEFAULT, false)
+    .setSeekForwardIncrementMs(SEEK_JUMP_INTERVAL_MS)
+    .setSeekBackIncrementMs(SEEK_JUMP_INTERVAL_MS)
     .build(),
   appContext
 ) {
   val id = UUID.randomUUID().toString()
-  var preservesPitch = false
+  var preservesPitch = true
   var isPaused = false
   var isMuted = false
   var previousVolume = 1f
@@ -86,7 +89,8 @@ class AudioPlayer(
       }
       ref.volume = 0f
     } else {
-      ref.volume = if (boundedVolume > 0) boundedVolume else previousVolume
+      previousVolume = boundedVolume
+      ref.volume = boundedVolume
     }
   }
 
@@ -96,10 +100,10 @@ class AudioPlayer(
     startUpdating()
   }
 
-  fun setActiveForLockScreen(active: Boolean, metadata: Metadata? = null) {
+  fun setActiveForLockScreen(active: Boolean, metadata: Metadata? = null, options: AudioLockScreenOptions? = null) {
     if (active) {
       this.metadata = metadata
-      AudioControlsService.setActivePlayer(context, this, metadata)
+      AudioControlsService.setActivePlayer(context, this, metadata, options)
     } else if (isActiveForLockScreen) {
       AudioControlsService.setActivePlayer(context, null)
     }
@@ -119,6 +123,7 @@ class AudioPlayer(
   }
 
   private fun startUpdating() {
+    updateJob?.cancel()
     updateJob = flow {
       while (true) {
         emit(Unit)
@@ -272,6 +277,7 @@ class AudioPlayer(
   }
 
   override fun sharedObjectDidRelease() {
+    super.sharedObjectDidRelease()
     appContext?.mainQueue?.launch {
       if (isActiveForLockScreen) {
         AudioControlsService.clearSession()

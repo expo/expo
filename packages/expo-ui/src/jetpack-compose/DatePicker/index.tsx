@@ -51,15 +51,19 @@ export type DateTimePickerProps = {
   modifiers?: ExpoModifier[];
 };
 
-type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected'> & {
+type NativeDatePickerProps = Omit<
+  DateTimePickerProps,
+  'variant' | 'onDateSelected' | 'initialDate'
+> & {
   variant?: AndroidVariant;
+  initialDate?: number | null;
 } & ViewEvent<'onDateSelected', { date: Date }>;
 
 /**
  * @hidden
  */
 export function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
-  const { variant, ...rest } = props;
+  const { variant, initialDate, ...rest } = props;
   const { minWidth, minHeight, ...restStyle } = StyleSheet.flatten(rest.style) || {};
 
   // On Android, the picker’s minWidth and minHeight must be 12dp.
@@ -70,8 +74,12 @@ export function transformDateTimePickerProps(props: DateTimePickerProps): Native
   const parsedMinWidth = minWidth ? minSize : undefined;
   const parsedMinHeight = minHeight ? minSize : undefined;
 
+  // Convert ISO string to timestamp for Android
+  const initialDateTimestamp = initialDate ? new Date(initialDate).getTime() : null;
+
   return {
     ...rest,
+    initialDate: initialDateTimestamp,
     onDateSelected: ({ nativeEvent: { date } }) => {
       props?.onDateSelected?.(new Date(date));
     },

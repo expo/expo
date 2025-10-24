@@ -7,6 +7,7 @@ on:
       - .github/workflows/ios-unit-tests.yml
       - apps/expo-go/ios/**
       - packages/**/ios/**
+      - apps/native-tests/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
       - tools/src/commands/IosNativeUnitTests.ts

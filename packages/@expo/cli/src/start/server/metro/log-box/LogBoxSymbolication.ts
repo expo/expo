@@ -27,7 +27,9 @@ export type SymbolicatedStackTrace = {
   codeFrame?: CodeFrame;
 };
 
-export type StackFrame = UpstreamStackFrame & { collapse?: boolean };
+export type StackFrame = UpstreamStackFrame & {
+  collapse?: boolean;
+};
 
 const cache: Map<StackFrame[], Promise<SymbolicatedStackTrace>> = new Map();
 

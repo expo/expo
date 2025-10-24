@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.scanDependenciesRecursively = scanDependenciesRecursively;
-exports.scanDevDependenciesShallowly = scanDevDependenciesShallowly;
 const node_module_1 = __importDefault(require("node:module"));
 const utils_1 = require("./utils");
 // NOTE(@kitten): There's no need to search very deep for modules
@@ -33,9 +32,16 @@ const createNodeModulePathsCreator = () => {
 };
 async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIncludeDependency) {
     const modules = [];
-    const dependencies = packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
+    let dependencies = packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
         ? packageJson.dependencies
         : {};
+    // NOTE(@kitten): Also traverse devDependencies for top-level package.json
+    const devDependencies = packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
+        ? packageJson.devDependencies
+        : null;
+    if (depth === 0 && devDependencies) {
+        dependencies = { ...dependencies, ...devDependencies };
+    }
     for (const dependencyName in dependencies) {
         if (!shouldIncludeDependency(dependencyName)) {
             continue;
@@ -153,42 +159,4 @@ const isOptionalPeerDependencyMeta = (peerDependenciesMeta, packageName) => {
         'optional' in peerDependenciesMeta[packageName] &&
         !!peerDependenciesMeta[packageName].optional);
 };
-async function scanDevDependenciesShallowly(rawPath, { shouldIncludeDependency = utils_1.defaultShouldIncludeDependency } = {}) {
-    const rootPath = await (0, utils_1.maybeRealpath)(rawPath);
-    if (!rootPath) {
-        return {};
-    }
-    const getNodeModulePaths = createNodeModulePathsCreator();
-    const searchResults = Object.create(null);
-    const nodeModulePaths = await getNodeModulePaths(rootPath);
-    const packageJson = await (0, utils_1.loadPackageJson)((0, utils_1.fastJoin)(rootPath, 'package.json'));
-    if (!packageJson) {
-        return searchResults;
-    }
-    const devDependencies = packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
-        ? packageJson.devDependencies
-        : {};
-    for (const dependencyName in devDependencies) {
-        if (!shouldIncludeDependency(dependencyName)) {
-            continue;
-        }
-        for (let idx = 0; idx < nodeModulePaths.length; idx++) {
-            const originPath = (0, utils_1.fastJoin)(nodeModulePaths[idx], dependencyName);
-            const nodeModulePath = await (0, utils_1.maybeRealpath)(originPath);
-            if (nodeModulePath != null) {
-                searchResults[dependencyName] = {
-                    source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
-                    name: dependencyName,
-                    version: '',
-                    path: nodeModulePath,
-                    originPath,
-                    duplicates: null,
-                    depth: 0,
-                };
-                break;
-            }
-        }
-    }
-    return searchResults;
-}
 //# sourceMappingURL=resolution.js.map

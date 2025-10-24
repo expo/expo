@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
@@ -8,7 +9,6 @@ export type DateTimePickerProps = {
     initialDate?: string | null;
     /**
      * A title displayed on the picker on iOS.
-     * @platform ios
      */
     title?: string;
     /**
@@ -29,7 +29,7 @@ export type DateTimePickerProps = {
     /**
      * The tint color to use on the picker elements.
      */
-    color?: string;
+    color?: ColorValue;
 } & CommonViewModifierProps;
 /**
  * Renders a `DateTimePicker` component.

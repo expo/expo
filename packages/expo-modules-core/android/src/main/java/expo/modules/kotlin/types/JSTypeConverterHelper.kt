@@ -7,7 +7,9 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.formatters.ValueOrSkip
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -31,6 +33,40 @@ fun Record.toJSValueExperimental(): Map<String, Any?> {
 
       val value = property.get(this)
       val convertedValue = JSTypeConverter.convertToJSValue(value, useExperimentalConverter = true)
+      result[jsKey] = convertedValue
+    }
+
+  return result
+}
+
+fun FormattedRecord<*>.toJSValueExperimental(): Map<String, Any?> {
+  val result = mutableMapOf<String, Any?>()
+
+  record
+    .javaClass
+    .kotlin
+    .memberProperties
+    .map { property ->
+      val fieldInformation = property.findAnnotation<Field>() ?: return@map
+      val jsKey = fieldInformation.key.takeUnless { it == "" } ?: property.name
+
+      property.isAccessible = true
+
+      val action = formatter.getAction(property)
+
+      val rawProperty = property.get(record)
+      val value = action?.invoke(record, rawProperty) ?: rawProperty
+
+      val unwrappedValue = if (value is ValueOrSkip<*>) {
+        when (value) {
+          is ValueOrSkip.Value<*> -> value.value
+          ValueOrSkip.Skip -> return@map
+        }
+      } else {
+        value
+      }
+
+      val convertedValue = JSTypeConverter.convertToJSValue(unwrappedValue, useExperimentalConverter = true)
       result[jsKey] = convertedValue
     }
 

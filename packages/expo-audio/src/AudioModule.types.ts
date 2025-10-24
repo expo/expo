@@ -12,6 +12,7 @@ import {
   RecordingStartOptions,
   RecordingStatus,
 } from './Audio.types';
+import { AudioLockScreenOptions } from './AudioConstants';
 
 /**
  * @hidden
@@ -195,8 +196,13 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * Only one player can control the lock screen at a time.
    * @param active Whether this player should be active for lock screen controls.
    * @param metadata Optional metadata to display on the lock screen (title, artist, album, artwork).
+   * @param options Optional configuration to configure the lock screen controls.
    */
-  setActiveForLockScreen(active: boolean, metadata?: AudioMetadata): void;
+  setActiveForLockScreen(
+    active: boolean,
+    metadata?: AudioMetadata,
+    options?: AudioLockScreenOptions
+  ): void;
 
   /**
    * Updates the metadata displayed on the lock screen for this player.

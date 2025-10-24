@@ -14,7 +14,7 @@ internal final class ImageLoadTask: SharedObject {
   }
 
   func load() async throws -> UIImage {
-    let task = self.task ?? Task {
+    let task = self.task ?? Task { [source, maxSize] in
       return try await ImageLoader.shared.load(source, maxSize: maxSize)
     }
     self.task = task

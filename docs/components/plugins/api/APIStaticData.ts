@@ -174,6 +174,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
   WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
+  WritableStream: 'https://developer.mozilla.org/en-US/docs/Web/API/WritableStream',
 
   // React Navigation
   DefaultNavigatorOptions:

@@ -10,7 +10,7 @@ public typealias LoggerTimerFormatterBlock = (_ duration: Double) -> String
  Native iOS logging class for Expo, with options to direct logs
  to different destinations.
  */
-public class Logger {
+public class Logger: @unchecked Sendable {
   public static let EXPO_MODULES_LOG_SUBSYSTEM = "dev.expo.modules"
   public static let EXPO_LOG_CATEGORY = "expo"
 

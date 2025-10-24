@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-  implementation "androidx.appcompat:appcompat:1.2.0"
+  implementation "androidx.appcompat:appcompat:1.7.1"
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'commons-codec:commons-codec:1.14'

@@ -2,12 +2,13 @@
  Enum-like struct representing field options that for example can specify if the field
  is required and so it must be provided by the dictionary from which the field is created.
  */
-public struct FieldOption: Equatable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral {
+public struct FieldOption: Equatable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, Sendable {
   public let rawValue: Int
-  public var key: String?
+  public let key: String?
 
-  public init(_ rawValue: Int) {
+  public init(_ rawValue: Int, key: String? = nil) {
     self.rawValue = rawValue
+    self.key = key
   }
 
   // MARK: `Equatable`
@@ -34,7 +35,7 @@ public struct FieldOption: Equatable, Hashable, ExpressibleByIntegerLiteral, Exp
    Initializer that allows to create an instance from int literal.
    */
   public init(integerLiteral value: Int) {
-    self.rawValue = value
+    self.init(value)
   }
 
   // MARK: `ExpressibleByStringLiteral`
@@ -43,8 +44,7 @@ public struct FieldOption: Equatable, Hashable, ExpressibleByIntegerLiteral, Exp
    Initializer that allows to create an instance from string literal.
    */
   public init(stringLiteral value: String) {
-    self.rawValue = 0
-    self.key = value
+    self.init(0, key: value)
   }
 }
 

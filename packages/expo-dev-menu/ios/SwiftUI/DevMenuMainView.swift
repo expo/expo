@@ -32,7 +32,7 @@ struct DevMenuMainView: View {
         DevMenuDeveloperTools()
 
         if viewModel.appInfo?.engine == "Hermes" {
-          HermesWarning()
+          HermesDebuggerTip()
         }
 
         DevMenuAppInfo()

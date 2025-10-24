@@ -14,13 +14,12 @@ class ModuleHolderTest {
 
     class MyModule : Module() {
       override fun definition() = ModuleDefinition {
-        Name("my-module")
         OnCreate { onCreateCalls++ }
         OnDestroy { onDestroyCalls++ }
       }
     }
 
-    val holder = ModuleHolder(MyModule())
+    val holder = ModuleHolder(MyModule(), "my-module")
 
     holder.post(EventName.MODULE_CREATE)
     holder.post(EventName.MODULE_DESTROY)

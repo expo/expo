@@ -42,7 +42,7 @@ extension ExpoSwiftUI {
   /**
    A hosting view that renders a SwiftUI view inside the UIKit view hierarchy.
    */
-  public final class HostingView<Props: ViewProps, ContentView: View<Props>>: ExpoView, AnyExpoSwiftUIHostingView {
+  public final class HostingView<Props: ViewProps, ContentView: View<Props>>: ExpoView, @MainActor AnyExpoSwiftUIHostingView {
     /**
      Props object that stores all the props for this particular view.
      It's an environment object that is observed by the content view.
@@ -65,7 +65,11 @@ extension ExpoSwiftUI {
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
       self.contentView = ContentView(props: props)
-      let rootView = AnyView(contentView.environmentObject(shadowNodeProxy))
+      let rootView = AnyView(
+        contentView
+          .environmentObject(shadowNodeProxy)
+          .environment(\.appContext, appContext)
+      )
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
@@ -81,6 +85,13 @@ extension ExpoSwiftUI {
         self.setViewSize(size)
         #endif
       }
+      
+      shadowNodeProxy.setStyleSize = { width, height in
+        #if RCT_NEW_ARCH_ENABLED
+        self.setStyleSize(width, height: height)
+        #endif
+      }
+      
       shadowNodeProxy.objectWillChange.send()
 
       #if os(iOS) || os(tvOS)
@@ -136,6 +147,12 @@ extension ExpoSwiftUI {
       return true
     }
 
+    public override func layoutSubviews() {
+      super.layoutSubviews()
+      // TODO: Use updateLayoutMetrics from RN. Add support in ExpoFabricView.
+      setupHostingViewConstraints()
+    }
+
 #if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
@@ -187,14 +204,13 @@ extension ExpoSwiftUI {
       guard let view = hostingController.view as UIView? else {
         return
       }
-      view.translatesAutoresizingMaskIntoConstraints = false
-
-      NSLayoutConstraint.activate([
-        view.topAnchor.constraint(equalTo: topAnchor),
-        view.bottomAnchor.constraint(equalTo: bottomAnchor),
-        view.leftAnchor.constraint(equalTo: leftAnchor),
-        view.rightAnchor.constraint(equalTo: rightAnchor)
-      ])
+      let frame = self.bounds;
+      view.frame = frame;
+        #if os(iOS) || os(tvOS)
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        #elseif os(macOS)
+        view.autoresizingMask = [.width, .height]
+        #endif
     }
 
     // MARK: - UIView lifecycle

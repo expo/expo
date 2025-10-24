@@ -366,6 +366,12 @@ redirects[regulatory-compliance/privacy-shield]=regulatory-compliance/data-and-p
 # After changing brownfield docs
 redirects[brownfield/installing-expo-modules]=brownfield/get-started
 
+# After removing Navigation section from Home and adding a Navigation page
+redirects[develop/file-based-routing]=develop/app-navigation
+redirects[develop/dynamic-routes]=develop/app-navigation
+redirects[develop/next-steps]=develop/app-navigation
+
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

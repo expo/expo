@@ -92,8 +92,7 @@ class AppContext(
       CoroutineName("expo.modules.MainQueue")
   )
 
-  val registry
-    get() = hostingRuntimeContext.registry
+  val registry = ModuleRegistry(this.weak())
 
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
@@ -110,8 +109,8 @@ class AppContext(
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
       // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
-      registry.register(NativeModulesProxyModule())
-      registry.register(JSLoggerModule())
+      registry.register(NativeModulesProxyModule(), null)
+      registry.register(JSLoggerModule(), null)
 
       // Registering modules that were previously provided by legacy FileSystem module.
       legacyModuleRegistry.registerInternalModule(FilePermissionModule())
@@ -124,7 +123,7 @@ class AppContext(
   }
 
   fun onCreate() = trace("AppContext.onCreate") {
-    hostingRuntimeContext.registry.postOnCreate()
+    registry.postOnCreate()
   }
 
   /**
@@ -234,7 +233,7 @@ class AppContext(
     val legacyEventEmitter = legacyModule<expo.modules.core.interfaces.services.EventEmitter>()
       ?: return null
     return KModuleEventEmitterWrapper(
-      requireNotNull(hostingRuntimeContext.registry.getModuleHolder(module)) {
+      requireNotNull(registry.getModuleHolder(module)) {
         "Cannot create an event emitter for the module that isn't present in the module registry."
       },
       legacyEventEmitter,
@@ -251,17 +250,17 @@ class AppContext(
 
   @Deprecated("Use AppContext.jsLogger instead")
   val errorManager: ErrorManagerModule? by lazy {
-    hostingRuntimeContext.registry.getModule()
+    registry.getModule()
   }
 
   val jsLogger by lazy {
-    hostingRuntimeContext.registry.getModule<JSLoggerModule>()?.logger
+    registry.getModule<JSLoggerModule>()?.logger
   }
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {
     hostingRuntimeContext.reactContext?.removeLifecycleEventListener(reactLifecycleDelegate)
-    hostingRuntimeContext.registry.post(EventName.MODULE_DESTROY)
-    hostingRuntimeContext.registry.cleanUp()
+    registry.post(EventName.MODULE_DESTROY)
+    registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
@@ -280,19 +279,19 @@ class AppContext(
     // We need to re-register activity contracts when reusing AppContext with new Activity after host destruction.
     if (hostWasDestroyed) {
       hostWasDestroyed = false
-      hostingRuntimeContext.registry.registerActivityContracts()
+      registry.registerActivityContracts()
     }
 
     activityResultsManager.onHostResume(activity)
-    hostingRuntimeContext.registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
+    registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
   internal fun onHostPause() {
-    hostingRuntimeContext.registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
+    registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
   }
 
   internal fun onUserLeaveHint() {
-    hostingRuntimeContext.registry.post(EventName.ON_USER_LEAVES_ACTIVITY)
+    registry.post(EventName.ON_USER_LEAVES_ACTIVITY)
   }
 
   internal fun onHostDestroy() {
@@ -303,7 +302,7 @@ class AppContext(
 
       activityResultsManager.onHostDestroy(it)
     }
-    hostingRuntimeContext.registry.post(EventName.ACTIVITY_DESTROYS)
+    registry.post(EventName.ACTIVITY_DESTROYS)
     // The host (Activity) was destroyed, but it doesn't mean that modules will be destroyed too.
     // So we save that information, and we will re-register activity contracts when the host will be resumed with new Activity.
     hostWasDestroyed = true
@@ -311,7 +310,7 @@ class AppContext(
 
   internal fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     activityResultsManager.onActivityResult(requestCode, resultCode, data)
-    hostingRuntimeContext.registry.post(
+    registry.post(
       EventName.ON_ACTIVITY_RESULT,
       activity,
       OnActivityResultPayload(
@@ -323,7 +322,7 @@ class AppContext(
   }
 
   internal fun onNewIntent(intent: Intent?) {
-    hostingRuntimeContext.registry.post(
+    registry.post(
       EventName.ON_NEW_INTENT,
       intent
     )

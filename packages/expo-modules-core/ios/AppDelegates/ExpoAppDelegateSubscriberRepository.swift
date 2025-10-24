@@ -1,12 +1,14 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-private var _subscribers = [ExpoAppDelegateSubscriberProtocol]()
-private var _reactDelegateHandlers = [ExpoReactDelegateHandler]()
+@MainActor private var _subscribers = [ExpoAppDelegateSubscriberProtocol]()
+@MainActor private var _reactDelegateHandlers = [ExpoReactDelegateHandler]()
 
 /**
  Class responsible for managing access to app delegate subscribers and react delegates.
  It should be used to access subscribers without depending on the `Expo` package where they are registered.
  */
+@MainActor
+@preconcurrency
 @objc(EXExpoAppDelegateSubscriberRepository)
 public class ExpoAppDelegateSubscriberRepository: NSObject {
   @objc

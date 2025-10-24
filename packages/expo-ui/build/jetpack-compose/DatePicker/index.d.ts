@@ -45,8 +45,9 @@ export type DateTimePickerProps = {
     /** Modifiers for the component */
     modifiers?: ExpoModifier[];
 };
-type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected'> & {
+type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected' | 'initialDate'> & {
     variant?: AndroidVariant;
+    initialDate?: number | null;
 } & ViewEvent<'onDateSelected', {
     date: Date;
 }>;

@@ -17,9 +17,26 @@ internal enum ExpoColorScheme: String, Enumerable {
   }
 }
 
+internal enum ExpoLayoutDirection: String, Enumerable {
+  case leftToRight
+  case rightToLeft
+
+  func toLayoutDirection() -> LayoutDirection {
+    switch self {
+    case .leftToRight:
+      return .leftToRight
+    case .rightToLeft:
+      return .rightToLeft
+    }
+  }
+}
+
 internal final class HostViewProps: ExpoSwiftUI.ViewProps {
   @Field var useViewportSizeMeasurement: Bool = false
   @Field var colorScheme: ExpoColorScheme?
+  @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
+  @Field var matchContentsHorizontal = false
+  @Field var matchContentsVertical = false
   var onLayoutContent = EventDispatcher()
 }
 
@@ -35,21 +52,26 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       useViewportSizeMeasurement = false
     }
 
+    let layoutDirection = props.layoutDirection.toLayoutDirection()
+    let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
+
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
       let HostLayout = useViewportSizeMeasurement
-        ? AnyLayout(ViewportSizeMeasurementLayout())
-        : AnyLayout(ZStackLayout(alignment: .topLeading))
+        ? AnyLayout(ViewportSizeMeasurementLayout(layoutDirection: layoutDirection))
+        : AnyLayout(ZStackLayout(alignment: alignment))
       return HostLayout {
         Children()
       }
+      .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
       .modifier(GeometryChangeModifier(props: props))
     }
 
-    return ZStack(alignment: .topLeading) {
+    return ZStack(alignment: alignment) {
       Children()
     }
+    .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
     .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
     .modifier(GeometryChangeModifier(props: props))
   }
@@ -78,6 +100,8 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 private struct ViewportSizeMeasurementLayout: Layout {
+  let layoutDirection: LayoutDirection
+
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     let maxSize = safeAreaSize()
     let proposalWidth = proposal.width ?? 0
@@ -96,9 +120,17 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    let isRTL = layoutDirection == .rightToLeft
     for subview in subviews {
+      let origin: CGPoint
+      if isRTL {
+        let size = subview.dimensions(in: ProposedViewSize(bounds.size))
+        origin = CGPoint(x: bounds.maxX - size.width, y: bounds.minY)
+      } else {
+        origin = bounds.origin
+      }
       subview.place(
-        at: bounds.origin,
+        at: origin,
         proposal: ProposedViewSize(bounds.size)
       )
     }
@@ -128,8 +160,15 @@ private struct ViewportSizeMeasurementLayout: Layout {
  */
 private struct GeometryChangeModifier: ViewModifier {
   let props: HostViewProps
+  @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
 
   private func dispatchOnLayoutContent(_ size: CGSize) {
+    if (props.matchContentsHorizontal || props.matchContentsVertical) {
+      let styleWidth = props.matchContentsHorizontal ? NSNumber(value: Float(size.width)) : nil
+      let styleHeight = props.matchContentsVertical ? NSNumber(value: Float(size.height)) : nil
+      shadowNodeProxy.setStyleSize?(styleWidth, styleHeight)
+    }
+    
     props.onLayoutContent([
       "width": size.width,
       "height": size.height
@@ -162,6 +201,18 @@ private struct ColorSchemeModifier: ViewModifier {
   func body(content: Content) -> some View {
     if let colorScheme {
       content.environment(\.colorScheme, colorScheme)
+    } else {
+      content
+    }
+  }
+}
+
+private struct LayoutDirectionModifier: ViewModifier {
+  let layoutDirection: LayoutDirection?
+
+  func body(content: Content) -> some View {
+    if let layoutDirection {
+      content.environment(\.layoutDirection, layoutDirection)
     } else {
       content
     }

@@ -296,4 +296,22 @@ describe(createSourceId, () => {
     };
     expect(createSourceId(source)).toBe('foo');
   });
+
+  it(`should use override hash key for file or dir`, () => {
+    const fileSource: HashSource = {
+      type: 'file',
+      filePath: '/app/app.json',
+      reasons: ['expoConfig'],
+      overrideHashKey: 'overrideKey',
+    };
+    expect(createSourceId(fileSource)).toBe('overrideKey');
+
+    const dirSource: HashSource = {
+      type: 'dir',
+      filePath: '/app/ios',
+      reasons: ['bareNativeDir'],
+      overrideHashKey: 'overrideKey',
+    };
+    expect(createSourceId(dirSource)).toBe('overrideKey');
+  });
 });

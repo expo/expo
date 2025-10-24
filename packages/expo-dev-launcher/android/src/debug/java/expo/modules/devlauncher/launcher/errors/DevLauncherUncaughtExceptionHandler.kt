@@ -102,7 +102,7 @@ class DevLauncherUncaughtExceptionHandler(
   private fun tryToSendExceptionToBundler(exception: Throwable) {
     if (
       controller.mode != DevLauncherController.Mode.APP ||
-      !controller.appHost.hasInstance ||
+      controller.appHost.currentReactContext?.hasActiveReactInstance() != true ||
       controller.appHost.currentReactContext === null
     ) {
       return

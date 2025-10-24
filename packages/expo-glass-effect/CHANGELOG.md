@@ -6,11 +6,17 @@
 
 ### 🎉 New features
 
+- Add non-uniform border radius support to `GlassView` ([#40570](https://github.com/expo/expo/pull/40570) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.1.4 - 2025-09-17
+
 ### 🐛 Bug fixes
 
 - Set default glass style to regular ([#39732](https://github.com/expo/expo/pull/39732) by [@brentvatne](https://github.com/brentvatne))
-
-### 💡 Others
 
 ## 0.1.3 — 2025-09-12
 

@@ -9,6 +9,7 @@
 namespace jsi = facebook::jsi;
 #endif // __cplusplus
 
+NS_SWIFT_SENDABLE
 NS_SWIFT_NAME(RawJavaScriptFunction)
 @interface EXRawJavaScriptFunction : NSObject
 

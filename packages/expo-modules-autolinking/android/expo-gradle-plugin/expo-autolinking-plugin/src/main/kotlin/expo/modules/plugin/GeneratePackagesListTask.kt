@@ -73,12 +73,14 @@ ${
 }
     )
 
-    val modulesList: List<Class<out Module>> = listOf(
+    val modulesMap: Map<Class<out Module>, String?> = mapOf(
 ${
   modules
     .flatMap { module ->
       module.projects.flatMap { project ->
-        project.modules.map { "      ${it}::class.java" }
+        project.modules.map { (classifier, name) ->
+          "      ${classifier}::class.java to ${name?.let { "\"${it}\"" }}" 
+        }
       }
     }
     .joinToString(",\n")
@@ -91,8 +93,8 @@ ${
     }
   }
 
-  override fun getModulesList(): List<Class<out Module>> {
-    return modulesList
+  override fun getModulesMap(): Map<Class<out Module>, String?> {
+    return modulesMap
   }
 }
 """.trimIndent()

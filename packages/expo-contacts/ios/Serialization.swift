@@ -247,10 +247,10 @@ func serializeContact(person: CNContact, keys: [String]?, directory: URL?) throw
     contact[ContactsKey.nameSuffix] = person.nameSuffix
   }
   if keysToFetch.contains(CNContactPhoneticGivenNameKey) && fieldHasValue(field: person.phoneticGivenName) {
-    contact[ContactsKey.note] = person.phoneticGivenName
+    contact[ContactsKey.phoneticFirstName] = person.phoneticGivenName
   }
   if keysToFetch.contains(CNContactPhoneticMiddleNameKey) && fieldHasValue(field: person.phoneticMiddleName) {
-    contact[ContactsKey.note] = person.phoneticMiddleName
+    contact[ContactsKey.phoneticMiddleName] = person.phoneticMiddleName
   }
   if keysToFetch.contains(CNContactPhoneticFamilyNameKey) && fieldHasValue(field: person.phoneticFamilyName) {
     contact[ContactsKey.phoneticLastName] = person.phoneticFamilyName

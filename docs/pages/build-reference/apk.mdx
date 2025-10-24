@@ -15,7 +15,7 @@ To generate an **.apk**, modify the [**eas.json**](/build/eas-json) by adding on
 - `developmentClient` to `true` (**default**)
 - `distribution` to `internal`
 - `android.buildType` to `apk`
-- `android.gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces **.apk**
+- `android.gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug`, [`:app:assembleDebugOptimized`](/more/expo-cli/#compiling-android) (available for SDK 54 and later), or any other Gradle command that produces an **.apk**
 
 ```json eas.json
 {

@@ -1,6 +1,13 @@
-import { useAudioPlayer, useAudioPlayerStatus, AudioModule, AudioSource } from 'expo-audio';
+import {
+  useAudioPlayer,
+  useAudioPlayerStatus,
+  AudioModule,
+  AudioSource,
+  AudioLockScreenOptions,
+} from 'expo-audio';
+import Checkbox from 'expo-checkbox';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Player from './Player';
 import Button from '../../../components/Button';
@@ -14,6 +21,17 @@ const remoteSource =
   'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02';
 const localSource = require('../../../../assets/sounds/polonez.mp3');
 
+enum LockScreenButton {
+  /**
+   * Seek 10s forward button
+   */
+  SEEK_FORWARD = 0,
+  /**
+   * Seek 10s back button
+   */
+  SEEK_BACKWARD = 1,
+}
+
 export default function AudioControlsScreen(props: any) {
   React.useLayoutEffect(() => {
     AudioModule.setAudioModeAsync({
@@ -21,8 +39,9 @@ export default function AudioControlsScreen(props: any) {
       interruptionMode: 'doNotMix',
       playsInSilentMode: true,
       allowsRecording: false,
-    });
-    AudioModule.setIsAudioActiveAsync(true);
+    }).catch((error: unknown) =>
+      console.warn(`Error calling setAudioModeAsync: ${JSON.stringify(error)}`)
+    );
     props.navigation.setOptions({
       title: 'Audio Controls',
     });
@@ -46,6 +65,7 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
   const status = useAudioPlayerStatus(player);
   const [enabled, setEnabled] = useState(false);
   const [metadata, setMetadata] = useState<1 | 2>(1);
+  const [options, setOptions] = useState<AudioLockScreenOptions>();
 
   const setIsMuted = (isMuted: boolean) => {
     player.muted = isMuted;
@@ -62,6 +82,17 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
 
   const setVolume = (volume: number) => {
     player.volume = volume;
+  };
+
+  const toggleButton = (button: LockScreenButton) => {
+    switch (button) {
+      case LockScreenButton.SEEK_FORWARD:
+        setOptions((o) => ({ ...o, showSeekForward: !o?.showSeekForward }));
+        break;
+      case LockScreenButton.SEEK_BACKWARD:
+        setOptions((o) => ({ ...o, showSeekBackward: !o?.showSeekBackward }));
+        break;
+    }
   };
 
   return (
@@ -87,14 +118,33 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
         <Button
           title={`${enabled ? 'Disable' : 'Enable'} Lock Screen controls`}
           onPress={() => {
-            player.setActiveForLockScreen(!enabled, {
-              title: 'Test',
-              artist: 'Test artist',
-              artworkUrl: artworkUrl1,
-            });
+            player.setActiveForLockScreen(
+              !enabled,
+              {
+                title: 'Test',
+                artist: 'Test artist',
+                artworkUrl: artworkUrl1,
+              },
+              options
+            );
             setEnabled((e) => !e);
           }}
         />
+        <Text>Lock screen buttons:</Text>
+        <View style={styles.optionRow}>
+          <Checkbox
+            value={options?.showSeekForward}
+            onValueChange={() => toggleButton(LockScreenButton.SEEK_FORWARD)}
+          />
+          <Text style={styles.optionsText}>Seek forward</Text>
+        </View>
+        <View style={styles.optionRow}>
+          <Checkbox
+            value={options?.showSeekBackward}
+            onValueChange={() => toggleButton(LockScreenButton.SEEK_BACKWARD)}
+          />
+          <Text style={styles.optionsText}>Seek backward</Text>
+        </View>
         <Button
           title="Update Metadata"
           onPress={() => {
@@ -126,5 +176,14 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     gap: 10,
+  },
+  optionRow: {
+    flexDirection: 'row',
+
+    gap: 10,
+  },
+  optionsText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

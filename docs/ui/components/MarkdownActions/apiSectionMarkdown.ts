@@ -28,7 +28,6 @@ type ApiDataFile = {
   children?: GeneratedData[];
 };
 
-const HOOK_EXCEPTIONS = new Set(['useSystemBrightnessAsync']);
 const METHOD_HEADER_TAG = '@header';
 
 type CategorizedEntries = {
@@ -349,7 +348,7 @@ async function fetchPackageDataAsync(version: string, packageName: string) {
 }
 
 function isHook(entry: GeneratedData) {
-  return Boolean(entry.name?.startsWith('use') && !HOOK_EXCEPTIONS.has(entry.name));
+  return Boolean(entry.name?.startsWith('use'));
 }
 
 function isListener(entry: GeneratedData) {
