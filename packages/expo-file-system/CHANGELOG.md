@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - [Android] Add contentUri property. ([#40002](https://github.com/expo/expo/pull/40002) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add `openAsCopy` and `allowsMultipleSelection` options to the `pickFileAsync` ([#39295](https://github.com/expo/expo/pull/39295) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 
@@ -27,7 +28,6 @@
 ### 🎉 New features
 
 - Add write options for base64 encoded bytes. ([#39963](https://github.com/expo/expo/pull/39963) by [@aleqsio](https://github.com/aleqsio))
-- [iOS] Add file sharing config options ([#39286](https://github.com/expo/expo/pull/39286) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 
@@ -59,7 +59,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [iOS] Add `pickDirectoryAsync` support ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
-- [iOS] Add `openAsCopy` and `allowsMultipleSelection ` options to the `pickFileAsync` ([#39295](https://github.com/expo/expo/pull/39295) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 
