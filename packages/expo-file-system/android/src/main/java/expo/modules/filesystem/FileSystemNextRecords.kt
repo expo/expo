@@ -62,5 +62,5 @@ data class DirectoryInfo(
 
 data class FilePickerOptions(
   @Field var initialUri: Uri? = null,
-  @Field var mimeType: String? = null,
+  @Field var mimeType: String? = null
 ) : Record
