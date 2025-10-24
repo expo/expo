@@ -3,13 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class ImageViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+internal final class ImageViewProps: UIBaseViewProps {
   @Field var systemName: String = ""
   @Field var size: Double?
   @Field var color: Color?
@@ -34,7 +28,6 @@ internal struct ImageView: ExpoSwiftUI.View {
       image
       .font(.system(size: CGFloat(props.size ?? 24)))
       .foregroundColor(props.color)
-      .modifier(CommonViewModifiers(props: props))
       .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
   }
 }

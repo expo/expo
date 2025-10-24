@@ -55,7 +55,6 @@ struct ContextMenu: ExpoSwiftUI.View {
         activationElement: activationElement,
         menuContent: menuContent
       )
-      .modifier(CommonViewModifiers(props: props))
     } else {
       let preview = props.children?
         .compactMap { $0.childView as? ContextMenuPreview }
@@ -67,13 +66,11 @@ struct ContextMenu: ExpoSwiftUI.View {
           preview: preview,
           menuContent: menuContent
         )
-        .modifier(CommonViewModifiers(props: props))
       } else {
         LongPressContextMenu(
           activationElement: activationElement,
           menuContent: menuContent
         )
-        .modifier(CommonViewModifiers(props: props))
       }
     }
   }

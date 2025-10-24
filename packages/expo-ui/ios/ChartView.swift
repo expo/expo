@@ -63,12 +63,7 @@ struct RuleChartStyle: Record {
   @Field var dashArray: [Double]?
 }
 
-final class ChartProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var modifiers: ModifierArray?
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
+final class ChartProps: UIBaseViewProps {
   @Field var data: [ChartDataPoint] = []
   @Field var type: ChartType = .line
   @Field var showGrid: Bool = true
@@ -193,7 +188,6 @@ struct ChartView: ExpoSwiftUI.View {
       .if(!props.showLegend) { chart in
         chart.chartLegend(.hidden)
       }
-      .modifier(CommonViewModifiers(props: props))
     }
   }
 
