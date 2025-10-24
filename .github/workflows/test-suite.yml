@@ -254,7 +254,7 @@ jobs:
           working-directory: apps/bare-expo
           build-command: |
             ./scripts/start-android-e2e-test.ts --build
-          build-output: apps/bare-expo/android/app/build/outputs/apk
+          build-output: apps/bare-expo/android/app/build/outputs/apk/release
           artifact-name: bare-expo-android-builds
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
@@ -288,7 +288,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: bare-expo-android-builds
-          path: apps/bare-expo/android/app/build/outputs/apk
+          path: apps/bare-expo/android/app/build/outputs/apk/release
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
