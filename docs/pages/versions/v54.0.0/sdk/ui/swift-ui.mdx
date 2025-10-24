@@ -22,6 +22,28 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 The SwiftUI components in `@expo/ui/swift-ui` allow you to build fully native iOS interfaces using SwiftUI from React Native.
 
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+Render every SwiftUI component inside the `<Host>` component from `@expo/ui/swift-ui`. `<Host>` bridges React Native and SwiftUI, and views rendered outside it will not appear.
+
+```tsx
+import { Host, Button } from '@expo/ui/swift-ui';
+
+export function SaveButton() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Button variant="default">Save changes</Button>
+    </Host>
+  );
+}
+```
+
+For a in-depth explanation of how `<Host>` works, see the following resources:
+
 <BoxLink
   title="Expo UI guide for Swift UI"
   description={
@@ -38,10 +60,6 @@ The SwiftUI components in `@expo/ui/swift-ui` allow you to build fully native iO
   title="Expo UI iOS Liquid Glass Tutorial"
   description="Learn how to build real SwiftUI views in your React Native app with the new Expo UI."
 />
-
-## Installation
-
-<APIInstallSection />
 
 ## Components
 
