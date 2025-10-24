@@ -7,5 +7,10 @@
 import { AgeRangeRequest, AgeRangeResponse } from '../src/ExpoAgeRange.types';
 
 export async function requestAgeRangeAsync(opts: AgeRangeRequest): Promise<AgeRangeResponse> {
-  return { lowerBound: 18, activeParentalControls: [] };
+  return {
+    installId: 'some-id',
+    userStatus: '1',
+    lowerBound: 18,
+    activeParentalControls: [],
+  };
 }
