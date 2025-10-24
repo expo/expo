@@ -1,14 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import {
-  useEffect,
-  useState,
-  createRef,
-  type PropsWithChildren,
-  useRef,
-  useCallback,
-} from 'react';
+import { useEffect, useState, createRef, type PropsWithChildren, useRef, useCallback } from 'react';
 
 import { InlineHelp } from 'ui/components/InlineHelp';
 import { PageHeader } from 'ui/components/PageHeader';
