@@ -36,7 +36,6 @@ export type AgeRangeResponse = {
    * @platform ios
    */
   activeParentalControls?: string[];
-
   /**
    * An ID assigned to supervised user installs by Google Play, used to notify you of revoked app approval.
    *

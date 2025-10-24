@@ -1,6 +1,6 @@
 ---
 title: AgeRange
-description: A library that provides access to age range information using Google Play Age Signals API on Android and Declared Age Range framework on iOS.
+description: A library that provides access to age range information using Play Age Signals API on Android and Declared Age Range framework on iOS.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-age-range'
 packageName: 'expo-age-range'
 platforms: ['android', 'ios']
@@ -14,9 +14,13 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-age-range` provides access to user age range information. It uses Google's [Play Age Signals API](https://developer.android.com/google/play/age-signals/use-age-signals-api) on Android and Apple's [Declared Age Range framework](https://developer.apple.com/documentation/declaredagerange/) on iOS.
 
-This API allows you to request age range information from users to help you comply with age-appropriate content regulations and provide age-appropriate experiences in your app.
+This API allows you to request age range information from users to help you comply with age-appropriate content regulations (such as in [Texas](https://developer.apple.com/news/?id=btkirlj8)) and provide age-appropriate experiences in your app.
 
-Limitation: On Android, the Play Age Signals API (beta) throws an exception until January 1, 2026, [as documented](https://developer.android.com/google/play/age-signals/use-age-signals-api#integrate-play-age-signals). From January 1, the API will return live responses.
+### Limitations
+
+We strongly recommend testing the functionality on a real device, as simulator runtimes may not work as expected.
+
+On Android, the Play Age Signals API (beta) throws an exception until January 1, 2026, as per the [official Android documentation](https://developer.android.com/google/play/age-signals/use-age-signals-api#integrate-play-age-signals). From January 1, the API will return live responses.
 
 ## Installation
 
@@ -26,7 +30,7 @@ Limitation: On Android, the Play Age Signals API (beta) throws an exception unti
 
 ### Setup iOS project
 
-To use the age range API on iOS, you need to add the `com.apple.developer.declared-age-range` entitlement to your app. Add it to your **app.json** or **app.config.js**:
+To use the age range API on iOS, you need to add the `com.apple.developer.declared-age-range` entitlement to your app. Add it to your [app config](./config/app/) file:
 
 ```json app.json
 {
@@ -42,7 +46,7 @@ To use the age range API on iOS, you need to add the `com.apple.developer.declar
 
 <ConfigReactNative>
 
-For bare React Native projects, add the entitlement to your **ios/[app]/[app].entitlements** file:
+For existing React Native projects, add the entitlement to your project's **ios/[app]/[app].entitlements** file:
 
 ```xml
 <key>com.apple.developer.declared-age-range</key>
@@ -53,15 +57,44 @@ For bare React Native projects, add the entitlement to your **ios/[app]/[app].en
 
 ## Usage
 
-<SnackInline label="Age Range Usage" dependencies={['expo-age-range']} platforms={['android', 'ios', 'web']}>
+<SnackInline label="Age Range Usage" dependencies={['expo-age-range']} platforms={['android', 'ios']}>
 
-```ts
+```tsx
 import * as AgeRange from 'expo-age-range';
+import { useState } from 'react';
+import { StyleSheet, Text, View, Button } from 'react-native';
 
-const result = await AgeRange.requestAgeRangeAsync({
-  threshold1: 10,
-  threshold2: 13,
-  threshold3: 18,
+export default function App() {
+  const [result, setResult] = useState<AgeRange.AgeRangeResponse | { error: string } | null>(null);
+
+  const requestAgeRange = async () => {
+    try {
+      const ageRange = await AgeRange.requestAgeRangeAsync({
+        threshold1: 10,
+        threshold2: 13,
+        threshold3: 18,
+      });
+      setResult(ageRange);
+    } catch (error) {
+      setResult({ error: error.message });
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Button title="Request Age Range" onPress={requestAgeRange} />
+      {result && (
+        <Text style={styles.result}>
+          {'error' in result ? `Error: ${result.error}` : `Lower age bound: ${result.lowerBound}`}
+        </Text>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', padding: 20 },
+  result: { marginTop: 20, fontSize: 16 },
 });
 ```
 
@@ -74,8 +107,19 @@ const result = await AgeRange.requestAgeRangeAsync({
 
 ## API
 
-```js
+```ts
 import * as AgeRange from 'expo-age-range';
 ```
 
 <APISection packageName="expo-age-range" apiName="AgeRange" />
+
+## Error codes
+
+Available in the `code` property of any error thrown by the native module.
+For Android-specific error codes, see "Handle API error codes" in [Use Play Age Signals API docs](https://developer.android.com/google/play/age-signals/use-age-signals-api#handle-api-errors)
+
+| Code                            | Description                                                                                                                      |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_AGE_RANGE_USER_DECLINED`   | **iOS Only.** User declined to shar their age range.                                                                             |
+| `ERR_AGE_RANGE_NOT_AVAILABLE`   | **iOS Only.** Age range not available. The most likely cause is that user is not signed in to their Apple account on the device. |
+| `ERR_AGE_RANGE_INVALID_REQUEST` | **iOS Only.** The provided params were invalid. The age ranges need to be minimum 2 years apart.                                 |
