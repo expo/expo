@@ -67,6 +67,7 @@ fun BottomSheetScaffold(
         modifier = Modifier
           .fillMaxWidth()
           .navigationBarsPadding()
+          .padding(bottom = NewAppTheme.spacing.`5`)
       ) {
         Box(modifier = Modifier.padding(NewAppTheme.spacing.`4`)) {
           header()
