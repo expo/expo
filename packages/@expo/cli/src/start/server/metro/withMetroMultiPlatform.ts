@@ -332,10 +332,8 @@ export function withExtendedResolver(
   let _asyncRequireModuleResolvedPath: string | null | undefined;
   const getAsyncRequireModule = () => {
     if (_asyncRequireModuleResolvedPath === undefined) {
-      _asyncRequireModuleResolvedPath = resolveFrom.silent(
-        config.projectRoot,
-        config.transformer.asyncRequireModulePath
-      );
+      _asyncRequireModuleResolvedPath =
+        resolveFrom.silent(config.projectRoot, config.transformer.asyncRequireModulePath) ?? null;
     }
     return _asyncRequireModuleResolvedPath
       ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)

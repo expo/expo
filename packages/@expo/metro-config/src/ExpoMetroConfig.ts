@@ -402,7 +402,7 @@ export function getDefaultConfig(
       babelTransformerPath: require.resolve('./babel-transformer'),
       // Only apply expo internal asyncRequireModulePath when `expo` is installed
       // This must be a module request, rather than an absolute path to keep the cache clean
-      asyncRequireModulePath: getExpoOptional(projectRoot)
+      asyncRequireModulePath: getExpoOptional(projectRoot, 'internal/async-require-module')
         ? 'expo/internal/async-require-module'
         : metroDefaultValues.transformer.asyncRequireModulePath,
       assetRegistryPath: '@react-native/assets-registry/registry',
@@ -459,8 +459,8 @@ function findUpPackageJson(cwd: string): string | null {
   return findUpPackageJson(path.dirname(cwd));
 }
 
-function getExpoOptional(projectRoot: string): string | undefined {
-  return resolveFrom.silent(projectRoot, 'expo/package.json');
+function getExpoOptional(projectRoot: string, subModule = 'package.json'): string | undefined {
+  return resolveFrom.silent(projectRoot, `expo/${subModule}`);
 }
 
 function getExpoMetroRuntimeOptional(projectRoot: string): string | undefined {
