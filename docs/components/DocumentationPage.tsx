@@ -201,25 +201,12 @@ export default function DocumentationPage({
         return;
       }
 
-      const target = event.target as HTMLElement | null;
-      if (target) {
-        const tagName = target.tagName;
-        const isEditable =
-          target.isContentEditable ||
-          tagName === 'INPUT' ||
-          tagName === 'TEXTAREA' ||
-          tagName === 'SELECT';
-        if (isEditable) {
-          return;
-        }
-      }
-
       let isMac = false;
       if (typeof navigator !== 'undefined') {
         if ('userAgentData' in navigator && navigator.userAgentData?.platform) {
           isMac = navigator.userAgentData.platform === 'macOS';
-        } else if (navigator.platform) {
-          isMac = navigator.platform.toLowerCase().includes('mac');
+        } else if (navigator.userAgent) {
+          isMac = navigator.userAgent.toLowerCase().includes('mac');
         }
       }
       const isModPressed = isMac ? event.metaKey : event.ctrlKey;
