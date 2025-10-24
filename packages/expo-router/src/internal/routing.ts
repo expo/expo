@@ -7,6 +7,12 @@ export {
   type Options as GetRoutesCoreOptions,
   type RewriteConfig,
 } from '../getRoutesCore';
-export { getContextKey, isTypedRoute, matchGroupName, removeSupportedExtensions, stripGroupSegmentsFromPath } from '../matchers';
+export {
+  getContextKey,
+  isTypedRoute,
+  matchGroupName,
+  removeSupportedExtensions,
+  stripGroupSegmentsFromPath,
+} from '../matchers';
 export type { DynamicConvention, RouteNode } from '../Route';
 export { sortRoutes } from '../sortRoutes';
