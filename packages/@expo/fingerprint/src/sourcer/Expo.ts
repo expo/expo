@@ -239,7 +239,7 @@ export async function createHashSourceExternalFileAsync({
   reason: string;
 }): Promise<HashSource | null> {
   const hashSource = await getFileBasedHashSourceAsync(projectRoot, file, reason);
-  if (hashSource != null) {
+  if (hashSource) {
     debug(`Adding config external file - ${chalk.dim(file)}`);
     if (hashSource.type === 'file' || hashSource.type === 'dir') {
       // We include the expo config contents in the fingerprint,
