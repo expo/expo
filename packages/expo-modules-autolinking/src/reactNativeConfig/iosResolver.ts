@@ -1,4 +1,4 @@
-import { glob } from 'glob';
+import fs from 'fs';
 import path from 'path';
 
 import type {
@@ -6,6 +6,17 @@ import type {
   RNConfigReactNativePlatformsConfigIos,
 } from './reactNativeConfig.types';
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+
+const findPodspecFile = async (targetPath: string) => {
+  try {
+    const entries = (await fs.promises.readdir(targetPath, { withFileTypes: true }))
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.podspec'))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    return entries.length > 0 ? path.join(targetPath, entries[0].name) : null;
+  } catch {
+    return null;
+  }
+};
 
 export async function resolveDependencyConfigImplIosAsync(
   resolution: { path: string; version: string },
@@ -17,16 +28,16 @@ export async function resolveDependencyConfigImplIosAsync(
     return null;
   }
 
-  const podspecs = await glob('*.podspec', { cwd: resolution.path });
-  if (!podspecs?.length) {
+  const mainPackagePodspec = path.join(
+    resolution.path,
+    path.basename(resolution.path) + '.podspec'
+  );
+  const podspecPath = fs.existsSync(mainPackagePodspec)
+    ? mainPackagePodspec
+    : await findPodspecFile(resolution.path);
+  if (!podspecPath) {
     return null;
   }
-
-  const mainPackagePodspec = path.basename(resolution.path) + '.podspec';
-  const podspecFile = podspecs.includes(mainPackagePodspec)
-    ? mainPackagePodspec
-    : podspecs.sort((a, b) => a.localeCompare(b))[0];
-  const podspecPath = path.join(resolution.path, podspecFile);
 
   if (reactNativeConfig === undefined && expoModuleConfig?.supportsPlatform('apple')) {
     // Check if Expo podspec files contain the React Native podspec file
