@@ -9,6 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
+import { ReactNavigationOptions } from '~/ui/components/ReactNavigationOptions';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <VideoBoxLink
@@ -135,7 +136,11 @@ The tab file named **index.tsx** is the default tab when the app loads. The seco
 
 ## Screen options
 
-The tabs layout wraps the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. You can use the [options presented in the React Navigation documentation](https://reactnavigation.org/docs/bottom-tab-navigator/#options) to customize the tab bar or each tab.
+The tabs layout wraps the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. Expo Router extends those APIs, so you can use the same configuration props to customize the tab bar or each tab. The supported tab bar options are listed below and sourced directly from the React Navigation documentation.
+
+<ReactNavigationOptions category="tabBar" />
+
+For additional details and navigator-specific examples, refer to the [React Navigation bottom tabs guide](https://reactnavigation.org/docs/bottom-tab-navigator/#options).
 
 ## Advanced
 
