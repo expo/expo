@@ -73,8 +73,10 @@ function normalizeArgs(
   blobFilename: string | undefined
 ): [string, File | string] {
   if (value instanceof Blob) {
-    // @ts-expect-error: `name` is not accessible in blob
-    value.name = blobFilename ?? value.name ?? 'blob';
+    if (Object.getOwnPropertyDescriptor(value, 'name')?.writable) {
+      // @ts-expect-error: `name` is not accessible in blob
+      value.name = blobFilename ?? value.name ?? 'blob';
+    }
   } else if (typeof value !== 'object') {
     value = String(value);
   }
