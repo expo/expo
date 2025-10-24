@@ -175,7 +175,7 @@ export async function parseNativePackageClassNameAsync(
   packageRoot: string,
   androidDir: string
 ): Promise<string | null> {
-  // Search for *Package.{java,kt} files first
+  // Search for **/*Package.{java,kt} files first
   for await (const entry of scanFilesRecursively(androidDir, undefined, true)) {
     if (entry.name.endsWith('Package.java') || entry.name.endsWith('Package.kt')) {
       try {
@@ -195,7 +195,7 @@ export async function parseNativePackageClassNameAsync(
     return null;
   }
 
-  // Search all *.{java,kt} files
+  // Search all **/*.{java,kt} files
   for await (const entry of scanFilesRecursively(androidDir, undefined, true)) {
     if (entry.name.endsWith('.java') || entry.name.endsWith('.kt')) {
       const contents = await fs.readFile(entry.path);

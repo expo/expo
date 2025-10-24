@@ -7,6 +7,7 @@ import type {
 } from './reactNativeConfig.types';
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
 
+/** Find all *.podspec files in target directory */
 const findPodspecFile = async (targetPath: string) => {
   try {
     const entries = (await fs.promises.readdir(targetPath, { withFileTypes: true }))

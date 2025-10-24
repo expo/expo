@@ -21,6 +21,7 @@ const fileExistsAsync = async (file: string): Promise<string | null> => {
   return stat?.isFile() ? file : null;
 };
 
+/** Find all *.podspec files in top-level directories */
 async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
   const configPodspecPaths = revision.config?.applePodspecPaths();
   if (configPodspecPaths && configPodspecPaths.length) {
