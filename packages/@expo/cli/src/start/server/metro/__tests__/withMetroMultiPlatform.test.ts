@@ -9,7 +9,12 @@ import { AutolinkingModuleResolverInput } from '../createExpoAutolinkingResolver
 import { shouldCreateVirtualShim } from '../externals';
 import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
 
-const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => config as any;
+const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => ({
+  ...(config as any),
+  transformer: {
+    asyncRequireModulePath: 'expo/internal/async-require-module',
+  },
+});
 
 class FailedToResolveNameError extends Error {
   extraPaths: string[] = [];
@@ -730,6 +735,61 @@ describe(withExtendedResolver, () => {
       '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
       'web'
     );
+  });
+
+  it('aliases assets registry to virtual shim', async () => {
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+        mock: '',
+      },
+      '/'
+    );
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+      tsconfig: {},
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    const result = modified.resolver.resolveRequest!(
+      getDefaultRequestContext(),
+      '@react-native/assets-registry/registry',
+      'ios'
+    );
+
+    expect(result).toEqual({
+      filePath: '\0polyfill:assets-registry',
+      type: 'sourceFile',
+    });
+  });
+
+  it('aliases async require module to resolved path', async () => {
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+        mock: '',
+      },
+      '/'
+    );
+
+    const config = asMetroConfig({ projectRoot: '/root/' });
+    const modified = withExtendedResolver(config, {
+      tsconfig: {},
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    // Requesting `asyncRequireModulePath` will replace the path with a Node-resolved path
+    const expectedPath = require.resolve(config.transformer.asyncRequireModulePath);
+    const result = modified.resolver.resolveRequest!(
+      getDefaultRequestContext(),
+      config.transformer.asyncRequireModulePath,
+      'ios'
+    );
+
+    expect(result).toEqual({
+      filePath: expectedPath,
+      type: 'sourceFile',
+    });
   });
 
   describe('built-in externals', () => {
