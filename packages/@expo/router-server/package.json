@@ -1,0 +1,67 @@
+{
+  "name": "@expo/router-server",
+  "version": "0.1.0",
+  "description": "Expo Router is a file-based router for React Native and web applications.",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "main": "build/index",
+  "types": "build/index.d.ts",
+  "files": [
+    "build",
+    "node"
+  ],
+  "repository": {
+    "url": "https://github.com/expo/expo.git",
+    "type": "git",
+    "directory": "packages/@expo/router-server"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://docs.expo.dev/routing/introduction/",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
+    "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "peerDependencies": {
+    "@expo/metro-runtime": "^6.1.2",
+    "react": "*",
+    "react-dom": "*",
+    "expo": "*",
+    "expo-constants": "^18.0.9",
+    "expo-font": "*",
+    "expo-router": "*",
+    "expo-server": "*",
+    "react-server-dom-webpack": ">= 19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-web": {
+      "optional": true
+    },
+    "react-server-dom-webpack": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "react-server-dom-webpack": "~19.0.0"
+  },
+  "dependencies": {
+    "debug": "^4.3.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

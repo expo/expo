@@ -15,12 +15,12 @@ android {
 }
 
 dependencies {
-  api "androidx.browser:browser:1.6.0"
+  implementation "androidx.browser:browser:1.6.0"
 
-  implementation "androidx.core:core-ktx:1.13.1"
+  implementation "androidx.core:core-ktx:1.17.0"
 
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
   }
-  testImplementation "org.robolectric:robolectric:4.11.1"
+  testImplementation "org.robolectric:robolectric:4.16"
 }

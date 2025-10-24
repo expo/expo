@@ -19,8 +19,8 @@ const LabeledContentNativeView: React.ComponentType<LabeledContentProps> = requi
 /**
  * LabeledContent component uses the native [LabeledContent](https://developer.apple.com/documentation/swiftui/labeledcontent) component.
  * A container for attaching a label to a value-bearing view.
- * Available from iOS 16.0.
- * @platform ios
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
  */
 export function LabeledContent(props: LabeledContentProps) {
   const { modifiers, ...restProps } = props;

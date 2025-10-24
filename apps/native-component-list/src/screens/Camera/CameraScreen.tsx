@@ -1,5 +1,5 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
 export const CameraScreens = [
   {
@@ -47,12 +47,6 @@ export const CameraScreens = [
 ];
 
 export default function CameraScreen() {
-  const apis: ListElement[] = CameraScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/components/${screen.route}`,
-    };
-  });
+  const apis = componentScreensToListElements(CameraScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

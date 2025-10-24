@@ -161,7 +161,10 @@ export type AudioStatus = {
     isLoaded: boolean;
     /** Current playback rate (1.0 = normal speed). */
     playbackRate: number;
-    /** Whether pitch correction is enabled for rate changes. */
+    /**
+     * Whether pitch correction is enabled for rate changes.
+     * @default true
+     */
     shouldCorrectPitch: boolean;
 };
 /**
@@ -486,4 +489,10 @@ export type InterruptionModeAndroid = 'doNotMix' | 'duckOthers';
  * @platform android
  */
 export type RecordingSource = 'camcorder' | 'default' | 'mic' | 'remote_submix' | 'unprocessed' | 'voice_communication' | 'voice_performance' | 'voice_recognition';
+export type AudioMetadata = {
+    title?: string;
+    artist?: string;
+    albumTitle?: string;
+    artworkUrl?: string;
+};
 //# sourceMappingURL=Audio.types.d.ts.map

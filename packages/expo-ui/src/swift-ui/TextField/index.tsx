@@ -39,10 +39,17 @@ export type TextFieldKeyboardType =
   | 'ascii-capable-number-pad';
 
 /**
- * Can be used for imperatively setting text on the TextField component.
+ * Can be used for imperatively setting text and focus on the TextField component.
  */
 export type TextFieldRef = {
   setText: (newText: string) => Promise<void>;
+  focus: () => Promise<void>;
+  blur: () => Promise<void>;
+  /**
+   * Programmatically select text using start and end indices.
+   * @platform ios 18.0+ tvos 18.0+
+   */
+  setSelection: (start: number, end: number) => Promise<void>;
 };
 
 export type TextFieldProps = {
@@ -58,12 +65,29 @@ export type TextFieldProps = {
   /**
    * A callback triggered when user types in text into the TextField.
    */
-  onChangeText: (value: string) => void;
+  onChangeText?: (value: string) => void;
+  /**
+   * A callback triggered when user focuses or blurs the TextField.
+   */
+  onChangeFocus?: (focused: boolean) => void;
+  /**
+   * A callback triggered when user submits the TextField by pressing the return key.
+   */
+  onSubmit?: (value: string) => void;
+  /**
+   * A callback triggered when user selects text in the TextField.
+   * @platform ios 18.0+ tvos 18.0+
+   */
+  onChangeSelection?: ({ start, end }: { start: number; end: number }) => void;
   /**
    * If true, the text input can be multiple lines.
    * While the content will wrap, there's no keyboard button to insert a new line.
    */
   multiline?: boolean;
+  /**
+   * If true, the text input will add new lines when the user presses the return key.
+   * @default true
+   */
   allowNewlines?: boolean;
   /**
    * The number of lines to display when `multiline` is set to true.
@@ -78,13 +102,21 @@ export type TextFieldProps = {
    * @default true
    */
   autocorrection?: boolean;
+
+  /**
+   * If true, the text input will be focused automatically when the component is mounted.
+   * @default false
+   */
+  autoFocus?: boolean;
 } & CommonViewModifierProps;
 
-export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText'> & {} & ViewEvent<
-    'onValueChanged',
-    { value: string }
-  >;
-
+export type NativeTextFieldProps = Omit<
+  TextFieldProps,
+  'onChangeText' | 'onSubmit'
+> & {} & ViewEvent<'onValueChanged', { value: string }> &
+  ViewEvent<'onFocusChanged', { value: boolean }> &
+  ViewEvent<'onSelectionChanged', { start: number; end: number }> &
+  ViewEvent<'onSubmit', { value: string }>;
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
   'ExpoUI',
@@ -99,6 +131,15 @@ function transformTextFieldProps(props: TextFieldProps): NativeTextFieldProps {
     ...restProps,
     onValueChanged: (event) => {
       props.onChangeText?.(event.nativeEvent.value);
+    },
+    onFocusChanged: (event) => {
+      props.onChangeFocus?.(event.nativeEvent.value);
+    },
+    onSelectionChanged: (event) => {
+      props.onChangeSelection?.({ start: event.nativeEvent.start, end: event.nativeEvent.end });
+    },
+    onSubmit: (event) => {
+      props.onSubmit?.(event.nativeEvent.value);
     },
   };
 }

@@ -11,12 +11,74 @@ isNew: true
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
+import { CODE } from '~/ui/components/Text';
 
 `expo-file-system` provides access to files and directories stored on a device or bundled as assets into the native project. It also allows downloading files from the network.
 
 ## Installation
 
 <APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-file-system` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-file-system",
+        {
+          "supportsOpeningDocumentsInPlace": true,
+          "enableFileSharing": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'supportsOpeningDocumentsInPlace',
+      platform: 'ios',
+      description:
+        'A boolean to enable `LSSupportsOpeningDocumentsInPlace` in **Info.plist**. This allows the app to open documents in place.',
+      default: 'false',
+    },
+    {
+      name: 'enableFileSharing',
+      platform: 'ios',
+      description:
+        "A boolean to enable `UIFileSharingEnabled` in **Info.plist**. This enables file sharing in the iOS Files app, making the app's Documents directory accessible to users through the Files app, iTunes File Sharing, and other file management tools.",
+      default: 'false',
+    },
+  ]}
+/>
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **ios** project manually, then you need to add the `LSSupportsOpeningDocumentsInPlace` and `UIFileSharingEnabled` keys to your project's **ios/[app]/Info.plist**:
+
+```xml
+<key>LSSupportsOpeningDocumentsInPlace</key>
+<true/>
+<key>UIFileSharingEnabled</key>
+<true/>
+```
+
+</ConfigReactNative>
 
 ## Usage
 
@@ -120,7 +182,7 @@ src.write(await response.bytes());
 
 </Collapsible>
 
-<Collapsible summary="Uploading files using `expo/fetch`">
+<Collapsible summary={<>Uploading files using <CODE>expo/fetch</CODE></>}>
 
 You can upload files as blobs directly with `fetch` built into the Expo package:
 
@@ -163,6 +225,9 @@ try {
   const file = new File(Paths.document, 'example.txt');
   file.create();
   console.log(file.uri); // '${documentDirectory}/example.txt'
+  const copiedFile = new File(Paths.cache, 'example-copy.txt');
+  file.copy(copiedFile);
+  console.log(copiedFile.uri); // '${cacheDirectory}/example-copy.txt'
   file.move(Paths.cache);
   console.log(file.uri); // '${cacheDirectory}/example.txt'
   file.move(new Directory(Paths.cache, 'newFolder'));

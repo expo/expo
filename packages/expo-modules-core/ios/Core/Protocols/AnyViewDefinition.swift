@@ -1,7 +1,7 @@
 /**
  A protocol for any type-erased view definition.
  */
-public protocol AnyViewDefinition {
+public protocol AnyViewDefinition: Sendable {
   /**
    An array of view props supported by the view.
    */

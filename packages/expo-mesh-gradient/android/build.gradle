@@ -31,6 +31,6 @@ android {
 }
 
 dependencies {
-  implementation 'androidx.compose.foundation:foundation-android:1.7.6'
-  implementation 'androidx.compose.ui:ui-android:1.7.6'
+  implementation 'androidx.compose.foundation:foundation-android:1.9.1'
+  implementation 'androidx.compose.ui:ui-android:1.9.1'
 }

@@ -11,17 +11,15 @@ class ViewManagerDefinitionTest {
   @Test
   fun `definition should deduce type of view manager`() {
     val simpleViewManagerDefinition = ViewManagerDefinition(
-      null,
-      { _, _ -> mockk<TextView>() },
-      TextView::class.java,
-      emptyMap()
+      viewFactory = { _, _ -> mockk<TextView>() },
+      viewType = TextView::class.java,
+      props = emptyMap()
     )
 
     val groupViewManagerDefinition = ViewManagerDefinition(
-      null,
-      { _, _ -> mockk<ListView>() },
-      ListView::class.java,
-      emptyMap()
+      viewFactory = { _, _ -> mockk<ListView>() },
+      viewType = ListView::class.java,
+      props = emptyMap()
     )
 
     Truth.assertThat(simpleViewManagerDefinition.getViewManagerType()).isEqualTo(ViewManagerType.SIMPLE)

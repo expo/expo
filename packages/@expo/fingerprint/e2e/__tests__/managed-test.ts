@@ -1,9 +1,10 @@
 import spawnAsync from '@expo/spawn-async';
+import { randomUUID } from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 import rimraf from 'rimraf';
 
-import getFingerprintHashFromCLIAsync from './utils/CLIUtils';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import {
   createFingerprintAsync,
   createProjectHashAsync,
@@ -24,6 +25,7 @@ describe('managed project test', () => {
   const tmpDir = require('temp-dir');
   const projectName = 'fingerprint-e2e-managed';
   const projectRoot = path.join(tmpDir, projectName);
+  let originalConfig: any;
 
   beforeAll(async () => {
     rimraf.sync(projectRoot);
@@ -37,6 +39,12 @@ describe('managed project test', () => {
         npm_config_user_agent: undefined,
       },
     });
+
+    originalConfig = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf8'));
+  });
+
+  afterEach(async () => {
+    await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(originalConfig, null, 2));
   });
 
   afterAll(async () => {
@@ -176,6 +184,33 @@ describe('managed project test', () => {
         },
       ]
     `);
+  });
+
+  it('should have same hash even if google service file path is different', async () => {
+    const configPath = path.join(projectRoot, 'app.json');
+    const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
+    const googleServicesPath = path.join(projectRoot, 'google-services.json');
+    config.expo.android.googleServicesFile = googleServicesPath;
+    await fs.writeFile(googleServicesPath, '{}');
+    await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+
+    const hash = await createProjectHashAsync(projectRoot);
+
+    // Simulate the EAS environment secrets file path
+    const tmpDir = require('temp-dir');
+    const googleServicesPathNew = path.join(tmpDir, 'eas-environment-secrets', randomUUID());
+    try {
+      await fs.mkdir(path.dirname(googleServicesPathNew), { recursive: true });
+      await fs.cp(googleServicesPath, googleServicesPathNew, { recursive: true });
+      await fs.rm(googleServicesPath, { recursive: true, force: true });
+      config.expo.android.googleServicesFile = googleServicesPathNew;
+      await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+
+      const hash2 = await createProjectHashAsync(projectRoot);
+      expect(hash).toBe(hash2);
+    } finally {
+      await fs.rm(path.dirname(googleServicesPathNew), { recursive: true, force: true });
+    }
   });
 });
 

@@ -81,6 +81,7 @@ export declare class Query {
   /**
    * Executes the query and retrieves the matching assets.
    * @returns A promise that resolves to an array of {@link Asset} objects that match the query criteria.
+   *
    * @example
    * ```ts
    * const assets = await new Query()

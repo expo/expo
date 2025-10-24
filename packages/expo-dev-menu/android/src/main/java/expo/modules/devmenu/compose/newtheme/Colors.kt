@@ -33,6 +33,7 @@ class Colors(private val pallet: RadixPallet<Color>) {
     val element = pallet.gray.`3`
 
     val warning = pallet.yellow.`3`
+    val tip = pallet.blue.`3`
     val info = pallet.blue.`3`
   }
 
@@ -43,7 +44,7 @@ class Colors(private val pallet: RadixPallet<Color>) {
     val quaternary = pallet.gray.`8`
 
     val warning = pallet.yellow.`11`
-    val info = pallet.blue.`10`
+    val info = pallet.blue.`11`
   }
 
   inner class Border internal constructor() {

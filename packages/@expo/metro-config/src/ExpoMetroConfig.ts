@@ -9,7 +9,7 @@ import type {
   Module,
   ReadOnlyGraph,
   Options as GraphOptions,
-} from '@expo/metro/metro/DeltaBundler/types.flow';
+} from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
 import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
 import chalk from 'chalk';
@@ -307,6 +307,11 @@ export function getDefaultConfig(
         .filter((assetExt: string) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
+      blockList: [
+        // .expo/types contains generated declaration files which are not and should not be processed by Metro.
+        // This prevents unwanted fast refresh on the declaration files changes.
+        /\.expo[\\/]types/,
+      ].concat(metroDefaultValues.resolver.blockList ?? []),
     },
     cacheStores: [cacheStore],
     watcher: {

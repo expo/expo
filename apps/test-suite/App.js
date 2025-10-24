@@ -2,15 +2,16 @@ import { NavigationContainer } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
 
-import AppNavigator from './AppNavigator';
+import { TestStackNavigator } from './TestStackNavigator';
 import { ThemeProvider } from '../common/ThemeProvider';
+import { routeNames } from './constants/routeNames';
 
 const linking = {
   prefixes: [Linking.createURL('/')],
   config: {
     screens: {
-      select: '',
-      run: 'run',
+      [routeNames.select]: '',
+      [routeNames.run]: routeNames.run,
     },
   },
 };
@@ -18,7 +19,7 @@ const linking = {
 export default () => (
   <ThemeProvider>
     <NavigationContainer linking={linking}>
-      <AppNavigator />
+      <TestStackNavigator />
     </NavigationContainer>
   </ThemeProvider>
 );

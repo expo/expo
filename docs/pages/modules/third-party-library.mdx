@@ -150,7 +150,7 @@ dependencies {
 <Collapsible summary={<>Are you trying to use a <CODE>.aar</CODE> dependency?</>}>
 
 <Tabs>
-  <Tab label="SDK 52 and above">
+  <Tab label="SDK 52 and later">
     Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the file as a Gradle project from autolinking:
 
 ```diff expo-module.config.json
@@ -175,7 +175,7 @@ dependencies {
 ```
 
   </Tab>
-  <Tab label="SDK 51 and below">
+  <Tab label="SDK 51 and earlier">
     Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the directory as a repository:
 
 ```diff android/build.gradle

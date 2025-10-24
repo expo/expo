@@ -11,46 +11,50 @@ public enum ValueOrUndefined<InnerType: AnyArgument>: AnyValueOrUndefined {
   case value(unwrapped: InnerType)
 
   var optional: InnerType? {
-    switch self {
+    return switch self {
     // We want to produce Optional(nil) instead of nil - that's what DynamicOptionalType does
-    case .undefined: return Any??.some(nil) as Any?? as! InnerType?
-    case .value(let value): return value
+    case .undefined: Any??.some(nil) as Any?? as! InnerType?
+    case .value(let value): value
     }
   }
 
-  var isUndefinded: Bool {
-    if case .undefined = self {
-      return true
+  var isUndefined: Bool {
+    return switch self {
+    case .undefined: true
+    default: false
     }
+  }
 
-    return false
+  // @deprecated because of the typo
+  var isUndefinded: Bool {
+    return self.isUndefined
   }
 }
 
 extension ValueOrUndefined: Equatable where InnerType: Equatable {
   public static func == (lhs: ValueOrUndefined, rhs: ValueOrUndefined) -> Bool {
-    switch (lhs, rhs) {
+    return switch (lhs, rhs) {
     case (.undefined, .undefined):
-      return true
+      true
     case (.value(let lhsValue), .value(let rhsValue)):
-      return lhsValue == rhsValue
+      lhsValue == rhsValue
     default:
-      return false
+      false
     }
   }
 }
 
 extension ValueOrUndefined: Comparable where InnerType: Comparable {
   public static func < (lhs: ValueOrUndefined, rhs: ValueOrUndefined) -> Bool {
-    switch (lhs, rhs) {
+    return switch (lhs, rhs) {
     case (.undefined, .undefined):
-      return false // undefined is considered equal to another undefined
+      false // undefined is considered equal to another undefined
     case (.undefined, _):
-      return false
+      false
     case (_, .undefined):
-      return false
+      false
     case (.value(let lhsValue), .value(let rhsValue)):
-      return lhsValue < rhsValue
+      lhsValue < rhsValue
     }
   }
 }

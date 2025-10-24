@@ -172,7 +172,10 @@ export type AudioStatus = {
   isLoaded: boolean;
   /** Current playback rate (1.0 = normal speed). */
   playbackRate: number;
-  /** Whether pitch correction is enabled for rate changes. */
+  /**
+   * Whether pitch correction is enabled for rate changes.
+   * @default true
+   */
   shouldCorrectPitch: boolean;
 };
 
@@ -527,3 +530,11 @@ export type RecordingSource =
   | 'voice_communication'
   | 'voice_performance'
   | 'voice_recognition';
+
+// @docsMissing
+export type AudioMetadata = {
+  title?: string;
+  artist?: string;
+  albumTitle?: string;
+  artworkUrl?: string;
+};

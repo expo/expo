@@ -182,11 +182,13 @@ Create a **SplashScreenController** to manage the splash screen. Authentication 
 import { SplashScreen } from 'expo-router';
 import { useSession } from './ctx';
 
+SplashScreen.preventAutoHideAsync();
+
 export function SplashScreenController() {
   const { isLoading } = useSession();
 
   if (!isLoading) {
-    SplashScreen.hideAsync();
+    SplashScreen.hide();
   }
 
   return null;

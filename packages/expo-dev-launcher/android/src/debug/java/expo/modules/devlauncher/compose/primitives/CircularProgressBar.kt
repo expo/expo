@@ -25,13 +25,14 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun CircularProgressBar(
+  modifier: Modifier = Modifier,
   startAngle: Float = 270f,
   size: Dp = 96.dp,
   strokeWidth: Dp = size / 8,
   duration: Duration = 1.seconds
 ) {
   val backgroundColor = NewAppTheme.pallet.gray.`3`
-  val progressColor = NewAppTheme.pallet.blue.`5`
+  val progressColor = NewAppTheme.pallet.blue.`8`
 
   val transition = rememberInfiniteTransition(label = "infiniteSpinningTransition")
 
@@ -44,7 +45,7 @@ fun CircularProgressBar(
     label = "Progress Animation"
   )
 
-  Canvas(modifier = Modifier.size(size)) {
+  Canvas(modifier = Modifier.size(size).then(modifier)) {
     val strokeWidthPx = strokeWidth.toPx()
     val arcSize = size.toPx() - strokeWidthPx
     drawArc(

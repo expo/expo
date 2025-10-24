@@ -39,6 +39,8 @@ class DevMenuModule : Module() {
         }
         DevMenuManager.registeredCallbacks.add(DevMenuManager.Callback(name, shouldCollapse))
       }
+
+      DevMenuManager.refreshCustomItems()
     }
 
     OnDestroy {

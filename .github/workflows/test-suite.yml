@@ -10,6 +10,7 @@ on:
       - apps/test-suite/**
       - packages/**
       - yarn.lock
+      # When adding new paths, also update the paths of the "Get the base commit" step below
   pull_request:
     paths:
       - .github/workflows/test-suite.yml
@@ -27,19 +28,20 @@ concurrency:
 jobs:
   ios-build:
     runs-on: macos-15
+    permissions:
+      # REQUIRED: Allow updating fingerprint in action caches
+      actions: write
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
-        with:
-          submodules: true
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
-      - name: 🔨 Switch to Xcode 16.4
-        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+      - name: 🔨 Switch to Xcode 26.0
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -67,28 +69,43 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
-      - name: 🌳 Display pod environment
-        run: pod env
-        working-directory: apps/bare-expo/ios
-      - name: 🥥 Install pods in apps/bare-expo/ios
-        if: steps.expo-caches.outputs.ios-pods-hit != 'true'
-        run: pod install
-        env:
-          RCT_USE_PREBUILT_RNCORE: 1
-          RCT_USE_RN_DEP: 1
-        working-directory: apps/bare-expo/ios
-      - name: 🏗️ Build iOS project (bare-expo)
-        run: ./scripts/start-ios-e2e-test.ts --build
-        working-directory: apps/bare-expo
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin main:main --depth 100 --no-recurse-submodules
+        if: github.event_name == 'pull_request'
+      - name: 🔎 Get the base commit
+        id: base-commit
+        run: |
+          # Since we limit this workflow only triggered from limited paths, we should use custom base commit
+          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+      - name: 📹 Check fingerprint
+        id: fingerprint
+        uses: expo/actions/fingerprint@main
+        with:
+          working-directory: apps/bare-expo
+          previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
+          fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
+      - name: 🏗️ Build/Repack iOS project (bare-expo)
+        uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 55
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
-      - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
+          RCT_USE_PREBUILT_RNCORE: 1
+          RCT_USE_RN_DEP: 1
         with:
-          name: bare-expo-ios-builds
-          path: apps/bare-expo/ios/build/BareExpo.app
+          platform: ios
+          fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
+          working-directory: apps/bare-expo
+          build-command: |
+            pushd ios
+            pod env
+            pod install
+            popd
+            ./scripts/start-ios-e2e-test.ts --build
+          build-output: apps/bare-expo/ios/build/BareExpo.app
+          artifact-name: bare-expo-ios-builds
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -115,6 +132,8 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
+      - name: 🔨 Switch to Xcode 26.0
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
@@ -122,11 +141,16 @@ jobs:
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
+      - name: 🧹 Cleanup unused simulator runtimes
+        run: |
+          xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
+          xcrun simctl list devices --json
+          xcrun simctl erase all
+          xcrun simctl shutdown all
+          sudo xcodebuild -runFirstLaunch
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
-          brew tap facebook/fb
-          brew install facebook/fb/idb-companion
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
@@ -163,14 +187,15 @@ jobs:
 
   android-build:
     runs-on: ubuntu-24.04
+    permissions:
+      # REQUIRED: Allow updating fingerprint in action caches
+      actions: write
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
-        with:
-          submodules: true
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
@@ -200,21 +225,37 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
-      - name: 🏗️ Gradle prebuild for Android project (workaround to fix build error)
-        run: ./gradlew preBuild
-        working-directory: apps/bare-expo/android
-      - name: 🏗️ Build Android project (bare-expo)
-        run: ./scripts/start-android-e2e-test.ts --build
-        working-directory: apps/bare-expo
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin main:main --depth 100 --no-recurse-submodules
+        if: github.event_name == 'pull_request'
+      - name: 🔎 Get the base commit
+        id: base-commit
+        run: |
+          # Since we limit this workflow only triggered from limited paths, we should use custom base commit
+          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+      - name: 📹 Check fingerprint
+        id: fingerprint
+        uses: expo/actions/fingerprint@main
+        with:
+          working-directory: apps/bare-expo
+          previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
+          fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
+      - name: 🏗️ Build/Repack Android project (bare-expo)
+        uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 35
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
-      - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
         with:
-          name: bare-expo-android-builds
-          path: apps/bare-expo/android/app/build/outputs/apk
+          platform: android
+          fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
+          working-directory: apps/bare-expo
+          build-command: |
+            ./scripts/start-android-e2e-test.ts --build
+          build-output: apps/bare-expo/android/app/build/outputs/apk
+          artifact-name: bare-expo-android-builds
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))

@@ -10,7 +10,7 @@ runExportSideEffects();
 
 describe('static-rendering with a custom base path', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-static-rendering-asset-prefix';
+  const outputName = 'dist-static-rendering-base-path';
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {

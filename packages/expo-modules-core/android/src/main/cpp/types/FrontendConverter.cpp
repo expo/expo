@@ -8,6 +8,7 @@
 #include "../JavaScriptTypedArray.h"
 #include "../JSIContext.h"
 #include "../JavaScriptObject.h"
+#include "../JavaScriptArrayBuffer.h"
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
 #include "../javaclasses/Collections.h"
@@ -217,6 +218,26 @@ bool JavaScriptObjectFrontendConverter::canConvert(
   const jsi::Value &value
 ) const {
   return value.isObject();
+}
+
+jobject JavaScriptArrayBufferFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+  return JavaScriptArrayBuffer::newInstance(
+    jsiContext,
+    jsiContext->runtimeHolder->weak_from_this(),
+    std::make_shared<jsi::ArrayBuffer>(value.asObject(rt).getArrayBuffer(rt))
+  ).release();
+}
+
+bool JavaScriptArrayBufferFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  return value.isObject() && value.getObject(rt).isArrayBuffer(rt);
 }
 
 jobject JavaScriptFunctionFrontendConverter::convert(

@@ -13,6 +13,7 @@ import {
   getStartMode,
   retryAsync,
   getMaestroFlowFilePath,
+  prettyPrintTestSuiteLogs,
 } from './lib/e2e-common';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
@@ -87,29 +88,6 @@ async function buildAsync(projectRoot: string, deviceId: string): Promise<string
   return binaryPath;
 }
 
-function prettyPrintTestSuiteLogs(logs: string[]) {
-  const lastTestSuiteLog = logs.reverse().find((logItem) => logItem.includes('TEST-SUITE-END'));
-  if (!lastTestSuiteLog) {
-    return '';
-  }
-  const jsonPart = lastTestSuiteLog?.match(/{.*}/);
-  if (!jsonPart || !jsonPart[0]) {
-    return '';
-  }
-  const testSuiteResult = JSON.parse(jsonPart[0]);
-  if ((testSuiteResult?.failures.length ?? 0) <= 0) {
-    return '';
-  }
-  const result = [];
-  result.push('  ❌ Test suite had following test failures:');
-  testSuiteResult?.failures?.split('\n').forEach((failure) => {
-    if (failure.length > 0) {
-      result.push(`    ${failure}`);
-    }
-  });
-  return result.join('\n');
-}
-
 function prettyPrintNativeErrorLogs(logs: string[]) {
   // the output shape is always: actual logs, some unrelated stuff from simctrl
   return logs.slice(0, -1).join('\n');
@@ -157,6 +135,45 @@ export function setupLogger(predicate: string, signal: AbortSignal): () => Promi
   };
 }
 
+async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60 * 3) {
+  await retryAsync(async (retryNumber) => {
+    if (process.env.CI) {
+      try {
+        await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
+        await spawnAsync('xcrun', ['simctl', 'erase', deviceId], { stdio: 'inherit' });
+      } catch {}
+    }
+
+    console.time(
+      `\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}] retry[${retryNumber}]`
+    );
+    const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], {
+      stdio: 'inherit',
+    });
+
+    let timeoutHandle: NodeJS.Timeout | null = null;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutHandle = setTimeout(() => {
+        bootProc.child?.kill('SIGTERM');
+        reject(new Error('Timeout from booting up simulator'));
+      }, timeout);
+    });
+
+    await Promise.race([bootProc, timeoutPromise]);
+    if (timeoutHandle) {
+      clearTimeout(timeoutHandle);
+      timeoutHandle = null;
+    }
+
+    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
+      stdio: 'inherit',
+    });
+
+    clearTimeout(timeoutHandle);
+    console.timeEnd(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
+  }, 3);
+}
+
 async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
@@ -165,12 +182,7 @@ async function testAsync(
   const stopLogCollectionController = new AbortController();
 
   try {
-    console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
-    await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
-    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
-      stdio: 'inherit',
-    });
-
+    await startSimulatorAsync(deviceId);
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
 
@@ -199,15 +211,24 @@ async function testAsync(
       // we need to always get these logs since it stops listener process
       const nativeLogs = await getNativeErrorLogs();
       if (!(await isAppRunning())) {
-        console.warn(
-          '\n\n  ❌ The runner app has probably crashed, here are the recent native error logs:\n\n'
-        );
-        console.log(prettyPrintNativeErrorLogs(nativeLogs));
+        if (nativeLogs.length > 0) {
+          console.warn(
+            '\n\n  ❌ The runner app has probably crashed, here are the recent native error logs:\n\n'
+          );
+          console.log(prettyPrintNativeErrorLogs(nativeLogs));
+        } else {
+          console.warn(
+            '\n\n  ❌ The runner app has probably crashed, but no native logs were captured.\n\n'
+          );
+        }
       }
 
       console.log('\n\n');
       throw new Error('e2e tests have failed.');
     }
+  } catch (e: unknown) {
+    console.error('Uncaught Error', e);
+    throw e;
   } finally {
     stopLogCollectionController.abort();
     await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });

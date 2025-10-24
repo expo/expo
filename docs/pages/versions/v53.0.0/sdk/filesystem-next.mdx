@@ -111,6 +111,9 @@ try {
   const file = new File(Paths.document, 'example.txt');
   file.create();
   console.log(file.uri); // '${documentDirectory}/example.txt'
+  const copiedFile = new File(Paths.cache, 'example-copy.txt');
+  file.copy(copiedFile);
+  console.log(copiedFile.uri); // '${cacheDirectory}/example-copy.txt'
   file.move(Paths.cache);
   console.log(file.uri); // '${cacheDirectory}/example.txt'
   file.move(new Directory(Paths.cache, 'newFolder'));

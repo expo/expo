@@ -92,6 +92,6 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     maxWorkers: args['--max-workers'],
     dumpAssetmap: !!args['--dump-assetmap'],
     sourceMaps: !!args['--source-maps'],
-    skipSSG: !!args['--no-ssg'],
+    skipSSG: !!args['--no-ssg'] || !!args['--api-only'],
   };
 }

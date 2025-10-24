@@ -10,15 +10,13 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import org.junit.Test
 
 class EmptyModule : Module() {
-  override fun definition() = ModuleDefinition {
-    Name("empty-module")
-  }
+  override fun definition() = ModuleDefinition {}
 }
 
 class ModuleHolderTest {
   @Test
   fun `should cache module instance`() {
-    val holder = ModuleHolder(EmptyModule())
+    val holder = ModuleHolder(EmptyModule(), "empty-module")
     val firstInstance = holder.module
     val secondInstance = holder.module
 
@@ -27,7 +25,7 @@ class ModuleHolderTest {
 
   @Test
   fun `should throw if method doesn't exist`() {
-    val holder = ModuleHolder(EmptyModule())
+    val holder = ModuleHolder(EmptyModule(), "empty-module")
     val promise = PromiseMock()
 
     assertThrows<FunctionCallException>(

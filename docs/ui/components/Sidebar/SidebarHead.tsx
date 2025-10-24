@@ -34,11 +34,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
 
   return (
     <>
-      <div
-        className={mergeClasses(
-          'flex flex-col gap-0.5 border-b border-default bg-default p-4',
-          'compact-height:pb-3'
-        )}>
+      <div className="flex flex-col gap-0.5 border-b border-default bg-default p-4 compact-height:pb-3">
         <Search />
         <div
           className={mergeClasses(

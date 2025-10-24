@@ -1,16 +1,16 @@
 package expo.modules.devmenu.react
 
 import android.util.Log
+import com.facebook.react.ReactHost
 import com.facebook.react.common.ShakeDetector
 import com.facebook.react.devsupport.DevSupportManagerBase
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
 import expo.modules.devmenu.helpers.hasDeclaredField
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 
 class DevMenuShakeDetectorListenerSwapper {
   fun swapShakeDetectorListener(
-    reactHost: ReactHostWrapper,
+    reactHost: ReactHost,
     newListener: ShakeDetector.ShakeListener
   ) {
     try {

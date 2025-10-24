@@ -1,4 +1,5 @@
-import { ViewProps } from 'react-native';
+import { RefObject } from 'react';
+import { ViewProps, View } from 'react-native';
 /**
  * Blur method to use on Android.
  *
@@ -10,6 +11,12 @@ import { ViewProps } from 'react-native';
  */
 export type ExperimentalBlurMethod = 'none' | 'dimezisBlurView';
 export type BlurViewProps = {
+    /**
+     * A ref to a BlurTargetView, which this BlurView will blur as its background.
+     *
+     * @platform android
+     */
+    blurTarget?: RefObject<View | null>;
     /**
      * A tint mode which will be applied to the view.
      * @default 'default'
@@ -44,6 +51,9 @@ export type BlurViewProps = {
      * @platform android
      */
     experimentalBlurMethod?: ExperimentalBlurMethod;
+} & ViewProps;
+export type BlurTargetViewProps = {
+    ref?: RefObject<View | null>;
 } & ViewProps;
 export type BlurTint = 'light' | 'dark' | 'default' | 'extraLight' | 'regular' | 'prominent' | 'systemUltraThinMaterial' | 'systemThinMaterial' | 'systemMaterial' | 'systemThickMaterial' | 'systemChromeMaterial' | 'systemUltraThinMaterialLight' | 'systemThinMaterialLight' | 'systemMaterialLight' | 'systemThickMaterialLight' | 'systemChromeMaterialLight' | 'systemUltraThinMaterialDark' | 'systemThinMaterialDark' | 'systemMaterialDark' | 'systemThickMaterialDark' | 'systemChromeMaterialDark';
 //# sourceMappingURL=BlurView.types.d.ts.map

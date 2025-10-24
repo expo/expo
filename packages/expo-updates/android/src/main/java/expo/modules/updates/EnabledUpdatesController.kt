@@ -64,7 +64,13 @@ class EnabledUpdatesController(
   private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
   private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet(), controllerScope)
   private val fileDownloader: FileDownloader
-    get() = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration, logger)
+    get() = FileDownloader(
+      context.filesDir,
+      EASClientID(context).uuid.toString(),
+      updatesConfiguration,
+      logger,
+      databaseHolder.database
+    )
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()

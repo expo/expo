@@ -7,6 +7,8 @@
 #import <jsi/jsi.h>
 #import <React/RCTBridgeModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
+#import <ReactCommon/CallInvoker.h>
+#import <react/bridging/CallbackWrapper.h>
 #import <ExpoModulesCore/ObjectDeallocator.h>
 
 namespace jsi = facebook::jsi;

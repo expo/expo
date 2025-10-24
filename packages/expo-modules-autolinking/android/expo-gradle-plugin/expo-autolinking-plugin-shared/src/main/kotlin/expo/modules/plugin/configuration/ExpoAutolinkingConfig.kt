@@ -103,7 +103,8 @@ data class GradleProject(
   val sourceDir: String,
   val publication: Publication? = null,
   val aarProjects: List<GradleAarProject> = emptyList(),
-  val modules: List<String> = emptyList(),
+  val modules: List<ModuleInfo> = emptyList(),
+  val packages: List<String> = emptyList(),
   val shouldUsePublicationScriptPath: String? = null,
   @Transient val configuration: GradleProjectConfiguration = GradleProjectConfiguration()
 ) {
@@ -116,6 +117,15 @@ data class GradleProject(
 
 data class GradleProjectConfiguration(
   var shouldUsePublication: Boolean = false
+)
+
+/**
+ * Object representing a module with name and classifier
+ */
+@Serializable
+data class ModuleInfo(
+  val classifier: String,
+  val name: String?,
 )
 
 /**
