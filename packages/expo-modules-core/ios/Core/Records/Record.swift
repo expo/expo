@@ -78,8 +78,8 @@ public extension Record {
 /**
  Recursively collects all children from a Mirror, including inherited properties from superclasses.
  */
-internal func allMirrorChildren(_ mirror: Mirror) -> [(label: String?, value: Any)] {
-  var children: [(label: String?, value: Any)] = Array(mirror.children)
+internal func allMirrorChildren(_ mirror: Mirror) -> [Mirror.Child] {
+  var children: [Mirror.Child] = Array(mirror.children)
   if let superclassMirror = mirror.superclassMirror {
     children.append(contentsOf: allMirrorChildren(superclassMirror))
   }
