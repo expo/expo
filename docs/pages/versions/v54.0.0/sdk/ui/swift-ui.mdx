@@ -28,7 +28,7 @@ The SwiftUI components in `@expo/ui/swift-ui` allow you to build fully native iO
 
 ## Usage
 
-Render every SwiftUI component inside the `<Host>` component from `@expo/ui/swift-ui`. `<Host>` bridges React Native and SwiftUI, and views rendered outside it will not appear.
+Using a component from `@expo/ui/swift-ui` requires wrapping it in a [`<Host>`](#host) component. The `<Host>` is a container for SwiftUI views.
 
 ```tsx
 import { Host, Button } from '@expo/ui/swift-ui';
