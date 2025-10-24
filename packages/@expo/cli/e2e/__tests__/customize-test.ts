@@ -90,7 +90,7 @@ it('runs `npx expo customize tsconfig.json`', async () => {
     {
       reuseExisting: false,
       // TODO(@hassankhan): remove @expo/router-server after publishing
-      linkExpoPackages: ['@expo/router-server'],
+      linkExpoPackages: ['expo-router', '@expo/router-server'],
     }
   );
 
@@ -111,8 +111,8 @@ it('runs `npx expo customize tsconfig.json` on a partially setup project', async
     'with-router',
     {
       reuseExisting: false,
-      // TODO(@hassankhan): remove @expo/router-server after publishing
-      linkExpoPackages: ['@expo/router-server'],
+      // TODO(@hassankhan): remove expo-router and @expo/router-server after publishing
+      linkExpoPackages: ['expo-router', '@expo/router-server'],
     }
   );
 
