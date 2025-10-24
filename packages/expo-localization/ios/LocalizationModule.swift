@@ -66,11 +66,11 @@ public class LocalizationModule: Module {
 
     let i18nUtil = RCTI18nUtil.sharedInstance()
     if forceRTL {
-      i18nUtil?.allowRTL(true);
-      i18nUtil?.forceRTL(true);
+      i18nUtil?.allowRTL(true)
+      i18nUtil?.forceRTL(true)
     } else {
-      i18nUtil?.allowRTL(supportsRTL);
-      i18nUtil?.forceRTL(supportsRTL ? isRTLPreferredForCurrentLocale() : false);
+      i18nUtil?.allowRTL(supportsRTL)
+      i18nUtil?.forceRTL(supportsRTL ? isRTLPreferredForCurrentLocale() : false)
     }
 
     UserDefaults.standard.synchronize()
