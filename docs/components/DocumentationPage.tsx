@@ -131,6 +131,12 @@ export default function DocumentationPage({
     });
   }, [didChatForceSidebarCollapse]);
 
+  const handleSidebarToggle = useCallback(() => {
+    setImmersiveMode(false);
+    setSidebarCollapsed(previous => !previous);
+    setDidChatForceSidebarCollapse(false);
+  }, []);
+
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
@@ -283,6 +289,7 @@ export default function DocumentationPage({
         isMobileMenuVisible={isMobileMenuVisible}
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}
+        onSidebarToggle={handleSidebarToggle}
         isSidebarCollapsed={isNavigationCollapsed}
         isChatExpanded={isAskAIExpanded}>
         <DocumentationHead
