@@ -5,7 +5,7 @@ description: How to implement authentication and protect routes with Expo Router
 hasVideoLink: true
 ---
 
-> **info** **Note:** This guide requires SDK 53. For the previous version of this guide see [Authentication (redirects)](/router/advanced/authentication-rewrites/).
+> **info** **Note:** This guide requires SDK 53 and later. For the previous version of this guide see [Authentication (redirects)](/router/advanced/authentication-rewrites/).
 
 import { Lock01Icon } from '@expo/styleguide-icons/outline/Lock01Icon';
 import { LockUnlocked01Icon } from '@expo/styleguide-icons/outline/LockUnlocked01Icon';
@@ -79,7 +79,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
 
   return (
-    <AuthContext
+    <AuthContext.Provider
       value={{
         signIn: () => {
           // Perform sign-in logic here
@@ -92,7 +92,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         isLoading,
       }}>
       {children}
-    </AuthContext>
+    </AuthContext.Provider>
   );
 }
 ```
@@ -151,7 +151,7 @@ export function useStorageState(key: string): UseStateHook<string> {
         console.error('Local storage is unavailable:', e);
       }
     } else {
-      SecureStore.getItemAsync(key).then(value => {
+      SecureStore.getItemAsync(key).then((value: string | null) => {
         setState(value);
       });
     }
@@ -260,7 +260,7 @@ Now modify the `RootNavigator` to protect routes based on your `SessionProvider`
 
 ```tsx app/_layout.tsx|collapseHeight=400
 // All import statements remain the same except you need to import `useSession` from your `ctx.tsx` file.
-import { SessionProvider } from '../ctx';
+import { SessionProvider, useSession } from '../ctx';
 
 // All of the above code remains unchanged. Update the `RootNavigator` to protect routes based on your `SessionProvider` below.
 
@@ -298,7 +298,7 @@ export default function Index() {
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text
         onPress={() => {
-          // The `app/(app)/_layout.tsx` redirects to the sign-in screen.
+          // The guard in `RootNavigator` redirects back to the sign-in screen.
           signOut();
         }}>
         Sign Out
@@ -374,8 +374,8 @@ For more information, read the [Protected routes documentation](/router/advanced
 
 <VideoBoxLink
   videoId="XCTaMu0qnFY"
-  title="How to use Protected Routes in Expo Router V5 and higher for smooth authentication"
-  description="Learn how to use Protected Routes in Expo Router V5 and higher to create an authentication flow."
+  title="How to use Protected Routes in Expo Router version 5 and later for smooth authentication"
+  description="Learn how to use Protected Routes in Expo Router version 5 and later to create an authentication flow."
 />
 
 ## Middleware
