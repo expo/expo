@@ -190,7 +190,7 @@ function ensureRelativePath(projectRoot, filePath) {
 }
 async function createHashSourceExternalFileAsync({ projectRoot, file, reason, }) {
     const hashSource = await (0, Utils_1.getFileBasedHashSourceAsync)(projectRoot, file, reason);
-    if (hashSource != null) {
+    if (hashSource) {
         debug(`Adding config external file - ${chalk_1.default.dim(file)}`);
         if (hashSource.type === 'file' || hashSource.type === 'dir') {
             // We include the expo config contents in the fingerprint,
