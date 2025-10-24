@@ -84,5 +84,7 @@ public final class ExpoUIModule: Module {
     View(ExpoUI.PopoverView.self)
     View(ExpoUI.PopoverViewContent.self)
     View(ExpoUI.PopoverViewPopContent.self)
+    View(ExpoUI.GridView.self)
+    View(ExpoUI.GridRowView.self)
   }
 }

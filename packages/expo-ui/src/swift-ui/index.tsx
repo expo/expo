@@ -30,3 +30,4 @@ export * from './Namespace';
 export * from './GlassEffectContainer';
 export * from './Shapes';
 export * from './Popover';
+export * from './Grid';

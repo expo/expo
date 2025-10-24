@@ -29,6 +29,7 @@
 - [iOS] Add RectangleMark and RuleMark support to Chart component ([#40046](https://github.com/expo/expo/pull/40046) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 - Adds selection API in text field, autoFocus, onSubmit event and rounded rectangle (squircle) support in glassEffect. ([#40455](https://github.com/expo/expo/pull/40455) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Add `font` modifier ([#40553](https://github.com/expo/expo/pull/40553) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Add Grid component and modifiers `gridCellUnsizedAxes`, `gridCellColumns`, `gridColumnAlignment`, `gridCellAnchor` ([#40485](https://github.com/expo/expo/pull/40485) by [@doombladeoff](https://github.com/doombladeoff))
 
 ### 🐛 Bug fixes
 
