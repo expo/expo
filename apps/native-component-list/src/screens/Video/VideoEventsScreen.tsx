@@ -3,16 +3,20 @@ import { useVideoPlayer, VideoTrack, VideoView, SubtitleTrack } from 'expo-video
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 
-import { bigBuckBunnySource, hlsSource } from './videoSources';
+import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
 import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import ConsoleBox from '../../components/ConsoleBox';
 import { E2EKeyValueBox } from '../../components/E2EKeyValueBox';
+import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
+
+const originalSource = bigBuckBunnySource;
+const replacementSource = elephantsDreamSource;
 
 export default function VideoEventsScreen() {
   const ref = useRef<VideoView>(null);
-  const [currentSource, setCurrentSource] = useState(hlsSource);
-  const player = useVideoPlayer(hlsSource, (player) => {
+  const [currentSource, setCurrentSource] = useState(originalSource);
+  const player = useVideoPlayer(originalSource, (player) => {
     player.loop = true;
     player.timeUpdateEventInterval = 0.25;
     player.showNowPlayingNotification = false;
@@ -22,7 +26,7 @@ export default function VideoEventsScreen() {
   const { status, error } = useEvent(player, 'statusChange', { status: player.status });
   const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
   const { playbackRate } = useEvent(player, 'playbackRateChange', { playbackRate: 1 });
-  const { source } = useEvent(player, 'sourceChange', { source: hlsSource });
+  const { source } = useEvent(player, 'sourceChange', { source: originalSource });
   const { volume } = useEvent(player, 'volumeChange', { volume: 1 });
   const { muted } = useEvent(player, 'mutedChange', { muted: false });
   const loadedMetadata = useEvent(player, 'sourceLoad');
@@ -35,12 +39,12 @@ export default function VideoEventsScreen() {
   const sourceObject = typeof source === 'object' ? source : null;
 
   const toggleSource = useCallback(() => {
-    if (currentSource === bigBuckBunnySource) {
-      player.replaceAsync(hlsSource);
-      setCurrentSource(hlsSource);
+    if (currentSource === replacementSource) {
+      player.replaceAsync(originalSource);
+      setCurrentSource(originalSource);
     } else {
-      player.replaceAsync(bigBuckBunnySource);
-      setCurrentSource(bigBuckBunnySource);
+      player.replaceAsync(replacementSource);
+      setCurrentSource(replacementSource);
     }
   }, [player, currentSource]);
 
@@ -60,7 +64,12 @@ export default function VideoEventsScreen() {
 
   return (
     <View style={styles.contentContainer}>
-      <VideoView ref={ref} player={player} style={styles.video} />
+      <E2EViewShotContainer
+        testID="video-view"
+        mode="keep-originals"
+        screenshotOutputPath="expo-video">
+        <VideoView ref={ref} player={player} style={styles.video} />
+      </E2EViewShotContainer>
 
       <ScrollView
         style={styles.controlsContainer}
@@ -84,7 +93,6 @@ export default function VideoEventsScreen() {
               player.currentTime = 30;
             }}
           />
-          <Button style={styles.button} title="Trigger an Error" onPress={triggerError} />
         </View>
         <View style={styles.row}>
           <Button style={styles.button} title="Toggle Source" onPress={toggleSource} />
@@ -102,7 +110,7 @@ export default function VideoEventsScreen() {
             source: sourceObject?.metadata?.title ?? 'No title',
             isPlaying,
             isAtStart: currentTime === 0,
-            duration: loadedMetadata?.duration,
+            duration: Math.round(loadedMetadata?.duration ?? 0),
             currentTime: Math.round((timeUpdate?.currentTime ?? 0) * 100) / 100,
 
             mimeType: videoTrack?.mimeType,

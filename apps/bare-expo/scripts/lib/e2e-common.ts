@@ -1,8 +1,18 @@
 import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs/promises';
+import { glob } from 'glob';
 import * as path from 'path';
+const MAESTRO_DRIVER_STARTUP_TIMEOUT = String(180_000);
+const MAESTRO_CLI_NO_ANALYTICS = '1';
+
+export const MAESTRO_ENV_VARS = {
+  MAESTRO_DRIVER_STARTUP_TIMEOUT,
+  MAESTRO_CLI_NO_ANALYTICS,
+};
 
 export type StartMode = 'BUILD' | 'TEST' | 'BUILD_AND_TEST';
+
+export const TEST_DURATION_LABEL = 'test duration';
 
 export function getStartMode(programFilename: string): StartMode {
   const programIndex = process.argv.findIndex((argv) => argv === programFilename);
@@ -18,17 +28,20 @@ export function getStartMode(programFilename: string): StartMode {
 
 export interface MaestroFlowParams {
   appId: string;
-  workflowFile: string;
-  confirmFirstRunPrompt?: boolean;
+  e2eDir: string;
+  confirmFirstRunPromptIOS: boolean;
 }
 
 export async function createMaestroFlowAsync({
   appId,
-  workflowFile,
-  confirmFirstRunPrompt,
-}: MaestroFlowParams): Promise<void> {
+  e2eDir,
+  confirmFirstRunPromptIOS,
+}: MaestroFlowParams): Promise<string> {
   const inputFile = await import('../../e2e/TestSuite-test.native.js');
   const testCases = inputFile.TESTS as string[];
+  const MAESTRO_GENERATED_FLOW = 'maestro-generated.yaml';
+  const workflowFile = path.join(e2eDir, MAESTRO_GENERATED_FLOW);
+
   const contents = [
     `\
 appId: ${appId}
@@ -36,10 +49,9 @@ appId: ${appId}
 - clearState
 `,
   ];
-
-  if (confirmFirstRunPrompt) {
+  if (confirmFirstRunPromptIOS) {
     contents.push(`\
-# Run once to approve the first time deeplinking prompt
+# Run once to approve the first time deeplinking prompt on iOS
 - openLink: bareexpo://test-suite/run
 - tapOn:
     text: "Open"
@@ -63,6 +75,7 @@ appId: ${appId}
   }
 
   await fs.writeFile(workflowFile, contents.join('\n'));
+  return workflowFile;
 }
 
 export async function ensureDirAsync(dirPath: string): Promise<void> {
@@ -99,11 +112,6 @@ export async function fileExistsAsync(file: string): Promise<boolean> {
 export async function delayAsync(timeMs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
 }
-
-export const getMaestroFlowFilePath = (projectRoot: string): string => {
-  const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
-  return path.join(projectRoot, MAESTRO_GENERATED_FLOW);
-};
 
 export function prettyPrintTestSuiteLogs(logs: string[]) {
   const lastTestSuiteLog = logs.reverse().find((logItem) => logItem.includes('TEST-SUITE-END'));
@@ -155,3 +163,44 @@ export function setupLogger(command: string, signal: AbortSignal): () => Promise
     }
   };
 }
+
+const getCustomMaestroFlowsAsync = async (
+  e2eDir: string,
+  platform?: 'android' | 'ios'
+): Promise<string[]> => {
+  const ignore = ['maestro-generated.yaml', '_nested-flows/**'];
+
+  // Exclude platform-specific files for other platforms
+  if (platform === 'android') {
+    ignore.push('**/*.ios.yaml');
+  } else if (platform === 'ios') {
+    ignore.push('**/*.android.yaml');
+  }
+
+  const yamlFiles = await glob('**/*.yaml', {
+    cwd: e2eDir,
+    ignore,
+  });
+
+  console.log(`detected maestro files for ${platform}:`, yamlFiles);
+  return yamlFiles;
+};
+
+export const runCustomMaestroFlowsAsync = async (
+  e2eDir: string,
+  platform: 'android' | 'ios',
+  fn: (maestroFlowFilePath: string) => Promise<void>
+) => {
+  const retriesForCustomTests = 3;
+
+  const maestroFlows = await getCustomMaestroFlowsAsync(e2eDir, platform);
+  for (const maestroFlowRelativePath of maestroFlows) {
+    const maestroFlowFilePath = path.join(e2eDir, maestroFlowRelativePath);
+    await retryAsync((retryNumber) => {
+      console.log(
+        `${maestroFlowRelativePath} e2e test attempt ${retryNumber + 1} of ${retriesForCustomTests}`
+      );
+      return fn(maestroFlowFilePath);
+    }, retriesForCustomTests);
+  }
+};

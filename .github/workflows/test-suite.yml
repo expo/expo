@@ -222,6 +222,12 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: 🧶 Install image comparison server node modules
+        run: yarn install --frozen-lockfile
+        working-directory: apps/bare-expo/e2e/image-comparison
+      - name: 🧪 Test image comparison utilities
+        run: bun test
+        working-directory: apps/bare-expo/e2e/image-comparison
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
