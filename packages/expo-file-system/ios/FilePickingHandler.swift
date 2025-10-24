@@ -42,7 +42,7 @@ internal class FilePickingHandler: FilePickingResultHandler {
 
     picker.delegate = pickerDelegate
     picker.presentationController?.delegate = pickerDelegate
-    picker.allowsMultipleSelection = options?.allowsMultipleSelection ?? false
+    picker.multiple = options?.multiple ?? false
 
     if UIDevice.current.userInterfaceIdiom == .pad {
       let viewFrame = currentVc.view.frame

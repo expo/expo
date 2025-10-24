@@ -140,7 +140,7 @@ File.downloadFileAsync = async function downloadFileAsync(
 
 File.pickFileAsync = async function (options: FilePickerOptions = {}) {
   const result = (await ExpoFileSystem.pickFileAsync(options)).map((file) => new File(file.uri));
-  if (options.allowsMultipleSelection) {
+  if (options.multiple) {
     return result;
   }
   return result[0];
