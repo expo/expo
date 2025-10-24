@@ -4,10 +4,18 @@ import type { ConfigT } from '@expo/metro/metro-config';
 import type { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver';
 import { vol } from 'memfs';
 import assert from 'node:assert';
+import resolveFrom from 'resolve-from';
 
 import { AutolinkingModuleResolverInput } from '../createExpoAutolinkingResolver';
 import { shouldCreateVirtualShim } from '../externals';
 import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
+
+jest.mock('resolve-from', () => {
+  const actual = jest.requireActual<typeof import('resolve-from')>('resolve-from');
+  const resolve = jest.fn(actual) as any as typeof actual;
+  resolve.silent = jest.fn(actual.silent);
+  return resolve;
+});
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => ({
   ...(config as any),
@@ -101,6 +109,10 @@ function getResolveFunc() {
   const metroResolver: typeof import('@expo/metro/metro-resolver') = require('@expo/metro/metro-resolver');
   return metroResolver.resolve;
 }
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe(withExtendedResolver, () => {
   function mockMinFs() {
@@ -346,13 +358,9 @@ describe(withExtendedResolver, () => {
   });
 
   it(`resolves to @expo/vector-icons on any platform`, async () => {
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-        'node_modules/@expo/vector-icons/index.js': '',
-      },
-      '/root/'
-    );
+    jest.mocked(resolveFrom.silent).mockImplementation((_from, moduleId) => {
+      return moduleId === '@expo/vector-icons' ? 'node_modules/@expo/vector-icons' : undefined;
+    });
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -375,13 +383,9 @@ describe(withExtendedResolver, () => {
   });
 
   it(`resolves nested imports to @expo/vector-icons on any platform`, async () => {
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-        'node_modules/@expo/vector-icons/index.js': '',
-      },
-      '/root/'
-    );
+    jest.mocked(resolveFrom.silent).mockImplementation((_from, moduleId) => {
+      return moduleId === '@expo/vector-icons' ? 'node_modules/@expo/vector-icons' : undefined;
+    });
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -404,12 +408,7 @@ describe(withExtendedResolver, () => {
   });
 
   it(`does not alias react-native-vector-icons if @expo/vector-icons is not installed`, async () => {
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-      },
-      '/root/'
-    );
+    jest.mocked(resolveFrom.silent).mockReturnValue(undefined);
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -764,6 +763,9 @@ describe(withExtendedResolver, () => {
   });
 
   it('aliases async require module to resolved path', async () => {
+    // Mock path we're expecting `asyncRequireModulePath` requests to have been replaced with
+    const expectedPath = 'node_modules/expo/internal/async-require-module.js';
+
     vol.fromJSON(
       {
         'node_modules/@react-native/assets-registry/registry.js': '',
@@ -772,6 +774,10 @@ describe(withExtendedResolver, () => {
       '/'
     );
 
+    jest.mocked(resolveFrom.silent).mockImplementation((_from, moduleId) => {
+      return moduleId === config.transformer.asyncRequireModulePath ? expectedPath : undefined;
+    });
+
     const config = asMetroConfig({ projectRoot: '/root/' });
     const modified = withExtendedResolver(config, {
       tsconfig: {},
@@ -779,7 +785,6 @@ describe(withExtendedResolver, () => {
     });
 
     // Requesting `asyncRequireModulePath` will replace the path with a Node-resolved path
-    const expectedPath = require.resolve(config.transformer.asyncRequireModulePath);
     const result = modified.resolver.resolveRequest!(
       getDefaultRequestContext(),
       config.transformer.asyncRequireModulePath,

@@ -326,16 +326,16 @@ export function withExtendedResolver(
     context: { platform: string; environment?: string }
   ) => number | string;
 
+  // We're manually resolving the `asyncRequireModulePath` since it's a module request
+  // However, in isolated installations it might not resolve from all paths, so we're resolving
+  // it from the project root manually
   let _asyncRequireModuleResolvedPath: string | null | undefined;
   const getAsyncRequireModule = () => {
     if (_asyncRequireModuleResolvedPath === undefined) {
-      try {
-        _asyncRequireModuleResolvedPath = require.resolve(
-          config.transformer.asyncRequireModulePath
-        );
-      } catch {
-        _asyncRequireModuleResolvedPath = null;
-      }
+      _asyncRequireModuleResolvedPath = resolveFrom.silent(
+        config.projectRoot,
+        config.transformer.asyncRequireModulePath
+      );
     }
     return _asyncRequireModuleResolvedPath
       ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)
