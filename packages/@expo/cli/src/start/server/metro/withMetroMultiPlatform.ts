@@ -326,6 +326,22 @@ export function withExtendedResolver(
     context: { platform: string; environment?: string }
   ) => number | string;
 
+  let _asyncRequireModuleResolvedPath: string | null | undefined;
+  const getAsyncRequireModule = () => {
+    if (_asyncRequireModuleResolvedPath === undefined) {
+      try {
+        _asyncRequireModuleResolvedPath = require.resolve(
+          config.transformer.asyncRequireModulePath
+        );
+      } catch {
+        _asyncRequireModuleResolvedPath = null;
+      }
+    }
+    return _asyncRequireModuleResolvedPath
+      ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)
+      : null;
+  };
+
   const getAssetRegistryModule = () => {
     const virtualModuleId = `\0polyfill:assets-registry`;
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -611,12 +627,17 @@ export function withExtendedResolver(
       return null;
     },
 
-    // Polyfill for asset registry
-    function requestStableAssetRegistry(
+    // Polyfill for asset registry (assetRegistryPath) and async require module (asyncRequireModulePath)
+    function requestStableConfigModules(
       context: ResolutionContext,
       moduleName: string,
       platform: string | null
     ) {
+      if (moduleName === config.transformer.asyncRequireModulePath) {
+        return getAsyncRequireModule();
+      }
+
+      // TODO(@kitten): Compare against `config.transformer.assetRegistryPath`
       if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
         return getAssetRegistryModule();
       }
