@@ -74,7 +74,7 @@ internal func createFilePicker(options: FilePickerOptions) -> UIDocumentPickerVi
       utTypes = [UTType.item]
     }
 
-    let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: options.openAsCopy)
+    let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: options.copyToCacheDirectory)
 
     if let initialUri = options.initialUri {
       picker.directoryURL = initialUri

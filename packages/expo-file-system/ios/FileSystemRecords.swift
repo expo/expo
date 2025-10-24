@@ -48,6 +48,6 @@ struct WriteOptions: Record {
 struct FilePickerOptions: Record {
   @Field var initialUri: URL?
   @Field var mimeType: String?
-  @Field var openAsCopy: Bool = true
+  @Field var copyToCacheDirectory: Bool = true
   @Field var multiple: Bool = false
 }
