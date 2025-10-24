@@ -333,8 +333,6 @@ public class AudioModule: Module {
     // Set audio session category once at initialization to avoid blocking delays later.
     // Using .playAndRecord with .mixWithOthers allows both playback and recording
     // without needing to change categories, which eliminates 3+ second blocking delays.
-    // See: https://github.com/expo/expo/issues/15873
-    // See: https://github.com/expo/expo/issues/40531
     let session = AVAudioSession.sharedInstance()
     do {
       var options: AVAudioSession.CategoryOptions = [.mixWithOthers]
@@ -515,8 +513,6 @@ public class AudioModule: Module {
     // Commenting out category changes to avoid 3+ second blocking delays.
     // The audio session category is set once at initialization and remains as .playAndRecord.
     // This allows both playback and recording without delays when switching between modes.
-    // See: https://github.com/expo/expo/issues/15873
-    // See: https://github.com/expo/expo/issues/40531
 
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
