@@ -107,8 +107,8 @@ class FileSystemModule : Module() {
       }
     }
 
-    AsyncFunction("pickFileAsync") Coroutine { initialUri: Uri?, mimeType: String? ->
-      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, mimeType, PickerType.FILE))
+    AsyncFunction("pickFileAsync") Coroutine { options: FilePickerOptions ->
+      val result = filePickerLauncher.launch(FilePickerContractOptions(options.initialUri, options.mimeType, PickerType.FILE))
       when (result) {
         is FilePickerContractResult.Success -> result.path as FileSystemFile
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
