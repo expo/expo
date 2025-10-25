@@ -5,7 +5,7 @@ import EventKitUI
 
 public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
-  private static let sharedEventStore = EKEventStore()
+  public static let sharedEventStore = EKEventStore()
   private var eventStore: EKEventStore {
     return CalendarModule.sharedEventStore
   }

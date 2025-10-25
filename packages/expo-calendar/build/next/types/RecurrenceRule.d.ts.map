@@ -1,0 +1,1 @@
+{"version":3,"file":"RecurrenceRule.d.ts","sourceRoot":"","sources":["../../../src/next/types/RecurrenceRule.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,cAAc,IAAI,0BAA0B,EAAE,MAAM,aAAa,CAAC;AAE3E,MAAM,MAAM,cAAc,GAAG;IAC3B;;;OAGG;IACH,OAAO,CAAC,EAAE,MAAM,GAAG,IAAI,GAAG,IAAI,CAAC;IAC/B;;;OAGG;IACH,UAAU,CAAC,EAAE,MAAM,GAAG,IAAI,CAAC;CAC5B,GAAG,0BAA0B,CAAC"}
