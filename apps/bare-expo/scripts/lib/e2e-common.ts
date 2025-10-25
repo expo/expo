@@ -61,6 +61,7 @@ appId: ${appId}
 
   for (const testCase of testCases) {
     contents.push(`\
+- openLink: bareexpo://test-suite
 - openLink: bareexpo://test-suite/run?tests=${testCase}
 # make sure we're running the right test
 - assertVisible:
