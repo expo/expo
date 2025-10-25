@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { RouteProps, ShouldSkip } from 'expo-router/build/rsc/router/common';
+import { type RouteProps, type ShouldSkip } from 'expo-router/internal/rsc';
 import type { FunctionComponent, ReactNode } from 'react';
 import type { PathSpec } from '../path';
 import { defineEntries } from '../server';

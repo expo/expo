@@ -15,6 +15,7 @@
     "link",
     "assets",
     "build",
+    "internal",
     "vendor",
     "!src",
     "_ctx-html.js",

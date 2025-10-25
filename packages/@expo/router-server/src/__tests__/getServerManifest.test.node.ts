@@ -1,5 +1,5 @@
-import { RequireContext } from 'expo-router';
-import { getExactRoutes } from 'expo-router/build/getRoutes';
+import type { RequireContext } from 'expo-router';
+import { getExactRoutes } from 'expo-router/internal/routing';
 
 import { getServerManifest, parseParameter } from '../getServerManifest';
 
