@@ -114,10 +114,14 @@ export async function disableAppSwitcherProtectionAsync() {
 /**
  * Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded.
  *
- * Permission requirements for this method depend on your device’s Android version:
- * - **Before Android 13**: Requires `READ_EXTERNAL_STORAGE`.
- * - **Android 13**: Switches to `READ_MEDIA_IMAGES`.
- * - **Post-Android 13**: No additional permissions required.
+ * Permission requirements for this method depend on your device's Android version:
+ * - **Android 14+**: Uses modern `DETECT_SCREEN_CAPTURE` permission (no runtime permission needed)
+ * - **Android 13 and below**: No permissions required by default (screenshot detection disabled)
+ * - **Legacy mode**: Can be enabled with `useLegacyPermissions: true` for full compatibility
+ *
+ * > **Warning**: Legacy mode requests broad permissions (`READ_EXTERNAL_STORAGE`, `READ_MEDIA_IMAGES`)
+ * > that may cause Google Play Store rejection.
+ *
  * You can request the appropriate permissions by using [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
  *
  * @param listener The function that will be executed when the user takes a screenshot.
@@ -170,22 +174,34 @@ export function useScreenshotListener(listener) {
 /**
  * Checks user's permissions for detecting when a screenshot is taken.
  * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.
+ *
+ * @param useLegacyPermissions Whether to use legacy permissions for Android 13 and below.
+ *   - `false` (default): Uses only modern `DETECT_SCREEN_CAPTURE` permission (Android 14+ only)
+ *   - `true`: Uses `READ_EXTERNAL_STORAGE` and `READ_MEDIA_IMAGES` for full compatibility
+ *
+ * > **Warning**: Setting `useLegacyPermissions: true` requests broad permissions that may cause Google Play Store rejection.
  * @return A promise that resolves to a [`PermissionResponse`](#permissionresponse) object.
  */
-export async function getPermissionsAsync() {
+export async function getPermissionsAsync(useLegacyPermissions) {
     if (ExpoScreenCapture.getPermissionsAsync) {
-        return ExpoScreenCapture.getPermissionsAsync();
+        return ExpoScreenCapture.getPermissionsAsync(useLegacyPermissions);
     }
     return defaultPermissionsResponse;
 }
 /**
  * Asks the user to grant permissions necessary for detecting when a screenshot is taken.
  * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.
+ *
+ * @param useLegacyPermissions Whether to use legacy permissions for Android 13 and below.
+ *   - `false` (default): Uses only modern `DETECT_SCREEN_CAPTURE` permission (Android 14+ only)
+ *   - `true`: Uses `READ_EXTERNAL_STORAGE` and `READ_MEDIA_IMAGES` for full compatibility
+ *
+ * > **Warning**: Setting `useLegacyPermissions: true` requests broad permissions that may cause Google Play Store rejection.
  * @return A promise that resolves to a [`PermissionResponse`](#permissionresponse) object.
- * */
-export async function requestPermissionsAsync() {
+ */
+export async function requestPermissionsAsync(useLegacyPermissions) {
     if (ExpoScreenCapture.requestPermissionsAsync) {
-        return ExpoScreenCapture.requestPermissionsAsync();
+        return ExpoScreenCapture.requestPermissionsAsync(useLegacyPermissions);
     }
     return defaultPermissionsResponse;
 }
@@ -199,8 +215,8 @@ export async function requestPermissionsAsync() {
  * ```
  */
 export const usePermissions = createPermissionHook({
-    getMethod: getPermissionsAsync,
-    requestMethod: requestPermissionsAsync,
+    getMethod: (options) => getPermissionsAsync(options?.useLegacyPermissions),
+    requestMethod: (options) => requestPermissionsAsync(options?.useLegacyPermissions),
 });
 const defaultPermissionsResponse = {
     granted: true,
