@@ -44,7 +44,7 @@ export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
    */
   const typedRoutesModule = resolveFrom.silent(
     options.projectRoot,
-    'expo-router/build/typed-routes'
+    '@expo/router-server/build/typed-routes'
   );
   return typedRoutesModule ? typedRoutes(typedRoutesModule, options) : legacyTypedRoutes(options);
 }

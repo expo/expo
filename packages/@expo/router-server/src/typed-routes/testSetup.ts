@@ -1,8 +1,8 @@
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
+import { inMemoryContext, MemoryContext } from 'expo-router/internal/testing';
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { getTypedRoutesDeclarationFile, GetTypedRoutesDeclarationFileOptions } from './generate';
-import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
 
 const fixtures: Record<
   string,

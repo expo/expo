@@ -1,16 +1,14 @@
 import { EXPO_ROUTER_CTX_IGNORE } from 'expo-router/_ctx-shared';
+import { isTypedRoute } from 'expo-router/internal/routing';
+import { requireContext, type RequireContextPonyFill } from 'expo-router/internal/testing';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { getTypedRoutesDeclarationFile } from './generate';
-import { isTypedRoute } from '../matchers';
-import requireContext, {
-  RequireContextPonyFill,
-} from '../testing-library/require-context-ponyfill';
 
 const defaultCtx = requireContext(process.env.EXPO_ROUTER_APP_ROOT, true, EXPO_ROUTER_CTX_IGNORE);
 
-export type { RequireContextPonyFill } from '../testing-library/require-context-ponyfill';
+export type { RequireContextPonyFill } from 'expo-router/internal/testing';
 
 /**
  * This file is imported via `@expo/cli`. While users should be using the same SDK version of `expo-router` as `@expo/cli`,

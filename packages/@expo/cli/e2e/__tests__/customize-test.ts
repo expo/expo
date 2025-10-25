@@ -90,7 +90,7 @@ it('runs `npx expo customize tsconfig.json`', async () => {
     {
       reuseExisting: false,
       // TODO(@hassankhan): remove @expo/router-server after publishing
-      linkExpoPackages: ['@expo/router-server'],
+      linkExpoPackages: ['expo-router', '@expo/router-server'],
     }
   );
 
@@ -111,8 +111,8 @@ it('runs `npx expo customize tsconfig.json` on a partially setup project', async
     'with-router',
     {
       reuseExisting: false,
-      // TODO(@hassankhan): remove @expo/router-server after publishing
-      linkExpoPackages: ['@expo/router-server'],
+      // TODO(@hassankhan): remove expo-router and @expo/router-server after publishing
+      linkExpoPackages: ['expo-router', '@expo/router-server'],
     }
   );
 
@@ -142,20 +142,20 @@ it('runs `npx expo customize tsconfig.json` on a partially setup project', async
   });
 });
 
-// it('runs `npx expo customize tsconfig.json` sets up typed routes', async () => {
-//   const projectRoot = await setupTestProjectWithOptionsAsync(
-//     'expo-customize-typed-routes',
-//     'with-router-typed-routes',
-//     // TODO(@hassankhan): remove @expo/router-server after publishing
-//     {
-//       reuseExisting: false,
-//       linkExpoPackages: ['expo-router', '@expo/log-box', '@expo/router-server'],
-//     }
-//   );
+it('runs `npx expo customize tsconfig.json` sets up typed routes', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'expo-customize-typed-routes',
+    'with-router-typed-routes',
+    // TODO(@hassankhan): remove @expo/router-server after publishing
+    {
+      reuseExisting: false,
+      linkExpoPackages: ['expo-router', '@expo/log-box', '@expo/router-server'],
+    }
+  );
 
-//   // `npx expo customize tsconfig.json`
-//   await executeExpoAsync(projectRoot, ['customize', 'tsconfig.json']);
+  // `npx expo customize tsconfig.json`
+  await executeExpoAsync(projectRoot, ['customize', 'tsconfig.json']);
 
-//   // Ensure no typescript errors are found
-//   await executeAsync(projectRoot, ['node', require.resolve('typescript/bin/tsc')]);
-// });
+  // Ensure no typescript errors are found
+  await executeAsync(projectRoot, ['node', require.resolve('typescript/bin/tsc')]);
+});
