@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `rawBody` handling on `/symbolicate` endpoint. Clients MUST send the header `'Content-Type': 'application/json'`. ([#35757](https://github.com/expo/expo/pull/35757) by [@huntie](https://github.com/huntie))
+
 ### 🎉 New features
 
 - Added support for cli command extension in expo modules ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
