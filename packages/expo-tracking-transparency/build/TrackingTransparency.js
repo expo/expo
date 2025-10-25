@@ -131,7 +131,7 @@ export const useTrackingPermissions = createPermissionHook({
  * the get and request permissions methods will always resolve to `granted`.
  */
 export function isAvailable() {
-    return Boolean(ExpoTrackingTransparency);
+    return Platform.OS !== 'web';
 }
 export { PermissionStatus };
 //# sourceMappingURL=TrackingTransparency.js.map
