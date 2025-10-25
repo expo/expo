@@ -136,34 +136,6 @@ export async function launchActivityAsync(
 
 /**
  * @param device.pid Process ID of the Android device to launch.
- * @param props.applicationId package name to launch.
- */
-export async function openAppIdAsync(
-  device: DeviceContext,
-  {
-    applicationId,
-  }: {
-    applicationId: string;
-  }
-) {
-  return openAsync(
-    adbArgs(
-      device.pid,
-      'shell',
-      'monkey',
-      '--pct-syskeys',
-      '0',
-      '-p',
-      applicationId,
-      '-c',
-      'android.intent.category.LAUNCHER',
-      '1'
-    )
-  );
-}
-
-/**
- * @param device.pid Process ID of the Android device to launch.
  * @param props.url URL to launch.
  */
 export async function openUrlAsync(
