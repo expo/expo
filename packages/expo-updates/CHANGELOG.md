@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Always resolve the absolute entry file path when creating manifest for build  ([#40592](https://github.com/expo/expo/pull/40592) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))

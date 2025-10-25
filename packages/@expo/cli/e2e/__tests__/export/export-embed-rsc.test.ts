@@ -1,5 +1,4 @@
 /* eslint-env jest */
-import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 
@@ -27,9 +26,6 @@ describe('export embed for RSC iOS', () => {
       projectRoot,
       [
         'export:embed',
-        //
-        '--entry-file',
-        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
         //
         '--bundle-output',
         `./${outputName}/index.js`,

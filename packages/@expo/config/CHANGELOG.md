@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Drop relative entry file path helpers from `@expo/config/paths` ([#40592](https://github.com/expo/expo/pull/40592) by [@byCedric](https://github.com/byCedric))
+
 ## 12.0.10 - 2025-10-01
 
 _This version does not introduce any user-facing changes._
