@@ -70,8 +70,14 @@ export async function loadMetroConfigAsync(
 ) {
   let reportEvent: ((event: any) => void) | undefined;
 
+  // We're resolving a monorepo root, higher up than the `projectRoot`. If this
+  // folder is different (presumably a parent) we're in a monorepo
+  const serverRoot = getMetroServerRoot(projectRoot);
+  const isWorkspace = serverRoot !== projectRoot;
+
+  // Autolinking Module Resolution will be enabled by default when we're in a monorepo
   const autolinkingModuleResolutionEnabled =
-    exp.experiments?.autolinkingModuleResolution ?? env.EXPO_USE_STICKY_RESOLVER;
+    exp.experiments?.autolinkingModuleResolution ?? isWorkspace;
 
   const serverActionsEnabled =
     exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
@@ -89,7 +95,6 @@ export async function loadMetroConfigAsync(
     Log.warn(`React 19 is enabled by default. Remove unused experiments.reactCanary flag.`);
   }
 
-  const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
   const hasConfig = await resolveConfig(options.config, projectRoot);
@@ -129,6 +134,10 @@ export async function loadMetroConfigAsync(
     Log.log(chalk.gray`React Compiler enabled`);
   }
 
+  if (autolinkingModuleResolutionEnabled) {
+    Log.log(chalk.gray`Expo Autolinking module resolution enabled`);
+  }
+
   if (env.EXPO_UNSTABLE_TREE_SHAKING && !env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     throw new CommandError(
       'EXPO_UNSTABLE_TREE_SHAKING requires EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH to be enabled.'
@@ -146,9 +155,6 @@ export async function loadMetroConfigAsync(
   }
   if (env.EXPO_UNSTABLE_LOG_BOX) {
     Log.warn(`Experimental Expo LogBox is enabled.`);
-  }
-  if (autolinkingModuleResolutionEnabled) {
-    Log.warn(`Experimental Expo Autolinking module resolver is enabled.`);
   }
 
   if (serverActionsEnabled) {
