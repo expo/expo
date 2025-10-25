@@ -1,10 +1,7 @@
 package expo.modules.medialibrary.next.permissions
 
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Binder
 import android.os.Build
 import androidx.annotation.RequiresApi
 import expo.modules.kotlin.AppContext
@@ -56,12 +53,9 @@ class MediaStorePermissionsDelegate(val appContext: AppContext) {
     writeLauncher = registerForActivityResult(WriteContract(appContextProvider))
   }
 
-  private fun hasWritePermissionForUri(uri: Uri): Boolean {
-    return context.checkUriPermission(
-      uri,
-      Binder.getCallingPid(),
-      Binder.getCallingUid(),
-      Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-    ) == PackageManager.PERMISSION_GRANTED
-  }
+  private fun hasWritePermissionForUri(uri: Uri): Boolean =
+    runCatching {
+      context.contentResolver.openOutputStream(uri, "rw")?.close()
+      return true
+    }.getOrDefault(false)
 }
