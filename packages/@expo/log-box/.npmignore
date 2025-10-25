@@ -18,3 +18,6 @@ __rsc_tests__
 
 # Exclude Sandbox App source
 /app/
+
+# This flag file trigger on-demand bundling during native builds in the Expo monorepo
+/.bundle-on-demand

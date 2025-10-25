@@ -15,16 +15,15 @@ const __dirname = dirname(__filename);
 
 const outputLogBoxBundle = 'ExpoLogBox.bundle';
 const defaultDomComponentsBundle = 'www.bundle';
-const outputDir = 'dist';
+const outputDir = join(__dirname, '../dist');
 const appBundlePath = join(outputDir, 'app.bundle');
 const indexHtmlPath = join(outputDir, defaultDomComponentsBundle, 'index.html');
 
 await rm(outputDir, { recursive: true, force: true });
 
 const result = await spawn(
-  'yarn',
+  join(__dirname, '../node_modules/.bin/expo'),
   [
-    'expo',
     'export:embed',
     '--platform',
     'android',
@@ -34,7 +33,10 @@ const result = await spawn(
     join(__dirname, '../app/index.ts'),
     ...argv.slice(2),
   ],
-  { stdio: 'inherit' }
+  {
+    stdio: 'inherit',
+    cwd: join(__dirname, '..'),
+  }
 );
 
 if (result.error) {
