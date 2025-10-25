@@ -585,9 +585,7 @@ async function transform(config, projectRoot, filename, data, options) {
 function getCacheKey(config) {
     const { 
     // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
-    expo_customTransformerPath: _customTransformerPath, babelTransformerPath, minifierPath, 
-    // Pull out of the cache key to prevent accidental cache invalidation.
-    asyncRequireModulePath, ...remainingConfig } = config;
+    expo_customTransformerPath: _customTransformerPath, babelTransformerPath, minifierPath, ...remainingConfig } = config;
     // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
     const filesKey = (0, metro_cache_key_1.getCacheKey)([
         require.resolve(babelTransformerPath),

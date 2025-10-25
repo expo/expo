@@ -780,8 +780,6 @@ export function getCacheKey(config: JsTransformerConfig): string {
     expo_customTransformerPath: _customTransformerPath,
     babelTransformerPath,
     minifierPath,
-    // Pull out of the cache key to prevent accidental cache invalidation.
-    asyncRequireModulePath,
     ...remainingConfig
   } = config;
 
