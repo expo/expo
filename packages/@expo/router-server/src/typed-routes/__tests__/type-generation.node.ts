@@ -1,5 +1,5 @@
-import { inMemoryContext } from '../../testing-library/context-stubs';
-import requireContext from '../../testing-library/require-context-ponyfill';
+import { inMemoryContext, requireContext } from 'expo-router/internal/testing';
+
 import { getTypedRoutesDeclarationFile } from '../generate';
 import { getWatchHandler } from '../index';
 
