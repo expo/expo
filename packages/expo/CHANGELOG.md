@@ -19,6 +19,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix setting filename in `FormData`. ([#40586](https://github.com/expo/expo/pull/40586) by [@aleqsio](https://github.com/aleqsio))
 - Fixed DOM Components entry not found from updates on Android. ([#40574](https://github.com/expo/expo/pull/40574) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
