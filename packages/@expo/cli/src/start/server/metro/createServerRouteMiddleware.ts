@@ -8,11 +8,12 @@
 import type { ProjectConfig } from '@expo/config';
 import type { MiddlewareSettings } from 'expo-server';
 import { createRequestHandler } from 'expo-server/adapter/http';
+import { type RouteInfo } from 'expo-server/private';
 import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
-import { fetchManifest, type ExpoRouterServerManifestV1Route } from './fetchRouterManifest';
+import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import {
   warnInvalidWebOutput,
@@ -35,7 +36,7 @@ export function createRouteHandlerMiddleware(
     routerRoot: string;
     getStaticPageAsync: (
       pathname: string,
-      route: ExpoRouterServerManifestV1Route<RegExp>
+      route: RouteInfo<RegExp>
     ) => Promise<{ content: string }>;
     bundleApiRoute: (
       functionFilePath: string
