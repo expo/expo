@@ -5,6 +5,7 @@ const withAndroidRootViewBackgroundColor_1 = require("./withAndroidRootViewBackg
 const withAndroidUserInterfaceStyle_1 = require("./withAndroidUserInterfaceStyle");
 const withIosRootViewBackgroundColor_1 = require("./withIosRootViewBackgroundColor");
 const withIosUserInterfaceStyle_1 = require("./withIosUserInterfaceStyle");
+const withMaterial3DynamicColorsTheme_1 = require("./withMaterial3DynamicColorsTheme");
 const pkg = require('expo-system-ui/package.json');
 const withSystemUI = (config) => {
     return (0, config_plugins_1.withPlugins)(config, [
@@ -12,6 +13,7 @@ const withSystemUI = (config) => {
         withIosRootViewBackgroundColor_1.withIosRootViewBackgroundColor,
         withAndroidUserInterfaceStyle_1.withAndroidUserInterfaceStyle,
         withIosUserInterfaceStyle_1.withIosUserInterfaceStyle,
+        withMaterial3DynamicColorsTheme_1.withMaterial3DynamicColorsTheme,
     ]);
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withSystemUI, pkg.name, pkg.version);

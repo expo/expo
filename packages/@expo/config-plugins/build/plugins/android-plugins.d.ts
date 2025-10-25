@@ -45,6 +45,13 @@ export declare const withAndroidColorsNight: ConfigPlugin<Mod<Resources.Resource
  */
 export declare const withAndroidStyles: ConfigPlugin<Mod<Resources.ResourceXML>>;
 /**
+ * Provides the `android/app/src/main/res/values/attrs.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
+ *
+ * @param config
+ * @param action
+ */
+export declare const withAndroidAttrs: ConfigPlugin<Mod<Resources.ResourceXML>>;
+/**
  * Provides the project MainActivity for modification.
  *
  * @param config

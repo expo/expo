@@ -41,12 +41,14 @@ module.exports = {
     reactCompiler: process.env.E2E_ROUTER_COMPILER,
     reactServerComponentRoutes: process.env.E2E_RSC_ENABLED,
     reactServerFunctions: process.env.E2E_SERVER_FUNCTIONS,
+    material3DynamicColorsTheme: true,
   },
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',
     bundler: 'metro',
   },
   plugins: [
+    ['expo-system-ui'],
     [
       'expo-build-properties',
       {

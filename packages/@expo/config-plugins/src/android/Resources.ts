@@ -16,6 +16,7 @@ export type ResourceXML = {
     color?: ResourceItemXML[];
     string?: ResourceItemXML[];
     style?: ResourceGroupXML[];
+    attr?: ResourceAttrXML[];
     // Add more if needed...
   };
 };
@@ -26,6 +27,13 @@ export type ResourceItemXML = {
     name: string;
     'tools:targetApi'?: string;
     translatable?: string;
+  };
+};
+export type ResourceAttrXML = {
+  _?: string;
+  $: {
+    name: string;
+    format?: string;
   };
 };
 /**

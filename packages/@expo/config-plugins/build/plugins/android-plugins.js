@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createAndroidManifestPlugin = createAndroidManifestPlugin;
 exports.createStringsXmlPlugin = createStringsXmlPlugin;
-exports.withStringsXml = exports.withSettingsGradle = exports.withProjectBuildGradle = exports.withMainApplication = exports.withMainActivity = exports.withGradleProperties = exports.withAppBuildGradle = exports.withAndroidStyles = exports.withAndroidManifest = exports.withAndroidColorsNight = exports.withAndroidColors = void 0;
+exports.withStringsXml = exports.withSettingsGradle = exports.withProjectBuildGradle = exports.withMainApplication = exports.withMainActivity = exports.withGradleProperties = exports.withAppBuildGradle = exports.withAndroidStyles = exports.withAndroidManifest = exports.withAndroidColorsNight = exports.withAndroidColors = exports.withAndroidAttrs = void 0;
 function _withMod() {
   const data = require("./withMod");
   _withMod = function () {
@@ -118,12 +118,27 @@ const withAndroidStyles = (config, action) => {
 };
 
 /**
- * Provides the project MainActivity for modification.
+ * Provides the `android/app/src/main/res/values/attrs.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
  *
  * @param config
  * @param action
  */
 exports.withAndroidStyles = withAndroidStyles;
+const withAndroidAttrs = (config, action) => {
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'attrs',
+    action
+  });
+};
+
+/**
+ * Provides the project MainActivity for modification.
+ *
+ * @param config
+ * @param action
+ */
+exports.withAndroidAttrs = withAndroidAttrs;
 const withMainActivity = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',

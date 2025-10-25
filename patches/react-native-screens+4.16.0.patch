@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-screens/android/build.gradle b/node_modules/react-native-screens/android/build.gradle
+index 114be81..1eb1795 100644
+--- a/node_modules/react-native-screens/android/build.gradle
++++ b/node_modules/react-native-screens/android/build.gradle
+@@ -243,7 +243,7 @@ dependencies {
+     implementation 'androidx.fragment:fragment-ktx:1.6.1'
+     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+-    implementation 'com.google.android.material:material:1.12.0'
++    implementation 'com.google.android.material:material:1.13.0'
+     implementation "androidx.core:core-ktx:1.8.0"
+ 
+     def COIL_VERSION = "3.0.4"
