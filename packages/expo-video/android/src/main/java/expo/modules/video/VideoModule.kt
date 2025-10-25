@@ -22,6 +22,8 @@ import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.AudioTrack
+import expo.modules.video.records.ScrubbingModeOptions
+import expo.modules.video.records.SeekTolerance
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
@@ -296,6 +298,22 @@ class VideoModule : Module() {
         }
         .set { ref: VideoPlayer, value: Boolean? ->
           ref.keepScreenOnWhilePlaying = value ?: true
+        }
+
+      Property("seekTolerance")
+        .get { ref: VideoPlayer ->
+          ref.seekTolerance
+        }
+        .set { ref: VideoPlayer, tolerance: SeekTolerance? ->
+          ref.seekTolerance = tolerance ?: SeekTolerance()
+        }
+
+      Property("scrubbingModeOptions")
+        .get { ref: VideoPlayer ->
+          ref.scrubbingModeOptions
+        }
+        .set { ref: VideoPlayer, options: ScrubbingModeOptions? ->
+          ref.scrubbingModeOptions = options ?: ScrubbingModeOptions()
         }
 
       Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->

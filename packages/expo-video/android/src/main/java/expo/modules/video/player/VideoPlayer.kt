@@ -37,6 +37,8 @@ import expo.modules.video.playbackService.ExpoVideoPlaybackService
 import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.ScrubbingModeOptions
+import expo.modules.video.records.SeekTolerance
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.MutableWeakReference
@@ -177,6 +179,22 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       val old = field
       field = value
       sendEvent(PlayerEvent.VideoTrackChanged(value, old))
+    }
+
+  var seekTolerance: SeekTolerance = SeekTolerance()
+    set(value) {
+      field = value
+      appContext?.mainQueue?.launch {
+        seekTolerance.applyToPlayer(this@VideoPlayer)
+      }
+    }
+
+  var scrubbingModeOptions: ScrubbingModeOptions = ScrubbingModeOptions()
+    set(value) {
+      field = value
+      appContext?.mainQueue?.launch {
+        scrubbingModeOptions.applyToPlayer(this@VideoPlayer)
+      }
     }
 
   var availableVideoTracks: List<VideoTrack> = emptyList()

@@ -1,12 +1,23 @@
 import { requestPermissionsAsync, getAssetsAsync, getAssetInfoAsync } from 'expo-media-library';
 import { VideoSource } from 'expo-video';
 const localVideoId: VideoSource = require('../../../assets/videos/ace.mp4') as number;
+const seekOptimizedVideoId: VideoSource =
+  require('../../../assets/videos/tola_seek_optimized.mov') as number;
 
 const localVideoSource: VideoSource = {
   assetId: localVideoId,
   metadata: {
     title: 'Cute Doggo',
     artist: 'Doggo',
+  },
+};
+
+export const seekOptimizedSource: VideoSource = {
+  assetId: seekOptimizedVideoId,
+  metadata: {
+    title: 'Tola running (seek optimized)',
+    artist:
+      "This video has been optimized for seeking by exoirting all of it's frames as keyframes",
   },
 };
 
