@@ -5,7 +5,6 @@ import resolveFrom from 'resolve-from';
 
 import { memoize } from '../utils';
 import type { RNConfigReactNativeConfig } from './reactNativeConfig.types';
-import { fileExistsAsync } from '../fileUtils';
 
 let tsMain: typeof import('typescript') | null | undefined = undefined;
 
@@ -17,13 +16,18 @@ const mockedNativeModules = path.join(__dirname, '..', '..', 'node_modules_mock'
 export const loadConfigAsync = memoize(async function loadConfigAsync<
   T extends RNConfigReactNativeConfig,
 >(packageRoot: string): Promise<T | null> {
-  const configJsPath = path.join(packageRoot, 'react-native.config.js');
-  if (await fileExistsAsync(configJsPath)) {
+  const [configJsPath, configTsPath] = await Promise.all(
+    ['react-native.config.js', 'react-native.config.ts'].map(async (fileName) => {
+      const file = path.join(packageRoot, fileName);
+      const stat = await fs.stat(file).catch(() => null);
+      return stat?.isFile() ? file : null;
+    })
+  );
+  if (configJsPath) {
     return requireConfig(configJsPath, await fs.readFile(configJsPath, 'utf8'));
   }
 
-  const configTsPath = path.join(packageRoot, 'react-native.config.ts');
-  if (await fileExistsAsync(configTsPath)) {
+  if (configTsPath) {
     if (tsMain === undefined) {
       const tsPath = resolveFrom.silent(packageRoot, 'typescript');
       if (tsPath) {

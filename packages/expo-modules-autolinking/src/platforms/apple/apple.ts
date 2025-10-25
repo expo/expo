@@ -1,9 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
-import { glob } from 'glob';
 import path from 'path';
 
-import { fileExistsAsync } from '../../fileUtils';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
@@ -18,18 +16,32 @@ const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
 
 const indent = '  ';
 
+const fileExistsAsync = async (file: string): Promise<string | null> => {
+  const stat = await fs.promises.stat(file).catch(() => null);
+  return stat?.isFile() ? file : null;
+};
+
+/** Find all *.podspec files in top-level directories */
 async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
   const configPodspecPaths = revision.config?.applePodspecPaths();
   if (configPodspecPaths && configPodspecPaths.length) {
     return configPodspecPaths;
   }
-
-  const podspecFiles = await glob('*/*.podspec', {
-    cwd: revision.path,
-    ignore: ['**/node_modules/**'],
-  });
-
-  return podspecFiles;
+  const podspecFiles = (
+    await Promise.all(
+      (await fs.promises.readdir(revision.path, { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules')
+        .map(async (directory) => {
+          const entries = await fs.promises.readdir(path.join(revision.path, directory.name), {
+            withFileTypes: true,
+          });
+          return entries
+            .filter((entry) => entry.isFile() && entry.name.endsWith('.podspec'))
+            .map((entry) => path.join(directory.name, entry.name));
+        })
+    )
+  ).flat(1);
+  return podspecFiles.sort((a, b) => a.localeCompare(b));
 }
 
 export function getSwiftModuleNames(

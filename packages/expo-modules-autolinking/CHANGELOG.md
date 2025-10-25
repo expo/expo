@@ -12,11 +12,13 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix passing exclude options. ([#40014](https://github.com/expo/expo/pull/40014) by [@jakex7](https://github.com/jakex7))
+- Sort results from file discovery to keep fingerprint stable ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
 - [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
+- Refactor test suite and file discovery implementation to drop `glob` ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 
 ## 3.0.19 - 2025-10-23
 

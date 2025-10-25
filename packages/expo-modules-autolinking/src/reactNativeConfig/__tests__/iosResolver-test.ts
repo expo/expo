@@ -1,20 +1,16 @@
-import { glob } from 'glob';
 import { vol } from 'memfs';
 
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
 
 jest.mock('fs/promises');
-jest.mock('glob');
+jest.mock('fs');
 
 describe(resolveDependencyConfigImplIosAsync, () => {
-  const mockGlob = glob as jest.MockedFunction<typeof glob>;
-
   afterEach(() => {
     vol.reset();
   });
 
   it('should return ios config if podspec found', async () => {
-    mockGlob.mockResolvedValueOnce(['RNTest.podspec']);
     vol.fromJSON({
       '/app/node_modules/react-native-test/RNTest.podspec': '',
     });
@@ -33,7 +29,6 @@ describe(resolveDependencyConfigImplIosAsync, () => {
   });
 
   it('should return ios config with override reactNativeConfig', async () => {
-    mockGlob.mockResolvedValueOnce(['RNTest.podspec']);
     vol.fromJSON({
       '/app/node_modules/react-native-test/RNTest.podspec': '',
     });
@@ -78,10 +73,6 @@ describe(resolveDependencyConfigImplIosAsync, () => {
   });
 
   it('should resolve podspec if the base name is matching the package name', async () => {
-    mockGlob.mockResolvedValueOnce([
-      'react-native-google-maps.podspec',
-      'react-native-maps.podspec',
-    ]);
     vol.fromJSON({
       '/app/node_modules/react-native-maps/react-native-google-maps.podspec': '',
       '/app/node_modules/react-native-maps/react-native-maps.podspec': '',
