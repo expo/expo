@@ -31,7 +31,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           <div className="flex flex-row items-center gap-2">
             <Edit05Icon className="icon-sm text-icon-secondary" />
             <FOOTNOTE crawlable={false} theme="secondary">
-              Edit
+              Edit page
             </FOOTNOTE>
           </div>
         </Button>
