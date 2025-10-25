@@ -1,6 +1,6 @@
-import { FontSource } from './Font.types';
+import { UseFontHook } from './Font.types';
 /**
- * Load a map of fonts at runtime with [`loadAsync`](#loadasyncfontfamilyorfontmap-source). This returns a `boolean` if the fonts are
+ * Load a map of fonts at runtime with [`loadAsync`](#loadasyncfontfamilyorfontmap-source). This returns `true` if the fonts are
  * loaded and ready to use. It also returns an error if something went wrong, to use in development.
  *
  * > Note, the fonts are not "reloaded" when you dynamically change the font map.
@@ -20,5 +20,5 @@ import { FontSource } from './Font.types';
  * });
  * ```
  */
-export declare const useFonts: (map: string | Record<string, FontSource>) => [boolean, Error | null];
+export declare const useFonts: UseFontHook;
 //# sourceMappingURL=FontHooks.d.ts.map

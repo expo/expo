@@ -71,3 +71,5 @@ export enum FontDisplay {
  * @hidden
  */
 export type UnloadFontOptions = Pick<FontResource, 'display'>;
+
+export type UseFontHook = (map: string | Record<string, FontSource>) => [boolean, Error | null];

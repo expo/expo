@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- unify `useFonts` return value in RSC ([#40481](https://github.com/expo/expo/pull/40481) by [@vonovak](https://github.com/vonovak))
+- fix android image scaling in `renderToImageAsync` ([#40113](https://github.com/expo/expo/pull/40113) by [@vonovak](https://github.com/vonovak))
 ### 💡 Others
 
 ## 14.0.9 - 2025-10-09
