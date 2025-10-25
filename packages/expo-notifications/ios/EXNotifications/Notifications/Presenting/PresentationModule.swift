@@ -23,10 +23,9 @@ open class PresentationModule: Module {
     }
   }
 
-  open func serializeNotifications(_ notifications: [UNNotification]) -> [[String: Any]] {
+  open func serializeNotifications(_ notifications: [UNNotification]) -> [NotificationRecord] {
     return notifications.map { notification in
-      // TODO: convert serialization to Records
-      return EXNotificationSerializer.serializedNotification(notification)
+      return NotificationRecord(from: notification)
     }
   }
 

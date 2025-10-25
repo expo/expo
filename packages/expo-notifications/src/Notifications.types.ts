@@ -439,8 +439,10 @@ export type NotificationContent = {
    */
   categoryIdentifier: string | null;
   // @docsMissing
-  sound: 'default' | 'defaultCritical' | 'custom' | null;
+  sound: 'default' | 'defaultCritical' | 'custom' | 'defaultRingtone' | null;
 } & (NotificationContentIos | NotificationContentAndroid);
+
+export type InterruptionLevel = 'passive' | 'active' | 'timeSensitive' | 'critical';
 
 /**
  * See [Apple documentation](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) for more information on specific fields.
@@ -483,7 +485,7 @@ export type NotificationContentIos = {
    * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
    * @platform ios
    */
-  interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
+  interruptionLevel?: InterruptionLevel;
 };
 
 // @docsMissing
@@ -561,7 +563,7 @@ export type NotificationContentInput = {
    * Application badge number associated with the notification.
    */
   badge?: number;
-  sound?: boolean | string;
+  sound?: boolean | 'default' | 'defaultCritical' | 'defaultRingtone' | string;
   /**
    * The name of the image or storyboard to use when your app launches because of the notification.
    */
@@ -623,7 +625,7 @@ export type NotificationContentInput = {
    * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
    * @platform ios
    */
-  interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
+  interruptionLevel?: InterruptionLevel;
 };
 
 /**

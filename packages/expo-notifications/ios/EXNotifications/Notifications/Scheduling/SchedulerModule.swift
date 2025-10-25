@@ -119,9 +119,9 @@ open class SchedulerModule: Module {
     }
   }
 
-  open func serializedNotificationRequests(_ requests: [UNNotificationRequest]) -> [[String: Any]] {
+  open func serializedNotificationRequests(_ requests: [UNNotificationRequest]) -> [NotificationRequestRecord] {
     return requests.map {
-      EXNotificationSerializer.serializedNotificationRequest($0)
+      NotificationRequestRecord(from: $0)
     }
   }
 
@@ -133,7 +133,7 @@ open class SchedulerModule: Module {
     guard let appContext = appContext else {
       return nil
     }
-    let requestContentRecord = try NotificationRequestContentRecord(from: contentInput, appContext: appContext)
+    let requestContentRecord = try NotificationContentRecord(from: contentInput, appContext: appContext)
     return try UNNotificationRequest(
       identifier: identifier,
       content: requestContentRecord.toUNMutableNotificationContent(),

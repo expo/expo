@@ -45,6 +45,7 @@
   },
   "expo": {
     "autolinking": {
+	  "legacy_shallowReactNativeLinking": true,
       "exclude": [
         "@expo/ui",
         "expo-audio",

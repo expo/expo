@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [ios] migrate notification serializer to swift ([#38633](https://github.com/expo/expo/pull/38633) by [@vonovak](https://github.com/vonovak))
+
 ## 0.32.12 - 2025-10-01
 
 ### 💡 Others
