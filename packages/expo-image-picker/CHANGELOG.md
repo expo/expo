@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix issue on iOS 26 where videos stored in iCloud were not downloaded when picked. ([#40047](https://github.com/expo/expo/pull/40047) by [@DvzZDev](https://github.com/DvzZDev))
+  
 ### 💡 Others
 
 ## 17.0.8 — 2025-09-11
