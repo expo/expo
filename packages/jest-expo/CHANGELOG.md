@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Auto-configure `prettierPath` to enable Jest snapshot updates ([#36010](https://github.com/expo/expo/pull/36010) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Improve local mock lookup. ([#39743](https://github.com/expo/expo/pull/39743) by [@aleqsio](https://github.com/aleqsio))
