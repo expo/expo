@@ -38,6 +38,8 @@
     "ios",
     "unstable-native-tabs.js",
     "unstable-native-tabs.d.ts",
+    "unstable-split-view.js",
+    "unstable-split-view.d.ts",
     "node",
     "plugin",
     "rsc",
