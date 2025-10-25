@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Removed some runtime type checks for dynamic types. ([#40611](https://github.com/expo/expo/pull/40611) by [@tsapeta](https://github.com/tsapeta))
+
 ## 54.0.20 — 2025-10-23
 
 _This version does not introduce any user-facing changes._
