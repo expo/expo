@@ -21,6 +21,7 @@
 - Migrate static rendering logic from `expo-router` to `@expo/router-server` ([#39374](https://github.com/expo/expo/pull/39374) by [@hassankhan](https://github.com/hassankhan))
 - Use Expo `HMRClient` in native apps ([#40449](https://github.com/expo/expo/pull/40449) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Migrate RSC logic from `expo-router` to `@expo/router-server` ([#40484](https://github.com/expo/expo/pull/40484) by [@hassankhan](https://github.com/hassankhan))
+- Remove webpack from `customize` command ([#40005](https://github.com/expo/expo/pull/40005) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
 
 ### ⚠️ Notices
 
