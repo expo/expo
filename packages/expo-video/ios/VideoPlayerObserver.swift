@@ -12,6 +12,37 @@ private struct Weak<T: AnyObject> {
   }
 }
 
+private enum ObserverTaskKey {
+  case sourceLoading
+  case subtitleTrackLoad
+  case audioTrackLoad
+  case trackChange
+}
+
+private actor ObserverTaskManager {
+  private var tasks: [ObserverTaskKey: Task<Void, Never>] = [:]
+
+  func run(
+    forKey key: ObserverTaskKey,
+    operation: @escaping @Sendable () async -> Void
+  ) {
+    tasks[key]?.cancel()
+
+    let newTask = Task {
+      await operation()
+      tasks[key] = nil
+    }
+    tasks[key] = newTask
+  }
+
+  func cancelAll() {
+    for task in tasks.values {
+      task.cancel()
+    }
+    tasks.removeAll()
+  }
+}
+
 protocol VideoPlayerObserverDelegate: AnyObject {
   func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?)
   func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool)
@@ -74,6 +105,8 @@ final class WeakPlayerObserverDelegate: Hashable {
 class VideoPlayerObserver: VideoSourceLoaderListener {
   private weak var owner: VideoPlayer?
   private weak var videoSourceLoader: VideoSourceLoader?
+  private let taskManager = ObserverTaskManager()
+
   var player: AVPlayer? {
     owner?.ref
   }
@@ -157,8 +190,6 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
   private var currentSubtitlesObserver: NSObjectProtocol?
   private var currentAudioTracksObserver: NSObjectProtocol?
 
-  private var videoTrackUpdateTask: Task<Void, Never>?
-
   init(owner: VideoPlayer, videoSourceLoader: VideoSourceLoader) {
     self.owner = owner
     self.videoSourceLoader = videoSourceLoader
@@ -241,8 +272,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
       // For HLS sources AVPlayer doesn't provide the tracks when they change
       // But it does call this event when they are loaded and when the current track changes.
       // We have to extract the necessary information ourselves.
-        self?.videoTrackUpdateTask?.cancel()
-        self?.videoTrackUpdateTask = Task { [weak self, playerItem] in
+      self?.runTask(forKey: .trackChange) { [weak self, item] in
         // For HLS sources
         if let videoPlayerItem = playerItem as? VideoPlayerItem, videoPlayerItem.isHls {
           guard let itemUri = videoPlayerItem.videoSource.uri else {
@@ -290,9 +320,16 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
       object: playerItem,
       queue: nil
     ) { [weak self] _ in
-      self?.delegates.forEach { delegate in
-        let subtitleTrack = VideoPlayerSubtitles.findCurrentSubtitleTrack(for: playerItem)
-        delegate.value?.onSubtitleSelectionChanged(player: player, playerItem: playerItem, subtitleTrack: subtitleTrack)
+      self?.runTask(forKey: .subtitleTrackLoad) { [weak self] in
+        let subtitleTrack = await VideoPlayerSubtitles.findCurrentSubtitleTrack(for: playerItem)
+
+        guard !Task.isCancelled else {
+          return
+        }
+
+        self?.delegates.forEach { delegate in
+          delegate.value?.onSubtitleSelectionChanged(player: player, playerItem: playerItem, subtitleTrack: subtitleTrack)
+        }
       }
     }
 
@@ -301,9 +338,16 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
       object: playerItem,
       queue: nil
     ) { [weak self] _ in
-      self?.delegates.forEach { delegate in
-        let audioTrack = VideoPlayerAudioTracks.findCurrentAudioTrack(for: playerItem)
-        delegate.value?.onAudioTrackSelectionChanged(player: player, playerItem: playerItem, audioTrack: audioTrack)
+      self?.runTask(forKey: .audioTrackLoad) { [weak self] in
+        let audioTrack = await VideoPlayerAudioTracks.findCurrentAudioTrack(for: playerItem)
+
+        guard !Task.isCancelled else {
+          return
+        }
+
+        self?.delegates.forEach { delegate in
+          delegate.value?.onAudioTrackSelectionChanged(player: player, playerItem: playerItem, audioTrack: audioTrack)
+        }
       }
     }
   }
@@ -314,8 +358,9 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     playerItemStatusObserver?.invalidate()
     tracksObserver?.invalidate()
 
-    videoTrackUpdateTask?.cancel()
-    videoTrackUpdateTask = nil
+    Task { [taskManager] in
+      await taskManager.cancelAll()
+    }
 
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
     NotificationCenter.default.removeObserver(currentSubtitlesObserver as Any)
@@ -506,6 +551,17 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
 
   private func onIsExternalPlaybackActiveChanged(_ player: AVPlayer, _ change: NSKeyValueObservedChange<Bool>) {
     self.isExternalPlaybackActive = player.isExternalPlaybackActive
+  }
+
+  private func runTask(
+    forKey key: ObserverTaskKey,
+    operation: @escaping @Sendable () async -> Void
+  ) {
+    // Delegate the entire operation to the actor.
+    // This requires making the call from an asynchronous context.
+    Task { [weak self] in
+      await self?.taskManager.run(forKey: key, operation: operation)
+    }
   }
 
   // MARK: - VideoSourceLoaderListener
