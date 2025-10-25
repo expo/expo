@@ -14,6 +14,7 @@ import { ScrollContainer } from '~/components/ScrollContainer';
 import { SidebarFooter } from '~/ui/components/Sidebar/SidebarFooter';
 import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
 import { TableOfContentsProps } from '~/ui/components/TableOfContents';
+import * as Tooltip from '~/ui/components/Tooltip';
 
 type Props = PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
@@ -73,31 +74,39 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
                   'bottom-6',
                   isSidebarCollapsed ? 'left-5 translate-x-0' : 'left-[280px] -translate-x-1/2'
                 )}>
-                <Button
-                  type="button"
-                  theme="quaternary"
-                  size="xs"
-                  className={mergeClasses(
-                    'inline-flex size-9 items-center justify-center rounded-full border !p-0 transition-colors duration-150 ease-out',
-                    'shadow-sm',
-                    isSidebarCollapsed
-                      ? 'border-palette-gray5 bg-palette-gray4 text-icon-secondary dark:border-palette-gray6 dark:bg-palette-gray5'
-                      : 'border-default bg-default text-icon-secondary',
-                    'hover:bg-element focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-blue9'
-                  )}
-                  aria-label={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
-                  title={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
-                  aria-pressed={!isSidebarCollapsed}
-                  onClick={onSidebarToggle}>
-                  {isSidebarCollapsed ? (
-                    <ChevronRightIcon className="icon-sm" />
-                  ) : (
-                    <ChevronLeftIcon className="icon-sm" />
-                  )}
-                  <span className="sr-only">
-                    {isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
-                  </span>
-                </Button>
+                <Tooltip.Root delayDuration={300}>
+                  <Tooltip.Trigger asChild>
+                    <Button
+                      type="button"
+                      theme="quaternary"
+                      size="xs"
+                      className={mergeClasses(
+                        'inline-flex size-9 items-center justify-center rounded-full border !p-0 transition-colors duration-150 ease-out',
+                        'shadow-sm',
+                        isSidebarCollapsed
+                          ? 'border-palette-gray5 bg-palette-gray4 text-icon-secondary dark:border-palette-gray6 dark:bg-palette-gray5'
+                          : 'border-default bg-default text-icon-secondary',
+                        'hover:bg-element focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-blue9'
+                      )}
+                      aria-label={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
+                      title={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
+                      aria-pressed={!isSidebarCollapsed}
+                      onClick={onSidebarToggle}>
+                      {isSidebarCollapsed ? (
+                        <ChevronRightIcon className="icon-sm" />
+                      ) : (
+                        <ChevronLeftIcon className="icon-sm" />
+                      )}
+                      <span className="sr-only">
+                        {isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
+                      </span>
+                    </Button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content sideOffset={8} className="max-w-[260px] text-center text-xs">
+                    Use Cmd/Ctrl + Shift + Enter to enter immersive mode. Use the same keys to exit
+                    immersive mode.
+                  </Tooltip.Content>
+                </Tooltip.Root>
               </div>
             ) : null}
             <div
