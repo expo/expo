@@ -1,6 +1,7 @@
 package expo.modules.calendar.dialogs
 
-import expo.modules.core.arguments.ReadableArguments
+import expo.modules.calendar.domain.event.enums.Availability
+import expo.modules.calendar.domain.event.records.input.RecurrenceRuleInput
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
@@ -19,7 +20,7 @@ class CreatedEventOptions : Record, Serializable {
   val timeZone: String? = null
 
   @Field
-  val availability: String? = null
+  val availability: Availability? = null
 
   @Field
   val allDay: Boolean? = null
@@ -31,7 +32,7 @@ class CreatedEventOptions : Record, Serializable {
   val endDate: String? = null
 
   @Field
-  val recurrenceRule: ReadableArguments? = null
+  val recurrenceRule: RecurrenceRuleInput? = null
 
   @Field
   val startNewActivityTask: Boolean = true
