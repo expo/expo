@@ -4,7 +4,6 @@ import { queryAndGenerateAsync, selectAndGenerateAsync } from './generate';
 import { Options } from './resolveOptions';
 import { DestinationResolutionProps } from './templates';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
-import { getPlatformBundlers } from '../start/server/platformBundlers';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv } from '../utils/nodeEnv';
 
@@ -16,8 +15,7 @@ export async function customizeAsync(files: string[], options: Options, extras: 
 
   require('@expo/env').load(projectRoot);
 
-  // Get the static path (defaults to 'web/')
-  // Doesn't matter if expo is installed or which mode is used.
+  // Get the expo config for determining the router root.
   const { exp } = getConfig(projectRoot, {
     skipSDKVersionRequirement: true,
   });
@@ -27,10 +25,7 @@ export async function customizeAsync(files: string[], options: Options, extras: 
   // Create the destination resolution props which are used in both
   // the query and select functions.
   const props: DestinationResolutionProps = {
-    webStaticPath:
-      (exp.web?.staticPath ?? getPlatformBundlers(projectRoot, exp).web === 'webpack')
-        ? 'web'
-        : 'public',
+    webStaticPath: 'public',
     appDirPath: routerRoot,
   };
 
