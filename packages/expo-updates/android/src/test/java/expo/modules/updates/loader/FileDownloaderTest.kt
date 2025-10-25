@@ -207,7 +207,7 @@ class FileDownloaderTest {
 
     val fileDownloader = createFileDownloader(config)
     val fallback = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config, allowPatch = false)
-    Assert.assertEquals("*/*", fallback.header("Accept"))
+    Assert.assertEquals("application/javascript", fallback.header("Accept"))
   }
 
   @Test
@@ -226,7 +226,7 @@ class FileDownloaderTest {
 
     val fileDownloader = createFileDownloader(config)
     val request = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
-    Assert.assertEquals("*/*", request.header("Accept"))
+    Assert.assertEquals("application/javascript", request.header("Accept"))
   }
 
   @Test
@@ -246,7 +246,7 @@ class FileDownloaderTest {
 
     val fileDownloader = createFileDownloader(config)
     val request = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
-    Assert.assertEquals("*/*", request.header("Accept"))
+    Assert.assertEquals("application/javascript", request.header("Accept"))
   }
 
   @Test
@@ -302,6 +302,41 @@ class FileDownloaderTest {
 
     // cleanup
     unmockkObject(ManifestMetadata)
+  }
+
+  @Test
+  fun testGetExtraHeadersForRemoteAssetRequest_includesPatchNegotiationHeaders() {
+    val launchedUpdateUUIDString = "7c1d2bd0-f88b-454d-998c-7fa92a924dbf"
+    val requestedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
+    val launchedUpdate = UpdateEntity(
+      UUID.fromString(launchedUpdateUUIDString),
+      Date(),
+      "1.0",
+      "test",
+      JSONObject("{}"),
+      Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      null
+    )
+    val requestedUpdate = UpdateEntity(
+      UUID.fromString(requestedUpdateUUIDString),
+      Date(),
+      "1.0",
+      "test",
+      JSONObject("{}"),
+      Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      null
+    )
+
+    val headers = FileDownloader.getExtraHeadersForRemoteAssetRequest(
+      launchedUpdate,
+      null,
+      requestedUpdate
+    )
+
+    Assert.assertEquals(launchedUpdateUUIDString, headers.get("Expo-Current-Update-ID"))
+    Assert.assertEquals(launchedUpdateUUIDString, headers.get("If-None-Match"))
+    Assert.assertEquals(requestedUpdateUUIDString, headers.get("Expo-Requested-Update-ID"))
+    Assert.assertEquals(requestedUpdateUUIDString, headers.get("If-Match"))
   }
 
   @Test
