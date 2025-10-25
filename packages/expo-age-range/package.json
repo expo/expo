@@ -1,0 +1,45 @@
+{
+  "name": "expo-age-range",
+  "version": "0.1.0",
+  "description": "A native module for age range functionality",
+  "sideEffects": false,
+  "main": "build/index.js",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/age-range/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-age-range"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "age-range",
+    "ios",
+    "android"
+  ],
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "expo-module-scripts": "^5.0.7"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react-native": "*"
+  }
+}
