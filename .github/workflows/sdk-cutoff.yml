@@ -1,0 +1,27 @@
+name: Cut off release branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      sdkVersion:
+        description: 'Enter the SDK version'
+        required: true
+
+jobs:
+  cut-release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+      - name: Cut release branch
+        run: |
+          git checkout -b sdk-${{ github.event.inputs.sdkVersion }}
+          git push origin sdk-${{ github.event.inputs.sdkVersion }}
+          echo "Created new SDK branch: https://github.com/${{ github.repository }}/tree/sdk-${{ github.event.inputs.sdkVersion }}"
+      - name: Create SDK cherry-pick labels
+        run: |
+          echo "Creating labels for SDK ${{ github.event.inputs.sdkVersion }}"
+          gh label create "SDK ${{ github.event.inputs.sdkVersion }}" --color "f39c12" --description "Pull request needs cherry-pick to sdk-${{ github.event.inputs.sdkVersion }} branch"
+          gh label create "SDK ${{ github.event.inputs.sdkVersion }} cherry-picked" --color "2ecc71" --description "Pull request was cherry-picked to sdk-${{ github.event.inputs.sdkVersion }} branch"
+        env:
+          GH_TOKEN: ${{ github.token }}
