@@ -29,11 +29,11 @@ fun SystemSection(
 
     Divider(thickness = 0.5.dp)
 
-    Info("Version", appVersion ?: "N/A")
+    Info("Version", appVersion.takeIf { !it.isNullOrBlank() } ?: "N/A")
 
     Divider(thickness = 0.5.dp)
 
-    Info("Runtime version", runtimeVersion ?: "N/A")
+    Info("Runtime version", runtimeVersion.takeIf { !it.isNullOrBlank() } ?: "N/A")
 
     Divider(thickness = 0.5.dp)
 

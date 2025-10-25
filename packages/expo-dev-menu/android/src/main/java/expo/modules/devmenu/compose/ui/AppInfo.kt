@@ -44,13 +44,13 @@ fun AppInfo(
         style = NewAppTheme.font.lg.merge(fontWeight = FontWeight.SemiBold)
       )
 
-      if (runtimeVersion != null) {
+      if (!runtimeVersion.isNullOrBlank()) {
         NewText(
           "Runtime version: $runtimeVersion",
           style = NewAppTheme.font.md,
           color = NewAppTheme.colors.text.secondary
         )
-      } else if (sdkVersion != null) {
+      } else if (!sdkVersion.isNullOrBlank()) {
         NewText(
           "SDK version: $sdkVersion",
           style = NewAppTheme.font.md,
