@@ -10,6 +10,7 @@ const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeS
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
+const StackElements_1 = require("./StackElements");
 const Protected_1 = require("../views/Protected");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
 const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
@@ -346,10 +347,76 @@ const Stack = Object.assign((props) => {
         const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
         return disableAnimationInScreenOptions(props.screenOptions, condition);
     }, [props.screenOptions, isStackAnimationDisabled]);
-    return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
+    const [screensConfig, setScreensConfig] = (0, react_1.useState)({});
+    const [screenProps, _setScreenProps] = (0, react_1.useState)({});
+    const [protectedScreens, setProtectedScreens] = (0, react_1.useState)([]);
+    const addScreenConfiguration = (0, react_1.useCallback)((name, options) => {
+        if (name in screensConfig) {
+            console.error(`Screen with name "${name}" is already registered in the Stack navigator. Screen names must be unique.`);
+            return;
+        }
+        setScreensConfig((prev) => ({
+            ...prev,
+            [name]: options,
+        }));
+    }, []);
+    const removeScreenConfiguration = (0, react_1.useCallback)((name) => {
+        setScreensConfig((prev) => {
+            const newConfig = { ...prev };
+            delete newConfig[name];
+            return newConfig;
+        });
+    }, []);
+    const updateScreenConfiguration = (0, react_1.useCallback)((name, options) => {
+        setScreensConfig((prev) => ({
+            ...prev,
+            [name]: {
+                ...prev[name],
+                ...options,
+            },
+        }));
+    }, []);
+    const setScreenProps = (0, react_1.useCallback)((name, props) => {
+        _setScreenProps((prev) => ({
+            ...prev,
+            [name]: props,
+        }));
+    }, []);
+    const removeScreenProps = (0, react_1.useCallback)((name) => {
+        _setScreenProps((prev) => {
+            const newProps = { ...prev };
+            delete newProps[name];
+            return newProps;
+        });
+    }, []);
+    const addProtectedScreen = (0, react_1.useCallback)((name) => {
+        setProtectedScreens((prev) => [...prev, name]);
+    }, []);
+    const removeProtectedScreen = (0, react_1.useCallback)((name) => {
+        setProtectedScreens((prev) => prev.filter((screen) => screen !== name));
+    }, []);
+    const rnChildren = (0, react_1.useMemo)(() => Object.entries(screensConfig).map(([name, options]) => (<Protected_1.Protected guard={!protectedScreens.includes(name)} key={name}>
+            <RNStack.Screen {...(screenProps[name] ?? {})} name={name} options={options}/>
+          </Protected_1.Protected>)), [screensConfig]);
+    const shouldRenderNavigator = rnChildren.length > 0 || react_1.Children.count(props.children) === 0;
+    return (<StackElements_1.ScreensOptionsContext value={{
+            addScreenConfiguration,
+            removeScreenConfiguration,
+            updateScreenConfiguration,
+            setScreenProps,
+            removeScreenProps,
+            addProtectedScreen,
+            removeProtectedScreen,
+        }}>
+        {props.children}
+        {shouldRenderNavigator && (<StackElements_1.ScreensOptionsContext value={undefined}>
+            <RNStack {...props} children={rnChildren} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>
+          </StackElements_1.ScreensOptionsContext>)}
+      </StackElements_1.ScreensOptionsContext>);
 }, {
-    Screen: RNStack.Screen,
-    Protected: Protected_1.Protected,
+    Screen: StackElements_1.StackScreen,
+    Protected: StackElements_1.StackProtected,
+    Header: StackElements_1.StackHeader,
 });
 function disableAnimationInScreenOptions(options, condition) {
     if (options && typeof options === 'function') {
