@@ -43,7 +43,7 @@
     "getenv": "^2.0.0",
     "glob": "^10.4.1",
     "inquirer": "^8.2.2",
-    "jsondiffpatch": "^0.4.1",
+    "jsondiffpatch": "^0.7.2",
     "junit-report-builder": "^1.3.0",
     "lan-network": "^0.1.7",
     "lodash": "^4.17.21",
