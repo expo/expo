@@ -112,6 +112,11 @@ export default function DocumentationPage({
     handleAskAIExpandedChange(false);
   };
 
+  const enterImmersiveMode = useCallback(() => {
+    setImmersiveMode(true);
+    setSidebarCollapsed(true);
+  }, []);
+
   const exitImmersiveMode = useCallback(() => {
     setImmersiveMode(false);
     if (!didChatForceSidebarCollapse) {
@@ -120,22 +125,28 @@ export default function DocumentationPage({
   }, [didChatForceSidebarCollapse]);
 
   const toggleImmersiveMode = useCallback(() => {
-    setImmersiveMode(previous => {
-      const nextValue = !previous;
-      if (nextValue) {
-        setSidebarCollapsed(true);
-      } else if (!didChatForceSidebarCollapse) {
-        setSidebarCollapsed(false);
-      }
-      return nextValue;
-    });
-  }, [didChatForceSidebarCollapse]);
+    if (isImmersiveMode) {
+      exitImmersiveMode();
+    } else {
+      enterImmersiveMode();
+    }
+  }, [enterImmersiveMode, exitImmersiveMode, isImmersiveMode]);
 
   const handleSidebarToggle = useCallback(() => {
-    setImmersiveMode(false);
-    setSidebarCollapsed(previous => !previous);
     setDidChatForceSidebarCollapse(false);
-  }, []);
+    if (isImmersiveMode) {
+      setSidebarCollapsed(false);
+      exitImmersiveMode();
+      return;
+    }
+
+    if (isSidebarCollapsed) {
+      setSidebarCollapsed(false);
+      return;
+    }
+
+    enterImmersiveMode();
+  }, [enterImmersiveMode, exitImmersiveMode, isImmersiveMode, isSidebarCollapsed]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
