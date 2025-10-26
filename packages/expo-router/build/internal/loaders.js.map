@@ -1,0 +1,1 @@
+{"version":3,"file":"loaders.js","sourceRoot":"","sources":["../../src/internal/loaders.ts"],"names":[],"mappings":";;;AAAA,0CAAuD;AAA9C,4GAAA,mBAAmB,OAAA","sourcesContent":["export { getLoaderModulePath } from '../loaders/utils';\n"]}

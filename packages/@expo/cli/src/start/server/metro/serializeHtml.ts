@@ -1,5 +1,5 @@
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import type { RouteNode } from 'expo-router/build/Route';
+import type { RouteNode } from 'expo-router/internal/routing';
 
 const debug = require('debug')('expo:metro:html') as typeof console.log;
 
@@ -103,7 +103,7 @@ function htmlFromSerialAssets(
               Array.isArray(route.entryPoints) &&
               Array.isArray(metadata.modulePaths)
             ) {
-              // TODO: Handle module IDs like `expo-router/build/views/Unmatched.js`
+              // TODO: Handle module IDs like `expo-router/internal/views/Unmatched.js`
               const doesAsyncChunkContainRouteEntryPoint = route.entryPoints.some((entryPoint) =>
                 (metadata.modulePaths as string[]).includes(entryPoint)
               );
