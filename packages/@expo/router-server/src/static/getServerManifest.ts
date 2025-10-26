@@ -6,8 +6,11 @@
  */
 
 import { ctx } from 'expo-router/_ctx';
-import { getReactNavigationConfig } from 'expo-router/build/getReactNavigationConfig';
-import { getRoutes, type Options } from 'expo-router/build/getRoutes';
+import {
+  getReactNavigationConfig,
+  getRoutes,
+  type GetRoutesOptions,
+} from 'expo-router/internal/routing';
 
 import { type ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
@@ -20,7 +23,7 @@ import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
 export async function getBuildTimeServerManifestAsync(
-  options: Options = {}
+  options: GetRoutesOptions = {}
 ): Promise<ExpoRouterServerManifestV1> {
   const routeTree = getRoutes(ctx, {
     platform: 'web',
@@ -38,7 +41,7 @@ export async function getBuildTimeServerManifestAsync(
 }
 
 /** Get the linking manifest from a Node.js process. */
-export async function getManifest(options: Options = {}) {
+export async function getManifest(options: GetRoutesOptions = {}) {
   const routeTree = getRoutes(ctx, {
     preserveApiRoutes: true,
     preserveRedirectAndRewrites: true,

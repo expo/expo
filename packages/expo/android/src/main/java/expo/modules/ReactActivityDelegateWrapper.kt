@@ -123,6 +123,11 @@ class ReactActivityDelegateWrapper(
     val newDelegate = reactActivityHandlers.asSequence()
       .mapNotNull { it.onDidCreateReactActivityDelegate(activity, this) }
       .firstOrNull()
+
+    reactActivityHandlers.forEach { handler ->
+      handler.onDidCreateReactActivityDelegateNotification(activity, newDelegate)
+    }
+
     if (newDelegate != null && newDelegate != this) {
       val mDelegateField = ReactActivity::class.java.getDeclaredField("mDelegate")
       mDelegateField.isAccessible = true

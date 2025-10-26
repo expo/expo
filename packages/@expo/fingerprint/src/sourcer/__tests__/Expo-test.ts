@@ -310,6 +310,26 @@ describe(getExpoConfigSourcesAsync, () => {
     );
   });
 
+  it('should contain external google service files with override hash key', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.writeFileSync('/app/google-services.json', 'JSON data');
+    const appJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
+    appJson.expo.android ||= {};
+    appJson.expo.android.googleServicesFile = '/app/google-services.json';
+    vol.writeFileSync('/app/app.json', JSON.stringify(appJson, null, 2));
+
+    const options = await normalizeOptionsAsync('/app');
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'google-services.json',
+        overrideHashKey: 'expoConfigExternalFile:contentsOnly',
+      })
+    );
+  });
+
   it('should contain external splash image from expo-splash-screen plugin properties', async () => {
     vol.fromJSON(require('./fixtures/ExpoDefault52Project.json'));
     vol.mkdirSync('/app/assets/images', { recursive: true });

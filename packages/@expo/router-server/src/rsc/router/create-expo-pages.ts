@@ -1,4 +1,4 @@
-import { type Options as GetRoutesOptions } from 'expo-router/build/getRoutes';
+import { type GetRoutesOptions } from 'expo-router/internal/routing';
 
 import { createPages } from './create-pages';
 import { EntriesDev } from '../server';

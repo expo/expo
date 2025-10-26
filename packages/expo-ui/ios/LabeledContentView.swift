@@ -3,13 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class LabeledContentProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class LabeledContentProps: UIBaseViewProps {
   @Field var label: String?
 }
 
@@ -21,7 +15,6 @@ internal struct LabeledContentView: ExpoSwiftUI.View {
       LabeledContent(props.label ?? "") {
         Children()
       }
-      .modifier(CommonViewModifiers(props: props))
     }
   }
 }

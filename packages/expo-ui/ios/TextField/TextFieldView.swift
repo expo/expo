@@ -16,13 +16,7 @@ enum KeyboardType: String, Enumerable {
   case asciiCapableNumberPad = "ascii-capable-number-pad"
 }
 
-final class TextFieldProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class TextFieldProps: UIBaseViewProps {
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var multiline: Bool = false
@@ -158,7 +152,7 @@ struct TextFieldView: ExpoSwiftUI.View {
       )
     }
     return text.lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
-      .modifier(CommonViewModifiers(props: props))
+      .modifier(UIBaseViewModifier(props: props))
       .fixedSize(horizontal: false, vertical: true)
       .keyboardType(getKeyboardType(props.keyboardType))
       .autocorrectionDisabled(!props.autocorrection)
