@@ -45,7 +45,7 @@ export type SwitchProps = {
      */
     style?: StyleProp<ViewStyle>;
     /**
-     * Picker color. On iOS, it only applies to the `menu` variant.
+     * Picker color.
      */
     color?: string;
     /**
