@@ -74,6 +74,7 @@
   "expo-screen-orientation": "~9.0.7",
   "expo-secure-store": "~15.0.7",
   "expo-sensors": "~15.0.7",
+  "expo-server": "~1.0.0",
   "expo-sharing": "~14.0.7",
   "expo-sms": "~14.0.7",
   "expo-speech": "~14.0.7",
