@@ -3,8 +3,8 @@ import { type ButtonProps } from '../Button';
 import { type CommonViewModifierProps } from '../types';
 /**
  * Activation method of the context menu.
- * - `singlePress`: The context menu is opened with a single tap. Does not isolate the content.
- * - `longPress`: The context menu is opened with a long press. On iOS additionally Highlights the content by blurring the background.
+ * - `singlePress` - The context menu is opened with a single tap. Does not isolate the content.
+ * - `longPress` - The context menu is opened with a long press. On iOS additionally Highlights the content by blurring the background.
  */
 export type ActivationMethod = 'singlePress' | 'longPress';
 /**
