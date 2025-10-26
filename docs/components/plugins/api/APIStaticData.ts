@@ -29,6 +29,7 @@ export const nonLinkableTypes = [
   'InferEventParameter',
   'K',
   'Listener',
+  'ModifierConfig',
   'ModuleType',
   'NativeBoundaryEventCallback',
   'NativeSyntheticEvent',
