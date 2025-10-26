@@ -25,7 +25,7 @@ export type SwitchProps = {
    */
   onValueChange?: (value: boolean) => void;
   /**
-   * Picker color. On iOS, it only applies to the `menu` variant.
+   * Picker color.  `menu` variant.
    */
   color?: ColorValue;
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps) &
