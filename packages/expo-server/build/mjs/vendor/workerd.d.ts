@@ -8,4 +8,4 @@ export type RequestHandler<Env = unknown> = (req: Request, env: Env, ctx: Execut
 export declare function createRequestHandler<Env = unknown>(params: {
     build: string;
     environment?: string | null;
-}, setup?: Partial<RequestHandlerParams>): RequestHandler<Env>;
+}, setup?: RequestHandlerParams): RequestHandler<Env>;
