@@ -8,6 +8,7 @@ export const nonLinkableTypes = [
   'BufferSource',
   'CodedError',
   'ColorValue',
+  'CommonViewModifierProps',
   'ComponentClass',
   'ComponentProps',
   'ComponentType',

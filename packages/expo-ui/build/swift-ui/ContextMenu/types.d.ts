@@ -17,13 +17,13 @@ export type ContextMenuProps = {
     activationMethod?: ActivationMethod;
     /**
      * The contents of the submenu are used as an anchor for the context menu.
-     * The children will be wrapped in a pressable element, which triggers opening of the context menu.
+     * The children will be wrapped in a `<Pressable>` component, which triggers opening of the context menu.
      */
     children: ReactNode;
 } & CommonViewModifierProps;
 /**
  * Props of the `Submenu` component.
- * @deprecated Use `ContextMenu` component as Submenu instead.
+ * @deprecated Use `ContextMenu` component as submenu instead.
  */
 export type SubmenuProps = {
     /**
