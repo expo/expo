@@ -57,7 +57,9 @@ export type SwitchProps = {
    */
   color?: string;
 
-  /** Modifiers for the component */
+  /**
+   * Modifiers for the component.
+   */
   modifiers?: ExpoModifier[];
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
 

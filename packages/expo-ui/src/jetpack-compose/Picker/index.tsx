@@ -53,7 +53,9 @@ export type PickerProps = {
    * Picker color.
    */
   color?: string;
-  /** Modifiers for the component */
+  /**
+   * Modifiers for the component.
+   */
   modifiers?: ExpoModifier[];
   /** Modifiers for the individual buttons */
   buttonModifiers?: ExpoModifier[];

@@ -36,7 +36,9 @@ export type ContextMenuProps = {
      * Optional styles to apply to the `ContextMenu`.
      */
     style?: StyleProp<ViewStyle>;
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
 };
 export declare function Items(props: ContextMenuContentProps): import("react").JSX.Element;

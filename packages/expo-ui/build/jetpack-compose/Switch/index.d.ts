@@ -48,7 +48,9 @@ export type SwitchProps = {
      * Picker color. On iOS, it only applies to the `menu` variant.
      */
     color?: string;
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
 export type SwitchSwitchVariantProps = {
