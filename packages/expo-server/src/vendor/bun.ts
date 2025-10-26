@@ -14,7 +14,7 @@ const STORE = new AsyncLocalStorage();
  */
 export function createRequestHandler(
   params: { build: string; environment?: string | null },
-  setup?: Partial<RequestHandlerParams>
+  setup?: RequestHandlerParams
 ): RequestHandler {
   const run = createNodeRequestScope(STORE, params);
   const onRequest = createExpoHandler({

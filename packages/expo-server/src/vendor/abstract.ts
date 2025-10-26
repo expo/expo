@@ -41,10 +41,6 @@ function noopBeforeResponse(
 }
 
 export interface RequestHandlerParams {
-  getHtml: (request: Request, route: Route) => Promise<string | Response | null>;
-  getRoutesManifest: () => Promise<Manifest | null>;
-  getApiRoute: (route: Route) => Promise<any>;
-  getMiddleware: (route: MiddlewareInfo) => Promise<MiddlewareModule>;
   /** Before handler response 4XX, not before unhandled error */
   beforeErrorResponse?: BeforeResponseCallback;
   /** Before handler responses */
@@ -53,6 +49,13 @@ export interface RequestHandlerParams {
   beforeHTMLResponse?: BeforeResponseCallback;
   /** Before handler API responses */
   beforeAPIResponse?: BeforeResponseCallback;
+}
+
+export interface RequestHandlerInput {
+  getHtml(request: Request, route: Route): Promise<string | Response | null>;
+  getRoutesManifest(): Promise<Manifest | null>;
+  getApiRoute(route: Route): Promise<any>;
+  getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;
 }
 
 export function createRequestHandler({
@@ -64,7 +67,7 @@ export function createRequestHandler({
   beforeResponse = noopBeforeResponse,
   beforeHTMLResponse = noopBeforeResponse,
   beforeAPIResponse = noopBeforeResponse,
-}: RequestHandlerParams) {
+}: RequestHandlerParams & RequestHandlerInput) {
   let manifest: Manifest | null = null;
 
   return async function handler(request: Request): Promise<Response> {

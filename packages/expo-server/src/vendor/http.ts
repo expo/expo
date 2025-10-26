@@ -4,7 +4,10 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
-import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
+import {
+  createRequestHandler as createExpoHandler,
+  type RequestHandlerParams as ExpoRequestHandlerParams,
+} from './abstract';
 import { createNodeEnv, createNodeRequestScope } from './environment/node';
 
 export { ExpoError } from './abstract';
@@ -19,6 +22,10 @@ export type RequestHandler = (
 
 const STORE = new AsyncLocalStorage();
 
+export interface RequestHandlerParams extends ExpoRequestHandlerParams {
+  handleRouteError?(error: Error): Promise<Response>;
+}
+
 /**
  * Returns a request handler for http that serves the response using Remix.
  */
@@ -27,12 +34,26 @@ export function createRequestHandler(
   setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
   const run = createNodeRequestScope(STORE, params);
-  const nodeEnv = createNodeEnv(params);
   const onRequest = createExpoHandler({
-    ...nodeEnv,
+    ...createNodeEnv(params),
     ...setup,
-    getRoutesManifest: setup?.getRoutesManifest ?? nodeEnv.getRoutesManifest,
   });
+
+  async function requestHandler(request: Request): Promise<Response> {
+    try {
+      return await run(onRequest, request);
+    } catch (error) {
+      const handleRouteError = setup?.handleRouteError;
+      if (handleRouteError && error != null && typeof error === 'object') {
+        try {
+          return await handleRouteError(error as Error);
+        } catch {
+          // Rethrow original error below
+        }
+      }
+      throw error;
+    }
+  }
 
   return async (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
     if (!req?.url || !req.method) {
@@ -40,7 +61,7 @@ export function createRequestHandler(
     }
     try {
       const request = convertRequest(req, res);
-      const response = await run(onRequest, request);
+      const response = await requestHandler(request);
       await respond(res, response);
     } catch (error: unknown) {
       // http doesn't support async functions, so we have to pass along the
