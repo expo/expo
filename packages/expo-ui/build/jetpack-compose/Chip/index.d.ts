@@ -7,7 +7,7 @@ import { ExpoModifier } from '../../types';
 export type ChipTextStyle = 'labelSmall' | 'labelMedium' | 'labelLarge' | 'bodySmall' | 'bodyMedium' | 'bodyLarge';
 export interface ChipProps extends ViewProps {
     /**
-     * The variant of the chip
+     * The variant of the chip.
      */
     variant?: 'assist' | 'filter' | 'input' | 'suggestion';
     /**
@@ -19,7 +19,7 @@ export interface ChipProps extends ViewProps {
      */
     leadingIcon?: string;
     /**
-     * Optional trailing icon name (using Material Icons). Used for assist, filter, and input chips. For input chips, defaults to 'filled.Close' if not specified.
+     * Optional trailing icon name (using Material Icons). Used for assist, filter, and input chips. For input chips, defaults to `filled.Close` if not specified.
      */
     trailingIcon?: string;
     /**
@@ -27,7 +27,7 @@ export interface ChipProps extends ViewProps {
      */
     iconSize?: number;
     /**
-     * Text style variant for the chip label. Defaults to 'labelSmall'.
+     * Text style variant for the chip label. Defaults to `labelSmall`.
      */
     textStyle?: ChipTextStyle;
     /**
@@ -39,7 +39,7 @@ export interface ChipProps extends ViewProps {
      */
     selected?: boolean;
     /**
-     * Modifiers for the component
+     * Modifiers for the component.
      */
     modifiers?: ExpoModifier[];
     /**
