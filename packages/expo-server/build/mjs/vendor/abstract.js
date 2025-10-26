@@ -18,7 +18,7 @@ export class ExpoError extends Error {
 function noopBeforeResponse(responseInit, _route) {
     return responseInit;
 }
-export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleRouteError, getMiddleware, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
+export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
     let manifest = null;
     return async function handler(request) {
         if (!manifest) {
@@ -41,19 +41,13 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         let request = incomingRequest;
         let url = new URL(request.url);
         if (manifest.middleware) {
-            try {
-                const middleware = await getMiddleware(manifest.middleware);
-                if (shouldRunMiddleware(request, middleware)) {
-                    const middlewareResponse = await middleware.default(new ImmutableRequest(request));
-                    if (middlewareResponse instanceof Response) {
-                        return middlewareResponse;
-                    }
-                    // If middleware returns undefined/void, continue to route matching
+            const middleware = await getMiddleware(manifest.middleware);
+            if (shouldRunMiddleware(request, middleware)) {
+                const middlewareResponse = await middleware.default(new ImmutableRequest(request));
+                if (middlewareResponse instanceof Response) {
+                    return middlewareResponse;
                 }
-            }
-            catch (error) {
-                // Shows RedBox in development
-                return handleRouteError(error);
+                // If middleware returns undefined/void, continue to route matching
             }
         }
         if (manifest.redirects) {
@@ -86,14 +80,8 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
                 if (!route.namedRegex.test(url.pathname)) {
                     continue;
                 }
-                try {
-                    const html = await getHtml(request, route);
-                    return respondHTML(html, route);
-                }
-                catch (error) {
-                    // Shows RedBox in development
-                    return handleRouteError(error);
-                }
+                const html = await getHtml(request, route);
+                return respondHTML(html, route);
             }
         }
         // Next, test API routes
@@ -101,14 +89,8 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
             if (!route.namedRegex.test(url.pathname)) {
                 continue;
             }
-            try {
-                const mod = await getApiRoute(route);
-                return await respondAPI(mod, request, route);
-            }
-            catch (error) {
-                // Shows RedBox in development
-                return handleRouteError(error);
-            }
+            const mod = await getApiRoute(route);
+            return await respondAPI(mod, request, route);
         }
         // Finally, test 404 routes
         if (request.method === 'GET' || request.method === 'HEAD') {
