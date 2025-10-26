@@ -8,9 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- Fix `handleRouteError` not being scoped to unhandled errors and only expose it on `http` and `express` adapter ([#40627](https://github.com/expo/expo/pull/40627) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Deduplicate shared types across `@expo/cli`, `@expo/router-server`, `expo-server` ([#40614](https://github.com/expo/expo/pull/40614) by [@hassankhan](https://github.com/hassankhan))
+- Remove internal adapter parameters from public API surface ([#40627](https://github.com/expo/expo/pull/40627) by [@kitten](https://github.com/kitten))
 
 ## 1.0.2 - 2025-10-20
 
