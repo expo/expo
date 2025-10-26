@@ -6,6 +6,7 @@ import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import {
   createRequestHandler as createExpoHandler,
+  type RequestHandlerInput as ExpoRequestHandlerInput,
   type RequestHandlerParams as ExpoRequestHandlerParams,
 } from './abstract';
 import { createNodeEnv, createNodeRequestScope } from './environment/node';
@@ -20,7 +21,9 @@ export type RequestHandler = (
 
 const STORE = new AsyncLocalStorage();
 
-export interface RequestHandlerParams extends ExpoRequestHandlerParams {
+export interface RequestHandlerParams
+  extends ExpoRequestHandlerParams,
+    Partial<ExpoRequestHandlerInput> {
   handleRouteError?(error: Error): Promise<Response>;
 }
 

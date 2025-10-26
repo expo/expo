@@ -1,8 +1,8 @@
 import type * as express from 'express';
-import { type RequestHandlerParams as ExpoRequestHandlerParams } from './abstract';
+import { type RequestHandlerInput as ExpoRequestHandlerInput, type RequestHandlerParams as ExpoRequestHandlerParams } from './abstract';
 export { ExpoError } from './abstract';
 export type RequestHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => Promise<void>;
-export interface RequestHandlerParams extends ExpoRequestHandlerParams {
+export interface RequestHandlerParams extends ExpoRequestHandlerParams, Partial<ExpoRequestHandlerInput> {
     handleRouteError?(error: Error): Promise<Response>;
 }
 /**

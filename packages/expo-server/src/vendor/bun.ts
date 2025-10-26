@@ -1,6 +1,10 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
+import {
+  createRequestHandler as createExpoHandler,
+  type RequestHandlerInput as ExpoRequestHandlerInput,
+  type RequestHandlerParams as ExpoRequestHandlerParams,
+} from './abstract';
 import { createNodeEnv, createNodeRequestScope } from './environment/node';
 
 export { ExpoError } from './abstract';
@@ -8,6 +12,10 @@ export { ExpoError } from './abstract';
 export type RequestHandler = (req: Request) => Promise<Response>;
 
 const STORE = new AsyncLocalStorage();
+
+export interface RequestHandlerParams
+  extends ExpoRequestHandlerParams,
+    Partial<ExpoRequestHandlerInput> {}
 
 /**
  * Returns a request handler for Express that serves the response using Remix.

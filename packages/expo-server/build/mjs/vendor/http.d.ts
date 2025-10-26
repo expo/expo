@@ -1,9 +1,9 @@
 import * as http from 'http';
-import { type RequestHandlerParams as ExpoRequestHandlerParams } from './abstract';
+import { type RequestHandlerInput as ExpoRequestHandlerInput, type RequestHandlerParams as ExpoRequestHandlerParams } from './abstract';
 export { ExpoError } from './abstract';
 type NextFunction = (err?: any) => void;
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
-export interface RequestHandlerParams extends ExpoRequestHandlerParams {
+export interface RequestHandlerParams extends ExpoRequestHandlerParams, Partial<ExpoRequestHandlerInput> {
     handleRouteError?(error: Error): Promise<Response>;
 }
 /**
