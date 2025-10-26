@@ -28,15 +28,24 @@ internal final class JSValueEncoder: Encoder {
   let codingPath: [any CodingKey] = []
   let userInfo: [CodingUserInfoKey: Any] = [:]
 
+  /**
+   Returns an encoding container appropriate for holding multiple values keyed by the given key type.
+   */
   func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key: CodingKey {
     let container = JSObjectEncodingContainer<Key>(to: valueHolder, runtime: runtime)
     return KeyedEncodingContainer(container)
   }
 
+  /**
+   Returns an encoding container appropriate for holding multiple unkeyed values.
+   */
   func unkeyedContainer() -> any UnkeyedEncodingContainer {
     return JSArrayEncodingContainer(to: valueHolder, runtime: runtime)
   }
 
+  /**
+   Returns an encoding container appropriate for holding a single primitive value, including optionals.
+   */
   func singleValueContainer() -> any SingleValueEncodingContainer {
     return JSValueEncodingContainer(to: valueHolder, runtime: runtime)
   }
@@ -50,7 +59,7 @@ private final class JSValueHolder {
 }
 
 /**
- Single value container used to encode to primitive JS values.
+ Single value container used to encode primitive values, including optionals.
  */
 private struct JSValueEncodingContainer: SingleValueEncodingContainer {
   private weak var runtime: JavaScriptRuntime?
@@ -70,12 +79,23 @@ private struct JSValueEncodingContainer: SingleValueEncodingContainer {
     self.valueHolder.value = .null
   }
 
-  mutating func encode<ValueType>(_ value: ValueType) throws {
+  mutating func encode<ValueType: Encodable>(_ value: ValueType) throws {
     guard let runtime else {
       // Do nothing when the runtime is already deallocated
       return
     }
-    self.valueHolder.value = JavaScriptValue.from(value, runtime: runtime)
+    let jsValue = JavaScriptValue.from(value, runtime: runtime)
+
+    // If the given value couldn't be converted to JavaScriptValue, try to encode it farther.
+    // It might be the case when the default implementation of `Encodable` has chosen the single value container
+    // for an optional type that should rather use keyed or unkeyed container when unwrapped.
+    if jsValue.isUndefined() {
+      let encoder = JSValueEncoder(runtime: runtime)
+      try value.encode(to: encoder)
+      self.valueHolder.value = encoder.value
+      return
+    }
+    self.valueHolder.value = jsValue
   }
 }
 
@@ -105,11 +125,7 @@ private struct JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingContainer
     object.setProperty(key.stringValue, value: JavaScriptValue.null)
   }
 
-  mutating func encode<ValueType>(_ value: ValueType, forKey key: Key) throws {
-    object.setProperty(key.stringValue, value: value)
-  }
-
-  mutating func encode<T: Encodable>(_ value: T, forKey key: Key) throws {
+  mutating func encode<ValueType: Encodable>(_ value: ValueType, forKey key: Key) throws {
     guard let runtime else {
       // Do nothing when the runtime is already deallocated
       return
@@ -159,7 +175,7 @@ private struct JSArrayEncodingContainer: UnkeyedEncodingContainer {
     items.append(.null)
   }
 
-  mutating func encode<T: Encodable>(_ value: T) throws {
+  mutating func encode<ValueType: Encodable>(_ value: ValueType) throws {
     guard let runtime else {
       // Do nothing when the runtime is already deallocated
       return

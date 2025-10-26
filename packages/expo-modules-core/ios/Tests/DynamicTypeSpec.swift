@@ -408,7 +408,7 @@ final class DynamicTypeSpec: ExpoSpec {
 
     // MARK: - DynamicEncodableType
 
-    fdescribe("DynamicEncodableType") {
+    describe("DynamicEncodableType") {
       struct TestEncodable: Encodable {
         let string: String
         let number: Int
