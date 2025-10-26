@@ -9,7 +9,7 @@ export function resolveSource(source) {
         if (asset.localUri && asset.localUri !== '') {
             return { uri: asset.localUri, assetId: source };
         }
-        return { uri: asset.localUri ?? asset.uri, assetId: source };
+        return { uri: asset.uri, assetId: source };
     }
     return source ?? null;
 }
