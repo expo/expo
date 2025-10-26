@@ -25,7 +25,7 @@ export type SwitchProps = {
    */
   onValueChange?: (value: boolean) => void;
   /**
-   * Picker color.  `menu` variant.
+   * Picker color.
    */
   color?: ColorValue;
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps) &
