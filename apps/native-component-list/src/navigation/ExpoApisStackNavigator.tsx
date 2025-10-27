@@ -61,6 +61,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ColorsScreen'));
+    },
+    name: 'Color',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/AccelerometerScreen'));
     },
     name: 'Accelerometer',

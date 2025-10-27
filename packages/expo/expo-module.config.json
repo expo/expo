@@ -5,6 +5,6 @@
     "podspecPath": "Expo.podspec"
   },
   "android": {
-    "modules": ["expo.modules.fetch.ExpoFetchModule"]
+    "modules": ["expo.modules.fetch.ExpoFetchModule", "expo.modules.color.ExpoMaterialColors"]
   }
 }
