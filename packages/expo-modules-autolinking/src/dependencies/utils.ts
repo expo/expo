@@ -132,21 +132,25 @@ export async function filterMapResolutionResult<T extends { name: string }>(
   return output;
 }
 
-export function mergeResolutionResults(results: ResolutionResult[]) {
-  if (results.length === 1) {
+export function mergeResolutionResults(
+  results: ResolutionResult[],
+  output?: ResolutionResult
+): ResolutionResult {
+  if (output == null && results.length === 1) {
     return results[0];
+  } else if (output == null) {
+    output = Object.create(null);
   }
-  const output: ResolutionResult = Object.create(null);
   for (let idx = 0; idx < results.length; idx++) {
     for (const key in results[idx]) {
       const resolution = results[idx][key]!;
-      const prevResolution = output[key];
+      const prevResolution = output![key];
       if (prevResolution != null) {
-        output[key] = mergeWithDuplicate(prevResolution, resolution);
+        output![key] = mergeWithDuplicate(prevResolution, resolution);
       } else {
-        output[key] = resolution;
+        output![key] = resolution;
       }
     }
   }
-  return output;
+  return output!;
 }

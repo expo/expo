@@ -8,7 +8,7 @@ import {
 import {
   type PackageJson,
   defaultShouldIncludeDependency,
-  mergeWithDuplicate,
+  mergeResolutionResults,
   loadPackageJson,
   maybeRealpath,
   fastJoin,
@@ -138,62 +138,63 @@ export async function scanDependenciesRecursively(
     return {};
   }
 
-  const modulePathsQueue: DependencyResolution[] = [
-    {
-      source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
-      name: '',
-      version: '',
-      path: rootPath,
-      originPath: rawPath,
-      duplicates: null,
-      depth: -1,
-    },
-  ];
-
   const _visitedPackagePaths = new Set();
   const getNodeModulePaths = createNodeModulePathsCreator();
-  const searchResults: ResolutionResult = Object.create(null);
   const maxDepth = limitDepth != null ? limitDepth : MAX_DEPTH;
-  for (let depth = 0; modulePathsQueue.length > 0 && depth < maxDepth; depth++) {
-    const resolutions = await Promise.all(
-      modulePathsQueue.map(async (resolution) => {
-        const nodeModulePaths = await getNodeModulePaths(resolution.path);
-        const packageJson = await loadPackageJson(fastJoin(resolution.path, 'package.json'));
-        if (packageJson) {
-          resolution.version = packageJson.version || '';
-          return await resolveDependencies(
-            packageJson,
-            nodeModulePaths,
-            depth,
-            shouldIncludeDependency
-          );
-        } else {
-          return [];
-        }
-      })
-    );
 
-    modulePathsQueue.length = 0;
-    for (let resolutionIdx = 0; resolutionIdx < resolutions.length; resolutionIdx++) {
-      const modules = resolutions[resolutionIdx];
-      for (let moduleIdx = 0; moduleIdx < modules.length; moduleIdx++) {
-        const resolution = modules[moduleIdx];
-        if (_visitedPackagePaths.has(resolution.path)) {
-          continue;
-        }
-
-        _visitedPackagePaths.add(resolution.path);
-        modulePathsQueue.push(resolution);
-
-        const prevEntry = searchResults[resolution.name];
-        if (prevEntry != null && resolution.path !== prevEntry.path) {
-          searchResults[resolution.name] = mergeWithDuplicate(prevEntry, resolution);
-        } else if (prevEntry == null) {
-          searchResults[resolution.name] = resolution;
-        }
-      }
+  const recurse = async (
+    resolution: DependencyResolution,
+    depth = 0
+  ): Promise<ResolutionResult> => {
+    const searchResults: ResolutionResult = Object.create(null);
+    const [nodeModulePaths, packageJson] = await Promise.all([
+      getNodeModulePaths(resolution.path),
+      loadPackageJson(fastJoin(resolution.path, 'package.json')),
+    ]);
+    if (!packageJson) {
+      return searchResults;
+    } else {
+      resolution.version = packageJson.version || '';
     }
-  }
+
+    const modules = await resolveDependencies(
+      packageJson,
+      nodeModulePaths,
+      depth,
+      shouldIncludeDependency
+    );
+    for (let idx = 0; idx < modules.length; idx++) {
+      searchResults[modules[idx].name] = modules[idx];
+    }
+
+    if (depth + 1 < maxDepth) {
+      const childResults = await Promise.all(
+        modules
+          .filter((resolution) => {
+            if (_visitedPackagePaths.has(resolution.path)) {
+              return false;
+            } else {
+              _visitedPackagePaths.add(resolution.path);
+              return true;
+            }
+          })
+          .map((resolution) => recurse(resolution, depth + 1))
+      );
+      return mergeResolutionResults(childResults, searchResults);
+    } else {
+      return searchResults;
+    }
+  };
+
+  const searchResults = await recurse({
+    source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+    name: '',
+    version: '',
+    path: rootPath,
+    originPath: rawPath,
+    duplicates: null,
+    depth: -1,
+  });
 
   return searchResults;
 }
