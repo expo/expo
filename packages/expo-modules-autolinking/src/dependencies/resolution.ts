@@ -50,43 +50,18 @@ async function resolveDependencies(
   depth: number,
   shouldIncludeDependency: (dependencyName: string) => boolean
 ): Promise<DependencyResolution[]> {
-  const modules: DependencyResolution[] = [];
-  let dependencies =
-    packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
-      ? packageJson.dependencies
-      : {};
-
+  const dependencies: Record<string, string> = Object.create(null);
+  if (packageJson.dependencies != null && typeof packageJson.dependencies === 'object') {
+    Object.assign(dependencies, packageJson.dependencies);
+  }
   // NOTE(@kitten): Also traverse devDependencies for top-level package.json
-  const devDependencies =
-    packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
-      ? (packageJson.devDependencies as Record<string, string>)
-      : null;
-  if (depth === 0 && devDependencies) {
-    dependencies = { ...dependencies, ...devDependencies };
+  if (
+    depth === 0 &&
+    packageJson.devDependencies != null &&
+    typeof packageJson.devDependencies === 'object'
+  ) {
+    Object.assign(dependencies, packageJson.devDependencies);
   }
-
-  for (const dependencyName in dependencies) {
-    if (!shouldIncludeDependency(dependencyName)) {
-      continue;
-    }
-    for (let idx = 0; idx < nodeModulePaths.length; idx++) {
-      const originPath = fastJoin(nodeModulePaths[idx], dependencyName);
-      const nodeModulePath = await maybeRealpath(originPath);
-      if (nodeModulePath != null) {
-        modules.push({
-          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
-          name: dependencyName,
-          version: '',
-          path: nodeModulePath,
-          originPath,
-          duplicates: null,
-          depth,
-        });
-        break;
-      }
-    }
-  }
-
   if (packageJson.peerDependencies != null && typeof packageJson.peerDependencies === 'object') {
     const peerDependenciesMeta =
       packageJson.peerDependenciesMeta != null &&
@@ -94,34 +69,43 @@ async function resolveDependencies(
         ? (packageJson.peerDependenciesMeta as Record<string, unknown>)
         : undefined;
     for (const dependencyName in packageJson.peerDependencies) {
-      if (dependencyName in dependencies || !shouldIncludeDependency(dependencyName)) {
-        continue;
-      } else if (isOptionalPeerDependencyMeta(peerDependenciesMeta, dependencyName)) {
-        // NOTE(@kitten): We only check peer dependencies because some package managers auto-install them
-        // which would mean they'd have no reference in any dependencies. However, optional peer dependencies
-        // don't auto-install and we can skip them
-        continue;
-      }
-      for (let idx = 0; idx < nodeModulePaths.length; idx++) {
-        const originPath = fastJoin(nodeModulePaths[idx], dependencyName);
-        const nodeModulePath = await maybeRealpath(originPath);
-        if (nodeModulePath != null) {
-          modules.push({
-            source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
-            name: dependencyName,
-            version: '',
-            path: nodeModulePath,
-            originPath,
-            duplicates: null,
-            depth,
-          });
-          break;
-        }
+      // NOTE(@kitten): We only check peer dependencies because some package managers auto-install them
+      // which would mean they'd have no reference in any dependencies. However, optional peer dependencies
+      // don't auto-install and we can skip them
+      if (!isOptionalPeerDependencyMeta(peerDependenciesMeta, dependencyName)) {
+        dependencies[dependencyName] = '';
       }
     }
   }
 
-  return modules;
+  const resolveDependency = async (
+    dependencyName: string
+  ): Promise<DependencyResolution | null> => {
+    for (let idx = 0; idx < nodeModulePaths.length; idx++) {
+      const originPath = fastJoin(nodeModulePaths[idx], dependencyName);
+      const nodeModulePath = await maybeRealpath(originPath);
+      if (nodeModulePath != null) {
+        return {
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+          name: dependencyName,
+          version: '',
+          path: nodeModulePath,
+          originPath,
+          duplicates: null,
+          depth,
+        };
+      }
+    }
+    return null;
+  };
+
+  const modules = await Promise.all(
+    Object.keys(dependencies)
+      .filter((dependencyName) => shouldIncludeDependency(dependencyName))
+      .map((dependencyName) => resolveDependency(dependencyName))
+  );
+
+  return modules.filter((resolution) => resolution != null);
 }
 
 interface ResolutionOptions {
