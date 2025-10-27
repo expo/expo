@@ -28,8 +28,8 @@ class BlurModule : Module() {
         view.applyBlurReduction(blurReductionFactor)
       }
 
-      Prop("experimentalBlurMethod") { view: ExpoBlurView, experimentalBlurMethod: BlurMethod ->
-        view.setBlurMethod(experimentalBlurMethod)
+      Prop("blurMethod") { view: ExpoBlurView, blurMethod: BlurMethod ->
+        view.setBlurMethod(blurMethod)
       }
 
       OnViewDidUpdateProps { view: ExpoBlurView ->
