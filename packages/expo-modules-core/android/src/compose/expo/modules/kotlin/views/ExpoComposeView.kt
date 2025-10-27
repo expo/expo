@@ -7,10 +7,17 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.viewevent.CoalescingKey
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.viewevent.ViewEventDelegate
 
 data class ComposableScope(
   val rowScope: RowScope? = null,
@@ -55,10 +62,10 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   @Composable
-  protected fun Children(composableScope: ComposableScope) {
+  fun Children(composableScope: ComposableScope?) {
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      with(composableScope) {
+      with(composableScope ?: ComposableScope()) {
         with(child) {
           Content()
         }
@@ -67,13 +74,18 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   @Composable
-  protected fun Child(composableScope: ComposableScope, index: Int) {
+  fun Child(composableScope: ComposableScope, index: Int) {
     val child = getChildAt(index) as? ExpoComposeView<*> ?: return
     with(composableScope) {
       with(child) {
         Content()
       }
     }
+  }
+
+  @Composable
+  fun Child(index: Int) {
+    Child(ComposableScope(), index)
   }
 
   init {
@@ -112,5 +124,49 @@ abstract class ExpoComposeView<T : ComposeProps>(
       child
     }
     super.addView(view, index, params)
+  }
+}
+
+class ExpoViewComposableScope(val view: ComposeFunctionHolder<*>) {
+  @Composable
+  fun Child(composableScope: ComposableScope, index: Int) {
+    view.Child(composableScope, index)
+  }
+
+  @Composable
+  fun Child(index: Int) {
+    view.Child(index)
+  }
+
+  @Composable
+  fun Children(composableScope: ComposableScope?) {
+    view.Children(composableScope)
+  }
+
+  inline fun <reified T> EventDispatcher(noinline coalescingKey: CoalescingKey<T>? = null): ViewEventDelegate<T> {
+    return view.EventDispatcher<T>(coalescingKey)
+  }
+}
+
+class ComposeFunctionHolder<P : ComposeProps>(
+  context: Context,
+  appContext: AppContext,
+  private val composableContent: @Composable ExpoViewComposableScope.(props: P) -> Unit,
+  props: P
+) : ExpoComposeView<P>(context, appContext) {
+  override var props: P? = props
+  private var key by mutableIntStateOf(0)
+  val scope = ExpoViewComposableScope(this)
+
+  fun recompose() {
+    key++
+  }
+
+  @Composable
+  override fun ComposableScope.Content() {
+    LaunchedEffect(key) {}
+    with(scope) {
+      composableContent(props ?: return)
+    }
   }
 }
