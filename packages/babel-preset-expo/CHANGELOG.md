@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
