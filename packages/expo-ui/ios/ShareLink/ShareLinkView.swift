@@ -58,7 +58,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
             ) {
               Children()
             }
-            .modifier(CommonViewModifiers(props: props))
+            .modifier(UIBaseViewModifier(props: props))
           } else {
             shareLink(
               item: item,
@@ -66,7 +66,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
               message: message,
               preview: preview
             )
-            .modifier(CommonViewModifiers(props: props))
+            .modifier(UIBaseViewModifier(props: props))
           }
         } else {
           if let asyncData {

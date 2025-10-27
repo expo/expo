@@ -116,14 +116,14 @@ internal struct AsyncShareLinkView<Content: View>: View {
           message: message,
           preview: preview,
           label: content
-        ).modifier(CommonViewModifiers(props: props))
+        ).modifier(UIBaseViewModifier(props: props))
       } else {
         SwiftUI.ShareLink(
           item: item,
           subject: subject,
           message: message,
           preview: preview
-        ).modifier(CommonViewModifiers(props: props))
+        ).modifier(UIBaseViewModifier(props: props))
       }
     }
 #else
