@@ -41,7 +41,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
         commandResult = await spawnAsync('npx', ['expo', 'install', '--check', '--json'], {
           stdio: 'pipe',
           cwd: projectRoot,
-          env: { ...process.env, CI: '1' },
+          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error) && error.status === 1) {
@@ -52,41 +52,9 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
         }
       }
 
-      const initialIssuesCount = issues.length;
       parseInstallCheckOutput(commandResult.stdout, issues, projectMajorSdkVersion);
 
-      // Only fall back to stderr if stdout didn't contain valid JSON indicating up-to-date status
-      if (issues.length === initialIssuesCount && commandResult.stderr.trim()) {
-        // Check if stdout indicates dependencies are up to date
-        let isUpToDate = false;
-        try {
-          const jsonMatch = commandResult.stdout.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const output = JSON.parse(jsonMatch[0]);
-            isUpToDate = output.upToDate === true;
-          }
-        } catch {
-          // JSON parsing failed, continue with stderr processing
-        }
-
-        // Only process stderr as errors if dependencies are not up to date
-        if (!isUpToDate) {
-          const stderrLines = commandResult.stderr.split('\n').filter((line) => {
-            const trimmedLine = line.trim();
-            // Filter out Expo debug logs and timestamps
-            return (
-              trimmedLine &&
-              !trimmedLine.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z expo:/) &&
-              !trimmedLine.startsWith('expo:')
-            );
-          });
-
-          const filteredStderr = stderrLines.join('\n').trim();
-          if (filteredStderr) {
-            issues.push(filteredStderr);
-          }
-        }
-      }
+      // We rely on EXPO_DEBUG=0 to ensure stdout contains only JSON output.
     } else {
       // SDK versions <54 don't support --json output
       // In the future, we should remove this and use the --json output above
@@ -94,7 +62,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
         await spawnAsync('npx', ['expo', 'install', '--check'], {
           stdio: 'pipe',
           cwd: projectRoot,
-          env: { ...process.env, CI: '1' },
+          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error)) {
