@@ -1,6 +1,6 @@
 'use client';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { createContext, use, useEffect, useMemo, useState } from 'react';
+import { createContext, use, useCallback, useLayoutEffect, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import type {
@@ -15,7 +15,7 @@ import type {
   StackScreenConfigurationContextValue,
   StackScreenProps,
 } from './StackElements.types';
-import type { ProtectedProps } from '../views/Protected';
+import { useNavigation } from '../useNavigation';
 import { Screen } from '../views/Screen';
 
 export const StackHeaderConfigurationContext = createContext<
@@ -36,26 +36,26 @@ function StackHeaderComponent({
       'Stack.Header can only be used inside of a Stack.Screen component in a _layout file.'
     );
   }
-  const { configuration, setConfiguration } = contextValue;
+  const { setConfiguration } = contextValue;
   const setHeaderBackButtonConfiguration: StackHeaderConfigurationContextValue['setHeaderBackButtonConfiguration'] =
     (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
+      setConfiguration({ ...config });
     };
   const setHeaderLeftConfiguration: StackHeaderConfigurationContextValue['setHeaderLeftConfiguration'] =
     (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
+      setConfiguration({ ...config });
     };
   const setHeaderRightConfiguration: StackHeaderConfigurationContextValue['setHeaderRightConfiguration'] =
     (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
+      setConfiguration({ ...config });
     };
   const setHeaderSearchBarConfiguration: StackHeaderConfigurationContextValue['setHeaderSearchBarConfiguration'] =
     (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
+      setConfiguration({ ...config });
     };
   const setHeaderTitleConfiguration: StackHeaderConfigurationContextValue['setHeaderTitleConfiguration'] =
     (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
+      setConfiguration({ ...config });
     };
 
   const currentConfig = useMemo<NativeStackNavigationOptions>(() => {
@@ -75,13 +75,13 @@ function StackHeaderComponent({
     };
   }, [hidden, blurEffect, style, largeStyle]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (hidden) {
-      setConfiguration((prev) => ({ ...prev, headerShown: false }));
+      setConfiguration({ headerShown: false });
     } else if (asChild) {
-      setConfiguration((prev) => ({ ...prev, header: () => children }));
+      setConfiguration({ header: () => children });
     } else {
-      setConfiguration((prev) => ({ ...prev, ...currentConfig }));
+      setConfiguration({ ...currentConfig });
     }
   }, [asChild, hidden, currentConfig]);
 
@@ -92,7 +92,6 @@ function StackHeaderComponent({
   return (
     <StackHeaderConfigurationContext
       value={{
-        configuration,
         setHeaderBackButtonConfiguration,
         setHeaderLeftConfiguration,
         setHeaderRightConfiguration,
@@ -112,7 +111,7 @@ function StackHeaderLeft({ asChild, children }: StackHeaderLeftProps) {
     );
   }
   const { setHeaderLeftConfiguration } = contextValue;
-  useEffect(() => {
+  useLayoutEffect(() => {
     const config = asChild ? { headerLeft: () => children } : {};
     setHeaderLeftConfiguration(config);
   }, [children, asChild]);
@@ -127,7 +126,7 @@ function StackHeaderRight({ asChild, children }: StackHeaderRightProps) {
     );
   }
   const { setHeaderRightConfiguration } = contextValue;
-  useEffect(() => {
+  useLayoutEffect(() => {
     const config = asChild ? { headerRight: () => children } : {};
     setHeaderRightConfiguration(config);
   }, [children, asChild]);
@@ -149,7 +148,7 @@ function StackHeaderBackButton({
     );
   }
   const { setHeaderBackButtonConfiguration } = contextValue;
-  useEffect(() => {
+  useLayoutEffect(() => {
     setHeaderBackButtonConfiguration({
       headerBackTitle: children,
       headerBackTitleStyle: style,
@@ -170,7 +169,7 @@ function StackHeaderTitle({ children, style, large, largeStyle }: StackHeaderTit
     );
   }
   const { setHeaderTitleConfiguration } = contextValue;
-  useEffect(() => {
+  useLayoutEffect(() => {
     const flattenedStyle = StyleSheet.flatten(style);
     const flattenedLargeStyle = StyleSheet.flatten(largeStyle);
     setHeaderTitleConfiguration({
@@ -195,7 +194,7 @@ function StackHeaderTitle({ children, style, large, largeStyle }: StackHeaderTit
 
 function StackHeaderSearchBar(props: StackHeaderSearchBarProps) {
   const contextValue = use(StackHeaderConfigurationContext);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!contextValue) {
       throw new Error(
         'Stack.Header.SearchBar can only be used inside of a Stack.Header component in a _layout file.'
@@ -217,66 +216,27 @@ export const ScreenOptionsContext = createContext<StackScreenConfigurationContex
   undefined
 );
 
-export function StackScreen({ name, options, children, ...rest }: StackScreenProps) {
-  const contextValue = use(ScreensOptionsContext);
-  const isWithinProtected = use(IsWithinProtected);
-  const [configuration, setConfiguration] = useState<NativeStackNavigationOptions>({});
-  if (contextValue && !name) {
-    throw new Error(
-      'A name prop is required for Stack.Screen when used inside of a Stack navigator.'
-    );
-  }
-  useEffect(() => {
-    if (contextValue && name) {
-      contextValue.addScreenConfiguration(name, { ...options, ...configuration });
-      return () => {
-        contextValue.removeScreenConfiguration(name);
-      };
-    }
-    return undefined;
-  }, [name]);
-  useEffect(() => {
-    if (contextValue && name) {
-      contextValue.setScreenProps(name, rest);
-      return () => {
-        contextValue.removeScreenProps(name);
-      };
-    }
-    return undefined;
-  }, [name]);
-  useEffect(() => {
-    if (contextValue && name && isWithinProtected) {
-      contextValue.addProtectedScreen(name);
-      return () => {
-        contextValue.removeProtectedScreen(name);
-      };
-    }
-    return undefined;
-  }, [name, isWithinProtected]);
-  useEffect(() => {
-    if (contextValue && name) {
-      contextValue.updateScreenConfiguration(name, { ...options, ...configuration });
-    }
-  }, [...Object.values(options ?? {}), configuration]);
+export const IsWithinCompositionConfiguration = createContext<boolean>(false);
 
-  if (!contextValue) {
-    return <Screen name={name} options={{ ...options }} />;
+export function StackScreen({ children, ...rest }: StackScreenProps) {
+  if (use(IsWithinCompositionConfiguration)) {
+    return <StackScreenInner {...rest} children={children} />;
+  } else {
+    return <Screen {...rest} />;
   }
-
-  return (
-    <ScreenOptionsContext value={{ configuration, setConfiguration }}>
-      {children}
-    </ScreenOptionsContext>
-  );
 }
 
-const IsWithinProtected = createContext(false);
+function StackScreenInner({ name, options, children, ...rest }: StackScreenProps) {
+  const navigation = useNavigation();
 
-export function StackProtected({ guard, children }: ProtectedProps) {
-  if (!guard) {
-    return <IsWithinProtected value>{children}</IsWithinProtected>;
-  }
-  return <>{children}</>;
+  const setConfiguration = useCallback<StackScreenConfigurationContextValue['setConfiguration']>(
+    (configUpdater) => {
+      navigation.setOptions(configUpdater);
+    },
+    [navigation]
+  );
+
+  return <ScreenOptionsContext value={{ setConfiguration }}>{children}</ScreenOptionsContext>;
 }
 
 export const StackHeader = Object.assign(StackHeaderComponent, {

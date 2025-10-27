@@ -47,6 +47,7 @@ const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
+const StackElements_1 = require("./layouts/StackElements");
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
@@ -189,6 +190,8 @@ function getQualifiedRouteComponent(value) {
     route, navigation, 
     // Pass all other props to the component
     ...props }) {
+        const contextValue = (0, react_1.use)(StackElements_1.ScreensOptionsContext);
+        const optionsSetter = contextValue?.getScreenForName(value.route);
         const stateForPath = (0, native_1.useStateForPath)();
         const isFocused = navigation.isFocused();
         const store = (0, storeContext_1.useExpoRouterStore)();
@@ -209,6 +212,9 @@ function getQualifiedRouteComponent(value) {
                 store.setFocusedState(stateForPath);
         }), [navigation]);
         return (<Route_1.Route node={value} route={route}>
+        <StackElements_1.IsWithinCompositionConfiguration value>
+          {optionsSetter ?? <></>}
+        </StackElements_1.IsWithinCompositionConfiguration>
         <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
           <ScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`

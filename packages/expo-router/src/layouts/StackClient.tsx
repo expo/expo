@@ -17,15 +17,14 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
-import { Children, ComponentProps, useCallback, useMemo, useState } from 'react';
+import { Children, ComponentProps, isValidElement, useMemo, type ReactElement } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import { getInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { SingularOptions, getSingularId } from '../useScreens';
-import { ScreensOptionsContext, StackHeader, StackScreen, StackProtected } from './StackElements';
-import type { StackScreensConfigurationContextValue } from './StackElements.types';
+import { ScreensOptionsContext, StackHeader, StackScreen } from './StackElements';
 import { Protected } from '../views/Protected';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
@@ -502,121 +501,43 @@ const Stack = Object.assign(
       return disableAnimationInScreenOptions(props.screenOptions, condition);
     }, [props.screenOptions, isStackAnimationDisabled]);
 
-    const [screensConfig, setScreensConfig] = useState<{
-      [key: string]: NativeStackNavigationOptions;
-    }>({});
-
-    const [screenProps, _setScreenProps] = useState<{
-      [key: string]: object;
-    }>({});
-
-    const [protectedScreens, setProtectedScreens] = useState<string[]>([]);
-
-    const addScreenConfiguration = useCallback<
-      StackScreensConfigurationContextValue['addScreenConfiguration']
-    >((name: string, options: NativeStackNavigationOptions) => {
-      if (name in screensConfig) {
-        console.error(
-          `Screen with name "${name}" is already registered in the Stack navigator. Screen names must be unique.`
-        );
-        return;
-      }
-      setScreensConfig((prev) => ({
-        ...prev,
-        [name]: options,
-      }));
-    }, []);
-
-    const removeScreenConfiguration = useCallback<
-      StackScreensConfigurationContextValue['removeScreenConfiguration']
-    >((name: string) => {
-      setScreensConfig((prev) => {
-        const newConfig = { ...prev };
-        delete newConfig[name];
-        return newConfig;
-      });
-    }, []);
-
-    const updateScreenConfiguration = useCallback<
-      StackScreensConfigurationContextValue['updateScreenConfiguration']
-    >((name: string, options: NativeStackNavigationOptions) => {
-      setScreensConfig((prev) => ({
-        ...prev,
-        [name]: {
-          ...prev[name],
-          ...options,
-        },
-      }));
-    }, []);
-
-    const setScreenProps = useCallback((name: string, props: object) => {
-      _setScreenProps((prev) => ({
-        ...prev,
-        [name]: props,
-      }));
-    }, []);
-
-    const removeScreenProps = useCallback((name: string) => {
-      _setScreenProps((prev) => {
-        const newProps = { ...prev };
-        delete newProps[name];
-        return newProps;
-      });
-    }, []);
-
-    const addProtectedScreen = useCallback((name: string) => {
-      setProtectedScreens((prev) => [...prev, name]);
-    }, []);
-
-    const removeProtectedScreen = useCallback((name: string) => {
-      setProtectedScreens((prev) => prev.filter((screen) => screen !== name));
-    }, []);
-
-    const rnChildren = useMemo(
-      () =>
-        Object.entries(screensConfig).map(([name, options]) => (
-          <Protected guard={!protectedScreens.includes(name)} key={name}>
-            <RNStack.Screen {...(screenProps[name] ?? {})} name={name} options={options} />
-          </Protected>
-        )),
-      [screensConfig]
+    const screens = useMemo(
+      () => getAllChildrenOfType(props.children, StackScreen),
+      [props.children]
     );
 
-    const shouldRenderNavigator = rnChildren.length > 0 || Children.count(props.children) === 0;
+    const value = useMemo(
+      () => ({
+        getScreenForName: (name: string) => {
+          return screens.find((screen) => screen.props.name === name);
+        },
+      }),
+      [screens]
+    );
 
     return (
-      <ScreensOptionsContext
-        value={{
-          addScreenConfiguration,
-          removeScreenConfiguration,
-          updateScreenConfiguration,
-          setScreenProps,
-          removeScreenProps,
-          addProtectedScreen,
-          removeProtectedScreen,
-        }}>
-        {props.children}
-        {shouldRenderNavigator && (
-          <ScreensOptionsContext value={undefined}>
-            <RNStack
-              {...props}
-              children={rnChildren}
-              screenOptions={screenOptions}
-              UNSTABLE_router={stackRouterOverride}
-            />
-          </ScreensOptionsContext>
-        )}
+      <ScreensOptionsContext value={value}>
+        <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
       </ScreensOptionsContext>
     );
   },
   {
     Screen: StackScreen,
-    Protected: StackProtected,
     Header: StackHeader,
+    Protected,
   }
 );
 
 type NativeStackScreenOptions = ComponentProps<typeof RNStack>['screenOptions'];
+
+function getAllChildrenOfType<PropsT>(
+  children: React.ReactNode | React.ReactNode[],
+  type: (props: PropsT) => unknown
+) {
+  return Children.toArray(children).filter(
+    (child): child is ReactElement<PropsT> => isValidElement(child) && child.type === type
+  );
+}
 
 function disableAnimationInScreenOptions(
   options: NativeStackScreenOptions | undefined,

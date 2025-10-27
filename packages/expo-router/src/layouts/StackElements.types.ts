@@ -4,7 +4,7 @@ import type {
   NativeStackHeaderRightProps,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
-import type { Dispatch, PropsWithChildren, ReactNode, SetStateAction } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 import type { StyleProp, TextStyle, ImageSourcePropType, ColorValue } from 'react-native';
 import type { ScreenStackHeaderConfigProps, SearchBarProps } from 'react-native-screens';
 
@@ -125,7 +125,6 @@ export interface StackHeaderConfiguration
 }
 
 export interface StackHeaderConfigurationContextValue {
-  configuration: StackHeaderConfiguration;
   setHeaderLeftConfiguration: (config: StackHeaderLeftConfiguration) => void;
   setHeaderRightConfiguration: (config: StackHeaderRightConfiguration) => void;
   setHeaderBackButtonConfiguration: (config: StackHeaderBackButtonConfiguration) => void;
@@ -134,18 +133,11 @@ export interface StackHeaderConfigurationContextValue {
 }
 
 export interface StackScreensConfigurationContextValue {
-  addScreenConfiguration: (name: string, config: StackHeaderConfiguration) => void;
-  removeScreenConfiguration: (name: string) => void;
-  updateScreenConfiguration: (name: string, config: Partial<StackHeaderConfiguration>) => void;
-  setScreenProps: (name: string, props: object) => void;
-  removeScreenProps: (name: string) => void;
-  addProtectedScreen: (name: string) => void;
-  removeProtectedScreen: (name: string) => void;
+  getScreenForName: (name: string) => ReactNode | undefined;
 }
 
 export interface StackScreenConfigurationContextValue {
-  configuration: NativeStackNavigationOptions;
-  setConfiguration: Dispatch<SetStateAction<NativeStackNavigationOptions>>;
+  setConfiguration: (o: NativeStackNavigationOptions) => void;
 }
 
 export interface StackScreenProps extends PropsWithChildren {

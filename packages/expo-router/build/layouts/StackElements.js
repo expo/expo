@@ -1,11 +1,11 @@
 "use strict";
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackHeader = exports.ScreenOptionsContext = exports.ScreensOptionsContext = exports.StackHeaderConfigurationContext = void 0;
+exports.StackHeader = exports.IsWithinCompositionConfiguration = exports.ScreenOptionsContext = exports.ScreensOptionsContext = exports.StackHeaderConfigurationContext = void 0;
 exports.StackScreen = StackScreen;
-exports.StackProtected = StackProtected;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+const useNavigation_1 = require("../useNavigation");
 const Screen_1 = require("../views/Screen");
 exports.StackHeaderConfigurationContext = (0, react_1.createContext)(undefined);
 function StackHeaderComponent({ asChild, children, hidden, blurEffect, style, largeStyle, }) {
@@ -13,21 +13,21 @@ function StackHeaderComponent({ asChild, children, hidden, blurEffect, style, la
     if (!contextValue) {
         throw new Error('Stack.Header can only be used inside of a Stack.Screen component in a _layout file.');
     }
-    const { configuration, setConfiguration } = contextValue;
+    const { setConfiguration } = contextValue;
     const setHeaderBackButtonConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
+        setConfiguration({ ...config });
     };
     const setHeaderLeftConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
+        setConfiguration({ ...config });
     };
     const setHeaderRightConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
+        setConfiguration({ ...config });
     };
     const setHeaderSearchBarConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
+        setConfiguration({ ...config });
     };
     const setHeaderTitleConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
+        setConfiguration({ ...config });
     };
     const currentConfig = (0, react_1.useMemo)(() => {
         const flattenedStyle = react_native_1.StyleSheet.flatten(style);
@@ -45,22 +45,21 @@ function StackHeaderComponent({ asChild, children, hidden, blurEffect, style, la
             headerLargeTitleShadowVisible: flattenedLargeStyle?.shadowColor !== 'transparent',
         };
     }, [hidden, blurEffect, style, largeStyle]);
-    (0, react_1.useEffect)(() => {
+    (0, react_1.useLayoutEffect)(() => {
         if (hidden) {
-            setConfiguration((prev) => ({ ...prev, headerShown: false }));
+            setConfiguration({ headerShown: false });
         }
         else if (asChild) {
-            setConfiguration((prev) => ({ ...prev, header: () => children }));
+            setConfiguration({ header: () => children });
         }
         else {
-            setConfiguration((prev) => ({ ...prev, ...currentConfig }));
+            setConfiguration({ ...currentConfig });
         }
     }, [asChild, hidden, currentConfig]);
     if (asChild) {
         return null;
     }
     return (<exports.StackHeaderConfigurationContext value={{
-            configuration,
             setHeaderBackButtonConfiguration,
             setHeaderLeftConfiguration,
             setHeaderRightConfiguration,
@@ -76,7 +75,7 @@ function StackHeaderLeft({ asChild, children }) {
         throw new Error('Stack.Header.Left can only be used inside of a Stack.Header component in a _layout file.');
     }
     const { setHeaderLeftConfiguration } = contextValue;
-    (0, react_1.useEffect)(() => {
+    (0, react_1.useLayoutEffect)(() => {
         const config = asChild ? { headerLeft: () => children } : {};
         setHeaderLeftConfiguration(config);
     }, [children, asChild]);
@@ -88,7 +87,7 @@ function StackHeaderRight({ asChild, children }) {
         throw new Error('Stack.Header.Right can only be used inside of a Stack.Header component in a _layout file.');
     }
     const { setHeaderRightConfiguration } = contextValue;
-    (0, react_1.useEffect)(() => {
+    (0, react_1.useLayoutEffect)(() => {
         const config = asChild ? { headerRight: () => children } : {};
         setHeaderRightConfiguration(config);
     }, [children, asChild]);
@@ -100,7 +99,7 @@ function StackHeaderBackButton({ children, style, withMenu, displayMode, src, hi
         throw new Error('Stack.Header.BackButton can only be used inside of a Stack.Header component in a _layout file.');
     }
     const { setHeaderBackButtonConfiguration } = contextValue;
-    (0, react_1.useEffect)(() => {
+    (0, react_1.useLayoutEffect)(() => {
         setHeaderBackButtonConfiguration({
             headerBackTitle: children,
             headerBackTitleStyle: style,
@@ -118,7 +117,7 @@ function StackHeaderTitle({ children, style, large, largeStyle }) {
         throw new Error('Stack.Header.Title can only be used inside of a Stack.Header component in a _layout file.');
     }
     const { setHeaderTitleConfiguration } = contextValue;
-    (0, react_1.useEffect)(() => {
+    (0, react_1.useLayoutEffect)(() => {
         const flattenedStyle = react_native_1.StyleSheet.flatten(style);
         const flattenedLargeStyle = react_native_1.StyleSheet.flatten(largeStyle);
         setHeaderTitleConfiguration({
@@ -142,7 +141,7 @@ function StackHeaderTitle({ children, style, large, largeStyle }) {
 }
 function StackHeaderSearchBar(props) {
     const contextValue = (0, react_1.use)(exports.StackHeaderConfigurationContext);
-    (0, react_1.useEffect)(() => {
+    (0, react_1.useLayoutEffect)(() => {
         if (!contextValue) {
             throw new Error('Stack.Header.SearchBar can only be used inside of a Stack.Header component in a _layout file.');
         }
@@ -155,58 +154,21 @@ function StackHeaderSearchBar(props) {
 }
 exports.ScreensOptionsContext = (0, react_1.createContext)(undefined);
 exports.ScreenOptionsContext = (0, react_1.createContext)(undefined);
-function StackScreen({ name, options, children, ...rest }) {
-    const contextValue = (0, react_1.use)(exports.ScreensOptionsContext);
-    const isWithinProtected = (0, react_1.use)(IsWithinProtected);
-    const [configuration, setConfiguration] = (0, react_1.useState)({});
-    if (contextValue && !name) {
-        throw new Error('A name prop is required for Stack.Screen when used inside of a Stack navigator.');
+exports.IsWithinCompositionConfiguration = (0, react_1.createContext)(false);
+function StackScreen({ children, ...rest }) {
+    if ((0, react_1.use)(exports.IsWithinCompositionConfiguration)) {
+        return <StackScreenInner {...rest} children={children}/>;
     }
-    (0, react_1.useEffect)(() => {
-        if (contextValue && name) {
-            contextValue.addScreenConfiguration(name, { ...options, ...configuration });
-            return () => {
-                contextValue.removeScreenConfiguration(name);
-            };
-        }
-        return undefined;
-    }, [name]);
-    (0, react_1.useEffect)(() => {
-        if (contextValue && name) {
-            contextValue.setScreenProps(name, rest);
-            return () => {
-                contextValue.removeScreenProps(name);
-            };
-        }
-        return undefined;
-    }, [name]);
-    (0, react_1.useEffect)(() => {
-        if (contextValue && name && isWithinProtected) {
-            contextValue.addProtectedScreen(name);
-            return () => {
-                contextValue.removeProtectedScreen(name);
-            };
-        }
-        return undefined;
-    }, [name, isWithinProtected]);
-    (0, react_1.useEffect)(() => {
-        if (contextValue && name) {
-            contextValue.updateScreenConfiguration(name, { ...options, ...configuration });
-        }
-    }, [...Object.values(options ?? {}), configuration]);
-    if (!contextValue) {
-        return <Screen_1.Screen name={name} options={{ ...options }}/>;
+    else {
+        return <Screen_1.Screen {...rest}/>;
     }
-    return (<exports.ScreenOptionsContext value={{ configuration, setConfiguration }}>
-      {children}
-    </exports.ScreenOptionsContext>);
 }
-const IsWithinProtected = (0, react_1.createContext)(false);
-function StackProtected({ guard, children }) {
-    if (!guard) {
-        return <IsWithinProtected value>{children}</IsWithinProtected>;
-    }
-    return <>{children}</>;
+function StackScreenInner({ name, options, children, ...rest }) {
+    const navigation = (0, useNavigation_1.useNavigation)();
+    const setConfiguration = (0, react_1.useCallback)((configUpdater) => {
+        navigation.setOptions(configUpdater);
+    }, [navigation]);
+    return <exports.ScreenOptionsContext value={{ setConfiguration }}>{children}</exports.ScreenOptionsContext>;
 }
 exports.StackHeader = Object.assign(StackHeaderComponent, {
     Left: StackHeaderLeft,

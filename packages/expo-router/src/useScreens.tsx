@@ -8,11 +8,12 @@ import {
   type RouteProp,
   type ScreenListeners,
 } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import { IsWithinCompositionConfiguration, ScreensOptionsContext } from './layouts/StackElements';
 import { Screen } from './primitives';
 import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
@@ -253,6 +254,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     // Pass all other props to the component
     ...props
   }: any) {
+    const contextValue = use(ScreensOptionsContext);
+    const optionsSetter = contextValue?.getScreenForName(value.route);
     const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
@@ -279,6 +282,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     return (
       <Route node={value} route={route}>
+        <IsWithinCompositionConfiguration value>
+          {optionsSetter ?? <></>}
+        </IsWithinCompositionConfiguration>
         <React.Suspense fallback={<SuspenseFallback route={value} />}>
           <ScreenComponent
             {...props}

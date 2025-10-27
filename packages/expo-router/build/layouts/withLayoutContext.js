@@ -41,13 +41,14 @@ const NativeTabTrigger_1 = require("../native-tabs/NativeBottomTabs/NativeTabTri
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
+const isScreen_1 = require("../views/isScreen");
 function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = {}) {
     return (0, react_1.useMemo)(() => {
         const customChildren = [];
         const screens = [];
         const protectedScreens = new Set();
         function flattenChild(child, exclude = false) {
-            if ((0, Screen_1.isScreen)(child, contextKey)) {
+            if ((0, isScreen_1.isScreen)(child, contextKey)) {
                 if (exclude) {
                     protectedScreens.add(child.props.name);
                 }
