@@ -1,12 +1,9 @@
 package expo.modules.devmenu
 
 import android.app.Activity
-import android.content.Context
-import android.hardware.SensorManager
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
-import android.view.inputmethod.InputMethodManager
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.LifecycleEventListener
@@ -19,10 +16,7 @@ import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.compose.BindingView
 import expo.modules.devmenu.compose.DevMenuAction
-import expo.modules.devmenu.detectors.ShakeDetector
-import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
-import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
@@ -38,8 +32,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
 
-  private var shakeDetector: ShakeDetector? = null
-  private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var preferences: DevMenuPreferencesInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
   private var shouldLaunchDevMenuOnStart: Boolean = false
@@ -77,11 +69,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private fun setUpReactInstance(reactHost: ReactHost) {
     currentReactInstance = WeakReference(reactHost)
 
-    DevMenuShakeDetectorListenerSwapper()
-      .swapShakeDetectorListener(
-        reactHost
-      ) {}
-
     if (reactHost.currentReactContext == null) {
       reactHost.addReactInstanceEventListener(object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
@@ -108,13 +95,15 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private fun handleLoadedDelegateContext(reactContext: ReactContext) {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
-    maybeStartDetectors(reactContext.applicationContext)
     preferences = DevMenuPreferencesHandle.also {
-      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty()) || hasDisableOnboardingQueryParam(launchUrl.orEmpty())) {
+      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty()) ||
+        hasDisableOnboardingQueryParam(launchUrl.orEmpty())
+      ) {
         it.isOnboardingFinished = true
       }
     }.also {
-      shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
+      shouldLaunchDevMenuOnStart =
+        canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
       if (shouldLaunchDevMenuOnStart) {
         reactContext.addLifecycleEventListener(this)
       }
@@ -134,47 +123,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   // it is set and unset by the public facing `DevMenuModule`
   // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty list
   var registeredCallbacks = mutableListOf<Callback>()
-
-  //endregion
-
-  //region shake detector
-
-  /**
-   * Starts [ShakeDetector] and [ThreeFingerLongPressDetector] if they aren't running yet.
-   */
-  private fun maybeStartDetectors(context: Context) {
-    if (shakeDetector == null) {
-      shakeDetector = ShakeDetector(this::onShakeGesture).apply {
-        start(context.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
-      }
-    }
-
-    if (threeFingerLongPressDetector == null) {
-      threeFingerLongPressDetector = ThreeFingerLongPressDetector(this::onThreeFingerLongPress)
-    }
-  }
-
-  /**
-   * Handles shake gesture which simply toggles the dev menu.
-   */
-  private fun onShakeGesture() {
-    if (preferences?.motionGestureEnabled == true) {
-      delegateActivity?.let {
-        toggleMenu(it)
-      }
-    }
-  }
-
-  /**
-   * Handles three finger long press which simply toggles the dev menu.
-   */
-  private fun onThreeFingerLongPress() {
-    if (preferences?.touchGestureEnabled == true) {
-      delegateActivity?.let {
-        toggleMenu(it)
-      }
-    }
-  }
 
   //endregion
 
@@ -248,46 +196,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
-  override fun onTouchEvent(ev: MotionEvent?) {
-    threeFingerLongPressDetector?.onTouchEvent(ev)
-  }
+  override fun onTouchEvent(ev: MotionEvent?) {}
 
   override fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean {
-    val imm = delegateActivity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-    // The keyboard is active. We don't want to handle events that should go to text inputs.
-    // RN uses onKeyUp to handle all events connected with dev options. We need to do the same to override them.
-    // However, this event is also triggered when input is edited. A better way to handle that case
-    // is use onKeyDown event. However, it doesn't work well with key commands and we can't override RN implementation in that approach.
-    if (imm?.isAcceptingText != false) {
-      return false
-    }
-
-    val keyCommand = KeyCommand(
-      code = keyCode,
-      withShift = event.modifiers and KeyEvent.META_SHIFT_MASK > 0
-    )
-
-    if (keyCommand == KeyCommand(KeyEvent.KEYCODE_MENU)) {
-      delegateActivity?.let {
-        openMenu(activity = it)
-      }
-      return true
-    }
-
-    if (preferences?.keyCommandsEnabled != true) {
-      return false
-    }
-
-    val action = when (keyCommand) {
-      KeyCommand(KeyEvent.KEYCODE_R) -> ::reload
-      KeyCommand(KeyEvent.KEYCODE_P) -> ::togglePerformanceMonitor
-      KeyCommand(KeyEvent.KEYCODE_I) -> ::toggleInspector
-      else -> return false
-    }
-
-    action()
-    closeMenu()
-    return true
+    return false
   }
 
   fun reload() {
