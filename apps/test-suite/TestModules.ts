@@ -70,6 +70,7 @@ export function getTestModules() {
   if (['android', 'ios'].includes(Platform.OS)) {
     modules.push(require('./tests/Blob'));
     modules.push(require('./tests/FileSystem'));
+    modules.push(require('./tests/CalendarNext'));
   }
 
   if (Platform.OS === 'android') {

@@ -8,7 +8,9 @@ export type PaddingValuesRecord = {
 export type CarouselVariant = 'multiBrowse' | 'unconstrained';
 export type FlingBehaviorType = 'singleAdvance' | 'noSnap';
 export type CarouselProps = {
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
     /** Carousel variant */
     variant?: CarouselVariant;

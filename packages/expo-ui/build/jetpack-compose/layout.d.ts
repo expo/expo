@@ -1,7 +1,9 @@
 import { ColorValue } from 'react-native';
 import { ExpoModifier } from '../types';
 export type PrimitiveBaseProps = {
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
 };
 export type HorizontalArrangement = 'start' | 'end' | 'center' | 'spaceBetween' | 'spaceAround' | 'spaceEvenly';

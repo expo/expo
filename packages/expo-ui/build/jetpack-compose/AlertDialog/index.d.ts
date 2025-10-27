@@ -30,7 +30,9 @@ export type AlertDialogProps = {
      * Callback that is called when the user tries to dismiss the dialog.
      */
     onDismissPressed?: () => void;
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
 };
 export type NativeAlertDialogProps = AlertDialogProps;

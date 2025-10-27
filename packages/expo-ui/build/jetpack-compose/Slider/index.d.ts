@@ -49,7 +49,9 @@ export type SliderProps = {
      * Callback triggered on dragging along the slider.
      */
     onValueChange?: (value: number) => void;
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
 };
 type NativeSliderProps = Omit<SliderProps, 'onValueChange'> & ViewEvent<'onValueChanged', {
