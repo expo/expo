@@ -334,6 +334,10 @@ class FunctionSpec: ExpoSpec {
             p.resolve(SharedString("Test with Promise"))
           }
 
+          Function("withEither") { (either: Either<Bool, String>) in
+            return either
+          }
+
           AsyncFunction("withURLAsync") {
             return TestURLRecord.defaultURL
           }
@@ -504,7 +508,17 @@ class FunctionSpec: ExpoSpec {
         expect(result.kind) == .string
         expect(result.getString()) == "Test with Promise"
       }
-      
+
+      it("accepts and returns Either value") {
+        let stringResult = try runtime.eval("expo.modules.TestModule.withEither('test string')")
+        expect(stringResult.kind) == .string
+        expect(stringResult.getString()) == "test string"
+
+        let boolResult = try runtime.eval("expo.modules.TestModule.withEither(true)")
+        expect(boolResult.kind) == .bool
+        expect(boolResult.getBool()) == true
+      }
+
       // For async tests, this is a safe way to repeatedly evaluate JS
       // and catch both Swift and ObjC exceptions
       func safeBoolEval(_ js: String) -> Bool {

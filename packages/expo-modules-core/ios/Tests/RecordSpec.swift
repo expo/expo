@@ -45,6 +45,31 @@ class RecordSpec: ExpoSpec {
       expect(record.toDictionary()["b"] as? Int).to(equal(dict["b"]! as! Int))
     }
 
+    it("works back and forth with Either") {
+      struct TestRecord: Record {
+        @Field var stringValue: Either<Bool, String>?
+        @Field var boolValue: Either<Bool, String>?
+        @Field var intValue: Either<Int, String>?
+        @Field var nilValue: Either<Int, String>?
+      }
+      let dict: [String: Any] = [
+        "stringValue": "custom",
+        "boolValue": true,
+        "intValue": 42,
+      ]
+      let record = try TestRecord(from: dict, appContext: appContext)
+      expect(record.stringValue?.get() as String?).to(equal("custom"))
+      expect(record.boolValue?.get() as Bool?).to(equal(true))
+      expect(record.intValue?.get() as Int?).to(equal(42))
+      expect(record.nilValue).to(beNil())
+
+      let asDict = record.toDictionary(appContext: appContext)
+      expect(asDict["stringValue"] as? String).to(equal("custom"))
+      expect(asDict["boolValue"] as? Bool).to(equal(true))
+      expect(asDict["intValue"] as? Int).to(equal(42))
+      expect(asDict["nilValue"] as? Int).to(beNil())
+    }
+
     it("works back and forth with a keyed field") {
       struct TestRecord: Record {
         @Field("key") var a: String?
