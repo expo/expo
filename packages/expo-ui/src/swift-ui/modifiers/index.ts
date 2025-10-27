@@ -63,6 +63,16 @@ export const listSectionSpacing = (spacing: 'default' | 'compact' | number) => {
 };
 
 /**
+ * Sets the vertical spacing between two adjacent rows in a List.
+ * @param spacing - The spacing value to use.
+ */
+export const listRowSpacing = (spacing?: number) => {
+  return createModifier('listRowSpacing', {
+    value: spacing,
+  });
+};
+
+/**
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
  * @see https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)
@@ -737,6 +747,7 @@ export const font = (params: {
  */
 export type BuiltInModifier =
   | ReturnType<typeof listSectionSpacing>
+  | ReturnType<typeof listRowSpacing>
   | ReturnType<typeof background>
   | ReturnType<typeof cornerRadius>
   | ReturnType<typeof shadow>

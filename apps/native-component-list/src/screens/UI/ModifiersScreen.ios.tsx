@@ -42,6 +42,7 @@ import {
   disabled,
   scrollContentBackground,
   listRowBackground,
+  listRowSpacing,
   allowsTightening,
   truncationMode,
   kerning,
@@ -93,6 +94,9 @@ export default function ModifiersScreen() {
     trailing: false,
     enabled: false,
   });
+
+  const [listRowSpacingValue, setListRowSpacingValue] = useState(20);
+
   const insets = [
     { key: 'top', label: 'Top' },
     { key: 'leading', label: 'Left' },
@@ -108,6 +112,7 @@ export default function ModifiersScreen() {
       <Host matchContents>
         <Form
           modifiers={[
+            listRowSpacing(listRowSpacingValue),
             scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),
             background(backgroundFormColor),
             frame({
@@ -147,6 +152,15 @@ export default function ModifiersScreen() {
               </View>
             </HStack>
             <Text>Only IOS 26</Text>
+          </Section>
+
+          <Section title="List row spacing">
+            <Slider
+              value={listRowSpacingValue}
+              min={0}
+              max={20}
+              onValueChange={setListRowSpacingValue}
+            />
           </Section>
 
           <VStack
@@ -222,7 +236,7 @@ export default function ModifiersScreen() {
             <Text size={14} modifiers={[kerning(kerningValue)]}>
               Kerning Text
             </Text>
-            <Slider min={0} max={10} onValueChange={setKerning} />
+            <Slider value={kerningValue} min={0} max={10} onValueChange={setKerning} />
 
             <HStack spacing={20}>
               <Text size={14} modifiers={[textCase('lowercase')]}>
@@ -346,7 +360,12 @@ export default function ModifiersScreen() {
                 </Text>
               </VStack>
             </HStack>
-            <Slider min={0} max={20} onValueChange={setLineSpaceingValue} />
+            <Slider
+              value={lineSpacingValue}
+              min={0}
+              max={20}
+              onValueChange={setLineSpaceingValue}
+            />
           </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
           <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>

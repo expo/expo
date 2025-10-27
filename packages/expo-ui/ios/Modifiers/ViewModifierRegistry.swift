@@ -35,6 +35,18 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   }
 }
 
+internal struct ListRowSpacingModifier: ViewModifier, Record {
+  @Field var value: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      content.listRowSpacing(value)
+    #endif
+  }
+}
+
 internal struct BackgroundModifier: ViewModifier, Record {
   @Field var color: Color?
 
@@ -1236,6 +1248,10 @@ extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
     register("listSectionSpacing") { params, appContext, _ in
       return try ListSectionSpacingModifier(from: params, appContext: appContext)
+    }
+
+    register("listRowSpacing") { params, appContext, _ in
+      return try ListRowSpacingModifier(from: params, appContext: appContext)
     }
 
     register("background") { params, appContext, _ in
