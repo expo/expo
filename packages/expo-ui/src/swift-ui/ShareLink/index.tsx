@@ -78,6 +78,7 @@ export function ShareLink(props: ShareLinkProps) {
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}
       ref={shareLinkRef}
+      item={item}
       onAsyncItemRequest={handleAsyncItemRequest}
     />
   );

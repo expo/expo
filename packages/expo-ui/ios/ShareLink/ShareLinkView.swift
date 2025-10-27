@@ -7,7 +7,7 @@ struct Preview: Record {
 }
 
 final class ShareLinkViewProps: UIBaseViewProps {
-  @Field var item: URL?
+  @Field var item: String?
   @Field var subject: String?
   @Field var message: String?
   @Field var preview: Preview?
@@ -28,7 +28,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
   func resolveContinuation(_ url: URL) {
     if #available(iOS 16.0, tvOS 16.0, *) {
       asyncData?.resolveContinuation(url)
-   }
+    }
   }
 
   func rejectContinuation() {
@@ -39,104 +39,53 @@ struct ShareLinkView: ExpoSwiftUI.View {
 
   var body: some View {
 #if !os(tvOS)
-    Group {
-      if #available(iOS 16.0, *) {
-        let hasChildren = props.children?.isEmpty == false
-        let subject = props.subject.map { Text($0) }
-        let message = props.message.map { Text($0) }
-        let preview: SharePreview<Image, Never>? = props.preview.flatMap { preview in
-          SharePreview(preview.title, image: Image(preview.image))
-        }
+    if #available(iOS 16.0, *) {
+      let subject = props.subject.map { Text($0) }
+      let message = props.message.map { Text($0) }
+      let preview = props.preview.flatMap { preview in
+        SharePreview(preview.title, image: Image(preview.image))
+      }
 
-        if let item = props.item {
-          if hasChildren {
-            shareLink(
-              item: item,
-              subject: subject,
-              message: message,
-              preview: preview
-            ) {
+      if let item = props.item {
+        if let preview {
+          SwiftUI.ShareLink(
+            item: item,
+            subject: subject,
+            message: message,
+            preview: preview,
+            label: {
               Children()
             }
-            .modifier(UIBaseViewModifier(props: props))
-          } else {
-            shareLink(
-              item: item,
-              subject: subject,
-              message: message,
-              preview: preview
-            )
-            .modifier(UIBaseViewModifier(props: props))
-          }
+          ).modifier(UIBaseViewModifier(props: props))
         } else {
-          if let asyncData {
-            AsyncShareLinkView(
-              props: props,
-              asyncData: asyncData,
-              subject: subject,
-              message: message,
-              preview: preview
-            ) {
+          SwiftUI.ShareLink(
+            item: item,
+            subject: subject,
+            message: message,
+            label: {
               Children()
-            }.onDisappear {
-              // performs continuation cleanup if component is unmounted mid async request
-              asyncData.rejectContinuation()
             }
-          }
+          ).modifier(UIBaseViewModifier(props: props))
         }
+      } else if let asyncData, let preview {
+        SwiftUI.ShareLink(
+          item: asyncData,
+          subject: subject,
+          message: message,
+          preview: preview,
+          label: {
+            Children()
+          }
+        )
+        .onDisappear {
+          // performs continuation cleanup if component is unmounted mid async request
+          asyncData.rejectContinuation()
+        }
+        .modifier(UIBaseViewModifier(props: props))
       }
     }
 #else
     EmptyView()
 #endif
   }
-
-#if !os(tvOS)
-  @available(iOS 16.0, *)
-  @ViewBuilder
-  private func shareLink(
-    item: URL,
-    subject: Text?,
-    message: Text?,
-    preview: SharePreview<Image, Never>?,
-    @ViewBuilder label: () -> some View
-  ) -> some View {
-    if let preview = preview {
-      SwiftUI.ShareLink(
-        item: item,
-        subject: subject,
-        message: message,
-        preview: preview,
-        label: label
-      )
-    } else {
-      SwiftUI.ShareLink(
-        item: item,
-        subject: subject,
-        message: message,
-        label: label
-      )
-    }
-  }
-
-  @available(iOS 16.0, *)
-  @ViewBuilder
-  private func shareLink(
-    item: URL,
-    subject: Text?,
-    message: Text?,
-    preview: SharePreview<Image, Never>?
-  ) -> some View {
-    if let preview = preview {
-      SwiftUI.ShareLink(
-        item: item,
-        subject: subject,
-        message: message,
-        preview: preview
-      )
-    } else {
-      SwiftUI.ShareLink(item: item, subject: subject, message: message)
-    }
-  }
-#endif
 }
