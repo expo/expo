@@ -347,77 +347,23 @@ const Stack = Object.assign((props) => {
         const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
         return disableAnimationInScreenOptions(props.screenOptions, condition);
     }, [props.screenOptions, isStackAnimationDisabled]);
-    const [screensConfig, setScreensConfig] = (0, react_1.useState)({});
-    const [screenProps, _setScreenProps] = (0, react_1.useState)({});
-    const [protectedScreens, setProtectedScreens] = (0, react_1.useState)([]);
-    const addScreenConfiguration = (0, react_1.useCallback)((name, options) => {
-        if (name in screensConfig) {
-            console.error(`Screen with name "${name}" is already registered in the Stack navigator. Screen names must be unique.`);
-            return;
-        }
-        setScreensConfig((prev) => ({
-            ...prev,
-            [name]: options,
-        }));
-    }, []);
-    const removeScreenConfiguration = (0, react_1.useCallback)((name) => {
-        setScreensConfig((prev) => {
-            const newConfig = { ...prev };
-            delete newConfig[name];
-            return newConfig;
-        });
-    }, []);
-    const updateScreenConfiguration = (0, react_1.useCallback)((name, options) => {
-        setScreensConfig((prev) => ({
-            ...prev,
-            [name]: {
-                ...prev[name],
-                ...options,
-            },
-        }));
-    }, []);
-    const setScreenProps = (0, react_1.useCallback)((name, props) => {
-        _setScreenProps((prev) => ({
-            ...prev,
-            [name]: props,
-        }));
-    }, []);
-    const removeScreenProps = (0, react_1.useCallback)((name) => {
-        _setScreenProps((prev) => {
-            const newProps = { ...prev };
-            delete newProps[name];
-            return newProps;
-        });
-    }, []);
-    const addProtectedScreen = (0, react_1.useCallback)((name) => {
-        setProtectedScreens((prev) => [...prev, name]);
-    }, []);
-    const removeProtectedScreen = (0, react_1.useCallback)((name) => {
-        setProtectedScreens((prev) => prev.filter((screen) => screen !== name));
-    }, []);
-    const rnChildren = (0, react_1.useMemo)(() => Object.entries(screensConfig).map(([name, options]) => (<Protected_1.Protected guard={!protectedScreens.includes(name)} key={name}>
-            <RNStack.Screen {...(screenProps[name] ?? {})} name={name} options={options}/>
-          </Protected_1.Protected>)), [screensConfig]);
-    const shouldRenderNavigator = rnChildren.length > 0 || react_1.Children.count(props.children) === 0;
-    return (<StackElements_1.ScreensOptionsContext value={{
-            addScreenConfiguration,
-            removeScreenConfiguration,
-            updateScreenConfiguration,
-            setScreenProps,
-            removeScreenProps,
-            addProtectedScreen,
-            removeProtectedScreen,
-        }}>
-        {props.children}
-        {shouldRenderNavigator && (<StackElements_1.ScreensOptionsContext value={undefined}>
-            <RNStack {...props} children={rnChildren} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>
-          </StackElements_1.ScreensOptionsContext>)}
+    const screens = (0, react_1.useMemo)(() => getAllChildrenOfType(props.children, StackElements_1.StackScreen), [props.children]);
+    const value = (0, react_1.useMemo)(() => ({
+        getScreenForName: (name) => {
+            return screens.find((screen) => screen.props.name === name);
+        },
+    }), [screens]);
+    return (<StackElements_1.ScreensOptionsContext value={value}>
+        <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>
       </StackElements_1.ScreensOptionsContext>);
 }, {
     Screen: StackElements_1.StackScreen,
-    Protected: StackElements_1.StackProtected,
     Header: StackElements_1.StackHeader,
+    Protected: Protected_1.Protected,
 });
+function getAllChildrenOfType(children, type) {
+    return react_1.Children.toArray(children).filter((child) => (0, react_1.isValidElement)(child) && child.type === type);
+}
 function disableAnimationInScreenOptions(options, condition) {
     if (options && typeof options === 'function') {
         return (props) => {

@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { PlatformColor, Text, View } from 'react-native';
+import { Platform, PlatformColor, Text, View } from 'react-native';
 
 const isAllowed = false;
 
@@ -11,7 +11,7 @@ export default function Layout() {
           style={{ backgroundColor: 'transparent' }}
           largeStyle={{ backgroundColor: 'transparent', shadowColor: 'transparent' }}>
           <Stack.Header.Title
-            style={{ fontSize: 12, color: PlatformColor('systemBlue') }}
+            style={{ fontSize: 12, color: 'blue' }}
             largeStyle={{ color: '#F00' }}
             large>
             Custom Header Title
@@ -20,14 +20,19 @@ export default function Layout() {
       </Stack.Screen>
       <Stack.Screen name="js-only">
         <Stack.Header
-          style={{ backgroundColor: '#f00' }}
-          largeStyle={{ backgroundColor: 'transparent' }}>
+          // style={{ backgroundColor: '#f00' }}
+          largeStyle={{
+            backgroundColor: Platform.select({
+              ios: PlatformColor('systemBackground'),
+              default: 'transparent',
+            }),
+          }}>
           <Stack.Header.Title
-            style={{ fontSize: 16, color: PlatformColor('systemGreen') }}
+            style={{ fontSize: 16, color: 'green' }}
             largeStyle={{ fontSize: 32, color: '#00F' }}>
             JS Only Header Title
           </Stack.Header.Title>
-          <Stack.Header.BackButton withMenu />
+          <Stack.Header.BackButton />
         </Stack.Header>
       </Stack.Screen>
       <Stack.Protected guard={isAllowed}>
@@ -43,7 +48,7 @@ export default function Layout() {
                 height: 80,
                 justifyContent: 'flex-end',
                 alignItems: 'center',
-                backgroundColor: PlatformColor('systemGray6'),
+                backgroundColor: 'lightgray',
               }}>
               <Text style={{ fontSize: 18 }}>Modal 123455 Header</Text>
             </View>
@@ -55,7 +60,7 @@ export default function Layout() {
               height: 80,
               justifyContent: 'flex-end',
               alignItems: 'center',
-              backgroundColor: PlatformColor('systemGray6'),
+              backgroundColor: 'lightgray',
             }}>
             <Text style={{ fontSize: 18 }}>Modal 123455 Header</Text>
           </View>

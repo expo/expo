@@ -19,7 +19,8 @@ import {
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
-import { isScreen, Screen } from '../views/Screen';
+import { Screen } from '../views/Screen';
+import { isScreen } from '../views/isScreen';
 
 export function useFilterScreenChildren(
   children: ReactNode,
