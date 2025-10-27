@@ -18,6 +18,8 @@ const val DEV_MENU_TAG = "[disabled] ExpoDevMenu"
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
 object DevMenuManager : DevMenuManagerInterface {
+  data class KeyCommand(val code: Int, val withShift: Boolean = false)
+
   internal var delegate: DevMenuDelegateInterface? = null
 
   var currentManifest: Manifest? = null
@@ -99,24 +101,31 @@ object DevMenuManager : DevMenuManagerInterface {
   fun reload() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
   fun goToHome() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
   fun togglePerformanceMonitor() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
   fun toggleInspector() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
   fun openJSInspector() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
   fun toggleFastRefresh() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
   fun toggleFab() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
   fun refreshCustomItems() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
