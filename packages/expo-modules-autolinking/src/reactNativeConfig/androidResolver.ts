@@ -143,28 +143,27 @@ async function* scanFilesRecursively(
   const queue = [parentPath];
   let targetPath: string | undefined;
   while (queue.length > 0 && (targetPath = queue.shift()) != null) {
-    let entries: AsyncIterable<import('fs').Dirent> | Iterable<import('fs').Dirent>;
     try {
-      entries = sort
+      const entries = sort
         ? (await fs.readdir(targetPath, { withFileTypes: true })).sort((a, b) =>
             a.name.localeCompare(b.name)
           )
         : await fs.opendir(targetPath);
+      for await (const entry of entries) {
+        if (entry.isDirectory() && entry.name !== 'node_modules') {
+          if (!includeDirectory || includeDirectory(targetPath, entry.name)) {
+            queue.push(path.join(targetPath, entry.name));
+          }
+        } else if (entry.isFile()) {
+          yield {
+            path: path.join(targetPath, entry.name),
+            parentPath: targetPath,
+            name: entry.name,
+          } as const;
+        }
+      }
     } catch {
       continue;
-    }
-    for await (const entry of entries) {
-      if (entry.isDirectory() && entry.name !== 'node_modules') {
-        if (!includeDirectory || includeDirectory(targetPath, entry.name)) {
-          queue.push(path.join(targetPath, entry.name));
-        }
-      } else if (entry.isFile()) {
-        yield {
-          path: path.join(targetPath, entry.name),
-          parentPath: targetPath,
-          name: entry.name,
-        } as const;
-      }
     }
   }
 }
