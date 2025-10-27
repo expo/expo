@@ -81,7 +81,7 @@ class CalendarRepository(context: Context) {
   }
 
   companion object {
-    private val findCalendarByIdQueryFields = arrayOf(
+    val findCalendarByIdQueryFields = arrayOf(
       CalendarContract.Calendars._ID,
       CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
       CalendarContract.Calendars.ACCOUNT_NAME,
@@ -99,7 +99,7 @@ class CalendarRepository(context: Context) {
       CalendarContract.Calendars.SYNC_EVENTS
     )
 
-    private val findCalendarsQueryParameters = arrayOf(
+    val findCalendarsQueryParameters = arrayOf(
       CalendarContract.Calendars._ID,
       CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
       CalendarContract.Calendars.ACCOUNT_NAME,

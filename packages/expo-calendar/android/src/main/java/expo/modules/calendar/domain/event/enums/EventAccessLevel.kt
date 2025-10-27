@@ -18,6 +18,9 @@ enum class EventAccessLevel(val value: String) : Enumerable {
     }
 
   companion object {
+    fun fromString(value: String): EventAccessLevel =
+      entries.find { it.value == value } ?: DEFAULT
+
     fun fromContentProviderValue(constant: Int): EventAccessLevel =
       when (constant) {
         CalendarContract.Events.ACCESS_CONFIDENTIAL -> CONFIDENTIAL

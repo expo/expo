@@ -146,21 +146,22 @@ class EventRepository(context: Context) {
   }
 
   private suspend fun removeRemindersForEvent(eventID: Int) = withContext(Dispatchers.IO) {
+    val projection = arrayOf(CalendarContract.Reminders._ID)
     val cursor = CalendarContract.Reminders.query(
       contentResolver,
       eventID.toLong(),
-      arrayOf(
-        CalendarContract.Reminders._ID
-      )
+      projection
     )
+
+    val idIndex = cursor.getColumnIndex(CalendarContract.Reminders._ID)
     while (cursor.moveToNext()) {
-      val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0))
+      val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(idIndex))
       contentResolver.delete(reminderUri, null, null)
     }
   }
 
   companion object {
-    private val findEventsQueryParameters = arrayOf(
+    val findEventsQueryParameters = arrayOf(
       CalendarContract.Instances.EVENT_ID,
       CalendarContract.Instances.TITLE,
       CalendarContract.Instances.DESCRIPTION,
@@ -182,7 +183,7 @@ class EventRepository(context: Context) {
       CalendarContract.Instances._ID
     )
 
-    private val findEventByIdQueryParameters = arrayOf(
+    val findEventByIdQueryParameters = arrayOf(
       CalendarContract.Events._ID,
       CalendarContract.Events.TITLE,
       CalendarContract.Events.DESCRIPTION,

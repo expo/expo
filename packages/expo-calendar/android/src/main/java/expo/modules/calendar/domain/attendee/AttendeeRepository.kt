@@ -51,7 +51,7 @@ class AttendeeRepository(context: Context) {
   }
 
   companion object {
-    private val findAttendeesByEventIdQueryParameters = arrayOf(
+    val findAttendeesByEventIdQueryParameters = arrayOf(
       CalendarContract.Attendees._ID,
       CalendarContract.Attendees.ATTENDEE_NAME,
       CalendarContract.Attendees.ATTENDEE_EMAIL,

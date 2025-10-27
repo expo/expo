@@ -16,6 +16,9 @@ enum class Availability(val value: String) : Enumerable {
     }
 
   companion object {
+    fun fromString(value: String): Availability =
+      entries.find { it.value == value } ?: BUSY
+
     fun fromContentProviderValue(constant: Int): Availability =
       when (constant) {
         CalendarContract.Events.AVAILABILITY_FREE -> FREE
