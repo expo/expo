@@ -252,6 +252,11 @@ class FunctionSpec: ExpoSpec {
         @Field var url: URL = defaultURL
       }
 
+      struct TestEncodable: Encodable {
+        let name: String
+        let version: Int
+      }
+
       afterEach {
         try runtime.eval("globalThis.result = undefined")
       }
@@ -307,6 +312,10 @@ class FunctionSpec: ExpoSpec {
 
           Function("withOptionalRecord") { (f: TestRecord?) in
             return "\(f?.property ?? "no value")"
+          }
+
+          Function("returnEncodable") {
+            return TestEncodable(name: "Expo SDK", version: 55)
           }
 
           Function("withSharedObject") {
@@ -386,6 +395,14 @@ class FunctionSpec: ExpoSpec {
 
       it("accepts optional record") {
         expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString()) == "123"
+      }
+
+      it("returns encodable struct") {
+        let result = try runtime.eval("expo.modules.TestModule.returnEncodable()")
+        expect(result.kind) == .object
+        expect(result.getObject().getPropertyNames()).to(contain(["name", "version"]))
+        expect(try result.getObject().getProperty("name").asString()) == "Expo SDK"
+        expect(try result.getObject().getProperty("version").asInt()) == 55
       }
 
       it("returns URL (sync)") {
