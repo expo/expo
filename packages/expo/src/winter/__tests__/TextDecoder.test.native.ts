@@ -26,6 +26,7 @@ describe('TextDecoder', () => {
 
   describe(`supports utf8 labels`, () => {
     [
+      'ascii',
       'unicode-1-1-utf-8',
       'unicode11utf8',
       'unicode20utf8',
@@ -174,6 +175,19 @@ describe('TextDecoder', () => {
       }
       const ascii_encoded = new TextEncoder().encode(string);
       expect(new TextDecoder(encoding).decode(ascii_encoded)).toBe(string);
+    });
+
+    it('should decode ASCII correctly using ascii label', () => {
+      const asciiText = 'Hello World! 123 ABC';
+      const asciiBytes = new Uint8Array([
+        72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33, 32, 49, 50, 51, 32, 65, 66, 67,
+      ]);
+
+      const decoder = new TextDecoder('ascii');
+      const result = decoder.decode(asciiBytes);
+
+      expect(result).toBe(asciiText);
+      expect(decoder.encoding).toBe('utf-8'); // ASCII maps to UTF-8
     });
   });
 

@@ -146,6 +146,7 @@ const ENCODING_MAP: { heading: string; encodings: Encoding[] }[] = [
     encodings: [
       {
         labels: [
+          'ascii',
           'unicode-1-1-utf-8',
           'unicode11utf8',
           'unicode20utf8',
