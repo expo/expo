@@ -49,11 +49,6 @@ fun ExpoViewComposableScope.BottomSheetContent(props: BottomSheetProps, onIsOpen
       onIsOpenedChange = { value -> onIsOpenedChange(IsOpenedChangeEvent(value)) }
     ) {
       Children(ComposableScope())
-      Button(
-        onClick = { onIsOpenedChange(IsOpenedChangeEvent(false)) }
-      ) {
-        androidx.compose.material3.Text("Close Bottom Sheet")
-      }
     }
   }
 }
