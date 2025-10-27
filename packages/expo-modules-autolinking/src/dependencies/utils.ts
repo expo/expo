@@ -14,7 +14,10 @@ export function defaultShouldIncludeDependency(dependencyName: string): boolean 
     scopeName === 'babel' ||
     scopeName === 'types' ||
     scopeName === 'eslint' ||
-    scopeName === 'typescript-eslint'
+    scopeName === 'typescript-eslint' ||
+    scopeName === 'testing-library' ||
+    scopeName === 'aws-crypto' ||
+    scopeName === 'aws-sdk'
   ) {
     return false;
   }
@@ -24,11 +27,20 @@ export function defaultShouldIncludeDependency(dependencyName: string): boolean 
     case '@expo/metro-config':
     case '@expo/package-manager':
     case '@expo/prebuild-config':
+    case '@expo/webpack-config':
     case '@expo/env':
     case '@react-native/codegen':
+    case '@react-native/community-cli-plugin':
     case 'eslint':
     case 'eslint-config-expo':
     case 'eslint-plugin-expo':
+    case 'eslint-plugin-import':
+    case 'jest-expo':
+    case 'jest':
+    case 'metro':
+    case 'ts-node':
+    case 'typescript':
+    case 'webpack':
       return false;
     default:
       return true;
