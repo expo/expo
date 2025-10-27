@@ -1,8 +1,9 @@
-import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
+import { type ColorSchemeName, StyleProp, ViewStyle } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type HostProps = {
     /**
      * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
+     * Can be only set once on mount.
      * @default false
      */
     matchContents?: boolean | {
@@ -29,6 +30,11 @@ export type HostProps = {
      * The color scheme of the host view.
      */
     colorScheme?: ColorSchemeName;
+    /**
+     * The layout direction for the SwiftUI content.
+     * Defaults to the current locale direction from I18nManager.
+     */
+    layoutDirection?: 'leftToRight' | 'rightToLeft';
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
 } & CommonViewModifierProps;

@@ -25,6 +25,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ComposableScope
 import java.util.Calendar
 import java.util.Date
 import android.graphics.Color as AndroidColor
@@ -56,7 +57,7 @@ enum class Variant(val value: String) : Enumerable {
 
 data class DateTimePickerProps(
   val title: MutableState<String> = mutableStateOf(""),
-  val initialDate: MutableState<Date?> = mutableStateOf(null),
+  val initialDate: MutableState<Long?> = mutableStateOf(null),
   val variant: MutableState<Variant> = mutableStateOf(Variant.PICKER),
   val displayedComponents: MutableState<DisplayedComponents> = mutableStateOf(DisplayedComponents.DATE),
   val showVariantToggle: MutableState<Boolean> = mutableStateOf(true),
@@ -68,12 +69,12 @@ data class DateTimePickerProps(
 @SuppressLint("ViewConstructor")
 @OptIn(ExperimentalMaterial3Api::class)
 class DateTimePickerView(context: Context, appContext: AppContext) :
-  ExpoComposeView<DateTimePickerProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<DateTimePickerProps>(context, appContext) {
   override val props = DateTimePickerProps()
   private val onDateSelected by EventDispatcher<DatePickerResult>()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
       ExpoTimePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value)) {
         onDateSelected(it)
@@ -97,8 +98,8 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     DatePickerState(
       initialDisplayMode = variant,
       locale = locale,
-      initialSelectedDateMillis = initialDate?.time ?: Date().time,
-      initialDisplayedMonthMillis = initialDate?.time ?: Date().time,
+      initialSelectedDateMillis = initialDate ?: Date().time,
+      initialDisplayedMonthMillis = initialDate ?: Date().time,
       yearRange = DatePickerDefaults.YearRange,
       selectableDates = DatePickerDefaults.AllDates
     )
@@ -129,7 +130,12 @@ fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
   val cal = Calendar.getInstance()
 
   val state = remember(props.initialDate.value, props.is24Hour.value) {
-    cal.time = props.initialDate.value ?: Date()
+    val initialDate = props.initialDate.value
+    if (initialDate != null) {
+      cal.timeInMillis = initialDate
+    } else {
+      cal.time = Date()
+    }
     val hour = cal.get(Calendar.HOUR_OF_DAY)
     val minute = cal.get(Calendar.MINUTE)
 

@@ -1,0 +1,86 @@
+---
+title: Switch
+description: A Jetpack Compose Switch component for toggle controls.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A switch component that provides toggle functionality with different visual styles.
+
+## Installation
+
+<APIInstallSection />
+
+## Toggle switch
+
+> **Note:** also known as **Toggle**.
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Switch component on Android."
+      src="/static/images/expo-ui/switch/android.png"
+      className="max-w-[480px]"
+    />
+
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Switch } from '@expo/ui/jetpack-compose';
+
+    <Switch
+      value={checked}
+      onValueChange={checked => {
+        setChecked(checked);
+      }}
+      color="#ff0000"
+      label="Play music"
+      variant="switch"
+    />
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/switch) for more information.
+
+## Checkbox
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Switch (checkbox variant) component on Android."
+      src="/static/images/expo-ui/checkbox/android.png"
+      className="max-w-[480px]"
+    />
+
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Switch } from '@expo/ui/jetpack-compose';
+
+    <Switch
+      value={checked}
+      onValueChange={checked => {
+        setChecked(checked);
+      }}
+      label="Play music"
+      color="#ff0000"
+      variant="checkbox"
+    />
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/checkbox) for more information.
+
+## API
+
+<APISection packageName="expo-ui/jetpack-compose/switch" apiName="Switch" />

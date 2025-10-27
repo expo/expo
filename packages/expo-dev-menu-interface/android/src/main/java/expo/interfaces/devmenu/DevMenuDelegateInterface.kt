@@ -1,6 +1,7 @@
 package expo.interfaces.devmenu
 
 import android.os.Bundle
+import com.facebook.react.ReactHost
 
 interface DevMenuDelegateInterface {
   /**
@@ -9,9 +10,9 @@ interface DevMenuDelegateInterface {
   fun appInfo(): Bundle?
 
   /**
-   * Returns a [ReactHostWrapper] ot the currently shown app. It is a context of what the dev menu displays.
+   * Returns a [ReactHost] of the currently shown app. It is a context of what the dev menu displays.
    */
-  fun reactHost(): ReactHostWrapper
+  fun reactHost(): ReactHost
 
   fun supportsDevelopment(): Boolean {
     return true

@@ -62,23 +62,13 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       throw UnableToDeleteException("uri '${file.uri}' does not exist")
     }
     if (file.isDirectory()) {
-      file.listFilesAsUnified().forEach { child ->
-        if (child.isDirectory()) {
-          // Recursively delete subdirectories
-          if (uri.isContentUri) {
-            SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), child.uri).delete()
-          } else {
-            JavaFile(child.uri).delete()
-          }
-        } else {
-          if (!child.delete()) {
-            throw UnableToDeleteException("failed to delete '${child.uri}'")
-          }
-        }
+      if (!file.deleteRecursively()) {
+        throw UnableToDeleteException("failed to delete '${file.uri}'")
       }
-    }
-    if (!file.delete()) {
-      throw UnableToDeleteException("failed to delete '${file.uri}'")
+    } else {
+      if (!file.delete()) {
+        throw UnableToDeleteException("failed to delete '${file.uri}'")
+      }
     }
   }
 

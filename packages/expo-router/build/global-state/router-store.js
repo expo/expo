@@ -104,12 +104,14 @@ exports.store = {
                 SplashScreen._internal_maybeHideAsync?.();
             });
         }
-        storeRef.current.navigationRef.addListener('state', (e) => {
-            if (!e.data.state) {
-                return;
-            }
+    },
+    onStateChange(newState) {
+        if (!newState) {
+            return;
+        }
+        if (process.env.NODE_ENV === 'development') {
             let isStale = false;
-            let state = e.data.state;
+            let state = newState;
             while (!isStale && state) {
                 isStale = state.stale;
                 state =
@@ -117,14 +119,16 @@ exports.store = {
                         ? state.index
                         : state.routes.length - 1]?.state;
             }
-            storeRef.current.state = e.data.state;
-            if (!isStale) {
-                storeRef.current.routeInfo = getCachedRouteInfo(e.data.state);
+            if (isStale) {
+                // This should never happen, as onStateChange should provide a full state. However, adding this check to catch any undocumented behavior.
+                console.error('Detected stale state in onStateChange. This is likely a bug in Expo Router.');
             }
-            for (const callback of routeInfoSubscribers) {
-                callback();
-            }
-        });
+        }
+        storeRef.current.state = newState;
+        storeRef.current.routeInfo = getCachedRouteInfo(newState);
+        for (const callback of routeInfoSubscribers) {
+            callback();
+        }
     },
     assertIsReady() {
         if (!storeRef.current.navigationRef.isReady()) {

@@ -12,7 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import java.lang.ref.WeakReference
 
 class ModuleRegistry(
-  private val runtimeContext: WeakReference<RuntimeContext>
+  private val appContextHolder: WeakReference<AppContext>
 ) : Iterable<ModuleHolder<*>> {
   @PublishedApi
   internal val registry = mutableMapOf<String, ModuleHolder<*>>()
@@ -21,30 +21,34 @@ class ModuleRegistry(
 
   private var isReadyForPostingEvents = false
 
-  fun <T : Module> register(module: T) = trace("ModuleRegistry.register(${module.javaClass})") {
-    module._runtimeContext = requireNotNull(runtimeContext.get()) { "Cannot create a module for invalid runtime context." }
+  fun <T : Module> register(module: T, name: String?) = trace("ModuleRegistry.register(${module.javaClass})") {
+    requireNotNull(appContextHolder.get()) { "Cannot register a module to an invalid app context." }
 
-    val holder = ModuleHolder(module)
+    module._appContextHolder = appContextHolder
+
+    val holder = ModuleHolder(module, name)
 
     module.coroutineScopeDelegate = lazy {
       CoroutineScope(
         Dispatchers.Default +
           SupervisorJob() +
-          CoroutineName(holder.definition.name)
+          CoroutineName(holder.name)
       )
     }
 
     registry[holder.name] = holder
   }
 
-  fun register(vararg modules: Module) {
-    modules.forEach { register(it) }
+  fun register(provider: ModulesProvider) = apply {
+    provider.getModulesMap().forEach { (classifier, name) ->
+      val module = classifier.getDeclaredConstructor().newInstance()
+      register(module, name)
+    }
   }
 
-  fun register(provider: ModulesProvider) = apply {
-    provider.getModulesList().forEach { type ->
-      val module = type.getDeclaredConstructor().newInstance()
-      register(module)
+  fun register(vararg modules: Module) = apply {
+    modules.forEach { module ->
+      register(module, null)
     }
   }
 

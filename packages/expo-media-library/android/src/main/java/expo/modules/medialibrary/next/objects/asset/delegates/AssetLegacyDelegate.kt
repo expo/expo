@@ -4,9 +4,10 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import androidx.annotation.DeprecatedSinceApi
 import androidx.core.net.toUri
-import expo.modules.medialibrary.AssetFileException
+import androidx.exifinterface.media.ExifInterface
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.next.exceptions.AssetCouldNotBeCreated
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
@@ -24,17 +25,27 @@ import expo.modules.medialibrary.next.extensions.safeCopy
 import expo.modules.medialibrary.next.extensions.safeMove
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.EXIF_TAGS
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
+import expo.modules.medialibrary.next.records.Location
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.collections.component1
+import kotlin.collections.component2
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 @DeprecatedSinceApi(Build.VERSION_CODES.Q)
-class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
+class AssetLegacyDelegate(
+  contentUri: Uri,
+  val assetDeleter: AssetDeleter,
+  context: Context
+) : AssetDelegate {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
@@ -110,13 +121,36 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
       ?: MimeType.from(getUri())
   }
 
-  override suspend fun delete(): Unit = withContext(Dispatchers.IO) {
-    val path = contentResolver.queryAssetPath(contentUri)
-      ?: throw AssetPropertyNotFoundException("Uri")
-    if (!File(path).delete()) {
-      throw AssetFileException("Could not delete file.")
+  override suspend fun getLocation(): Location? =
+    contentResolver.openInputStream(contentUri)?.use { stream ->
+      ExifInterface(stream)
+        .latLong
+        ?.let { (lat, long) -> Location(lat, long) }
     }
-    contentResolver.delete(contentUri, null, null)
+
+  override suspend fun getExif(): Bundle = withContext(Dispatchers.IO) {
+    if (getMediaType() != MediaType.IMAGE) {
+      return@withContext Bundle()
+    }
+    val exifBundle = Bundle()
+    contentResolver.openInputStream(contentUri)?.use { stream ->
+      ensureActive()
+      val exifInterface = ExifInterface(stream)
+      for ((type, name) in EXIF_TAGS) {
+        if (exifInterface.getAttribute(name) != null) {
+          when (type) {
+            "string" -> exifBundle.putString(name, exifInterface.getAttribute(name))
+            "int" -> exifBundle.putInt(name, exifInterface.getAttributeInt(name, 0))
+            "double" -> exifBundle.putDouble(name, exifInterface.getAttributeDouble(name, 0.0))
+          }
+        }
+      }
+    }
+    return@withContext exifBundle
+  }
+
+  override suspend fun delete(): Unit = withContext(Dispatchers.IO) {
+    assetDeleter.delete(contentUri)
   }
 
   override suspend fun getUri(): Uri {
@@ -146,6 +180,7 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
     if (uri == null) {
       throw AssetCouldNotBeCreated("Could not create a new asset while copying the old one")
     }
-    return@withContext Asset(uri, contextRef.getOrThrow())
+    val newAssetDelegate = AssetLegacyDelegate(contentUri, assetDeleter, contextRef.getOrThrow())
+    return@withContext Asset(newAssetDelegate)
   }
 }

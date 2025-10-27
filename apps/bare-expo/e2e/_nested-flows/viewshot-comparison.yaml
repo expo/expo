@@ -1,0 +1,32 @@
+# view shot comparison flow for maestro
+# This flow can be reused across different view shot comparison tests
+# it fails if the images are too different, optionally normalizing images so that only one view shot is used for both platforms
+
+# making changes? update apps/bare-expo/scripts/lib/pathUtils.test.ts
+
+# Parameters:
+#   - screenshotOutputPath: The folder path of the viewshot to take and compare. The file name will be based on the testID
+#   - testID: The testID of the view to take shot of
+#   - mode: 'normalize' or 'keep-originals'. When 'keep-originals', the view shots will be stored with platform suffix.
+#            With 'normalize', only one original view shot is kept, and the view shots taken at test time are normalized (if needed) and then compared with the base shot.
+#   - similarityThreshold: The percentage of similarity required to pass the comparison. Defaults to 5 and 15% for the platformDependent and crossPlatform modes, respectively
+#   - resizingFactor: this factor resizes the taken images to occupy less space
+
+appId: dev.expo.Payments
+---
+- runScript:
+    file: ./compare-images-http.js
+    env:
+      currentScreenshot: ${screenshotOutputPath}/${testID}_full.${maestro.platform}
+      platform: ${maestro.platform}
+      testID: ${testID}
+      baseImage: ${screenshotOutputPath}/${testID}.base
+      # needs to be in ~/.maestro/tests so that it's stored as GH action artifact
+      diffOutputPath: ~/.maestro/tests/${screenshotOutputPath}
+      similarityThreshold: ${similarityThreshold}
+      mode: ${mode}
+      resizingFactor: ${resizingFactor}
+
+- assertTrue:
+    condition: ${output.comparisonResult.success}
+    label: Viewshot comparison check. Is the image comparison server running (./image-comparison/server.ts)? See its terminal logs for details.)

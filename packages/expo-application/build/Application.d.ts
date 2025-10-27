@@ -44,7 +44,10 @@ export declare const applicationId: string | null;
  * > for the lifetime of the user's device. See the [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID)
  * > official docs for more information.
  * @example
- * `"dd96dec43fb81c97"`
+ * ```ts
+ * Application.getAndroidId();
+ * // "dd96dec43fb81c97"
+ * ```
  * @platform android
  */
 export declare function getAndroidId(): string;

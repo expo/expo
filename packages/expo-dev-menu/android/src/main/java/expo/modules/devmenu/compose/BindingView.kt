@@ -5,16 +5,23 @@ import android.app.Activity
 import android.content.Context
 import android.widget.LinearLayout
 import androidx.compose.ui.platform.ComposeView
+import com.facebook.react.ReactHost
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.compose.newtheme.AppTheme
 import expo.modules.devmenu.compose.ui.DevMenuBottomSheet
 import expo.modules.devmenu.fab.MovableFloatingActionButton
+import java.lang.ref.WeakReference
 
 @SuppressLint("ViewConstructor")
-class BindingView(context: Context, lazyViewModel: Lazy<DevMenuViewModel>) : LinearLayout(context) {
+class BindingView(
+  context: Context,
+  lazyViewModel: Lazy<DevMenuViewModel>,
+  val reactHostHolder: WeakReference<ReactHost>
+) : LinearLayout(context) {
   val viewModel by lazyViewModel
 
   init {
+    id = BindingView.id
     z = Float.MAX_VALUE
     addView(
       ComposeView(context).apply {
@@ -35,5 +42,13 @@ class BindingView(context: Context, lazyViewModel: Lazy<DevMenuViewModel>) : Lin
         }
       }
     )
+  }
+
+  companion object {
+    private val id = generateViewId()
+
+    fun findIn(activity: Activity): BindingView? {
+      return activity.findViewById(id)
+    }
   }
 }

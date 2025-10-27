@@ -7,11 +7,13 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **important** Web modals are available in SDK 54 and above.
+> **important** Web modals are an experimental feature available in SDK 54 and later. To use this feature, you must set the `EXPO_UNSTABLE_WEB_MODAL=1` environment variable in your project.
 
 Modern web apps require a flexible modal experience that adapts to different content sizes and user interactions. Expo Router provides various modal presentation patterns for modern web experiences. These patterns leverage `presentation` with `modal`, `formSheet`, `transparentModal`, or `containedTransparentModal` to present either a modal based on different screen widths, and provide customizable styling props using `webModalStyle`.
 
 ## Get started
+
+> **info** To use the new web modal features, you must set the `EXPO_UNSTABLE_WEB_MODAL=1` environment variable for both development and [export](/deploy/web/#export-your-web-project) builds. You can do this by adding it to your **.env** file at the root of your project or by prefixing your commands, for example: `EXPO_UNSTABLE_WEB_MODAL=1 npx expo start`.
 
 Modals in Expo Router are configured using `Stack.Screen` component with specific options. This requires the modal screen to be added to the layout file of your app's `Stack`.
 
@@ -113,7 +115,7 @@ export const unstable_settings = {
 };
 ```
 
-In the above example, the `anchor: index` tells the Expo Router that it should maintain the specified anchor route in the background when presenting a modal.
+In the above example, the `anchor: 'index'` tells the Expo Router that it should maintain the specified anchor route in the background when presenting a modal.
 
 ## Modal presentation style
 

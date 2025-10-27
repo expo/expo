@@ -78,18 +78,15 @@ function convertError(error) {
  */
 function renderRootComponent(Component) {
     try {
+        if (process.env.NODE_ENV !== 'production') {
+            require('@expo/log-box/lib').setupLogBox();
+        }
         // This must be delayed so the user has a chance to call it first.
         setTimeout(() => {
             SplashScreen._internal_preventAutoHideAsync?.();
         });
         React.startTransition(() => {
-            if (process.env.NODE_ENV !== 'production') {
-                const { withErrorOverlay } = require('@expo/metro-runtime/error-overlay');
-                (0, expo_1.registerRootComponent)(withErrorOverlay(Component));
-            }
-            else {
-                (0, expo_1.registerRootComponent)(Component);
-            }
+            (0, expo_1.registerRootComponent)(Component);
         });
     }
     catch (e) {

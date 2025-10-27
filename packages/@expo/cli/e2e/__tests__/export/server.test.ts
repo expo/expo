@@ -88,6 +88,7 @@ describe('server-output', () => {
           'node_modules/.bin/esbuild',
           '--bundle',
           '--format=esm',
+          '--platform=node',
           `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
           path.join(projectRoot, '__e2e__/server/workerd/workerd.mjs'),
         ]);
@@ -336,6 +337,13 @@ describe('server-output', () => {
         await expect(serverFetchAsync('/api/externals').then((r) => r.text())).resolves.toMatchPath(
           'a/b/c'
         );
+      });
+
+      it('supports runtime API', async () => {
+        await expect(serverFetchAsync('/api/runtime').then((r) => r.json())).resolves.toEqual({
+          environment: expect.stringMatching(/production|development/),
+          origin: 'null',
+        });
       });
     }
 

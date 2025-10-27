@@ -84,6 +84,18 @@ internal func convertToUrl(string value: String) -> URL? {
 }
 
 /**
+ Helper class that lets us bypass the compiler's data-race protection checks by taking the value out of isolation.
+ - TODO: Remove it once the code is refactored to deal better with the concurrency model.
+ */
+internal class NonisolatedUnsafeVar<VarType>: @unchecked Sendable {
+  nonisolated(unsafe) var value: VarType
+
+  init(_ value: VarType) {
+    self.value = value
+  }
+}
+
+/**
  A collection of utility functions for various Expo Modules common tasks.
  */
 public struct Utilities {

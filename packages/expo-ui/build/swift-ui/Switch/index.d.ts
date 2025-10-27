@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type SwitchProps = {
     /**
@@ -18,9 +19,9 @@ export type SwitchProps = {
      */
     onValueChange?: (value: boolean) => void;
     /**
-     * Picker color. On iOS, it only applies to the `menu` variant.
+     * Picker color.
      */
-    color?: string;
+    color?: ColorValue;
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps) & CommonViewModifierProps;
 export type SwitchSwitchVariantProps = {
     variant?: 'switch';

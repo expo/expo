@@ -92,7 +92,7 @@ function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
     didJustFinish: media.ended,
     isBuffering: false,
     playbackRate: media.playbackRate,
-    shouldCorrectPitch: false,
+    shouldCorrectPitch: true,
     mute: media.muted,
     loop: media.loop,
   };

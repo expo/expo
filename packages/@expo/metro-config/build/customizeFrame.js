@@ -41,6 +41,7 @@ exports.INTERNAL_CALLSITES_REGEX = new RegExp([
     // Block expo's metro-runtime
     '@expo/metro-runtime/.+\\.ts',
     '@expo/server/.+\\.ts',
+    'expo-server/.+\\.ts',
     // Block upstream metro-runtime
     '/metro-runtime/.+\\.js$',
     // Expo's metro-runtime require patch:

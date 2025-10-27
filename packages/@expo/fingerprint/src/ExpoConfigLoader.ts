@@ -108,6 +108,9 @@ function setNodeEnv(mode: 'development' | 'production') {
 
 // Ignore default javascript files when calling `getConfig()`
 const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
+  // We don't want to include the whole project package.json from the ExpoConfigLoader phase.
+  'package.json',
+
   '**/node_modules/@babel/**/*',
   '**/node_modules/@expo/**/*',
   '**/node_modules/@jridgewell/**/*',

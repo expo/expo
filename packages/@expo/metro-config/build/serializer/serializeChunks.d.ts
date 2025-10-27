@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { MetroConfig, AssetData } from '@expo/metro/metro';
-import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { SerialAsset } from './serializerAssets';

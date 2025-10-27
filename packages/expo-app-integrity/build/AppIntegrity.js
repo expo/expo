@@ -11,11 +11,11 @@ export const isSupported = Platform.OS === 'ios' ? ExpoAppIntegrity.isSupported 
  * @return A Promise that is fulfilled with a string that contains the key identifier. The key itself is stored securely in the Secure Enclave.
  * @platform ios
  */
-export async function generateKey() {
+export async function generateKeyAsync() {
     if (Platform.OS !== 'ios') {
         throw new Error('generateAssertion is only available on iOS');
     }
-    return ExpoAppIntegrity.generateKey();
+    return ExpoAppIntegrity.generateKeyAsync();
 }
 /**
  * Asks Apple to attest to the validity of a generated cryptographic key.
@@ -24,11 +24,11 @@ export async function generateKey() {
  * @return A Promise that is fulfilled with a string that contains the attestation data. A statement from Apple about the validity of the key associated with keyId. Send this to your server for processing.
  * @platform ios
  */
-export async function attestKey(keyId, challenge) {
+export async function attestKeyAsync(keyId, challenge) {
     if (Platform.OS !== 'ios') {
         throw new Error('generateAssertion is only available on iOS');
     }
-    return ExpoAppIntegrity.attestKey(keyId, challenge);
+    return ExpoAppIntegrity.attestKeyAsync(keyId, challenge);
 }
 /**
  * Creates a block of data that demonstrates the legitimacy of an instance of your app running on a device.
@@ -37,11 +37,11 @@ export async function attestKey(keyId, challenge) {
  * @return A Promise that is fulfilled with a string that contains the assertion object. A data structure that you send to your server for processing.
  * @platform ios
  */
-export async function generateAssertion(keyId, challenge) {
+export async function generateAssertionAsync(keyId, challenge) {
     if (Platform.OS !== 'ios') {
         throw new Error('generateAssertion is only available on iOS');
     }
-    return ExpoAppIntegrity.generateAssertion(keyId, challenge);
+    return ExpoAppIntegrity.generateAssertionAsync(keyId, challenge);
 }
 /**
  * Prepares the integrity token provider for the given cloud project number.
@@ -49,11 +49,11 @@ export async function generateAssertion(keyId, challenge) {
  * @return A Promise that is fulfilled if the integrity token provider is prepared successfully.
  * @platform android
  */
-export async function prepareIntegrityTokenProvider(cloudProjectNumber) {
+export async function prepareIntegrityTokenProviderAsync(cloudProjectNumber) {
     if (Platform.OS !== 'android') {
         throw new Error('prepareIntegrityTokenProvider is only available on Android');
     }
-    return ExpoAppIntegrity.prepareIntegrityTokenProvider(cloudProjectNumber);
+    return ExpoAppIntegrity.prepareIntegrityTokenProviderAsync(cloudProjectNumber);
 }
 /**
  * Requests an integrity verdict for the given request hash from Google Play.
@@ -61,22 +61,22 @@ export async function prepareIntegrityTokenProvider(cloudProjectNumber) {
  * @return A Promise that is fulfilled with a string that contains the integrity check result.
  * @platform android
  */
-export async function requestIntegrityCheck(requestHash) {
+export async function requestIntegrityCheckAsync(requestHash) {
     if (Platform.OS !== 'android') {
         throw new Error('requestIntegrityCheck is only available on Android');
     }
-    return ExpoAppIntegrity.requestIntegrityCheck(requestHash);
+    return ExpoAppIntegrity.requestIntegrityCheckAsync(requestHash);
 }
 /**
  * Checks if hardware attestation is supported on this device.
  * @return A Promise that is fulfilled with a boolean indicating support.
  * @platform android
  */
-export async function isHardwareAttestationSupported() {
+export async function isHardwareAttestationSupportedAsync() {
     if (Platform.OS !== 'android') {
         return false;
     }
-    return ExpoAppIntegrity.isHardwareAttestationSupported();
+    return ExpoAppIntegrity.isHardwareAttestationSupportedAsync();
 }
 /**
  * Generates a hardware-attested key pair in the Android Keystore.
@@ -86,11 +86,11 @@ export async function isHardwareAttestationSupported() {
  * @return A Promise that resolves when the key is generated successfully.
  * @platform android
  */
-export async function generateHardwareAttestedKey(keyAlias, challenge) {
+export async function generateHardwareAttestedKeyAsync(keyAlias, challenge) {
     if (Platform.OS !== 'android') {
         throw new Error('generateHardwareAttestedKey is only available on Android');
     }
-    return ExpoAppIntegrity.generateHardwareAttestedKey(keyAlias, challenge);
+    return ExpoAppIntegrity.generateHardwareAttestedKeyAsync(keyAlias, challenge);
 }
 /**
  * Retrieves the attestation certificate chain for a hardware-attested key.
@@ -99,10 +99,10 @@ export async function generateHardwareAttestedKey(keyAlias, challenge) {
  * @return A Promise that is fulfilled with an array of base64-encoded X.509 certificates.
  * @platform android
  */
-export async function getAttestationCertificateChain(keyAlias) {
+export async function getAttestationCertificateChainAsync(keyAlias) {
     if (Platform.OS !== 'android') {
         throw new Error('getAttestationCertificateChain is only available on Android');
     }
-    return ExpoAppIntegrity.getAttestationCertificateChain(keyAlias);
+    return ExpoAppIntegrity.getAttestationCertificateChainAsync(keyAlias);
 }
 //# sourceMappingURL=AppIntegrity.js.map

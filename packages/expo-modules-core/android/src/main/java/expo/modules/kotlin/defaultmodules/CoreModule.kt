@@ -57,7 +57,7 @@ class CoreModule : Module() {
     }
 
     Function("getViewConfig") { moduleName: String, viewName: String? ->
-      val holder = runtimeContext.registry.getModuleHolder(moduleName)
+      val holder = appContext.registry.getModuleHolder(moduleName)
         ?: return@Function null
 
       val viewManagerDefinition = holder

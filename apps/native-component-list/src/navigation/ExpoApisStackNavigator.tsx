@@ -9,11 +9,14 @@ import TabIcon from '../components/TabIcon';
 import getStackNavWithConfig from '../navigation/StackConfig';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
 import { BlobScreens } from '../screens/Blob/BlobScreen';
+import { CalendarsNextScreens } from '../screens/CalendarsNextScreen';
 import { CalendarsScreens } from '../screens/CalendarsScreen';
+import { apiScreensToListElements } from '../screens/ComponentListScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
+import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
-import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
+import { type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +27,13 @@ export const ScreensList: ScreenConfig[] = [
     },
     name: 'ModulesCore',
     options: { title: 'Expo Modules Core' },
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/MediaLibrary@Next/MediaLibraryScreens'));
+    },
+    name: 'MediaLibrary@Next',
+    options: { title: 'MediaLibrary@Next' },
   },
   {
     getComponent() {
@@ -47,7 +57,7 @@ export const ScreensList: ScreenConfig[] = [
     getComponent() {
       return optionalRequire(() => require('../screens/CellularScreen'));
     },
-    name: 'Cellular',
+    name: 'Cellular (device-only)',
   },
   {
     getComponent() {
@@ -136,7 +146,7 @@ export const ScreensList: ScreenConfig[] = [
     getComponent() {
       return optionalRequire(() => require('../screens/BrightnessScreen'));
     },
-    name: 'Brightness',
+    name: 'Brightness (device-only)',
   },
   {
     getComponent() {
@@ -164,6 +174,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/FileSystemLegacyScreen'));
+    },
+    name: 'FileSystem@legacy',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/FontScreen'));
     },
     name: 'Font',
@@ -180,6 +196,12 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/CalendarsScreen'));
     },
     name: 'Calendars',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/CalendarsNextScreen'));
+    },
+    name: 'Calendars@next',
   },
   {
     getComponent() {
@@ -439,17 +461,15 @@ export const ScreensList: ScreenConfig[] = [
 export const Screens: ScreenConfig[] = [
   ...ScreensList,
   ...ModulesCoreScreens,
+  ...MediaLibraryScreens,
   ...AudioScreens,
   ...BlobScreens,
   ...ContactsScreens,
   ...CalendarsScreens,
+  ...CalendarsNextScreens,
 ];
 
-export const screenApiItems: ScreenApiItem[] = ScreensList.map(({ name, route }) => ({
-  name,
-  route: '/apis/' + (route ?? name.toLowerCase()),
-  isAvailable: true,
-}));
+export const screenApiItems = apiScreensToListElements(ScreensList);
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
   const { theme } = useTheme();

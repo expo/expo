@@ -21,9 +21,9 @@ enum PitchCorrectionQuality: String, Enumerable {
   func toPitchAlgorithm() -> AVAudioTimePitchAlgorithm {
     switch self {
     case .low:
-      return .timeDomain
-    case .medium:
       return .varispeed
+    case .medium:
+      return .timeDomain
     case .high:
       return .spectral
     }
@@ -50,6 +50,11 @@ struct Metadata: Record {
   @Field var artist: String?
   @Field var albumTitle: String?
   @Field var artworkUrl: URL?
+}
+
+struct LockScreenOptions: Record {
+  @Field var showSeekForward: Bool = false
+  @Field var showSeekBackward: Bool = false
 }
 
 enum BitRateStrategy: String, Enumerable {

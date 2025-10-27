@@ -49,6 +49,10 @@ class VideoPlayerItem: AVPlayerItem {
     self.createTracksLoadingTask()
   }
 
+  deinit {
+    tracksLoadingTask?.cancel()
+  }
+
   func createTracksLoadingTask() {
     tracksLoadingTask = Task { [weak self] in
       var tracks: [VideoTrack] = []

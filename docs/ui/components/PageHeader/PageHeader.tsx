@@ -2,9 +2,11 @@ import { mergeClasses } from '@expo/styleguide';
 import { useRouter } from 'next/compat/router';
 
 import { WithTestRequire } from '~/types/common';
+import { MarkdownActionsDropdown } from '~/ui/components/MarkdownActions/MarkdownActionsDropdown';
 import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/paths';
 import { H1, P } from '~/ui/components/Text';
 
+import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI';
 import { PagePackageVersion } from './PagePackageVersion';
 import { PagePlatformTags } from './PagePlatformTags';
 import { PageTitleButtons } from './PageTitleButtons';
@@ -16,6 +18,10 @@ type Props = {
   sourceCodeUrl?: string;
   iconUrl?: string;
   platforms?: string[];
+  showAskAIButton?: boolean;
+  onAskAIClick?: () => void;
+  isAskAIVisible?: boolean;
+  askAIButtonVariant?: 'default' | 'config';
 } & WithTestRequire;
 
 export function PageHeader({
@@ -26,6 +32,10 @@ export function PageHeader({
   sourceCodeUrl,
   platforms,
   testRequire,
+  showAskAIButton = false,
+  onAskAIClick,
+  isAskAIVisible = false,
+  askAIButtonVariant = 'default',
 }: Props) {
   const router = useRouter();
   const currentPath = router?.asPath ?? router?.pathname ?? '';
@@ -53,12 +63,19 @@ export function PageHeader({
           {packageName && packageName.startsWith('expo-') && 'Expo '}
           {title}
         </H1>
-        <span className="-mt-0.5 flex gap-1 max-xl-gutters:hidden">
-          <PageTitleButtons
-            packageName={packageName}
-            sourceCodeUrl={sourceCodeUrl}
-            showMarkdownActions={showMarkdownActions}
-          />
+        <span className="-mt-0.5 flex items-center gap-1 max-xl-gutters:hidden">
+          <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+          {(showMarkdownActions || (showAskAIButton && onAskAIClick)) && (
+            <span className="flex items-center gap-1">
+              {showAskAIButton && onAskAIClick && askAIButtonVariant === 'config' && (
+                <AskPageAIConfigTrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+              )}
+              {showMarkdownActions && <MarkdownActionsDropdown />}
+              {showAskAIButton && onAskAIClick && askAIButtonVariant !== 'config' && (
+                <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+              )}
+            </span>
+          )}
         </span>
       </div>
       {description && (
@@ -66,12 +83,19 @@ export function PageHeader({
           {description}
         </P>
       )}
-      <span className="mb-1 mt-3 hidden gap-1 max-xl-gutters:flex">
-        <PageTitleButtons
-          packageName={packageName}
-          sourceCodeUrl={sourceCodeUrl}
-          showMarkdownActions={showMarkdownActions}
-        />
+      <span className="mb-1 mt-3 hidden items-center gap-1 max-xl-gutters:flex">
+        <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+        {(showMarkdownActions || (showAskAIButton && onAskAIClick)) && (
+          <span className="ml-1 flex items-center gap-1">
+            {showAskAIButton && onAskAIClick && askAIButtonVariant === 'config' && (
+              <AskPageAIConfigTrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+            )}
+            {showMarkdownActions && <MarkdownActionsDropdown />}
+            {showAskAIButton && onAskAIClick && askAIButtonVariant !== 'config' && (
+              <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
+            )}
+          </span>
+        )}
       </span>
       <div
         className={mergeClasses(

@@ -107,8 +107,8 @@ describe('exports with single-page', () => {
 
     const links = indexHtml.querySelectorAll('html > head > link');
     expect(links.length).toBe(
-      // Global CSS, CSS Module, Vaul Modal CSS (and entry point)
-      6
+      // Global CSS and CSS Module
+      4
     );
 
     const linkStrings = links.map((l) => l.toString());
@@ -121,13 +121,6 @@ describe('exports with single-page', () => {
         ),
         expect.stringMatching(
           /<link rel="stylesheet" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css">/
-        ),
-        // Modal CSS
-        expect.stringMatching(
-          /<link rel="preload" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
-        ),
-        expect.stringMatching(
-          /<link rel="stylesheet" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
         ),
         // Test CSS module
         expect.stringMatching(

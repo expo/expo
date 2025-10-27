@@ -151,7 +151,9 @@ function appendLabelOptions(options: ExtendedNativeTabOptions, props: LabelProps
     options.title = '';
   } else {
     options.title = props.children;
-    options.selectedLabelStyle = props.selectedStyle;
+    if (props.selectedStyle) {
+      options.selectedLabelStyle = props.selectedStyle;
+    }
   }
 }
 
@@ -180,11 +182,17 @@ export function appendIconOptions(options: ExtendedNativeTabOptions, props: Icon
           }
         : undefined;
     }
+  } else if ('androidSrc' in props && process.env.EXPO_OS === 'android') {
+    const icon = convertIconSrcToIconOption({ src: props.androidSrc });
+    options.icon = icon?.icon;
+    options.selectedIcon = icon?.selectedIcon;
   } else if ('drawable' in props && process.env.EXPO_OS === 'android') {
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
   }
-  options.selectedIconColor = props.selectedColor;
+  if (props.selectedColor) {
+    options.selectedIconColor = props.selectedColor;
+  }
 }
 
 function convertIconSrcToIconOption(

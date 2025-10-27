@@ -1,0 +1,44 @@
+---
+title: CircularProgress
+description: A Jetpack Compose CircularProgress component for displaying circular progress indicators.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A circular progress indicator component for displaying progress in a circular format.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="CircularProgress component on Android."
+      src="/static/images/expo-ui/circularprogress/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { CircularProgress } from '@expo/ui/jetpack-compose';
+
+    <CircularProgress progress={0.5} style={{ width: 300 }} color="blue" elementColors={{ trackColor: '#cccccc' }} />
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress) for more information.
+
+## API
+
+<APISection packageName="expo-ui/jetpack-compose/circularprogress" apiName="CircularProgress" />

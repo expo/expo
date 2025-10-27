@@ -9,12 +9,12 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.lang.ref.WeakReference
 
-private const val moduleName = "ExpoModulesCoreJSLogger"
-private const val onNewError = "$moduleName.onNewError"
-private const val onNewWarning = "$moduleName.onNewWarning"
-private const val onNewDebug = "$moduleName.onNewDebug"
-private const val onNewInfo = "$moduleName.onNewInfo"
-private const val onNewTrace = "$moduleName.onNewTrace"
+internal const val JSLoggerModuleName = "ExpoModulesCoreJSLogger"
+private const val onNewError = "$JSLoggerModuleName.onNewError"
+private const val onNewWarning = "$JSLoggerModuleName.onNewWarning"
+private const val onNewDebug = "$JSLoggerModuleName.onNewDebug"
+private const val onNewInfo = "$JSLoggerModuleName.onNewInfo"
+private const val onNewTrace = "$JSLoggerModuleName.onNewTrace"
 
 @Deprecated("Use JSLoggerModule instead")
 typealias ErrorManagerModule = JSLoggerModule
@@ -37,7 +37,7 @@ class JSLoggerModule : Module() {
     private set
 
   override fun definition() = ModuleDefinition {
-    Name(moduleName)
+    Name(JSLoggerModuleName)
 
     Events(onNewError, onNewWarning, onNewDebug, onNewInfo, onNewTrace)
 

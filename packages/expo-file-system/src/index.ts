@@ -8,6 +8,7 @@ export {
   type InfoOptions,
   type PathInfo,
   type DirectoryInfo,
+  type DownloadOptions,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';

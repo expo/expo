@@ -8,11 +8,26 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.7 - 2025-10-20
+
+### 💡 Others
+
+- Bump to `@expo/metro@54.1.0` and `metro@0.83.2` ([#39826](https://github.com/expo/expo/pull/39826) by [@kitten](https://github.com/kitten))
+
+## 54.0.5 - 2025-09-22
+
+### 🐛 Bug fixes
+
 - Prevent fast refresh on generated type declarations changes ([#39835](https://github.com/expo/expo/pull/39835) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+## 54.0.4 - 2025-09-18
 
 ### 💡 Others
 
 - Bump to `@expo/metro@~54.0.0` ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
+- Rename to `@expo/server` to `expo-server` ([#40087](https://github.com/expo/expo/pull/40087) by [@kitten](https://github.com/kitten))
 
 ## 54.0.3 — 2025-09-12
 

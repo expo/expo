@@ -132,6 +132,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
   },
   {
     "filePath": "assets/icon.png",
+    "overrideHashKey": "expoConfigExternalFile:contentsOnly",
     "reasons": [
       "expoConfigExternalFile",
     ],
@@ -139,6 +140,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
   },
   {
     "filePath": "assets/adaptive-icon.png",
+    "overrideHashKey": "expoConfigExternalFile:contentsOnly",
     "reasons": [
       "expoConfigExternalFile",
     ],
@@ -146,6 +148,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
   },
   {
     "filePath": "assets/splash.png",
+    "overrideHashKey": "expoConfigExternalFile:contentsOnly",
     "reasons": [
       "expoConfigExternalFile",
     ],

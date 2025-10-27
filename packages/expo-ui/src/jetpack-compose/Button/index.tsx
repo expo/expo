@@ -3,6 +3,8 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
+import { getTextFromChildren } from '../../utils';
+import { parseJSXShape, ShapeJSXElement, ShapeProps } from '../Shape';
 
 /**
  * The built-in button styles available on Android.
@@ -53,7 +55,7 @@ export type ButtonProps = {
   /**
    * The text to display inside the button.
    */
-  children: string;
+  children?: string | string[] | React.JSX.Element;
   /**
    * Colors for button's core elements.
    * @platform android
@@ -63,12 +65,15 @@ export type ButtonProps = {
    * Button color.
    */
   color?: string;
+  shape?: ShapeJSXElement;
   /**
    * Disabled state of the button.
    */
   disabled?: boolean;
 
-  /** Modifiers for the component */
+  /**
+   * Modifiers for the component.
+   */
   modifiers?: ExpoModifier[];
 };
 
@@ -77,11 +82,12 @@ export type ButtonProps = {
  */
 export type NativeButtonProps = Omit<
   ButtonProps,
-  'role' | 'onPress' | 'children' | 'leadingIcon' | 'trailingIcon' | 'systemImage'
+  'role' | 'onPress' | 'leadingIcon' | 'trailingIcon' | 'systemImage' | 'shape'
 > & {
   text: string;
   leadingIcon?: string;
   trailingIcon?: string;
+  shape: ShapeProps;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
@@ -94,15 +100,17 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
  * @hidden
  */
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
-  const { children, onPress, leadingIcon, trailingIcon, systemImage, ...restProps } = props;
+  const { children, onPress, leadingIcon, trailingIcon, systemImage, shape, ...restProps } = props;
 
   // Handle backward compatibility: systemImage maps to leadingIcon
   const finalLeadingIcon = leadingIcon ?? systemImage;
 
   return {
     ...restProps,
-    text: children ?? '',
+    text: getTextFromChildren(children) ?? '',
+    children,
     leadingIcon: finalLeadingIcon,
+    shape: parseJSXShape(shape),
     trailingIcon,
     onButtonPressed: onPress,
     // @ts-expect-error

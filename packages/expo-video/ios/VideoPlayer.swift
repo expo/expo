@@ -268,9 +268,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   private func clearCurrentItem() {
-    DispatchQueue.main.async { [ref, videoSourceLoader, dangerousPropertiesStore] in
+    videoSourceLoader.cancelCurrentTask()
+
+    DispatchQueue.main.async { [ref, dangerousPropertiesStore] in
       ref.replaceCurrentItem(with: nil)
-      videoSourceLoader.cancelCurrentTask()
       dangerousPropertiesStore.reset()
       dangerousPropertiesStore.ownerIsReplacing = false
     }
