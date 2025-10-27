@@ -9,8 +9,6 @@ import { ViewProps, View } from 'react-native';
  *
  * - `'dimezisBlurViewSdk31Plus'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library on Android SDK 31 and above, for older versions of Android falls back to 'none'. This is due to performance limitations on older versions of Android, see the [performance](#performance) section to learn more.
  *
- * - `'dimezisBlurViewSdk31Plus'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library on Android SDK 31 and above, for older versions of Android falls back to 'none'. This is due to performance limitations on older versions of Android, see the [performance](#performance) section to learn more.
- *
  * @platform android
  */
 export type BlurMethod = 'none' | 'dimezisBlurView' | 'dimezisBlurViewSdk31Plus';
@@ -65,9 +63,6 @@ export type BlurViewProps = {
      * @platform android
      */
     blurMethod?: BlurMethod;
-} & ViewProps;
-export type BlurTargetViewProps = {
-    ref?: RefObject<View | null>;
 } & ViewProps;
 export type BlurTargetViewProps = {
     ref?: RefObject<View | null>;
