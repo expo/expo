@@ -2,17 +2,12 @@ package expo.modules.devmenu
 
 import android.app.Activity
 import android.util.Log
-import android.view.KeyEvent
-import android.view.MotionEvent
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import expo.interfaces.devmenu.DevMenuDelegateInterface
-import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.compose.BindingView
 import expo.modules.devmenu.compose.DevMenuAction
@@ -25,15 +20,15 @@ import java.lang.ref.WeakReference
 
 const val DEV_MENU_TAG = "ExpoDevMenu"
 
-object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
+object DevMenuManager : LifecycleEventListener {
   data class KeyCommand(val code: Int, val withShift: Boolean = false)
 
   data class Callback(val name: String, val shouldCollapse: Boolean)
 
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
 
-  private var preferences: DevMenuPreferencesInterface? = null
-  internal var delegate: DevMenuDelegateInterface? = null
+  private var preferences: DevMenuPreferencesHandle? = null
+  internal var delegate: DevMenuDefaultDelegate? = null
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private var currentReactInstance: WeakReference<ReactHost?> = WeakReference(null)
   private var canLaunchDevMenuOnStart = true
@@ -88,7 +83,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   /**
-   * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuPreferences].
+   * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuPreferencesHandler].
    * We can't open dev menu here, cause then the app will crash - two react instance try to render.
    * So we wait until the [reactContext] activity will be ready.
    */
@@ -170,36 +165,22 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     goToHomeAction()
   }
 
-  override fun openMenu(activity: Activity, screen: String?) =
+  fun openMenu(activity: Activity) =
     withBindingView(activity) { bindingView ->
       bindingView.viewModel.onAction(DevMenuAction.Open)
     }
 
   // TODO(@lukmccall): pass activity
-  override fun closeMenu() {
+  fun closeMenu() {
     withBindingView(activity = delegateActivity ?: return) { bindingView ->
       bindingView.viewModel.onAction(DevMenuAction.Close)
     }
   }
 
-  override fun hideMenu() {
+  fun hideMenu() {
     withBindingView(activity = delegateActivity ?: return) { bindingView ->
       bindingView.viewModel.onAction(DevMenuAction.Close)
     }
-  }
-
-  override fun toggleMenu(activity: Activity) = withBindingView(activity) { bindingView ->
-    if (bindingView.viewModel.state.isOpen) {
-      bindingView.viewModel.onAction(DevMenuAction.Close)
-    } else {
-      bindingView.viewModel.onAction(DevMenuAction.Open)
-    }
-  }
-
-  override fun onTouchEvent(ev: MotionEvent?) {}
-
-  override fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean {
-    return false
   }
 
   fun reload() {
@@ -246,7 +227,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     preferences?.showFab = !current
   }
 
-  override fun setDelegate(newDelegate: DevMenuDelegateInterface) {
+  fun setDelegate(newDelegate: DevMenuDefaultDelegate) {
     Log.i(DEV_MENU_TAG, "Set new dev-menu delegate: ${newDelegate.javaClass}")
     // removes event listener for old delegate
     delegateReactContext?.removeLifecycleEventListener(this)
@@ -260,29 +241,29 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     goToHomeAction = action
   }
 
-  override fun initializeWithReactHost(reactHost: ReactHost) {
+  fun initializeWithReactHost(reactHost: ReactHost) {
     setDelegate(DevMenuDefaultDelegate(reactHost))
   }
 
-  override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
+  fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
     delegateReactContext
       ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       ?.emit(eventName, eventData)
   }
 
-  override fun isInitialized(): Boolean {
+  fun isInitialized(): Boolean {
     return delegate !== null
   }
 
-  override val coroutineScope = CoroutineScope(Dispatchers.Default)
+  val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-  override fun getSettings(): DevMenuPreferencesInterface? = preferences
+  fun getSettings(): DevMenuPreferencesHandle? = preferences
 
-  override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
+  fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart
   }
 
-  override fun synchronizeDelegate() {
+  fun synchronizeDelegate() {
     val newReactInstance = requireNotNull(delegate).reactHost()
     if (newReactInstance != currentReactInstance.get()) {
       setUpReactInstance(newReactInstance)
