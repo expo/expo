@@ -79,10 +79,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
             message: message,
             preview: preview,
             label: { Children() }
-          ).onDisappear {
-           // cleanup if unmounted mid async request
-           asyncData.rejectContinuation()
-         }
+          )
        } else {
          SwiftUI.ShareLink(
             item: asyncData,
