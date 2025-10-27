@@ -17,6 +17,8 @@ import assert from 'assert';
 import jscSafeUrl from 'jsc-safe-url';
 import path from 'path';
 
+import { toPosixPath as normalizePathSeparatorsToPosix } from '../../utils/filePath';
+
 export type Options = {
   createModuleId: (module: string) => number | string;
   dev: boolean;
@@ -114,6 +116,7 @@ export function getModuleParams(
           paths[id] =
             '/' +
             path.join(
+              // TODO: This is not the proper Metro URL encoding of a file path
               path.dirname(bundlePath),
               // Strip the file extension
               path.basename(bundlePath, path.extname(bundlePath))
@@ -143,7 +146,7 @@ export function getModuleParams(
   if (options.dev) {
     // Add the relative path of the module to make debugging easier.
     // This is mapped to `module.verboseName` in `require.js`.
-    params.push(path.relative(options.projectRoot, module.path));
+    params.push(normalizePathSeparatorsToPosix(path.relative(options.projectRoot, module.path)));
   }
 
   return { params, paths };

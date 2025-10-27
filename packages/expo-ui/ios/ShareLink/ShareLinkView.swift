@@ -6,13 +6,7 @@ struct Preview: Record {
   @Field var image: String
 }
 
-final class ShareLinkViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class ShareLinkViewProps: UIBaseViewProps {
   @Field var item: URL?
   @Field var subject: String?
   @Field var message: String?

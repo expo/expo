@@ -4,8 +4,8 @@ import path from 'node:path';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
-import { pageCollectErrors } from '../page';
 import { mutateFile, openPageAndEagerlyLoadJS } from '../../utils/hmr';
+import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -47,12 +47,12 @@ test.describe(inputDir, () => {
     console.timeEnd('Eagerly bundled JS');
   });
   test.afterEach(async () => {
+    await expoStart.stopAsync();
+
     // Ensure `const ROUTE_VALUE = 'ROUTE_VALUE_1';` -> `const ROUTE_VALUE = 'ROUTE_VALUE';` before starting
     await mutateFile(indexFile, (contents) => {
       return contents.replace(/ROUTE_VALUE_[\d\w]+/g, 'ROUTE_VALUE');
     });
-
-    await expoStart.stopAsync();
   });
 
   // This test is needed because the HMR serializer is different to the main serializer and we inject webworker-specific code in the serializer.
@@ -82,8 +82,12 @@ test.describe(inputDir, () => {
     });
 
     await waitForFashRefresh();
+    // Ensure after HMR received the update browser content was updated as well
+    await page
+      .locator('[data-testid="test-hmr"]', { hasText: nextValue })
+      .waitFor({ timeout: 100 });
 
-    // Click the button
+    // Click the button to generate data-2 if hmr failed
     await page.click('[data-testid="test-anchor"]');
 
     expect(await page.textContent('[data-testid="data-2"]')).toBe('10');

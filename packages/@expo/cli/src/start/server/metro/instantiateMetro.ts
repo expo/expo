@@ -144,6 +144,9 @@ export async function loadMetroConfigAsync(
   if (env.EXPO_UNSTABLE_TREE_SHAKING) {
     Log.warn(`Experimental tree shaking is enabled.`);
   }
+  if (env.EXPO_UNSTABLE_LOG_BOX) {
+    Log.warn(`Experimental Expo LogBox is enabled.`);
+  }
   if (autolinkingModuleResolutionEnabled) {
     Log.warn(`Experimental Expo Autolinking module resolver is enabled.`);
   }

@@ -55,28 +55,35 @@ class DevMenuViewModel : ViewModel() {
     )
   }
 
+  private fun toggleMenu() {
+    _state.value = _state.value.copy(isOpen = !state.isOpen)
+  }
+
+  private fun toggleFastRefresh() {
+    DevMenuManager.toggleFastRefresh()
+    _state.value = _state.value.copy(devToolsSettings = DevMenuManager.getDevSettings())
+  }
+
+  private fun finishOnboarding() {
+    DevMenuManager.getSettings()?.isOnboardingFinished = true
+    _state.value = _state.value.copy(isOnboardingFinished = true)
+  }
+
   fun onAction(action: DevMenuAction) = with(DevMenuManager) {
     when (action) {
       DevMenuAction.Open -> this@DevMenuViewModel.openMenu()
       DevMenuAction.Close -> this@DevMenuViewModel.closeMenu()
+      DevMenuAction.Toggle -> this@DevMenuViewModel.toggleMenu()
       DevMenuAction.Reload -> reload()
       DevMenuAction.GoHome -> goToHome()
       DevMenuAction.TogglePerformanceMonitor -> togglePerformanceMonitor()
       DevMenuAction.OpenJSDebugger -> openJSInspector()
       DevMenuAction.OpenReactNativeDevMenu -> getReactHost()?.devSupportManager?.showDevOptionsDialog()
       DevMenuAction.ToggleElementInspector -> toggleInspector()
-      is DevMenuAction.ToggleFastRefresh -> {
-        toggleFastRefresh()
-        _state.value = _state.value.copy(devToolsSettings = DevMenuManager.getDevSettings())
-      }
+      is DevMenuAction.ToggleFastRefresh -> this@DevMenuViewModel.toggleFastRefresh()
       is DevMenuAction.ToggleFab -> toggleFab()
-      DevMenuAction.FinishOnboarding -> {
-        DevMenuManager.getSettings()?.isOnboardingFinished = true
-        _state.value = _state.value.copy(isOnboardingFinished = true)
-      }
-      is DevMenuAction.TriggerCustomCallback -> {
-        sendEventToDelegateBridge("registeredCallbackFired", action.name)
-      }
+      DevMenuAction.FinishOnboarding -> finishOnboarding()
+      is DevMenuAction.TriggerCustomCallback -> sendEventToDelegateBridge("registeredCallbackFired", action.name)
     }
   }
 

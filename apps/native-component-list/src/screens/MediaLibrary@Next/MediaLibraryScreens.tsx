@@ -1,5 +1,5 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 
 export const MediaLibraryScreens = [
   {
@@ -26,13 +26,6 @@ export const MediaLibraryScreens = [
 ];
 
 export default function MediaLibraryScreen() {
-  const apis: ListElement[] = MediaLibraryScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/apis/${screen.route}`,
-    };
-  });
-
+  const apis = apiScreensToListElements(MediaLibraryScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

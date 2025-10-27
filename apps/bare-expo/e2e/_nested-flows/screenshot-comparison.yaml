@@ -1,0 +1,27 @@
+# Screenshot comparison flow for maestro
+# This flow can be reused across different image comparison tests
+# it fails if the images are too different
+
+# making changes? update apps/bare-expo/scripts/lib/pathUtils.test.ts
+
+# Parameters:
+#   - screenshotOutputPath: The path including the name of the screenshot to take and compare
+#   - similarityThreshold: The percentage of similarity required to pass the comparison (default: <=5% difference)
+#   - resizingFactor: this factor resizes the taken images to occupy less space
+
+appId: dev.expo.Payments
+---
+- runScript:
+    file: ./compare-images-http.js
+    env:
+      currentScreenshot: ${screenshotOutputPath}.${maestro.platform}
+      platform: ${maestro.platform}
+      baseImage: ${screenshotOutputPath}.base.${maestro.platform}
+      # needs to be in ~/.maestro/tests so that it's stored as GH action artifact
+      diffOutputPath: ~/.maestro/tests/${screenshotOutputPath}
+      similarityThreshold: ${similarityThreshold}
+      resizingFactor: ${resizingFactor}
+
+- assertTrue:
+    condition: ${output.comparisonResult.success}
+    label: Screenshot comparison check. Is the image comparison server running (./image-comparison/server.ts)? See its terminal logs for details.)

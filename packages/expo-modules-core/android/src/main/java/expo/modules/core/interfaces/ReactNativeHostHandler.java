@@ -1,8 +1,11 @@
 package expo.modules.core.interfaces;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.facebook.react.ReactHost;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -71,6 +74,11 @@ public interface ReactNativeHostHandler {
    * Callback before react instance creation
    */
   default void onWillCreateReactInstance(boolean useDeveloperSupport) {}
+
+  /**
+   * Callback when the {@link ReactHost} is created
+   */
+  default void onDidCreateReactHost(@NonNull Context context, @NonNull ReactHost reactNativeHost) {}
 
   /**
    * Callback when the {@link DevSupportManager} is available

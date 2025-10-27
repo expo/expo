@@ -1,4 +1,4 @@
-import { glob } from 'glob';
+import { glob, Path } from 'glob';
 import { vol } from 'memfs';
 
 import {
@@ -18,7 +18,12 @@ const mockGlobStream = glob.stream as jest.MockedFunction<typeof glob.stream>;
 
 function registerGlobStreamMockOnce(results: string[]) {
   // NOTE: Cast to any since any async iterable is accepted here
-  mockGlobStream.mockReturnValueOnce(results as any);
+  mockGlobStream.mockReturnValueOnce(
+    results.map((outputPath) => ({
+      isFile: () => true,
+      fullpath: () => outputPath,
+    })) as any
+  );
 }
 
 describe(resolveDependencyConfigImplAndroidAsync, () => {

@@ -105,17 +105,19 @@ internal struct PaddingModifier: ViewModifier, Record {
   @Field var trailing: CGFloat?
 
   func body(content: Content) -> some View {
-    if let all {
-      content.padding(all)
-    } else if let horizontal, let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: horizontal, bottom: vertical, trailing: horizontal))
-    } else if let horizontal {
-      content.padding(EdgeInsets(top: 0, leading: horizontal, bottom: 0, trailing: horizontal))
-    } else if let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: 0, bottom: vertical, trailing: 0))
-    } else {
-      content.padding(EdgeInsets(top: top ?? 0, leading: leading ?? 0, bottom: bottom ?? 0, trailing: trailing ?? 0))
-    }
+    let topValue = top ?? vertical ?? all ?? 0
+    let bottomValue = bottom ?? vertical ?? all ?? 0
+    let leadingValue = leading ?? horizontal ?? all ?? 0
+    let trailingValue = trailing ?? horizontal ?? all ?? 0
+
+    content.padding(
+      EdgeInsets(
+        top: topValue,
+        leading: leadingValue,
+        bottom: bottomValue,
+        trailing: trailingValue
+      )
+    )
   }
 }
 
@@ -639,76 +641,6 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
-internal struct GlassEffectOptions: Record {
-  @Field var variant: String?
-  @Field var interactive: Bool?
-  @Field var tint: Color?
-}
-
-internal struct GlassEffectModifier: ViewModifier, Record {
-  @Field var glass: GlassEffectOptions?
-  @Field var shape: String = "capsule"
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
-      let interactive = glass?.interactive ?? false
-      let tint = glass?.tint
-      let glass = parseGlassVariant(glass?.variant ?? "regular")
-      switch shape {
-      case "capsule":
-        content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
-      case "circle":
-        content.glassEffect(glass.interactive(interactive).tint(tint), in: Circle())
-      case "ellipse":
-        content.glassEffect(glass.interactive(interactive).tint(tint), in: Ellipse())
-      default:
-        content.glassEffect(glass.interactive(interactive).tint(tint), in: Rectangle())
-      }
-      #else
-      content
-      #endif
-    } else {
-      content
-    }
-  }
-
-  #if compiler(>=6.2) // Xcode 26
-  @available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
-  private func parseGlassVariant(_ glassString: String) -> Glass {
-    switch glassString {
-    case "regular":
-      return .regular
-    case "clear":
-      return .clear
-    default:
-      return .identity
-    }
-  }
-  #endif
-}
-
-internal struct GlassEffectIdModifier: ViewModifier, Record {
-  @Field var id: String?
-  @Field var namespaceId: String?
-
-  func body(content: Content) -> some View {
-    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
-      if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
-        content.glassEffectID(id, in: namespace)
-      } else {
-        content
-      }
-      #else
-      content
-      #endif
-    } else {
-      content
-    }
-  }
-}
 
 internal enum AnimationType: String, Enumerable {
   case easeInOut
@@ -1551,6 +1483,10 @@ extension ViewModifierRegistry {
 
     register("headerProminence") { params, appContext, _ in
       return try HeaderProminence(from: params, appContext: appContext)
+    }
+
+    register("font") { params, appContext, _ in
+      return try FontModifier(from: params, appContext: appContext)
     }
   }
 }

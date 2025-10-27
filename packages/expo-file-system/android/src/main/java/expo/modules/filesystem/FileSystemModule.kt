@@ -215,6 +215,10 @@ class FileSystemModule : Module() {
         file.asString()
       }
 
+      Property("contentUri") { file ->
+        file.asContentUri()
+      }
+
       Property("md5") { file ->
         try {
           file.md5

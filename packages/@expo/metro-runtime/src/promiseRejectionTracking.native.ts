@@ -1,4 +1,4 @@
-import ExceptionsManager from './error-overlay/modules/ExceptionsManager';
+import ExceptionsManager from './ExceptionsManager';
 
 type GlobalThis = {
   HermesInternal:

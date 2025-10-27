@@ -13,6 +13,7 @@ import type {
   CustomResolutionContext,
 } from '@expo/metro/metro-resolver';
 import { resolve as metroResolver } from '@expo/metro/metro-resolver';
+import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -650,6 +651,28 @@ export function withExtendedResolver(
         return result;
       }
 
+      const normalizedPath = normalizeSlashes(result.filePath);
+
+      const doReplace = (from: string, to: string | undefined, options?: { throws?: boolean }) =>
+        doReplaceHelper(from, to, {
+          normalizedPath,
+          doResolve,
+          ...options,
+        });
+      const doReplaceStrict = (from: string, to: string | undefined) =>
+        doReplace(from, to, { throws: true });
+
+      if (env.EXPO_UNSTABLE_WEB_MODAL) {
+        const webModalModule = doReplace(
+          'expo-router/build/layouts/_web-modal.js',
+          'expo-router/build/layouts/ExperimentalModalStack.js'
+        );
+        if (webModalModule) {
+          debug('Using `_unstable-web-modal` implementation.');
+          return webModalModule;
+        }
+      }
+
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
           // Disallow importing confusing native modules on web
@@ -670,9 +693,8 @@ export function withExtendedResolver(
 
           // Replace with static shims
 
-          const normalName = normalizeSlashes(result.filePath)
-            // Drop everything up until the `node_modules` folder.
-            .replace(/.*node_modules\//, '');
+          // Drop everything up until the `node_modules` folder.
+          const normalName = normalizedPath.replace(/.*node_modules\//, '');
 
           const shimFile = shouldCreateVirtualShim(normalName);
           if (shimFile) {
@@ -694,17 +716,33 @@ export function withExtendedResolver(
           context.customResolverOptions?.environment === 'node' ||
           context.customResolverOptions?.environment === 'react-server';
 
-        // react-native/Libraries/Core/InitializeCore
-        const normal = normalizeSlashes(result.filePath);
-
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          if (normal.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
+          const emptyModule = doReplace('react-native/Libraries/Core/InitializeCore.js', undefined);
+          if (emptyModule) {
             debug('Shimming out InitializeCore for React Native in native SSR bundle');
-            return {
-              type: 'empty',
-            };
+            return emptyModule;
           }
+        }
+
+        const hmrModule = doReplaceStrict(
+          'react-native/Libraries/Utilities/HMRClient.js',
+          'expo/src/async-require/hmr.ts'
+        );
+        if (hmrModule) return hmrModule;
+
+        if (env.EXPO_UNSTABLE_LOG_BOX) {
+          const logBoxModule = doReplace(
+            'react-native/Libraries/LogBox/LogBoxInspectorContainer.js',
+            '@expo/log-box/swap-rn-logbox.js'
+          );
+          if (logBoxModule) return logBoxModule;
+
+          const logBoxParserModule = doReplace(
+            'react-native/Libraries/LogBox/Data/parseLogBoxLog.js',
+            '@expo/log-box/swap-rn-logbox-parser.js'
+          );
+          if (logBoxParserModule) return logBoxParserModule;
         }
       }
 
@@ -789,6 +827,47 @@ export function withExtendedResolver(
   return withMetroErrorReportingResolver(
     withMetroSupervisingTransformWorker(metroConfigWithCustomContext)
   );
+}
+
+function doReplaceHelper(
+  from: string,
+  to: string | undefined,
+  {
+    throws = false,
+    normalizedPath,
+    doResolve,
+  }: {
+    throws?: boolean;
+    normalizedPath: string;
+    doResolve: StrictResolver;
+  }
+): SourceFileResolution | { type: 'empty' } | undefined {
+  if (!normalizedPath.endsWith(from)) {
+    return undefined;
+  }
+
+  if (to === undefined) {
+    return {
+      type: 'empty',
+    };
+  }
+
+  try {
+    const hmrModule = doResolve(to);
+    if (hmrModule.type === 'sourceFile') {
+      debug(`Using \`${to}\` implementation.`);
+      return hmrModule;
+    }
+  } catch (resolutionError) {
+    if (throws) {
+      throw new Error(`Failed to replace ${from} with ${to}. Resolution of ${to} failed.`, {
+        cause: resolutionError,
+      });
+    }
+
+    debug(`Failed to resolve ${to} when swapping from ${from}: ${resolutionError}`);
+  }
+  return undefined;
 }
 
 /** @returns `true` if the incoming resolution should be swapped. */

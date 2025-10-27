@@ -7,6 +7,7 @@ import SelectScreen from './screens/SelectScreen';
 import RunTests from './screens/TestScreen';
 import { useTheme } from '../common/ThemeProvider';
 import ThemeToggler from '../common/ThemeToggler';
+import { routeNames } from './constants/routeNames';
 
 // @tsapeta: This navigator is also being used by `bare-expo` app,
 // so make sure it still works there once you change something here.
@@ -31,7 +32,7 @@ export function TestStackNavigator() {
         },
       }}>
       <Stack.Screen
-        name="select"
+        name={routeNames.select}
         component={SelectScreen}
         options={{
           title: 'Expo Test Suite',
@@ -48,7 +49,7 @@ export function TestStackNavigator() {
           ),
         }}
       />
-      <Stack.Screen name="run" component={RunTests} options={{ title: 'Test Runner' }} />
+      <Stack.Screen name={routeNames.run} component={RunTests} options={{ title: 'Test Runner' }} />
     </Stack.Navigator>
   );
 }

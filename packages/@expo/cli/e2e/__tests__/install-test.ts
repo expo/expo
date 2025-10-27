@@ -235,7 +235,8 @@ describe('expo-router integration', () => {
       'with-router',
       {
         reuseExisting: false,
-        linkExpoPackages: ['expo-router'],
+        // TODO(@hassankhan): remove @expo/router-server after publishing
+        linkExpoPackages: ['expo-router', '@expo/router-server'],
       }
     );
     const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
@@ -276,5 +277,5 @@ describe('expo-router integration', () => {
     expect(pkg.read().dependencies).toMatchObject({
       '@react-navigation/native': '^7.1.8',
     });
-  });
+  }, 600_000);
 });

@@ -106,23 +106,6 @@ class AudioControlsService : MediaSessionService() {
   private fun buildNotification(): Notification? {
     val session = mediaSession ?: return null
 
-    // Build list of action indices to show in compact view
-    val compactViewIndices = mutableListOf<Int>()
-    var currentIndex = 0
-
-    // Map the same order as updateSessionCustomLayout
-    if (currentOptions?.showSeekBackward == true) {
-      compactViewIndices.add(currentIndex)
-      currentIndex++
-    }
-    // Always show play/pause in compact view
-    compactViewIndices.add(currentIndex)
-    currentIndex++
-
-    if (currentOptions?.showSeekForward == true) {
-      compactViewIndices.add(currentIndex)
-    }
-
     val builder = NotificationCompat.Builder(this, CHANNEL_ID)
       .setSmallIcon(androidx.media3.session.R.drawable.media3_icon_circular_play)
       .setContentTitle(currentMetadata?.title ?: "\u200E")
@@ -132,10 +115,10 @@ class AudioControlsService : MediaSessionService() {
       .setContentIntent(buildContentIntent())
       .setAutoCancel(false)
       .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
-      .setStyle(
-        MediaStyleNotificationHelper.MediaStyle(session)
-          .setShowActionsInCompactView(*compactViewIndices.toIntArray())
-      )
+
+    // Using only session custom layout: do NOT call setShowActionsInCompactView.
+    // The compact layout will follow the order of the custom layout provided to the session.
+    builder.setStyle(MediaStyleNotificationHelper.MediaStyle(session))
 
     return builder.build()
   }

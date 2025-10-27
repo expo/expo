@@ -549,7 +549,8 @@ export const glassEffect = (params?: {
     interactive?: boolean;
     tint?: Color;
   };
-  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
+  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse' | 'roundedRectangle';
+  cornerRadius?: number;
 }) => createModifier('glassEffect', params);
 
 /**
@@ -687,6 +688,44 @@ export const listSectionMargins = (params?: {
   edges?: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical';
 }) => createModifier('listSectionMargins', params);
 
+/**
+ * Sets the font properties of a view.
+ * Supports both custom font families and system fonts with weight and design options.
+ *
+ * @param params - The font configuration. When `family` is provided, it uses Font.custom().
+ * When `family` is not provided, it uses Font.system() with the specified weight and design.
+ *
+ * @example
+ * ```typescript
+ * // Custom font family
+ * <Text modifiers={[font({ family: 'Helvetica', size: 18 })]}>Custom Font Text</Text>
+ *
+ * // System font with weight and design
+ * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>System Font Text</Text>
+ * ```
+ * @see https://developer.apple.com/documentation/swiftui/font/custom(_:size:)
+ * @see https://developer.apple.com/documentation/swiftui/font/system(size:weight:design:)
+ */
+export const font = (params: {
+  /** Custom font family name. If provided, uses Font.custom() */
+  family?: string;
+  /** Font size in points */
+  size?: number;
+  /** Font weight for system fonts */
+  weight?:
+    | 'ultraLight'
+    | 'thin'
+    | 'light'
+    | 'regular'
+    | 'medium'
+    | 'semibold'
+    | 'bold'
+    | 'heavy'
+    | 'black';
+  /** Font design for system fonts */
+  design?: 'default' | 'rounded' | 'serif' | 'monospaced';
+}) => createModifier('font', params);
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -757,7 +796,8 @@ export type BuiltInModifier =
   | ReturnType<typeof listRowInsets>
   | ReturnType<typeof badgeProminence>
   | ReturnType<typeof badge>
-  | ReturnType<typeof listSectionMargins>;
+  | ReturnType<typeof listSectionMargins>
+  | ReturnType<typeof font>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

@@ -22,15 +22,16 @@ module Pod
   class Installer
     private
 
-    _original_run_podfile_post_install_hooks = instance_method(:run_podfile_post_install_hooks)
+    _original_perform_post_install_actions = instance_method(:perform_post_install_actions)
     _original_run_podfile_pre_install_hooks = instance_method(:run_podfile_pre_install_hooks)
     _script_phase_name = '[Expo Autolinking] Run Codegen with autolinking'
 
     public
 
-    define_method(:run_podfile_post_install_hooks) do
+    define_method(:perform_post_install_actions) do
+
       # Call original implementation first
-      _original_run_podfile_post_install_hooks.bind(self).()
+      _original_perform_post_install_actions.bind(self).()
 
       # Next we'll perform an Expo workaround for Codegen in React Native where it uses the wrong output path for
       # the generated files. This can be remove when the following PR is merged and released upstream:

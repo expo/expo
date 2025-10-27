@@ -19,11 +19,17 @@ async function fileExistsAsync(file) {
  * Search files that match the glob pattern and return all matches from the matchFunctor.
  */
 async function globMatchFunctorAllAsync(globPattern, matchFunctor, options) {
-    const globStream = glob_1.glob.stream(globPattern, { ...options, withFileTypes: false });
+    const globStream = glob_1.glob.stream(globPattern, {
+        ...options,
+        withFileTypes: true,
+    });
     const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
     const results = [];
-    for await (const file of globStream) {
-        let filePath = file.toString();
+    for await (const globPath of globStream) {
+        if (!globPath.isFile()) {
+            continue;
+        }
+        let filePath = globPath.fullpath();
         if (!path_1.default.isAbsolute(filePath)) {
             filePath = path_1.default.resolve(cwd, filePath);
         }
@@ -39,10 +45,16 @@ async function globMatchFunctorAllAsync(globPattern, matchFunctor, options) {
  * Search files that match the glob pattern and return the first match from the matchFunctor.
  */
 async function globMatchFunctorFirstAsync(globPattern, matchFunctor, options) {
-    const globStream = glob_1.glob.stream(globPattern, { ...options, withFileTypes: false });
+    const globStream = glob_1.glob.stream(globPattern, {
+        ...options,
+        withFileTypes: true,
+    });
     const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
-    for await (const file of globStream) {
-        let filePath = file.toString();
+    for await (const globPath of globStream) {
+        if (!globPath.isFile()) {
+            continue;
+        }
+        let filePath = globPath.fullpath();
         if (!path_1.default.isAbsolute(filePath)) {
             filePath = path_1.default.resolve(cwd, filePath);
         }
