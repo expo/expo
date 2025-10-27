@@ -5,7 +5,7 @@ description: How to implement authentication and protect routes with Expo Router
 hasVideoLink: true
 ---
 
-> SDK 53 introduced [Protected routes](/router/advanced/protected/), a more powerful method of handling authentication. Please follow this guide if using SDK >53.
+> **info** SDK 53 introduced [Protected routes](/router/advanced/protected/), a more powerful method of handling authentication. Please follow this guide if you are using SDK 52 and earlier.
 
 import { Lock01Icon } from '@expo/styleguide-icons/outline/Lock01Icon';
 import { LockUnlocked01Icon } from '@expo/styleguide-icons/outline/LockUnlocked01Icon';
@@ -56,7 +56,7 @@ To follow the above example, set up a [React Context provider](https://react.dev
 This provider uses a mock implementation. You can replace it with your own [authentication provider](/guides/authentication/).
 
 ```tsx ctx.tsx
-import { use, createContext, type PropsWithChildren } from 'react';
+import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
 
 const AuthContext = createContext<{
@@ -73,7 +73,7 @@ const AuthContext = createContext<{
 
 // This hook can be used to access the user info.
 export function useSession() {
-  const value = use(AuthContext);
+  const value = useContext(AuthContext);
   if (!value) {
     throw new Error('useSession must be wrapped in a <SessionProvider />');
   }
@@ -85,7 +85,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
 
   return (
-    <AuthContext
+    <AuthContext.Provider
       value={{
         signIn: () => {
           // Perform sign-in logic here
@@ -98,7 +98,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         isLoading,
       }}>
       {children}
-    </AuthContext>
+    </AuthContext.Provider>
   );
 }
 ```
@@ -153,7 +153,7 @@ export function useStorageState(key: string): UseStateHook<string> {
         console.error('Local storage is unavailable:', e);
       }
     } else {
-      SecureStore.getItemAsync(key).then(value => {
+      SecureStore.getItemAsync(key).then((value: string | null) => {
         setState(value);
       });
     }

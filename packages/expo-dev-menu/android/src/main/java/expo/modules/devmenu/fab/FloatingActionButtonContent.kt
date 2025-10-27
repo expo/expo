@@ -1,3 +1,5 @@
+package expo.modules.devmenu.fab
+
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring

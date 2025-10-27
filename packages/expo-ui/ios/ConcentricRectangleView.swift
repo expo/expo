@@ -21,13 +21,7 @@ internal struct ConcentricRectangleCornerParams: Record {
   @Field var bottomTrailingCorner: CornerStyleConfig?
 }
 
-internal final class ConcentricRectangleViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+internal final class ConcentricRectangleViewProps: UIBaseViewProps {
   @Field var corners: ConcentricRectangleCornerParams?
 }
 
@@ -71,7 +65,6 @@ internal struct ConcentricRectangleView: ExpoSwiftUI.View {
         bottomLeadingCorner: bottomLeadingCorner,
         bottomTrailingCorner: bottomTrailingCorner
       )
-      .modifier(CommonViewModifiers(props: props))
     } else {
       EmptyView()
     }

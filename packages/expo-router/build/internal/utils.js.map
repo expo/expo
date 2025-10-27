@@ -1,0 +1,1 @@
+{"version":3,"file":"utils.js","sourceRoot":"","sources":["../../src/internal/utils.ts"],"names":[],"mappings":";;;AAAA,oCAAoD;AAA3C,2GAAA,oBAAoB,OAAA","sourcesContent":["export { shouldLinkExternally } from '../utils/url';\n"]}

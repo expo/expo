@@ -1,6 +1,5 @@
 import type { RequireContext } from 'expo-router';
-import type { RouteNode } from 'expo-router/build/Route';
-import { getExactRoutes } from 'expo-router/build/getRoutes';
+import { getExactRoutes, type RouteNode } from 'expo-router/internal/routing';
 
 import { loadStaticParamsAsync, assertStaticParams } from '../loadStaticParamsAsync';
 

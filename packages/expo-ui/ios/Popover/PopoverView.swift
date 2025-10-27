@@ -24,7 +24,6 @@ internal struct PopoverView: ExpoSwiftUI.View {
             popoverContent
           }
         }
-        .modifier(CommonViewModifiers(props: props))
         .onChange(
           of: isPresented,
           perform: { newValue in

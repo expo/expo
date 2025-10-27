@@ -51,9 +51,9 @@ const requestHash = '2cp24z...';
 const result = await AppIntegrity.requestIntegrityCheckAsync(requestHash);
 ```
 
-Before calling [requestIntegrityCheckAsync](#appintegrityrequestintegritycheckasyncrequesthash), ensure that [prepareIntegrityTokenProviderAsync](#appintegrityprepareintegritytokenproviderasynccloudprojectnumber) was called successfully.
+Before calling [`requestIntegrityCheckAsync`](#appintegrityrequestintegritycheckasyncrequesthash), ensure that [`prepareIntegrityTokenProviderAsync`](#appintegrityprepareintegritytokenproviderasynccloudprojectnumber) was called successfully.
 
-In this example, `requestHash` is a hash unique to the specific user action being verified. You can call [requestIntegrityCheckAsync](#appintegrityprepareintegritytokenproviderasynccloudprojectnumber) multiple times with different hashes for different user actions.
+In this example, `requestHash` is a hash unique to the specific user action being verified. You can call [`requestIntegrityCheckAsync`](#appintegrityprepareintegritytokenproviderasynccloudprojectnumber) multiple times with different hashes for different user actions.
 
 On success, send the result to your server for verification.
 

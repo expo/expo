@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add non-uniform border radius support to `GlassView` ([#40570](https://github.com/expo/expo/pull/40570) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

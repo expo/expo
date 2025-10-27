@@ -1,0 +1,67 @@
+name: 'Slack Notify'
+description: 'Send test suite notifications to Slack with artifacts download url'
+inputs:
+  channel:
+    description: 'Slack channel'
+    required: true
+  job_name:
+    description: 'Job name for display at the top of slack message'
+    required: true
+  artifact_url:
+    description: 'Artifact download URL'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - uses: 8398a7/action-slack@v3
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
+      with:
+        channel: ${{ inputs.channel }}
+        status: custom
+        fields: job,message,ref,eventName,author,took
+        author_name: ${{ inputs.job_name }}
+        custom_payload: |
+          {
+            attachments: [{
+              color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+              fields: [
+                {
+                  title: '${{ inputs.job_name }}',
+                  value: process.env.AS_JOB,
+                  short: true
+                },
+                {
+                  title: 'Message',
+                  value: process.env.AS_MESSAGE,
+                  short: true
+                },
+                {
+                  title: 'Ref',
+                  value: process.env.AS_REF,
+                  short: true
+                },
+                {
+                  title: 'Event Name',
+                  value: process.env.AS_EVENT_NAME,
+                  short: true
+                },
+                {
+                  title: 'Author',
+                  value: process.env.AS_AUTHOR,
+                  short: true
+                },
+                {
+                  title: 'Took',
+                  value: process.env.AS_TOOK,
+                  short: true
+                },
+                {
+                  title: 'Artifacts URL',
+                  value: '<${{ inputs.artifact_url }}|Download Artifacts>',
+                  short: false
+                }
+              ]
+            }]
+          }
