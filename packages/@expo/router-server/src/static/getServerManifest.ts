@@ -11,8 +11,9 @@ import {
   getRoutes,
   type GetRoutesOptions,
 } from 'expo-router/internal/routing';
+import { type RoutesManifest } from 'expo-server/private';
 
-import { type ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
+import { getServerManifest } from '../getServerManifest';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
 /**
@@ -24,7 +25,7 @@ import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
  */
 export async function getBuildTimeServerManifestAsync(
   options: GetRoutesOptions = {}
-): Promise<ExpoRouterServerManifestV1> {
+): Promise<RoutesManifest<string>> {
   const routeTree = getRoutes(ctx, {
     platform: 'web',
     ...options,
