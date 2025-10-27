@@ -1,12 +1,12 @@
 import React from 'react';
 import { type View } from 'react-native';
 import ExpoImage from './ExpoImage';
-import { ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
+import { ImageCacheConfig, ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
 export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: React.RefObject<ExpoImage | null>;
     containerViewRef: React.RefObject<View | null>;
     constructor(props: ImageProps);
-    getAnimatableRef: () => View | this | null;
+    getAnimatableRef: () => this | View | null;
     /**
      * @hidden
      */
@@ -64,6 +64,12 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * to `null` if the image does not exist in the cache.
      */
     static getCachePathAsync(cacheKey: string): Promise<string | null>;
+    /**
+     * Configures the image cache. This allows you to manage the cache eviction policy.
+     * @param config - The cache configuration.
+     * @platform ios
+     */
+    static configureCache(config: ImageCacheConfig): void;
     /**
      * Asynchronously generates a [Blurhash](https://blurha.sh) from an image.
      * @param source - The image source, either a URL (string) or an ImageRef
