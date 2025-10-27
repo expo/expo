@@ -6,9 +6,8 @@
  */
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
-import { RouteNode } from 'expo-router/build/Route';
-import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
-import { shouldLinkExternally } from 'expo-router/build/utils/url';
+import { type RouteNode, stripGroupSegmentsFromPath } from 'expo-router/internal/routing';
+import { shouldLinkExternally } from 'expo-router/internal/utils';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';

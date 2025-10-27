@@ -1,4 +1,4 @@
-import { getMockConfig } from 'expo-router/build/testing-library/mock-config';
+import { getMockConfig } from 'expo-router/internal/testing';
 
 import {
   getHtmlFiles,
