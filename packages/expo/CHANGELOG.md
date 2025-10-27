@@ -20,7 +20,7 @@
 ### 🐛 Bug fixes
 
 - Fixed DOM Components entry not found from updates on Android. ([#40574](https://github.com/expo/expo/pull/40574) by [@kudo](https://github.com/kudo))
-- Accept 'ascii' encoding label as UTF-8 alias for spec compliance in TextDecoder. ([#XXXX](https://github.com/expo/expo/pull/XXXX) by [@jgo80](https://github.com/jgo80))
+- Accept 'ascii' encoding label as UTF-8 alias for spec compliance in TextDecoder. ([#XXXX](https://github.com/expo/expo/pull/XXXX) by [@jgo80](https://github.com/jgo80)) ([#40656](https://github.com/expo/expo/pull/40656) by [@jgo80](https://github.com/jgo80))
 
 ### 💡 Others
 
