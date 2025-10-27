@@ -45,40 +45,46 @@ function getServerManifest(route, options) {
         else {
             key = getNormalizedContextKey(absoluteRoute);
         }
-        return [[key, '/' + absoluteRoute, route]];
+        return [
+            {
+                normalizedContextKey: key,
+                absoluteRoutePath: '/' + absoluteRoute,
+                route,
+            },
+        ];
     }
     // Remove duplicates from the runtime manifest which expands array syntax.
     const flat = getFlatNodes(route)
-        .sort(([, , a], [, , b]) => (0, routing_1.sortRoutes)(b, a))
+        .sort(({ route: a }, { route: b }) => (0, routing_1.sortRoutes)(b, a))
         .reverse();
-    const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api'), ([path]) => path);
-    const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route' ||
-        (route.type === 'rewrite' && (route.methods === undefined || route.methods.includes('GET')))), ([path]) => path);
-    const redirects = uniqueBy(flat.filter(([, , route]) => route.type === 'redirect'), ([path]) => path)
+    const apiRoutes = uniqueBy(flat.filter(({ route }) => route.type === 'api'), ({ normalizedContextKey }) => normalizedContextKey);
+    const otherRoutes = uniqueBy(flat.filter(({ route }) => route.type === 'route' ||
+        (route.type === 'rewrite' && (route.methods === undefined || route.methods.includes('GET')))), ({ normalizedContextKey }) => normalizedContextKey);
+    const redirects = uniqueBy(flat.filter(({ route }) => route.type === 'redirect'), ({ normalizedContextKey }) => normalizedContextKey)
         .map((redirect) => {
         // TODO(@hassankhan): ENG-16577
         // For external redirects, use `destinationContextKey` as the destination URL
-        if ((0, utils_1.shouldLinkExternally)(redirect[2].destinationContextKey)) {
-            redirect[1] = redirect[2].destinationContextKey;
+        if ((0, utils_1.shouldLinkExternally)(redirect.route.destinationContextKey)) {
+            redirect.absoluteRoutePath = redirect.route.destinationContextKey;
         }
         else {
-            redirect[1] =
-                flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
-                    '/';
+            redirect.absoluteRoutePath =
+                flat.find(({ route }) => route.contextKey === redirect.route.destinationContextKey)
+                    ?.normalizedContextKey ?? '/';
         }
         return redirect;
     })
         .reverse();
-    const rewrites = uniqueBy(flat.filter(([, , route]) => route.type === 'rewrite'), ([path]) => path)
+    const rewrites = uniqueBy(flat.filter(({ route }) => route.type === 'rewrite'), ({ normalizedContextKey }) => normalizedContextKey)
         .map((rewrite) => {
-        rewrite[1] =
-            flat.find(([, , route]) => route.contextKey === rewrite[2].destinationContextKey)?.[0] ??
-                '/';
+        rewrite.absoluteRoutePath =
+            flat.find(({ route }) => route.contextKey === rewrite.route.destinationContextKey)
+                ?.normalizedContextKey ?? '/';
         return rewrite;
     })
         .reverse();
-    const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
-    const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));
+    const standardRoutes = otherRoutes.filter(({ route }) => !isNotFoundRoute(route));
+    const notFoundRoutes = otherRoutes.filter(({ route }) => isNotFoundRoute(route));
     const manifest = {
         apiRoutes: getMatchableManifestForPaths(apiRoutes),
         htmlRoutes: getMatchableManifestForPaths(standardRoutes),
@@ -97,16 +103,16 @@ function getServerManifest(route, options) {
     return manifest;
 }
 function getMatchableManifestForPaths(paths) {
-    return paths.map(([normalizedRoutePath, absoluteRoute, node]) => {
-        const matcher = getNamedRouteRegex(normalizedRoutePath, absoluteRoute, node.contextKey);
-        if (node.generated) {
+    return paths.map(({ normalizedContextKey, absoluteRoutePath, route }) => {
+        const matcher = getNamedRouteRegex(normalizedContextKey, absoluteRoutePath, route.contextKey);
+        if (route.generated) {
             matcher.generated = true;
         }
-        if (node.permanent) {
+        if (route.permanent) {
             matcher.permanent = true;
         }
-        if (node.methods) {
-            matcher.methods = node.methods;
+        if (route.methods) {
+            matcher.methods = route.methods;
         }
         return matcher;
     });
