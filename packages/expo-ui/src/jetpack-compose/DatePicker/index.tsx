@@ -47,7 +47,9 @@ export type DateTimePickerProps = {
    * @default true
    */
   is24Hour?: boolean;
-  /** Modifiers for the component */
+  /**
+   * Modifiers for the component.
+   */
   modifiers?: ExpoModifier[];
 };
 

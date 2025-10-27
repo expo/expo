@@ -22,7 +22,7 @@ import { type CommonViewModifierProps } from '../types';
  */
 export type TextFieldKeyboardType = 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'ascii-capable' | 'numbers-and-punctuation' | 'url' | 'name-phone-pad' | 'decimal-pad' | 'twitter' | 'web-search' | 'ascii-capable-number-pad';
 /**
- * Can be used for imperatively setting text and focus on the TextField component.
+ * Can be used for imperatively setting text and focus on the `TextField` component.
  */
 export type TextFieldRef = {
     setText: (newText: string) => Promise<void>;
@@ -37,7 +37,7 @@ export type TextFieldRef = {
 export type TextFieldProps = {
     ref?: Ref<TextFieldRef>;
     /**
-     * Initial value that the TextField displays when being mounted. As the TextField is an uncontrolled component, change the key prop if you need to change the text value.
+     * Initial value that the `TextField` displays when being mounted. As the `TextField` is an uncontrolled component, change the key prop if you need to change the text value.
      */
     defaultValue?: string;
     /**
@@ -45,15 +45,15 @@ export type TextFieldProps = {
      */
     placeholder?: string;
     /**
-     * A callback triggered when user types in text into the TextField.
+     * A callback triggered when user types in text into the `TextField`.
      */
     onChangeText?: (value: string) => void;
     /**
-     * A callback triggered when user focuses or blurs the TextField.
+     * A callback triggered when user focuses or blurs the `TextField`.
      */
     onChangeFocus?: (focused: boolean) => void;
     /**
-     * A callback triggered when user submits the TextField by pressing the return key.
+     * A callback triggered when user submits the `TextField` by pressing the return key.
      */
     onSubmit?: (value: string) => void;
     /**

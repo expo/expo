@@ -5,8 +5,8 @@ import { type CommonViewModifierProps } from '../types';
 
 /**
  * Activation method of the context menu.
- * - `singlePress`: The context menu is opened with a single tap. Does not isolate the content.
- * - `longPress`: The context menu is opened with a long press. On iOS additionally Highlights the content by blurring the background.
+ * - `singlePress` - The context menu is opened with a single tap. Does not isolate the content.
+ * - `longPress` - The context menu is opened with a long press. On iOS additionally Highlights the content by blurring the background.
  */
 export type ActivationMethod = 'singlePress' | 'longPress';
 
@@ -21,14 +21,14 @@ export type ContextMenuProps = {
 
   /**
    * The contents of the submenu are used as an anchor for the context menu.
-   * The children will be wrapped in a pressable element, which triggers opening of the context menu.
+   * The children will be wrapped in a `<Pressable>` component, which triggers opening of the context menu.
    */
   children: ReactNode;
 } & CommonViewModifierProps;
 
 /**
  * Props of the `Submenu` component.
- * @deprecated Use `ContextMenu` component as Submenu instead.
+ * @deprecated Use `ContextMenu` component as submenu instead.
  */
 export type SubmenuProps = {
   /**

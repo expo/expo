@@ -28,7 +28,7 @@ declare namespace ContextMenu {
     var Items: typeof import(".").Items;
 }
 /**
- * @deprecated Use `ContextMenu` component as Submenu instead.
+ * @deprecated Use `ContextMenu` component as submenu instead.
  */
 declare const Submenu: (props: SubmenuProps) => import("react").JSX.Element;
 export { ContextMenu, Submenu };

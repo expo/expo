@@ -33,7 +33,9 @@ export type ShapeProps = {
   style?: ViewStyle;
   /** Color of the shape */
   color?: string;
-  /** Modifiers for the component */
+  /**
+   * Modifiers for the component.
+   */
   modifiers?: ExpoModifier[];
 };
 
