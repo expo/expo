@@ -74,25 +74,21 @@ struct ShareLinkView: ExpoSwiftUI.View {
      } else if let asyncData, let preview {
        if hasChildren {
          SwiftUI.ShareLink(
-            item: asyncData,
-            subject: subject,
-            message: message,
-            preview: preview,
-            label: { Children() }
-          )
+          item: asyncData,
+          subject: subject,
+          message: message,
+          preview: preview,
+          label: { Children() }
+         )
        } else {
          SwiftUI.ShareLink(
-            item: asyncData,
-            subject: subject,
-            message: message,
-            preview: preview,
-          )
+          item: asyncData,
+          subject: subject,
+          message: message,
+          preview: preview,
+         )
        }
-     } else {
-       EmptyView()
      }
-   } else {
-     EmptyView()
    }
 #else
     EmptyView()
