@@ -3,6 +3,7 @@ package expo.modules.blur
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import eightbitlab.com.blurview.BlurView
 import expo.modules.blur.enums.BlurMethod
 import expo.modules.blur.enums.TintStyle
@@ -64,6 +65,10 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
       BlurMethod.DIMEZIS_BLUR_VIEW -> {
         applyBlurViewRadiusCompat(true, radius)
       }
+
+      BlurMethod.DIMEZIS_BLUR_VIEW_SDK_31_PLUS -> {
+        applyBlurViewRadiusCompat(Build.VERSION.SDK_INT >= 31, radius)
+      }
     }
   }
 
@@ -93,6 +98,15 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
         blurView.setBlurEnabled(true)
         setBackgroundColor(Color.TRANSPARENT)
       }
+
+      BlurMethod.DIMEZIS_BLUR_VIEW_SDK_31_PLUS -> {
+        val isNewSdk = Build.VERSION.SDK_INT >= 31
+        blurView.setBlurEnabled(isNewSdk)
+
+        if (isNewSdk) {
+          this.setBackgroundColor(Color.TRANSPARENT)
+        }
+      }
     }
     // Update of the blur to the current blurRadius value
     setBlurRadius(blurRadius)
@@ -107,12 +121,16 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) return
 
     when (blurMethod) {
+      BlurMethod.NONE -> {
+        applyBlurViewOverlayColorCompat(false)
+      }
+
       BlurMethod.DIMEZIS_BLUR_VIEW -> {
         applyBlurViewOverlayColorCompat(true)
       }
 
-      BlurMethod.NONE -> {
-        applyBlurViewOverlayColorCompat(false)
+      BlurMethod.DIMEZIS_BLUR_VIEW_SDK_31_PLUS -> {
+        applyBlurViewOverlayColorCompat(Build.VERSION.SDK_INT >= 31)
       }
     }
     blurView.invalidate()
