@@ -25,11 +25,9 @@ class AttendeeRepository(context: Context) {
     )
 
     return@withContext cursor.use { cursor ->
-      val results = mutableListOf<Attendee>()
-      while (cursor.moveToNext()) {
-        results.add(cursor.extractAttendee())
-      }
-      results
+      generateSequence {
+        if (cursor.moveToNext()) cursor.extractAttendee() else null
+      }.toList()
     }
   }
 
@@ -42,9 +40,8 @@ class AttendeeRepository(context: Context) {
   }
 
   suspend fun deleteAttendee(attendeeID: String): Boolean {
-    val rows: Int
     val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toInt().toLong())
-    rows = withContext(Dispatchers.IO) {
+    val rows = withContext(Dispatchers.IO) {
       contentResolver.delete(uri, null, null)
     }
     return rows > 0
@@ -69,7 +66,10 @@ private suspend fun ContentResolver.insertAttendee(attendee: Attendee, eventID: 
 
   val attendeesUri = CalendarContract.Attendees.CONTENT_URI
   val attendeeUri = withContext(Dispatchers.IO) { insert(attendeesUri, contentValues) }
-  return attendeeUri!!.lastPathSegment!!.toInt()
+  val attendeeID = requireNotNull(attendeeUri?.lastPathSegment) {
+    "Couldn't decode attendee ID from inserted content URI"
+  }
+  return attendeeID.toInt()
 }
 
 private suspend fun ContentResolver.updateAttendee(attendee: Attendee): Int {

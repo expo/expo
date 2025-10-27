@@ -10,6 +10,16 @@ enum class AttendeeRole(val value: String) : Enumerable {
   SPEAKER("speaker"),
   NONE("none");
 
+  val contentProviderValue
+    get() =
+      when (this) {
+        ATTENDEE -> CalendarContract.Attendees.RELATIONSHIP_ATTENDEE
+        ORGANIZER -> CalendarContract.Attendees.RELATIONSHIP_ORGANIZER
+        PERFORMER -> CalendarContract.Attendees.RELATIONSHIP_PERFORMER
+        SPEAKER -> CalendarContract.Attendees.RELATIONSHIP_SPEAKER
+        NONE -> CalendarContract.Attendees.RELATIONSHIP_NONE
+      }
+
   companion object {
     /**
      * @param constant value from `CalendarContract.Attendees.RELATIONSHIP_*`
@@ -27,14 +37,4 @@ enum class AttendeeRole(val value: String) : Enumerable {
     fun fromString(stringValue: String): AttendeeRole =
       entries.find { it.value == stringValue } ?: NONE
   }
-
-  val contentProviderValue
-    get() =
-      when (this) {
-        ATTENDEE -> CalendarContract.Attendees.RELATIONSHIP_ATTENDEE
-        ORGANIZER -> CalendarContract.Attendees.RELATIONSHIP_ORGANIZER
-        PERFORMER -> CalendarContract.Attendees.RELATIONSHIP_PERFORMER
-        SPEAKER -> CalendarContract.Attendees.RELATIONSHIP_SPEAKER
-        NONE -> CalendarContract.Attendees.RELATIONSHIP_NONE
-      }
 }

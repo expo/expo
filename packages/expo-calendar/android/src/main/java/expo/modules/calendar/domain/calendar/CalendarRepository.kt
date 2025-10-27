@@ -25,11 +25,9 @@ class CalendarRepository(context: Context) {
     requireNotNull(cursor) { "Cursor shouldn't be null" }
 
     return@withContext cursor.use { cursor ->
-      val results = mutableListOf<CalendarEntity>()
-      while (cursor.moveToNext()) {
-        results.add(cursor.extractCalendar())
-      }
-      results
+      generateSequence {
+        if (cursor.moveToNext()) cursor.extractCalendar() else null
+      }.toList()
     }
   }
 

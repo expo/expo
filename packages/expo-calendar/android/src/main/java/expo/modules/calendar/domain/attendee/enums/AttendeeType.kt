@@ -9,6 +9,14 @@ enum class AttendeeType(val value: String) : Enumerable {
   RESOURCE("resource"),
   NONE("none");
 
+  val contentProviderValue
+    get() = when (this) {
+      OPTIONAL -> CalendarContract.Attendees.TYPE_OPTIONAL
+      REQUIRED -> CalendarContract.Attendees.TYPE_REQUIRED
+      RESOURCE -> CalendarContract.Attendees.TYPE_RESOURCE
+      else -> CalendarContract.Attendees.TYPE_NONE
+    }
+
   companion object {
     /**
      * @param constant value from `CalendarContract.Attendees.TYPE_*`
@@ -25,12 +33,4 @@ enum class AttendeeType(val value: String) : Enumerable {
     fun fromString(stringValue: String): AttendeeType =
       entries.find { it.value == stringValue } ?: NONE
   }
-
-  val contentProviderValue
-    get() = when (this) {
-      OPTIONAL -> CalendarContract.Attendees.TYPE_OPTIONAL
-      REQUIRED -> CalendarContract.Attendees.TYPE_REQUIRED
-      RESOURCE -> CalendarContract.Attendees.TYPE_RESOURCE
-      else -> CalendarContract.Attendees.TYPE_NONE
-    }
 }

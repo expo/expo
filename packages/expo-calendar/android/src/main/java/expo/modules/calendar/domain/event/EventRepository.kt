@@ -51,11 +51,9 @@ class EventRepository(context: Context) {
 
       requireNotNull(cursor) { "Cursor shouldn't be null" }
       return@withContext cursor.use { cursor ->
-        val results = mutableListOf<EventEntity>()
-        while (cursor.moveToNext()) {
-          results.add(cursor.extractEvent(contentResolver))
-        }
-        results
+        generateSequence {
+          if (cursor.moveToNext()) cursor.extractEvent(contentResolver) else null
+        }.toList()
       }
     }
 
@@ -108,12 +106,11 @@ class EventRepository(context: Context) {
 
   @Throws(ParseException::class, SecurityException::class)
   suspend fun removeEvent(details: RemoveEventInput): Boolean = withContext(Dispatchers.IO) {
-    val rows: Int
     val eventID = details.id
     val instanceStartDate = details.instanceStartDate?.getTimeInMillis()
     if (instanceStartDate == null) {
       val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
-      rows = contentResolver.delete(uri, null, null)
+      val rows = contentResolver.delete(uri, null, null)
       return@withContext rows > 0
     } else {
       val exceptionValues = ContentValues().apply {

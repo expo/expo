@@ -16,10 +16,7 @@ data class RecurrenceRuleInput(
   @Field val endDate: DateTimeInput? = null
 ) : Record {
   private fun ruleEndDate(): String? {
-    val inputDate = endDate?.getTimeInMillis()
-    if (inputDate == null) {
-      return null
-    }
+    val inputDate = endDate?.getTimeInMillis() ?: return null
 
     val calendar = Calendar.getInstance().apply {
       timeInMillis = inputDate

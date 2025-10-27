@@ -10,6 +10,15 @@ enum class AttendeeStatus(val value: String) : Enumerable {
   TENTATIVE("tentative"),
   NONE("none");
 
+  val contentProviderValue
+    get() = when (this) {
+      ACCEPTED -> CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED
+      DECLINED -> CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED
+      INVITED -> CalendarContract.Attendees.ATTENDEE_STATUS_INVITED
+      TENTATIVE -> CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE
+      else -> CalendarContract.Attendees.ATTENDEE_STATUS_NONE
+    }
+
   companion object {
     /**
      * @param constant value from `CalendarContract.Attendees.ATTENDE_STATUS_*`
@@ -27,13 +36,4 @@ enum class AttendeeStatus(val value: String) : Enumerable {
     fun fromString(stringValue: String): AttendeeStatus =
       entries.find { it.value == stringValue } ?: NONE
   }
-
-  val contentProviderValue
-    get() = when (this) {
-      ACCEPTED -> CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED
-      DECLINED -> CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED
-      INVITED -> CalendarContract.Attendees.ATTENDEE_STATUS_INVITED
-      TENTATIVE -> CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE
-      else -> CalendarContract.Attendees.ATTENDEE_STATUS_NONE
-    }
 }
