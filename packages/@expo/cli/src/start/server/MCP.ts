@@ -7,6 +7,7 @@ import resolveFrom from 'resolve-from';
 import { getAccessToken, getSession } from '../../api/user/UserSettings';
 import { Log } from '../../log';
 import { env } from '../../utils/env';
+import { installExitHooks } from '../../utils/exit';
 
 const importESM = require('@expo/cli/add-module') as <T>(moduleName: string) => Promise<T>;
 
@@ -15,9 +16,13 @@ const debug = require('debug')('expo:start:server:mcp') as typeof console.log;
 /**
  * Create the MCP server
  */
-export async function maybeCreateMCPServerAsync(
-  projectRoot: string
-): Promise<McpServerProxy | null> {
+export async function maybeCreateMCPServerAsync({
+  projectRoot,
+  devServerUrl,
+}: {
+  projectRoot: string;
+  devServerUrl: string;
+}): Promise<McpServerProxy | null> {
   const mcpServer = env.EXPO_UNSTABLE_MCP_SERVER;
   if (!mcpServer) {
     return null;
@@ -58,8 +63,14 @@ export async function maybeCreateMCPServerAsync(
     const server: McpServerProxy = new TunnelMcpServerProxy(mcpServerUrl, {
       logger,
       wsHeaders: createAuthHeaders(),
+      projectRoot,
+      devServerUrl,
     });
     addMcpCapabilities(server, projectRoot);
+
+    installExitHooks(() => {
+      server.close();
+    });
 
     return server;
   } catch (error: unknown) {

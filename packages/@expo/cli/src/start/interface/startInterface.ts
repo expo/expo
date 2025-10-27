@@ -1,3 +1,4 @@
+import type { McpServerProxy } from '@expo/mcp-tunnel' with { 'resolution-mode': 'import' };
 import chalk from 'chalk';
 
 import { KeyPressHandler } from './KeyPressHandler';
@@ -36,9 +37,10 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms'>
+  options: Pick<StartOptions, 'devClient' | 'platforms'> & { mcpServer: McpServerProxy | null }
 ) {
   const actions = new DevServerManagerActions(devServerManager, options);
+  const { mcpServer } = options;
 
   const isWebSocketsEnabled = devServerManager.getDefaultDevServer()?.isTargetingNative();
 
@@ -73,6 +75,9 @@ export async function startInterfaceAsync(
         const spinner = ora({ text: 'Stopping server', color: 'white' }).start();
         try {
           await devServerManager.stopAsync();
+          if (mcpServer) {
+            await mcpServer.close();
+          }
           spinner.stopAndPersist({ text: 'Stopped server', symbol: `\u203A` });
           // @ts-ignore: Argument of type '"SIGINT"' is not assignable to parameter of type '"disconnect"'.
           process.emit('SIGINT');
