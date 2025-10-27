@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.facebook.react")
 }
 
 android {
@@ -27,20 +28,12 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -56,4 +49,24 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    implementation("com.facebook.react:react-android")
+    implementation("com.facebook.react:hermes-android")
+}
+
+val projectRoot = File(rootDir.absoluteFile, "../../minimal-tester").absolutePath
+
+react {
+    entryFile = file(listOf("node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() })
+    reactNativeDir = file(listOf("node", "--print", "require.resolve('react-native/package.json')").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absoluteFile
+    hermesCommand = file(listOf("node", "--print", "require.resolve('react-native/package.json')").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absolutePath + "/sdks/hermesc/%OS-BIN%/hermesc"
+    codegenDir = file(listOf("node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absoluteFile
+    enableBundleCompression = false
+
+    // Use Expo CLI to bundle the app, this ensures the Metro config works correctly with Expo projects.
+    cliFile = file(listOf("node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() })
+    bundleCommand = "export:embed"
+
+    /* Autolinking */
+    autolinkLibrariesWithApp()
 }
