@@ -3,12 +3,7 @@ package expo.modules.devmenu
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.MotionEvent
 import com.facebook.react.ReactHost
-import expo.interfaces.devmenu.DevMenuDelegateInterface
-import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
@@ -17,10 +12,10 @@ const val DEV_MENU_TAG = "[disabled] ExpoDevMenu"
 
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
-object DevMenuManager : DevMenuManagerInterface {
+object DevMenuManager {
   data class KeyCommand(val code: Int, val withShift: Boolean = false)
 
-  internal var delegate: DevMenuDelegateInterface? = null
+  internal var delegate: DevMenuDefaultDelegate? = null
 
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
@@ -45,31 +40,27 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun openMenu(activity: Activity, screen: String?) {
+  fun openMenu(activity: Activity) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun closeMenu() {
+  fun closeMenu() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun hideMenu() {
+  fun hideMenu() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun toggleMenu(activity: Activity) {
+  fun toggleMenu(activity: Activity) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun onKeyEvent(keyCode: Int, event: KeyEvent) = false
+  fun setDelegate(newDelegate: DevMenuDefaultDelegate) = Unit
 
-  override fun onTouchEvent(ev: MotionEvent?) = Unit
+  fun initializeWithReactHost(reactHost: ReactHost) = Unit
 
-  override fun setDelegate(newDelegate: DevMenuDelegateInterface) = Unit
-
-  override fun initializeWithReactHost(reactHost: ReactHost) = Unit
-
-  override fun getSettings(): DevMenuPreferencesInterface? {
+  fun getSettings(): DevMenuPreferencesHandle? {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
@@ -77,17 +68,17 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun synchronizeDelegate() = Unit
+  fun synchronizeDelegate() = Unit
 
-  override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
+  fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
+  fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun isInitialized(): Boolean {
+  fun isInitialized(): Boolean {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
@@ -95,7 +86,7 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override val coroutineScope: CoroutineScope
+  val coroutineScope: CoroutineScope
     get() = throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
 
   fun reload() {
