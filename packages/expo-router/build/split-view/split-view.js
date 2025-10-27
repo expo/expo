@@ -41,7 +41,7 @@ const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importStar(require("react"));
 const react_native_screens_1 = require("react-native-screens");
 const elements_1 = require("./elements");
-const withLayoutContext_1 = require("../layouts/withLayoutContext");
+const IsWithinLayoutContext_1 = require("../layouts/IsWithinLayoutContext");
 const Navigator_1 = require("../views/Navigator");
 const IsWithinSplitViewContext = (0, react_1.createContext)(false);
 function SplitViewNavigator({ children, ...splitViewHostProps }) {
@@ -49,7 +49,7 @@ function SplitViewNavigator({ children, ...splitViewHostProps }) {
         throw new Error('There can only be one SplitView in the navigation hierarchy.');
     }
     // TODO: Add better way of detecting if SplitView is rendered inside Native navigator.
-    if ((0, react_1.use)(withLayoutContext_1.IsWithinLayoutContext)) {
+    if ((0, react_1.use)(IsWithinLayoutContext_1.IsWithinLayoutContext)) {
         throw new Error('SplitView cannot be used inside another navigator, except for Slot.');
     }
     if (!expo_constants_1.default.expoConfig?.extra?.router?.unstable_splitView) {
@@ -59,9 +59,9 @@ function SplitViewNavigator({ children, ...splitViewHostProps }) {
         console.warn('SplitView is only supported on iOS. The SplitView will behave like a Slot navigator on other platforms.');
         return <Navigator_1.Slot />;
     }
-    const WrappedSlot = () => (<withLayoutContext_1.IsWithinLayoutContext value>
+    const WrappedSlot = () => (<IsWithinLayoutContext_1.IsWithinLayoutContext value>
       <Navigator_1.Slot />
-    </withLayoutContext_1.IsWithinLayoutContext>);
+    </IsWithinLayoutContext_1.IsWithinLayoutContext>);
     const allChildrenArray = react_1.default.Children.toArray(children);
     const columnChildren = allChildrenArray.filter((child) => (0, react_1.isValidElement)(child) && child.type === elements_1.SplitViewColumn);
     const inspectorChildren = allChildrenArray.filter((child) => (0, react_1.isValidElement)(child) && child.type === elements_1.SplitViewInspector);

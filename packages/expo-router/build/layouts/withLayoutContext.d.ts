@@ -1,5 +1,5 @@
 import { EventMapBase, NavigationState } from '@react-navigation/native';
-import React, { ComponentProps, ComponentType, ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
+import { ComponentProps, ComponentType, ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
 import { PickPartial } from '../types';
 import { ScreenProps } from '../useScreens';
 import { Protected } from '../views/Protected';
@@ -14,7 +14,6 @@ export declare function useFilterScreenChildren(children: ReactNode, { isCustomN
     children: any[];
     protectedScreens: Set<string>;
 };
-export declare const IsWithinLayoutContext: React.Context<boolean>;
 /**
  * Returns a navigator that automatically injects matched routes and renders nothing when there are no children.
  * Return type with `children` prop optional.

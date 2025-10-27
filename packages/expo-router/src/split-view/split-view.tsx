@@ -3,7 +3,7 @@ import React, { createContext, isValidElement, use, type ReactNode } from 'react
 import { SplitViewHost, SplitViewScreen, type SplitViewHostProps } from 'react-native-screens';
 
 import { SplitViewColumn, SplitViewInspector } from './elements';
-import { IsWithinLayoutContext } from '../layouts/withLayoutContext';
+import { IsWithinLayoutContext } from '../layouts/IsWithinLayoutContext';
 import { Slot } from '../views/Navigator';
 
 const IsWithinSplitViewContext = createContext(false);

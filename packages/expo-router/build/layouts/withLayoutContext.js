@@ -33,13 +33,13 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IsWithinLayoutContext = void 0;
 exports.useFilterScreenChildren = useFilterScreenChildren;
 exports.withLayoutContext = withLayoutContext;
 const react_1 = __importStar(require("react"));
 const Route_1 = require("../Route");
 const NativeTabTrigger_1 = require("../native-tabs/NativeBottomTabs/NativeTabTrigger");
 const useScreens_1 = require("../useScreens");
+const IsWithinLayoutContext_1 = require("./IsWithinLayoutContext");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
 function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = {}) {
@@ -108,7 +108,6 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
         };
     }, [children]);
 }
-exports.IsWithinLayoutContext = (0, react_1.createContext)(false);
 /**
  * Returns a navigator that automatically injects matched routes and renders nothing when there are no children.
  * Return type with `children` prop optional.
@@ -155,9 +154,9 @@ function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
         if (!sorted.length) {
             return null;
         }
-        return (<exports.IsWithinLayoutContext value>
+        return (<IsWithinLayoutContext_1.IsWithinLayoutContext value>
           <Nav {...props} id={contextKey} ref={ref} children={sorted}/>
-        </exports.IsWithinLayoutContext>);
+        </IsWithinLayoutContext_1.IsWithinLayoutContext>);
     }), {
         Screen: Screen_1.Screen,
         Protected: Protected_1.Protected,

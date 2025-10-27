@@ -9,7 +9,6 @@ import React, {
   ReactNode,
   RefAttributes,
   useMemo,
-  createContext,
 } from 'react';
 
 import { useContextKey } from '../Route';
@@ -19,6 +18,7 @@ import {
 } from '../native-tabs/NativeBottomTabs/NativeTabTrigger';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
+import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
 
@@ -109,8 +109,6 @@ export function useFilterScreenChildren(
     };
   }, [children]);
 }
-
-export const IsWithinLayoutContext = createContext(false);
 
 /**
  * Returns a navigator that automatically injects matched routes and renders nothing when there are no children.
