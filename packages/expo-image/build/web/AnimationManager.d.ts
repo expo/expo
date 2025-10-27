@@ -23,7 +23,7 @@ export declare function getAnimatorFromTransition(transition: ImageTransition | 
     animateInClass: string;
     animateOutClass: string;
     containerClass: string;
-    timingFunction: "linear" | "ease-in-out" | "ease-in" | "ease-out" | null;
+    timingFunction: "ease-in-out" | "ease-in" | "ease-out" | "linear" | null;
     animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down";
     duration: number;
 } | null;
