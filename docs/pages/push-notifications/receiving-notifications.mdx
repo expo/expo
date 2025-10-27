@@ -19,20 +19,20 @@ useEffect(() => {
   registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
 
   /* @info This listener is fired whenever a notification is received while the app is foregrounded. */
-  notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-    setNotification(notification);
+  const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+    console.log(notification);
   });
   /* @end */
 
   /* @info This listener is fired whenever a user taps on or interacts with a notification (works when an app is foregrounded, backgrounded, or killed). */
-  responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+  const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
     console.log(response);
   });
   /* @end */
 
   return () => {
-    Notifications.removeNotificationSubscription(notificationListener.current);
-    Notifications.removeNotificationSubscription(responseListener.current);
+    notificationListener.remove();
+    responseListener.remove();
   };
 }, []);
 ```
