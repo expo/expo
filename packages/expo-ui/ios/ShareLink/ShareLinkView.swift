@@ -37,55 +37,83 @@ struct ShareLinkView: ExpoSwiftUI.View {
     }
   }
 
-  var body: some View {
+  @ViewBuilder
+  private var shareLink: some View {
 #if !os(tvOS)
-    if #available(iOS 16.0, *) {
-      let subject = props.subject.map { Text($0) }
-      let message = props.message.map { Text($0) }
-      let preview = props.preview.flatMap { preview in
-        SharePreview(preview.title, image: Image(preview.image))
-      }
+   if #available(iOS 16.0, *) {
+     let hasChildren = props.children?.isEmpty == false
+     let subject = props.subject.map { Text($0) }
+     let message = props.message.map { Text($0) }
+     let preview = props.preview.flatMap { preview in
+       SharePreview(preview.title, image: Image(preview.image))
+     }
 
-      if let item = props.item {
-        if let preview {
-          SwiftUI.ShareLink(
-            item: item,
+     if let item = props.item {
+       if let preview {
+         SwiftUI.ShareLink(
+           item: item,
+           subject: subject,
+           message: message,
+           preview: preview,
+           label: { Children() }
+         )
+       } else if hasChildren {
+         SwiftUI.ShareLink(
+           item: item,
+           subject: subject,
+           message: message,
+           label: { Children() }
+         )
+       } else {
+         SwiftUI.ShareLink(
+           item: item,
+           subject: subject,
+           message: message
+         )
+       }
+     } else if let asyncData, let preview {
+       if hasChildren {
+         SwiftUI.ShareLink(
+            item: asyncData,
             subject: subject,
             message: message,
             preview: preview,
-            label: {
-              Children()
-            }
-          ).modifier(UIBaseViewModifier(props: props))
-        } else {
-          SwiftUI.ShareLink(
-            item: item,
+            label: { Children() }
+          ).onDisappear {
+           // cleanup if unmounted mid async request
+           asyncData.rejectContinuation()
+         }
+       } else {
+         SwiftUI.ShareLink(
+            item: asyncData,
             subject: subject,
             message: message,
-            label: {
-              Children()
-            }
-          ).modifier(UIBaseViewModifier(props: props))
-        }
-      } else if let asyncData, let preview {
-        SwiftUI.ShareLink(
-          item: asyncData,
-          subject: subject,
-          message: message,
-          preview: preview,
-          label: {
-            Children()
-          }
-        )
-        .onDisappear {
-          // performs continuation cleanup if component is unmounted mid async request
-          asyncData.rejectContinuation()
-        }
-        .modifier(UIBaseViewModifier(props: props))
-      }
-    }
+            preview: preview,
+          )
+       }
+     } else {
+       EmptyView()
+     }
+   } else {
+     EmptyView()
+   }
 #else
     EmptyView()
 #endif
-  }
+ }
+
+   var body: some View {
+ #if !os(tvOS)
+     shareLink.modifier(UIBaseViewModifier(props: props))
+       .onDisappear {
+        // cleanup if unmounted mid async request
+         if #available(iOS 16.0, *) {
+           asyncData?.rejectContinuation()
+         } else {
+         }
+       }
+ #else
+     EmptyView()
+ #endif
+   }
 }
