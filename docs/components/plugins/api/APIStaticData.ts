@@ -237,6 +237,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     Href: '/versions/unversioned/sdk/router/#href-1',
     BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/unversioned/sdk/maps/#cameraposition-2',
+    ScrubbingModeOptions: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
+    SeekTolerance: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
   },
 };
 
