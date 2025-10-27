@@ -10,6 +10,7 @@ const inline_env_vars_1 = require("./inline-env-vars");
 const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
 const server_actions_plugin_1 = require("./server-actions-plugin");
+const server_data_loaders_plugin_1 = require("./server-data-loaders-plugin");
 const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
@@ -164,6 +165,10 @@ function babelPresetExpo(api, options = {}) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
     }
     extraPlugins.push(client_module_proxy_plugin_1.reactClientReferencesPlugin);
+    // Strip loader() functions from client bundles
+    if (!isServerEnv) {
+        extraPlugins.push(server_data_loaders_plugin_1.serverDataLoadersPlugin);
+    }
     // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
     // users who are bundling using the client-only system.
     if (isReactServer) {
