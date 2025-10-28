@@ -1,0 +1,82 @@
+import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
+
+export default function App() {
+  const [cart, setCart] = useState([]);
+
+  const products = [
+    { id: '1', name: 'Samsung Galaxy S24 Ultra', price: 139999, img: 'https://i.ibb.co/tLJ5vRn/s24ultra.jpg' },
+    { id: '2', name: 'iPhone 15 Pro Max', price: 184999, img: 'https://i.ibb.co/Zh6XsfZ/iphone15.jpg' },
+    { id: '3', name: 'Redmi Note 13 Pro', price: 32999, img: 'https://i.ibb.co/3czcDzw/redmi13pro.jpg' },
+    { id: '4', name: 'Apple MacBook Air M3', price: 189999, img: 'https://i.ibb.co/9bGc5fS/macbookair.jpg' },
+    { id: '5', name: 'NoiseFit Halo Smartwatch', price: 5999, img: 'https://i.ibb.co/JxK4Gf0/noisefit.jpg' },
+  ];
+
+  const addToCart = (item) => {
+    setCart([...cart, item]);
+    alert(`${item.name} কার্টে যোগ হয়েছে!`);
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>📱 Gadget 766 — Israfil Rayhan</Text>
+      <Text style={styles.subtitle}>নতুন প্রোডাক্ট, সেরা দাম, এক ক্লিকে অর্ডার করুন 💚💛</Text>
+
+      <FlatList
+        data={products}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Image source={{ uri: item.img }} style={styles.image} />
+            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.price}>{item.price} ৳</Text>
+            <TouchableOpacity style={styles.button} onPress={() => addToCart(item)}>
+              <Text style={styles.buttonText}>🛒 কার্টে যোগ করুন</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+
+      <View style={styles.cartBox}>
+        <Text style={styles.cartText}>🛍 মোট পণ্য: {cart.length}</Text>
+        <Text style={styles.cartText}>
+          💰 মোট দাম: {cart.reduce((sum, i) => sum + i.price, 0)} ৳
+        </Text>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { backgroundColor: '#f7fbe9', padding: 15 },
+  title: { fontSize: 24, fontWeight: 'bold', color: '#2e7d32', textAlign: 'center', marginVertical: 10 },
+  subtitle: { fontSize: 16, color: '#8a8a8a', textAlign: 'center', marginBottom: 20 },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginBottom: 15,
+    padding: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  image: { width: 180, height: 180, borderRadius: 12 },
+  name: { fontSize: 16, fontWeight: 'bold', marginTop: 8, color: '#333' },
+  price: { fontSize: 16, color: '#388e3c', marginVertical: 5 },
+  button: {
+    backgroundColor: '#fdd835',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  buttonText: { color: '#000', fontWeight: 'bold' },
+  cartBox: {
+    backgroundColor: '#2e7d32',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 25,
+  },
+  cartText: { color: '#fff', fontSize: 16, textAlign: 'center' },
+});
