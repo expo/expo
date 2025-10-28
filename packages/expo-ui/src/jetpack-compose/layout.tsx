@@ -5,7 +5,9 @@ import { ExpoModifier } from '../types';
 import { getTextFromChildren } from '../utils';
 
 export type PrimitiveBaseProps = {
-  /** Modifiers for the component */
+  /**
+   * Modifiers for the component.
+   */
   modifiers?: ExpoModifier[];
 };
 

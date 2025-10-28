@@ -64,7 +64,9 @@ export type ButtonProps = {
      * Disabled state of the button.
      */
     disabled?: boolean;
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
 };
 /**

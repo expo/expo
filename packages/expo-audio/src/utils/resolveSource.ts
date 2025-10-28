@@ -3,14 +3,84 @@ import { Platform } from 'expo-modules-core';
 
 import { AudioSource } from '../Audio.types';
 
+type AudioSourceObject = Exclude<AudioSource, string | number | null>;
+
+function getAssetFromSource(source?: AudioSource | string | number | Asset | null): Asset | null {
+  if (!source) {
+    return null;
+  }
+
+  if (source instanceof Asset) {
+    return source;
+  }
+
+  if (typeof source === 'number') {
+    return Asset.fromModule(source);
+  }
+
+  if (typeof source === 'object') {
+    if ('assetId' in source && typeof source.assetId === 'number') {
+      return Asset.fromModule(source.assetId);
+    }
+    if ('uri' in source && typeof source.uri === 'string') {
+      return Asset.fromURI(source.uri);
+    }
+  }
+
+  if (typeof source === 'string') {
+    return Asset.fromURI(source);
+  }
+
+  return null;
+}
+
+function createSourceFromAsset(
+  asset: Asset,
+  extras: { assetId?: number; headers?: Record<string, string> } = {}
+): AudioSourceObject {
+  const uri = asset.localUri ?? asset.uri;
+  const result: AudioSourceObject = { uri };
+
+  if (extras.assetId != null) {
+    result.assetId = extras.assetId;
+  }
+  if (extras.headers) {
+    result.headers = extras.headers;
+  }
+
+  return result;
+}
+
 export function resolveSource(source?: AudioSource | string | number | null): AudioSource | null {
+  if (source == null) {
+    return null;
+  }
+
+  if (source instanceof Asset) {
+    return createSourceFromAsset(source);
+  }
+
   if (typeof source === 'string') {
     return { uri: source };
   }
   if (typeof source === 'number') {
     const asset = Asset.fromModule(source);
-    return { uri: asset.uri, assetId: source };
+    return createSourceFromAsset(asset, { assetId: source });
   }
+
+  if (typeof source === 'object') {
+    if ('assetId' in source && typeof source.assetId === 'number') {
+      const asset = Asset.fromModule(source.assetId);
+      return {
+        ...source,
+        uri: asset.localUri ?? asset.uri,
+      };
+    }
+    if ('uri' in source && typeof source.uri === 'string') {
+      return source;
+    }
+  }
+
   return source ?? null;
 }
 
@@ -21,32 +91,18 @@ export function resolveSource(source?: AudioSource | string | number | null): Au
 export async function resolveSourceWithDownload(
   source: AudioSource | string | number | null
 ): Promise<AudioSource | null> {
-  let asset: Asset | null = null;
-
-  // Get asset from different source types
-  if (typeof source === 'number') {
-    asset = Asset.fromModule(source);
-  } else if (source instanceof Asset) {
-    asset = source;
-  } else if (typeof source === 'string') {
-    // For remote URLs, create an asset from URI
-    asset = Asset.fromURI(source);
-  } else if (source && typeof source === 'object' && source.uri) {
-    // For source objects with URI
-    asset = Asset.fromURI(source.uri);
-  } else if (source && typeof source === 'object' && source.assetId) {
-    // For source objects with assetId
-    asset = Asset.fromModule(source.assetId);
-  }
+  const asset = getAssetFromSource(source);
+  const fallbackSource = resolveSource(source);
 
   if (asset) {
+    let assetToDownload: Asset = asset;
     try {
       // iOS AVPlayer fails to load the asset if the type is not set or can't be inferred
       // since this is an audio asset, we can safely set the type to mp3 or any other audio type
       // and iOS will be able to download and play the asset
       // Since expo-asset caches, this will only run once per asset, as long as the asset is not deleted from the cache
-      if (!asset.type) {
-        asset = new Asset({
+      if (!assetToDownload.type) {
+        assetToDownload = new Asset({
           name: asset.name,
           type: 'mp3',
           uri: asset.uri,
@@ -55,20 +111,27 @@ export async function resolveSourceWithDownload(
 
       // FYI: downloadAsync is a no-op on web and immediately returns a promise that resolves to the original url
       // TODO(@hirbod): evaluate if we should implement downloadAsync for web instead
-      await asset.downloadAsync();
+      await assetToDownload.downloadAsync();
 
       // Use the local URI if available after download
-      if (asset.localUri) {
-        let finalUri = asset.localUri;
+      if (assetToDownload.localUri) {
+        let finalUri = assetToDownload.localUri;
 
         // On web, we need to fetch the audio file and create a blob URL
         // this fully downloads the file to the user's device memory and makes it available for the user to play
         // fetch() is subject to CORS restrictions, so we need to document this for the users on web
         // TODO(@hirbod): evaluate if we should implement a downloadAsync for web instead of using fetch here
         if (Platform.OS === 'web') {
-          const response = await fetch(asset.localUri);
+          const response = await fetch(assetToDownload.localUri);
           const blob = await response.blob();
           finalUri = URL.createObjectURL(blob);
+        }
+
+        if (fallbackSource && typeof fallbackSource === 'object') {
+          return {
+            ...fallbackSource,
+            uri: finalUri,
+          };
         }
 
         return { uri: finalUri };
@@ -84,5 +147,5 @@ export async function resolveSourceWithDownload(
   }
 
   // Fallback to normal resolution
-  return resolveSource(source);
+  return fallbackSource;
 }

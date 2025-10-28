@@ -1,0 +1,1 @@
+{"version":3,"file":"static.js","sourceRoot":"","sources":["../../src/internal/static.ts"],"names":[],"mappings":";;;AAAA,uCAA2C;AAAlC,iGAAA,SAAS,OAAA;AAClB,yEAA8E;AAArE,oIAAA,2BAA2B,OAAA","sourcesContent":["export { InnerRoot } from '../static/html';\nexport { registerStaticRootComponent } from '../static/registerRootComponent';\n"]}

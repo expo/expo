@@ -10,6 +10,8 @@ import type {
   AudioMixingMode,
   VideoTrack,
   AudioTrack,
+  ScrubbingModeOptions,
+  SeekTolerance,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -87,6 +89,8 @@ export default class VideoPlayerWeb
   availableVideoTracks: VideoTrack[] = []; // Not supported on web. Dummy to match the interface.
   isExternalPlaybackActive: boolean = false; // Not supported on web. Dummy to match the interface.
   keepScreenOnWhilePlaying: boolean = false; // Not supported on web. Dummy to match the interface
+  seekTolerance: SeekTolerance = {} as SeekTolerance; // Not supported on web. Dummy to match the interface.
+  scrubbingModeOptions: ScrubbingModeOptions = {} as ScrubbingModeOptions; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {

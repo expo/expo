@@ -15,6 +15,7 @@
     "link",
     "assets",
     "build",
+    "internal",
     "vendor",
     "!src",
     "_ctx-html.js",
@@ -37,6 +38,8 @@
     "ios",
     "unstable-native-tabs.js",
     "unstable-native-tabs.d.ts",
+    "unstable-split-view.js",
+    "unstable-split-view.d.ts",
     "node",
     "plugin",
     "rsc",
@@ -68,7 +71,6 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -125,8 +127,7 @@
     "@types/react-dom": "^19.1.7",
     "@types/semver": "^7.7.0",
     "immer": "^10.1.1",
-    "react-server-dom-webpack": "~19.0.0",
-    "tsd": "^0.28.1"
+    "react-server-dom-webpack": "~19.0.0"
   },
   "dependencies": {
     "@expo/metro-runtime": "^6.1.2",

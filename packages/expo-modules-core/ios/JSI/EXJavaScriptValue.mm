@@ -170,8 +170,12 @@
 
 + (nonnull EXJavaScriptValue *)undefined
 {
-  auto undefined = std::make_shared<jsi::Value>();
   return [[EXJavaScriptValue alloc] initWithRuntime:nil value:jsi::Value::undefined()];
+}
+
++ (nonnull EXJavaScriptValue *)null
+{
+  return [[EXJavaScriptValue alloc] initWithRuntime:nil value:jsi::Value::null()];
 }
 
 + (nonnull EXJavaScriptValue *)number:(double)value

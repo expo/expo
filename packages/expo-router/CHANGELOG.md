@@ -11,6 +11,7 @@
 - Add support for server data loaders in development ([#39570](https://github.com/expo/expo/pull/39570) by [@hassankhan](https://github.com/hassankhan))
 - Add environmental variable to enable experimental web modal implementation ([#40231](https://github.com/expo/expo/pull/40231) by [@Ubax](https://github.com/Ubax))
 - Use the new error overlay UI from `@expo/log-box` ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Add split view layout support ([#39563](https://github.com/expo/expo/pull/39563) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -23,6 +24,9 @@
 - Migrate static rendering logic from `expo-router` to `@expo/router-server` ([#39374](https://github.com/expo/expo/pull/39374) by [@hassankhan](https://github.com/hassankhan))
 - Migrate RSC logic from `expo-router` to `@expo/router-server` ([#40484](https://github.com/expo/expo/pull/40484) by [@hassankhan](https://github.com/hassankhan))
 - Migrate UI code back to `expo-router` ([#40510](https://github.com/expo/expo/pull/40510) by [@hassankhan](https://github.com/hassankhan))
+- [docs] Update redirectSystemPath to include information about null return ([#40555](https://github.com/expo/expo/pull/40555) by [@Ubax](https://github.com/Ubax))
+- Expose internal API for use in `@expo/router-server` ([#40545](https://github.com/expo/expo/pull/40545) by [@hassankhan](https://github.com/hassankhan))
+- Migrate typed routes logic from `expo-router` to `@expo/router-server` ([#40576](https://github.com/expo/expo/pull/40576) by [@hassankhan](https://github.com/hassankhan))
 
 ## 6.0.13 - 2025-10-20
 

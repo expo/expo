@@ -40,6 +40,23 @@ internal struct DynamicEitherType<EitherType: AnyEither>: AnyDynamicType {
     throw NeitherTypeException(types)
   }
 
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    guard let either = result as? EitherType else {
+      throw Conversions.CastingException<EitherType>(result)
+    }
+
+    let types = eitherType.dynamicTypes()
+
+    // Try each type - one should succeed
+    for type in types {
+      if let converted = try? type.convertResult(either.value, appContext: appContext) {
+        return converted
+      }
+    }
+
+    throw NeitherTypeException(types)
+  }
+
   var description: String {
     let types = eitherType.dynamicTypes()
     return "Either<\(types.map(\.description).joined(separator: ", "))>"

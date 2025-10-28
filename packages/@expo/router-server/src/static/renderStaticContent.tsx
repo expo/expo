@@ -9,9 +9,8 @@ import '@expo/metro-runtime';
 import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
-import { InnerRoot } from 'expo-router/build/static/html';
-import { registerStaticRootComponent } from 'expo-router/build/static/registerRootComponent';
 import Head from 'expo-router/head';
+import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server.node';
 

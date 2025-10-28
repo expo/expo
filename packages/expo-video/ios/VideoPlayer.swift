@@ -11,6 +11,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   lazy var subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(owner: self)
   private var dangerousPropertiesStore = DangerousPropertiesStore()
   lazy var audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(owner: self)
+  lazy var seeker: VideoPlayerSeeker = VideoPlayerSeeker(player: self)
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .doNotMix {
@@ -52,7 +53,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
 
-      ref.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
+      seeker.seek(to: timeToSeek)
     }
   }
 
@@ -335,7 +336,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   func onPlayedToEnd(player: AVPlayer) {
     safeEmit(event: "playToEnd")
     if loop {
-      self.ref.seek(to: .zero)
+      seeker.seek(to: .zero)
       self.ref.play()
     }
   }
