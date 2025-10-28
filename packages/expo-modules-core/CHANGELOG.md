@@ -18,6 +18,7 @@
 - [Android] Added `ReactActivityHandler.onDidCreateReactActivityDelegateNotification`. ([#40537](https://github.com/expo/expo/pull/40537) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Added `ReactNativeHostHandler.onDidCreateReactHost`. ([#40561](https://github.com/expo/expo/pull/40561) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Swift's `Encodable` types can now be converted to JavaScript values. ([#40621](https://github.com/expo/expo/pull/40621) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers.
 
 ### 🐛 Bug fixes
 
@@ -39,7 +40,6 @@
 - [iOS] Added base props support for SwiftUI integration. ([#40492](https://github.com/expo/expo/pull/40492) by [@kudo](https://github.com/kudo))
 - [iOS] Removed some runtime type checks for dynamic types. ([#40611](https://github.com/expo/expo/pull/40611) by [@tsapeta](https://github.com/tsapeta))
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
-
 
 ## 3.0.22 - 2025-10-20
 
