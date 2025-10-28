@@ -1,1 +1,1 @@
-This is a flag file. It's presence triggers bundling of the @expo/log-box UI on demand during the native build. This file doesn't with the package.
+This is a flag file. It's presence triggers bundling of the @expo/log-box UI on demand during the native build. This file doesn't ship with the package.
