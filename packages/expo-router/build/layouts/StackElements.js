@@ -1,212 +1,156 @@
 "use strict";
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackHeader = exports.ScreenOptionsContext = exports.ScreensOptionsContext = exports.StackHeaderConfigurationContext = void 0;
+exports.StackHeader = void 0;
+exports.appendScreenStackPropsToOptions = appendScreenStackPropsToOptions;
 exports.StackScreen = StackScreen;
-exports.StackProtected = StackProtected;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const Screen_1 = require("../views/Screen");
-exports.StackHeaderConfigurationContext = (0, react_1.createContext)(undefined);
-function StackHeaderComponent({ asChild, children, hidden, blurEffect, style, largeStyle, }) {
-    const contextValue = (0, react_1.use)(exports.ScreenOptionsContext);
-    if (!contextValue) {
-        throw new Error('Stack.Header can only be used inside of a Stack.Screen component in a _layout file.');
+function StackHeaderComponent(props) {
+    return null;
+}
+function appendStackHeaderPropsToOptions(options, props) {
+    const flattenedStyle = react_native_1.StyleSheet.flatten(props.style);
+    const flattenedLargeStyle = react_native_1.StyleSheet.flatten(props.largeStyle);
+    if (props.hidden) {
+        return { ...options, headerShown: false };
     }
-    const { configuration, setConfiguration } = contextValue;
-    const setHeaderBackButtonConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
+    if (props.asChild) {
+        return { ...options, header: () => props.children };
+    }
+    let updatedOptions = {
+        ...options,
+        headerShown: !props.hidden,
+        headerBlurEffect: props.blurEffect,
+        headerStyle: {
+            backgroundColor: flattenedStyle?.backgroundColor,
+        },
+        headerLargeStyle: {
+            backgroundColor: flattenedLargeStyle?.backgroundColor,
+        },
+        headerShadowVisible: flattenedStyle?.shadowColor !== 'transparent',
+        headerLargeTitleShadowVisible: flattenedLargeStyle?.shadowColor !== 'transparent',
     };
-    const setHeaderLeftConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
-    };
-    const setHeaderRightConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
-    };
-    const setHeaderSearchBarConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
-    };
-    const setHeaderTitleConfiguration = (config) => {
-        setConfiguration((prev) => ({ ...prev, ...config }));
-    };
-    const currentConfig = (0, react_1.useMemo)(() => {
-        const flattenedStyle = react_native_1.StyleSheet.flatten(style);
-        const flattenedLargeStyle = react_native_1.StyleSheet.flatten(largeStyle);
-        return {
-            headerShown: !hidden,
-            headerBlurEffect: blurEffect,
-            headerStyle: {
-                backgroundColor: flattenedStyle?.backgroundColor,
-            },
-            headerLargeStyle: {
-                backgroundColor: flattenedLargeStyle?.backgroundColor,
-            },
-            headerShadowVisible: flattenedStyle?.shadowColor !== 'transparent',
-            headerLargeTitleShadowVisible: flattenedLargeStyle?.shadowColor !== 'transparent',
-        };
-    }, [hidden, blurEffect, style, largeStyle]);
-    (0, react_1.useEffect)(() => {
-        if (hidden) {
-            setConfiguration((prev) => ({ ...prev, headerShown: false }));
+    function appendChildOptions(child, options) {
+        if (child.type === StackHeaderTitle) {
+            updatedOptions = appendStackHeaderTitlePropsToOptions(updatedOptions, child.props);
         }
-        else if (asChild) {
-            setConfiguration((prev) => ({ ...prev, header: () => children }));
+        else if (child.type === StackHeaderLeft) {
+            updatedOptions = appendStackHeaderLeftPropsToOptions(updatedOptions, child.props);
+        }
+        else if (child.type === StackHeaderRight) {
+            updatedOptions = appendStackHeaderRightPropsToOptions(updatedOptions, child.props);
+        }
+        else if (child.type === StackHeaderBackButton) {
+            updatedOptions = appendStackHeaderBackButtonPropsToOptions(updatedOptions, child.props);
+        }
+        else if (child.type === StackHeaderSearchBar) {
+            updatedOptions = appendStackHeaderSearchBarPropsToOptions(updatedOptions, child.props);
         }
         else {
-            setConfiguration((prev) => ({ ...prev, ...currentConfig }));
+            updatedOptions = processUnknownChild(updatedOptions, child, appendChildOptions);
         }
-    }, [asChild, hidden, currentConfig]);
-    if (asChild) {
-        return null;
+        return updatedOptions;
     }
-    return (<exports.StackHeaderConfigurationContext value={{
-            configuration,
-            setHeaderBackButtonConfiguration,
-            setHeaderLeftConfiguration,
-            setHeaderRightConfiguration,
-            setHeaderSearchBarConfiguration,
-            setHeaderTitleConfiguration,
-        }}>
-      {children}
-    </exports.StackHeaderConfigurationContext>);
+    react_1.Children.forEach(props.children, (child) => {
+        if ((0, react_1.isValidElement)(child)) {
+            updatedOptions = appendChildOptions(child, updatedOptions);
+        }
+    });
+    return updatedOptions;
 }
-function StackHeaderLeft({ asChild, children }) {
-    const contextValue = (0, react_1.use)(exports.StackHeaderConfigurationContext);
-    if (!contextValue) {
-        throw new Error('Stack.Header.Left can only be used inside of a Stack.Header component in a _layout file.');
-    }
-    const { setHeaderLeftConfiguration } = contextValue;
-    (0, react_1.useEffect)(() => {
-        const config = asChild ? { headerLeft: () => children } : {};
-        setHeaderLeftConfiguration(config);
-    }, [children, asChild]);
+function StackHeaderLeft(props) {
     return null;
 }
-function StackHeaderRight({ asChild, children }) {
-    const contextValue = (0, react_1.use)(exports.StackHeaderConfigurationContext);
-    if (!contextValue) {
-        throw new Error('Stack.Header.Right can only be used inside of a Stack.Header component in a _layout file.');
+function appendStackHeaderLeftPropsToOptions(options, props) {
+    if (!props.asChild) {
+        return options;
     }
-    const { setHeaderRightConfiguration } = contextValue;
-    (0, react_1.useEffect)(() => {
-        const config = asChild ? { headerRight: () => children } : {};
-        setHeaderRightConfiguration(config);
-    }, [children, asChild]);
+    return {
+        ...options,
+        headerLeft: () => props.children,
+    };
+}
+function StackHeaderRight(props) {
     return null;
 }
-function StackHeaderBackButton({ children, style, withMenu, displayMode, src, hidden, }) {
-    const contextValue = (0, react_1.use)(exports.StackHeaderConfigurationContext);
-    if (!contextValue) {
-        throw new Error('Stack.Header.BackButton can only be used inside of a Stack.Header component in a _layout file.');
+function appendStackHeaderRightPropsToOptions(options, props) {
+    if (!props.asChild) {
+        return options;
     }
-    const { setHeaderBackButtonConfiguration } = contextValue;
-    (0, react_1.useEffect)(() => {
-        setHeaderBackButtonConfiguration({
-            headerBackTitle: children,
-            headerBackTitleStyle: style,
-            headerBackImageSource: src,
-            headerBackButtonDisplayMode: displayMode,
-            headerBackButtonMenuEnabled: withMenu,
-            headerBackVisible: !hidden,
-        });
-    }, []);
+    return {
+        ...options,
+        headerRight: () => props.children,
+    };
+}
+function StackHeaderBackButton(props) {
     return null;
 }
-function StackHeaderTitle({ children, style, large, largeStyle }) {
-    const contextValue = (0, react_1.use)(exports.StackHeaderConfigurationContext);
-    if (!contextValue) {
-        throw new Error('Stack.Header.Title can only be used inside of a Stack.Header component in a _layout file.');
-    }
-    const { setHeaderTitleConfiguration } = contextValue;
-    (0, react_1.useEffect)(() => {
-        const flattenedStyle = react_native_1.StyleSheet.flatten(style);
-        const flattenedLargeStyle = react_native_1.StyleSheet.flatten(largeStyle);
-        setHeaderTitleConfiguration({
-            headerTitle: children,
-            headerLargeTitle: large,
-            headerTitleAlign: flattenedStyle?.textAlign,
-            headerTitleStyle: {
-                ...flattenedStyle,
-                // This is needed because React Navigation expects color to be a string
-                color: flattenedStyle?.color ?? undefined,
-            },
-            headerLargeTitleStyle: {
-                ...flattenedLargeStyle,
-                fontWeight: flattenedLargeStyle?.fontWeight?.toString(),
-                // This is needed because React Navigation expects color to be a string
-                color: flattenedLargeStyle?.color ?? undefined,
-            },
-        });
-    }, [children, style, large, largeStyle]);
+function appendStackHeaderBackButtonPropsToOptions(options, props) {
+    return {
+        ...options,
+        headerBackTitle: props.children,
+        headerBackTitleStyle: props.style,
+        headerBackImageSource: props.src,
+        headerBackButtonDisplayMode: props.displayMode,
+        headerBackButtonMenuEnabled: props.withMenu,
+        headerBackVisible: !props.hidden,
+    };
+}
+function StackHeaderTitle(props) {
     return null;
+}
+function appendStackHeaderTitlePropsToOptions(options, props) {
+    const flattenedStyle = react_native_1.StyleSheet.flatten(props.style);
+    const flattenedLargeStyle = react_native_1.StyleSheet.flatten(props.largeStyle);
+    return {
+        ...options,
+        headerTitle: props.children,
+        headerLargeTitle: props.large,
+        headerTitleAlign: flattenedStyle?.textAlign,
+        headerTitleStyle: {
+            ...flattenedStyle,
+            color: flattenedStyle?.color ?? undefined,
+        },
+        headerLargeTitleStyle: {
+            ...flattenedLargeStyle,
+            fontWeight: flattenedLargeStyle?.fontWeight?.toString(),
+            color: flattenedLargeStyle?.color ?? undefined,
+        },
+    };
+}
+function appendStackHeaderSearchBarPropsToOptions(options, props) {
+    return {
+        ...options,
+        headerSearchBarOptions: {
+            ...props,
+        },
+    };
 }
 function StackHeaderSearchBar(props) {
-    const contextValue = (0, react_1.use)(exports.StackHeaderConfigurationContext);
-    (0, react_1.useEffect)(() => {
-        if (!contextValue) {
-            throw new Error('Stack.Header.SearchBar can only be used inside of a Stack.Header component in a _layout file.');
-        }
-        const { setHeaderSearchBarConfiguration } = contextValue;
-        setHeaderSearchBarConfiguration({
-            headerSearchBarOptions: props,
-        });
-    }, [props]);
     return null;
 }
-exports.ScreensOptionsContext = (0, react_1.createContext)(undefined);
-exports.ScreenOptionsContext = (0, react_1.createContext)(undefined);
-function StackScreen({ name, options, children, ...rest }) {
-    const contextValue = (0, react_1.use)(exports.ScreensOptionsContext);
-    const isWithinProtected = (0, react_1.use)(IsWithinProtected);
-    const [configuration, setConfiguration] = (0, react_1.useState)({});
-    if (contextValue && !name) {
-        throw new Error('A name prop is required for Stack.Screen when used inside of a Stack navigator.');
+function appendScreenStackPropsToOptions(options, props) {
+    let updatedOptions = { ...options, ...props.options };
+    function appendChildOptions(child, options) {
+        if (child.type === exports.StackHeader) {
+            updatedOptions = appendStackHeaderPropsToOptions(options, child.props);
+        }
+        else {
+            updatedOptions = processUnknownChild(options, child, appendChildOptions);
+        }
+        return updatedOptions;
     }
-    (0, react_1.useEffect)(() => {
-        if (contextValue && name) {
-            contextValue.addScreenConfiguration(name, { ...options, ...configuration });
-            return () => {
-                contextValue.removeScreenConfiguration(name);
-            };
+    react_1.Children.forEach(props.children, (child) => {
+        if ((0, react_1.isValidElement)(child)) {
+            updatedOptions = appendChildOptions(child, updatedOptions);
         }
-        return undefined;
-    }, [name]);
-    (0, react_1.useEffect)(() => {
-        if (contextValue && name) {
-            contextValue.setScreenProps(name, rest);
-            return () => {
-                contextValue.removeScreenProps(name);
-            };
-        }
-        return undefined;
-    }, [name]);
-    (0, react_1.useEffect)(() => {
-        if (contextValue && name && isWithinProtected) {
-            contextValue.addProtectedScreen(name);
-            return () => {
-                contextValue.removeProtectedScreen(name);
-            };
-        }
-        return undefined;
-    }, [name, isWithinProtected]);
-    (0, react_1.useEffect)(() => {
-        if (contextValue && name) {
-            contextValue.updateScreenConfiguration(name, { ...options, ...configuration });
-        }
-    }, [...Object.values(options ?? {}), configuration]);
-    if (!contextValue) {
-        return <Screen_1.Screen name={name} options={{ ...options }}/>;
-    }
-    return (<exports.ScreenOptionsContext value={{ configuration, setConfiguration }}>
-      {children}
-    </exports.ScreenOptionsContext>);
+    });
+    return updatedOptions;
 }
-const IsWithinProtected = (0, react_1.createContext)(false);
-function StackProtected({ guard, children }) {
-    if (!guard) {
-        return <IsWithinProtected value>{children}</IsWithinProtected>;
-    }
-    return <>{children}</>;
+function StackScreen({ children, ...rest }) {
+    return <Screen_1.Screen {...rest}/>;
 }
 exports.StackHeader = Object.assign(StackHeaderComponent, {
     Left: StackHeaderLeft,
@@ -215,4 +159,20 @@ exports.StackHeader = Object.assign(StackHeaderComponent, {
     Title: StackHeaderTitle,
     SearchBar: StackHeaderSearchBar,
 });
+function processUnknownChild(options, child, appendChildOptions) {
+    if (typeof child.type === 'function') {
+        // Handle function components (not class components)
+        const type = child.type;
+        const isClassComponent = !!type.prototype?.isReactComponent;
+        if (!isClassComponent) {
+            const renderedChildren = type(child.props);
+            react_1.Children.forEach(renderedChildren, (grandChild) => {
+                if ((0, react_1.isValidElement)(grandChild)) {
+                    options = appendChildOptions(grandChild, options);
+                }
+            });
+        }
+    }
+    return options;
+}
 //# sourceMappingURL=StackElements.js.map

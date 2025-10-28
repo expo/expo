@@ -1,6 +1,6 @@
 'use client';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { createContext, use, useEffect, useMemo, useState } from 'react';
+import { Children, isValidElement } from 'react';
 import { StyleSheet } from 'react-native';
 
 import type {
@@ -10,273 +10,206 @@ import type {
   StackHeaderRightProps,
   StackHeaderTitleProps,
   StackHeaderSearchBarProps,
-  StackHeaderConfigurationContextValue,
-  StackScreensConfigurationContextValue,
-  StackScreenConfigurationContextValue,
   StackScreenProps,
 } from './StackElements.types';
-import type { ProtectedProps } from '../views/Protected';
 import { Screen } from '../views/Screen';
 
-export const StackHeaderConfigurationContext = createContext<
-  StackHeaderConfigurationContextValue | undefined
->(undefined);
+function StackHeaderComponent(props: StackHeaderProps) {
+  return null;
+}
 
-function StackHeaderComponent({
-  asChild,
-  children,
-  hidden,
-  blurEffect,
-  style,
-  largeStyle,
-}: StackHeaderProps) {
-  const contextValue = use(ScreenOptionsContext);
-  if (!contextValue) {
-    throw new Error(
-      'Stack.Header can only be used inside of a Stack.Screen component in a _layout file.'
-    );
+function appendStackHeaderPropsToOptions(
+  options: NativeStackNavigationOptions,
+  props: StackHeaderProps
+): NativeStackNavigationOptions {
+  const flattenedStyle = StyleSheet.flatten(props.style);
+  const flattenedLargeStyle = StyleSheet.flatten(props.largeStyle);
+
+  if (props.hidden) {
+    return { ...options, headerShown: false };
   }
-  const { configuration, setConfiguration } = contextValue;
-  const setHeaderBackButtonConfiguration: StackHeaderConfigurationContextValue['setHeaderBackButtonConfiguration'] =
-    (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
-    };
-  const setHeaderLeftConfiguration: StackHeaderConfigurationContextValue['setHeaderLeftConfiguration'] =
-    (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
-    };
-  const setHeaderRightConfiguration: StackHeaderConfigurationContextValue['setHeaderRightConfiguration'] =
-    (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
-    };
-  const setHeaderSearchBarConfiguration: StackHeaderConfigurationContextValue['setHeaderSearchBarConfiguration'] =
-    (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
-    };
-  const setHeaderTitleConfiguration: StackHeaderConfigurationContextValue['setHeaderTitleConfiguration'] =
-    (config) => {
-      setConfiguration((prev) => ({ ...prev, ...config }));
-    };
 
-  const currentConfig = useMemo<NativeStackNavigationOptions>(() => {
-    const flattenedStyle = StyleSheet.flatten(style);
-    const flattenedLargeStyle = StyleSheet.flatten(largeStyle);
-    return {
-      headerShown: !hidden,
-      headerBlurEffect: blurEffect,
-      headerStyle: {
-        backgroundColor: flattenedStyle?.backgroundColor as string | undefined,
-      },
-      headerLargeStyle: {
-        backgroundColor: flattenedLargeStyle?.backgroundColor as string | undefined,
-      },
-      headerShadowVisible: flattenedStyle?.shadowColor !== 'transparent',
-      headerLargeTitleShadowVisible: flattenedLargeStyle?.shadowColor !== 'transparent',
-    };
-  }, [hidden, blurEffect, style, largeStyle]);
+  if (props.asChild) {
+    return { ...options, header: () => props.children };
+  }
 
-  useEffect(() => {
-    if (hidden) {
-      setConfiguration((prev) => ({ ...prev, headerShown: false }));
-    } else if (asChild) {
-      setConfiguration((prev) => ({ ...prev, header: () => children }));
+  let updatedOptions: NativeStackNavigationOptions = {
+    ...options,
+    headerShown: !props.hidden,
+    headerBlurEffect: props.blurEffect,
+    headerStyle: {
+      backgroundColor: flattenedStyle?.backgroundColor as string | undefined,
+    },
+    headerLargeStyle: {
+      backgroundColor: flattenedLargeStyle?.backgroundColor as string | undefined,
+    },
+    headerShadowVisible: flattenedStyle?.shadowColor !== 'transparent',
+    headerLargeTitleShadowVisible: flattenedLargeStyle?.shadowColor !== 'transparent',
+  };
+
+  function appendChildOptions(child: React.ReactElement, options: NativeStackNavigationOptions) {
+    if (child.type === StackHeaderTitle) {
+      updatedOptions = appendStackHeaderTitlePropsToOptions(
+        updatedOptions,
+        child.props as StackHeaderTitleProps
+      );
+    } else if (child.type === StackHeaderLeft) {
+      updatedOptions = appendStackHeaderLeftPropsToOptions(
+        updatedOptions,
+        child.props as StackHeaderLeftProps
+      );
+    } else if (child.type === StackHeaderRight) {
+      updatedOptions = appendStackHeaderRightPropsToOptions(
+        updatedOptions,
+        child.props as StackHeaderRightProps
+      );
+    } else if (child.type === StackHeaderBackButton) {
+      updatedOptions = appendStackHeaderBackButtonPropsToOptions(
+        updatedOptions,
+        child.props as StackHeaderBackButtonProps
+      );
+    } else if (child.type === StackHeaderSearchBar) {
+      updatedOptions = appendStackHeaderSearchBarPropsToOptions(
+        updatedOptions,
+        child.props as StackHeaderSearchBarProps
+      );
     } else {
-      setConfiguration((prev) => ({ ...prev, ...currentConfig }));
+      updatedOptions = processUnknownChild(updatedOptions, child, appendChildOptions);
     }
-  }, [asChild, hidden, currentConfig]);
-
-  if (asChild) {
-    return null;
+    return updatedOptions;
   }
 
-  return (
-    <StackHeaderConfigurationContext
-      value={{
-        configuration,
-        setHeaderBackButtonConfiguration,
-        setHeaderLeftConfiguration,
-        setHeaderRightConfiguration,
-        setHeaderSearchBarConfiguration,
-        setHeaderTitleConfiguration,
-      }}>
-      {children}
-    </StackHeaderConfigurationContext>
-  );
+  Children.forEach(props.children, (child) => {
+    if (isValidElement(child)) {
+      updatedOptions = appendChildOptions(child, updatedOptions);
+    }
+  });
+
+  return updatedOptions;
 }
 
-function StackHeaderLeft({ asChild, children }: StackHeaderLeftProps) {
-  const contextValue = use(StackHeaderConfigurationContext);
-  if (!contextValue) {
-    throw new Error(
-      'Stack.Header.Left can only be used inside of a Stack.Header component in a _layout file.'
-    );
-  }
-  const { setHeaderLeftConfiguration } = contextValue;
-  useEffect(() => {
-    const config = asChild ? { headerLeft: () => children } : {};
-    setHeaderLeftConfiguration(config);
-  }, [children, asChild]);
+function StackHeaderLeft(props: StackHeaderLeftProps) {
   return null;
 }
 
-function StackHeaderRight({ asChild, children }: StackHeaderRightProps) {
-  const contextValue = use(StackHeaderConfigurationContext);
-  if (!contextValue) {
-    throw new Error(
-      'Stack.Header.Right can only be used inside of a Stack.Header component in a _layout file.'
-    );
+function appendStackHeaderLeftPropsToOptions(
+  options: NativeStackNavigationOptions,
+  props: StackHeaderLeftProps
+): NativeStackNavigationOptions {
+  if (!props.asChild) {
+    return options;
   }
-  const { setHeaderRightConfiguration } = contextValue;
-  useEffect(() => {
-    const config = asChild ? { headerRight: () => children } : {};
-    setHeaderRightConfiguration(config);
-  }, [children, asChild]);
+
+  return {
+    ...options,
+    headerLeft: () => props.children,
+  };
+}
+
+function StackHeaderRight(props: StackHeaderRightProps) {
   return null;
 }
 
-function StackHeaderBackButton({
-  children,
-  style,
-  withMenu,
-  displayMode,
-  src,
-  hidden,
-}: StackHeaderBackButtonProps) {
-  const contextValue = use(StackHeaderConfigurationContext);
-  if (!contextValue) {
-    throw new Error(
-      'Stack.Header.BackButton can only be used inside of a Stack.Header component in a _layout file.'
-    );
+function appendStackHeaderRightPropsToOptions(
+  options: NativeStackNavigationOptions,
+  props: StackHeaderRightProps
+): NativeStackNavigationOptions {
+  if (!props.asChild) {
+    return options;
   }
-  const { setHeaderBackButtonConfiguration } = contextValue;
-  useEffect(() => {
-    setHeaderBackButtonConfiguration({
-      headerBackTitle: children,
-      headerBackTitleStyle: style,
-      headerBackImageSource: src,
-      headerBackButtonDisplayMode: displayMode,
-      headerBackButtonMenuEnabled: withMenu,
-      headerBackVisible: !hidden,
-    });
-  }, []);
+
+  return {
+    ...options,
+    headerRight: () => props.children,
+  };
+}
+
+function StackHeaderBackButton(props: StackHeaderBackButtonProps) {
   return null;
 }
 
-function StackHeaderTitle({ children, style, large, largeStyle }: StackHeaderTitleProps) {
-  const contextValue = use(StackHeaderConfigurationContext);
-  if (!contextValue) {
-    throw new Error(
-      'Stack.Header.Title can only be used inside of a Stack.Header component in a _layout file.'
-    );
-  }
-  const { setHeaderTitleConfiguration } = contextValue;
-  useEffect(() => {
-    const flattenedStyle = StyleSheet.flatten(style);
-    const flattenedLargeStyle = StyleSheet.flatten(largeStyle);
-    setHeaderTitleConfiguration({
-      headerTitle: children,
-      headerLargeTitle: large,
-      headerTitleAlign: flattenedStyle?.textAlign,
-      headerTitleStyle: {
-        ...flattenedStyle,
-        // This is needed because React Navigation expects color to be a string
-        color: (flattenedStyle?.color as string) ?? undefined,
-      },
-      headerLargeTitleStyle: {
-        ...flattenedLargeStyle,
-        fontWeight: flattenedLargeStyle?.fontWeight?.toString(),
-        // This is needed because React Navigation expects color to be a string
-        color: (flattenedLargeStyle?.color as string) ?? undefined,
-      },
-    });
-  }, [children, style, large, largeStyle]);
+function appendStackHeaderBackButtonPropsToOptions(
+  options: NativeStackNavigationOptions,
+  props: StackHeaderBackButtonProps
+): NativeStackNavigationOptions {
+  return {
+    ...options,
+    headerBackTitle: props.children,
+    headerBackTitleStyle: props.style,
+    headerBackImageSource: props.src,
+    headerBackButtonDisplayMode: props.displayMode,
+    headerBackButtonMenuEnabled: props.withMenu,
+    headerBackVisible: !props.hidden,
+  };
+}
+
+function StackHeaderTitle(props: StackHeaderTitleProps) {
   return null;
+}
+
+function appendStackHeaderTitlePropsToOptions(
+  options: NativeStackNavigationOptions,
+  props: StackHeaderTitleProps
+): NativeStackNavigationOptions {
+  const flattenedStyle = StyleSheet.flatten(props.style);
+  const flattenedLargeStyle = StyleSheet.flatten(props.largeStyle);
+
+  return {
+    ...options,
+    headerTitle: props.children,
+    headerLargeTitle: props.large,
+    headerTitleAlign: flattenedStyle?.textAlign,
+    headerTitleStyle: {
+      ...flattenedStyle,
+      color: (flattenedStyle?.color as string) ?? undefined,
+    },
+    headerLargeTitleStyle: {
+      ...flattenedLargeStyle,
+      fontWeight: flattenedLargeStyle?.fontWeight?.toString(),
+      color: (flattenedLargeStyle?.color as string) ?? undefined,
+    },
+  };
+}
+
+function appendStackHeaderSearchBarPropsToOptions(
+  options: NativeStackNavigationOptions,
+  props: StackHeaderSearchBarProps
+): NativeStackNavigationOptions {
+  return {
+    ...options,
+    headerSearchBarOptions: {
+      ...props,
+    },
+  };
 }
 
 function StackHeaderSearchBar(props: StackHeaderSearchBarProps) {
-  const contextValue = use(StackHeaderConfigurationContext);
-  useEffect(() => {
-    if (!contextValue) {
-      throw new Error(
-        'Stack.Header.SearchBar can only be used inside of a Stack.Header component in a _layout file.'
-      );
-    }
-    const { setHeaderSearchBarConfiguration } = contextValue;
-    setHeaderSearchBarConfiguration({
-      headerSearchBarOptions: props,
-    });
-  }, [props]);
   return null;
 }
 
-export const ScreensOptionsContext = createContext<
-  StackScreensConfigurationContextValue | undefined
->(undefined);
-
-export const ScreenOptionsContext = createContext<StackScreenConfigurationContextValue | undefined>(
-  undefined
-);
-
-export function StackScreen({ name, options, children, ...rest }: StackScreenProps) {
-  const contextValue = use(ScreensOptionsContext);
-  const isWithinProtected = use(IsWithinProtected);
-  const [configuration, setConfiguration] = useState<NativeStackNavigationOptions>({});
-  if (contextValue && !name) {
-    throw new Error(
-      'A name prop is required for Stack.Screen when used inside of a Stack navigator.'
-    );
+export function appendScreenStackPropsToOptions(
+  options: NativeStackNavigationOptions,
+  props: StackScreenProps
+): NativeStackNavigationOptions {
+  let updatedOptions = { ...options, ...props.options };
+  function appendChildOptions(child: React.ReactElement, options: NativeStackNavigationOptions) {
+    if (child.type === StackHeader) {
+      updatedOptions = appendStackHeaderPropsToOptions(options, child.props as StackHeaderProps);
+    } else {
+      updatedOptions = processUnknownChild(options, child, appendChildOptions);
+    }
+    return updatedOptions;
   }
-  useEffect(() => {
-    if (contextValue && name) {
-      contextValue.addScreenConfiguration(name, { ...options, ...configuration });
-      return () => {
-        contextValue.removeScreenConfiguration(name);
-      };
+  Children.forEach(props.children, (child) => {
+    if (isValidElement(child)) {
+      updatedOptions = appendChildOptions(child, updatedOptions);
     }
-    return undefined;
-  }, [name]);
-  useEffect(() => {
-    if (contextValue && name) {
-      contextValue.setScreenProps(name, rest);
-      return () => {
-        contextValue.removeScreenProps(name);
-      };
-    }
-    return undefined;
-  }, [name]);
-  useEffect(() => {
-    if (contextValue && name && isWithinProtected) {
-      contextValue.addProtectedScreen(name);
-      return () => {
-        contextValue.removeProtectedScreen(name);
-      };
-    }
-    return undefined;
-  }, [name, isWithinProtected]);
-  useEffect(() => {
-    if (contextValue && name) {
-      contextValue.updateScreenConfiguration(name, { ...options, ...configuration });
-    }
-  }, [...Object.values(options ?? {}), configuration]);
-
-  if (!contextValue) {
-    return <Screen name={name} options={{ ...options }} />;
-  }
-
-  return (
-    <ScreenOptionsContext value={{ configuration, setConfiguration }}>
-      {children}
-    </ScreenOptionsContext>
-  );
+  });
+  return updatedOptions;
 }
 
-const IsWithinProtected = createContext(false);
-
-export function StackProtected({ guard, children }: ProtectedProps) {
-  if (!guard) {
-    return <IsWithinProtected value>{children}</IsWithinProtected>;
-  }
-  return <>{children}</>;
+export function StackScreen({ children, ...rest }: StackScreenProps) {
+  return <Screen {...rest} />;
 }
 
 export const StackHeader = Object.assign(StackHeaderComponent, {
@@ -286,3 +219,28 @@ export const StackHeader = Object.assign(StackHeaderComponent, {
   Title: StackHeaderTitle,
   SearchBar: StackHeaderSearchBar,
 });
+
+function processUnknownChild<PropsT>(
+  options: NativeStackNavigationOptions,
+  child: React.ReactElement,
+  appendChildOptions: (
+    child: React.ReactElement,
+    options: NativeStackNavigationOptions
+  ) => NativeStackNavigationOptions
+) {
+  if (typeof child.type === 'function') {
+    // Handle function components (not class components)
+    const type = child.type as any;
+    const isClassComponent = !!type.prototype?.isReactComponent;
+
+    if (!isClassComponent) {
+      const renderedChildren = type(child.props);
+      Children.forEach(renderedChildren, (grandChild) => {
+        if (isValidElement(grandChild)) {
+          options = appendChildOptions(grandChild, options);
+        }
+      });
+    }
+  }
+  return options;
+}

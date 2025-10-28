@@ -3,20 +3,26 @@ import { PlatformColor, Text, View } from 'react-native';
 
 const isAllowed = false;
 
+function CustomHeader() {
+  return (
+    <Stack.Header
+      style={{ backgroundColor: 'transparent' }}
+      largeStyle={{ backgroundColor: 'transparent', shadowColor: 'transparent' }}>
+      <Stack.Header.Title
+        style={{ fontSize: 12, color: PlatformColor('systemBlue') }}
+        largeStyle={{ color: '#F00' }}
+        large>
+        Custom Header Title
+      </Stack.Header.Title>
+    </Stack.Header>
+  );
+}
+
 export default function Layout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ title: 'Test' }}>
-        <Stack.Header
-          style={{ backgroundColor: 'transparent' }}
-          largeStyle={{ backgroundColor: 'transparent', shadowColor: 'transparent' }}>
-          <Stack.Header.Title
-            style={{ fontSize: 12, color: PlatformColor('systemBlue') }}
-            largeStyle={{ color: '#F00' }}
-            large>
-            Custom Header Title
-          </Stack.Header.Title>
-        </Stack.Header>
+        <CustomHeader />
       </Stack.Screen>
       <Stack.Screen name="js-only">
         <Stack.Header

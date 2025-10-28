@@ -1,8 +1,8 @@
 import { ParamListBase, StackRouter as RNStackRouter, StackNavigationState, type RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { ComponentProps } from 'react';
-import { StackScreen, StackProtected } from './StackElements';
-import { Protected } from '../views/Protected';
+import React, { ComponentProps } from 'react';
+import { StackScreen } from './StackElements';
+import { Protected, type ProtectedProps } from '../views/Protected';
 /**
  * We extend NativeStackNavigationOptions with our custom props
  * to allow for several extra props to be used on web, like modalWidth
@@ -46,7 +46,7 @@ export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
         shadow?: string;
     };
 };
-declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -134,7 +134,7 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     }>>(original: import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>) => Partial<import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>>) | undefined;
 } & {
     id?: undefined;
-}, "children">> & import("react").RefAttributes<unknown>> & {
+}, "children">> & React.RefAttributes<unknown>> & {
     Screen: (props: import("../useScreens").ScreenProps<ExtendedStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
     Protected: typeof Protected;
 };
@@ -148,14 +148,14 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
  *
  */
 export declare const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UNSTABLE_router']>;
-declare const Stack: ((props: ComponentProps<typeof RNStack>) => import("react").JSX.Element) & {
+declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Element) & {
     Screen: typeof StackScreen;
-    Protected: typeof StackProtected;
-    Header: (({ asChild, children, hidden, blurEffect, style, largeStyle, }: import("./StackElements.types").StackHeaderProps) => import("react").JSX.Element | null) & {
-        Left: ({ asChild, children }: import("./StackElements.types").StackHeaderLeftProps) => null;
-        Right: ({ asChild, children }: import("./StackElements.types").StackHeaderRightProps) => null;
-        BackButton: ({ children, style, withMenu, displayMode, src, hidden, }: import("./StackElements.types").StackHeaderBackButtonProps) => null;
-        Title: ({ children, style, large, largeStyle }: import("./StackElements.types").StackHeaderTitleProps) => null;
+    Protected: React.FunctionComponent<ProtectedProps>;
+    Header: ((props: import("./StackElements.types").StackHeaderProps) => null) & {
+        Left: (props: import("./StackElements.types").StackHeaderLeftProps) => null;
+        Right: (props: import("./StackElements.types").StackHeaderRightProps) => null;
+        BackButton: (props: import("./StackElements.types").StackHeaderBackButtonProps) => null;
+        Title: (props: import("./StackElements.types").StackHeaderTitleProps) => null;
         SearchBar: (props: import("./StackElements.types").StackHeaderSearchBarProps) => null;
     };
 };
