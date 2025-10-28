@@ -3,32 +3,13 @@ import path from 'path';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
+import { scanFilesRecursively } from '../../utils';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
 
 interface AndroidConfigurationOutput {
   buildFromSource: string[];
-}
-
-async function* scanFilesRecursively(parentPath: string) {
-  const queue = [parentPath];
-  let targetPath: string | undefined;
-  while (queue.length > 0 && (targetPath = queue.shift()) != null) {
-    let entries: AsyncIterable<import('fs').Dirent> | Iterable<import('fs').Dirent>;
-    try {
-      entries = await fs.promises.opendir(targetPath);
-    } catch {
-      continue;
-    }
-    for await (const entry of entries) {
-      if (entry.isDirectory() && entry.name !== 'node_modules') {
-        queue.push(path.join(targetPath, entry.name));
-      } else if (entry.isFile()) {
-        yield path.join(targetPath, entry.name);
-      }
-    }
-  }
 }
 
 export function getConfiguration(
@@ -105,10 +86,10 @@ export async function resolveModuleAsync(
 
       const packages = new Set<string>();
       for await (const file of scanFilesRecursively(projectPath)) {
-        if (!file.endsWith('Package.java') && !file.endsWith('Package.kt')) {
+        if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
           continue;
         }
-        const fileContent = await fs.promises.readFile(file, 'utf8');
+        const fileContent = await fs.promises.readFile(file.path, 'utf8');
 
         // Very naive check to skip non-expo packages
         if (
@@ -120,7 +101,7 @@ export async function resolveModuleAsync(
         const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
 
         if (classPathMatches) {
-          const basename = path.basename(file, path.extname(file));
+          const basename = path.basename(file.name, path.extname(file.name));
           packages.add(`${classPathMatches[1]}.${basename}`);
         }
       }

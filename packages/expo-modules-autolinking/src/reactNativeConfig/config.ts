@@ -3,7 +3,7 @@ import path from 'path';
 import requireFromString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
-import { memoize } from '../utils';
+import { memoize, fileExistsAsync } from '../utils';
 import type { RNConfigReactNativeConfig } from './reactNativeConfig.types';
 
 let tsMain: typeof import('typescript') | null | undefined = undefined;
@@ -19,8 +19,7 @@ export const loadConfigAsync = memoize(async function loadConfigAsync<
   const [configJsPath, configTsPath] = await Promise.all(
     ['react-native.config.js', 'react-native.config.ts'].map(async (fileName) => {
       const file = path.join(packageRoot, fileName);
-      const stat = await fs.stat(file).catch(() => null);
-      return stat?.isFile() ? file : null;
+      return (await fileExistsAsync(file)) ? file : null;
     })
   );
   if (configJsPath) {

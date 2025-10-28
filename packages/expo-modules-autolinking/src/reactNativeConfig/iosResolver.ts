@@ -6,17 +6,14 @@ import type {
   RNConfigReactNativePlatformsConfigIos,
 } from './reactNativeConfig.types';
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { listFilesSorted } from '../utils';
 
-/** Find all *.podspec files in target directory */
-const findPodspecFile = async (targetPath: string) => {
-  try {
-    const entries = (await fs.promises.readdir(targetPath, { withFileTypes: true }))
-      .filter((entry) => entry.isFile() && entry.name.endsWith('.podspec'))
-      .sort((a, b) => a.name.localeCompare(b.name));
-    return entries.length > 0 ? path.join(targetPath, entries[0].name) : null;
-  } catch {
-    return null;
-  }
+/** Find first *.podspec file in target directory */
+const findPodspecFile = async (targetPath: string): Promise<string | null> => {
+  const podspecFiles = await listFilesSorted(targetPath, (basename) =>
+    basename.endsWith('.podspec')
+  );
+  return podspecFiles.length > 0 ? podspecFiles[0] : null;
 };
 
 export async function resolveDependencyConfigImplIosAsync(
