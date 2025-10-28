@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -152,21 +153,16 @@ class ComposeFunctionHolder<P : ComposeProps>(
   context: Context,
   appContext: AppContext,
   private val composableContent: @Composable ExpoViewComposableScope.(props: P) -> Unit,
-  props: P
+  override val props: P
 ) : ExpoComposeView<P>(context, appContext) {
-  override var props: P? = props
-  private var key by mutableIntStateOf(0)
+  val propsMutableState = mutableStateOf(props)
   val scope = ExpoViewComposableScope(this)
-
-  fun recompose() {
-    key++
-  }
 
   @Composable
   override fun ComposableScope.Content() {
-    LaunchedEffect(key) {}
+    val props by propsMutableState
     with(scope) {
-      composableContent(props ?: return)
+      composableContent(props)
     }
   }
 }
