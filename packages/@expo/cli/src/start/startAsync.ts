@@ -116,10 +116,11 @@ export async function startAsync(
   const defaultServerUrl = devServerManager.getDefaultDevServer()?.getDevServerUrl() ?? '';
   // Present the Terminal UI.
   if (isInteractive()) {
-    const mcpServer = await profile(maybeCreateMCPServerAsync)({
-      projectRoot,
-      devServerUrl: defaultServerUrl,
-    });
+    const mcpServer =
+      (await profile(maybeCreateMCPServerAsync)({
+        projectRoot,
+        devServerUrl: defaultServerUrl,
+      })) ?? undefined;
 
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
