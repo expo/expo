@@ -7,6 +7,7 @@ import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.records.Location
+import expo.modules.medialibrary.next.records.Shape
 
 interface AssetDelegate {
   val contentUri: Uri
@@ -15,6 +16,7 @@ interface AssetDelegate {
   suspend fun getFilename(): String
   suspend fun getHeight(): Int
   suspend fun getWidth(): Int
+  suspend fun getShape(): Shape?
   suspend fun getMediaType(): MediaType
   suspend fun getModificationTime(): Long?
   suspend fun getUri(): Uri

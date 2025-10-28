@@ -281,6 +281,13 @@ export async function test(t) {
       t.expect(height).toBeGreaterThan(0);
     });
 
+    t.it('returns a shape', async () => {
+      const shape = await asset.getShape();
+      t.expect(shape).toBeDefined();
+      t.expect(shape?.width).toBeGreaterThan(0);
+      t.expect(shape?.height).toBeGreaterThan(0);
+    });
+
     t.it('returns a media type', async () => {
       const mediaType = await asset.getMediaType();
       t.expect(mediaType).toBeDefined();

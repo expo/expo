@@ -1,0 +1,1 @@
+{"version":3,"file":"Shape.js","sourceRoot":"","sources":["../../../src/next/types/Shape.ts"],"names":[],"mappings":"","sourcesContent":["export type Shape = {\n  width: number;\n  height: number;\n};\n"]}
