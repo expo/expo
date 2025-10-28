@@ -28,11 +28,11 @@ import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
 import chalk from 'chalk';
-import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
 import type { RouteNode } from 'expo-router/build/Route';
-import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
+import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
