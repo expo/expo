@@ -1,8 +1,15 @@
-'use client';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { Children, isValidElement } from 'react';
+import { Children, Fragment, isValidElement, type ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 
+import {
+  StackHeaderTitle,
+  StackHeaderBackButton,
+  StackHeaderComponent,
+  StackHeaderLeft,
+  StackHeaderRight,
+  StackHeaderSearchBar,
+} from './elements';
 import type {
   StackHeaderBackButtonProps,
   StackHeaderLeftProps,
@@ -11,11 +18,27 @@ import type {
   StackHeaderTitleProps,
   StackHeaderSearchBarProps,
   StackScreenProps,
-} from './StackElements.types';
-import { Screen } from '../views/Screen';
+} from './types';
 
-function StackHeaderComponent(props: StackHeaderProps) {
-  return null;
+export function appendScreenStackPropsToOptions(
+  options: NativeStackNavigationOptions,
+  props: StackScreenProps
+): NativeStackNavigationOptions {
+  let updatedOptions = { ...options, ...props.options };
+  function appendChildOptions(child: React.ReactElement, options: NativeStackNavigationOptions) {
+    if (child.type === StackHeaderComponent) {
+      updatedOptions = appendStackHeaderPropsToOptions(options, child.props as StackHeaderProps);
+    } else {
+      updatedOptions = processUnknownChild(options, child, appendChildOptions);
+    }
+    return updatedOptions;
+  }
+  Children.forEach(props.children, (child) => {
+    if (isValidElement(child)) {
+      updatedOptions = appendChildOptions(child, updatedOptions);
+    }
+  });
+  return updatedOptions;
 }
 
 function appendStackHeaderPropsToOptions(
@@ -88,10 +111,6 @@ function appendStackHeaderPropsToOptions(
   return updatedOptions;
 }
 
-function StackHeaderLeft(props: StackHeaderLeftProps) {
-  return null;
-}
-
 function appendStackHeaderLeftPropsToOptions(
   options: NativeStackNavigationOptions,
   props: StackHeaderLeftProps
@@ -106,10 +125,6 @@ function appendStackHeaderLeftPropsToOptions(
   };
 }
 
-function StackHeaderRight(props: StackHeaderRightProps) {
-  return null;
-}
-
 function appendStackHeaderRightPropsToOptions(
   options: NativeStackNavigationOptions,
   props: StackHeaderRightProps
@@ -122,29 +137,6 @@ function appendStackHeaderRightPropsToOptions(
     ...options,
     headerRight: () => props.children,
   };
-}
-
-function StackHeaderBackButton(props: StackHeaderBackButtonProps) {
-  return null;
-}
-
-function appendStackHeaderBackButtonPropsToOptions(
-  options: NativeStackNavigationOptions,
-  props: StackHeaderBackButtonProps
-): NativeStackNavigationOptions {
-  return {
-    ...options,
-    headerBackTitle: props.children,
-    headerBackTitleStyle: props.style,
-    headerBackImageSource: props.src,
-    headerBackButtonDisplayMode: props.displayMode,
-    headerBackButtonMenuEnabled: props.withMenu,
-    headerBackVisible: !props.hidden,
-  };
-}
-
-function StackHeaderTitle(props: StackHeaderTitleProps) {
-  return null;
 }
 
 function appendStackHeaderTitlePropsToOptions(
@@ -171,6 +163,21 @@ function appendStackHeaderTitlePropsToOptions(
   };
 }
 
+function appendStackHeaderBackButtonPropsToOptions(
+  options: NativeStackNavigationOptions,
+  props: StackHeaderBackButtonProps
+): NativeStackNavigationOptions {
+  return {
+    ...options,
+    headerBackTitle: props.children,
+    headerBackTitleStyle: props.style,
+    headerBackImageSource: props.src,
+    headerBackButtonDisplayMode: props.displayMode,
+    headerBackButtonMenuEnabled: props.withMenu,
+    headerBackVisible: !props.hidden,
+  };
+}
+
 function appendStackHeaderSearchBarPropsToOptions(
   options: NativeStackNavigationOptions,
   props: StackHeaderSearchBarProps
@@ -183,43 +190,6 @@ function appendStackHeaderSearchBarPropsToOptions(
   };
 }
 
-function StackHeaderSearchBar(props: StackHeaderSearchBarProps) {
-  return null;
-}
-
-export function appendScreenStackPropsToOptions(
-  options: NativeStackNavigationOptions,
-  props: StackScreenProps
-): NativeStackNavigationOptions {
-  let updatedOptions = { ...options, ...props.options };
-  function appendChildOptions(child: React.ReactElement, options: NativeStackNavigationOptions) {
-    if (child.type === StackHeader) {
-      updatedOptions = appendStackHeaderPropsToOptions(options, child.props as StackHeaderProps);
-    } else {
-      updatedOptions = processUnknownChild(options, child, appendChildOptions);
-    }
-    return updatedOptions;
-  }
-  Children.forEach(props.children, (child) => {
-    if (isValidElement(child)) {
-      updatedOptions = appendChildOptions(child, updatedOptions);
-    }
-  });
-  return updatedOptions;
-}
-
-export function StackScreen({ children, ...rest }: StackScreenProps) {
-  return <Screen {...rest} />;
-}
-
-export const StackHeader = Object.assign(StackHeaderComponent, {
-  Left: StackHeaderLeft,
-  Right: StackHeaderRight,
-  BackButton: StackHeaderBackButton,
-  Title: StackHeaderTitle,
-  SearchBar: StackHeaderSearchBar,
-});
-
 function processUnknownChild<PropsT>(
   options: NativeStackNavigationOptions,
   child: React.ReactElement,
@@ -228,19 +198,42 @@ function processUnknownChild<PropsT>(
     options: NativeStackNavigationOptions
   ) => NativeStackNavigationOptions
 ) {
-  if (typeof child.type === 'function') {
+  if (isChildOfType(child, Fragment)) {
+    Children.forEach(child.props.children, (grandChild) => {
+      if (isValidElement(grandChild)) {
+        options = appendChildOptions(grandChild, options);
+      }
+    });
+  } else if (typeof child.type === 'function') {
     // Handle function components (not class components)
     const type = child.type as any;
     const isClassComponent = !!type.prototype?.isReactComponent;
 
     if (!isClassComponent) {
-      const renderedChildren = type(child.props);
-      Children.forEach(renderedChildren, (grandChild) => {
-        if (isValidElement(grandChild)) {
-          options = appendChildOptions(grandChild, options);
+      try {
+        const renderedChildren = type(child.props);
+        Children.forEach(renderedChildren, (grandChild) => {
+          if (isValidElement(grandChild)) {
+            options = appendChildOptions(grandChild, options);
+          }
+        });
+      } catch (e) {
+        if (e instanceof Error && e.message.includes('React is not defined')) {
+          throw new Error(
+            'Using hooks inside custom header components is not supported. Please avoid using hooks in components passed to Stack.Header.'
+          );
+        } else {
+          throw e;
         }
-      });
+      }
     }
   }
   return options;
+}
+
+export function isChildOfType<PropsT>(
+  element: React.ReactNode,
+  type: (props: PropsT) => unknown
+): element is ReactElement<PropsT> {
+  return isValidElement(element) && element.type === type;
 }

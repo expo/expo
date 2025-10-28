@@ -1,7 +1,7 @@
 import { ParamListBase, StackRouter as RNStackRouter, StackNavigationState, type RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React, { ComponentProps } from 'react';
-import { StackScreen } from './StackElements';
+import { StackScreen } from './stack-utils/elements';
 import { Protected, type ProtectedProps } from '../views/Protected';
 /**
  * We extend NativeStackNavigationOptions with our custom props
@@ -151,12 +151,12 @@ export declare const stackRouterOverride: NonNullable<ComponentProps<typeof RNSt
 declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Element) & {
     Screen: typeof StackScreen;
     Protected: React.FunctionComponent<ProtectedProps>;
-    Header: ((props: import("./StackElements.types").StackHeaderProps) => null) & {
-        Left: (props: import("./StackElements.types").StackHeaderLeftProps) => null;
-        Right: (props: import("./StackElements.types").StackHeaderRightProps) => null;
-        BackButton: (props: import("./StackElements.types").StackHeaderBackButtonProps) => null;
-        Title: (props: import("./StackElements.types").StackHeaderTitleProps) => null;
-        SearchBar: (props: import("./StackElements.types").StackHeaderSearchBarProps) => null;
+    Header: typeof import("./stack-utils/elements").StackHeaderComponent & {
+        Left: typeof import("./stack-utils/elements").StackHeaderLeft;
+        Right: typeof import("./stack-utils/elements").StackHeaderRight;
+        BackButton: typeof import("./stack-utils/elements").StackHeaderBackButton;
+        Title: typeof import("./stack-utils/elements").StackHeaderTitle;
+        SearchBar: typeof import("./stack-utils/elements").StackHeaderSearchBar;
     };
 };
 export default Stack;

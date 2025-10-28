@@ -43,7 +43,8 @@ const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeS
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
-const StackElements_1 = require("./StackElements");
+const elements_1 = require("./stack-utils/elements");
+const options_1 = require("./stack-utils/options");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
@@ -379,12 +380,12 @@ function mapProtectedScreen(props) {
     return {
         ...props,
         children: react_1.Children.toArray(props.children).map((child, index) => {
-            if (isChildOfType(child, StackElements_1.StackScreen)) {
-                const options = (0, StackElements_1.appendScreenStackPropsToOptions)({}, child.props);
+            if ((0, options_1.isChildOfType)(child, elements_1.StackScreen)) {
+                const options = (0, options_1.appendScreenStackPropsToOptions)({}, child.props);
                 const { children, ...rest } = child.props;
                 return <Screen_1.Screen key={child.props.name} {...rest} options={options}/>;
             }
-            else if (isChildOfType(child, Protected_1.Protected)) {
+            else if ((0, options_1.isChildOfType)(child, Protected_1.Protected)) {
                 return <Protected_1.Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)}/>;
             }
             return child;
@@ -400,9 +401,9 @@ const Stack = Object.assign((props) => {
     const rnChildren = (0, react_1.useMemo)(() => mapProtectedScreen({ guard: true, children: props.children }).children, [props.children]);
     return (<RNStack {...props} children={rnChildren} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
-    Screen: StackElements_1.StackScreen,
+    Screen: elements_1.StackScreen,
     Protected: Protected_1.Protected,
-    Header: StackElements_1.StackHeader,
+    Header: elements_1.StackHeader,
 });
 function disableAnimationInScreenOptions(options, condition) {
     if (options && typeof options === 'function') {
@@ -440,7 +441,4 @@ const StackRouter = (options) => {
     };
 };
 exports.StackRouter = StackRouter;
-function isChildOfType(element, type) {
-    return (0, react_1.isValidElement)(element) && element.type === type;
-}
 //# sourceMappingURL=StackClient.js.map

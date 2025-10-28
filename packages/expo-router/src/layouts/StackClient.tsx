@@ -17,14 +17,15 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
-import React, { Children, ComponentProps, isValidElement, useMemo, type ReactElement } from 'react';
+import React, { Children, ComponentProps, useMemo } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import { getInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { SingularOptions, getSingularId } from '../useScreens';
-import { appendScreenStackPropsToOptions, StackHeader, StackScreen } from './StackElements';
+import { StackHeader, StackScreen } from './stack-utils/elements';
+import { appendScreenStackPropsToOptions, isChildOfType } from './stack-utils/options';
 import { Protected, type ProtectedProps } from '../views/Protected';
 import { Screen } from '../views/Screen';
 
@@ -582,10 +583,3 @@ export const StackRouter: typeof RNStackRouter = (options) => {
     ...stackRouterOverride(router),
   };
 };
-
-function isChildOfType<PropsT>(
-  element: React.ReactNode,
-  type: (props: PropsT) => unknown
-): element is ReactElement<PropsT> {
-  return isValidElement(element) && element.type === type;
-}
