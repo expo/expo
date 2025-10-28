@@ -80,7 +80,6 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 
 @implementation ExpoFabricViewObjC {
   ExpoViewShadowNode::ConcreteState::Shared _state;
-  NSMutableDictionary<NSString *, id> *_changedPropsMap;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -122,34 +121,20 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   [super finalizeUpdates:updateMask];
 
   if (updateMask & RNComponentViewUpdateMaskProps) {
-    // _changedProps gets set in updateProps:oldProps: which gets called before finalizeUpdates
-    [self updateProps:_changedPropsMap];
-    [self viewDidUpdateProps];
-  }
-}
+    const auto &newProps = static_cast<const ExpoViewProps &>(*_props);
+    NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
 
-- (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps {
-  [super updateProps:props oldProps:oldProps];
-  
-  const auto &newViewProps = static_cast<const ExpoViewProps &>(*props);
-  _changedPropsMap = [[NSMutableDictionary alloc] init];
-  
-  for (const auto &item : newViewProps.propsMap) {
-    NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
-    if ([self supportsPropWithName:propName]) {
-      const auto &newPropValue = item.second;
-      bool hasValueChanged = true;
-      // oldProps is nullptr on initial mount
-      if (oldProps) {
-        const auto &oldViewProps = static_cast<const ExpoViewProps &>(*oldProps);
-        auto oldPropIt = oldViewProps.propsMap.find(item.first);
-        hasValueChanged = (oldPropIt == oldViewProps.propsMap.end() || oldPropIt->second != newPropValue);
-      }
+    for (const auto &item : newProps.propsMap) {
+      NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
 
-      if (hasValueChanged) {
-        _changedPropsMap[propName] = convertFollyDynamicToId(newPropValue);
+      // Ignore props inherited from the base view and Yoga.
+      if ([self supportsPropWithName:propName]) {
+        propsMap[propName] = convertFollyDynamicToId(item.second);
       }
     }
+
+    [self updateProps:propsMap];
+    [self viewDidUpdateProps];
   }
 }
 
