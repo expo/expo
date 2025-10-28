@@ -13,29 +13,9 @@ exports.convertPackageWithGradleToProjectName = convertPackageWithGradleToProjec
 exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("../../utils");
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
-async function* scanFilesRecursively(parentPath) {
-    const queue = [parentPath];
-    let targetPath;
-    while (queue.length > 0 && (targetPath = queue.shift()) != null) {
-        let entries;
-        try {
-            entries = await fs_1.default.promises.opendir(targetPath);
-        }
-        catch {
-            continue;
-        }
-        for await (const entry of entries) {
-            if (entry.isDirectory() && entry.name !== 'node_modules') {
-                queue.push(path_1.default.join(targetPath, entry.name));
-            }
-            else if (entry.isFile()) {
-                yield path_1.default.join(targetPath, entry.name);
-            }
-        }
-    }
-}
 function getConfiguration(options) {
     return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
 }
@@ -87,18 +67,18 @@ async function resolveModuleAsync(packageName, revision) {
             ? path_1.default.join(revision.path, project.shouldUsePublicationScriptPath)
             : undefined;
         const packages = new Set();
-        for await (const file of scanFilesRecursively(projectPath)) {
-            if (!file.endsWith('Package.java') && !file.endsWith('Package.kt')) {
+        for await (const file of (0, utils_1.scanFilesRecursively)(projectPath)) {
+            if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
                 continue;
             }
-            const fileContent = await fs_1.default.promises.readFile(file, 'utf8');
+            const fileContent = await fs_1.default.promises.readFile(file.path, 'utf8');
             // Very naive check to skip non-expo packages
             if (!/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)) {
                 continue;
             }
             const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
             if (classPathMatches) {
-                const basename = path_1.default.basename(file, path_1.default.extname(file));
+                const basename = path_1.default.basename(file.name, path_1.default.extname(file.name));
                 packages.add(`${classPathMatches[1]}.${basename}`);
             }
         }

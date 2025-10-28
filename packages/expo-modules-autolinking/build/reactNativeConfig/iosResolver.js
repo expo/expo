@@ -6,17 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveDependencyConfigImplIosAsync = resolveDependencyConfigImplIosAsync;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-/** Find all *.podspec files in target directory */
+const utils_1 = require("../utils");
+/** Find first *.podspec file in target directory */
 const findPodspecFile = async (targetPath) => {
-    try {
-        const entries = (await fs_1.default.promises.readdir(targetPath, { withFileTypes: true }))
-            .filter((entry) => entry.isFile() && entry.name.endsWith('.podspec'))
-            .sort((a, b) => a.name.localeCompare(b.name));
-        return entries.length > 0 ? path_1.default.join(targetPath, entries[0].name) : null;
-    }
-    catch {
-        return null;
-    }
+    const podspecFiles = await (0, utils_1.listFilesSorted)(targetPath, (basename) => basename.endsWith('.podspec'));
+    return podspecFiles.length > 0 ? podspecFiles[0] : null;
 };
 async function resolveDependencyConfigImplIosAsync(resolution, reactNativeConfig, expoModuleConfig) {
     if (reactNativeConfig === null) {

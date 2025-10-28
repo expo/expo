@@ -12,10 +12,7 @@ exports.parseComponentDescriptorsAsync = parseComponentDescriptorsAsync;
 exports.findGradleAndManifestAsync = findGradleAndManifestAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
-const fileExistsAsync = async (file) => {
-    const stat = await promises_1.default.stat(file).catch(() => null);
-    return stat?.isFile() ? file : null;
-};
+const utils_1 = require("../utils");
 async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeConfig, expoModuleConfig) {
     if (reactNativeConfig === null) {
         // Skip autolinking for this package.
@@ -118,40 +115,12 @@ async function parsePackageNameAsync(manifestPath, gradlePath) {
     }
     return null;
 }
-async function* scanFilesRecursively(parentPath, includeDirectory, sort = !promises_1.default.opendir) {
-    const queue = [parentPath];
-    let targetPath;
-    while (queue.length > 0 && (targetPath = queue.shift()) != null) {
-        try {
-            const entries = sort
-                ? (await promises_1.default.readdir(targetPath, { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name))
-                : await promises_1.default.opendir(targetPath);
-            for await (const entry of entries) {
-                if (entry.isDirectory() && entry.name !== 'node_modules') {
-                    if (!includeDirectory || includeDirectory(targetPath, entry.name)) {
-                        queue.push(path_1.default.join(targetPath, entry.name));
-                    }
-                }
-                else if (entry.isFile()) {
-                    yield {
-                        path: path_1.default.join(targetPath, entry.name),
-                        parentPath: targetPath,
-                        name: entry.name,
-                    };
-                }
-            }
-        }
-        catch {
-            continue;
-        }
-    }
-}
 /**
  * Parse the Java or Kotlin class name to for `ReactPackage` or `(Base|Turbo)ReactPackage`.
  */
 async function parseNativePackageClassNameAsync(packageRoot, androidDir) {
     // Search for **/*Package.{java,kt} files first
-    for await (const entry of scanFilesRecursively(androidDir, undefined, true)) {
+    for await (const entry of (0, utils_1.scanFilesRecursively)(androidDir, undefined, true)) {
         if (entry.name.endsWith('Package.java') || entry.name.endsWith('Package.kt')) {
             try {
                 const contents = await promises_1.default.readFile(entry.path);
@@ -166,11 +135,11 @@ async function parseNativePackageClassNameAsync(packageRoot, androidDir) {
         }
     }
     // Early return if the module is an Expo module
-    if (await fileExistsAsync(path_1.default.join(packageRoot, 'expo-module.config.json'))) {
+    if (await (0, utils_1.fileExistsAsync)(path_1.default.join(packageRoot, 'expo-module.config.json'))) {
         return null;
     }
     // Search all **/*.{java,kt} files
-    for await (const entry of scanFilesRecursively(androidDir, undefined, true)) {
+    for await (const entry of (0, utils_1.scanFilesRecursively)(androidDir, undefined, true)) {
         if (entry.name.endsWith('.java') || entry.name.endsWith('.kt')) {
             const contents = await promises_1.default.readFile(entry.path);
             const matched = matchNativePackageClassName(entry.path, contents);
@@ -213,7 +182,7 @@ async function parseLibraryNameAsync(androidDir, packageJson) {
     const libraryNameRegExp = /libraryName = ["'](.+)["']/;
     const gradlePath = path_1.default.join(androidDir, 'build.gradle');
     // [1] `libraryName` from build.gradle
-    if (await fileExistsAsync(gradlePath)) {
+    if (await (0, utils_1.fileExistsAsync)(gradlePath)) {
         const buildGradleContents = await promises_1.default.readFile(gradlePath, 'utf8');
         const match = buildGradleContents.match(libraryNameRegExp);
         if (match) {
@@ -222,7 +191,7 @@ async function parseLibraryNameAsync(androidDir, packageJson) {
     }
     // [2] `libraryName` from build.gradle.kts
     const gradleKtsPath = path_1.default.join(androidDir, 'build.gradle.kts');
-    if (await fileExistsAsync(gradleKtsPath)) {
+    if (await (0, utils_1.fileExistsAsync)(gradleKtsPath)) {
         const buildGradleContents = await promises_1.default.readFile(gradleKtsPath, 'utf8');
         const match = buildGradleContents.match(libraryNameRegExp);
         if (match) {
@@ -237,7 +206,7 @@ async function parseComponentDescriptorsAsync(packageRoot, packageJson) {
         : packageRoot;
     const extRe = /\.[tj]sx?$/;
     const results = new Set();
-    for await (const entry of scanFilesRecursively(jsRoot)) {
+    for await (const entry of (0, utils_1.scanFilesRecursively)(jsRoot)) {
         if (extRe.test(entry.name)) {
             const contents = await promises_1.default.readFile(entry.path);
             const matched = matchComponentDescriptors(entry.path, contents);
@@ -262,14 +231,16 @@ function matchComponentDescriptors(_filePath, contents) {
     return null;
 }
 const findAndroidManifestsAsync = async (targetPath) => {
-    const files = scanFilesRecursively(targetPath, (parentPath, name) => {
+    const files = (0, utils_1.scanFilesRecursively)(targetPath, (parentPath, name) => {
         switch (name) {
             case 'build':
             case 'debug':
-            case 'Examples':
-            case 'examples':
             case 'Pods':
                 return false;
+            case 'Examples':
+            case 'examples':
+                // Only ignore top-level examples directories in `targetPath` but not nested ones
+                return parentPath !== targetPath;
             case 'android':
                 return !/[\\/]sdks[\\/]hermes$/.test(parentPath);
             case 'androidTest':
@@ -288,7 +259,7 @@ const findAndroidManifestsAsync = async (targetPath) => {
     return manifestPaths.sort((a, b) => a.localeCompare(b));
 };
 const getFileCandidatesAsync = async (targetPath, fileNames) => {
-    const gradlePaths = await Promise.all(fileNames.map((fileName) => fileExistsAsync(path_1.default.join(targetPath, fileName))));
+    const gradlePaths = await Promise.all(fileNames.map((fileName) => (0, utils_1.fileExistsAsync)(path_1.default.join(targetPath, fileName))));
     return gradlePaths.filter((file) => file != null).sort((a, b) => a.localeCompare(b));
 };
 async function findGradleAndManifestAsync({ androidDir, isLibrary, }) {

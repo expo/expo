@@ -17,8 +17,7 @@ const mockedNativeModules = path_1.default.join(__dirname, '..', '..', 'node_mod
 exports.loadConfigAsync = (0, utils_1.memoize)(async function loadConfigAsync(packageRoot) {
     const [configJsPath, configTsPath] = await Promise.all(['react-native.config.js', 'react-native.config.ts'].map(async (fileName) => {
         const file = path_1.default.join(packageRoot, fileName);
-        const stat = await promises_1.default.stat(file).catch(() => null);
-        return stat?.isFile() ? file : null;
+        return (await (0, utils_1.fileExistsAsync)(file)) ? file : null;
     }));
     if (configJsPath) {
         return requireConfig(configJsPath, await promises_1.default.readFile(configJsPath, 'utf8'));
