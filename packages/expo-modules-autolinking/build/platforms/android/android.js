@@ -13,8 +13,8 @@ exports.convertPackageToProjectName = convertPackageToProjectName;
 exports.convertPackageWithGradleToProjectName = convertPackageWithGradleToProjectName;
 exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
 const fs_1 = __importDefault(require("fs"));
-const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("../../utils");
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
 function getConfiguration(options) {
@@ -169,11 +169,11 @@ async function findAndroidPackagesAsync(modules) {
         }
     }
     await Promise.all(flattenedSourceDirList.map(async (sourceDir) => {
-        const files = await (0, glob_1.glob)('**/*Package.{java,kt}', {
-            cwd: sourceDir,
-        });
-        for (const file of files) {
-            const fileContent = await fs_1.default.promises.readFile(path_1.default.join(sourceDir, file), 'utf8');
+        for await (const file of (0, utils_1.scanFilesRecursively)(sourceDir)) {
+            if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
+                continue;
+            }
+            const fileContent = await fs_1.default.promises.readFile(file.path, 'utf8');
             const packageRegex = (() => {
                 if (process.env.EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE) {
                     return /\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/;
@@ -188,7 +188,7 @@ async function findAndroidPackagesAsync(modules) {
             }
             const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
             if (classPathMatches) {
-                const basename = path_1.default.basename(file, path_1.default.extname(file));
+                const basename = path_1.default.basename(file.name, path_1.default.extname(file.name));
                 classes.push(`${classPathMatches[1]}.${basename}`);
             }
         }

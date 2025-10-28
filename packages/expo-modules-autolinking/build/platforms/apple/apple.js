@@ -10,22 +10,20 @@ exports.generateModulesProviderAsync = generateModulesProviderAsync;
 exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs_1 = __importDefault(require("fs"));
-const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
-const fileUtils_1 = require("../../fileUtils");
+const utils_1 = require("../../utils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
 const indent = '  ';
+/** Find all *.podspec files in top-level directories */
 async function findPodspecFiles(revision) {
     const configPodspecPaths = revision.config?.applePodspecPaths();
     if (configPodspecPaths && configPodspecPaths.length) {
         return configPodspecPaths;
     }
-    const podspecFiles = await (0, glob_1.glob)('*/*.podspec', {
-        cwd: revision.path,
-        ignore: ['**/node_modules/**'],
-    });
-    return podspecFiles;
+    else {
+        return await (0, utils_1.listFilesInDirectories)(revision.path, (basename) => basename.endsWith('.podspec'));
+    }
 }
 function getSwiftModuleNames(pods, swiftModuleNames) {
     if (swiftModuleNames && swiftModuleNames.length) {
@@ -192,7 +190,7 @@ function wrapInDebugConfigurationCheck(indentationLevel, debugBlock, releaseBloc
     return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(indentationLevel)}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
 }
 async function parseEntitlementsAsync(entitlementPath) {
-    if (!entitlementPath || !(await (0, fileUtils_1.fileExistsAsync)(entitlementPath))) {
+    if (!entitlementPath || !(await (0, utils_1.fileExistsAsync)(entitlementPath))) {
         return {};
     }
     const { stdout } = await (0, spawn_async_1.default)('plutil', ['-convert', 'json', '-o', '-', entitlementPath]);

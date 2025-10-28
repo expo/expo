@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Sort results from file discovery to keep fingerprint stable ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Refactor test suite and file discovery implementation to drop `glob` ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 
 ## 3.0.19 — 2025-10-23
 

@@ -1,9 +1,9 @@
 import fs from 'fs';
-import { glob } from 'glob';
 import path from 'path';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
+import { scanFilesRecursively } from '../../utils';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
@@ -214,12 +214,12 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Pro
 
   await Promise.all(
     flattenedSourceDirList.map(async (sourceDir) => {
-      const files = await glob('**/*Package.{java,kt}', {
-        cwd: sourceDir,
-      });
+      for await (const file of scanFilesRecursively(sourceDir)) {
+        if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
+          continue;
+        }
 
-      for (const file of files) {
-        const fileContent = await fs.promises.readFile(path.join(sourceDir, file), 'utf8');
+        const fileContent = await fs.promises.readFile(file.path, 'utf8');
 
         const packageRegex = (() => {
           if (process.env.EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE) {
@@ -237,7 +237,7 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Pro
         const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
 
         if (classPathMatches) {
-          const basename = path.basename(file, path.extname(file));
+          const basename = path.basename(file.name, path.extname(file.name));
           classes.push(`${classPathMatches[1]}.${basename}`);
         }
       }
