@@ -88,13 +88,6 @@ open class DevMenuManager: NSObject {
   @objc
   public private(set) var currentManifestURL: URL?
 
-  /**
-   For backwards compatibility in projects that call this method from AppDelegate
-   */
-  @available(*, deprecated, message: "Manual setup of DevMenuManager in AppDelegate is deprecated in favor of automatic setup with Expo Modules")
-  @objc
-  public static func configure(withBridge bridge: AnyObject) { }
-
   @objc
   public func setDelegate(_ delegate: DevMenuHostDelegate?) {
     hostDelegate = delegate
