@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Add support to SwiftUI apps ([#40542](https://github.com/expo/expo/pull/40542) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Decouple dev menu from dev launcher.
 
 ### 🐛 Bug fixes
 
