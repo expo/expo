@@ -18,19 +18,34 @@ const STORE = new node_async_hooks_1.AsyncLocalStorage();
  */
 function createRequestHandler(params, setup) {
     const run = (0, node_1.createNodeRequestScope)(STORE, params);
-    const nodeEnv = (0, node_1.createNodeEnv)(params);
     const onRequest = (0, abstract_1.createRequestHandler)({
-        ...nodeEnv,
+        ...(0, node_1.createNodeEnv)(params),
         ...setup,
-        getRoutesManifest: setup?.getRoutesManifest ?? nodeEnv.getRoutesManifest,
     });
+    async function requestHandler(request) {
+        try {
+            return await run(onRequest, request);
+        }
+        catch (error) {
+            const handleRouteError = setup?.handleRouteError;
+            if (handleRouteError && error != null && typeof error === 'object') {
+                try {
+                    return await handleRouteError(error);
+                }
+                catch {
+                    // Rethrow original error below
+                }
+            }
+            throw error;
+        }
+    }
     return async (req, res, next) => {
         if (!req?.url || !req.method) {
             return next();
         }
         try {
             const request = convertRequest(req, res);
-            const response = await run(onRequest, request);
+            const response = await requestHandler(request);
             await respond(res, response);
         }
         catch (error) {

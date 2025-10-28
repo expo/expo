@@ -41,11 +41,6 @@ function noopBeforeResponse(
 }
 
 export interface RequestHandlerParams {
-  getHtml: (request: Request, route: Route) => Promise<string | Response | null>;
-  getRoutesManifest: () => Promise<Manifest | null>;
-  getApiRoute: (route: Route) => Promise<any>;
-  getMiddleware: (route: MiddlewareInfo) => Promise<MiddlewareModule>;
-  handleRouteError: (error: Error) => Promise<Response>;
   /** Before handler response 4XX, not before unhandled error */
   beforeErrorResponse?: BeforeResponseCallback;
   /** Before handler responses */
@@ -56,17 +51,23 @@ export interface RequestHandlerParams {
   beforeAPIResponse?: BeforeResponseCallback;
 }
 
+export interface RequestHandlerInput {
+  getHtml(request: Request, route: Route): Promise<string | Response | null>;
+  getRoutesManifest(): Promise<Manifest | null>;
+  getApiRoute(route: Route): Promise<any>;
+  getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;
+}
+
 export function createRequestHandler({
   getRoutesManifest,
   getHtml,
   getApiRoute,
-  handleRouteError,
   getMiddleware,
   beforeErrorResponse = noopBeforeResponse,
   beforeResponse = noopBeforeResponse,
   beforeHTMLResponse = noopBeforeResponse,
   beforeAPIResponse = noopBeforeResponse,
-}: RequestHandlerParams) {
+}: RequestHandlerParams & RequestHandlerInput) {
   let manifest: Manifest | null = null;
 
   return async function handler(request: Request): Promise<Response> {
@@ -93,19 +94,13 @@ export function createRequestHandler({
     let url = new URL(request.url);
 
     if (manifest.middleware) {
-      try {
-        const middleware = await getMiddleware(manifest.middleware);
-        if (shouldRunMiddleware(request, middleware)) {
-          const middlewareResponse = await middleware.default(new ImmutableRequest(request));
-          if (middlewareResponse instanceof Response) {
-            return middlewareResponse;
-          }
-
-          // If middleware returns undefined/void, continue to route matching
+      const middleware = await getMiddleware(manifest.middleware);
+      if (shouldRunMiddleware(request, middleware)) {
+        const middlewareResponse = await middleware.default(new ImmutableRequest(request));
+        if (middlewareResponse instanceof Response) {
+          return middlewareResponse;
         }
-      } catch (error) {
-        // Shows RedBox in development
-        return handleRouteError(error as Error);
+        // If middleware returns undefined/void, continue to route matching
       }
     }
 
@@ -145,14 +140,8 @@ export function createRequestHandler({
         if (!route.namedRegex.test(url.pathname)) {
           continue;
         }
-
-        try {
-          const html = await getHtml(request, route);
-          return respondHTML(html, route);
-        } catch (error) {
-          // Shows RedBox in development
-          return handleRouteError(error as Error);
-        }
+        const html = await getHtml(request, route);
+        return respondHTML(html, route);
       }
     }
 
@@ -161,14 +150,8 @@ export function createRequestHandler({
       if (!route.namedRegex.test(url.pathname)) {
         continue;
       }
-
-      try {
-        const mod = await getApiRoute(route);
-        return await respondAPI(mod, request, route);
-      } catch (error) {
-        // Shows RedBox in development
-        return handleRouteError(error as Error);
-      }
+      const mod = await getApiRoute(route);
+      return await respondAPI(mod, request, route);
     }
 
     // Finally, test 404 routes
