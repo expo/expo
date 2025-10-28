@@ -7,7 +7,14 @@ module EnvHelper
 end
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
-isLogBoxEnabled = EnvHelper.env_true?("EXPO_UNSTABLE_LOG_BOX")
+# Should ExpoLogBox.bundle be packaged with the app?
+isEnabled = EnvHelper.env_true?("EXPO_UNSTABLE_LOG_BOX")
+# Should the UI be loaded from development server?
+isDevelop = EnvHelper.env_true?("EXPO_DEVELOP_LOG_BOX")
+# Should the RedBox replacement WebView be inspectable?
+isDebug = EnvHelper.env_true?("EXPO_DEBUG_LOG_BOX")
+
+shouldBuild = File.exist?(File.join(__dir__, '.bundle-on-demand'))
 
 Pod::Spec.new do |s|
   s.name           = 'ExpoLogBox'
@@ -26,9 +33,9 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   extraCompilerFlags = '$(inherited)' \
-    + (EnvHelper.env_true?("EXPO_DEVELOP_LOG_BOX") ? " -DEXPO_DEVELOP_LOG_BOX" : "") \
-    + (EnvHelper.env_true?("EXPO_DEBUG_LOG_BOX") ? " -DEXPO_DEBUG_LOG_BOX" : "") \
-    + (isLogBoxEnabled ? " -DEXPO_UNSTABLE_LOG_BOX" : "")
+    + (isDevelop ? " -DEXPO_DEVELOP_LOG_BOX" : "") \
+    + (isDebug ? " -DEXPO_DEBUG_LOG_BOX" : "") \
+    + (isEnabled ? " -DEXPO_UNSTABLE_LOG_BOX" : "")
 
   s.compiler_flags = extraCompilerFlags
   s.pod_target_xcconfig = {
@@ -39,11 +46,20 @@ Pod::Spec.new do |s|
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
 
-  if isLogBoxEnabled
+  optionalBuild = ""
+  if shouldBuild
+    optionalBuild += %Q{
+      echo "Building ExpoLogBox.bundle..."
+      #{__dir__}/scripts/with-node.sh #{__dir__}/scripts/build-bundle.mjs
+    }
+  end
+
+  if isEnabled
     script_phase = {
       :name => 'Prepare ExpoLogBox Resources',
       # NOTE(@krystofwoldrich): We might want to add a flag to always include the ExpoLogBox.bundle to cover unusual configurations.
       :script => %Q{
+        #{optionalBuild}
         echo "Preparing ExpoLogBox.bundle..."
         source="#{__dir__}/dist/ExpoLogBox.bundle/"
         dest="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLogBox.bundle/"
