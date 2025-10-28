@@ -55,7 +55,6 @@ def config = project.hasProperty("react") ? project.react : [];
 def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
 
 afterEvaluate {
-  def projectRoot = file("${rootProject.projectDir}")
   def distDir = file("${expoLogBoxDir}/dist")
   def bundleOnDemandFlagFile = file("${expoLogBoxDir}/.bundle-on-demand")
 
