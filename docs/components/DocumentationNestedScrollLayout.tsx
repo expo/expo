@@ -103,8 +103,7 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
                     </Button>
                   </Tooltip.Trigger>
                   <Tooltip.Content sideOffset={8} className="max-w-[260px] text-center text-xs">
-                    Use Cmd/Ctrl + Shift + Enter to enter immersive mode. Use the same keys to exit
-                    immersive mode.
+                    Use Cmd/Ctrl + Shift + Enter to toggle immersive mode.
                   </Tooltip.Content>
                 </Tooltip.Root>
               </div>
