@@ -13,6 +13,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// NODE_BINARY is set for Xcode builds via the `with-node.sh` script.
+const nodePath = process.env.NODE_BINARY || 'node';
 const outputLogBoxBundle = 'ExpoLogBox.bundle';
 const defaultDomComponentsBundle = 'www.bundle';
 const outputDir = join(__dirname, '../dist');
@@ -22,8 +24,9 @@ const indexHtmlPath = join(outputDir, defaultDomComponentsBundle, 'index.html');
 await rm(outputDir, { recursive: true, force: true });
 
 const result = await spawn(
-  join(__dirname, '../node_modules/.bin/expo'),
+  nodePath,
   [
+    join(__dirname, '../node_modules/.bin/expo'),
     'export:embed',
     '--platform',
     'android',

@@ -46,20 +46,24 @@ Pod::Spec.new do |s|
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
 
-  optionalBuild = ""
-  if shouldBuild
-    optionalBuild += %Q{
-      echo "Building ExpoLogBox.bundle..."
-      #{__dir__}/scripts/with-node.sh #{__dir__}/scripts/build-bundle.mjs
-    }
-  end
-
   if isEnabled
-    script_phase = {
+    if shouldBuild
+      build_bundle_script = {
+        :name => 'Build ExpoLogBox Bundle',
+        :script => %Q{
+          echo "Building ExpoLogBox.bundle..."
+          #{__dir__}/scripts/with-node.sh #{__dir__}/scripts/build-bundle.mjs
+        },
+        :execution_position => :before_compile,
+        # NOTE(@krystofwoldrich): Ideally we would specify `__dir__/**/*`, but Xcode doesn't support patterns
+        :input_files  => ["#{__dir__}/package.json"],
+        :output_files  => ["#{__dir__}/dist/ExpoLogBox.bundle"],
+      }
+    end
+    copy_bundle_script = {
       :name => 'Prepare ExpoLogBox Resources',
       # NOTE(@krystofwoldrich): We might want to add a flag to always include the ExpoLogBox.bundle to cover unusual configurations.
       :script => %Q{
-        #{optionalBuild}
         echo "Preparing ExpoLogBox.bundle..."
         source="#{__dir__}/dist/ExpoLogBox.bundle/"
         dest="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLogBox.bundle/"
@@ -77,9 +81,9 @@ Pod::Spec.new do |s|
     # :always_out_of_date is only available in CocoaPods 1.13.0 and later
     if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')
       # always run the script without warning
-      script_phase[:always_out_of_date] = "1"
+      copy_bundle_script[:always_out_of_date] = "1"
     end
-    s.script_phase = script_phase
+    s.script_phases = shouldBuild ? [build_bundle_script, copy_bundle_script] : [copy_bundle_script]
     s.resource_bundles = {
       'ExpoLogBox' => [],
     }

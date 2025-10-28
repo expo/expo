@@ -61,7 +61,9 @@ afterEvaluate {
       description = 'expo-log-box: Create bundle.'
 
       // Setup inputs and output so Gradle can cache the ExpoLogBox.bundle
-      inputs.dir expoLogBoxDirFile
+      inputs.dir project.fileTree(expoLogBoxDirFile) {
+        exclude 'dist/**'
+      }
       outputs.dir distDirFile
 
       // Generate the bundle
