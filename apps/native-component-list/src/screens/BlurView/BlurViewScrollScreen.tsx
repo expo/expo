@@ -54,7 +54,12 @@ export default function BlurScrollScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, maxWidth: 800, alignSelf: 'center', width: '100%' },
+  container: {
+    flex: 1,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
+  },
   overlayContainer: {
     position: 'absolute',
     width: '100%',
