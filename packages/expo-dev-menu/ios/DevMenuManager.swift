@@ -283,12 +283,12 @@ open class DevMenuManager: NSObject {
   func shouldShowOnboarding() -> Bool {
     return !isOnboardingFinished
   }
-  
+
   @objc
   public var isOnboardingFinished: Bool {
     return DevMenuPreferences.isOnboardingFinished
   }
-  
+
   @objc
   public func setOnboardingFinished(_ finished: Bool) {
     DevMenuPreferences.isOnboardingFinished = finished
