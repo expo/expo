@@ -4,9 +4,9 @@ import { ViewProps, View } from 'react-native';
 /**
  * Blur method to use on Android.
  *
- * - `'none'` - Falls back to a semi-transparent view instead of rendering a blur effect.
+ * - `'none'` - Renders a semi-transparent view instead of rendering a blur effect.
  *
- * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance on Android 11 and older.
+ * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance on Android SDK 30 and below.
  *
  * - `'dimezisBlurViewSdk31Plus'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library on Android SDK 31 and above, for older versions of Android falls back to 'none'. This is due to performance limitations on older versions of Android, see the [performance](#performance) section to learn more.
  *
