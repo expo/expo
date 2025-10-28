@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `transformer.asyncRequireModulePath` polluting cache with absolute path in transform output ([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 54.0.7 — 2025-10-20
