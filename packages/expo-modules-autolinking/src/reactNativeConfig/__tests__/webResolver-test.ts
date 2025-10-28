@@ -3,7 +3,6 @@ import { vol } from 'memfs';
 import { checkDependencyWebAsync } from '../webResolver';
 
 jest.mock('fs/promises');
-jest.mock('glob');
 
 describe(checkDependencyWebAsync, () => {
   afterEach(() => {
