@@ -17,8 +17,7 @@ import type { NativeTabOptions } from '../types';
 describe(createStandardAppearanceFromOptions, () => {
   it('empty options should create empty appearance', () => {
     const options: NativeTabOptions = {};
-    const baseAppearance = {};
-    const result = createStandardAppearanceFromOptions(options, baseAppearance);
+    const result = createStandardAppearanceFromOptions(options);
     const expectedItemAppearance: BottomTabsScreenItemAppearance = {
       normal: {},
       selected: {},
@@ -49,23 +48,10 @@ describe(createStandardAppearanceFromOptions, () => {
           fontSize: 30,
         },
         disableTransparentOnScrollEdge,
-      };
-      const baseAppearanceItem: BottomTabsScreenItemAppearance = {
-        normal: { tabBarItemBadgeBackgroundColor: 'orange', tabBarItemIconColor: 'purple' },
-        selected: { tabBarItemTitleFontSize: 10, tabBarItemIconColor: 'black' },
-        focused: { tabBarItemTitleFontSize: 10, tabBarItemIconColor: 'black' },
-        disabled: {},
-      };
-      const baseAppearance: BottomTabsScreenAppearance = {
-        stacked: baseAppearanceItem,
-        inline: baseAppearanceItem,
-        compactInline: baseAppearanceItem,
-        tabBarBackgroundColor: '#fff',
-        tabBarBlurEffect: 'light',
-        tabBarShadowColor: 'blue',
+        blurEffect: 'light',
       };
 
-      const result = createStandardAppearanceFromOptions(options, baseAppearance);
+      const result = createStandardAppearanceFromOptions(options);
 
       const expectedItemAppearance: BottomTabsScreenItemAppearance = {
         normal: {
@@ -139,22 +125,10 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
           fontSize: 30,
         },
         disableTransparentOnScrollEdge,
+        blurEffect: 'light',
       };
-      const baseAppearanceItem: BottomTabsScreenItemAppearance = {
-        normal: { tabBarItemBadgeBackgroundColor: 'orange', tabBarItemIconColor: 'purple' },
-        selected: { tabBarItemTitleFontSize: 10, tabBarItemIconColor: 'black' },
-        focused: { tabBarItemTitleFontSize: 10, tabBarItemIconColor: 'black' },
-        disabled: {},
-      };
-      const baseAppearance: BottomTabsScreenAppearance = {
-        stacked: baseAppearanceItem,
-        inline: baseAppearanceItem,
-        compactInline: baseAppearanceItem,
-        tabBarBackgroundColor: '#fff',
-        tabBarBlurEffect: 'light',
-        tabBarShadowColor: 'gray',
-      };
-      const result = createScrollEdgeAppearanceFromOptions(options, baseAppearance);
+
+      const result = createScrollEdgeAppearanceFromOptions(options);
       const expectedItemAppearance: BottomTabsScreenItemAppearance = {
         normal: {
           tabBarItemBadgeBackgroundColor: 'green',

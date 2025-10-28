@@ -6,16 +6,23 @@ exports.appendSelectedStyleToAppearance = appendSelectedStyleToAppearance;
 exports.appendStyleToAppearance = appendStyleToAppearance;
 exports.convertStyleToAppearance = convertStyleToAppearance;
 exports.convertStyleToItemStateAppearance = convertStyleToItemStateAppearance;
-function createStandardAppearanceFromOptions(options, baseStandardAppearance) {
+const types_1 = require("./types");
+const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
+function createStandardAppearanceFromOptions(options) {
+    let blurEffect = options.blurEffect;
+    if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
+        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
+        blurEffect = undefined;
+    }
     const appearance = appendStyleToAppearance({
         ...options.labelStyle,
         iconColor: options.iconColor,
         backgroundColor: options.backgroundColor,
-        blurEffect: options.blurEffect,
+        blurEffect,
         badgeBackgroundColor: options.badgeBackgroundColor,
         titlePositionAdjustment: options.titlePositionAdjustment,
         shadowColor: options.shadowColor,
-    }, baseStandardAppearance, ['normal', 'focused', 'selected']);
+    }, {}, ['normal', 'focused', 'selected']);
     return appendSelectedStyleToAppearance({
         ...(options.selectedLabelStyle ?? {}),
         iconColor: options.selectedIconColor,
@@ -23,16 +30,21 @@ function createStandardAppearanceFromOptions(options, baseStandardAppearance) {
         titlePositionAdjustment: options.selectedTitlePositionAdjustment,
     }, appearance);
 }
-function createScrollEdgeAppearanceFromOptions(options, baseScrollEdgeAppearance) {
+function createScrollEdgeAppearanceFromOptions(options) {
+    let blurEffect = options.disableTransparentOnScrollEdge ? options.blurEffect : 'none';
+    if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
+        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
+        blurEffect = undefined;
+    }
     const appearance = appendStyleToAppearance({
         ...options.labelStyle,
         iconColor: options.iconColor,
-        blurEffect: options.disableTransparentOnScrollEdge ? options.blurEffect : 'none',
+        blurEffect,
         backgroundColor: options.disableTransparentOnScrollEdge ? options.backgroundColor : null,
         shadowColor: options.disableTransparentOnScrollEdge ? options.shadowColor : 'transparent',
         badgeBackgroundColor: options.badgeBackgroundColor,
         titlePositionAdjustment: options.titlePositionAdjustment,
-    }, baseScrollEdgeAppearance, ['normal', 'focused', 'selected']);
+    }, {}, ['normal', 'focused', 'selected']);
     return appendSelectedStyleToAppearance({
         ...(options.selectedLabelStyle ?? {}),
         iconColor: options.selectedIconColor,

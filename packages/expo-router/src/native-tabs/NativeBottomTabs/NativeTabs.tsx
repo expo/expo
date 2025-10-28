@@ -1,3 +1,5 @@
+// We need this file to re-export the navigator
+// Otherwise rsc would fail
 import { NativeTabsNavigatorWithContext } from './NativeBottomTabsNavigator';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import type { NativeTabsProps } from './types';

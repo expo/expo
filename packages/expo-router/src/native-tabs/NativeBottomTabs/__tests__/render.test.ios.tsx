@@ -216,21 +216,6 @@ describe('First focused tab', () => {
       expect(screen.getByTestId('second')).toBeVisible();
       expect(screen.queryByTestId('index')).toBeNull();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      expect((NativeTabsView as jest.Mock).mock.calls[0][0].builder.state).toMatchObject({
-        type: 'tab',
-        routeNames: ['first', 'second'],
-        index: 0,
-        routes: [
-          expect.objectContaining({
-            key: expect.any(String),
-            name: 'first',
-          }),
-          expect.objectContaining({
-            key: expect.any(String),
-            name: 'second',
-          }),
-        ],
-      });
     });
   });
 

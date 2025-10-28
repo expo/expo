@@ -6,26 +6,37 @@ import type {
 } from 'react-native-screens';
 
 import {
+  SUPPORTED_BLUR_EFFECTS,
   type NativeTabOptions,
   type NativeTabsBlurEffect,
   type NativeTabsLabelStyle,
 } from './types';
 
+const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
+
 export function createStandardAppearanceFromOptions(
-  options: NativeTabOptions,
-  baseStandardAppearance: BottomTabsScreenAppearance
+  options: NativeTabOptions
 ): BottomTabsScreenAppearance {
+  let blurEffect = options.blurEffect;
+  if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
+    console.warn(
+      `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map(
+        (effect) => `"${effect}"`
+      ).join(', ')}`
+    );
+    blurEffect = undefined;
+  }
   const appearance = appendStyleToAppearance(
     {
       ...options.labelStyle,
       iconColor: options.iconColor,
       backgroundColor: options.backgroundColor,
-      blurEffect: options.blurEffect,
+      blurEffect,
       badgeBackgroundColor: options.badgeBackgroundColor,
       titlePositionAdjustment: options.titlePositionAdjustment,
       shadowColor: options.shadowColor,
     },
-    baseStandardAppearance,
+    {},
     ['normal', 'focused', 'selected']
   );
   return appendSelectedStyleToAppearance(
@@ -40,20 +51,28 @@ export function createStandardAppearanceFromOptions(
 }
 
 export function createScrollEdgeAppearanceFromOptions(
-  options: NativeTabOptions,
-  baseScrollEdgeAppearance: BottomTabsScreenAppearance
+  options: NativeTabOptions
 ): BottomTabsScreenAppearance {
+  let blurEffect = options.disableTransparentOnScrollEdge ? options.blurEffect : 'none';
+  if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
+    console.warn(
+      `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map(
+        (effect) => `"${effect}"`
+      ).join(', ')}`
+    );
+    blurEffect = undefined;
+  }
   const appearance = appendStyleToAppearance(
     {
       ...options.labelStyle,
       iconColor: options.iconColor,
-      blurEffect: options.disableTransparentOnScrollEdge ? options.blurEffect : 'none',
+      blurEffect,
       backgroundColor: options.disableTransparentOnScrollEdge ? options.backgroundColor : null,
       shadowColor: options.disableTransparentOnScrollEdge ? options.shadowColor : 'transparent',
       badgeBackgroundColor: options.badgeBackgroundColor,
       titlePositionAdjustment: options.titlePositionAdjustment,
     },
-    baseScrollEdgeAppearance,
+    {},
     ['normal', 'focused', 'selected']
   );
   return appendSelectedStyleToAppearance(
