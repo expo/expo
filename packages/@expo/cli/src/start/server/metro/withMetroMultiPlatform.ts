@@ -168,7 +168,6 @@ export function withExtendedResolver(
     tsconfig,
     autolinkingModuleResolverInput,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
     isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
@@ -176,7 +175,6 @@ export function withExtendedResolver(
     tsconfig: TsConfigPaths | null;
     autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactServerComponentsEnabled?: boolean;
     getMetroBundler: () => Bundler;
@@ -184,9 +182,6 @@ export function withExtendedResolver(
 ) {
   if (isReactServerComponentsEnabled) {
     Log.warn(`React Server Components (beta) is enabled.`);
-  }
-  if (isFastResolverEnabled) {
-    Log.log(chalk.dim`Fast resolver is enabled.`);
   }
 
   const aliases: { [key: string]: Record<string, string> } = {
@@ -903,7 +898,6 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
-    isFastResolverEnabled,
     isExporting,
 
     isReactServerComponentsEnabled,
@@ -914,7 +908,6 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     isAutolinkingResolverEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
     isExporting?: boolean;
 
     isReactServerComponentsEnabled: boolean;
@@ -988,7 +981,6 @@ export async function withMetroMultiPlatformAsync(
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
     isReactServerComponentsEnabled,
     getMetroBundler,
   });
