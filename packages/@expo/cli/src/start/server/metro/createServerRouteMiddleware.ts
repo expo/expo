@@ -9,9 +9,8 @@ import type { ProjectConfig } from '@expo/config';
 import type { MiddlewareSettings } from 'expo-server';
 import { createRequestHandler } from 'expo-server/adapter/http';
 import { type RouteInfo } from 'expo-server/private';
-import resolve from 'resolve';
+import path from 'path';
 import resolveFrom from 'resolve-from';
-import { promisify } from 'util';
 
 import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
@@ -23,11 +22,6 @@ import {
 import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
-
-const resolveAsync = promisify(resolve) as any as (
-  id: string,
-  opts: resolve.AsyncOpts
-) => Promise<string | null>;
 
 export function createRouteHandlerMiddleware(
   projectRoot: string,
@@ -144,11 +138,10 @@ export function createRouteHandlerMiddleware(
           warnInvalidWebOutput();
         }
 
-        const resolvedFunctionPath = await resolveAsync(route.file, {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-          basedir: options.appDir,
-        })!;
-
+        // TODO(@kitten): Unify with MetroBundlerDevServer#exportExpoRouterApiRoutesAsync
+        const resolvedFunctionPath = path.isAbsolute(route.file)
+          ? route.file
+          : path.join(options.appDir, route.file);
         try {
           debug(`Bundling API route at: ${resolvedFunctionPath}`);
           return await options.bundleApiRoute(resolvedFunctionPath!);
@@ -188,11 +181,10 @@ export function createRouteHandlerMiddleware(
           };
         }
 
-        const resolvedFunctionPath = await resolveAsync(route.file, {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-          basedir: options.appDir,
-        })!;
-
+        // TODO(@kitten): Unify with MetroBundlerDevServer#exportMiddleware
+        const resolvedFunctionPath = path.isAbsolute(route.file)
+          ? route.file
+          : path.join(options.appDir, route.file);
         try {
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
           const middlewareModule = (await options.bundleApiRoute(resolvedFunctionPath!)) as any;
