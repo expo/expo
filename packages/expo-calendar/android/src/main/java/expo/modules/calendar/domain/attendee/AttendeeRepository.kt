@@ -17,10 +17,10 @@ class AttendeeRepository(context: Context) {
   private val contentResolver
     get() = contextRef.get()?.contentResolver ?: throw Exceptions.ReactContextLost()
 
-  suspend fun findAttendeesByEventId(eventID: String): List<Attendee> = withContext(Dispatchers.IO) {
+  suspend fun findAttendeesByEventId(eventId: String): List<Attendee> = withContext(Dispatchers.IO) {
     val cursor = CalendarContract.Attendees.query(
       contentResolver,
-      eventID.toLong(),
+      eventId.toLong(),
       findAttendeesByEventIdQueryParameters
     )
 
@@ -39,8 +39,8 @@ class AttendeeRepository(context: Context) {
     }
   }
 
-  suspend fun deleteAttendee(attendeeID: String): Boolean {
-    val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toInt().toLong())
+  suspend fun deleteAttendee(attendeeId: String): Boolean {
+    val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeId.toInt().toLong())
     val rows = withContext(Dispatchers.IO) {
       contentResolver.delete(uri, null, null)
     }
@@ -66,19 +66,19 @@ private suspend fun ContentResolver.insertAttendee(attendee: Attendee, eventID: 
 
   val attendeesUri = CalendarContract.Attendees.CONTENT_URI
   val attendeeUri = withContext(Dispatchers.IO) { insert(attendeesUri, contentValues) }
-  val attendeeID = requireNotNull(attendeeUri?.lastPathSegment) {
+  val attendeeId = requireNotNull(attendeeUri?.lastPathSegment) {
     "Couldn't decode attendee ID from inserted content URI"
   }
-  return attendeeID.toInt()
+  return attendeeId.toInt()
 }
 
 private suspend fun ContentResolver.updateAttendee(attendee: Attendee): Int {
-  val attendeeID = requireNotNull(attendee.id?.toInt()) { "Attendee ID must be present when updating" }
+  val attendeeId = requireNotNull(attendee.id?.toInt()) { "Attendee ID must be present when updating" }
 
-  val updateUri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
+  val updateUri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeId.toLong())
 
   withContext(Dispatchers.IO) {
     update(updateUri, attendee.toContentValues(), null, null)
   }
-  return attendeeID
+  return attendeeId
 }

@@ -57,8 +57,8 @@ class EventRepository(context: Context) {
       }
     }
 
-  suspend fun findEventById(eventID: String): EventEntity? = withContext(Dispatchers.IO) {
-    val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toInt().toLong())
+  suspend fun findEventById(eventId: String): EventEntity? = withContext(Dispatchers.IO) {
+    val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId.toInt().toLong())
     val selection = "((${CalendarContract.Events.DELETED} != 1))"
     val cursor = contentResolver.query(
       uri,
@@ -81,13 +81,16 @@ class EventRepository(context: Context) {
     val eventsUri = CalendarContract.Events.CONTENT_URI
     val eventUri = contentResolver.insert(eventsUri, payload)
       ?: throw EventNotSavedException()
-    val eventID = eventUri.lastPathSegment!!.toInt()
+
+    val eventId = requireNotNull(eventUri.lastPathSegment) {
+      "Couldn't decode event ID from inserted content URI"
+    }.toInt()
 
     eventInput.alarms?.let { reminders ->
-      createRemindersForEvent(eventID, reminders)
+      createRemindersForEvent(eventId, reminders)
     }
 
-    return@withContext eventID
+    return@withContext eventId
   }
 
   suspend fun updateEvent(updateInput: EventUpdateInput): Int = withContext(Dispatchers.IO) {
@@ -123,7 +126,7 @@ class EventRepository(context: Context) {
     return@withContext true
   }
 
-  private suspend fun createRemindersForEvent(eventID: Int, reminders: List<Alarm>) = withContext(Dispatchers.IO) {
+  private suspend fun createRemindersForEvent(eventId: Int, reminders: List<Alarm>) = withContext(Dispatchers.IO) {
     for (reminder in reminders) {
       ensureActive()
       if (reminder.relativeOffset == null) {
@@ -134,7 +137,7 @@ class EventRepository(context: Context) {
       val method = reminder.method?.contentProviderValue ?: CalendarContract.Reminders.METHOD_DEFAULT
 
       val reminderValues = ContentValues().apply {
-        put(CalendarContract.Reminders.EVENT_ID, eventID)
+        put(CalendarContract.Reminders.EVENT_ID, eventId)
         put(CalendarContract.Reminders.MINUTES, minutes)
         put(CalendarContract.Reminders.METHOD, method)
       }
@@ -142,11 +145,11 @@ class EventRepository(context: Context) {
     }
   }
 
-  private suspend fun removeRemindersForEvent(eventID: Int) = withContext(Dispatchers.IO) {
+  private suspend fun removeRemindersForEvent(eventId: Int) = withContext(Dispatchers.IO) {
     val projection = arrayOf(CalendarContract.Reminders._ID)
     val cursor = CalendarContract.Reminders.query(
       contentResolver,
-      eventID.toLong(),
+      eventId.toLong(),
       projection
     )
 

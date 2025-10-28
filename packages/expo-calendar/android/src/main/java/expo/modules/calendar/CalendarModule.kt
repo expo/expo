@@ -92,24 +92,24 @@ class CalendarModule : Module() {
     AsyncFunction("saveCalendarAsync") Coroutine { calendarInput: Either<NewCalendarInput, CalendarUpdateInput> ->
       checkPermissions()
       try {
-        val calendarID = if (calendarInput.`is`(CalendarUpdateInput::class)) {
+        val calendarId = if (calendarInput.`is`(CalendarUpdateInput::class)) {
           calendarRepository.updateCalendar(calendarInput.second())
         } else {
           calendarRepository.createCalendar(calendarInput.first())
         }
-        return@Coroutine calendarID.toString()
+        return@Coroutine calendarId.toString()
       } catch (e: Exception) {
         throw CalendarNotSavedException("Calendar could not be saved: " + e.message, e)
       }
     }
 
-    AsyncFunction("deleteCalendarAsync") Coroutine { calendarID: String ->
+    AsyncFunction("deleteCalendarAsync") Coroutine { calendarId: String ->
       checkPermissions()
-      val successful = calendarRepository.deleteCalendar(calendarID)
+      val successful = calendarRepository.deleteCalendar(calendarId)
       if (successful) {
         return@Coroutine
       } else {
-        throw CalendarNotDeletedException("Calendar with id $calendarID could not be deleted")
+        throw CalendarNotDeletedException("Calendar with id '$calendarId' could not be deleted")
       }
     }
 
@@ -123,10 +123,10 @@ class CalendarModule : Module() {
       }
     }
 
-    AsyncFunction("getEventByIdAsync") Coroutine { eventID: String ->
+    AsyncFunction("getEventByIdAsync") Coroutine { eventId: String ->
       checkPermissions()
-      val results = eventRepository.findEventById(eventID).ifNull {
-        throw EventNotFoundException("Event with id $eventID could not be found")
+      val results = eventRepository.findEventById(eventId).ifNull {
+        throw EventNotFoundException("Event with id $eventId could not be found")
       }
       return@Coroutine results
     }
@@ -148,27 +148,27 @@ class CalendarModule : Module() {
       val successful = try {
         eventRepository.removeEvent(details)
       } catch (e: Exception) {
-        throw EventNotDeletedException("Event with id ${details.id} could not be deleted", e)
+        throw EventNotDeletedException("Event with id '${details.id}' could not be deleted", e)
       }
 
       if (!successful) {
-        throw EventNotDeletedException("Event with id ${details.id} could not be deleted")
+        throw EventNotDeletedException("Event with id '${details.id}' could not be deleted")
       }
     }
 
-    AsyncFunction("getAttendeesForEventAsync") Coroutine { eventID: String ->
+    AsyncFunction("getAttendeesForEventAsync") Coroutine { eventId: String ->
       checkPermissions()
-      val results = attendeeRepository.findAttendeesByEventId(eventID)
+      val results = attendeeRepository.findAttendeesByEventId(eventId)
       return@Coroutine results
     }
 
-    AsyncFunction("saveAttendeeForEventAsync") Coroutine { details: Attendee, eventID: String? ->
+    AsyncFunction("saveAttendeeForEventAsync") Coroutine { details: Attendee, eventId: String? ->
       checkPermissions()
       try {
-        val attendeeID = attendeeRepository.saveAttendeeForEvent(details, eventID)
+        val attendeeID = attendeeRepository.saveAttendeeForEvent(details, eventId)
         return@Coroutine attendeeID.toString()
       } catch (e: Exception) {
-        throw AttendeeNotSavedException("Attendees for event with id $eventID could not be saved", e)
+        throw AttendeeNotSavedException("Attendees for event with id '$eventId' could not be saved", e)
       }
     }
 
@@ -199,9 +199,9 @@ class CalendarModule : Module() {
     /**
      * @deprecated in favor of openEventInCalendarAsync
      * */
-    AsyncFunction("openEventInCalendar") { eventID: String ->
+    AsyncFunction("openEventInCalendar") { eventId: String ->
       val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-      val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
+      val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId.toLong())
       val sendIntent = Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setData(uri)
       if (sendIntent.resolveActivity(context.packageManager) != null) {
         context.startActivity(sendIntent)

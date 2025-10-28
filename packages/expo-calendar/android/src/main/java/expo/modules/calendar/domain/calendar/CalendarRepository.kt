@@ -31,8 +31,8 @@ class CalendarRepository(context: Context) {
     }
   }
 
-  suspend fun findCalendarById(calendarID: String): CalendarEntity? = withContext(Dispatchers.IO) {
-    val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toInt().toLong())
+  suspend fun findCalendarById(calendarId: String): CalendarEntity? = withContext(Dispatchers.IO) {
+    val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId.toInt().toLong())
     val cursor = contentResolver.query(
       uri,
       findCalendarByIdQueryFields,
@@ -57,16 +57,19 @@ class CalendarRepository(context: Context) {
     val calendarUri = withContext(Dispatchers.IO) {
       contentResolver.insert(calendarsUri, calendarInput.toContentValues())
     }
-    return calendarUri!!.lastPathSegment!!.toInt()
+    val calendarId = requireNotNull(calendarUri?.lastPathSegment) {
+      "Couldn't decode calendar ID from inserted content URI"
+    }
+    return calendarId.toInt()
   }
 
   suspend fun updateCalendar(updateInput: CalendarUpdateInput): Int {
-    val calendarID = updateInput.id.toInt()
-    val updateUri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toLong())
+    val calendarId = updateInput.id.toInt()
+    val updateUri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId.toLong())
     withContext(Dispatchers.IO) {
       contentResolver.update(updateUri, updateInput.toContentValues(), null, null)
     }
-    return calendarID
+    return calendarId
   }
 
   @Throws(SecurityException::class)

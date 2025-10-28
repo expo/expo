@@ -35,7 +35,7 @@ data class NewCalendarInput(
     put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, title)
     put(CalendarContract.Calendars.VISIBLE, isVisible)
     put(CalendarContract.Calendars.SYNC_EVENTS, isSynced)
-    put(CalendarContract.Calendars.ACCOUNT_NAME, source.name!!)
+    put(CalendarContract.Calendars.ACCOUNT_NAME, source.name)
     put(CalendarContract.Calendars.ACCOUNT_TYPE, source.resolvedType)
     put(CalendarContract.Calendars.CALENDAR_COLOR, color)
     put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, accessLevel.contentProviderValue)
