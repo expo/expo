@@ -58,7 +58,7 @@ Expo Maps provides access to the platform native map APIs on Android and iOS.
 <Tab label="For Google Play Store">
 
 - **If you are deploying your app to the Google Play Store**, you'll need to [upload your app binary to Google Play console](/submit/android/) at least once. This is required for Google to generate your app signing credentials.
-- Go to the **[Google Play Console](https://play.google.com/console) > (your app) > Release > Setup > App integrity > App Signing**.
+- Go to the **[Google Play Console](https://play.google.com/console) > (your app) > Test and release > App integrity > Play app signing > Settings > App signing key certificate**.
 - Copy the value of **SHA-1 certificate fingerprint**.
 
 </Tab>
@@ -100,7 +100,7 @@ Expo Maps provides access to the platform native map APIs on Android and iOS.
 
 ## Permissions
 
-To display the user's location on the map, you need to declare and request location permission beforehand. You can configure this using the built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+To display the user's location on the map, you need to declare and request location permission beforehand. You can configure this using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
 <ConfigPluginExample>
 

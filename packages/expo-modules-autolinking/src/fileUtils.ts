@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { glob, GlobOptions } from 'glob';
+import { glob, type GlobOptions, type GlobOptionsWithFileTypesTrue } from 'glob';
 import path from 'path';
 
 /**
@@ -20,13 +20,19 @@ export async function fileExistsAsync(file: string): Promise<boolean> {
 export async function globMatchFunctorAllAsync(
   globPattern: string,
   matchFunctor: MatchFunctor,
-  options?: GlobOptions
+  options?: Omit<GlobOptions, 'withFileTypes'>
 ): Promise<string[]> {
-  const globStream = glob.stream(globPattern, { ...options, withFileTypes: false });
+  const globStream = glob.stream(globPattern, {
+    ...options,
+    withFileTypes: true,
+  } as GlobOptionsWithFileTypesTrue);
   const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
   const results: string[] = [];
-  for await (const file of globStream) {
-    let filePath = file.toString();
+  for await (const globPath of globStream) {
+    if (!globPath.isFile()) {
+      continue;
+    }
+    let filePath = globPath.fullpath();
     if (!path.isAbsolute(filePath)) {
       filePath = path.resolve(cwd, filePath);
     }
@@ -45,12 +51,18 @@ export async function globMatchFunctorAllAsync(
 export async function globMatchFunctorFirstAsync(
   globPattern: string,
   matchFunctor: MatchFunctor,
-  options?: GlobOptions
+  options?: Omit<GlobOptions, 'withFileTypes'>
 ): Promise<string | null> {
-  const globStream = glob.stream(globPattern, { ...options, withFileTypes: false });
+  const globStream = glob.stream(globPattern, {
+    ...options,
+    withFileTypes: true,
+  } as GlobOptionsWithFileTypesTrue);
   const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
-  for await (const file of globStream) {
-    let filePath = file.toString();
+  for await (const globPath of globStream) {
+    if (!globPath.isFile()) {
+      continue;
+    }
+    let filePath = globPath.fullpath();
     if (!path.isAbsolute(filePath)) {
       filePath = path.resolve(cwd, filePath);
     }

@@ -3,6 +3,7 @@ package expo.modules.kotlin.sharedobjects
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.RuntimeContext
+import kotlin.reflect.KClass
 
 /**
  * Shared object (ref) that holds a strong reference to any native object. Allows passing references
@@ -29,3 +30,6 @@ inline fun <reified RefType> SharedRef<*>.cast(): SharedRef<RefType>? {
 
   return null
 }
+
+fun KClass<*>.isSharedRefClass() =
+  SharedRef::class.java.isAssignableFrom(this.java)

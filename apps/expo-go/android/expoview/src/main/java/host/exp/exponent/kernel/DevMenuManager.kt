@@ -22,6 +22,7 @@ import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.modules.ExponentKernelModule
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.ShakeDetector
+import host.exp.exponent.utils.currentDeviceIsAPhone
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -88,7 +89,9 @@ class DevMenuManager {
         // We need to force the device to use portrait orientation as the dev menu doesn't support landscape.
         // However, when removing it, we should set it back to the orientation from before showing the dev menu.
         orientationBeforeShowingDevMenu = activity.requestedOrientation
-        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        if (currentDeviceIsAPhone(activity)) {
+          activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
 
         devMenuView.view?.let {
           activity.addReactViewToContentContainer(it)

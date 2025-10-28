@@ -19,7 +19,6 @@ import expo.modules.kotlin.types.TypeConverterProvider
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
-import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
@@ -32,18 +31,16 @@ class RecordTypeConverter<T : Record>(
   private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> by lazy {
     (type.classifier as KClass<*>)
       .memberProperties
-      .map { property ->
-        val fieldAnnotation = property.findAnnotation<Field>() ?: return@map null
+      .mapNotNull { property ->
+        val fieldAnnotation = property.findAnnotation<Field>() ?: return@mapNotNull null
         val typeConverter = converterProvider.obtainTypeConverter(property.returnType)
 
-        return@map property to PropertyDescriptor(
+        return@mapNotNull property to PropertyDescriptor(
           typeConverter,
           fieldAnnotation,
-          isRequired = property.findAnnotation<Required>() != null,
-          validators = getValidators(property)
+          isRequired = property.findAnnotation<Required>() != null
         )
       }
-      .filterNotNull()
       .toMap()
   }
 
@@ -89,15 +86,6 @@ class RecordTypeConverter<T : Record>(
             descriptor.typeConverter.convert(this, context, forceConversion)
           }
 
-          if (casted != null) {
-            descriptor
-              .validators
-              .forEach { validator ->
-                @Suppress("UNCHECKED_CAST")
-                (validator as FieldValidator<Any>).validate(casted)
-              }
-          }
-
           javaField.isAccessible = true
           javaField.set(instance, casted)
         }
@@ -111,25 +99,9 @@ class RecordTypeConverter<T : Record>(
     return objectConstructorFactory.get(clazz)
   }
 
-  private fun getValidators(property: KProperty1<out Any, *>): List<FieldValidator<*>> {
-    return property
-      .annotations
-      .map findValidators@{ annotation ->
-        val binderAnnotation = annotation.annotationClass.findAnnotation<BindUsing>()
-          ?: return@findValidators null
-        annotation to binderAnnotation
-      }
-      .filterNotNull()
-      .map { (annotation, binderAnnotation) ->
-        val binderInstance = binderAnnotation.binder.createInstance() as ValidationBinder
-        binderInstance.bind(annotation, property.returnType)
-      }
-  }
-
   private data class PropertyDescriptor(
     val typeConverter: TypeConverter<*>,
     val fieldAnnotation: Field,
-    val isRequired: Boolean,
-    val validators: List<FieldValidator<*>>
+    val isRequired: Boolean
   )
 }

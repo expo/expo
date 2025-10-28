@@ -1,8 +1,6 @@
-import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
+import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { Animated, Button, Image, StyleSheet, TextInput, View } from 'react-native';
-
-export { default as LifecycleAwareView } from './LifecycleAwareView';
 
 const IMGS = [
   require('./img/dawid-zawila-628275-unsplash.jpg'),
@@ -26,7 +24,7 @@ const Background: React.FunctionComponent<{ index: number }> = ({ index }) => (
 
 type Links = { Details: undefined | { index?: number } };
 
-type Props = StackScreenProps<Links, 'Details'>;
+type Props = NativeStackScreenProps<Links, 'Details'>;
 
 class DetailsScreen extends React.Component<Props, { count: number; text: string }> {
   animvalue = new Animated.Value(0);
@@ -83,7 +81,7 @@ class DetailsScreen extends React.Component<Props, { count: number; text: string
   }
 }
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const App = () => (
   <Stack.Navigator>

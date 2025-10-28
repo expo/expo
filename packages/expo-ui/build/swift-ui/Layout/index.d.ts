@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 type TapEvent = ViewEvent<'onTap', object> & {
@@ -6,7 +7,7 @@ type TapEvent = ViewEvent<'onTap', object> & {
 interface StackBaseProps extends CommonViewModifierProps {
     children: React.ReactNode;
     spacing?: number;
-    backgroundColor?: string;
+    backgroundColor?: ColorValue;
     /**
      * Callback triggered when the view is pressed.
      */
@@ -29,5 +30,9 @@ export interface GroupProps extends CommonViewModifierProps {
     onPress?: () => void;
 }
 export declare function Group(props: GroupProps): import("react").JSX.Element;
+export interface ZStackProps extends StackBaseProps {
+    alignment?: 'center' | 'leading' | 'trailing' | 'top' | 'bottom' | 'topLeading' | 'topTrailing' | 'bottomLeading' | 'bottomTrailing' | 'centerFirstTextBaseline' | 'centerLastTextBaseline' | 'leadingFirstTextBaseline' | 'leadingLastTextBaseline' | 'trailingFirstTextBaseline' | 'trailingLastTextBaseline';
+}
+export declare function ZStack(props: ZStackProps): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

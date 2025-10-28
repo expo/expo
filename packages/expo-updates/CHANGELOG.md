@@ -6,9 +6,36 @@
 
 ### 🎉 New features
 
+- Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
+- [android] Remove references to reactNativeHost ([#40182](https://github.com/expo/expo/pull/40182) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 29.0.11 - 2025-09-18
+
+### 🐛 Bug fixes
+
+- [iOS] Fix resizeMode on reload screen image. ([#39768](https://github.com/expo/expo/pull/39768) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 29.0.10 — 2025-09-11
+
+### 💡 Others
+
+- Surface iOS compilation errors in updates E2E tests. ([#39542](https://github.com/expo/expo/pull/39542) by [@douglowder](https://github.com/douglowder))
+
+## 29.0.9 — 2025-09-10
+
+### 🐛 Bug fixes
+
+- [Android] Propagate controller scope to state machine. ([#39526](https://github.com/expo/expo/pull/39526) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 29.0.8 — 2025-09-02
 

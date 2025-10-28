@@ -24,3 +24,8 @@
 
 -keepnames class * extends expo.modules.core.BasePackage
 -keepnames class * implements expo.modules.core.interfaces.Package
+
+# For React Native WindowUtilKt edge-to-edge support
+-keep class com.facebook.react.views.view.WindowUtilKt {
+  *;
+}

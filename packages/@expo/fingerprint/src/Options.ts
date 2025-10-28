@@ -52,6 +52,12 @@ export const DEFAULT_IGNORE_PATHS = [
   'app.config.json',
   'app.json',
 
+  // Ignore CocoaPods generated files
+  // https://github.com/expo/expo/blob/d0e39858ead9a194d90990f89903e773b9d33582/packages/expo-sqlite/ios/ExpoSQLite.podspec#L25-L36
+  // https://github.com/expo/expo/blob/d0e39858ead9a194d90990f89903e773b9d33582/packages/expo-updates/ios/EXUpdates.podspec#L51-L58
+  '**/node_modules/expo-sqlite/ios/sqlite3.[ch]',
+  '**/node_modules/expo-updates/ios/EXUpdates/BSPatch/bspatch.c',
+
   // Ignore nested node_modules
   '**/node_modules/**/node_modules/**',
 

@@ -32,7 +32,7 @@ export type SwitchProps = {
      */
     label?: string;
     /**
-     * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`. The `'button'` style is iOS only.
+     * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
      * @default 'switch'
      */
     variant?: 'checkbox' | 'switch' | 'button';
@@ -45,10 +45,12 @@ export type SwitchProps = {
      */
     style?: StyleProp<ViewStyle>;
     /**
-     * Picker color. On iOS, it only applies to the `menu` variant.
+     * Picker color.
      */
     color?: string;
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
 export type SwitchSwitchVariantProps = {

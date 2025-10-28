@@ -27,7 +27,7 @@ struct Button: ExpoSwiftUI.View {
       })
     .disabled(props.disabled)
     .tint(props.color)
-    .modifier(CommonViewModifiers(props: props))
+    .controlSize(props.controlSize?.toNativeControlSize() ?? .regular)
     // TODO: Maybe there is a way to do a switch statement similarly to the `if` extension?
     .if(props.variant == .bordered, {
       $0.buttonStyle(.bordered)
@@ -39,7 +39,12 @@ struct Button: ExpoSwiftUI.View {
     .if(props.variant == .borderedProminent, {
       $0.buttonStyle(.borderedProminent)
     })
-    #if !os(tvOS)
+
+    #if os(tvOS)
+    .if(props.variant == .card, {
+      $0.buttonStyle(.card)
+    })
+    #else
     .if(props.variant == .borderless, {
       $0.buttonStyle(.borderless)
     })
@@ -60,7 +65,7 @@ struct Button: ExpoSwiftUI.View {
     })
     #endif
 
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, tvOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       switch props.variant {
       case .glass:
@@ -78,3 +83,4 @@ struct Button: ExpoSwiftUI.View {
     }
   }
 }
+

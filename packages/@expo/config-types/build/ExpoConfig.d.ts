@@ -220,6 +220,10 @@ export interface ExpoConfig {
          * Enable debugging of native code with updates enabled. Defaults to false. If set to true, the EX_UPDATES_NATIVE_DEBUG environment variable will be set in Podfile.properties.json and gradle.properties. This causes Xcode and Android Studio debug builds to be built with expo-updates enabled, and JS debugging (with dev client or packager) disabled. This should not be used in production.
          */
         useNativeDebug?: boolean;
+        /**
+         * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to true. Set to false to force full asset downloads even when a server offers patch responses.
+         */
+        enableBsdiffPatchSupport?: boolean;
     };
     /**
      * Provide overrides by locale for application name and System Dialog prompts like Permissions Boxes. [Learn more](https://docs.expo.dev/guides/localization/#translating-app-metadata).
@@ -297,6 +301,7 @@ export interface ExpoConfig {
         turboModules?: boolean;
         /**
          * Experimentally use a vendored canary build of React for testing upcoming features.
+         * @deprecated React 19 is enabled by default. Remove unused experiments.reactCanary flag.
          */
         reactCanary?: boolean;
         /**

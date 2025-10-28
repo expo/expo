@@ -1,1 +1,0 @@
-{"version":3,"file":"constants.js","sourceRoot":"","sources":["../../../../src/swift-ui/modifiers/animation/constants.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,YAAY,GAAG,MAAM,CAAC,OAAO,CAAC,CAAC","sourcesContent":["export const VALUE_SYMBOL = Symbol('value');\n"]}

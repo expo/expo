@@ -8,6 +8,7 @@ import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
   ModuleDescriptorIos,
+  ModuleIosConfig,
   ModuleIosPodspecInfo,
   PackageRevision,
 } from '../../types';
@@ -66,7 +67,11 @@ export async function resolveModuleAsync(
     pods,
     swiftModuleNames,
     flags: extraOutput.flags,
-    modules: revision.config?.appleModules() ?? [],
+    modules:
+      revision.config
+        ?.appleModules()
+        .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ??
+      [],
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
@@ -136,11 +141,11 @@ async function generatePackageListFileContentAsync(
     .concat(...debugOnlyModules.map((module) => module.swiftModuleNames))
     .filter(Boolean);
 
-  const modulesClassNames = ([] as string[])
+  const modulesClassNames = ([] as ModuleIosConfig[])
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
 
-  const debugOnlyModulesClassNames = ([] as string[])
+  const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
     .concat(...debugOnlyModules.map((module) => module.modules))
     .filter(Boolean);
 
@@ -172,12 +177,12 @@ ${generateCommonImportList(swiftModules)}
 ${generateDebugOnlyImportList(debugOnlySwiftModules)}
 @objc(${className})
 public class ${className}: ModulesProvider {
-  public override func getModuleClasses() -> [AnyModule.Type] {
+  public override func getModuleClasses() -> [ExpoModuleTupleType] {
 ${generateModuleClasses(modulesClassNames, debugOnlyModulesClassNames)}
   }
 
   public override func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {
-${generateModuleClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)}
+${generateClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)}
   }
 
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
@@ -208,7 +213,31 @@ function generateDebugOnlyImportList(swiftModules: string[]): string {
   );
 }
 
-function generateModuleClasses(classNames: string[], debugOnlyClassName: string[]): string {
+function generateModuleClasses(
+  modules: ModuleIosConfig[],
+  debugOnlyModules: ModuleIosConfig[]
+): string {
+  const commonClassNames = formatArrayOfModuleTuples(modules);
+  if (debugOnlyModules.length > 0) {
+    return wrapInDebugConfigurationCheck(
+      2,
+      `return ${formatArrayOfModuleTuples(modules.concat(debugOnlyModules))}`,
+      `return ${commonClassNames}`
+    );
+  } else {
+    return `${indent.repeat(2)}return ${commonClassNames}`;
+  }
+}
+
+/**
+ * Formats an array of modules config to Swift's array of module tuples.
+ */
+function formatArrayOfModuleTuples(modules: ModuleIosConfig[]): string {
+  return `[${modules.map((module) => `\n${indent.repeat(3)}(module: ${module.class}.self, name: ${module.name ? `"${module.name}"` : 'nil'})`).join(',')}
+${indent.repeat(2)}]`;
+}
+
+function generateClasses(classNames: string[], debugOnlyClassName: string[]): string {
   const commonClassNames = formatArrayOfClassNames(classNames);
   if (debugOnlyClassName.length > 0) {
     return wrapInDebugConfigurationCheck(

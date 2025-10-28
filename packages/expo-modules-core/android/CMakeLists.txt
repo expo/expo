@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.16)
 
 project(expo-modules-core)
 
@@ -16,10 +16,12 @@ endif ()
 
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
+
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
 file(GLOB sources_android_types "${SRC_DIR}/main/cpp/types/*.cpp")
 file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/javaclasses/*.cpp")
-file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/decorators/*.cpp")
+file(GLOB sources_android_decorators "${SRC_DIR}/main/cpp/decorators/*.cpp")
+file(GLOB sources_android_worklets "${SRC_DIR}/main/cpp/worklets/*.cpp")
 file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
@@ -35,13 +37,17 @@ endmacro()
 add_library(CommonSettings INTERFACE)
 
 add_library(
-        ${PACKAGE_NAME}
-        SHARED
-        ${common_sources}
-        ${sources_android}
-        ${sources_android_types}
-        ${sources_android_javaclasses}
+  ${PACKAGE_NAME}
+  SHARED
+  ${common_sources}
+  ${sources_android}
+  ${sources_android_types}
+  ${sources_android_javaclasses}
+  ${sources_android_decorators}
+  ${sources_android_worklets}
 )
+
+target_precompile_headers(${PACKAGE_NAME} PRIVATE ${SRC_DIR}/main/cpp/ExpoHeader.pch)
 
 if(IS_NEW_ARCHITECTURE_ENABLED)
   add_subdirectory("${SRC_DIR}/fabric")
@@ -50,6 +56,12 @@ if(IS_NEW_ARCHITECTURE_ENABLED)
 else()
   set(NEW_ARCHITECTURE_DEPENDENCIES "")
   set(NEW_ARCHITECTURE_COMPILE_OPTIONS "")
+endif()
+
+if (REACT_NATIVE_WORKLETS_DIR)
+  set(WORKLETS_INTEGRATION_COMPILE_OPTIONS "-DWORKLETS_ENABLED=1")
+else()
+  set(WORKLETS_INTEGRATION_COMPILE_OPTIONS "")
 endif()
 
 createVarAsBoolToInt("USE_HERMES_INT" ${USE_HERMES})
@@ -64,6 +76,7 @@ target_compile_options(CommonSettings INTERFACE
   -DUSE_HERMES=${USE_HERMES_INT}
   -DUNIT_TEST=${UNIT_TEST_INT}
   ${NEW_ARCHITECTURE_COMPILE_OPTIONS}
+  ${WORKLETS_INTEGRATION_COMPILE_OPTIONS}
 )
 
 # tests
@@ -71,7 +84,7 @@ target_compile_options(CommonSettings INTERFACE
 if(${UNIT_TEST})
   if(${USE_HERMES})
     find_package(hermes-engine REQUIRED CONFIG)
-    set(JSEXECUTOR_LIB hermes-engine::libhermes)
+    set(JSEXECUTOR_LIB hermes-engine::hermesvm)
   else()
     set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
   endif()
@@ -89,35 +102,42 @@ find_package(fbjni REQUIRED CONFIG)
 
 # includes
 
-if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
-  get_target_property(INCLUDE_reactnativejni
-       ReactAndroid::reactnative
-       INTERFACE_INCLUDE_DIRECTORIES)
-else()
-  get_target_property(INCLUDE_reactnativejni
-        ReactAndroid::reactnativejni
-        INTERFACE_INCLUDE_DIRECTORIES)
-endif()
+
+get_target_property(INCLUDE_reactnativejni
+  ReactAndroid::reactnative
+  INTERFACE_INCLUDE_DIRECTORIES
+)
 
 target_include_directories(
-       ${PACKAGE_NAME}
-       PRIVATE
-       ${INCLUDE_reactnativejni}/react
+  ${PACKAGE_NAME}
+  PRIVATE
+  ${INCLUDE_reactnativejni}/react
 
-        # header only imports from turbomodule, e.g. CallInvokerHolder.h
-       "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
-       "${COMMON_DIR}"
-       "${SRC_DIR}/fabric"
+  # header only imports from turbomodule, e.g. CallInvokerHolder.h
+  "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
+  "${COMMON_DIR}"
+  "${SRC_DIR}/fabric"
 )
+
+if (REACT_NATIVE_WORKLETS_DIR)
+  target_include_directories(
+    ${PACKAGE_NAME}
+    PRIVATE
+    "${REACT_NATIVE_DIR}/ReactCommon"
+    "${REACT_NATIVE_DIR}/ReactCommon/jsiexecutor"
+    "${REACT_NATIVE_WORKLETS_DIR}/Common/cpp"
+    "${REACT_NATIVE_WORKLETS_DIR}/android/src/main/cpp"
+  )
+endif()
 
 # linking
 
 include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
 
 target_compile_options(
-        ${PACKAGE_NAME}
-        PRIVATE
-        ${folly_FLAGS}
+  ${PACKAGE_NAME}
+  PRIVATE
+  ${folly_FLAGS}
 )
 
 target_link_libraries(
@@ -131,16 +151,30 @@ target_link_libraries(
   ${NEW_ARCHITECTURE_DEPENDENCIES}
 )
 
-if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
-   target_link_libraries(
-    ${PACKAGE_NAME}
-    ReactAndroid::reactnative
-   )
-else()
+
+target_link_libraries(
+  ${PACKAGE_NAME}
+  ReactAndroid::reactnative
+)
+
+if (REACT_NATIVE_WORKLETS_DIR)
+  add_library(worklets SHARED IMPORTED)
+
+  if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    set(BUILD_TYPE "debug")
+  else()
+    set(BUILD_TYPE "release")
+  endif()
+
+  set_target_properties(
+    worklets
+    PROPERTIES
+    IMPORTED_LOCATION
+    "${REACT_NATIVE_WORKLETS_DIR}/android/build/intermediates/cmake/${BUILD_TYPE}/obj/${ANDROID_ABI}/libworklets.so"
+  )
+
   target_link_libraries(
     ${PACKAGE_NAME}
-    ReactAndroid::reactnativejni
-    ReactAndroid::folly_runtime
-    ReactAndroid::react_nativemodule_core
+    worklets
   )
 endif()

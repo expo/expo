@@ -7,7 +7,7 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && patch-package && node ./tools/bin/expotools.js validate-workspace-dependencies",
+    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && yarn workspace @expo/log-box prepare && patch-package && node ./tools/bin/expotools.js validate-workspace-dependencies",
     "install:react-native-lab": "(([ \"$(ls -A react-native-lab/react-native)\" ] && (yarn --cwd react-native-lab/react-native install --frozen-lockfile || true)) || echo \"Skipping installing Node modules in react-native-lab/react-native (directory empty)\")",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
@@ -20,10 +20,9 @@
     ]
   },
   "resolutions": {
-    "@expo/metro": "~0.1.1",
-    "react-native": "0.81.1",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "@expo/metro": "~54.1.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__template": "^7.4.4",

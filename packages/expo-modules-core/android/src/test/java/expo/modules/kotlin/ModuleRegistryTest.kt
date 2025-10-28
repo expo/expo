@@ -25,8 +25,11 @@ class ModuleRegistryTest {
   @Test
   fun `should register all classes from provider`() {
     val provider = object : ModulesProvider {
-      override fun getModulesList(): List<Class<out Module>> {
-        return listOf(M1::class.java, M2::class.java)
+      override fun getModulesMap(): Map<Class<out Module>, String?> {
+        return mapOf(
+          M1::class.java to null,
+          M2::class.java to null
+        )
       }
     }
     val moduleRegistry = ModuleRegistry(WeakReference(mockk()))
@@ -49,8 +52,8 @@ class ModuleRegistryTest {
     }
 
     val provider = object : ModulesProvider {
-      override fun getModulesList(): List<Class<out Module>> {
-        return listOf(IncorrectModule::class.java)
+      override fun getModulesMap(): Map<Class<out Module>, String?> {
+        return mapOf(IncorrectModule::class.java to null)
       }
     }
     val moduleRegistry = ModuleRegistry(mockk())
@@ -65,8 +68,8 @@ class ModuleRegistryTest {
   @Test
   fun `should return holder for module`() {
     val provider = object : ModulesProvider {
-      override fun getModulesList(): List<Class<out Module>> {
-        return listOf(M1::class.java)
+      override fun getModulesMap(): Map<Class<out Module>, String?> {
+        return mapOf(M1::class.java to null)
       }
     }
 

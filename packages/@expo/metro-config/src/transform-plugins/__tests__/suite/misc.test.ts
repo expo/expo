@@ -38,22 +38,20 @@ it('copy getters/setters', () => {
 });
 
 it('copy getters/setters (namespace import)', () => {
-  // We have a loose namespace conversion that does trigger this
-  expect(() => {
-    exec({
-      moduleWithGetter: `
-        var Obj = {
-          baz: 123,
-          get boo() { throw new Error('Should never be triggered'); },
-        };
-        module.exports = Obj;
-      `,
-      entry: `
-        import * as foo from "moduleWithGetter";
-        export { foo };
-      `,
-    });
-  }).toThrow(/Should never be triggered/);
+  const mod = exec({
+    moduleWithGetter: `
+      var Obj = {
+        baz: 123,
+        get boo() { throw new Error('Should never be triggered'); },
+      };
+      module.exports = Obj;
+    `,
+    entry: `
+      import * as foo from "moduleWithGetter";
+      export { foo };
+    `,
+  });
+  expect(Object.keys(mod.exports)).toEqual(['foo']);
 });
 
 it('export expression with conflicting name', () => {

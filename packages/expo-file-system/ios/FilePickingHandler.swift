@@ -70,6 +70,13 @@ internal class FilePickingHandler: FilePickingResultHandler {
     }
   }
 
+  func didPickDirectoryAt(url: URL) {
+    handlePickingResult { context in
+      let directory = FileSystemDirectory(url: url)
+      context.promise.resolve(directory)
+    }
+  }
+
   func didCancelPicking() {
     handlePickingResult { context in
       context.promise.reject(FilePickingCancelledException())

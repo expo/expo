@@ -276,7 +276,13 @@ it('transforms and extracts "import" statements as live bindings', () => {
       if (e && e.__esModule) return e;
       var n = {};
       if (e) Object.keys(e).forEach(function (k) {
-        n[k] = e[k];
+        var d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: function () {
+            return e[k];
+          }
+        });
       });
       n.default = e;
       return n;
@@ -421,7 +427,13 @@ it('does not transform import all as export as live bindings', () => {
       if (e && e.__esModule) return e;
       var n = {};
       if (e) Object.keys(e).forEach(function (k) {
-        n[k] = e[k];
+        var d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: function () {
+            return e[k];
+          }
+        });
       });
       n.default = e;
       return n;

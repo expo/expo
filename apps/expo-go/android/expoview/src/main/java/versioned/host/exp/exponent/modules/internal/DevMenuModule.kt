@@ -1,4 +1,5 @@
 package versioned.host.exp.exponent.modules.internal
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,7 +26,13 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.UUID
 import javax.inject.Inject
 
-class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any?>, val manifest: Manifest?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
+class DevMenuModule(
+  reactContext: ReactApplicationContext,
+  val experienceProperties: Map<String, Any?>,
+  val manifest: Manifest?
+) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
+  // Used for modyfing the settings while dev support is disabled
+  private val devInternalSettings: DevInternalSettings by lazy { DevInternalSettings(reactApplicationContext, null) }
 
   @Inject
   internal lateinit var devMenuManager: DevMenuManager
@@ -95,16 +102,14 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       items.putBundle("dev-remote-debug", debuggerMap)
     }
 
-    if (VRUtilities.isQuest()) {
-      if (devSettings != null && devSupportManager.devSupportEnabled) {
-        val label = if (devSettings.isFloatingActionButtonEnabled) {
-          getString(R.string.devmenu_hide_fab)
-        } else {
-          getString(R.string.devmenu_show_fab)
-        }
-        fabMap.putString("label", label)
-        fabMap.putBoolean("isEnabled", true)
+    if (!VRUtilities.isQuest()) {
+      val label = if (devInternalSettings.isFloatingActionButtonEnabled) {
+        getString(R.string.devmenu_hide_fab)
+      } else {
+        getString(R.string.devmenu_show_fab)
       }
+      fabMap.putString("label", label)
+      fabMap.putBoolean("isEnabled", true)
       items.putBundle("dev-fab", fabMap)
     }
 
@@ -125,7 +130,11 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       perfMap.putString("label", getString(R.string.devmenu_performance_monitor_unavailable))
       perfMap.putBoolean("isEnabled", false)
     }
-    items.putBundle("dev-perf-monitor", perfMap)
+
+    // Quest doesn't support displaying over other apps
+    if (!VRUtilities.isQuest()) {
+      items.putBundle("dev-perf-monitor", perfMap)
+    }
 
     return items
   }
@@ -135,7 +144,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    */
   override fun selectItemWithKey(itemKey: String) {
     val devSupportManager = getDevSupportManager()
-    val devSettings = devSupportManager?.devSettings as DevInternalSettings?
+    val devSettings = devSupportManager?.devSettings as DevInternalSettings? ?: devInternalSettings
 
     if (devSupportManager == null || devSettings == null) {
       return
@@ -162,7 +171,8 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
           devSupportManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
         }
         "dev-fab" -> {
-          devSupportManager.setFloatingActionButtonEnabled(!devSettings.isFloatingActionButtonEnabled)
+          // When dev support is disabled the devSupportManager setters don't work so we have to modify the property directly
+          devSettings.isFloatingActionButtonEnabled = !devSettings.isFloatingActionButtonEnabled
         }
       }
     }

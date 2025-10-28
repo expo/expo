@@ -6,9 +6,27 @@
 
 ### 🎉 New features
 
+- Add non-uniform border radius support to `GlassView` ([#40570](https://github.com/expo/expo/pull/40570) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.1.4 - 2025-09-17
+
+### 🐛 Bug fixes
+
+- Set default glass style to regular ([#39732](https://github.com/expo/expo/pull/39732) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.1.3 — 2025-09-12
+
+### 🎉 New features
+
+Add child view support to <GlassView />, allowing child views to inherit animations from the parent view. ([#39595](https://github.com/expo/expo/pull/39595) by [@patrikduksin](https://github.com/patrikduksin))
+
+## 0.1.2 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
 
 ## 0.1.1 — 2025-09-04
 

@@ -35,6 +35,8 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   }
   return context.resolveRequest(context, moduleName, platform);
 };
+// writing a screenshot otherwise shows a metro refresh banner at the top of the screen which can interfere with another screenshot
+config.resolver.blockList.push(/.*bare-expo\/e2e.*/);
 
 // When testing on MacOS we need to include the `react-native-macos/Libraries/Core/InitializeCore` as prepended global module
 const originalGetModulesRunBeforeMainModule = config.serializer.getModulesRunBeforeMainModule;

@@ -123,12 +123,7 @@
 
   for (size_t i = 0; i < arraySize; i++) {
     jsi::Value item = jsiArray.getValueAtIndex(*runtime, i);
-
-    if (item.isUndefined() || item.isNull()) {
-      [result addObject:(id)kCFNull];
-    } else {
-      [result addObject:[[EXJavaScriptValue alloc] initWithRuntime:_runtime value:std::move(item)]];
-    }
+    [result addObject:[[EXJavaScriptValue alloc] initWithRuntime:_runtime value:std::move(item)]];
   }
   return result;
 }
@@ -175,8 +170,12 @@
 
 + (nonnull EXJavaScriptValue *)undefined
 {
-  auto undefined = std::make_shared<jsi::Value>();
   return [[EXJavaScriptValue alloc] initWithRuntime:nil value:jsi::Value::undefined()];
+}
+
++ (nonnull EXJavaScriptValue *)null
+{
+  return [[EXJavaScriptValue alloc] initWithRuntime:nil value:jsi::Value::null()];
 }
 
 + (nonnull EXJavaScriptValue *)number:(double)value

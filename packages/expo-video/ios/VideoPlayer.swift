@@ -11,6 +11,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   lazy var subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(owner: self)
   private var dangerousPropertiesStore = DangerousPropertiesStore()
   lazy var audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(owner: self)
+  lazy var seeker: VideoPlayerSeeker = VideoPlayerSeeker(player: self)
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .doNotMix {
@@ -52,7 +53,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
 
-      ref.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
+      seeker.seek(to: timeToSeek)
     }
   }
 
@@ -204,6 +205,11 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
+    // TODO: @behenate (SDK 55) completely remove support for synchronous `replaceCurrentItem` - it's not practical in any circumstance
+    if let url = videoSource.uri, url.isPHAssetUrl {
+      throw PlayerItemLoadException("The provided uri \(url) is a local PHAsset URL. This kind of URL can only be loaded asynchrynously. Use `VideoPlayer.replaceAsync` in order to load this item")
+    }
+
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()
       contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
@@ -263,9 +269,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   private func clearCurrentItem() {
-    DispatchQueue.main.async { [ref, videoSourceLoader, dangerousPropertiesStore] in
+    videoSourceLoader.cancelCurrentTask()
+
+    DispatchQueue.main.async { [ref, dangerousPropertiesStore] in
       ref.replaceCurrentItem(with: nil)
-      videoSourceLoader.cancelCurrentTask()
       dangerousPropertiesStore.reset()
       dangerousPropertiesStore.ownerIsReplacing = false
     }
@@ -329,7 +336,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   func onPlayedToEnd(player: AVPlayer) {
     safeEmit(event: "playToEnd")
     if loop {
-      self.ref.seek(to: .zero)
+      seeker.seek(to: .zero)
       self.ref.play()
     }
   }

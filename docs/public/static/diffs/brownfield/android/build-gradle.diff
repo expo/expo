@@ -1,0 +1,20 @@
+diff --git a/build.gradle b/build.gradle
+index fee4cc3..52f6135 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -9,6 +9,7 @@ buildscript {
+     dependencies {
+         classpath('com.android.tools.build:gradle')
+         classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
++        classpath('com.facebook.react:react-native-gradle-plugin')
+     }
+ }
+
+@@ -18,3 +19,6 @@ allprojects {
+         mavenCentral()
+     }
+ }
++
++apply plugin: "expo-root-project"
++apply plugin: "com.facebook.react.rootproject"
+\ No newline at end of file

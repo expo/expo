@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -12,7 +13,7 @@ export interface ContentUnavailableViewProps extends CommonViewModifierProps {
   /**
    * SF Symbol indicating why the content is not available.
    */
-  systemImage?: string;
+  systemImage?: SFSymbol;
 
   /**
    * Description of why the content is not available.
@@ -23,10 +24,6 @@ export interface ContentUnavailableViewProps extends CommonViewModifierProps {
 const ContentUnavailableViewNativeView: React.ComponentType<ContentUnavailableViewProps> =
   requireNativeView('ExpoUI', 'ContentUnavailableView');
 
-/**
- * Displays a native Swift UI ContentUnavailableView.
- * @platform ios 17.0+
- */
 function transformContentUnavailableViewProps(
   props: ContentUnavailableViewProps
 ): ContentUnavailableViewProps {
@@ -38,6 +35,11 @@ function transformContentUnavailableViewProps(
   };
 }
 
+/**
+ * Displays a native Swift UI ContentUnavailableView.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ */
 export function ContentUnavailableView(props: ContentUnavailableViewProps) {
   return <ContentUnavailableViewNativeView {...transformContentUnavailableViewProps(props)} />;
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
 export const GLScreens = [
   {
@@ -151,12 +151,6 @@ export const GLScreens = [
 ];
 
 export default function GLScreen() {
-  const apis: ListElement[] = GLScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/components/${screen.route}`,
-    };
-  });
+  const apis = componentScreensToListElements(GLScreens);
   return <ComponentListScreen apis={apis} />;
 }

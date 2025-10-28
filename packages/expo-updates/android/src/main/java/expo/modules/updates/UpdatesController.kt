@@ -32,12 +32,10 @@ object UpdatesController {
     }
 
   @JvmStatic
-  fun initializeWithoutStarting(context: Context) {
+  fun initializeWithoutStarting(context: Context, useDeveloperSupport: Boolean) {
     if (singletonInstance != null) {
       return
     }
-    val useDeveloperSupport =
-      (context as? ReactApplication)?.reactNativeHost?.useDeveloperSupport ?: false
     if (useDeveloperSupport && !UpdatesPackage.isUsingNativeDebug) {
       if (BuildConfig.USE_DEV_CLIENT) {
         val devLauncherController = initializeAsDevLauncherWithoutStarting(context)
@@ -135,9 +133,9 @@ object UpdatesController {
    */
   @JvmStatic
   @Synchronized
-  fun initialize(context: Context) {
+  fun initialize(context: Context, useDeveloperSupport: Boolean = false) {
     if (singletonInstance == null) {
-      initializeWithoutStarting(context)
+      initializeWithoutStarting(context, useDeveloperSupport)
       singletonInstance?.start()
     }
   }

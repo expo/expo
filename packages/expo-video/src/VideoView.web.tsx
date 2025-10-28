@@ -97,6 +97,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
         }
       }
     },
+    nativeRef: videoRef,
   }));
 
   useEffect(() => {

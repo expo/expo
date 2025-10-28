@@ -41,7 +41,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
         commandResult = await spawnAsync('npx', ['expo', 'install', '--check', '--json'], {
           stdio: 'pipe',
           cwd: projectRoot,
-          env: { ...process.env, CI: '1' },
+          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error) && error.status === 1) {
@@ -52,13 +52,9 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
         }
       }
 
-      const initialIssuesCount = issues.length;
       parseInstallCheckOutput(commandResult.stdout, issues, projectMajorSdkVersion);
 
-      // If no issues were added from stdout, fall back to stderr
-      if (issues.length === initialIssuesCount && commandResult.stderr.trim()) {
-        issues.push(commandResult.stderr.trim());
-      }
+      // We rely on EXPO_DEBUG=0 to ensure stdout contains only JSON output.
     } else {
       // SDK versions <54 don't support --json output
       // In the future, we should remove this and use the --json output above
@@ -66,7 +62,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
         await spawnAsync('npx', ['expo', 'install', '--check'], {
           stdio: 'pipe',
           cwd: projectRoot,
-          env: { ...process.env, CI: '1' },
+          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error)) {

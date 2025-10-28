@@ -23,8 +23,12 @@ class LoadingProgressPopupController(activity: Activity) {
   private var mStatusTextView: TextView? = null
   private var mPercentageTextView: TextView? = null
   private var mContainer: ViewGroup? = null
+  private var remainsHidden = false
 
   fun show() {
+    if (remainsHidden) {
+      return
+    }
     mWeakActivity.get()?.let { activity ->
       if (activity.isFinishing || activity.isDestroyed) {
         return
@@ -45,8 +49,12 @@ class LoadingProgressPopupController(activity: Activity) {
         mPopupWindow = PopupWindow(mContainer, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also {
           it.isTouchable = false
           activity.window.decorView.post {
-            if (!activity.isFinishing || !activity.isDestroyed) {
-              it.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
+            if (!activity.isFinishing && !activity.isDestroyed) {
+              try {
+                it.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
+              } catch (_: Exception) {
+                mPopupWindow = null
+              }
             }
           }
         }
@@ -57,10 +65,10 @@ class LoadingProgressPopupController(activity: Activity) {
   fun updateProgress(status: String?, done: Int?, total: Int?) {
     show()
     mWeakActivity.get()?.runOnUiThread {
-      mStatusTextView!!.text = status ?: "Building JavaScript bundle..."
+      mStatusTextView?.text = status ?: "Building JavaScript bundle..."
       if (done != null && total != null && total > 0) {
         val percent: Float = done.toFloat() / total * 100
-        mPercentageTextView!!.text = String.format(Locale.getDefault(), "%.2f%%", percent)
+        mPercentageTextView?.text = String.format(Locale.getDefault(), "%.2f%%", percent)
       }
     }
   }
@@ -77,11 +85,12 @@ class LoadingProgressPopupController(activity: Activity) {
 
     show()
     mWeakActivity.get()?.runOnUiThread {
-      mStatusTextView!!.text = text
+      mStatusTextView?.text = text
     }
   }
 
   fun hide() {
+    remainsHidden = true
     mWeakActivity.get()?.runOnUiThread {
       if (mPopupWindow == null || !mPopupWindow!!.isShowing) {
         // already hidden

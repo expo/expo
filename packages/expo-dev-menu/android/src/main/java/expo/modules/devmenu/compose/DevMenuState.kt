@@ -10,8 +10,14 @@ data class DevMenuState(
   val isOpen: Boolean = false,
   val devToolsSettings: DevToolsSettings = DevToolsSettings(),
   val isOnboardingFinished: Boolean = false,
-  val showFab: Boolean = DevMenuPreferencesHandle.showFab
+  val showFab: Boolean = DevMenuPreferencesHandle.showFab,
+  val customItems: List<CustomItem> = emptyList()
 ) {
+  data class CustomItem(
+    val name: String,
+    val shouldCollapse: Boolean
+  )
+
   data class AppInfo(
     val appName: String,
     val hostUrl: String,

@@ -1,0 +1,58 @@
+---
+title: Form
+description: A SwiftUI Form component for collecting user input in a structured layout.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A container for grouping controls used for data entry, such as in settings or inspection panes.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+```tsx
+import { useState } from 'react';
+import { Form, Host, Section, TextField, Switch, Button } from '@expo/ui/swift-ui';
+
+function FormExample() {
+  const [notifications, setNotifications] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <Section title="Profile">
+          <TextField placeholder="Name" onChangeText={() => {}} />
+          <TextField placeholder="Enter your email" />
+        </Section>
+
+        <Section title="Preferences">
+          <Switch
+            label="Enable notifications"
+            value={notifications}
+            onValueChange={setNotifications}
+          />
+          <Switch label="Dark mode" value={darkMode} onValueChange={setDarkMode} />
+        </Section>
+
+        <Section>
+          <Button>Save Changes</Button>
+        </Section>
+      </Form>
+    </Host>
+  );
+}
+```
+
+> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/form) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/form" apiName="Form" />

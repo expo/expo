@@ -200,10 +200,10 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
   },
   "dependencies": {
     "cool-package": "*",
-    "expo": "~53.0.0",
-    "expo-status-bar": "~2.2.3",
-    "react": "19.0.0",
-    "react-native": "0.79.4"
+    "expo": "~54.0.0",
+    "expo-status-bar": "~3.0.6",
+    "react": "19.1.0",
+    "react-native": "0.81.1"
   }
 }
 ```
@@ -299,9 +299,7 @@ For [npm](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides),
 
 #### Deduplicating auto-linked native modules
 
-> **important** This is an experimental feature starting in SDK 54 and above.
-
-This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
+> **important** This is an experimental feature starting in SDK 54 and later. The process will be automated and have better support in future versions.
 
 Often, duplicate dependencies won't cause any problems. However, native modules should never be duplicated, because only one version of a native module can be compiled for an app build at a time. Unlike JavaScript dependencies, native builds cannot contain two conflicting versions of a single native module.
 

@@ -9,6 +9,7 @@
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/EXJavaScriptSharedObjectBinding.h>
 #import <ExpoModulesCore/EXStringUtils.h>
+#import <Foundation/NSURL.h>
 
 namespace expo {
 
@@ -30,7 +31,8 @@ jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 #if !TARGET_OS_OSX
   const uint8_t *utf8 = (const uint8_t *)[value UTF8String];
   const size_t length = [value length];
-  if (expo::isAllASCIIAndNotNull(utf8, utf8 + length)) {
+
+  if (utf8 != nullptr && expo::isAllASCIIAndNotNull(utf8, utf8 + length)) {
     return jsi::String::createFromAscii(runtime, (const char *)utf8, length);
   }
   // Using cStringUsingEncoding should be fine as long as we provide the length.
@@ -39,6 +41,12 @@ jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
   // TODO(@jakex7): Remove after update to react-native-macos@0.79.0
   return jsi::String::createFromUtf8(runtime, [value UTF8String]);
 #endif
+}
+
+jsi::String convertNSURLToJSIString(jsi::Runtime &runtime, NSURL *value)
+{
+  NSString *stringValue = [value absoluteString];
+  return convertNSStringToJSIString(runtime, stringValue);
 }
 
 jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
@@ -107,6 +115,8 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
     return convertNSArrayToJSIArray(runtime, (NSArray *)value);
   } else if ([value isKindOfClass:[NSData class]]) {
     return createUint8Array(runtime, (NSData *)value);
+  } else if ([value isKindOfClass:[NSURL class]]) {
+    return convertNSURLToJSIString(runtime, (NSURL *)value);
   } else if (value == (id)kCFNull) {
     return jsi::Value::null();
   }

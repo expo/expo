@@ -2,16 +2,24 @@
 
 'use client';
 
-import { requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, findNodeHandle, Platform } from 'react-native';
 
-import { BlurViewProps } from './BlurView.types';
+import { BlurMethod, BlurViewProps } from './BlurView.types';
+import { NativeBlurView } from './NativeBlurModule';
 
-const NativeBlurView = requireNativeViewManager('ExpoBlurView');
+type BlurViewState = {
+  blurTargetId?: number | null;
+};
 
 // TODO: Class components are not supported with React Server Components.
-export default class BlurView extends React.Component<BlurViewProps> {
+export default class BlurView extends React.Component<BlurViewProps, BlurViewState> {
+  constructor(props: BlurViewProps) {
+    super(props);
+    this.state = {
+      blurTargetId: undefined,
+    };
+  }
   blurViewRef? = React.createRef<typeof NativeBlurView>();
 
   /**
@@ -23,12 +31,55 @@ export default class BlurView extends React.Component<BlurViewProps> {
     return this.blurViewRef?.current;
   }
 
+  componentDidMount(): void {
+    this._updateBlurTargetId();
+    this._maybeWarnAboutBlurMethod();
+
+    if (this.props.experimentalBlurMethod != null) {
+      console.warn(
+        'The `experimentalBlurMethod` prop has been depracated. Please use the `blurMethod` prop instead.'
+      );
+    }
+  }
+
+  componentDidUpdate(prevProps: Readonly<BlurViewProps>): void {
+    if (prevProps.blurTarget?.current !== this.props.blurTarget?.current) {
+      this._updateBlurTargetId();
+    }
+  }
+
+  _maybeWarnAboutBlurMethod(): void {
+    const blurMethod = this._getBlurMethod();
+    if (
+      Platform.OS === 'android' &&
+      (blurMethod === 'dimezisBlurView' || blurMethod === 'dimezisBlurViewSdk31Plus') &&
+      !this.props.blurTarget
+    ) {
+      // The fallback happens on the native side
+      console.warn(
+        `You have selected the "${blurMethod}" blur method, but the \`blurTarget\` prop has not been configured. The blur view will fallback to "none" blur method to avoid errors. You can learn more about the new BlurView API at: https://docs.expo.dev/versions/latest/sdk/blur-view/`
+      );
+    }
+  }
+
+  _updateBlurTargetId = () => {
+    const blurTarget = this.props.blurTarget?.current;
+    const blurTargetId = blurTarget ? findNodeHandle(blurTarget) : undefined;
+    this.setState(() => ({
+      blurTargetId,
+    }));
+  };
+
+  _getBlurMethod(): BlurMethod {
+    const providedMethod = this.props.blurMethod ?? this.props.experimentalBlurMethod;
+    return providedMethod ?? 'none';
+  }
+
   render() {
     const {
       tint = 'default',
       intensity = 50,
       blurReductionFactor = 4,
-      experimentalBlurMethod = 'none',
       style,
       children,
       ...props
@@ -36,11 +87,12 @@ export default class BlurView extends React.Component<BlurViewProps> {
     return (
       <View {...props} style={[styles.container, style]}>
         <NativeBlurView
+          blurTargetId={this.state.blurTargetId}
           ref={this.blurViewRef}
           tint={tint}
           intensity={intensity}
           blurReductionFactor={blurReductionFactor}
-          experimentalBlurMethod={experimentalBlurMethod}
+          blurMethod={this._getBlurMethod()}
           style={StyleSheet.absoluteFill}
         />
         {children}

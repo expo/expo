@@ -170,7 +170,7 @@ private fun RecentlyOpenedApps(
     ) {
       Section.Header("RECENTLY OPENED")
 
-      Section.Button("RESET", { onAction(HomeAction.ResetRecentlyOpenedApps) })
+      Section.Button("RESET", onClick = { onAction(HomeAction.ResetRecentlyOpenedApps) })
     }
 
     Column(

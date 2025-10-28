@@ -61,7 +61,7 @@ export declare function useAudioPlayer(source?: AudioSource, options?: AudioPlay
  *
  *   return (
  *     <View>
- *       <Text>Playing: {status.isPlaying ? 'Yes' : 'No'}</Text>
+ *       <Text>Playing: {status.playing ? 'Yes' : 'No'}</Text>
  *       <Text>Current Time: {status.currentTime}s</Text>
  *       <Text>Duration: {status.duration}s</Text>
  *     </View>
@@ -151,7 +151,7 @@ export declare function useAudioRecorder(options: RecordingOptions, statusListen
  *   return (
  *     <View>
  *       <Text>Recording: {state.isRecording ? 'Yes' : 'No'}</Text>
- *       <Text>Duration: {state.currentTime}s</Text>
+ *       <Text>Duration: {Math.round(state.durationMillis / 1000)}s</Text>
  *       <Text>Can Record: {state.canRecord ? 'Yes' : 'No'}</Text>
  *     </View>
  *   );

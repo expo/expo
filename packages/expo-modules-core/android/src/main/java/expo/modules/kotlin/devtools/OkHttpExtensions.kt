@@ -31,7 +31,7 @@ fun Headers.toSingleMap(): Map<String, String> {
  */
 suspend inline fun Request.await(okHttpClient: OkHttpClient): Response {
   return suspendCancellableCoroutine { callback ->
-    okHttpClient.newCall(this).enqueue(object : Callback {
+    val responseCallback = object : Callback {
       override fun onResponse(call: Call, response: Response) {
         callback.resume(response)
       }
@@ -42,6 +42,10 @@ suspend inline fun Request.await(okHttpClient: OkHttpClient): Response {
         }
         callback.resumeWithException(e)
       }
-    })
+    }
+
+    okHttpClient
+      .newCall(this)
+      .enqueue(responseCallback)
   }
 }

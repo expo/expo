@@ -8,12 +8,11 @@ public final class FontUtilsModule: Module {
 
 #if !os(macOS)
     AsyncFunction("renderToImageAsync") { (glyphs: String, options: RenderToImageOptions, promise: Promise) throws in
-      let font: UIFont
-      if let fontName = UIFont.fontNames(forFamilyName: options.fontFamily).first,
+      let font = if let fontName = UIFont.fontNames(forFamilyName: options.fontFamily).first,
         let uiFont = UIFont(name: fontName, size: options.size) {
-        font = uiFont
+        uiFont
       } else {
-        font = UIFont.systemFont(ofSize: options.size)
+        UIFont.systemFont(ofSize: options.size)
       }
 
       let attributedString = NSAttributedString(
@@ -41,7 +40,8 @@ public final class FontUtilsModule: Module {
         promise.resolve([
           "uri": outputURL.absoluteString,
           "width": image.size.width,
-          "height": image.size.height
+          "height": image.size.height,
+          "scale": UIScreen.main.scale
         ])
       } catch {
         promise.reject(SaveImageException(outputURL.absoluteString))

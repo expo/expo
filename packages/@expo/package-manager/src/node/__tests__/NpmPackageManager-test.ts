@@ -318,6 +318,21 @@ describe('NpmPackageManager', () => {
         expect.objectContaining({ cwd: projectRoot })
       );
     });
+
+    it('sorts dependencies alphabetically when updating package.json', async () => {
+      vol.fromJSON({ 'package.json': '{}' }, projectRoot);
+
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      // non-alphabetical order
+      await npm.addAsync(['zebra@^1.0.0', 'Alpha@^2.0.0', 'beta@^3.0.0', 'Gamma@^4.0.0']);
+
+      const packageFile = JSON.parse(
+        vol.readFileSync(path.join(projectRoot, 'package.json')).toString()
+      );
+
+      const dependencyKeys = Object.keys(packageFile.dependencies);
+      expect(dependencyKeys).toEqual(['Alpha', 'beta', 'Gamma', 'zebra']);
+    });
   });
 
   describe('addDevAsync', () => {

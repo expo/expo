@@ -68,11 +68,16 @@ public class ReloadScreenView: UIView {
       NSLayoutConstraint.activate([
         imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
         imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
-        imageView.widthAnchor.constraint(equalToConstant: scaledWidth),
-        imageView.heightAnchor.constraint(equalToConstant: scaledHeight)
+        imageView.widthAnchor.constraint(equalToConstant: scaledWidth < frame.width ? scaledWidth : frame.width),
+        imageView.heightAnchor.constraint(equalToConstant: scaledHeight < frame.height ? scaledHeight : frame.height)
       ])
     } else {
-      addViewConstraints(for: imageView)
+      NSLayoutConstraint.activate([
+        imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+        imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+        imageView.widthAnchor.constraint(equalTo: widthAnchor),
+        imageView.heightAnchor.constraint(equalTo: heightAnchor)
+      ])
     }
 
     loadImage(source: url, into: imageView)

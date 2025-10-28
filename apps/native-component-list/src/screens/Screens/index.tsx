@@ -1,4 +1,7 @@
-import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationProp,
+} from '@react-navigation/native-stack';
 import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
@@ -14,7 +17,7 @@ const SCREENS: Record<string, { component: any; options: { title: string } }> = 
 
 type Links = { Container: undefined; NativeStack: undefined; Navigation: undefined };
 
-type Props = { navigation: StackNavigationProp<Links> };
+type Props = { navigation: NativeStackNavigationProp<Links> };
 
 class MainScreen extends React.Component<Props> {
   static navigationOptions = {
@@ -59,8 +62,8 @@ class MainScreenItem extends React.Component<{
   }
 }
 
-const Stack = createStackNavigator();
-const SwitchStack = createStackNavigator();
+const Stack = createNativeStackNavigator();
+const SwitchStack = createNativeStackNavigator();
 
 const ExampleApp = () => (
   <SwitchStack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>

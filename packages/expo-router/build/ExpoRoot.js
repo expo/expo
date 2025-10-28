@@ -47,7 +47,6 @@ const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
-const ModalContext_1 = require("./modal/ModalContext");
 const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
 const Sitemap_1 = require("./views/Sitemap");
@@ -72,19 +71,19 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
      * is a HTML document, we need to ensure its inside the <body>
      */
-    const wrapper = ({ children }) => {
+    const wrapper = (0, react_1.useMemo)(() => ({ children }) => {
         return (<ParentWrapper>
-        <LinkPreviewContext_1.LinkPreviewContextProvider>
-          <react_native_safe_area_context_1.SafeAreaProvider 
+            <LinkPreviewContext_1.LinkPreviewContextProvider>
+              <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-            {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
-            {children}
-          </react_native_safe_area_context_1.SafeAreaProvider>
-        </LinkPreviewContext_1.LinkPreviewContextProvider>
-      </ParentWrapper>);
-    };
+                {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+                {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
+                {children}
+              </react_native_safe_area_context_1.SafeAreaProvider>
+            </LinkPreviewContext_1.LinkPreviewContextProvider>
+          </ParentWrapper>);
+    }, [ParentWrapper]);
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
 function AutoStatusBar() {
@@ -142,12 +141,10 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
     }
     return (<storeContext_1.StoreContext.Provider value={store}>
-      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
+      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} onStateChange={store.onStateChange} documentTitle={documentTitle} onReady={store.onReady}>
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <ModalContext_1.ModalContextProvider>
-              <Content />
-            </ModalContext_1.ModalContextProvider>
+            <Content />
           </WrapperComponent>
         </serverLocationContext_1.ServerContext.Provider>
       </NavigationContainer_1.NavigationContainer>

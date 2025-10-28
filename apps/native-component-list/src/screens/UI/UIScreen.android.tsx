@@ -1,5 +1,5 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
 export const UIScreens = [
   {
@@ -115,6 +115,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Chip component',
+    route: 'ui/assist-chip',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ChipScreen'));
+    },
+  },
+  {
+    name: 'Carousel component',
+    route: 'ui/carousel',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CarouselScreen'));
+    },
+  },
+  {
     name: 'Jetpack Compose primitives',
     route: 'ui/jetpack-compose-primitives',
     options: {},
@@ -125,13 +141,7 @@ export const UIScreens = [
 ];
 
 export default function UIScreen() {
-  const apis: ListElement[] = UIScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/components/${screen.route}`,
-    };
-  });
+  const apis = componentScreensToListElements(UIScreens);
   return <ComponentListScreen apis={apis} />;
 }
 

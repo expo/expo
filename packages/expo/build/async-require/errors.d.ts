@@ -1,6 +1,6 @@
 export declare class MetroServerError extends Error {
-    url: string;
     code: string;
+    url: string;
     constructor(errorObject: {
         message: string;
     } & Record<string, any>, url: string);

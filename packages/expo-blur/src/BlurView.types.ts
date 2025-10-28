@@ -1,17 +1,33 @@
-import { ViewProps } from 'react-native';
+import { RefObject } from 'react';
+import { ViewProps, View } from 'react-native';
 
 /**
  * Blur method to use on Android.
  *
  * - `'none'` - Falls back to a semi-transparent view instead of rendering a blur effect.
  *
- * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance.
+ * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance on Android 11 and older.
+ *
+ * - `'dimezisBlurViewSdk31Plus'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library on Android SDK 31 and above, for older versions of Android falls back to 'none'. This is due to performance limitations on older versions of Android, see the [performance](#performance) section to learn more.
  *
  * @platform android
  */
-export type ExperimentalBlurMethod = 'none' | 'dimezisBlurView';
+export type BlurMethod = 'none' | 'dimezisBlurView' | 'dimezisBlurViewSdk31Plus';
+
+/**
+ * @hidden
+ * @deprecated Use `BlurMethod` instead
+ * @platform android
+ */
+export type ExperimentalBlurMethod = BlurMethod;
 
 export type BlurViewProps = {
+  /**
+   * A ref to a BlurTargetView, which this BlurView will blur as its background.
+   *
+   * @platform android
+   */
+  blurTarget?: RefObject<View | null>;
   /**
    * A tint mode which will be applied to the view.
    * @default 'default'
@@ -38,15 +54,24 @@ export type BlurViewProps = {
   blurReductionFactor?: number;
 
   /**
-   * Blur method to use on Android.
-   *
-   * > **warning** Currently, `BlurView` support is experimental on Android and may cause performance and graphical issues.
-   * It can be enabled by setting this property.
-   *
+   * @hidden
+   * @deprecated Use `blurMethod` instead.
    * @default 'none'
    * @platform android
    */
   experimentalBlurMethod?: ExperimentalBlurMethod;
+
+  /**
+   * Blur method to use on Android.
+   *
+   * @default 'none'
+   * @platform android
+   */
+  blurMethod?: BlurMethod;
+} & ViewProps;
+
+export type BlurTargetViewProps = {
+  ref?: RefObject<View | null>;
 } & ViewProps;
 
 export type BlurTint =

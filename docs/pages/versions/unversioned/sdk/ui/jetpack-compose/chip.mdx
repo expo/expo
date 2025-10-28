@@ -1,0 +1,75 @@
+---
+title: Chip
+description: A Jetpack Compose Chip component for displaying compact elements.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A chip component for displaying compact elements that represent inputs, attributes, or actions.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Chip component on Android."
+      src="/static/images/expo-ui/chip/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Chip } from '@expo/ui/jetpack-compose';
+
+    // Assist chip with icon
+    <Chip
+      variant="assist"
+      label="Book"
+      leadingIcon="filled.Add"
+      onPress={() => console.log('Opening flight booking...')}
+    />
+
+    // Filter chip with selection
+    <Chip
+      variant="filter"
+      label="Images"
+      leadingIcon="filled.Star"
+      selected={selectedFilters.includes('Images')}
+      onPress={() => handleFilterToggle('Images')}
+    />
+
+    // Input chip with dismiss
+    <Chip
+      variant="input"
+      label="Work"
+      leadingIcon="filled.Create"
+      onDismiss={() => handleInputDismiss('Work')}
+    />
+
+    // Suggestion chip
+    <Chip
+      variant="suggestion"
+      label="Nearby"
+      leadingIcon="filled.LocationOn"
+      onPress={() => console.log('Searching nearby...')}
+    />
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/chip) for more information.
+
+## API
+
+<APISection packageName="expo-ui/jetpack-compose/chip" apiName="Chip" />

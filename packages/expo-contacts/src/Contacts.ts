@@ -4,10 +4,13 @@ import {
   PermissionExpiration,
   UnavailabilityError,
   uuid,
+  EventSubscription,
 } from 'expo-modules-core';
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
+
+export const onContactsChangeEventName = 'onContactsChange';
 
 export type ContactsPermissionResponse = PermissionResponse & {
   /**
@@ -1054,6 +1057,49 @@ export async function requestPermissionsAsync(): Promise<ContactsPermissionRespo
  */
 export async function presentAccessPickerAsync(): Promise<string[]> {
   return await ExpoContacts.presentAccessPickerAsync();
+}
+
+/**
+ * Adds a listener for contact changes. The listener will be called whenever contacts are added, updated, or deleted.
+ *
+ * **Platform differences:**
+ * - **Android**: 5-7 second delay - uses `ContentObserver` with inherent system delays
+ * - **iOS**: Immediate response - uses `CNContactStoreDidChangeNotification`
+ *
+ * The Android delay is a system limitation that affects all apps using `ContentObserver` for contacts.
+ * This delay is by design to batch notifications for better performance and battery life.
+ * For more immediate updates, you can also listen to app state changes and refresh
+ * contacts when the app comes to the foreground. This ensures users see the latest contacts when
+ * returning from the native Contacts app.
+ *
+ * @param listener The function that will be executed when contacts change.
+ * This function accepts no arguments.
+ *
+ * @returns A subscription object with a `remove` method to stop listening.
+ * @example
+ * ```jsx
+ * const subscription = Contacts.addContactChangeListener(() => {
+ *   console.log('Contacts changed - refreshing contact list');
+ *   // Refresh your contact list when changes are detected
+ *   loadContacts();
+ * });
+ *
+ * // Later, remove the listener
+ * subscription.remove();
+ * ```
+ */
+export function addContactsChangeListener(listener: () => void): EventSubscription {
+  if (!ExpoContacts.addListener) {
+    throw new UnavailabilityError('Contacts', 'addContactChangeListener');
+  }
+
+  const eventSubscription = ExpoContacts.addListener(onContactsChangeEventName, listener);
+
+  return {
+    remove: () => {
+      eventSubscription?.remove();
+    },
+  };
 }
 
 /**

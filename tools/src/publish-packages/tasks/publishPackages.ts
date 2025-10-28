@@ -12,6 +12,7 @@ import logger from '../../Logger';
 import * as Npm from '../../Npm';
 import { Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
+import { sleepAsync } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { green, cyan, yellow } = chalk;
@@ -70,6 +71,7 @@ export const publishPackages = new Task<TaskArgs>(
           const sdkTag = `sdk-${semver.major(pkg.packageVersion)}`;
           logger.log('  ', `Assigning ${yellow(sdkTag)} tag to ${green(pkg.packageName)}`);
           if (!options.dry) {
+            await sleepAsync(1000); // wait for npm to process the package
             await Npm.addTagAsync(pkg.packageName, pkg.packageVersion, sdkTag, {
               stdio: requiresOTP ? 'inherit' : undefined,
             });

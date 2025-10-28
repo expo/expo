@@ -6,13 +6,11 @@ import DoneText from './DoneText';
 import SuiteResult from './SuiteResult';
 import { useTheme } from '../../common/ThemeProvider';
 
-export default function Suites({ suites, done, numFailed, results }) {
-  const ref = React.useRef(null);
+export default function Suites({ suites, done, numFailed, results, selectionQuery }) {
   const { theme } = useTheme();
 
   return (
     <FlatList
-      ref={ref}
       style={styles.list}
       contentContainerStyle={styles.contentContainerStyle}
       data={[...suites]}
@@ -27,7 +25,12 @@ export default function Suites({ suites, done, numFailed, results }) {
               borderBottomColor: theme.border.secondary,
             },
           ]}>
-          <DoneText done={done} numFailed={numFailed} results={results} />
+          <DoneText
+            done={done}
+            numFailed={numFailed}
+            results={results}
+            selectionQuery={selectionQuery}
+          />
         </View>
       )}
       stickyHeaderIndices={[0]}

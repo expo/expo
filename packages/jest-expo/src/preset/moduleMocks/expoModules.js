@@ -100,7 +100,6 @@ module.exports = {
             argumentsCount: 0,
             key: 'setSystemBrightnessModeAsync',
           },
-          { name: 'useSystemBrightnessAsync', argumentsCount: 0, key: 'useSystemBrightnessAsync' },
         ],
         ExpoCalendar: [
           {

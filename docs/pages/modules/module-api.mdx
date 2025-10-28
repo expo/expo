@@ -28,37 +28,21 @@ Name("MyModuleName")
 ```
 
 </PaddedAPIBox>
-<PaddedAPIBox header="Constants">
+<PaddedAPIBox header="Constant">
 
-Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
+Defines a constant property on the JavaScript object. The property is computed only once when it's first accessed, and subsequent accesses return the cached value.
 
 <CodeBlocksTable>
 
 ```swift
-// Created from the dictionary
-Constants([
-  "PI": Double.pi
-])
-
-// or returned by the closure
-Constants {
-  return [
-    "PI": Double.pi
-  ]
+Constant("PI") {
+  Double.pi
 }
 ```
 
 ```kotlin
-// Passed as arguments
-Constants(
-  "PI" to kotlin.math.PI
-)
-
-// or returned by the closure
-Constants {
-  return@Constants mapOf(
-    "PI" to kotlin.math.PI
-  )
+Constant("PI") {
+  Math.PI
 }
 ```
 
@@ -423,6 +407,44 @@ OnActivityResult { activity, payload ->
 }
 ```
 
+</PaddedAPIBox>
+<PaddedAPIBox header="Constants">
+
+> **warning** **Deprecated:** Use [`Constant`](#constant) instead.
+
+Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
+
+<CodeBlocksTable>
+
+```swift
+// Created from the dictionary
+Constants([
+  "PI": Double.pi
+])
+
+// or returned by the closure
+Constants {
+  return [
+    "PI": Double.pi
+  ]
+}
+```
+
+```kotlin
+// Passed as arguments
+Constants(
+  "PI" to kotlin.math.PI
+)
+
+// or returned by the closure
+Constants {
+  return@Constants mapOf(
+    "PI" to kotlin.math.PI
+  )
+}
+```
+
+</CodeBlocksTable>
 </PaddedAPIBox>
 
 ## View definition components

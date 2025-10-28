@@ -1,0 +1,46 @@
+---
+title: TextField
+description: A SwiftUI TextField component for text input.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A text field component that allows users to enter and edit text.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="TextField component on iOS."
+      src="/static/images/expo-ui/textinput/ios.png"
+      className="max-w-[320px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Host, TextField } from '@expo/ui/swift-ui';
+
+    <Host matchContents>
+      <TextField autocorrection={false} defaultValue="A single line text input" onChangeText={setValue} />
+    </Host>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/textfield) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/textfield" apiName="TextField" />

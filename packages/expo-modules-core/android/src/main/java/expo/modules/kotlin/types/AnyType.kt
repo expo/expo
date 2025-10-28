@@ -21,7 +21,6 @@ import expo.modules.kotlin.typedarray.Uint16Array
 import expo.modules.kotlin.typedarray.Uint32Array
 import expo.modules.kotlin.typedarray.Uint8Array
 import expo.modules.kotlin.typedarray.Uint8ClampedArray
-import expo.modules.kotlin.types.AnyTypeProvider.typesMap
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -90,7 +89,7 @@ class EmptyKType(
 
 object AnyTypeProvider {
   @PublishedApi
-  internal val typesMap = buildMap<Pair<KClass<*>, Boolean>, AnyType> {
+  internal val typesMap = buildMap {
     listOf(
       Int::class,
       Float::class,
@@ -312,11 +311,8 @@ class AnyType(
 ) {
 
   private val converter: TypeConverter<*> by lazy {
-    if (converterProvider != null) {
-      converterProvider.obtainTypeConverter(kType)
-    } else {
-      TypeConverterProviderImpl.obtainTypeConverter(kType)
-    }
+    converterProvider?.obtainTypeConverter(kType)
+      ?: TypeConverterProviderImpl.obtainTypeConverter(kType)
   }
 
   fun convert(value: Any?, appContext: AppContext? = null, forceConversion: Boolean = false): Any? {

@@ -76,15 +76,7 @@ export const home = [
   ]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
-    makeGroup(
-      'Navigation',
-      [
-        makePage('develop/file-based-routing.mdx'),
-        makePage('develop/dynamic-routes.mdx'),
-        makePage('develop/next-steps.mdx'),
-      ],
-      { expanded: false }
-    ),
+    makePage('develop/app-navigation.mdx'),
     makeGroup(
       'User interface',
       [
@@ -187,6 +179,7 @@ export const general = [
     makeGroup(
       'Compile locally',
       [
+        makePage('guides/local-app-overview.mdx'),
         makePage('guides/local-app-development.mdx'),
         makePage('guides/local-app-production.mdx'),
         makePage('guides/cache-builds-remotely.mdx'),
@@ -229,7 +222,7 @@ export const general = [
     ]),
     makeSection('Existing native apps', [
       makePage('brownfield/overview.mdx'),
-      makePage('brownfield/installing-expo-modules.mdx'),
+      makePage('brownfield/get-started.mdx'),
     ]),
     makeGroup(
       'Reference',
@@ -405,6 +398,7 @@ export const eas = [
       expanded: true,
     }
   ),
+  makeSection('AI', [makePage('eas/ai/mcp.mdx')]),
   makeSection('EAS Workflows', [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
@@ -764,13 +758,18 @@ function makePage(file) {
     data.title = '';
   }
 
+  const isIndex = path.basename(file, path.extname(file)) === 'index';
+
   const result = {
     // TODO(cedric): refactor name into title
     name: data.sidebar_title ?? data.title,
     // TODO(cedric): refactor href into url
     href: url,
+    isIndex, // If the page is index from a directory, it will be listed at first
     isNew: data.isNew ?? undefined,
     isAlpha: data.isAlpha ?? undefined,
+    isBeta: data.isBeta ?? undefined,
+    isPreview: data.isPreview ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
     hasVideoLink: data.hasVideoLink ?? undefined,
@@ -792,11 +791,70 @@ function makePage(file) {
  * Load all pages from a single directory.
  */
 function pagesFromDir(dir) {
-  return fs
-    .readdirSync(path.resolve(PAGES_DIR, dir), { withFileTypes: true })
-    .filter(entity => entity.isFile())
-    .map(file => makePage(path.join(dir, file.name)))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const dirPath = path.resolve(PAGES_DIR, dir);
+  const entities = fs.readdirSync(dirPath, { withFileTypes: true });
+
+  const files = entities
+    .filter(entity => entity.isFile() && entity.name !== 'metadata.json')
+    .map(file => makePage(path.join(dir, file.name)));
+
+  const folders = entities
+    .filter(entity => entity.isDirectory())
+    .map(folder => {
+      const folderPages = pagesFromDir(path.join(dir, folder.name));
+      const sortedFolderPages = folderPages.sort((a, b) => {
+        // prioritize index files first
+        if (a.isIndex && !b.isIndex) {
+          return -1;
+        }
+        if (!a.isIndex && b.isIndex) {
+          return 1;
+        }
+
+        // otherwise sort by name (title)
+        return a.name.localeCompare(b.name);
+      });
+
+      if (folderPages.length === 0) {
+        return null;
+      }
+
+      const metaJsonPath = path.join(dirPath, folder.name, 'metadata.json');
+      let sidebarTitle = folder.name.toUpperCase();
+      let expanded = true;
+
+      if (fs.existsSync(metaJsonPath)) {
+        try {
+          const metaContent = fs.readFileSync(metaJsonPath, 'utf-8');
+          const meta = JSON.parse(metaContent);
+          if (meta.sidebarTitle) {
+            sidebarTitle = meta.sidebarTitle;
+          }
+          if (typeof meta.expanded === 'boolean') {
+            expanded = meta.expanded;
+          }
+        } catch (error) {
+          // fallback to default behavior
+          console.warn(`Invalid metadata.json in ${metaJsonPath}:`, error.message);
+        }
+      }
+
+      return makeGroup(sidebarTitle, sortedFolderPages, { expanded });
+    })
+    .filter(Boolean);
+
+  return [...files, ...folders].sort((a, b) => {
+    // prioritize index files first
+    if (a.isIndex && !b.isIndex) {
+      return -1;
+    }
+    if (!a.isIndex && b.isIndex) {
+      return 1;
+    }
+
+    // otherwise sort by name (title)
+    return a.name.localeCompare(b.name);
+  });
 }
 
 /**

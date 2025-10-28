@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+- [Android] Remove unused `androidx.annotation:annotation` dependency. ([#39755](https://github.com/expo/expo/pull/39755) by [@lukmccall](https://github.com/lukmccall))
+
+## 10.0.7 — 2025-09-10
+
+### 💡 Others
+
+- Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+
 ## 10.0.6 — 2025-09-02
 
 _This version does not introduce any user-facing changes._
