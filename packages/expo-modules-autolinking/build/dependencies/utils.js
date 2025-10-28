@@ -130,13 +130,11 @@ async function filterMapResolutionResult(results, filterMap) {
     }
     return output;
 }
-function mergeResolutionResults(results, output) {
-    if (output == null && results.length === 1) {
+function mergeResolutionResults(results, base) {
+    if (base == null && results.length === 1) {
         return results[0];
     }
-    else if (output == null) {
-        output = Object.create(null);
-    }
+    const output = base == null ? Object.create(null) : base;
     for (let idx = 0; idx < results.length; idx++) {
         for (const key in results[idx]) {
             const resolution = results[idx][key];

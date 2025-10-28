@@ -146,23 +146,22 @@ export async function filterMapResolutionResult<T extends { name: string }>(
 
 export function mergeResolutionResults(
   results: ResolutionResult[],
-  output?: ResolutionResult
+  base?: ResolutionResult
 ): ResolutionResult {
-  if (output == null && results.length === 1) {
+  if (base == null && results.length === 1) {
     return results[0];
-  } else if (output == null) {
-    output = Object.create(null);
   }
+  const output: ResolutionResult = base == null ? Object.create(null) : base;
   for (let idx = 0; idx < results.length; idx++) {
     for (const key in results[idx]) {
       const resolution = results[idx][key]!;
-      const prevResolution = output![key];
+      const prevResolution = output[key];
       if (prevResolution != null) {
-        output![key] = mergeWithDuplicate(prevResolution, resolution);
+        output[key] = mergeWithDuplicate(prevResolution, resolution);
       } else {
-        output![key] = resolution;
+        output[key] = resolution;
       }
     }
   }
-  return output!;
+  return output;
 }
