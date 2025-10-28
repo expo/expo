@@ -46,10 +46,7 @@ dependencies {
   implementation 'com.google.code.gson:gson:2.8.6'
 }
 
-def expoLogBoxDir = project.providers.exec {
-  workingDir(projectDir)
-  commandLine("node", "-e", "console.log(require('path').dirname(require.resolve('@expo/log-box/package.json')));")
-}.standardOutput.asText.get().trim()
+def expoLogBoxDir = project.projectDir.parentFile.absolutePath
 
 def config = project.hasProperty("react") ? project.react : [];
 def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
