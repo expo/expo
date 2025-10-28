@@ -49,15 +49,7 @@ def reactNativeArchitectures() {
 }
 
 // HERMES
-def USE_HERMES = true
-if (findProject(":app")) {
-  def appProject = project(":app")
-  def hermesProp = appProject.findProperty("hermesEnabled")
-  def enableHermes = appProject?.ext?.react?.enableHermes
-  if (hermesProp != null || enableHermes != null) {
-    USE_HERMES = hermesProp?.toBoolean() || enableHermes?.toBoolean()
-  }
-}
+def USE_HERMES = findProperty("hermesEnabled") ?: true
 
 // Currently the needs for hermes/jsc are only for androidTest, so we turn on this flag only when `isExpoModulesCoreTests` is true
 USE_HERMES = USE_HERMES && isExpoModulesCoreTests
