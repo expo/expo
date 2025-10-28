@@ -22,13 +22,30 @@ function createRequestHandler(params, setup) {
         ...(0, node_1.createNodeEnv)(params),
         ...setup,
     });
+    async function requestHandler(request) {
+        try {
+            return await run(onRequest, request);
+        }
+        catch (error) {
+            const handleRouteError = setup?.handleRouteError;
+            if (handleRouteError && error != null && typeof error === 'object') {
+                try {
+                    return await handleRouteError(error);
+                }
+                catch {
+                    // Rethrow original error below
+                }
+            }
+            throw error;
+        }
+    }
     return async (req, res, next) => {
         if (!req?.url || !req.method) {
             return next();
         }
         try {
             const request = convertRequest(req, res);
-            const response = await run(onRequest, request);
+            const response = await requestHandler(request);
             await respond(res, response);
         }
         catch (error) {
