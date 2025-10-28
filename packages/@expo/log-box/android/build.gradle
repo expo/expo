@@ -63,6 +63,7 @@ afterEvaluate {
       // Setup inputs and output so Gradle can cache the ExpoLogBox.bundle
       inputs.dir project.fileTree(expoLogBoxDirFile) {
         exclude 'dist/**'
+        exclude 'android/**'
       }
       outputs.dir distDirFile
 
