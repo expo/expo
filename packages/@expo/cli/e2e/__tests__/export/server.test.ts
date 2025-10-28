@@ -288,6 +288,7 @@ describe('server-output', () => {
           method: 'GET',
         });
         expect(res.status).toBe(500);
+        expect(await res.text()).toEqual(''); // Ensures 500 from Response.error() and not from another error
       });
     });
     describe('Response.redirect', () => {

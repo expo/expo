@@ -153,11 +153,17 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
             modifiedResponseInit = beforeAPIResponse(modifiedResponseInit, callbackRoute);
         }
         // Second to last is error response callback
-        if (originalStatus && originalStatus > 399) {
+        if (typeof originalStatus === 'number' &&
+            (originalStatus === 0 /* Response.error() */ || originalStatus > 399)) {
             modifiedResponseInit = beforeErrorResponse(modifiedResponseInit, callbackRoute);
         }
         // Generic before response callback last
         modifiedResponseInit = beforeResponse(modifiedResponseInit, callbackRoute);
+        if (originalStatus === 0) {
+            // Response.error() results in status 0, which will cause new Response() to fail.
+            // We convert it to 500 only if originally 0, if cbs set the values to 0, we don't protect against it.
+            modifiedResponseInit.status = 500;
+        }
         return new Response(bodyInit, modifiedResponseInit);
     }
     function createResponseFrom(routeType = null, route, response) {
