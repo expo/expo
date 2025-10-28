@@ -14,7 +14,7 @@ fun ContentResolver.safeQuery(
 ): Cursor? {
   return try {
     query(uri, projection, selection, selectionArgs, sortOrder)
-  } catch (_: SecurityException) {
-    throw PermissionException("Missing required system permissions")
+  } catch (e: SecurityException) {
+    throw PermissionException("Missing required system permissions", e)
   }
 }
