@@ -5,8 +5,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * This is added as `asyncRequireModulePath` in `@expo/metro-config`
  * Fork of https://github.com/facebook/metro/blob/b8e9e64f1de97a67234e223f5ee21524b160e8a5/packages/metro-runtime/src/modules/asyncRequire.js#L1
- * Adds worker support.
+ * - Adds worker support.
  */
 
 type MetroRequire = {
@@ -89,5 +90,8 @@ asyncRequire.unstable_resolve = function unstable_resolve(
   }
   return id;
 };
+
+// TODO(@kitten): Missing metro type definitions
+declare const module: any;
 
 module.exports = asyncRequire;
