@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.0.3 — 2025-10-28
+
+### 🐛 Bug fixes
+
 - Fix `handleRouteError` not being scoped to unhandled errors and only expose it on `http` and `express` adapter ([#40627](https://github.com/expo/expo/pull/40627) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

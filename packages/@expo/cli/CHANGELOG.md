@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.14 — 2025-10-28
+
+### 💡 Others
+
 - Alias `transformer.asyncRequireModulePath` via Node resolution, when provided ([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
 
 ## 54.0.13 — 2025-10-21

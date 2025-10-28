@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix issue where local assets don't resolve correctly in release mode. ([#40642](https://github.com/expo/expo/pull/40642) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 1.0.14 — 2025-10-28
+
+### 🐛 Bug fixes
+
+- Fix issue where local assets don't resolve correctly in release mode. ([#40642](https://github.com/expo/expo/pull/40642) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.0.13 — 2025-09-18
 
