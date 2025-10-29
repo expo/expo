@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Alias `transformer.asyncRequireModulePath` via Node resolution, when provided ([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
+- Added MCP server handshaking and graceful shutdown. ([#40660](https://github.com/expo/expo/pull/40660) by [@kudo](https://github.com/kudo))
 
 ## 54.0.13 — 2025-10-21
 

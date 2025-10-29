@@ -1570,10 +1570,10 @@
     debug "^3.1.0"
     glob "^10.4.2"
 
-"@expo/mcp-tunnel@~0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@expo/mcp-tunnel/-/mcp-tunnel-0.0.7.tgz#16850d5e7b5b3961bf06be0111ae4689de959aeb"
-  integrity sha512-ht8Q1nKtiHobZqkUqt/7awwjW2D59ardP6XDVmGceGjQtoZELVaJDHyMIX+aVG9SZ9aj8+uGlhQYeBi57SZPMA==
+"@expo/mcp-tunnel@~0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@expo/mcp-tunnel/-/mcp-tunnel-0.1.0.tgz#ae4ce4320b2f97a9891783c2316f9936c912d126"
+  integrity sha512-rJ6hl0GnIZj9+ssaJvFsC7fwyrmndcGz+RGFzu+0gnlm78X01957yjtHgjcmnQAgL5hWEOR6pkT0ijY5nU5AWw==
   dependencies:
     ws "^8.18.3"
     zod "^3.25.76"
