@@ -310,10 +310,13 @@ internal struct MediaHandler {
         let fileExtension = getFileExtension(from: originalFilename)
         let destinationUrl = try generateUrl(withFileExtension: fileExtension)
 
+        let resourceOptions = PHAssetResourceRequestOptions()
+        resourceOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
+
         try await PHAssetResourceManager.default().writeData(
           for: resource,
           toFile: destinationUrl,
-          options: nil
+          options: resourceOptions
         )
 
         let mimeType = getMimeType(from: destinationUrl.pathExtension)
@@ -389,7 +392,10 @@ internal struct MediaHandler {
 
           // Stream the resource into our cache directory. This API is asynchronous but doesn't require
           // a temporary file like `loadFileRepresentation`.
-          try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: nil)
+          let resourceOptions = PHAssetResourceRequestOptions()
+          resourceOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
+
+          try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: resourceOptions)
 
           // Build and return the result using the helper.
           let mimeType = getMimeType(from: destinationUrl.pathExtension)
