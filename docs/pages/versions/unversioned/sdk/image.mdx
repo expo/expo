@@ -12,6 +12,11 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
+import {
+  ConfigPluginExample,
+  ConfigPluginProperties,
+  ConfigReactNative,
+} from '~/ui/components/ConfigSection';
 
 `expo-image` is a cross-platform React component that loads and renders images.
 
@@ -43,9 +48,11 @@ import { Terminal } from '~/ui/components/Snippet';
 
 <APIInstallSection />
 
-### Config plugin (optional)
+## Configuration in app config
 
 You can configure build-time settings for `expo-image` using its [config plugin](/config-plugins/introduction/). Add the plugin to the `plugins` array in your **app.json** or **app.config.js** and rebuild the native project.
+
+<ConfigPluginExample>
 
 ```json app.json
 {
@@ -62,9 +69,27 @@ You can configure build-time settings for `expo-image` using its [config plugin]
 }
 ```
 
-- **disableLibdav1d** (_boolean_, iOS only) — When `true`, skips adding the bundled `libavif/libdav1d` Pod. Use this when another dependency (such as FFmpegKit) already links `libdav1d`. Disabling the Pod removes AVIF image support on iOS unless another decoder is available.
+</ConfigPluginExample>
 
-If you are not running config plugins (for example, in a plain React Native workflow), set the shell environment variable `EXPO_IMAGE_DISABLE_LIBDAV1D=1` before running `pod install` to achieve the same effect.
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'disableLibdav1d',
+      platform: 'ios',
+      description:
+        'When true, skips adding the bundled `libavif/libdav1d` Pod. Use this when another dependency (such as FFmpegKit) already links `libdav1d`. Disabling the Pod removes AVIF image support on iOS unless another decoder is available.',
+      default: 'false',
+    },
+  ]}
+/>
+
+<ConfigReactNative>
+  If you are not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/))
+  or you're using native **ios** project manually, then set the shell environment variable
+  `EXPO_IMAGE_DISABLE_LIBDAV1D=1` before running `pod install` to achieve the same effect.
+  Alternatively, you can add `ENV['EXPO_IMAGE_DISABLE_LIBDAV1D'] ||= '0'` to the top of your
+  `Podfile`.
+</ConfigReactNative>
 
 ## Usage
 
