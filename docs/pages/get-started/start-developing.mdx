@@ -1,97 +1,94 @@
----
-title: Start developing
-description: Make your first change to an Expo project and see it live on your device.
-hideTOC: true
----
+// server/index.js
+// Minimal Express server to initiate Daraja STK push (sandbox).
+// Note: This is example code for testing. Do NOT store production keys in plaintext.
 
-import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+const express = require("express");
+const axios = require("axios");
+const bodyParser = require("body-parser");
 
-<Step label="1">
-## Start a development server
-To start the development server, run the following command:
+const app = express();
+app.use(bodyParser.json());
 
-<Terminal cmd={['$ npx expo start']} />
+/*
+  CONFIG - replace with your keys for live
+  For sandbox/test use the Daraja sandbox consumer key/secret and shortcode.
+*/
+const CONF = {
+  consumerKey: "YOUR_DARAJA_CONSUMER_KEY",      // sandbox key
+  consumerSecret: "YOUR_DARAJA_CONSUMER_SECRET",// sandbox secret
+  shortcode: "174379", // Daraja sandbox shortcode (example). Replace with your Paybill/Till when live.
+  passkey: "YOUR_LIPA_NA_MPESA_PASSKEY",       // Lipa Na M-Pesa passkey (sandbox)
+  callbackBaseUrl: "https://your-backend.example.com", // public URL for callbacks
+  environment: "sandbox", // or "production"
+};
 
-</Step>
+// get OAuth token
+async function getAuthToken() {
+  const url =
+    CONF.environment === "sandbox"
+      ? "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+      : "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
 
-<Step label="2">
-## Open the app on your device
+  const token = Buffer.from(`${CONF.consumerKey}:${CONF.consumerSecret}`).toString("base64");
+  const res = await axios.get(url, {
+    headers: { Authorization: `Basic ${token}` },
+  });
+  return res.data.access_token;
+}
 
-After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
+// STK Push endpoint
+app.post("/api/stkpush", async (req, res) => {
+  try {
+    const { phone, amount, accountReference = "APPLLElinc", transactionDesc = "Subscription" } = req.body;
+    if (!phone || !amount) return res.status(400).json({ error: "phone & amount required" });
 
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>a</kbd> or <kbd>i</kbd> respectively to open the app.
+    const token = await getAuthToken();
 
-<Collapsible summary="Having problems?">
+    const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, "").slice(0, 14); // YYYYMMDDHHMMSS
+    const password = Buffer.from(`${CONF.shortcode}${CONF.passkey}${timestamp}`).toString("base64");
 
-Make sure you are on the same Wi-Fi network on your computer and your device.
+    const url =
+      CONF.environment === "sandbox"
+        ? "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+        : "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
 
-If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
+    const callbackUrl = `${CONF.callbackBaseUrl}/api/stk/callback`; // Daraja will POST here
 
-<Terminal cmd={['$ npx expo start --tunnel']} />
+    const body = {
+      BusinessShortCode: CONF.shortcode,
+      Password: password,
+      Timestamp: timestamp,
+      TransactionType: "CustomerPayBillOnline",
+      Amount: amount,
+      PartyA: phone.replace(/\D/g, ""), // phone in format 2547xxxxxxx
+      PartyB: CONF.shortcode,
+      PhoneNumber: phone.replace(/\D/g, ""),
+      CallBackURL: callbackUrl,
+      AccountReference: accountReference,
+      TransactionDesc: transactionDesc,
+    };
 
-> Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
+    const response = await axios.post(url, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-</Collapsible>
+    // store response's CheckoutRequestID, etc. (you should persist to DB)
+    return res.json({ success: true, data: response.data });
+  } catch (err) {
+    console.error("stkpush err", err.response?.data || err.message);
+    return res.status(500).json({ error: "STK push failed", detail: err.response?.data || err.message });
+  }
+});
 
-</Step>
+// Callback endpoint for Daraja (must be publicly reachable)
+app.post("/api/stk/callback", (req, res) => {
+  // Daraja will POST JSON containing ResultCode, CheckoutRequestID, etc.
+  const callback = req.body;
+  console.log("Daraja callback received:", JSON.stringify(callback).slice(0, 1200));
+  // TODO: parse callback.body and update subscription in DB and push notification to user
+  // For now, just respond 200 OK
+  res.json({ result: "received" });
+});
 
-<Step label="3">
-
-## Make your first change
-
-Open the **app/(tabs)/index.tsx** file in your code editor and make a change.
-
-<DiffBlock
-  raw={`diff --git a/app/(tabs)/index.tsx b/app/(tabs)/index.tsx
-index 45cfa0e..4d1b384 100644
---- a/app/(tabs)/index.tsx
-+++ b/app/(tabs)/index.tsx
-@@ -17,7 +17,7 @@ export default function HomeScreen() {
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
--       <ThemedText type="title">Welcome!</ThemedText>
-+       <ThemedText type="title">Hello World!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-  `}
-/>
-
-<Collapsible summary="Changes not showing up on your device?">
-
-Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
-
-- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
-- Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS.
-- If you see **Enable Fast Refresh**, press it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
-
-  <ContentSpotlight
-    alt="Developer menu in Expo Go app."
-    src="/static/images/get-started/developer-menu.png"
-    className="max-w-[540px]"
-  />
-
-</Collapsible>
-
-</Step>
-
----
-
-## File structure
-
-Below, you can get familiar with the default project's file structure:
-
-<ProjectStructure />
-
-## Features
-
-The default project template has the following features:
-
-<TemplateFeatures />
+const port = process.env.PORT || 3333;
+app.listen(port, () => console.log("STK backend running on", port));
