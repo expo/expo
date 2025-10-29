@@ -29,6 +29,14 @@ extension ExpoSwiftUI {
       // Nothing to do here
     }
 
+    static func dismantleUIView(_ uiView: UIView, coordinator: ()) {
+      // https://github.com/expo/expo/issues/40604
+      // UIViewRepresentable attaches autoresizingMask w+h to the hosted UIView
+      // This causes issues for RN views when they are recycled.
+      // So we clean up the autoresizingMask to avoid issues.
+      uiView.autoresizingMask = []
+    }
+
     // MARK: - AnyChild implementations
 
     var childView: some SwiftUI.View {
