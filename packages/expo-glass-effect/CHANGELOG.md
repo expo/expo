@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed XCode 16.4 compilation ([#40686](https://github.com/expo/expo/pull/40686) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ## 0.1.5 — 2025-10-28
 
 ### 🎉 New features
