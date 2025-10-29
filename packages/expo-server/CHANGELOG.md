@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - Fix `handleRouteError` not being scoped to unhandled errors and only expose it on `http` and `express` adapter ([#40627](https://github.com/expo/expo/pull/40627) by [@kitten](https://github.com/kitten))
+- Convert `Response.error()` status `0` to `500` ([#40672](https://github.com/expo/expo/pull/40672) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
