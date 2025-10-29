@@ -15,6 +15,7 @@ on:
       - packages/@expo/package-manager/src/**
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/router-server/**
+      - packages/@expo/log-box/**
       - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**
@@ -35,6 +36,7 @@ on:
       - packages/@expo/package-manager/src/**
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/router-server/**
+      - packages/@expo/log-box/**
       - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**
