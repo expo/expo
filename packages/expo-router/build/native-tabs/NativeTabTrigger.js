@@ -115,11 +115,14 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
     }, { ...initialOptions });
 }
 function appendBadgeOptions(options, props) {
-    if (props.children) {
-        options.badgeValue = String(props.children);
-        options.selectedBadgeBackgroundColor = props.selectedBackgroundColor;
+    options.selectedBadgeBackgroundColor = props.selectedBackgroundColor;
+    if (props.hidden) {
+        options.badgeValue = undefined;
     }
-    else if (!props.hidden) {
+    else if (props.children) {
+        options.badgeValue = String(props.children);
+    }
+    else {
         // If no value is provided, we set it to a space to show the badge
         // Otherwise, the `react-native-screens` will interpret it as a hidden badge
         // https://github.com/software-mansion/react-native-screens/blob/b4358fd95dd0736fc54df6bb97f210dc89edf24c/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm#L172
@@ -130,15 +133,24 @@ function appendLabelOptions(options, props) {
     if (props.hidden) {
         options.title = '';
     }
-    else {
+    else if ('children' in props) {
         options.title = props.children;
-        if (props.selectedStyle) {
-            options.selectedLabelStyle = react_native_1.StyleSheet.flatten(props.selectedStyle);
-        }
+    }
+    if ('selectedStyle' in props) {
+        options.selectedLabelStyle = react_native_1.StyleSheet.flatten(props.selectedStyle);
     }
 }
 function appendIconOptions(options, props) {
-    if ('sf' in props && props.sf && process.env.EXPO_OS === 'ios') {
+    if ('sf' in props || 'src' in props || 'md' in props || 'drawable' in props) {
+        options.icon = undefined;
+        options.selectedIcon = undefined;
+    }
+    if ('src' in props && props.src) {
+        const icon = convertIconSrcToIconOption(props);
+        options.icon = icon?.icon;
+        options.selectedIcon = icon?.selectedIcon;
+    }
+    else if ('sf' in props && process.env.EXPO_OS === 'ios') {
         if (typeof props.sf === 'string') {
             options.icon = props.sf
                 ? {
@@ -180,7 +192,7 @@ function appendIconOptions(options, props) {
         options.icon = icon?.icon;
         options.selectedIcon = icon?.selectedIcon;
     }
-    if (props.selectedColor) {
+    if ('selectedColor' in props) {
         options.selectedIconColor = props.selectedColor;
     }
 }
