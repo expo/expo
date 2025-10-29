@@ -18,7 +18,7 @@
 - [Android] Added `ReactActivityHandler.onDidCreateReactActivityDelegateNotification`. ([#40537](https://github.com/expo/expo/pull/40537) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Added `ReactNativeHostHandler.onDidCreateReactHost`. ([#40561](https://github.com/expo/expo/pull/40561) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Swift's `Encodable` types can now be converted to JavaScript values. ([#40621](https://github.com/expo/expo/pull/40621) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers.
+- [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers. ([#40684](https://github.com/expo/expo/pull/40684) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

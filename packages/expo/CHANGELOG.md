@@ -16,7 +16,7 @@
 - [iOS] Add `applicationDidReceiveMemoryWarning` subscribing to ExpoAppDelegate ([#40504](https://github.com/expo/expo/pull/40504) by [@szydlovsky](https://github.com/szydlovsky))
 - Fork default RN `HMRClient` to enable custom HMR Errors handling and UI ([#40449](https://github.com/expo/expo/pull/40449) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Add support for a new error overlay UI from `@expo/log-box` ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers.
+- [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers. ([#40684](https://github.com/expo/expo/pull/40684) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
