@@ -89,7 +89,14 @@ export function importExportLiveBindingsPlugin({
 }: ConfigAPI & typeof import('@babel/core')): PluginObj<State> {
   const isImpure = caller((_caller) => {
     const callee = _caller as ExpoBabelCaller | undefined;
-    return callee?.isServer || callee?.isNodeModule || callee?.metroSourceType === 'script';
+    const metroSourceType = callee?.metroSourceType;
+    switch (metroSourceType) {
+      case 'script':
+      case 'asset':
+        return true;
+      default:
+        return !!(callee?.isServer || callee?.isNodeModule);
+    }
   });
 
   const addModuleSpecifiers = (state: State, source: ModuleRequest): ModuleSpecifiers => {
