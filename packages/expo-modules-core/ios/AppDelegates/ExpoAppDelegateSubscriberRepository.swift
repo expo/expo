@@ -32,6 +32,7 @@ public class ExpoAppDelegateSubscriberRepository: NSObject {
       fatalError("Given app delegate subscriber `\(String(describing: subscriber))` is already registered.")
     }
     _subscribers.append(subscriber)
+    subscriber.subscriberDidRegister?()
   }
 
   @objc
