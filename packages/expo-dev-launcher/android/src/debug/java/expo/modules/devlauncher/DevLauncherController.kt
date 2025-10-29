@@ -483,6 +483,10 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     fun wrapReactActivityDelegate(activity: ReactActivity, devLauncherReactActivityDelegateSupplier: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate {
+      // Set activity class as launcher for createBasicAppIntent() to correctly identify the React Native Intent when launching,
+      // otherwise it will just use the main app intent, which is not always true in brownfield.
+      sLauncherClass = activity::class.java
+
       devLauncherKoin()
         .get<DevLauncherLifecycle>()
         .delegateWillBeCreated(activity)
