@@ -23,14 +23,14 @@ const indexHtmlPath = join(outputDir, defaultDomComponentsBundle, 'index.html');
 
 await rm(outputDir, { recursive: true, force: true });
 
-// We use path to the binary to avoid issue with the package managers when building in Android Studio or Xcode.
-const executable = process.platform === 'win32' ? 'yarn' : nodePath;
-const expo = process.platform === 'win32' ? 'expo' : join(__dirname, '../node_modules/.bin/expo');
+const expoCliJs = import.meta
+  .resolve('expo/bin/cli', join(__dirname, '..'))
+  .slice('file://'.length);
 
 const result = await spawn(
-  executable,
+  nodePath,
   [
-    expo,
+    expoCliJs,
     'export:embed',
     '--platform',
     'android',
