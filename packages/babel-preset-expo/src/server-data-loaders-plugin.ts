@@ -24,7 +24,7 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
       // Early exit if file doesn't contain a `loader` named export
       if (!file.code.includes(LOADER_EXPORT_NAME)) {
         debug('Skipping file (no loader export):', file.opts.filename);
-        file.path.skip();
+        file.path.stop();
         return;
       }
 

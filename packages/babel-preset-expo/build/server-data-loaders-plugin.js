@@ -13,7 +13,7 @@ function serverDataLoadersPlugin(api) {
             // Early exit if file doesn't contain a `loader` named export
             if (!file.code.includes(LOADER_EXPORT_NAME)) {
                 debug('Skipping file (no loader export):', file.opts.filename);
-                file.path.skip();
+                file.path.stop();
                 return;
             }
             debug(isServer ? 'Processing server bundle:' : 'Processing client bundle:', file.opts.filename);
