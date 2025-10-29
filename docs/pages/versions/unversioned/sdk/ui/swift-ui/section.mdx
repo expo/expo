@@ -1,0 +1,43 @@
+---
+title: Section
+description: A SwiftUI Section component for grouping related content in lists.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A section component for grouping related content within lists, providing headers, footers, and collapsible functionality.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+```tsx
+import { Host, List, Section, Switch, Text } from '@expo/ui/swift-ui';
+
+function SectionExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Section
+          header={<Text>Custom Header</Text>}
+          footer={<Text color="gray">These settings control app behavior</Text>}>
+          <Switch label="Enable notifications" value={true} />
+          <Switch label="Dark mode" value={false} />
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/section) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/section" apiName="Section" />

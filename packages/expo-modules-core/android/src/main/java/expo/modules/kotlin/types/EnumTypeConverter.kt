@@ -90,17 +90,17 @@ class EnumTypeConverter(
     enumConstants: Array<out Enum<*>>,
     parameterName: String
   ): Enum<*> {
-    val filed = enumClass.java.getDeclaredField(parameterName)
-    requireNotNull(filed) { "Cannot find a property for $parameterName parameter" }
+    val field = enumClass.java.getDeclaredField(parameterName)
+    requireNotNull(field) { "Cannot find a property for $parameterName parameter" }
 
-    filed.isAccessible = true
+    field.isAccessible = true
 
-    val parameterType = filed.type
+    val parameterType = field.type
     val jsUnwrapValue = jsValue.unwrapValue(parameterType)
 
     return requireNotNull(
       enumConstants.find {
-        filed.get(it) == jsUnwrapValue
+        field.get(it) == jsUnwrapValue
       }
     ) { "Couldn't convert '$jsValue' to ${enumClass.simpleName} where $parameterName is the enum parameter" }
   }

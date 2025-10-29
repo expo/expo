@@ -5,6 +5,7 @@ export * from './ColorPicker';
 export * from './ContentUnavailableView';
 export * from './ContextMenu';
 export * from './DatePicker';
+export * from './Divider';
 export * from './DisclosureGroup';
 export * from './Form';
 export * from './Gauge';
@@ -28,4 +29,5 @@ export * from './SecureField';
 export * from './Namespace';
 export * from './GlassEffectContainer';
 export * from './Shapes';
+export * from './Popover';
 //# sourceMappingURL=index.d.ts.map

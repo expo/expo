@@ -7,7 +7,7 @@ import ExpoSQLite from './ExpoSQLite';
  */
 function resolveDbDirectory(directory: string | undefined): string {
   const resolvedDirectory = directory ?? ExpoSQLite.defaultDatabaseDirectory;
-  if (resolvedDirectory === null) {
+  if (resolvedDirectory == null) {
     throw new Error('Both provided directory and defaultDatabaseDirectory are null.');
   }
   return resolvedDirectory;

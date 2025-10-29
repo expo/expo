@@ -30,6 +30,7 @@ open class AppLoader: NSObject {
   public let database: UpdatesDatabase
   public let directory: URL
   public let launchedUpdate: Update?
+  public var requestedUpdate: Update?
 
   private var updateResponseContainingManifest: UpdateResponse?
 
@@ -71,6 +72,7 @@ open class AppLoader: NSObject {
     existingAssets = []
     assetDownloadProgress = [:]
     updateResponseContainingManifest = nil
+    requestedUpdate = nil
     updateResponseBlock = nil
     assetBlock = nil
     successBlock = nil
@@ -207,10 +209,18 @@ open class AppLoader: NSObject {
         !assets.isEmpty {
         self.assetsToLoad = assets
         let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
+        let requestedUpdate: Update? = {
+          if let launchedUpdate = self.launchedUpdate,
+            launchedUpdate.updateId == updateManifest.updateId {
+            return nil
+          }
+          return updateManifest
+        }()
+        self.requestedUpdate = requestedUpdate
         let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
           launchedUpdate: self.launchedUpdate,
           embeddedUpdate: embeddedUpdate,
-          requestedUpdate: updateManifest
+          requestedUpdate: requestedUpdate
         )
 
         for asset in assets {
@@ -394,7 +404,8 @@ open class AppLoader: NSObject {
 
       if self.erroredAssets.isEmpty {
         do {
-          try self.database.markUpdateFinished(self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest)
+          let updateManifest = self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest
+          try self.database.markUpdateFinished(updateManifest)
         } catch {
           self.arrayLock.unlock()
           self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))

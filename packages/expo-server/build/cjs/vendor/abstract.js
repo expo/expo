@@ -23,7 +23,7 @@ exports.ExpoError = ExpoError;
 function noopBeforeResponse(responseInit, _route) {
     return responseInit;
 }
-function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleRouteError, getMiddleware, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
+function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
     let manifest = null;
     return async function handler(request) {
         if (!manifest) {
@@ -46,19 +46,13 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
         let request = incomingRequest;
         let url = new URL(request.url);
         if (manifest.middleware) {
-            try {
-                const middleware = await getMiddleware(manifest.middleware);
-                if ((0, middleware_1.shouldRunMiddleware)(request, middleware)) {
-                    const middlewareResponse = await middleware.default(new ImmutableRequest_1.ImmutableRequest(request));
-                    if (middlewareResponse instanceof Response) {
-                        return middlewareResponse;
-                    }
-                    // If middleware returns undefined/void, continue to route matching
+            const middleware = await getMiddleware(manifest.middleware);
+            if ((0, middleware_1.shouldRunMiddleware)(request, middleware)) {
+                const middlewareResponse = await middleware.default(new ImmutableRequest_1.ImmutableRequest(request));
+                if (middlewareResponse instanceof Response) {
+                    return middlewareResponse;
                 }
-            }
-            catch (error) {
-                // Shows RedBox in development
-                return handleRouteError(error);
+                // If middleware returns undefined/void, continue to route matching
             }
         }
         if (manifest.redirects) {
@@ -91,14 +85,8 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
                 if (!route.namedRegex.test(url.pathname)) {
                     continue;
                 }
-                try {
-                    const html = await getHtml(request, route);
-                    return respondHTML(html, route);
-                }
-                catch (error) {
-                    // Shows RedBox in development
-                    return handleRouteError(error);
-                }
+                const html = await getHtml(request, route);
+                return respondHTML(html, route);
             }
         }
         // Next, test API routes
@@ -106,14 +94,8 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
             if (!route.namedRegex.test(url.pathname)) {
                 continue;
             }
-            try {
-                const mod = await getApiRoute(route);
-                return await respondAPI(mod, request, route);
-            }
-            catch (error) {
-                // Shows RedBox in development
-                return handleRouteError(error);
-            }
+            const mod = await getApiRoute(route);
+            return await respondAPI(mod, request, route);
         }
         // Finally, test 404 routes
         if (request.method === 'GET' || request.method === 'HEAD') {
@@ -151,16 +133,15 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
         let modifiedResponseInit = responseInit;
         // Apply user-defined headers, if provided
         if (manifest?.headers) {
-            for (const [key, value] of Object.entries(manifest.headers)) {
-                if (Array.isArray(value)) {
-                    // For arrays, append each value separately (important for Set-Cookie)
-                    value.forEach((v) => modifiedResponseInit.headers.append(key, v));
-                }
-                else {
-                    // Don't override existing headers
-                    if (!modifiedResponseInit.headers.has(key)) {
-                        modifiedResponseInit.headers.set(key, value);
+            for (const headerName in manifest.headers) {
+                if (Array.isArray(manifest.headers[headerName])) {
+                    for (const headerValue of manifest.headers[headerName]) {
+                        modifiedResponseInit.headers.append(headerName, headerValue);
                     }
+                }
+                else if (manifest.headers[headerName] != null &&
+                    !modifiedResponseInit.headers.has(headerName)) {
+                    modifiedResponseInit.headers.set(headerName, manifest.headers[headerName]);
                 }
             }
         }
@@ -172,11 +153,17 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
             modifiedResponseInit = beforeAPIResponse(modifiedResponseInit, callbackRoute);
         }
         // Second to last is error response callback
-        if (originalStatus && originalStatus > 399) {
+        if (typeof originalStatus === 'number' &&
+            (originalStatus === 0 /* Response.error() */ || originalStatus > 399)) {
             modifiedResponseInit = beforeErrorResponse(modifiedResponseInit, callbackRoute);
         }
         // Generic before response callback last
         modifiedResponseInit = beforeResponse(modifiedResponseInit, callbackRoute);
+        if (originalStatus === 0) {
+            // Response.error() results in status 0, which will cause new Response() to fail.
+            // We convert it to 500 only if originally 0, if cbs set the values to 0, we don't protect against it.
+            modifiedResponseInit.status = 500;
+        }
         return new Response(bodyInit, modifiedResponseInit);
     }
     function createResponseFrom(routeType = null, route, response) {

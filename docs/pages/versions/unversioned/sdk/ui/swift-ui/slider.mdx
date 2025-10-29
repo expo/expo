@@ -1,0 +1,47 @@
+---
+title: Slider
+description: A SwiftUI Slider component for selecting values from a range.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+<APIInstallSection />
+
+# Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Slider component on iOS."
+      src="/static/images/expo-ui/slider/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Host, Slider } from '@expo/ui/swift-ui';
+
+    <Host style={{ minHeight: 60 }}>
+      <Slider
+        value={value}
+        onValueChange={(value) => {
+          setValue(value);
+        }}
+      />
+    </Host>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/slider) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/slider" apiName="Slider" />

@@ -40,7 +40,7 @@ import { origin, environment } from 'expo-server';
 export async function GET() {
   return Response.json({
     isProduction: environment() == null,
-    isStating: environment() === 'staging',
+    isStaging: environment() === 'staging',
     origin: origin(),
   });
 }

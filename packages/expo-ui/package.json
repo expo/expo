@@ -16,10 +16,6 @@
     "./jetpack-compose": {
       "types": "./build/jetpack-compose/index.d.ts",
       "default": "./src/jetpack-compose/index.ts"
-    },
-    "./jetpack-compose-primitives": {
-      "types": "./build/jetpack-compose-primitives/index.d.ts",
-      "default": "./src/jetpack-compose-primitives/index.tsx"
     }
   },
   "scripts": {

@@ -11,9 +11,18 @@ export function ExpoAppAwardsBanner() {
   });
 
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isAnimated, setIsAnimated] = useState(false);
 
   useEffect(function didMount() {
     setIsLoaded(true);
+    // we need to wait for the next frame to ensure the banner is rendered to the DOM
+    const raf = requestAnimationFrame(() => {
+      setIsAnimated(true);
+    });
+
+    return function cleanup() {
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   if (lastDismissDate || !isLoaded) {
@@ -21,27 +30,32 @@ export function ExpoAppAwardsBanner() {
   }
 
   return (
-    <div className="mb-6 flex h-[52px] w-full items-center justify-between gap-3 rounded-lg bg-[linear-gradient(88deg,#978365_0.18%,#18191B_15.14%)] px-3">
-      <Link href="https://expo.dev/awards" openInNewTab className="ml-1 flex items-center gap-3">
-        {logo}
-        <p className="font-medium text-palette-white max-md-gutters:hidden">
-          Celebrating the best apps built with Expo
-        </p>
-      </Link>
-      <div className="flex items-center gap-1">
-        <Link
-          href="https://expo.dev/awards"
-          openInNewTab
-          className="rounded-full bg-palette-white px-4 py-1 text-3xs font-semibold text-palette-black max-sm-gutters:hidden">
-          Submit your app
+    <div
+      className={`backface-hidden h-[52px] w-full transform-gpu overflow-hidden rounded-lg bg-[linear-gradient(88deg,#978365_0.18%,#18191B_15.14%)] transition-all duration-500 ease-in-out ${
+        isAnimated ? 'mb-6 max-h-[52px] opacity-100' : 'mb-0 max-h-0 opacity-0'
+      }`}>
+      <div className="flex min-h-0 items-center justify-between gap-3 p-3">
+        <Link href="https://expo.dev/awards" openInNewTab className="ml-1 flex items-center gap-3">
+          {logo}
+          <p className="font-medium text-palette-white max-md-gutters:hidden">
+            Celebrating the best apps built with Expo
+          </p>
         </Link>
-        <button
-          className="rounded-full p-1"
-          onClick={() => {
-            setLastDismissDate(new Date().toDateString());
-          }}>
-          <XIcon className="text-palette-gray10" />
-        </button>
+        <div className="flex items-center gap-1">
+          <Link
+            href="https://expo.dev/awards"
+            openInNewTab
+            className="rounded-full bg-palette-white px-4 py-1 text-3xs font-semibold text-palette-black max-sm-gutters:hidden">
+            Submit your app
+          </Link>
+          <button
+            className="rounded-full p-1"
+            onClick={() => {
+              setLastDismissDate(new Date().toDateString());
+            }}>
+            <XIcon className="text-palette-gray10" />
+          </button>
+        </div>
       </div>
     </div>
   );

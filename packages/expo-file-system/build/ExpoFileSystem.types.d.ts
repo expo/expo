@@ -204,7 +204,7 @@ export declare class File {
      * Writes content to the file.
      * @param content The content to write into the file.
      */
-    write(content: string | Uint8Array, options: FileWriteOptions): void;
+    write(content: string | Uint8Array, options?: FileWriteOptions): void;
     /**
      * Deletes a file.
      *
@@ -297,6 +297,11 @@ export declare class File {
      * A mime type of the file. An empty string if the file does not exist, or it cannot be read.
      */
     type: string;
+    /**
+     * A content URI to the file that can be shared to external applications.
+     * @platform android
+     */
+    contentUri: string;
 }
 export declare class FileHandle {
     close(): void;

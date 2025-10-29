@@ -27,7 +27,6 @@ for (const outputMode of outputModes) {
         E2E_ROUTER_SRC: inputDir,
         E2E_ROUTER_ASYNC: 'development',
         E2E_RSC_ENABLED: '1',
-        E2E_CANARY_ENABLED: '1',
         EXPO_USE_METRO_REQUIRE: '1',
         TEST_SECRET_VALUE: 'test-secret',
 

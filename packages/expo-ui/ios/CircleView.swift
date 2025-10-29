@@ -3,12 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class CircleViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
+internal final class CircleViewProps: UIBaseViewProps {
 }
 
 internal struct CircleView: ExpoSwiftUI.View {
@@ -16,6 +11,5 @@ internal struct CircleView: ExpoSwiftUI.View {
 
   var body: some View {
     Circle()
-      .modifier(CommonViewModifiers(props: props))
   }
 }

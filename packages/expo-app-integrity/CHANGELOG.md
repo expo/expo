@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.1.9 - 2025-10-20
+
+### 🛠 Breaking changes
+
+- Rename functions to include `async` suffix. ([#40447](https://github.com/expo/expo/pull/40447) by [@nishan](https://github.com/intergalacticspacehighway)) ([#40447](https://github.com/expo/expo/pull/40447) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 0.1.8 - 2025-09-22
 
 ### 🎉 New features

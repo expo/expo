@@ -6,6 +6,9 @@ plugins {
 group = 'host.exp.exponent'
 version = '17.0.8'
 
+def barcodeScannerEnabled = findProperty('expo.camera.barcode-scanner-enabled')
+def isBarcodeScannerEnabled = (barcodeScannerEnabled ?: "true").toString() != "false"
+
 android {
   namespace "expo.modules.camera"
   defaultConfig {
@@ -15,7 +18,7 @@ android {
 }
 
 dependencies {
-  def camerax_version = "1.5.0-rc01"
+  def camerax_version = "1.5.1"
 
   api "androidx.exifinterface:exifinterface:1.4.1"
   api "androidx.appcompat:appcompat:1.7.1"
@@ -24,10 +27,12 @@ dependencies {
   implementation "androidx.camera:camera-camera2:${camerax_version}"
   implementation "androidx.camera:camera-lifecycle:${camerax_version}"
   implementation "androidx.camera:camera-video:${camerax_version}"
-  implementation "com.google.android.gms:play-services-code-scanner:16.1.0"
 
   implementation "androidx.camera:camera-view:${camerax_version}"
   implementation "androidx.camera:camera-extensions:${camerax_version}"
-  implementation "com.google.mlkit:barcode-scanning:17.3.0"
-  implementation "androidx.camera:camera-mlkit-vision:${camerax_version}"
+
+  def barcodeDependencyConfiguration = isBarcodeScannerEnabled ? "implementation" : "compileOnly"
+  add(barcodeDependencyConfiguration, "com.google.android.gms:play-services-code-scanner:16.1.0")
+  add(barcodeDependencyConfiguration, "com.google.mlkit:barcode-scanning:17.3.0")
+  add(barcodeDependencyConfiguration, "androidx.camera:camera-mlkit-vision:${camerax_version}")
 }

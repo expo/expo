@@ -11,6 +11,7 @@ export interface ModifierConfig {
 /**
  * Factory function to create modifier configuration objects.
  * This is used internally by all modifier functions.
+ * @hidden
  */
 export function createModifier(type: string, params: Record<string, any> = {}): ModifierConfig {
   return { $type: type, ...params };

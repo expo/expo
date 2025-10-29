@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.views.ComposableScope
 import java.io.Serializable
 
 open class AlertDialogButtonPressedEvent() : Record, Serializable
@@ -27,13 +28,13 @@ data class AlertDialogProps(
 ) : ComposeProps
 
 class AlertDialogView(context: Context, appContext: AppContext) :
-  ExpoComposeView<AlertDialogProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<AlertDialogProps>(context, appContext) {
   override val props = AlertDialogProps()
   private val onDismissPressed by EventDispatcher<AlertDialogButtonPressedEvent>()
   private val onConfirmPressed by EventDispatcher<AlertDialogButtonPressedEvent>()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val (title) = props.title
     val (text) = props.text
     val (confirmButtonText) = props.confirmButtonText

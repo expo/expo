@@ -50,8 +50,6 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 
 - Go to `react-native-lab/react-native` submodule.
 - Coordinate with whoever did the React Native upgrade (if anyone) or Brent (@brentvatne) to create a new branch for new SDK in our `react-native` fork (`sdk-XX` typically, where `XX` is the major number of the SDK version).
-- Run `et update-react-native`. This expotools command copies `ReactAndroid` and `ReactCommon` folders from the submodule to the respective paths: `android/ReactAndroid` and `android/ReactCommon` and then executes `ReactAndroidCodeTransformer` that applies some Expo-specific code transformations.
-- Add your git changes from both `react-native-lab` and `android` folders and create a pull request to `main` branch.
 - Run `git tag -a 'sdk-XX.X.X' -m 'React Native X.Y.Z for Expo SDKXX'` (where `X.Y.Z` is the React Native version and `XX` is the major number of SDK version), to make a tag for the latest commit in your local repo.
 - Push the tag to the remote using `git push --tags`.
 

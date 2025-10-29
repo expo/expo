@@ -1,8 +1,9 @@
 import { getConfig } from '@expo/config';
+import { type RouteInfo } from 'expo-server/private';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
-import { type ExpoRouterServerManifestV1Route, fetchManifest } from '../metro/fetchRouterManifest';
+import { fetchManifest } from '../metro/fetchRouterManifest';
 
 const LOADER_MODULE_ENDPOINT = '/_expo/loaders';
 
@@ -16,10 +17,7 @@ export class DataLoaderModuleMiddleware extends ExpoMiddleware {
   constructor(
     protected projectRoot: string,
     protected appDir: string,
-    private executeServerDataLoaderAsync: (
-      url: URL,
-      route: ExpoRouterServerManifestV1Route<RegExp>
-    ) => Promise<any>,
+    private executeServerDataLoaderAsync: (url: URL, route: RouteInfo<RegExp>) => Promise<any>,
     private getDevServerUrl: () => string
   ) {
     super(projectRoot, [LOADER_MODULE_ENDPOINT]);

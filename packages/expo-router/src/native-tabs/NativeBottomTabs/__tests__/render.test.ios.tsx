@@ -1,14 +1,17 @@
+import { usePreventRemove } from '@react-navigation/core';
 import { screen } from '@testing-library/react-native';
 import React from 'react';
-import { View } from 'react-native';
+import { Button, View } from 'react-native';
 import {
   BottomTabsScreen as _BottomTabsScreen,
   BottomTabs as _BottomTabs,
 } from 'react-native-screens';
 
 import { usePathname } from '../../../hooks';
+import { router } from '../../../imperative-api';
+import { Stack } from '../../../layouts/Stack';
 import { Redirect } from '../../../link/Redirect';
-import { renderRouter } from '../../../testing-library';
+import { act, fireEvent, renderRouter } from '../../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
 import {
@@ -331,6 +334,66 @@ describe('First focused tab', () => {
     expect(screen.queryByTestId('second')).toBeNull();
     expect(BottomTabsScreen).not.toHaveBeenCalled();
   });
+
+  it('Can remove the last tab, when it is focused', async () => {
+    renderRouter({
+      _layout: function Layout() {
+        const [isSecondTabVisible, setIsSecondTabVisible] = React.useState(true);
+
+        return (
+          <>
+            <Button
+              testID="remove"
+              title="Remove"
+              onPress={() => {
+                setIsSecondTabVisible(false);
+              }}
+            />
+            <NativeTabs>
+              <NativeTabs.Trigger name="index" />
+              {isSecondTabVisible && <NativeTabs.Trigger name="second" />}
+            </NativeTabs>
+          </>
+        );
+      },
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0].isFocused).toBe(true);
+    expect(BottomTabsScreen.mock.calls[0][0].tabKey).toMatch(/^index-[-\w]+/);
+    expect(BottomTabsScreen.mock.calls[1][0].isFocused).toBe(false);
+    expect(BottomTabsScreen.mock.calls[1][0].tabKey).toMatch(/^second-[-\w]+/);
+
+    BottomTabsScreen.mockClear();
+    act(() => router.navigate('/second'));
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(4);
+    expect(BottomTabsScreen.mock.calls[2][0].isFocused).toBe(false);
+    expect(BottomTabsScreen.mock.calls[2][0].tabKey).toMatch(/^index-[-\w]+/);
+    expect(BottomTabsScreen.mock.calls[3][0].isFocused).toBe(true);
+    expect(BottomTabsScreen.mock.calls[3][0].tabKey).toMatch(/^second-[-\w]+/);
+
+    BottomTabsScreen.mockClear();
+    act(() => {
+      fireEvent.press(screen.getByTestId('remove'));
+    });
+
+    expect(screen.queryByTestId('second')).toBeNull();
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(3);
+    expect(BottomTabsScreen.mock.calls[0][0].isFocused).toBe(true);
+    expect(BottomTabsScreen.mock.calls[0][0].tabKey).toMatch(/^index-[-\w]+/);
+    expect(BottomTabsScreen.mock.calls[1][0].isFocused).toBe(true);
+    expect(BottomTabsScreen.mock.calls[1][0].tabKey).toMatch(/^index-[-\w]+/);
+    expect(BottomTabsScreen.mock.calls[2][0].isFocused).toBe(true);
+    expect(BottomTabsScreen.mock.calls[2][0].tabKey).toMatch(/^index-[-\w]+/);
+  });
 });
 
 it('when nesting NativeTabs, it throws an Error', () => {
@@ -471,5 +534,29 @@ describe('Native props validation', () => {
     );
     expect(BottomTabs).toHaveBeenCalledTimes(1);
     expect(BottomTabs.mock.calls[0][0].tabBarMinimizeBehavior).toBe(undefined);
+  });
+});
+
+describe('Misc', () => {
+  it('usePreventRemove can be used inside the stack nested in tabs', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="stack" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      'stack/_layout': () => {
+        return <Stack />;
+      },
+      'stack/index': function InnerIndex() {
+        usePreventRemove(true, () => {});
+        return <View testID="stack-index" />;
+      },
+    });
+
+    router.navigate('/stack');
+    expect(screen.getByTestId('stack-index')).toBeVisible();
   });
 });

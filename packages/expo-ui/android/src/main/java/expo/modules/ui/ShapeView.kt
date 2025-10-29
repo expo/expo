@@ -18,7 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.circle
 import androidx.graphics.shapes.pill
@@ -28,6 +32,7 @@ import androidx.graphics.shapes.star
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.views.ComposableScope
 import android.graphics.Color as GraphicsColor
 
 enum class ShapeType(val value: String) : Enumerable {
@@ -141,23 +146,33 @@ fun pathFromShapeRecord(record: ShapeRecord, size: Size): Path {
   val radius = record.radius
   val shapeType = record.type
   val verticesCount = record.verticesCount
-
-  val path = when (shapeType) {
-    ShapeType.STAR -> createStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, radius = radius, verticesCount = verticesCount)
-    ShapeType.PILL_STAR -> createPillStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, verticesCount = verticesCount)
-    ShapeType.PILL -> createPillPath(size = size, smoothing = smoothing)
-    ShapeType.CIRCLE -> createCirclePath(size = size, radius = radius, verticesCount = verticesCount)
-    ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = cornerRounding, smoothing = smoothing)
-    ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, verticesCount = verticesCount)
-  }
-  return path
+  return runCatching {
+    when (shapeType) {
+      ShapeType.STAR -> createStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, radius = radius, verticesCount = verticesCount)
+      ShapeType.PILL_STAR -> createPillStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, verticesCount = verticesCount)
+      ShapeType.PILL -> createPillPath(size = size, smoothing = smoothing)
+      ShapeType.CIRCLE -> createCirclePath(size = size, radius = radius, verticesCount = verticesCount)
+      ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = cornerRounding, smoothing = smoothing)
+      ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, verticesCount = verticesCount)
+    }
+  }.getOrNull() ?: Path()
 }
 
-class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<ShapeProps>(context, appContext, withHostingView = true) {
+fun shapeFromShapeRecord(shapeRecord: ShapeRecord?): Shape? {
+  if (shapeRecord == null) return null
+  return object : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+      val path = pathFromShapeRecord(shapeRecord, size)
+      return Outline.Generic(path)
+    }
+  }
+}
+
+class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<ShapeProps>(context, appContext) {
   override val props = ShapeProps()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val (smoothing) = props.smoothing
     val (cornerRounding) = props.cornerRounding
     val (innerRadius) = props.innerRadius

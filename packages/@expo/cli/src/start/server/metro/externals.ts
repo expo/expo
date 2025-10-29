@@ -36,19 +36,11 @@ export const NODE_STDLIB_MODULES: string[] = [
 ].sort();
 
 const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/shims');
-const canaryFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/canary');
 
 export function shouldCreateVirtualShim(normalName: string) {
   const shimPath = path.join(shimsFolder, normalName);
   if (fs.existsSync(shimPath)) {
     return shimPath;
-  }
-  return null;
-}
-export function shouldCreateVirtualCanary(normalName: string): string | null {
-  const canaryPath = path.join(canaryFolder, normalName);
-  if (fs.existsSync(canaryPath)) {
-    return canaryPath;
   }
   return null;
 }

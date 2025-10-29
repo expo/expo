@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- [iOS] Add support to SwiftUI apps ([#40542](https://github.com/expo/expo/pull/40542) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Decouple dev menu from dev launcher. ([#40669](https://github.com/expo/expo/pull/40669) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -13,10 +16,20 @@
 - change debugger connection "warning" to a "tip" ([#39942](https://github.com/expo/expo/pull/39942) by [@vonovak](https://github.com/vonovak))
 - Remove unused dev dependencies ([#39987](https://github.com/expo/expo/pull/39987) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [android] Make reactNativeHost optional in ReactHostWrapper ([#40085](https://github.com/expo/expo/pull/40085) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Remove `ReactHostWrapper` ([#40295](https://github.com/expo/expo/pull/40295) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 7.0.15 - 2025-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.14 - 2025-10-09
+
+_This version does not introduce any user-facing changes._
 
 ## 7.0.13 - 2025-10-01
 

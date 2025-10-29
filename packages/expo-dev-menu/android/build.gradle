@@ -20,14 +20,27 @@ expoModule {
 
 android {
   namespace "expo.modules.devmenu"
+
   defaultConfig {
     versionCode 10
     versionName '7.0.11'
   }
+
+  buildTypes {
+    create("debugOptimized") {
+      initWith(buildTypes.debug)
+      matchingFallbacks += ["release"]
+    }
+  }
+
+  sourceSets {
+    debugOptimized {
+      setRoot 'src/debug'
+    }
+  }
+
   buildFeatures {
     compose true
-  }
-  buildFeatures {
     buildConfig true
   }
 }

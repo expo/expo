@@ -9,19 +9,20 @@ const path_1 = __importDefault(require("path"));
 const require_from_string_1 = __importDefault(require("require-from-string"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const utils_1 = require("../utils");
-const fileUtils_1 = require("../fileUtils");
 let tsMain = undefined;
 const mockedNativeModules = path_1.default.join(__dirname, '..', '..', 'node_modules_mock');
 /**
  * Load the `react-native.config.js` or `react-native.config.ts` from the package.
  */
 exports.loadConfigAsync = (0, utils_1.memoize)(async function loadConfigAsync(packageRoot) {
-    const configJsPath = path_1.default.join(packageRoot, 'react-native.config.js');
-    if (await (0, fileUtils_1.fileExistsAsync)(configJsPath)) {
+    const [configJsPath, configTsPath] = await Promise.all(['react-native.config.js', 'react-native.config.ts'].map(async (fileName) => {
+        const file = path_1.default.join(packageRoot, fileName);
+        return (await (0, utils_1.fileExistsAsync)(file)) ? file : null;
+    }));
+    if (configJsPath) {
         return requireConfig(configJsPath, await promises_1.default.readFile(configJsPath, 'utf8'));
     }
-    const configTsPath = path_1.default.join(packageRoot, 'react-native.config.ts');
-    if (await (0, fileUtils_1.fileExistsAsync)(configTsPath)) {
+    if (configTsPath) {
         if (tsMain === undefined) {
             const tsPath = resolve_from_1.default.silent(packageRoot, 'typescript');
             if (tsPath) {

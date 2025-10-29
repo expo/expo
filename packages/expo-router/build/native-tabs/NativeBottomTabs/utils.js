@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.filterAllowedChildrenElements = filterAllowedChildrenElements;
 exports.isChildOfType = isChildOfType;
 exports.shouldTabBeVisible = shouldTabBeVisible;
+exports.convertLabelStylePropToObject = convertLabelStylePropToObject;
+exports.convertIconColorPropToObject = convertIconColorPropToObject;
 const react_1 = __importDefault(require("react"));
 function filterAllowedChildrenElements(children, components) {
     return react_1.default.Children.toArray(children).filter((child) => react_1.default.isValidElement(child) && components.includes(child.type));
@@ -17,5 +19,27 @@ function shouldTabBeVisible(options) {
     // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
     // If it is not defined, then it was not specified, and we should hide the tab.
     return options.hidden === false;
+}
+function convertLabelStylePropToObject(labelStyle) {
+    if (labelStyle) {
+        if (typeof labelStyle === 'object' && ('default' in labelStyle || 'selected' in labelStyle)) {
+            return labelStyle;
+        }
+        return {
+            default: labelStyle,
+        };
+    }
+    return {};
+}
+function convertIconColorPropToObject(iconColor) {
+    if (iconColor) {
+        if (typeof iconColor === 'object' && ('default' in iconColor || 'selected' in iconColor)) {
+            return iconColor;
+        }
+        return {
+            default: iconColor,
+        };
+    }
+    return {};
 }
 //# sourceMappingURL=utils.js.map

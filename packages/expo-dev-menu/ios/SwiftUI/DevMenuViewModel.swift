@@ -68,11 +68,12 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func goHome() {
-    devMenuManager.closeMenu()
-    if let devLauncherClass = NSClassFromString("EXDevLauncherController") as? NSObject.Type {
-      let sharedInstance = devLauncherClass.perform(Selector(("sharedInstance")))?.takeUnretainedValue()
-      _ = sharedInstance?.perform(Selector(("navigateToLauncher")))
+    guard devMenuManager.canNavigateHome else {
+      return
     }
+
+    devMenuManager.closeMenu()
+    devMenuManager.navigateHome()
   }
 
   func togglePerformanceMonitor() {
@@ -159,16 +160,16 @@ class DevMenuViewModel: ObservableObject {
     }
   }
 
-  var isDevLauncherInstalled: Bool {
-    return NSClassFromString("EXDevLauncherController") != nil
+  var canNavigateHome: Bool {
+    return devMenuManager.canNavigateHome
   }
 
   private func checkOnboardingStatus() {
-    isOnboardingFinished = UserDefaults.standard.bool(forKey: "EXDevMenuIsOnboardingFinished")
+    isOnboardingFinished = devMenuManager.isOnboardingFinished
   }
 
   func finishOnboarding() {
-    UserDefaults.standard.set(true, forKey: "EXDevMenuIsOnboardingFinished")
+    devMenuManager.setOnboardingFinished(true)
     isOnboardingFinished = true
   }
 

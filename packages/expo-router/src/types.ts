@@ -35,13 +35,18 @@ export type NativeIntent = {
    * - **path**: represents the URL or path undergoing processing.
    * - **initial**: a boolean indicating whether the path is the app's initial URL.
    *
-   * It's return value should either be a `string` or a `Promise<string>`.
+   * Its return value should be a `string`, a `Promise<string | null>`, or `null`. When a falsy value
+   * is returned (for example, `null`), no redirection occurs and the app stays on the current path.
+   *
    * Note that throwing errors within this method may result in app crashes. It's recommended to
    * wrap your code inside a `try/catch` block and utilize `.catch()` when appropriate.
    *
    * @see For usage information, see [Redirecting system paths](/router/advanced/native-intent/#redirectsystempath).
    */
-  redirectSystemPath?: (event: { path: string; initial: boolean }) => Promise<string> | string;
+  redirectSystemPath?: (event: {
+    path: string;
+    initial: boolean;
+  }) => Promise<string | null> | string | null;
   /**
    * > **warning** Experimentally available in SDK 52.
    *

@@ -3,7 +3,7 @@
 /**
  Specialized class for the view prop. Specifies the prop name and its setter.
  */
-public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: AnyViewProp {
+public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: AnyViewProp, @unchecked Sendable {
   public typealias SetterType = (ViewType, PropType) -> Void
 
   /**

@@ -33,7 +33,6 @@ test.describe(inputDir, () => {
         E2E_SERVER_FUNCTIONS: '1',
         E2E_ROUTER_JS_ENGINE: 'hermes',
         EXPO_USE_METRO_REQUIRE: '1',
-        E2E_CANARY_ENABLED: '1',
         E2E_RSC_ENABLED: '1',
         TEST_SECRET_VALUE: 'test-secret',
         CI: '1',
