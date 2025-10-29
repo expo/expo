@@ -13,12 +13,7 @@ import React, { use, useCallback, useMemo } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabsView } from './NativeTabsView';
-import type {
-  ExtendedNativeTabOptions,
-  NativeTabOptions,
-  NativeTabsProps,
-  NativeTabsViewTabItem,
-} from './types';
+import type { NativeTabOptions, NativeTabsProps, NativeTabsViewTabItem } from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import { getPathFromState } from '../link/linking';
@@ -61,7 +56,7 @@ export function NativeTabsNavigator({
     TabNavigationState<ParamListBase>,
     TabRouterOptions,
     Record<string, (...args: any) => void>,
-    ExtendedNativeTabOptions,
+    NativeTabOptions,
     Record<string, any>
   >(NativeBottomTabsRouter, {
     children,

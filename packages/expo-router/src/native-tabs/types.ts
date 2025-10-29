@@ -4,6 +4,8 @@ import type { ColorValue, ImageSourcePropType, TextStyle } from 'react-native';
 import type { BottomTabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+export type NativeScreenProps = Partial<Omit<BottomTabsScreenProps, 'tabKey' | 'isFocused'>>;
+
 export interface NativeTabOptions extends DefaultRouterOptions {
   /**
    * The icon to display in the tab bar.
@@ -131,6 +133,12 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    * @platform web
    */
   indicatorColor?: ColorValue;
+  /**
+   * If true, the tab will be hidden from the tab bar.
+   */
+  hidden?: boolean;
+  specialEffects?: BottomTabsScreenProps['specialEffects'];
+  nativeProps?: NativeScreenProps;
 }
 
 export type SymbolOrImageSource =
@@ -152,14 +160,6 @@ export type SymbolOrImageSource =
        */
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
     };
-
-export interface ExtendedNativeTabOptions extends NativeTabOptions {
-  /**
-   * If true, the tab will be hidden from the tab bar.
-   */
-  hidden?: boolean;
-  specialEffects?: BottomTabsScreenProps['specialEffects'];
-}
 
 type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 
@@ -385,7 +385,7 @@ export interface NativeTabsViewProps
 }
 
 export interface NativeTabsViewTabItem {
-  options: ExtendedNativeTabOptions;
+  options: NativeTabOptions;
   routeKey: string;
   name: string;
   contentRenderer: () => React.ReactNode;
@@ -437,11 +437,17 @@ export interface NativeTabTriggerProps {
    */
   hidden?: boolean;
   /**
-   * The options for the trigger.
+   * Props passed to the underlying native tab screen implementation.
+   * Use this to configure props not directly exposed by Expo Router, but available in `react-native-screens`.
    *
-   * Use `Icon`, `Label`, and `Badge` components as children to customize the tab, rather then raw options.
+   * > **Note**: This will override any other props set by Expo Router and may lead to unexpected behavior.
+   *
+   * > **Note**: This is an unstable API and may change or be removed in minor versions.
+   *
+   * @platform android
+   * @platform iOS
    */
-  options?: NativeTabOptions;
+  unstable_nativeProps?: NativeScreenProps;
   /**
    * If true, the tab will not pop stack to the root when selected again.
    *

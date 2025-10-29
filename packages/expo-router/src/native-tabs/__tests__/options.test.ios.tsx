@@ -29,20 +29,20 @@ jest.mock('../NativeTabsView', () => {
 
 const NativeTabsView = _NativeTabsView as jest.MockedFunction<typeof _NativeTabsView>;
 
-it('can pass options via options prop', () => {
-  const indexOptions: NativeTabOptions = {
+it('can pass nativeProps via unstable_nativeProps prop', () => {
+  const indexOptions = {
     title: 'Test Title',
     iconColor: 'blue',
   };
-  const secondOptions: NativeTabOptions = {
+  const secondOptions = {
     title: 'Second Title',
     iconColor: 'red',
   };
   renderRouter({
     _layout: () => (
       <NativeTabs>
-        <NativeTabs.Trigger name="index" options={{ ...indexOptions }} />
-        <NativeTabs.Trigger name="second" options={{ ...secondOptions }} />
+        <NativeTabs.Trigger name="index" unstable_nativeProps={{ ...indexOptions }} />
+        <NativeTabs.Trigger name="second" unstable_nativeProps={{ ...secondOptions }} />
       </NativeTabs>
     ),
     index: () => <View testID="index" />,
@@ -54,10 +54,14 @@ it('can pass options via options prop', () => {
   expect(NativeTabsView).toHaveBeenCalledTimes(1);
   const call = NativeTabsView.mock.calls[0][0];
   expect(call.tabs[0].options).toMatchObject({
-    ...indexOptions,
+    nativeProps: {
+      ...indexOptions,
+    },
   });
   expect(call.tabs[1].options).toMatchObject({
-    ...secondOptions,
+    nativeProps: {
+      ...secondOptions,
+    },
   });
 });
 
@@ -108,6 +112,7 @@ it('when no options are passed, default ones are used', () => {
     badgeBackgroundColor: undefined,
     indicatorColor: undefined,
     badgeTextColor: undefined,
+    nativeProps: undefined,
   } as NativeTabOptions);
 });
 
@@ -651,103 +656,6 @@ describe('Tab options', () => {
 });
 
 describe('Dynamic options', () => {
-  it('updates options dynamically', () => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
-        </NativeTabs>
-      ),
-      index: () => (
-        <View testID="index">
-          <NativeTabs.Trigger name="index" options={{ title: 'Updated Title' }} />
-        </View>
-      ),
-    });
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(2);
-    const first = NativeTabsView.mock.calls[0][0];
-    const second = NativeTabsView.mock.calls[1][0];
-    expect(first.tabs[0].options.title).toBe('Initial Title');
-    expect(second.tabs[0].options.title).toBe('Updated Title');
-  });
-
-  it('can use components as children', () => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
-        </NativeTabs>
-      ),
-      index: () => (
-        <View testID="index">
-          <NativeTabs.Trigger name="index">
-            <Label>Updated Title</Label>
-            <Badge>5</Badge>
-            <Icon sf="homepod.2.fill" />
-          </NativeTabs.Trigger>
-        </View>
-      ),
-    });
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(2);
-    const first = NativeTabsView.mock.calls[0][0];
-    const second = NativeTabsView.mock.calls[1][0];
-    expect(first.tabs[0].options).toMatchObject({
-      title: 'Initial Title',
-    } as NativeTabOptions);
-    expect(second.tabs[0].options).toMatchObject({
-      title: 'Updated Title',
-      badgeValue: '5',
-      icon: {
-        sf: 'homepod.2.fill',
-      },
-      selectedIcon: undefined,
-    } as NativeTabOptions);
-  });
-
-  it('can override component children from _layout with options', () => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index">
-            <Label>Initial Title</Label>
-            <Badge>3</Badge>
-            <Icon sf="0.circle" />
-          </NativeTabs.Trigger>
-        </NativeTabs>
-      ),
-      index: () => (
-        <View testID="index">
-          <NativeTabs.Trigger
-            name="index"
-            options={{
-              title: 'Updated Title',
-              badgeValue: '5',
-              icon: { sf: 'homepod.2.fill' },
-            }}
-          />
-        </View>
-      ),
-    });
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(2);
-    const first = NativeTabsView.mock.calls[0][0];
-    const second = NativeTabsView.mock.calls[1][0];
-    expect(first.tabs[0].options).toMatchObject({
-      title: 'Initial Title',
-      badgeValue: '3',
-      icon: { sf: '0.circle' },
-    } as NativeTabOptions);
-    expect(second.tabs[0].options).toMatchObject({
-      title: 'Updated Title',
-      badgeValue: '5',
-      icon: {
-        sf: 'homepod.2.fill',
-      },
-    } as NativeTabOptions);
-  });
-
   it('can override component children from _layout with dynamic children', () => {
     renderRouter({
       _layout: () => (
@@ -825,8 +733,12 @@ describe('Dynamic options', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
-          <NativeTabs.Trigger name="second" options={{ title: 'Second' }} />
+          <NativeTabs.Trigger name="index">
+            <Label>Initial Title</Label>
+          </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="second">
+            <Label>Second</Label>
+          </NativeTabs.Trigger>
         </NativeTabs>
       ),
       index: () => (
