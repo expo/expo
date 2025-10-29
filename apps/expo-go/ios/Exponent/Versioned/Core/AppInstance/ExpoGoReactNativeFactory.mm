@@ -2,8 +2,13 @@
 #import "ExpoGoReactNativeFactory.h"
 #import <RCTAppSetupUtils.h>
 #import <React/CoreModulesPlugins.h>
+#import <ExpoModulesCore/EXRuntime.h>
+#import <ExpoModulesCore-Swift.h>
 
-@implementation ExpoGoReactNativeFactory
+
+@implementation ExpoGoReactNativeFactory {
+  EXAppContext *_appContext;
+}
 
 - (Class)getModuleClassFromName:(const char *)name
 {
@@ -32,6 +37,21 @@
   if ([self.delegate respondsToSelector:@selector(loadBundleAtURL:onProgress:onComplete:)]) {
     [self.delegate loadBundleAtURL:sourceURL onProgress:onProgress onComplete:loadCallback];
   }
+}
+
+- (void)hostDidStart:(nonnull RCTHost *)host {
+  host.runtimeDelegate = self;
+}
+
+- (void)host:(nonnull RCTHost *)host didInitializeRuntime:(jsi::Runtime &)runtime
+{
+  _appContext = [[EXAppContext alloc] init];
+  
+  // Inject and decorate the `global.expo` object
+  _appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
+  [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
+  
+  [_appContext registerNativeModules];
 }
 
 @end
