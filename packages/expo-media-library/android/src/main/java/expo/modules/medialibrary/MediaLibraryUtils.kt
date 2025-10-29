@@ -85,7 +85,7 @@ object MediaLibraryUtils {
     selection: String?,
     selectionArgs: Array<out String?>?
   ): Boolean = withContext(Dispatchers.IO) {
-    val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA)
+    val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.MIME_TYPE)
     try {
       context.contentResolver.query(
         EXTERNAL_CONTENT_URI,
@@ -103,8 +103,12 @@ object MediaLibraryUtils {
             coroutineContext.ensureActive()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
               val columnId = filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID)
+              val columnMimeType = filesToDelete.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
               val id = filesToDelete.getLong(columnId)
-              val assetUri = ContentUris.withAppendedId(EXTERNAL_CONTENT_URI, id)
+              val mimeType = filesToDelete.getString(columnMimeType)
+              // Use correct MediaStore URI based on mime type instead of generic EXTERNAL_CONTENT_URI
+              val baseUri = mimeTypeToExternalUri(mimeType)
+              val assetUri = ContentUris.withAppendedId(baseUri, id)
               val rowsDeleted = context.contentResolver.delete(assetUri, null)
               if (rowsDeleted == 0) {
                 throw AssetFileException("Could not delete file.")
