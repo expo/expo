@@ -36,7 +36,7 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms'>
+  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer'>
 ) {
   const actions = new DevServerManagerActions(devServerManager, options);
 
@@ -73,6 +73,9 @@ export async function startInterfaceAsync(
         const spinner = ora({ text: 'Stopping server', color: 'white' }).start();
         try {
           await devServerManager.stopAsync();
+          if (options.mcpServer) {
+            await options.mcpServer.closeAsync();
+          }
           spinner.stopAndPersist({ text: 'Stopped server', symbol: `\u203A` });
           // @ts-ignore: Argument of type '"SIGINT"' is not assignable to parameter of type '"disconnect"'.
           process.emit('SIGINT');
