@@ -6,6 +6,7 @@
 import spawn from '@expo/spawn-async';
 import { globSync } from 'glob';
 import { rm, rename } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { join, dirname } from 'path';
 import { argv } from 'process';
 import { fileURLToPath } from 'url';
@@ -23,9 +24,7 @@ const indexHtmlPath = join(outputDir, defaultDomComponentsBundle, 'index.html');
 
 await rm(outputDir, { recursive: true, force: true });
 
-const expoCliJs = import.meta
-  .resolve('expo/bin/cli', join(__dirname, '..'))
-  .slice('file://'.length);
+const expoCliJs = createRequire(__dirname).resolve('expo/bin/cli');
 
 const result = await spawn(
   nodePath,
