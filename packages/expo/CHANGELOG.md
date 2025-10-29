@@ -16,6 +16,7 @@
 - [iOS] Add `applicationDidReceiveMemoryWarning` subscribing to ExpoAppDelegate ([#40504](https://github.com/expo/expo/pull/40504) by [@szydlovsky](https://github.com/szydlovsky))
 - Fork default RN `HMRClient` to enable custom HMR Errors handling and UI ([#40449](https://github.com/expo/expo/pull/40449) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Add support for a new error overlay UI from `@expo/log-box` ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers. ([#40684](https://github.com/expo/expo/pull/40684) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -26,7 +27,7 @@
 - [android] Add getDefaultReactHost to ExpoReactHostFactory ([#40086](https://github.com/expo/expo/pull/40086) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Remove edge-to-edge logic from `ReactActivityDelegateWrapper`. ([#40263](https://github.com/expo/expo/pull/40263) by [@behenate](https://github.com/behenate))
 - [expo/dom] Add `overrideUri` to `DOMProps` to enable pre-bundled DOM Components. ([#40397](https://github.com/expo/expo/pull/40397) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- Add `internal/async-require-module` for `@expo/metro-config`'s `asyncRequireModulePath`([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten)) 
+- Add `internal/async-require-module` for `@expo/metro-config`'s `asyncRequireModulePath`([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
