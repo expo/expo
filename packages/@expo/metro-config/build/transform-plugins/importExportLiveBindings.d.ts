@@ -54,5 +54,5 @@ interface State {
     /** Transformed imports to add to the body, if IDs referenced */
     importDeclarations: ImportDeclaration[];
 }
-export declare function importExportLiveBindingsPlugin({ template, types: t, }: ConfigAPI & typeof import('@babel/core')): PluginObj<State>;
+export declare function importExportLiveBindingsPlugin({ caller, template, types: t, }: ConfigAPI & typeof import('@babel/core')): PluginObj<State>;
 export {};
