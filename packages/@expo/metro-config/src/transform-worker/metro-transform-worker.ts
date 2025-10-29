@@ -367,6 +367,10 @@ async function transformJS(
 
   const unstable_renameRequire = config.unstable_renameRequire;
 
+  if (!options.dev) {
+    ast = performConstantFolding(ast, { filename: file.filename });
+  }
+
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
   if (!optimize) {
     ast = applyImportSupport(ast, {
@@ -375,10 +379,6 @@ async function transformJS(
       importDefault,
       importAll,
     }).ast;
-  }
-
-  if (!options.dev) {
-    ast = performConstantFolding(ast, { filename: file.filename });
   }
 
   let dependencyMapName: string = '';
