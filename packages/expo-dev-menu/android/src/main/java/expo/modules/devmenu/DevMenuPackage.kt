@@ -3,19 +3,16 @@ package expo.modules.devmenu
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.os.Bundle
 import android.view.KeyEvent
 import android.view.ViewGroup
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
-import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devmenu.compose.DevMenuFragment
 import expo.modules.devmenu.react.DevMenuInstaller
@@ -46,28 +43,6 @@ class DevMenuPackage : Package {
           }
 
           DevMenuInstaller.install(devSupportManager)
-        }
-      }
-    )
-  }
-
-  override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
-    if (!BuildConfig.DEBUG) {
-      return emptyList()
-    }
-
-    return listOf(
-      object : ReactActivityLifecycleListener {
-        override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
-          if (!DevMenuManager.isInitialized()) {
-            val reactHost = (activity.application as ReactApplication).reactHost
-            checkNotNull(reactHost) {
-              "DevMenuManager.initializeWithReactHost() was called before reactHost was initialized"
-            }
-            DevMenuManager.initializeWithReactHost(reactHost)
-          } else {
-            DevMenuManager.synchronizeDelegate()
-          }
         }
       }
     )

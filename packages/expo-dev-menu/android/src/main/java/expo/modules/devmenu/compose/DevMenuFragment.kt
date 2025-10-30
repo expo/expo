@@ -18,6 +18,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import com.facebook.react.ReactHost
+import com.facebook.react.ReactInstanceEventListener
+import com.facebook.react.bridge.ReactContext
 import expo.modules.devmenu.AppInfo
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.DevMenuPreferencesHandle
@@ -42,13 +44,40 @@ class DevMenuFragment(
   private val threeFingerLongPressDetector = ThreeFingerLongPressDetector(::onThreeFingerLongPressDetected)
   private val shakeDetector = ShakeDetector(this::onShakeDetected)
 
+  private val reactHost: ReactHost?
+    get() = reactHostHolder.get()
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    if (DevMenuManager.shouldDisableOnboarding()) {
+      DevMenuPreferencesHandle.isOnboardingFinished = true
+    }
+
+    val shouldShowAtLaunch = DevMenuManager.canLaunchDevMenuOnStart &&
+      (DevMenuPreferencesHandle.showsAtLaunch || !DevMenuPreferencesHandle.isOnboardingFinished)
+    if (shouldShowAtLaunch) {
+      val onReactContext = object : ReactInstanceEventListener {
+        override fun onReactContextInitialized(context: ReactContext) {
+          val boundedContext = reactHost?.currentReactContext
+          // We check if that listener is called for the same context that is currently set in the host.
+          if (boundedContext != null && boundedContext == context) {
+            viewModel.onAction(DevMenuAction.Open)
+          }
+          reactHost?.removeReactInstanceEventListener(this)
+        }
+      }
+
+      reactHost?.addReactInstanceEventListener(onReactContext)
+    }
+  }
+
   override fun onStart() {
     super.onStart()
 
-    val reactHost = reactHostHolder.get()
-    if (reactHost != null) {
+    reactHost?.let {
       viewModel.updateAppInfo(
-        AppInfo.getAppInfo(reactHost)
+        AppInfo.getAppInfo(it)
       )
     }
 
@@ -98,12 +127,12 @@ class DevMenuFragment(
       return false
     }
 
-    val keyCommand = DevMenuManager.KeyCommand(
+    val keyCommand = KeyCommand(
       code = keyCode,
       withShift = event.modifiers and KeyEvent.META_SHIFT_MASK > 0
     )
 
-    if (keyCommand == DevMenuManager.KeyCommand(KeyEvent.KEYCODE_MENU)) {
+    if (keyCommand == KeyCommand(KeyEvent.KEYCODE_MENU)) {
       viewModel.onAction(DevMenuAction.Toggle)
       return true
     }
@@ -117,9 +146,9 @@ class DevMenuFragment(
     )
 
     when (keyCommand) {
-      DevMenuManager.KeyCommand(KeyEvent.KEYCODE_R) -> devToolsDelegate.reload()
-      DevMenuManager.KeyCommand(KeyEvent.KEYCODE_P) -> devToolsDelegate.togglePerformanceMonitor()
-      DevMenuManager.KeyCommand(KeyEvent.KEYCODE_I) -> devToolsDelegate.toggleElementInspector()
+      KeyCommand(KeyEvent.KEYCODE_R) -> devToolsDelegate.reload()
+      KeyCommand(KeyEvent.KEYCODE_P) -> devToolsDelegate.togglePerformanceMonitor()
+      KeyCommand(KeyEvent.KEYCODE_I) -> devToolsDelegate.toggleElementInspector()
       else -> return false
     }
 
@@ -222,5 +251,7 @@ class DevMenuFragment(
 
       operator fun getValue(thisRef: Any?, property: KProperty<*>): T? = value
     }
+
+    private  data class KeyCommand(val code: Int, val withShift: Boolean = false)
   }
 }
