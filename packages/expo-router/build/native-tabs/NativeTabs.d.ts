@@ -19,7 +19,6 @@ import type { NativeTabsProps } from './types';
  */
 export declare const NativeTabs: ((props: NativeTabsProps) => import("react").JSX.Element) & {
     Trigger: ((props: import("./types").NativeTabTriggerProps) => null) & {
-        TabBar: typeof import("./NativeTabsTriggerTabBar").NativeTabsTriggerTabBar;
         Label: import("react").FC<import(".").NativeTabsTriggerLabelProps>;
         Icon: import("react").FC<import(".").NativeTabsTriggerIconProps>;
         Badge: import("react").FC<import(".").NativeTabsTriggerBadgeProps>;

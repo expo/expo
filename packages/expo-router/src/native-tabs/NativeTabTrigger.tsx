@@ -4,12 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { isValidElement, type ReactElement, type ReactNode } from 'react';
 import { type ImageSourcePropType } from 'react-native';
 
-import { NativeTabsTriggerTabBar } from './NativeTabsTriggerTabBar';
-import {
-  type NativeTabOptions,
-  type NativeTabsTriggerTabBarProps,
-  type NativeTabTriggerProps,
-} from './types';
+import type { NativeTabOptions, NativeTabTriggerProps } from './types';
 import { filterAllowedChildrenElements, isChildOfType } from './utils';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
 import type { VectorIconProps } from '../primitives';
@@ -90,7 +85,6 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
 }
 
 export const NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
-  TabBar: NativeTabsTriggerTabBar,
   Label: NativeTabsTriggerLabel,
   Icon: NativeTabsTriggerIcon,
   Badge: NativeTabsTriggerBadge,
@@ -127,7 +121,6 @@ export function convertTabPropsToOptions(
     NativeTabsTriggerBadge,
     NativeTabsTriggerLabel,
     NativeTabsTriggerIcon,
-    NativeTabsTriggerTabBar,
   ]);
   return allowedChildren.reduce<NativeTabOptions>(
     (acc, child) => {
@@ -137,8 +130,6 @@ export function convertTabPropsToOptions(
         appendLabelOptions(acc, child.props);
       } else if (isChildOfType(child, NativeTabsTriggerIcon)) {
         appendIconOptions(acc, child.props);
-      } else if (isChildOfType(child, NativeTabsTriggerTabBar)) {
-        appendTabBarOptions(acc, child.props);
       }
       return acc;
     },
@@ -239,52 +230,6 @@ function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | un
     }
   }
   return undefined;
-}
-
-function appendTabBarOptions(options: NativeTabOptions, props: NativeTabsTriggerTabBarProps) {
-  const {
-    backgroundColor,
-    blurEffect,
-    iconColor,
-    disableTransparentOnScrollEdge,
-    badgeBackgroundColor,
-    badgeTextColor,
-    indicatorColor,
-    labelStyle,
-    shadowColor,
-  } = props;
-
-  if (backgroundColor) {
-    options.backgroundColor = backgroundColor;
-  }
-  // We need better native integration of this on Android
-  // Simulating from JS side creates ugly transitions
-  if (process.env.EXPO_OS !== 'android') {
-    if (blurEffect) {
-      options.blurEffect = blurEffect;
-    }
-    if (shadowColor) {
-      options.shadowColor = shadowColor;
-    }
-    if (iconColor) {
-      options.iconColor = iconColor;
-    }
-    if (disableTransparentOnScrollEdge !== undefined) {
-      options.disableTransparentOnScrollEdge = disableTransparentOnScrollEdge;
-    }
-    if (badgeBackgroundColor) {
-      options.badgeBackgroundColor = badgeBackgroundColor;
-    }
-    if (badgeTextColor) {
-      options.badgeTextColor = badgeTextColor;
-    }
-    if (indicatorColor) {
-      options.indicatorColor = indicatorColor;
-    }
-    if (labelStyle) {
-      options.labelStyle = labelStyle;
-    }
-  }
 }
 
 export function isNativeTabTrigger(
