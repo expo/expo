@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.facebook.react.ReactHost
 import expo.modules.devmenu.DevMenuDevSettings
 import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.DevMenuManager.getReactHost
 import expo.modules.devmenu.DevMenuPreferencesHandle
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
@@ -109,7 +108,7 @@ class DevMenuViewModel(
       DevMenuAction.GoHome -> DevMenuManager.goToHome()
       DevMenuAction.TogglePerformanceMonitor -> devToolsDelegate?.togglePerformanceMonitor()
       DevMenuAction.OpenJSDebugger -> devToolsDelegate?.openJSInspector()
-      DevMenuAction.OpenReactNativeDevMenu -> getReactHost()?.devSupportManager?.showDevOptionsDialog()
+      DevMenuAction.OpenReactNativeDevMenu -> reactHost?.devSupportManager?.showDevOptionsDialog()
       DevMenuAction.ToggleElementInspector -> devToolsDelegate?.toggleElementInspector()
       is DevMenuAction.ToggleFastRefresh -> toggleFastRefresh()
       is DevMenuAction.ToggleFab -> toggleFab()
