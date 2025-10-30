@@ -30,7 +30,7 @@
     "glob": "^10.4.2",
     "npm-run-all2": "^8.0.4",
     "react": "19.1.1",
-    "react-native": "0.82.0",
+    "react-native": "0.83.0-nightly-20251030-26ad9492b",
     "rimraf": "^6.0.1",
     "typescript": "~5.9.2",
     "typescript-plugin-css-modules": "^5.2.0"
