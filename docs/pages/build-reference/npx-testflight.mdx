@@ -1,5 +1,6 @@
 ---
 title: npx testflight command
+sidebar_title: npx testflight
 description: A single command that allows you to build, sign, and submit your iOS app to TestFlight from any device.
 ---
 
@@ -53,7 +54,7 @@ You will receive build and submission status updates throughout the process insi
 
 <Collapsible summary={<>Can I run <CODE>npx testflight</CODE> command in non-interactive mode?</>}>
 
-Yes, when you provide `ascAppId` in the `submit` profile in the **eas.json**, the `npx testflight` command will bypass the process of ensuring your app exists on App Store Connect.
+Yes, when you provide `ascAppId` in the `submit.production` profile in the **eas.json**, the `npx testflight` command will bypass the process of ensuring your app exists on App Store Connect.
 
 ```json eas.json
 {
