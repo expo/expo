@@ -12,10 +12,7 @@ import React, {
 } from 'react';
 
 import { useContextKey } from '../Route';
-import {
-  isNativeTabTrigger,
-  convertTabPropsToOptions,
-} from '../native-tabs/NativeBottomTabs/NativeTabTrigger';
+import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
 import { IsWithinLayoutContext } from './IsWithinLayoutContext';
