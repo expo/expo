@@ -20,23 +20,6 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
 
   return {
     name: 'expo-server-data-loaders',
-
-    pre(file) {
-      assertExpoMetadata(file.metadata);
-
-      // Early exit if file doesn't contain a `loader` named export
-      if (!file.code.includes(LOADER_EXPORT_NAME)) {
-        debug('Skipping file:', file.opts.filename);
-        file.path.stop();
-        return;
-      }
-
-      debug(
-        isServer ? 'Processing server bundle:' : 'Processing client bundle:',
-        file.opts.filename
-      );
-    },
-
     visitor: {
       ExportNamedDeclaration(path, state) {
         assertExpoMetadata(state.file.metadata);
@@ -45,11 +28,23 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
           return;
         }
 
-        // Check if file is within the `app/` directory
+        // Early exit if file is not within the `app/` directory
         if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
           debug('Skipping file outside app directory:', state.file.opts.filename);
           return;
         }
+
+        // Early exit if file doesn't contain a `loader` named export
+        if (!state.file.code.includes(LOADER_EXPORT_NAME)) {
+          debug('Skipping file:', state.file.opts.filename);
+          state.file.path.stop();
+          return;
+        }
+
+        debug(
+          isServer ? 'Processing server bundle:' : 'Processing client bundle:',
+          state.file.opts.filename
+        );
 
         const { declaration } = path.node;
 
@@ -65,7 +60,6 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
 
         // Handles `export const loader = ...`
         if (t.isVariableDeclaration(declaration)) {
-          const originalLength = declaration.declarations.length;
           declaration.declarations = declaration.declarations.filter(
             (declarator: t.VariableDeclarator) => {
               const name = t.isIdentifier(declarator.id) ? declarator.id.name : null;
