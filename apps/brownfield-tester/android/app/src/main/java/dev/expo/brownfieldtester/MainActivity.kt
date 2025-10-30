@@ -23,49 +23,49 @@ import androidx.core.content.ContextCompat
 import dev.expo.brownfieldtester.ui.theme.BrownfieldTheme
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            BrownfieldTheme {
-                val context = LocalContext.current
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    BrownfieldHome(
-                        modifier = Modifier.padding(innerPadding),
-                        onLaunchExpo = {
-                            val intent = Intent(context, ExpoActivity::class.java)
-                            ContextCompat.startActivity(context, intent, null)
-                        }
-                    )
-                }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      BrownfieldTheme {
+        val context = LocalContext.current
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+          BrownfieldHome(
+            modifier = Modifier.padding(innerPadding),
+            onLaunchExpo = {
+              val intent = Intent(context, ExpoActivity::class.java)
+              ContextCompat.startActivity(context, intent, null)
             }
+          )
         }
+      }
     }
+  }
 }
 
 @Composable
 fun BrownfieldHome(
-    modifier: Modifier = Modifier,
-    onLaunchExpo: () -> Unit = {}
+  modifier: Modifier = Modifier,
+  onLaunchExpo: () -> Unit = {}
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Welcome to Brownfield Tester")
-        Button(onClick = onLaunchExpo, modifier = Modifier.size(width = 220.dp, height = 54.dp)) {
-            Text(text = "Open Expo Screen")
-        }
+  Column(
+    modifier = modifier
+      .fillMaxSize()
+      .padding(24.dp),
+    verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically),
+    horizontalAlignment = Alignment.CenterHorizontally
+  ) {
+    Text(text = "Welcome to Brownfield Tester")
+    Button(onClick = onLaunchExpo, modifier = Modifier.size(width = 220.dp, height = 54.dp)) {
+      Text(text = "Open Expo Screen")
     }
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun BrownfieldHomePreview() {
-    BrownfieldTheme {
-        BrownfieldHome()
-    }
+  BrownfieldTheme {
+    BrownfieldHome()
+  }
 }
