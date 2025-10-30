@@ -110,7 +110,7 @@ class FileSystemModule : Module() {
     AsyncFunction("pickFileAsync") Coroutine { options: FilePickerOptions ->
       val result = filePickerLauncher.launch(FilePickerContractOptions(options.initialUri, options.mimeType, PickerType.FILE))
       when (result) {
-        is FilePickerContractResult.Success -> result.path as FileSystemFile
+        is FilePickerContractResult.Success -> listOf(result.path as FileSystemFile)
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
       }
     }
