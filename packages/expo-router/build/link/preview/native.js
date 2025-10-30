@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeLinkPreviewAction = NativeLinkPreviewAction;
 exports.NativeLinkPreview = NativeLinkPreview;
+exports.LinkPreviewNativeZoomTransitionEnabler = LinkPreviewNativeZoomTransitionEnabler;
 exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
 const expo_1 = require("expo");
 const react_native_1 = require("react-native");
@@ -24,6 +25,23 @@ function NativeLinkPreview(props) {
         return null;
     }
     return <NativeLinkPreviewView {...props}/>;
+}
+// #endregion
+const LinkPreviewNativeZoomTransitionEnablerView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeZoomTransitionEnabler')
+    : null;
+function LinkPreviewNativeZoomTransitionEnabler(props) {
+    if (!LinkPreviewNativeZoomTransitionEnablerView) {
+        return null;
+    }
+    return (<LinkPreviewNativeZoomTransitionEnablerView {...props} style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: 1,
+            height: 1,
+            backgroundColor: 'transparent',
+        }}/>);
 }
 const NativeLinkPreviewContentView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewContentView')
