@@ -47,6 +47,8 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
           const name = declaration.id?.name;
           if (name && isLoaderIdentifier(name)) {
             debug('Found and removed loader function declaration');
+            assertExpoMetadata(state.file.metadata);
+            state.file.metadata.performConstantFolding = true;
             path.remove();
           }
         }
@@ -67,6 +69,8 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
 
           // If all declarations were removed, remove the export
           if (declaration.declarations.length === 0) {
+            assertExpoMetadata(state.file.metadata);
+            state.file.metadata.performConstantFolding = true;
             path.remove();
           }
         }
@@ -80,4 +84,13 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
  */
 function isLoaderIdentifier(name: string): boolean {
   return name === LOADER_EXPORT_NAME;
+}
+
+function assertExpoMetadata(metadata: any): asserts metadata is {
+  performConstantFolding?: boolean;
+} {
+  if (metadata && typeof metadata === 'object') {
+    return;
+  }
+  throw new Error('Expected Babel state.file.metadata to be an object');
 }

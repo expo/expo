@@ -279,7 +279,9 @@ async function transformJS(file, { config, options }) {
             importAll,
         }).ast;
     }
-    if (!options.dev) {
+    // NOTE(@hassankhan): Constant folding can be an expensive/slow operation, so we limit it to
+    // production builds, or files that specifically seen a change in their exports
+    if (!options.dev || file.performConstantFolding) {
         ast = performConstantFolding(ast, { filename: file.filename });
     }
     let dependencyMapName = '';
@@ -483,6 +485,7 @@ async function transformJSWithBabel(file, context) {
         reactServerReference: transformResult.metadata?.reactServerReference,
         reactClientReference: transformResult.metadata?.reactClientReference,
         expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+        performConstantFolding: transformResult.metadata?.performConstantFolding,
     };
     return await transformJS(jsFile, context);
 }

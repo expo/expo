@@ -61,15 +61,14 @@ function transformTest(code: string, isServer = false) {
 
   return {
     code: results.code,
-    metadata: results.metadata,
+    metadata: results.metadata as unknown as { performConstantFolding?: boolean },
   };
 }
 
 describe('export function loader()', () => {
   it('removes `export async function loader() {}`', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       import { useLoaderData } from 'expo-router';
 
       export async function loader() {
@@ -81,9 +80,11 @@ describe('export function loader()', () => {
         return <div>{data.data}</div>;
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBe(true);
+    expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
       export default function Index() {
@@ -96,9 +97,8 @@ describe('export function loader()', () => {
   });
 
   it('removes `export function loader() {}`', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       import { useLoaderData } from 'expo-router';
 
       export function loader() {
@@ -110,9 +110,11 @@ describe('export function loader()', () => {
         return <div>{data.data}</div>;
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBe(true);
+    expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
       export default function Index() {
@@ -127,9 +129,8 @@ describe('export function loader()', () => {
 
 describe('export const loader = () => {}', () => {
   it('removes `export const loader = async () => {}`', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       import { useLoaderData } from 'expo-router';
 
       export const loader = async () => {
@@ -141,9 +142,11 @@ describe('export const loader = () => {}', () => {
         return <div>{data.data}</div>;
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBe(true);
+    expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
       export default function Index() {
@@ -156,9 +159,8 @@ describe('export const loader = () => {}', () => {
   });
 
   it('removes `export const loader = () => {}`', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       import { useLoaderData } from 'expo-router';
 
       export const loader = () => {
@@ -170,9 +172,11 @@ describe('export const loader = () => {}', () => {
         return <div>{data.data}</div>;
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBe(true);
+    expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
       export default function Index() {
@@ -187,9 +191,8 @@ describe('export const loader = () => {}', () => {
 
 describe('export const loader = function() {}', () => {
   it('removes `export const loader = async function() {}`', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       import { useLoaderData } from 'expo-router';
 
       export const loader = async function() {
@@ -201,9 +204,11 @@ describe('export const loader = function() {}', () => {
         return <div>{data.data}</div>;
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBe(true);
+    expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
       export default function Index() {
@@ -216,9 +221,8 @@ describe('export const loader = function() {}', () => {
   });
 
   it('removes `export const loader = function() {}`', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       import { useLoaderData } from 'expo-router';
 
       export const loader = function() {
@@ -230,9 +234,11 @@ describe('export const loader = function() {}', () => {
         return <div>{data.data}</div>;
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBe(true);
+    expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
       export default function Index() {
@@ -247,9 +253,8 @@ describe('export const loader = function() {}', () => {
 
 describe('preserves', () => {
   it('preserves loader in server bundles', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       import { useLoaderData } from 'expo-router';
 
       export async function loader() {
@@ -261,9 +266,11 @@ describe('preserves', () => {
         return <div>{data.data}</div>;
       }
     `,
-        true
-      ).code
-    ).toMatchInlineSnapshot(`
+      true
+    );
+
+    expect(res.metadata.performConstantFolding).toBeUndefined();
+    expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
       export async function loader() {
@@ -281,9 +288,8 @@ describe('preserves', () => {
   });
 
   it('preserves other named exports', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       import { useLoaderData } from 'expo-router';
 
       export async function loader() {
@@ -297,9 +303,11 @@ describe('preserves', () => {
         return <div>{data.data}</div>;
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBe(true);
+    expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
       export const unstable_settings = {
@@ -315,9 +323,8 @@ describe('preserves', () => {
   });
 
   it('preserves multiple exports in same declaration', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       import { useLoaderData } from 'expo-router';
 
       export const loader = async () => {
@@ -333,9 +340,11 @@ describe('preserves', () => {
         return <div>{data.data}</div>;
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBeUndefined();
+    expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
       export const unstable_settings = {
@@ -358,16 +367,17 @@ describe('preserves', () => {
 
 describe('edge cases', () => {
   it('handles files with no loader export', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       export default function Index() {
         return <div>Index</div>;
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBeUndefined();
+    expect(res.code).toMatchInlineSnapshot(`
       "import { jsx as _jsx } from "react/jsx-runtime";
       export default function Index() {
         return /*#__PURE__*/_jsx("div", {
@@ -378,15 +388,16 @@ describe('edge cases', () => {
   });
 
   it('handles files with only loader export', () => {
-    expect(
-      transformTest(
-        `
+    const res = transformTest(
+      `
       export async function loader() {
         return { data: 'test' };
       }
     `,
-        false
-      ).code
-    ).toMatchInlineSnapshot(`""`);
+      false
+    );
+
+    expect(res.metadata.performConstantFolding).toBe(true);
+    expect(res.code).toMatchInlineSnapshot(`""`);
   });
 });

@@ -29,6 +29,8 @@ function serverDataLoadersPlugin(api) {
                     const name = declaration.id?.name;
                     if (name && isLoaderIdentifier(name)) {
                         debug('Found and removed loader function declaration');
+                        assertExpoMetadata(state.file.metadata);
+                        state.file.metadata.performConstantFolding = true;
                         path.remove();
                     }
                 }
@@ -45,6 +47,8 @@ function serverDataLoadersPlugin(api) {
                     });
                     // If all declarations were removed, remove the export
                     if (declaration.declarations.length === 0) {
+                        assertExpoMetadata(state.file.metadata);
+                        state.file.metadata.performConstantFolding = true;
                         path.remove();
                     }
                 }
@@ -57,4 +61,10 @@ function serverDataLoadersPlugin(api) {
  */
 function isLoaderIdentifier(name) {
     return name === LOADER_EXPORT_NAME;
+}
+function assertExpoMetadata(metadata) {
+    if (metadata && typeof metadata === 'object') {
+        return;
+    }
+    throw new Error('Expected Babel state.file.metadata to be an object');
 }
