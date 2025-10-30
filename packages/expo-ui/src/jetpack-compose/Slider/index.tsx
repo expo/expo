@@ -54,7 +54,9 @@ export type SliderProps = {
    */
   onValueChange?: (value: number) => void;
 
-  /** Modifiers for the component */
+  /**
+   * Modifiers for the component.
+   */
   modifiers?: ExpoModifier[];
 };
 

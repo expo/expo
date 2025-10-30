@@ -3,10 +3,11 @@ import {
   CircularProgress,
   Host,
   Image,
+  Label,
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
-import { fixedSize } from '@expo/ui/swift-ui/modifiers';
+import { background, fixedSize, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
@@ -16,6 +17,31 @@ export default function ButtonScreen() {
   return (
     <Page>
       <ScrollView showsVerticalScrollIndicator={false}>
+        <Section title="With Label">
+          <Button style={styles.button}>
+            <Label
+              title="Default Padding"
+              modifiers={[foregroundStyle('black'), padding(), background('yellow')]}
+            />
+          </Button>
+          <Button style={styles.button}>
+            <Label
+              title="No Padding"
+              systemImage="gear"
+              modifiers={[foregroundStyle('black'), padding({ all: 0 }), background('yellow')]}
+            />
+          </Button>
+          <Button style={styles.button}>
+            <Label
+              title="Custom Padding"
+              modifiers={[
+                foregroundStyle('black'),
+                padding({ horizontal: 20, vertical: 8 }),
+                background('yellow'),
+              ]}
+            />
+          </Button>
+        </Section>
         <Section title="Default">
           <Button style={styles.button}>Test</Button>
         </Section>

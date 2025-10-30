@@ -353,7 +353,7 @@ export async function setIsAudioActiveAsync(active) {
  * // Configure audio for recording
  * await setAudioModeAsync({
  *   allowsRecording: true,
- *   playsInSilentMode: false
+ *   playsInSilentMode: true
  * });
  * ```
  */

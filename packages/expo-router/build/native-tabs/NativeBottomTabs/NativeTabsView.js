@@ -38,139 +38,52 @@ const react_1 = __importStar(require("react"));
 const react_native_screens_1 = require("react-native-screens");
 const appearance_1 = require("./appearance");
 const types_1 = require("./types");
-const utils_1 = require("./utils");
+const icon_1 = require("./utils/icon");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
-const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
-// TODO(ubax): refactor this component, so that testing options passed to screen is easier
 function NativeTabsView(props) {
-    const { builder, minimizeBehavior, disableIndicator, focusedIndex } = props;
-    const { state, descriptors, navigation } = builder;
-    const { routes } = state;
-    let blurEffect = props.blurEffect;
-    if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
-        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
-        blurEffect = undefined;
-    }
-    const defaultIconColor = (0, utils_1.convertIconColorPropToObject)(props.iconColor).default;
-    const defaultLabelStyle = (0, utils_1.convertLabelStylePropToObject)(props.labelStyle).default;
+    const { minimizeBehavior, disableIndicator, focusedIndex, tabs } = props;
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     // We need to check if the deferred index is not out of bounds
     // This can happen when the focused index is the last tab, and user removes that tab
     // In that case the deferred index will still point to the last tab, but after re-render
     // it will be out of bounds
-    const inBoundsDeferredFocusedIndex = deferredFocusedIndex < routes.length ? deferredFocusedIndex : focusedIndex;
-    let standardAppearance = (0, appearance_1.convertStyleToAppearance)({
-        ...defaultLabelStyle,
-        iconColor: defaultIconColor,
-        blurEffect,
-        backgroundColor: props.backgroundColor,
-        badgeBackgroundColor: props.badgeBackgroundColor,
-    });
-    if (props.tintColor) {
-        standardAppearance = (0, appearance_1.appendSelectedStyleToAppearance)({ iconColor: props.tintColor, color: props.tintColor }, standardAppearance);
-    }
-    const scrollEdgeAppearance = (0, appearance_1.convertStyleToAppearance)({
-        ...defaultLabelStyle,
-        iconColor: defaultIconColor,
-        blurEffect,
-        backgroundColor: props.backgroundColor,
-        badgeBackgroundColor: props.badgeBackgroundColor,
-    });
-    const appearances = routes.map((route) => ({
-        standardAppearance: (0, appearance_1.createStandardAppearanceFromOptions)(descriptors[route.key].options, standardAppearance),
-        scrollEdgeAppearance: (0, appearance_1.createScrollEdgeAppearanceFromOptions)(descriptors[route.key].options, scrollEdgeAppearance),
+    const inBoundsDeferredFocusedIndex = deferredFocusedIndex < tabs.length ? deferredFocusedIndex : focusedIndex;
+    const appearances = tabs.map((tab) => ({
+        standardAppearance: (0, appearance_1.createStandardAppearanceFromOptions)(tab.options),
+        scrollEdgeAppearance: (0, appearance_1.createScrollEdgeAppearanceFromOptions)(tab.options),
     }));
-    const options = routes.map((route) => descriptors[route.key].options);
-    const children = routes
-        .map((route, index) => ({ route, index }))
-        .filter(({ route: { key } }) => (0, utils_1.shouldTabBeVisible)(descriptors[key].options))
-        .map(({ route, index }) => {
-        const descriptor = descriptors[route.key];
+    const options = tabs.map((tab) => tab.options);
+    const children = tabs.map((tab, index) => {
         const isFocused = index === inBoundsDeferredFocusedIndex;
-        return (<Screen key={route.key} routeKey={route.key} name={route.name} descriptor={descriptor} isFocused={isFocused} standardAppearance={appearances[index].standardAppearance} scrollEdgeAppearance={appearances[index].scrollEdgeAppearance} badgeTextColor={props.badgeTextColor}/>);
+        return (<Screen key={tab.routeKey} routeKey={tab.routeKey} name={tab.name} options={tab.options} isFocused={isFocused} standardAppearance={appearances[index].standardAppearance} scrollEdgeAppearance={appearances[index].scrollEdgeAppearance} badgeTextColor={tab.options.badgeTextColor} contentRenderer={tab.contentRenderer}/>);
     });
     const currentTabAppearance = appearances[inBoundsDeferredFocusedIndex]?.standardAppearance;
     return (<BottomTabsWrapper 
     // #region android props
-    tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor} tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor ?? props.backgroundColor ?? undefined} tabBarItemRippleColor={props.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor} tabBarItemTitleFontColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor} 
+    tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor} tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor} tabBarItemRippleColor={props.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor} tabBarItemTitleFontColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor} 
     // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
-    tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor ?? props?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
+    tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
     // #endregion
     // #region iOS props
     tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} 
     // #endregion
     onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
-            const descriptor = descriptors[tabKey];
-            const route = descriptor.route;
-            navigation.dispatch({
-                type: 'JUMP_TO',
-                target: state.key,
-                payload: {
-                    name: route.name,
-                },
-            });
+            props.onTabChange(tabKey);
         }}>
       {children}
     </BottomTabsWrapper>);
 }
 function Screen(props) {
-    const { routeKey, name, descriptor, isFocused, standardAppearance, scrollEdgeAppearance, badgeTextColor, } = props;
-    const title = descriptor.options.title ?? name;
-    const icon = useAwaitedScreensIcon(descriptor.options.icon);
-    const selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
-    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(icon)} iconResource={getAndroidIconResource(icon)} icon={convertOptionsIconToPropsIcon(icon)} selectedIcon={convertOptionsIconToPropsIcon(selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
-      {descriptor.render()}
+    const { routeKey, name, options, isFocused, standardAppearance, scrollEdgeAppearance, badgeTextColor, contentRenderer, } = props;
+    const title = options.title ?? name;
+    // We need to await the icon, as VectorIcon will load asynchronously
+    const icon = (0, icon_1.useAwaitedScreensIcon)(options.icon);
+    const selectedIcon = (0, icon_1.useAwaitedScreensIcon)(options.selectedIcon);
+    return (<react_native_screens_1.BottomTabsScreen {...options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={(0, icon_1.getRNScreensAndroidIconResourceNameFromAwaitedIcon)(icon)} iconResource={(0, icon_1.getRNScreensAndroidIconResourceFromAwaitedIcon)(icon)} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={options.role} isFocused={isFocused}>
+      {contentRenderer()}
     </react_native_screens_1.BottomTabsScreen>);
-}
-function useAwaitedScreensIcon(icon) {
-    const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
-    const [awaitedIcon, setAwaitedIcon] = (0, react_1.useState)(undefined);
-    (0, react_1.useEffect)(() => {
-        const loadIcon = async () => {
-            if (src && src instanceof Promise) {
-                const awaitedSrc = await src;
-                if (awaitedSrc) {
-                    const currentAwaitedIcon = { src: awaitedSrc };
-                    setAwaitedIcon(currentAwaitedIcon);
-                }
-            }
-        };
-        loadIcon();
-        // Checking `src` rather then icon here, to avoid unnecessary re-renders
-        // The icon object can be recreated, while src should stay the same
-        // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
-        // So we should be safe with promise resolving
-    }, [src]);
-    return (0, react_1.useMemo)(() => (isAwaitedIcon(icon) ? icon : awaitedIcon), [awaitedIcon, icon]);
-}
-function isAwaitedIcon(icon) {
-    return !icon || !('src' in icon && icon.src instanceof Promise);
-}
-function convertOptionsIconToPropsIcon(icon) {
-    if (!icon) {
-        return undefined;
-    }
-    if ('sf' in icon && icon.sf) {
-        return { sfSymbolName: icon.sf };
-    }
-    else if ('src' in icon && icon.src) {
-        return { templateSource: icon.src };
-    }
-    return undefined;
-}
-function getAndroidIconResource(icon) {
-    if (icon && 'src' in icon && icon.src) {
-        return icon.src;
-    }
-    return undefined;
-}
-function getAndroidIconResourceName(icon) {
-    if (icon && 'drawable' in icon && icon.drawable) {
-        return icon.drawable;
-    }
-    return undefined;
 }
 const supportedTabBarMinimizeBehaviorsSet = new Set(types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
 const supportedTabBarItemLabelVisibilityModesSet = new Set(types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES);

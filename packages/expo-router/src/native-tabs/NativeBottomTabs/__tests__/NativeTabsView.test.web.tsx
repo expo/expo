@@ -6,101 +6,55 @@ import type {
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import React from 'react';
 
 import { NativeTabsView } from '../NativeTabsView';
 import type { ExtendedNativeTabOptions, NativeTabsProps, NativeTabsViewProps } from '../types';
 
-const BASE_STATE: TabNavigationState<ParamListBase> = {
-  stale: false,
-  key: 'test',
-  index: 0,
-  routes: [],
-  routeNames: [],
-  history: [],
-  type: 'tab',
-  preloadedRouteKeys: [],
-};
-
-function createBuilderForRoutes(
-  _routes: { options: ExtendedNativeTabOptions; name: string; render: () => React.ReactNode }[],
-  partialState: Partial<TabNavigationState<ParamListBase>> = {}
-) {
-  const descriptors = _routes.reduce(
-    (acc, { options, name, render }, index) => {
-      acc[`r-${index}`] = {
-        options,
-        key: `r-${index}`,
-        route: { key: `r-${index}`, name, params: {} },
-        render,
-      };
-      return acc;
-    },
-    {} as Record<string, any>
-  );
-  const routes = _routes.map(({ name }, index) => ({
-    key: `r-${index}`,
-    name,
-  }));
-  const state = {
-    ...BASE_STATE,
-    ...partialState,
-    routes,
-    routeNames: routes.map((r) => r.name),
-  } as TabNavigationState<ParamListBase>;
-  const navigation = {
-    dispatch: jest.fn(),
-  } as unknown as NativeTabsViewProps['builder']['navigation'];
-  const builder = {
-    state,
-    navigation,
-    descriptors,
-  } as NativeTabsViewProps['builder'];
-  return {
-    builder,
-  };
-}
-
 describe('Native Bottom Tabs Navigation', () => {
   it('renders tabs correctly for two elements', () => {
-    const { builder } = createBuilderForRoutes([
+    const tabs: NativeTabsViewProps['tabs'] = [
       {
         name: 'index',
+        routeKey: 'r-0',
         options: { title: 'Index', hidden: false },
-        render: () => <div data-testid="index">Index</div>,
+        contentRenderer: () => <div data-testid="index" />,
       },
       {
         name: 'about',
+        routeKey: 'r-1',
         options: { title: 'About', hidden: false },
-        render: () => <div data-testid="about">About</div>,
+        contentRenderer: () => <div data-testid="about" />,
       },
-    ]);
-    render(<NativeTabsView builder={builder} focusedIndex={0} />);
+    ];
+    render(<NativeTabsView tabs={tabs} focusedIndex={0} onTabChange={() => {}} />);
     expect(screen.getByTestId('index')).toBeTruthy();
     // expect(screen.queryByTestId('about')).toBeNull();
     expect(screen.getByLabelText('Main')).toMatchSnapshot();
   });
 
   it('renders tabs correctly for three elements', () => {
-    const { builder } = createBuilderForRoutes([
+    const tabs: NativeTabsViewProps['tabs'] = [
       {
         name: 'index',
+        routeKey: 'r-0',
         options: { title: 'Index', hidden: false },
-        render: () => <div data-testid="index" />,
+        contentRenderer: () => <div data-testid="index" />,
       },
       {
         name: 'about',
+        routeKey: 'r-1',
         options: { title: 'About', hidden: false },
-        render: () => <div data-testid="about" />,
+        contentRenderer: () => <div data-testid="about" />,
       },
       {
         name: 'tab-3',
+        routeKey: 'r-2',
         options: { title: 'Tab-3', hidden: false },
-        render: () => <div data-testid="tab-3"> 3</div>,
+        contentRenderer: () => <div data-testid="tab-3"> 3</div>,
       },
-    ]);
+    ];
 
-    render(<NativeTabsView builder={builder} focusedIndex={0} />);
+    render(<NativeTabsView tabs={tabs} focusedIndex={0} onTabChange={() => {}} />);
     expect(screen.getAllByRole('tab')).toHaveLength(3); // Only two visible tabs
     expect(screen.getByText('Index')).toBeTruthy();
     expect(screen.getByText('Tab-3')).toBeTruthy();
@@ -115,79 +69,57 @@ describe('Native Bottom Tabs Navigation', () => {
     { index: 4, activeTestId: 'tab-5' },
     { index: 5, activeTestId: 'tab-6' },
   ] as const)('renders correct tab for index', ({ index, activeTestId }) => {
-    const { builder } = createBuilderForRoutes([
+    const tabs: NativeTabsViewProps['tabs'] = [
       {
         name: 'index',
+        routeKey: 'r-0',
         options: { title: 'Index', hidden: false },
-        render: () => <div data-testid="index">Index</div>,
+        contentRenderer: () => <div data-testid="index">Index</div>,
       },
       {
         name: 'about',
+        routeKey: 'r-1',
         options: { title: 'About', hidden: false },
-        render: () => <div data-testid="about">About</div>,
+        contentRenderer: () => <div data-testid="about">About</div>,
       },
       {
         name: 'tab-3',
+        routeKey: 'r-2',
         options: { title: 'Tab-3', hidden: false },
-        render: () => <div data-testid="tab-3">Tab 3</div>,
+        contentRenderer: () => <div data-testid="tab-3">Tab 3</div>,
       },
       {
         name: 'tab-4',
+        routeKey: 'r-3',
         options: { title: 'Tab 4', hidden: false },
-        render: () => <div data-testid="tab-4">Tab 4</div>,
+        contentRenderer: () => <div data-testid="tab-4">Tab 4</div>,
       },
       {
         name: 'tab-5',
+        routeKey: 'r-4',
         options: { title: 'Tab 5', hidden: false },
-        render: () => <div data-testid="tab-5">Tab 5</div>,
+        contentRenderer: () => <div data-testid="tab-5">Tab 5</div>,
       },
       {
         name: 'tab-6',
+        routeKey: 'r-5',
         options: { title: 'Tab 6', hidden: false },
-        render: () => <div data-testid="tab-6">Tab 6</div>,
+        contentRenderer: () => <div data-testid="tab-6">Tab 6</div>,
       },
-    ]);
-    render(<NativeTabsView builder={builder} focusedIndex={index} />);
+    ];
+    render(<NativeTabsView tabs={tabs} focusedIndex={index} onTabChange={() => {}} />);
     expect(screen.getByTestId(activeTestId)).toBeTruthy();
-  });
-
-  it('correctly handles hidden tabs', () => {
-    const { builder } = createBuilderForRoutes([
-      {
-        name: 'index',
-        options: { title: 'Index-tab', hidden: false },
-        render: () => <div data-testid="index">Index</div>,
-      },
-      {
-        name: 'about',
-        options: { title: 'About-tab', hidden: true },
-        render: () => <div data-testid="about">About</div>,
-      },
-      {
-        name: 'tab-3',
-        options: { title: 'Tab-3-tab', hidden: false },
-        render: () => <div data-testid="tab-3">Tab 3</div>,
-      },
-    ]);
-
-    render(<NativeTabsView builder={builder} focusedIndex={2} />);
-    expect(screen.getByTestId('index').parentElement).toHaveAttribute('data-state', 'inactive');
-    expect(screen.queryByTestId('about')).toBeNull();
-    expect(screen.getByTestId('tab-3').parentElement).toHaveAttribute('data-state', 'active');
-    expect(screen.getAllByRole('tab')).toHaveLength(2); // Only two visible tabs
-    expect(screen.getByText('Index-tab')).toBeTruthy();
-    expect(screen.getByText('Tab-3-tab')).toBeTruthy();
-    expect(screen.queryByText('About-tab')).toBeNull();
   });
 });
 
 describe('Focused tab handling', () => {
   it('correctly handles focus in the app', async () => {
-    const { builder } = createBuilderForRoutes([
+    const tabs: NativeTabsViewProps['tabs'] = [
       {
         name: 'index',
+        routeKey: 'r-0',
         options: { title: 'Index-tab', hidden: false },
-        render: () => (
+        contentRenderer: () => (
           <div data-testid="index">
             <button data-testid="button-1">Button 1</button>
             <button data-testid="button-2">Button 2</button>
@@ -196,17 +128,18 @@ describe('Focused tab handling', () => {
       },
       {
         name: 'about',
+        routeKey: 'r-1',
         options: { title: 'About-tab', hidden: false },
-        render: () => (
+        contentRenderer: () => (
           <div data-testid="about">
             <button data-testid="button-3">Button 3</button>
             <button data-testid="button-4">Button 4</button>
           </div>
         ),
       },
-    ]);
+    ];
 
-    render(<NativeTabsView builder={builder} focusedIndex={0} />);
+    render(<NativeTabsView tabs={tabs} focusedIndex={0} onTabChange={() => {}} />);
 
     const IndexTab = screen.getByRole('tab', { name: 'Index-tab' });
     const AboutTab = screen.getByRole('tab', { name: 'About-tab' });

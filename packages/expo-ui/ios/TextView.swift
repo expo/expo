@@ -3,19 +3,16 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class TextViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+internal final class TextViewProps: UIBaseViewProps {
   @Field var text: String = ""
   @Field var weight: FontWeight?
   @Field var design: FontDesign?
   @Field var size: Double?
   @Field var lineLimit: Int?
   @Field var color: Color?
+
+  // Override default frame alignment for text views
+  override var defaultFrameAlignment: Alignment { .leading }
 }
 
 internal struct TextView: ExpoSwiftUI.View {
@@ -36,6 +33,5 @@ internal struct TextView: ExpoSwiftUI.View {
       }
       .lineLimit(props.lineLimit)
       .foregroundColor(props.color)
-      .modifier(CommonViewModifiers(props: props, defaultFrameAlignment: .leading))
   }
 }

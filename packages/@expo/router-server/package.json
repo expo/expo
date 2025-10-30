@@ -35,10 +35,8 @@
   ],
   "peerDependencies": {
     "@expo/metro-runtime": "^6.1.2",
-    "@react-navigation/native": "^7.1.8",
     "react": "*",
     "react-dom": "*",
-    "react-native-web": "*",
     "expo": "*",
     "expo-constants": "^18.0.9",
     "expo-font": "*",
@@ -58,7 +56,8 @@
     }
   },
   "devDependencies": {
-    "react-server-dom-webpack": "~19.0.0"
+    "react-server-dom-webpack": "~19.0.0",
+    "tsd": "^0.28.1"
   },
   "dependencies": {
     "debug": "^4.3.4"

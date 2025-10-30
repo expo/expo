@@ -9,8 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBuildTimeServerManifestAsync = getBuildTimeServerManifestAsync;
 exports.getManifest = getManifest;
 const _ctx_1 = require("expo-router/_ctx");
-const getReactNavigationConfig_1 = require("expo-router/build/getReactNavigationConfig");
-const getRoutes_1 = require("expo-router/build/getRoutes");
+const routing_1 = require("expo-router/internal/routing");
 const getServerManifest_1 = require("../getServerManifest");
 const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
 /**
@@ -21,7 +20,7 @@ const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
 async function getBuildTimeServerManifestAsync(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
+    const routeTree = (0, routing_1.getRoutes)(_ctx_1.ctx, {
         platform: 'web',
         ...options,
     });
@@ -34,7 +33,7 @@ async function getBuildTimeServerManifestAsync(options = {}) {
 }
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
+    const routeTree = (0, routing_1.getRoutes)(_ctx_1.ctx, {
         preserveApiRoutes: true,
         preserveRedirectAndRewrites: true,
         platform: 'web',
@@ -45,6 +44,6 @@ async function getManifest(options = {}) {
     }
     // Evaluate all static params
     await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
-    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routeTree, false);
+    return (0, routing_1.getReactNavigationConfig)(routeTree, false);
 }
 //# sourceMappingURL=getServerManifest.js.map

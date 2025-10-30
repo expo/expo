@@ -12,7 +12,7 @@ public class ExpoDevMenuReactDelegateHandler: ExpoReactDelegateHandler {
     launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> UIView? {
     if EXAppDefines.APP_DEBUG {
-      DevMenuManager.shared.currentBridge = RCTBridge.current()
+      DevMenuManager.shared.updateCurrentBridge(RCTBridge.current())
     }
     return nil
   }

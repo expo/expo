@@ -604,9 +604,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "@expo/styleguide-search-ui@npm:3.2.2"
+"@expo/styleguide-search-ui@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "@expo/styleguide-search-ui@npm:3.2.3"
   dependencies:
     "@expo/styleguide": "npm:^9.2.2"
     "@expo/styleguide-icons": "npm:^2.2.3"
@@ -621,7 +621,7 @@ __metadata:
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/dfc5bc9c162e397d41560ae45d809800b03364ce6d1e0e3ea7e95af4aa41530a07d380ecf29ecdca62839e15b7f3813b889905c6af7cac91904380fe89844a64
+  checksum: 10c0/c75d8c582df59be7fb6e9d50ff1e07f43ce78d856a748d299f028e30b9dcce4212d4f49638bbe97dac465214d4f1f4782c568ae7ca048914da8c0549a6485c12
   languageName: node
   linkType: hard
 
@@ -6916,7 +6916,7 @@ __metadata:
     "@expo/styleguide": "npm:^9.2.2"
     "@expo/styleguide-base": "npm:^2.0.3"
     "@expo/styleguide-icons": "npm:^2.2.3"
-    "@expo/styleguide-search-ui": "npm:^3.2.2"
+    "@expo/styleguide-search-ui": "npm:^3.2.3"
     "@kapaai/react-sdk": "npm:^0.9.0"
     "@mdx-js/loader": "npm:^3.1.1"
     "@mdx-js/mdx": "npm:^3.1.1"
@@ -7002,7 +7002,7 @@ __metadata:
     sitemap: "npm:^8.0.1"
     tailwindcss: "npm:^3.4.18"
     tippy.js: "npm:^6.3.7"
-    typescript: "npm:^5.8.3"
+    typescript: "npm:~5.8.3"
     unist-builder: "npm:^4.0.0"
     unist-util-visit: "npm:^5.0.0"
     user-agent-data-types: "npm:^0.4.2"
@@ -13843,23 +13843,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.8.3":
-  version: 5.9.3
-  resolution: "typescript@npm:5.9.3"
+"typescript@npm:~5.8.3":
+  version: 5.8.3
+  resolution: "typescript@npm:5.8.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/6bd7552ce39f97e711db5aa048f6f9995b53f1c52f7d8667c1abdc1700c68a76a308f579cd309ce6b53646deb4e9a1be7c813a93baaf0a28ccd536a30270e1c5
+  checksum: 10c0/5f8bb01196e542e64d44db3d16ee0e4063ce4f3e3966df6005f2588e86d91c03e1fb131c2581baf0fb65ee79669eea6e161cd448178986587e9f6844446dbb48
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>":
-  version: 5.9.3
-  resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
+"typescript@patch:typescript@npm%3A~5.8.3#optional!builtin<compat/typescript>":
+  version: 5.8.3
+  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/ad09fdf7a756814dce65bc60c1657b40d44451346858eea230e10f2e95a289d9183b6e32e5c11e95acc0ccc214b4f36289dcad4bf1886b0adb84d711d336a430
+  checksum: 10c0/39117e346ff8ebd87ae1510b3a77d5d92dae5a89bde588c747d25da5c146603a99c8ee588c7ef80faaf123d89ed46f6dbd918d534d641083177d5fac38b8a1cb
   languageName: node
   linkType: hard
 

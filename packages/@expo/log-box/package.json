@@ -16,8 +16,7 @@
     "build": "run-s build:lib build:bundle",
     "build:lib": "tsc -p tsconfig.lib.json",
     "build:bundle": "node ./scripts/build-bundle.mjs",
-    "export:web": "expo export -p web --no-minify",
-    "prepublishOnly": "run-s clean:bundle build:bundle"
+    "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
     "@expo/dom-webview": "*",

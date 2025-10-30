@@ -6,13 +6,23 @@
 
 ### 🎉 New features
 
-- Update autolinking messages to be clearer about isolated dependencies and add note on corrupted installations ([#40279](https://github.com/expo/expo/pull/40279) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
+
+- Fix dependecy check failure when using EXPO_DEBUG=1 ([#39929](https://github.com/expo/expo/pull/39929) by [@betomoedano](https://github.com/betomoedano))
+
+### 💡 Others
+
+## 1.17.11 - 2025-10-20
 
 ### 💡 Others
 
 - Bump to `@expo/metro@54.1.0` and `metro@0.83.2` ([#39826](https://github.com/expo/expo/pull/39826) by [@kitten](https://github.com/kitten))
+
+## 1.17.10 - 2025-10-09
+
+### 🎉 New features
+
+- Update autolinking messages to be clearer about isolated dependencies and add note on corrupted installations ([#40279](https://github.com/expo/expo/pull/40279) by [@kitten](https://github.com/kitten))
 
 ## 1.17.9 - 2025-10-01
 

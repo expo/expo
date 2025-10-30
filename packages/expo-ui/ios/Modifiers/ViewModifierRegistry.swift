@@ -98,26 +98,29 @@ internal struct PaddingModifier: ViewModifier, Record {
   @Field var all: CGFloat?
   @Field var horizontal: CGFloat?
   @Field var vertical: CGFloat?
-
+  
   @Field var top: CGFloat?
   @Field var leading: CGFloat?
   @Field var bottom: CGFloat?
   @Field var trailing: CGFloat?
-
+  
   func body(content: Content) -> some View {
-    let topValue = top ?? vertical ?? all ?? 0
-    let bottomValue = bottom ?? vertical ?? all ?? 0
-    let leadingValue = leading ?? horizontal ?? all ?? 0
-    let trailingValue = trailing ?? horizontal ?? all ?? 0
-
-    content.padding(
-      EdgeInsets(
-        top: topValue,
-        leading: leadingValue,
-        bottom: bottomValue,
-        trailing: trailingValue
+    let hasCustomPadding = [
+      all, horizontal, vertical, top, leading, bottom, trailing
+    ].contains { $0 != nil }
+    
+    if !hasCustomPadding {
+      // Default SwiftUI padding (system spacing)
+      content.padding()
+    } else {
+      let insets = EdgeInsets(
+        top: top ?? vertical ?? all ?? 0,
+        leading: leading ?? horizontal ?? all ?? 0,
+        bottom: bottom ?? vertical ?? all ?? 0,
+        trailing: trailing ?? horizontal ?? all ?? 0
       )
-    )
+      content.padding(insets)
+    }
   }
 }
 

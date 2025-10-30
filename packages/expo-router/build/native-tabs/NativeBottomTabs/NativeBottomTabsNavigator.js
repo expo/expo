@@ -46,37 +46,68 @@ const linking_1 = require("../../link/linking");
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
 exports.NativeTabsContext = react_1.default.createContext(false);
-function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...rest }) {
+function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, labelStyle, iconColor, blurEffect, backgroundColor, badgeBackgroundColor, indicatorColor, badgeTextColor, ...rest }) {
     if ((0, react_1.use)(exports.NativeTabsContext)) {
         throw new Error('Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.');
     }
-    const selectedLabelStyle = (0, utils_1.convertLabelStylePropToObject)(rest.labelStyle).selected;
-    const selectedIconColor = (0, utils_1.convertIconColorPropToObject)(rest.iconColor).selected;
-    const builder = (0, native_1.useNavigationBuilder)(NativeBottomTabsRouter_1.NativeBottomTabsRouter, {
+    const processedLabelStyle = (0, utils_1.convertLabelStylePropToObject)(labelStyle);
+    const processedIconColor = (0, utils_1.convertIconColorPropToObject)(iconColor);
+    const selectedLabelStyle = processedLabelStyle.selected
+        ? {
+            ...processedLabelStyle.selected,
+            color: processedLabelStyle.selected.color ?? rest.tintColor,
+        }
+        : rest.tintColor
+            ? { color: rest.tintColor }
+            : undefined;
+    const { state, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(NativeBottomTabsRouter_1.NativeBottomTabsRouter, {
         children,
         backBehavior,
         screenOptions: {
             disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
+            labelStyle: processedLabelStyle.default,
             selectedLabelStyle,
-            selectedIconColor,
+            iconColor: processedIconColor.default,
+            selectedIconColor: processedIconColor.selected ?? rest.tintColor,
+            blurEffect,
+            backgroundColor,
+            badgeBackgroundColor,
+            indicatorColor,
+            badgeTextColor,
         },
     });
-    const { state, descriptors, NavigationContent } = builder;
     const { routes } = state;
-    let focusedIndex = state.index;
-    const isAnyRouteFocused = routes[focusedIndex].key &&
-        descriptors[routes[focusedIndex].key] &&
-        (0, utils_1.shouldTabBeVisible)(descriptors[routes[focusedIndex].key].options);
-    if (!isAnyRouteFocused) {
+    const visibleTabs = (0, react_1.useMemo)(() => routes
+        // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
+        // If it is not defined, then it was not specified, and we should hide the tab.
+        .filter((route) => descriptors[route.key].options?.hidden !== true)
+        .map((route) => ({
+        options: descriptors[route.key].options,
+        routeKey: route.key,
+        name: route.name,
+        contentRenderer: () => descriptors[route.key].render(),
+    })), [routes, descriptors]);
+    const visibleFocusedTabIndex = (0, react_1.useMemo)(() => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key), [visibleTabs, routes, state.index]);
+    if (visibleFocusedTabIndex < 0) {
         if (process.env.NODE_ENV !== 'production') {
             throw new Error(`The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "${(0, linking_1.getPathFromState)(state)}"`);
         }
-        // Set focusedIndex to the first visible tab
-        focusedIndex = routes.findIndex((route) => (0, utils_1.shouldTabBeVisible)(descriptors[route.key].options));
     }
+    const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
+    const onTabChange = (0, react_1.useCallback)((tabKey) => {
+        const descriptor = descriptors[tabKey];
+        const route = descriptor.route;
+        navigation.dispatch({
+            type: 'JUMP_TO',
+            target: state.key,
+            payload: {
+                name: route.name,
+            },
+        });
+    }, [descriptors, navigation, state.key]);
     return (<NavigationContent>
       <exports.NativeTabsContext value>
-        <NativeTabsView_1.NativeTabsView builder={builder} {...rest} focusedIndex={focusedIndex}/>
+        <NativeTabsView_1.NativeTabsView {...rest} focusedIndex={focusedIndex} tabs={visibleTabs} onTabChange={onTabChange}/>
       </exports.NativeTabsContext>
     </NavigationContent>);
 }

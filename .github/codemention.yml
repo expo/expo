@@ -42,6 +42,8 @@ rules:
     mentions: ['EvanBacon', 'bycedric']
   - patterns: ['packages/@expo/prebuild-config/**']
     mentions: ['EvanBacon']
+  - patterns: ['packages/@expo/router-server/**']
+    mentions: ['EvanBacon', 'hassankhan', 'kitten']
   - patterns: ['packages/@expo/schemer/**']
     mentions: ['bycedric', 'kitten']
   - patterns: ['packages/@expo/schema-utils/**']

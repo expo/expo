@@ -2,20 +2,14 @@ import ExpoModulesCore
 import SwiftUI
 
 // MARK: - Grid Props
-final class GridProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class GridProps: UIBaseViewProps {
   @Field var alignment: AlignmentOptions?
   @Field var verticalSpacing: CGFloat?
   @Field var horizontalSpacing: CGFloat?
 }
 
 // MARK: - GridRow
-internal final class GridRowProps: ExpoSwiftUI.ViewProps {}
+internal final class GridRowProps: UIBaseViewProps {}
 internal struct GridRowView: ExpoSwiftUI.View {
   @ObservedObject var props: GridRowProps
 
@@ -43,7 +37,6 @@ internal struct GridView: ExpoSwiftUI.View {
       ) {
         Children()
       }
-      .modifier(CommonViewModifiers(props: props))
     } else {
       EmptyView()
     }

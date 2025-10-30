@@ -22,7 +22,7 @@ const STORE = new AsyncLocalStorage();
  */
 export function createRequestHandler<Env = unknown>(
   params: { build: string; environment?: string | null },
-  setup?: Partial<RequestHandlerParams>
+  setup?: RequestHandlerParams
 ): RequestHandler<Env> {
   const run = createWorkerdRequestScope(STORE, params);
   const onRequest = createExpoHandler({

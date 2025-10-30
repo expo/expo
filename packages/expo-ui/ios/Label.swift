@@ -3,13 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class LabelViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class LabelViewProps: UIBaseViewProps {
   @Field var title: String?
   @Field var systemImage: String?
   @Field var color: Color?
@@ -17,13 +11,17 @@ final class LabelViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
 
 struct LabelView: ExpoSwiftUI.View {
   @ObservedObject var props: LabelViewProps
-
+  
   var body: some View {
-    Label(
-      title: { Text(props.title ?? "") },
-      icon: { Image(systemName: props.systemImage ?? "").foregroundStyle(props.color ?? Color.accentColor) }
-    )
-    .modifier(CommonViewModifiers(props: props))
+    Label {
+      Text(props.title ?? "")
+    } icon: {
+      if let systemImage = props.systemImage, !systemImage.isEmpty {
+        Image(systemName: systemImage)
+          .foregroundStyle(props.color ?? .accentColor)
+      }
+    }
+    .labelStyle(.titleAndIcon) // ensures proper layout when icon exists
     .applyFixedSize(props.fixedSize ?? true)
   }
 }

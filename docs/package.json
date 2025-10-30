@@ -30,7 +30,7 @@
     "@expo/styleguide": "^9.2.2",
     "@expo/styleguide-base": "^2.0.3",
     "@expo/styleguide-icons": "^2.2.3",
-    "@expo/styleguide-search-ui": "^3.2.2",
+    "@expo/styleguide-search-ui": "^3.2.3",
     "@kapaai/react-sdk": "^0.9.0",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/mdx": "^3.1.1",
@@ -121,7 +121,7 @@
     "sitefetch": "^0.0.17",
     "sitemap": "^8.0.1",
     "tailwindcss": "^3.4.18",
-    "typescript": "^5.8.3",
+    "typescript": "~5.8.3",
     "unist-builder": "^4.0.0",
     "unist-util-visit": "^5.0.0",
     "user-agent-data-types": "^0.4.2"
