@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix missing backdrop blur on Web
+
 ### 💡 Others
 
 ### ⚠️ Notices
