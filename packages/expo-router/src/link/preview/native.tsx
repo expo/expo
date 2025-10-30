@@ -1,6 +1,7 @@
 'use client';
 
 import { requireNativeView } from 'expo';
+import type { PropsWithChildren } from 'react';
 import { Platform, StyleSheet, type ViewProps } from 'react-native';
 
 const areNativeViewsAvailable =
@@ -70,6 +71,32 @@ export function NativeLinkPreview(props: NativeLinkPreviewProps) {
   return <NativeLinkPreviewView {...props} />;
 }
 // #endregion
+
+const LinkPreviewNativeZoomTransitionEnablerView: React.ComponentType<
+  ViewProps & { zoomViewNativeTag: number }
+> | null = areNativeViewsAvailable
+  ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeZoomTransitionEnabler')
+  : null;
+export function LinkPreviewNativeZoomTransitionEnabler(
+  props: PropsWithChildren<{ zoomViewNativeTag: number }>
+) {
+  if (!LinkPreviewNativeZoomTransitionEnablerView) {
+    return null;
+  }
+  return (
+    <LinkPreviewNativeZoomTransitionEnablerView
+      {...props}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: 1,
+        height: 1,
+        backgroundColor: 'transparent',
+      }}
+    />
+  );
+}
 
 // #region Preview Content View
 export interface NativeLinkPreviewContentProps extends ViewProps {

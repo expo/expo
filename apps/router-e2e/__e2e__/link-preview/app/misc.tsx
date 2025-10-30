@@ -1,5 +1,6 @@
 import { Link, usePathname } from 'expo-router';
-import React from 'react';
+import { LinkPreviewNativeZoomTransitionEnabler } from 'expo-router/build/link/preview/native';
+import React, { use } from 'react';
 import {
   View,
   Text,
@@ -10,17 +11,22 @@ import {
 } from 'react-native';
 
 import { useTimer } from '../utils/useTimer';
+import { TagContext } from '../components/tagContenxt';
 
 const HomeIndex = () => {
   const pathname = usePathname();
   const time = useTimer();
   const { width } = useWindowDimensions();
+  const [tag] = use(TagContext);
 
   return (
     <ScrollView
       style={{ backgroundColor: '#84DCC6' }}
       contentContainerStyle={{ padding: 16, gap: 16 }}
       contentInsetAdjustmentBehavior="automatic">
+      <LinkPreviewNativeZoomTransitionEnabler zoomViewNativeTag={tag}>
+        <View />
+      </LinkPreviewNativeZoomTransitionEnabler>
       <View>
         <Text>Misc</Text>
         <Text>Current Path: {pathname}</Text>

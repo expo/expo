@@ -36,6 +36,8 @@
 
 + (BOOL)isRNSTabBarController:(UIView *)view;
 
++ (BOOL)isRNScreen:(UIResponder *)view;
+
 + (nullable RNSTabBarController *)getBottomTabControllerFromView:(UIView *)view;
 
 + (BOOL)isRNSBottomTabsHostComponentView:(UIView *)view;

@@ -44,6 +44,12 @@ public class LinkPreviewNativeModule: Module {
       }
     }
 
+    View(LinkPreviewNativeZoomTransitionEnabler.self) {
+      Prop("zoomViewNativeTag") { (view: LinkPreviewNativeZoomTransitionEnabler, tag: Int) in
+        view.zoomViewNativeTag = tag
+      }
+    }
+
     View(LinkPreviewNativeActionView.self) {
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
