@@ -46,7 +46,9 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   _appContext.reactBridge = bridge;
 
 #if !__has_include(<ReactCommon/RCTRuntimeExecutor.h>)
-  _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:bridge];
+  [bridge dispatchBlock:^{
+      _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:bridge];
+    } queue:RCTJSThread];
 #endif // React Native <0.74
 }
 
