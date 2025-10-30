@@ -6,7 +6,7 @@
  */
 import type { ConfigAPI, types as t, PluginObj } from '@babel/core';
 
-import { getIsServer } from './common';
+import { getExpoRouterAbsoluteAppRoot, getIsServer, toPosixPath } from './common';
 
 const debug = require('debug')('expo:babel:server-data-loaders');
 
@@ -15,15 +15,32 @@ const LOADER_EXPORT_NAME = 'loader';
 export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
   const { types: t } = api;
 
+  const routerAbsoluteRoot = api.caller(getExpoRouterAbsoluteAppRoot);
   const isServer = api.caller(getIsServer);
 
   return {
     name: 'expo-server-data-loaders',
 
     pre(file) {
+      const filePath = file.opts.filename ?? '';
+      const normalizedFilePath = toPosixPath(filePath);
+      const normalizedAppRoot = toPosixPath(routerAbsoluteRoot);
+      const isInAppDirectory = normalizedFilePath.startsWith(normalizedAppRoot + '/');
+
+      assertExpoMetadata(file.metadata);
+
+      // Early exit if file isn't within the `app/` directory
+      if (!isInAppDirectory) {
+        debug('Skipping file:', filePath);
+        file.metadata.skipped = true;
+        file.path.stop();
+        return;
+      }
+
       // Early exit if file doesn't contain a `loader` named export
       if (!file.code.includes(LOADER_EXPORT_NAME)) {
-        debug('Skipping file (no loader export):', file.opts.filename);
+        debug('Skipping file:', file.opts.filename);
+        file.metadata.skipped = true;
         file.path.stop();
         return;
       }
@@ -36,7 +53,9 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
 
     visitor: {
       ExportNamedDeclaration(path, state) {
-        if (isServer) {
+        assertExpoMetadata(state.file.metadata);
+
+        if (isServer || state.file.metadata.skipped) {
           return;
         }
 
@@ -47,7 +66,6 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
           const name = declaration.id?.name;
           if (name && isLoaderIdentifier(name)) {
             debug('Found and removed loader function declaration');
-            assertExpoMetadata(state.file.metadata);
             state.file.metadata.performConstantFolding = true;
             path.remove();
           }
@@ -69,7 +87,6 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
 
           // If all declarations were removed, remove the export
           if (declaration.declarations.length === 0) {
-            assertExpoMetadata(state.file.metadata);
             state.file.metadata.performConstantFolding = true;
             path.remove();
           }
@@ -88,6 +105,7 @@ function isLoaderIdentifier(name: string): boolean {
 
 function assertExpoMetadata(metadata: any): asserts metadata is {
   performConstantFolding?: boolean;
+  skipped?: boolean;
 } {
   if (metadata && typeof metadata === 'object') {
     return;

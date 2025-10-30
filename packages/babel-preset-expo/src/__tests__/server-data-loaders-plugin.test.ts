@@ -30,9 +30,11 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
 
 const DEF_OPTIONS = {
   // Ensure this is absolute to prevent the filename from being converted to absolute and breaking CI tests.
-  filename: '/unknown',
+  filename: '/app/index',
+
   babelrc: false,
   presets: [preset],
+
   sourceMaps: true,
   configFile: false,
   compact: false,
@@ -50,9 +52,17 @@ afterAll(() => {
   process.env = { ...originalEnv };
 });
 
-function transformTest(code: string, isServer = false) {
+type TransformTestOptions = Partial<typeof DEF_OPTIONS> & {
+  isServer?: boolean;
+};
+
+function transformTest(
+  code: string,
+  { isServer = false, ...defaultOverrideOpts }: TransformTestOptions
+) {
   const options = {
     ...DEF_OPTIONS,
+    ...defaultOverrideOpts,
     caller: getCaller(isServer ? SERVER_CALLER : CLIENT_CALLER),
   };
 
@@ -80,7 +90,7 @@ describe('export function loader()', () => {
         return <div>{data.data}</div>;
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBe(true);
@@ -110,7 +120,7 @@ describe('export function loader()', () => {
         return <div>{data.data}</div>;
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBe(true);
@@ -142,7 +152,7 @@ describe('export const loader = () => {}', () => {
         return <div>{data.data}</div>;
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBe(true);
@@ -172,7 +182,7 @@ describe('export const loader = () => {}', () => {
         return <div>{data.data}</div>;
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBe(true);
@@ -204,7 +214,7 @@ describe('export const loader = function() {}', () => {
         return <div>{data.data}</div>;
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBe(true);
@@ -234,7 +244,7 @@ describe('export const loader = function() {}', () => {
         return <div>{data.data}</div>;
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBe(true);
@@ -266,7 +276,7 @@ describe('preserves', () => {
         return <div>{data.data}</div>;
       }
     `,
-      true
+      { isServer: true }
     );
 
     expect(res.metadata.performConstantFolding).toBeUndefined();
@@ -303,7 +313,7 @@ describe('preserves', () => {
         return <div>{data.data}</div>;
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBe(true);
@@ -340,7 +350,7 @@ describe('preserves', () => {
         return <div>{data.data}</div>;
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBeUndefined();
@@ -373,7 +383,7 @@ describe('edge cases', () => {
         return <div>Index</div>;
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBeUndefined();
@@ -394,10 +404,56 @@ describe('edge cases', () => {
         return { data: 'test' };
       }
     `,
-      false
+      { isServer: false }
     );
 
     expect(res.metadata.performConstantFolding).toBe(true);
     expect(res.code).toMatchInlineSnapshot(`""`);
+  });
+});
+
+describe('directory filtering', () => {
+  it('skips files outside app directory', () => {
+    const res = transformTest(
+      `
+      export function loader() {
+        return { data: 'test' };
+      }
+
+      function noop() {
+        return;
+      }
+
+      export function MyComponent() {
+        noop();
+        const data = loader();
+        return <div>{data.data}</div>;
+      }
+    `,
+      {
+        filename: '/components/MyComponent',
+        isServer: false,
+      }
+    );
+
+    expect(res.metadata.performConstantFolding).toBeUndefined();
+    expect(res.code).toMatchInlineSnapshot(`
+      "import { jsx as _jsx } from "react/jsx-runtime";
+      export function loader() {
+        return {
+          data: 'test'
+        };
+      }
+      function noop() {
+        return;
+      }
+      export function MyComponent() {
+        noop();
+        const data = loader();
+        return /*#__PURE__*/_jsx("div", {
+          children: data.data
+        });
+      }"
+    `);
   });
 });
