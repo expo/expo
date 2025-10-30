@@ -28,7 +28,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ## Configuration in app config
 
-You can configure `expo-secure-store` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+You can configure `expo-secure-store` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigPluginExample>
 
@@ -87,13 +87,15 @@ On Android, values are stored in [`SharedPreferences`](https://developer.android
 
 ### iOS
 
-> For iOS standalone apps, data stored with `expo-secure-store` can persist across app installs.
-
-On iOS, values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
+On iOS, values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. **Due to the underlying nature of iOS Keychain, data stored with `expo-secure-store` will persist across app uninstallations when the app is reinstalled with the same bundle ID.** This is an expected behavior of the iOS Keychain system, not a bug, and should be considered when designing your app's data handling. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
 
 ## Data persistence
 
-`expo-secure-store` is designed to provide a persistent data storage solution across app restarts and updates. However, it is important not to rely on it as a single source of truth for irreplaceable, critical data. Data saved using `expo-secure-store` will not be preserved upon app uninstallation.
+`expo-secure-store` is designed to provide a persistent data storage solution across app restarts and updates. However, it is important not to rely on it as a single source of truth for irreplaceable, critical data.
+
+-   **On Android:** Data saved using `expo-secure-store` **will not be preserved upon app uninstallation**.
+-   **On iOS:** Data saved using `expo-secure-store` **will persist across app uninstallations** if the app is reinstalled with the same bundle ID. This is due to how the iOS Keychain manages stored credentials.
+
 Additionally, any data protected with the `requireAuthentication` option set to `true` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint.
 
 #### Exempting encryption prompt
