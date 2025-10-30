@@ -142,10 +142,12 @@ export function convertTabPropsToOptions(
 }
 
 function appendBadgeOptions(options: ExtendedNativeTabOptions, props: BadgeProps) {
-  if (props.children) {
+  options.selectedBadgeBackgroundColor = props.selectedBackgroundColor;
+  if (props.hidden) {
+    options.badgeValue = undefined;
+  } else if (props.children) {
     options.badgeValue = String(props.children);
-    options.selectedBadgeBackgroundColor = props.selectedBackgroundColor;
-  } else if (!props.hidden) {
+  } else {
     // If no value is provided, we set it to a space to show the badge
     // Otherwise, the `react-native-screens` will interpret it as a hidden badge
     // https://github.com/software-mansion/react-native-screens/blob/b4358fd95dd0736fc54df6bb97f210dc89edf24c/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm#L172
@@ -154,17 +156,25 @@ function appendBadgeOptions(options: ExtendedNativeTabOptions, props: BadgeProps
 }
 
 function appendLabelOptions(options: ExtendedNativeTabOptions, props: LabelProps) {
+  if ('selectedStyle' in props) {
+    options.selectedLabelStyle = props.selectedStyle;
+  }
   if (props.hidden) {
     options.title = '';
-  } else {
+  } else if ('children' in props) {
     options.title = props.children;
-    if (props.selectedStyle) {
-      options.selectedLabelStyle = props.selectedStyle;
-    }
   }
 }
 
 export function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) {
+  if ('selectedColor' in props) {
+    options.selectedIconColor = props.selectedColor;
+  }
+  if ('sf' in props || 'src' in props || 'androidSrc' in props || 'drawable' in props) {
+    options.icon = undefined;
+    options.selectedIcon = undefined;
+  }
+
   if ('src' in props && props.src) {
     const icon = convertIconSrcToIconOption(props);
     options.icon = icon?.icon;
@@ -196,9 +206,6 @@ export function appendIconOptions(options: ExtendedNativeTabOptions, props: Icon
   } else if ('drawable' in props && process.env.EXPO_OS === 'android') {
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
-  }
-  if (props.selectedColor) {
-    options.selectedIconColor = props.selectedColor;
   }
 }
 
