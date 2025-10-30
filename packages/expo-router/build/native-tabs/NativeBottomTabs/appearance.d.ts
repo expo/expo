@@ -1,8 +1,8 @@
 import type { ColorValue } from 'react-native';
 import type { BottomTabsScreenAppearance, BottomTabsScreenItemStateAppearance } from 'react-native-screens';
 import { type NativeTabOptions, type NativeTabsBlurEffect, type NativeTabsLabelStyle } from './types';
-export declare function createStandardAppearanceFromOptions(options: NativeTabOptions, baseStandardAppearance: BottomTabsScreenAppearance): BottomTabsScreenAppearance;
-export declare function createScrollEdgeAppearanceFromOptions(options: NativeTabOptions, baseScrollEdgeAppearance: BottomTabsScreenAppearance): BottomTabsScreenAppearance;
+export declare function createStandardAppearanceFromOptions(options: NativeTabOptions): BottomTabsScreenAppearance;
+export declare function createScrollEdgeAppearanceFromOptions(options: NativeTabOptions): BottomTabsScreenAppearance;
 export interface AppearanceStyle extends NativeTabsLabelStyle {
     iconColor?: ColorValue;
     backgroundColor?: ColorValue | null;

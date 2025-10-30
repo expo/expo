@@ -1,4 +1,4 @@
-import type { DefaultRouterOptions, ParamListBase, TabNavigationState, TabRouterOptions, useNavigationBuilder } from '@react-navigation/native';
+import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
 import type { ColorValue, ImageSourcePropType, TextStyle } from 'react-native';
 import type { BottomTabsScreenProps } from 'react-native-screens';
@@ -232,7 +232,7 @@ export interface NativeTabsProps extends PropsWithChildren {
     /**
      * The background color of the tab bar.
      */
-    backgroundColor?: ColorValue | null;
+    backgroundColor?: ColorValue;
     /**
      * The background color of every badge in the tab bar.
      */
@@ -328,9 +328,16 @@ export interface NativeTabsProps extends PropsWithChildren {
      */
     badgeTextColor?: ColorValue;
 }
-export interface NativeTabsViewProps extends NativeTabsProps {
+export interface NativeTabsViewProps extends Omit<NativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor'> {
     focusedIndex: number;
-    builder: ReturnType<typeof useNavigationBuilder<TabNavigationState<ParamListBase>, TabRouterOptions, Record<string, (...args: any) => void>, NativeTabOptions, Record<string, any>>>;
+    tabs: NativeTabsViewTabItem[];
+    onTabChange: (tabKey: string) => void;
+}
+export interface NativeTabsViewTabItem {
+    options: ExtendedNativeTabOptions;
+    routeKey: string;
+    name: string;
+    contentRenderer: () => React.ReactNode;
 }
 export declare const SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES: readonly ["auto", "selected", "labeled", "unlabeled"];
 /**
