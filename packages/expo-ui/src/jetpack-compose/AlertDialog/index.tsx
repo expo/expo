@@ -34,7 +34,9 @@ export type AlertDialogProps = {
    */
   onDismissPressed?: () => void;
 
-  /** Modifiers for the component */
+  /**
+   * Modifiers for the component.
+   */
   modifiers?: ExpoModifier[];
 };
 

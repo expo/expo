@@ -1,5 +1,3 @@
-#pragma once
-
 #if WORKLETS_ENABLED
 
 #include "WorkletJSCallInvoker.h"

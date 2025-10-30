@@ -257,6 +257,11 @@ class FunctionSpec: ExpoSpec {
         @Field var b: ValueOrUndefined<Double> = .undefined
       }
 
+      struct TestEncodable: Encodable {
+        let name: String
+        let version: Int
+      }
+
       afterEach {
         try runtime.eval("globalThis.result = undefined")
       }
@@ -318,6 +323,10 @@ class FunctionSpec: ExpoSpec {
             return "\(f?.property ?? "no value")"
           }
 
+          Function("returnEncodable") {
+            return TestEncodable(name: "Expo SDK", version: 55)
+          }
+
           Function("withSharedObject") {
             return SharedString("Test")
           }
@@ -332,6 +341,10 @@ class FunctionSpec: ExpoSpec {
 
           AsyncFunction("withSharedObjectPromise") { (p: Promise) in
             p.resolve(SharedString("Test with Promise"))
+          }
+
+          Function("withEither") { (either: Either<Bool, String>) in
+            return either
           }
 
           AsyncFunction("withURLAsync") {
@@ -399,6 +412,14 @@ class FunctionSpec: ExpoSpec {
 
       it("accepts optional record") {
         expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString()) == "123"
+      }
+
+      it("returns encodable struct") {
+        let result = try runtime.eval("expo.modules.TestModule.returnEncodable()")
+        expect(result.kind) == .object
+        expect(result.getObject().getPropertyNames()).to(contain(["name", "version"]))
+        expect(try result.getObject().getProperty("name").asString()) == "Expo SDK"
+        expect(try result.getObject().getProperty("version").asInt()) == 55
       }
 
       it("returns URL (sync)") {
@@ -527,7 +548,17 @@ class FunctionSpec: ExpoSpec {
         expect(result.kind) == .string
         expect(result.getString()) == "Test with Promise"
       }
-      
+
+      it("accepts and returns Either value") {
+        let stringResult = try runtime.eval("expo.modules.TestModule.withEither('test string')")
+        expect(stringResult.kind) == .string
+        expect(stringResult.getString()) == "test string"
+
+        let boolResult = try runtime.eval("expo.modules.TestModule.withEither(true)")
+        expect(boolResult.kind) == .bool
+        expect(boolResult.getBool()) == true
+      }
+
       // For async tests, this is a safe way to repeatedly evaluate JS
       // and catch both Swift and ObjC exceptions
       func safeBoolEval(_ js: String) -> Bool {

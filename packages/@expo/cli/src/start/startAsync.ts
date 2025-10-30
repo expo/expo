@@ -113,24 +113,29 @@ export async function startAsync(
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);
 
+  const defaultServerUrl = devServerManager.getDefaultDevServer()?.getDevServerUrl() ?? '';
   // Present the Terminal UI.
   if (isInteractive()) {
-    const mcpServer = await profile(maybeCreateMCPServerAsync)(projectRoot);
+    const mcpServer =
+      (await profile(maybeCreateMCPServerAsync)({
+        projectRoot,
+        devServerUrl: defaultServerUrl,
+      })) ?? undefined;
 
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
+      mcpServer,
     });
 
     mcpServer?.start();
   } else {
     // Display the server location in CI...
-    const url = devServerManager.getDefaultDevServer()?.getDevServerUrl();
-    if (url) {
+    if (defaultServerUrl) {
       if (env.__EXPO_E2E_TEST) {
         // Print the URL to stdout for tests
-        console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url })}`);
+        console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: defaultServerUrl })}`);
       }
-      Log.log(chalk`Waiting on {underline ${url}}`);
+      Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
     }
   }
 

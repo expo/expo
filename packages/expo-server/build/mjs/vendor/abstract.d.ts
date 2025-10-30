@@ -22,11 +22,6 @@ type CallbackRoute = (Route & {
 };
 type BeforeResponseCallback = (responseInit: ResponseInitLike, route: CallbackRoute) => ResponseInitLike;
 export interface RequestHandlerParams {
-    getHtml: (request: Request, route: Route) => Promise<string | Response | null>;
-    getRoutesManifest: () => Promise<Manifest | null>;
-    getApiRoute: (route: Route) => Promise<any>;
-    getMiddleware: (route: MiddlewareInfo) => Promise<MiddlewareModule>;
-    handleRouteError: (error: Error) => Promise<Response>;
     /** Before handler response 4XX, not before unhandled error */
     beforeErrorResponse?: BeforeResponseCallback;
     /** Before handler responses */
@@ -36,5 +31,11 @@ export interface RequestHandlerParams {
     /** Before handler API responses */
     beforeAPIResponse?: BeforeResponseCallback;
 }
-export declare function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleRouteError, getMiddleware, beforeErrorResponse, beforeResponse, beforeHTMLResponse, beforeAPIResponse, }: RequestHandlerParams): (request: Request) => Promise<Response>;
+export interface RequestHandlerInput {
+    getHtml(request: Request, route: Route): Promise<string | Response | null>;
+    getRoutesManifest(): Promise<Manifest | null>;
+    getApiRoute(route: Route): Promise<any>;
+    getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;
+}
+export declare function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, beforeErrorResponse, beforeResponse, beforeHTMLResponse, beforeAPIResponse, }: RequestHandlerParams & RequestHandlerInput): (request: Request) => Promise<Response>;
 export {};

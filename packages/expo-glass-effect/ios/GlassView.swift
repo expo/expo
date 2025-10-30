@@ -26,7 +26,7 @@ public final class GlassView: ExpoView {
 
   public func updateBorderRadius() {
     if #available(iOS 26.0, *) {
-      
+      #if compiler(>=6.2) // Xcode 26
       let topLeft = UICornerRadius(floatLiteral: topLeftRadius ?? radius ?? 0)
       let topRight = UICornerRadius(floatLiteral: topRightRadius ?? radius ?? 0)
       let bottomLeft = UICornerRadius(floatLiteral: bottomLeftRadius ?? radius ?? 0)
@@ -38,6 +38,7 @@ public final class GlassView: ExpoView {
         bottomLeftRadius: bottomLeft,
         bottomRightRadius: bottomRight
       )
+      #endif
     }
   }
 

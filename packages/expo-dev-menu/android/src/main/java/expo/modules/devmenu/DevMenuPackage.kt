@@ -5,43 +5,39 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.facebook.react.ReactActivity
+import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
-import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.ReactHost
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.facebook.react.packagerconnection.RequestHandler
-import com.facebook.react.uimanager.ReactShadowNode
-import com.facebook.react.uimanager.ViewManager
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.core.interfaces.ReactNativeHostHandler
-import expo.modules.devmenu.compose.BindingView
-import expo.modules.devmenu.compose.DevMenuViewModel
-import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
-import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
-import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
+import expo.modules.devmenu.compose.DevMenuFragment
+import expo.modules.devmenu.react.DevMenuInstaller
 import expo.modules.kotlin.weak
+import java.lang.ref.WeakReference
 
-class DevMenuPackage : Package, ReactPackage {
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> {
-    return emptyList()
-  }
-
+class DevMenuPackage : Package {
   override fun createReactNativeHostHandlers(context: Context?): List<ReactNativeHostHandler?>? {
     if (!BuildConfig.DEBUG) {
       return emptyList()
     }
-  
+
     return listOf(
       object : ReactNativeHostHandler {
+        private var weakReactNativeHost = WeakReference<ReactHost>(null)
+
+        override fun onDidCreateReactHost(context: Context, reactNativeHost: ReactHost) {
+          super.onDidCreateReactHost(context, reactNativeHost)
+
+          weakReactNativeHost = reactNativeHost.weak()
+        }
+
         override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
           super.onDidCreateDevSupportManager(devSupportManager)
 
@@ -49,23 +45,7 @@ class DevMenuPackage : Package, ReactPackage {
             return
           }
 
-          val currentCommandHandlers =
-            DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue<_, Map<String, RequestHandler>?>(
-              "customPackagerCommandHandlers",
-              devSupportManager
-            ) ?: emptyMap()
-
-          val weakDevSupportManager = devSupportManager.weak()
-          val handlers = DevMenuCommandHandlersProvider(weakDevSupportManager)
-            .createCommandHandlers()
-
-          val newCommandHandlers = currentCommandHandlers + handlers
-
-          DevSupportManagerBase::class.java.setPrivateDeclaredFieldValue(
-            "customPackagerCommandHandlers",
-            devSupportManager,
-            newCommandHandlers
-          )
+          DevMenuInstaller.install(devSupportManager)
         }
       }
     )
@@ -100,20 +80,35 @@ class DevMenuPackage : Package, ReactPackage {
 
     return listOf(
       object : ReactActivityHandler {
+        private var currentActivityHolder: WeakReference<Activity> = WeakReference(null)
+        private val currentActivity
+          get() = currentActivityHolder.get()
+        private val fragment by DevMenuFragment.fragment { currentActivity }
+
+        private var reactHostHolder: WeakReference<ReactHost> = WeakReference(null)
+
+        override fun onDidCreateReactActivityDelegateNotification(activity: ReactActivity?, delegate: ReactActivityDelegate?) {
+          currentActivityHolder = activity.weak()
+          reactHostHolder = delegate?.reactHost.weak()
+        }
+
         override fun createReactRootViewContainer(activity: Activity): ViewGroup {
-          return FrameLayout(activity).apply {
-            addView(BindingView(activity, lazyViewModel = (activity as AppCompatActivity).viewModels<DevMenuViewModel>()))
-          }
+          return DevMenuFragment.createFragmentHost(activity, reactHostHolder)
         }
 
         override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-          return DevMenuManager.onKeyEvent(keyCode, event)
+          val fragment = fragment ?: return false
+          return fragment.onKeyUp(keyCode, event)
         }
       }
     )
   }
 
   override fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener?>? {
+    if (!BuildConfig.DEBUG) {
+      return emptyList()
+    }
+
     return listOf(
       object : ApplicationLifecycleListener {
         override fun onCreate(application: Application) {

@@ -162,6 +162,11 @@
           "description": "Enable experimental data loader support. This is only supported for `web.output: 'static'` outputs at the moment.",
           "type": "boolean",
           "default": false
+        },
+        "unstable_splitView": {
+          "description": "Enable experimental SplitView support on ios",
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false

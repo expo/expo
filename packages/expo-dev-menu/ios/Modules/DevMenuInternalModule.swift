@@ -36,7 +36,7 @@ public class DevMenuInternalModule: Module {
     }
 
     AsyncFunction("setOnboardingFinished") { (finished: Bool) in
-      DevMenuPreferences.isOnboardingFinished = finished
+      DevMenuManager.shared.setOnboardingFinished(finished)
     }
 
     AsyncFunction("openDevMenuFromReactNative") {

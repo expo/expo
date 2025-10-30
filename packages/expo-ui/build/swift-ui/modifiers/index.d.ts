@@ -10,26 +10,26 @@ type NamedColor = 'primary' | 'secondary' | 'red' | 'orange' | 'yellow' | 'green
 type Color = string | ColorValue | NamedColor;
 /**
  * Sets the spacing between adjacent sections.
- * @param spacing - The spacing to apply
+ * @param spacing - The spacing to apply.
  * @platform ios 17.0+
  */
 export declare const listSectionSpacing: (spacing: "default" | "compact" | number) => ModifierConfig;
 /**
  * Sets the background of a view.
- * @param color - The background color (hex string, e.g., '#FF0000')
- * @see https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)
+ * @param color - The background color (hex string). For example, `#FF0000`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)).
  */
 export declare const background: (color: Color) => ModifierConfig;
 /**
  * Applies corner radius to a view.
- * @param radius - The corner radius value
- * @see https://developer.apple.com/documentation/swiftui/view/cornerradius(_:antialiased:)
+ * @param radius - The corner radius value.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/cornerradius(_:antialiased:)).
  */
 export declare const cornerRadius: (radius: number) => ModifierConfig;
 /**
  * Adds a shadow to a view.
- * @param params - The shadow parameters. Radius, offset and color.
- * @see https://developer.apple.com/documentation/SwiftUI/View/shadow(color:radius:x:y:)
+ * @param params - The shadow parameters: `radius`, offset (`x`, `y`) and `color`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/shadow(color:radius:x:y:)).
  */
 export declare const shadow: (params: {
     radius: number;
@@ -39,15 +39,15 @@ export declare const shadow: (params: {
 }) => ModifierConfig;
 /**
  * Adds a matched geometry effect to a view.
- * @param id - The id of the view
+ * @param id - The id of the view.
  * @param namespaceId - The namespace id of the view. Use Namespace component to create a namespace.
- * @see https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:)).
  */
 export declare const matchedGeometryEffect: (id: string, namespaceId: string) => ModifierConfig;
 /**
  * Sets the frame properties of a view.
  * @param params - The frame parameters. Width, height, minWidth, maxWidth, minHeight, maxHeight, idealWidth, idealHeight and alignment.
- * @see https://developer.apple.com/documentation/SwiftUI/View/frame(width:height:alignment:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/frame(width:height:alignment:)).
  */
 export declare const frame: (params: {
     width?: number;
@@ -63,10 +63,10 @@ export declare const frame: (params: {
 /**
  * Sets padding on a view.
  * Supports individual edges or shorthand properties.
- * @param params - The padding parameters. Top, bottom, leading, trailing, horizontal, vertical and all.
- * @see https://developer.apple.com/documentation/SwiftUI/View/padding(_:_:)
+ * @param params - The padding parameters: `top`, `bottom`, `leading`, `trailing`, `horizontal`, `vertical` and `all`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/padding(_:_:)).
  */
-export declare const padding: (params: {
+export declare const padding: (params?: {
     top?: number;
     bottom?: number;
     leading?: number;
@@ -77,8 +77,8 @@ export declare const padding: (params: {
 }) => ModifierConfig;
 /**
  * Controls fixed size behavior.
- * @param params - Whether the view should use its ideal width or height
- * @see https://developer.apple.com/documentation/swiftui/view/fixedsize()
+ * @param params - Whether the view should use its ideal width or height.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/fixedsize()).
  */
 export declare const fixedSize: (params?: {
     horizontal?: boolean;
@@ -86,8 +86,8 @@ export declare const fixedSize: (params?: {
 }) => ModifierConfig;
 /**
  * Allows a view to ignore safe area constraints.
- * @param params - The safe area regions to ignore and the edges to expand into
- * @see https://developer.apple.com/documentation/swiftui/view/ignoressafearea(_:edges:)
+ * @param params - The safe area regions to ignore and the edges to expand into.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ignoressafearea(_:edges:)).
  */
 export declare const ignoreSafeArea: (params?: {
     regions?: "all" | "container" | "keyboard";
@@ -95,45 +95,45 @@ export declare const ignoreSafeArea: (params?: {
 }) => ModifierConfig;
 /**
  * Adds a tap gesture recognizer.
- * @param handler - Function to call when tapped
- * @see https://developer.apple.com/documentation/swiftui/view/ontapgesture(count:perform:)
+ * @param handler - Function to call when tapped.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ontapgesture(count:perform:)).
  */
 export declare const onTapGesture: (handler: () => void) => ModifierConfig;
 /**
  * Adds a long press gesture recognizer.
- * @param handler - Function to call when long pressed
+ * @param handler - Function to call when long pressed.
  * @param minimumDuration - Minimum duration for long press (default: 0.5s)
  */
 export declare const onLongPressGesture: (handler: () => void, minimumDuration?: number) => ModifierConfig;
 /**
  * Adds an onAppear modifier that calls a function when the view appears.
- * @param handler - Function to call when the view appears
- * @see https://developer.apple.com/documentation/swiftui/view/onlongpressgesture(minimumduration:perform:onpressingchanged:)
+ * @param handler - Function to call when the view appears.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onlongpressgesture(minimumduration:perform:onpressingchanged:)).
  */
 export declare const onAppear: (handler: () => void) => ModifierConfig;
 /**
  * Adds an onDisappear modifier that calls a function when the view disappears.
- * @param handler - Function to call when the view disappears
- * @see https://developer.apple.com/documentation/swiftui/view/ondisappear(perform:)
+ * @param handler - Function to call when the view disappears.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ondisappear(perform:)).
  */
 export declare const onDisappear: (handler: () => void) => ModifierConfig;
 /**
  * Sets the opacity of a view.
- * @param value - Opacity value between 0 and 1
- * @see https://developer.apple.com/documentation/swiftui/view/opacity(_:)
+ * @param value - Opacity value between 0 and 1.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/opacity(_:)).
  */
 export declare const opacity: (value: number) => ModifierConfig;
 /**
  * Clips the view to a specific shape.
- * @param shape - The clipping shape
+ * @param shape - The clipping shape.
  * @param cornerRadius - Corner radius for rounded rectangle (default: 8)
- * @see https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
 export declare const clipShape: (shape: "rectangle" | "circle" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
 /**
  * Adds a border to a view.
  * @param params - The border parameters. Color and width.
- * @see https://developer.apple.com/documentation/swiftui/view/border(_:width:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/border(_:width:)).
  */
 export declare const border: (params: {
     color: Color;
@@ -141,20 +141,20 @@ export declare const border: (params: {
 }) => ModifierConfig;
 /**
  * Applies scaling transformation.
- * @param scale - Scale factor (1.0 = normal size)
- * @see https://developer.apple.com/documentation/swiftui/view/scaleeffect(_:anchor:)
+ * @param scale - Scale factor (1.0 = normal size).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scaleeffect(_:anchor:)).
  */
 export declare const scaleEffect: (scale: number) => ModifierConfig;
 /**
  * Applies rotation transformation.
- * @param angle - Rotation angle in degrees
- * @see https://developer.apple.com/documentation/swiftui/view/rotationeffect(_:anchor:)
+ * @param angle - Rotation angle in degrees.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotationeffect(_:anchor:)).
  */
 export declare const rotationEffect: (angle: number) => ModifierConfig;
 /**
  * Applies an offset (translation) to a view.
- * @param params - The offset parameters. x and y.
- * @see https://developer.apple.com/documentation/swiftui/view/offset(x:y:)
+ * @param params - The offset parameters: `x` and `y`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/offset(x:y:)).
  */
 export declare const offset: (params: {
     x?: number;
@@ -162,9 +162,9 @@ export declare const offset: (params: {
 }) => ModifierConfig;
 /**
  * Sets the foreground color/tint of a view.
- * @param color - The foreground color (hex string)
- * @deprecated Use foregroundStyle instead
- * @see https://developer.apple.com/documentation/swiftui/view/foregroundcolor(_:)
+ * @param color - The foreground color (hex string).
+ * @deprecated Use `foregroundStyle` instead.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/foregroundcolor(_:)).
  */
 export declare const foregroundColor: (color: Color) => ModifierConfig;
 /**
@@ -177,16 +177,16 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  *
  * **Simple Color (string):**
  * - Hex colors: `'#FF0000'`, `'#RGB'`, `'#RRGGBB'`, `'#AARRGGBB'`
- * - Named colors: `'red'`, `'blue'`, `'green'`, etc.
+ * - Named colors: `'red'`, `'blue'`, `'green'`, and so on.
  *
  * **Explicit Color Object:**
- * ```typescript
+ * ```ts
  * { type: 'color', color: '#FF0000' }
  * ```
  *
  * **Hierarchical Styles (Semantic):**
  * Auto-adapting semantic styles that respond to light/dark mode and accessibility settings:
- * ```typescript
+ * ```ts
  * { type: 'hierarchical', style: 'primary' }    // Most prominent (main content, headlines)
  * { type: 'hierarchical', style: 'secondary' }  // Supporting text, subheadlines
  * { type: 'hierarchical', style: 'tertiary' }   // Less important text, captions
@@ -195,7 +195,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```
  *
  * **Linear Gradient:**
- * ```typescript
+ * ```ts
  * {
  *   type: 'linearGradient',
  *   colors: ['#FF0000', '#0000FF', '#00FF00'],
@@ -205,7 +205,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```
  *
  * **Radial Gradient:**
- * ```typescript
+ * ```ts
  * {
  *   type: 'radialGradient',
  *   colors: ['#FF0000', '#0000FF'],
@@ -216,7 +216,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```
  *
  * **Angular Gradient (Conic):**
- * ```typescript
+ * ```ts
  * {
  *   type: 'angularGradient',
  *   colors: ['#FF0000', '#00FF00', '#0000FF'],
@@ -225,7 +225,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```
  *
  * @example
- * ```typescript
+ * ```tsx
  * // Simple usage
  * <Text modifiers={[foregroundStyle('#FF0000')]}>Red Text</Text>
  *
@@ -247,7 +247,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  *
  * @returns A view modifier that applies the specified foreground style
  * @since iOS 15.0+ (hierarchical quinary requires iOS 16.0+)
- * @see https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)).
  */
 export declare const foregroundStyle: (style: string | {
     type: "color";
@@ -285,119 +285,119 @@ export declare const foregroundStyle: (style: string | {
 }) => ModifierConfig;
 /**
  * Sets the tint color of a view.
- * @param color - The tint color (hex string)
- * @see https://developer.apple.com/documentation/swiftui/view/tint(_:)
+ * @param color - The tint color (hex string). For example, `#FF0000`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/tint(_:)).
  */
 export declare const tint: (color: Color) => ModifierConfig;
 /**
  * Hides or shows a view.
- * @param hidden - Whether the view should be hidden
- * @see https://developer.apple.com/documentation/swiftui/view/hidden(_:)
+ * @param hidden - Whether the view should be hidden.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/hidden(_:)).
  */
 export declare const hidden: (hidden?: boolean) => ModifierConfig;
 /**
  * Disables or enables a view.
- * @param disabled - Whether the view should be disabled
- * @see https://developer.apple.com/documentation/swiftui/view/disabled(_:)
+ * @param disabled - Whether the view should be disabled.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/disabled(_:)).
  */
 export declare const disabled: (disabled?: boolean) => ModifierConfig;
 /**
  * Sets the z-index (display order) of a view.
- * @param index - The z-index value
- * @see https://developer.apple.com/documentation/swiftui/view/zindex(_:)
+ * @param index - The z-index value.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/zindex(_:)).
  */
 export declare const zIndex: (index: number) => ModifierConfig;
 /**
  * Applies blur to a view.
- * @param radius - The blur radius
- * @see https://developer.apple.com/documentation/swiftui/view/blur(radius:opaque:)
+ * @param radius - The blur radius.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/blur(radius:opaque:)).
  */
 export declare const blur: (radius: number) => ModifierConfig;
 /**
  * Adjusts the brightness of a view.
- * @param amount - Brightness adjustment (-1 to 1)
- * @see https://developer.apple.com/documentation/swiftui/view/brightness(_:)
+ * @param amount - Brightness adjustment (-1 to 1).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/brightness(_:)).
  */
 export declare const brightness: (amount: number) => ModifierConfig;
 /**
  * Adjusts the contrast of a view.
- * @param amount - Contrast multiplier (0 to infinity, 1 = normal)
- * @see https://developer.apple.com/documentation/swiftui/view/contrast(_:)
+ * @param amount - Contrast multiplier (0 to infinity, 1 = normal).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contrast(_:)).
  */
 export declare const contrast: (amount: number) => ModifierConfig;
 /**
  * Adjusts the saturation of a view.
- * @param amount - Saturation multiplier (0 to infinity, 1 = normal)
- * @see https://developer.apple.com/documentation/swiftui/view/saturation(_:)
+ * @param amount - Saturation multiplier (0 to infinity, 1 = normal).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/saturation(_:)).
  */
 export declare const saturation: (amount: number) => ModifierConfig;
 /**
  * Applies a hue rotation to a view.
- * @param angle - Hue rotation angle in degrees
- * @see https://developer.apple.com/documentation/swiftui/view/huerotation(_:)
+ * @param angle - Hue rotation angle in degrees.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/huerotation(_:)).
  */
 export declare const hueRotation: (angle: number) => ModifierConfig;
 /**
  * Inverts the colors of a view.
- * @param inverted - Whether to invert colors
- * @see https://developer.apple.com/documentation/swiftui/view/colorinvert()
+ * @param inverted - Whether to invert colors.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/colorinvert()).
  */
 export declare const colorInvert: (inverted?: boolean) => ModifierConfig;
 /**
  * Makes a view grayscale.
- * @param amount - Grayscale amount (0 to 1)
- * @see https://developer.apple.com/documentation/swiftui/view/grayscale(_:)
+ * @param amount - Grayscale amount (0 to 1).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/grayscale(_:)).
  */
 export declare const grayscale: (amount: number) => ModifierConfig;
 /**
  * Sets the button style for button views.
- * @param style - The button style
- * @see https://developer.apple.com/documentation/swiftui/view/buttonstyle(_:)
+ * @param style - The button style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/buttonstyle(_:)).
  */
 export declare const buttonStyle: (style: "automatic" | "bordered" | "borderedProminent" | "borderless" | "glass" | "glassProminent" | "plain") => ModifierConfig;
 /**
  * Controls how the keyboard is dismissed when scrolling.
- * @param mode - The keyboard dismiss mode
+ * @param mode - The keyboard dismiss mode.
  * @platform ios 16.0+
  * @platform tvos 16.0+
- * @see https://developer.apple.com/documentation/swiftui/view/scrolldismisseskeyboard(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolldismisseskeyboard(_:)).
  */
 export declare const scrollDismissesKeyboard: (mode: "automatic" | "never" | "interactively" | "immediately") => ModifierConfig;
 /**
  * Sets accessibility label for the view.
- * @param label - The accessibility label
- * @see https://developer.apple.com/documentation/swiftui/view/accessibilitylabel(_:)
+ * @param label - The accessibility label.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilitylabel(_:)).
  */
 export declare const accessibilityLabel: (label: string) => ModifierConfig;
 /**
  * Sets accessibility hint for the view.
- * @param hint - The accessibility hint
- * @see https://developer.apple.com/documentation/swiftui/view/accessibilityhint(_:)
+ * @param hint - The accessibility hint.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityhint(_:)).
  */
 export declare const accessibilityHint: (hint: string) => ModifierConfig;
 /**
  * Sets accessibility value for the view.
- * @param value - The accessibility value
- * @see https://developer.apple.com/documentation/swiftui/view/accessibilityvalue(_:)
+ * @param value - The accessibility value.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityvalue(_:)).
  */
 export declare const accessibilityValue: (value: string) => ModifierConfig;
 /**
  * Sets layout priority for the view.
- * @param priority - Layout priority value
- * @see https://developer.apple.com/documentation/swiftui/view/layoutpriority(_:)
+ * @param priority - Layout priority value.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/layoutpriority(_:)).
  */
 export declare const layoutPriority: (priority: number) => ModifierConfig;
 /**
  * Applies a mask to the view.
- * @param shape - The masking shape
- * @param cornerRadius - Corner radius for rounded rectangle (default: 8)
- * @see https://developer.apple.com/documentation/swiftui/view/mask(_:)
+ * @param shape - The masking shape.
+ * @param cornerRadius - Corner radius for rounded rectangle (default: `8`).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/mask(_:)).
  */
 export declare const mask: (shape: "rectangle" | "circle" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
 /**
  * Overlays another view on top.
- * @param params - Overlay color and alignment
- * @see https://developer.apple.com/documentation/swiftui/view/overlay(_:alignment:)
+ * @param params - Overlay color and alignment.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/overlay(_:alignment:)).
  */
 export declare const overlay: (params: {
     color?: Color;
@@ -405,7 +405,7 @@ export declare const overlay: (params: {
 }) => ModifierConfig;
 /**
  * Adds a background behind the view.
- * @param params - Background color and alignment
+ * @param params - Background color and alignment.
  */
 export declare const backgroundOverlay: (params: {
     color?: Color;
@@ -413,8 +413,8 @@ export declare const backgroundOverlay: (params: {
 }) => ModifierConfig;
 /**
  * Sets aspect ratio constraint.
- * @param params - Width/height aspect ratio and content mode
- * @see https://developer.apple.com/documentation/swiftui/view/aspectratio(_:contentmode:)
+ * @param params - Width/height aspect ratio and content mode.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/aspectratio(_:contentmode:)).
  */
 export declare const aspectRatio: (params: {
     ratio: number;
@@ -422,14 +422,14 @@ export declare const aspectRatio: (params: {
 }) => ModifierConfig;
 /**
  * Clips content to bounds.
- * @param clipped - Whether to clip content
- * @see https://developer.apple.com/documentation/swiftui/view/clipped(antialiased:)
+ * @param clipped - Whether to clip content.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipped(antialiased:)).
  */
 export declare const clipped: (clipped?: boolean) => ModifierConfig;
 /**
  * Applies a glass effect to a view.
  * @param params - The glass effect parameters. Variant, interactive, tint and shape.
- * @see https://developer.apple.com/documentation/swiftui/view/glasseffect(_:in:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/glasseffect(_:in:)).
  */
 export declare const glassEffect: (params?: {
     glass?: {
@@ -442,54 +442,54 @@ export declare const glassEffect: (params?: {
 }) => ModifierConfig;
 /**
  * Associates an identity value to Liquid Glass effects defined within a `GlassEffectContainer`.
- * @param id - The id of the glass effect
+ * @param id - The id of the glass effect.
  * @param namespaceId - The namespace id of the glass effect. Use Namespace component to create a namespace.
- * @see https://developer.apple.com/documentation/swiftui/view/glasseffectid(_:in:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/glasseffectid(_:in:)).
  */
 export declare const glassEffectId: (id: string, namespaceId: string) => ModifierConfig;
 /**
  * Specifies the visibility of the background for scrollable views within this view.
- * @param visible - The visibility of the background
- * @see https://developer.apple.com/documentation/swiftui/view/scrollcontentbackground(_:)
+ * @param visible - The visibility of the background.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrollcontentbackground(_:)).
  */
 export declare const scrollContentBackground: (visible: "automatic" | "visible" | "hidden") => ModifierConfig;
 /**
  * Sets the background of a row.
- * @param color - The row color (hex string, e.g., '#FF0000')
- * @see https://developer.apple.com/documentation/swiftui/view/listrowbackground(_:)
+ * @param color - The row color (hex string). For example, `#FF0000`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowbackground(_:)).
  */
 export declare const listRowBackground: (color: Color) => ModifierConfig;
 /**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
  * @param mode - The truncation mode that specifies where to truncate the text within the text view, if needed.
  * You can truncate at the beginning, middle, or end of the text view.
- * @see https://developer.apple.com/documentation/swiftui/view/truncationmode(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/truncationmode(_:)).
  */
 export declare const truncationMode: (mode: "head" | "middle" | "tail") => ModifierConfig;
 /**
  * Sets whether text in this view can compress the space between characters when necessary to fit text in a line
  * @default true
- * @see https://developer.apple.com/documentation/swiftui/view/allowstightening(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/allowstightening(_:)).
  */
 export declare const allowsTightening: (value: boolean) => ModifierConfig;
 /**
  * Sets the spacing, or kerning, between characters for the text in this view.
  * @default 0
- * @see https://developer.apple.com/documentation/swiftui/view/kerning(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/kerning(_:)).
  */
 export declare const kerning: (value?: number) => ModifierConfig;
 /**
  * Sets a transform for the case of the text contained in this view when displayed.
  * @default "lowercase"
- * @see https://developer.apple.com/documentation/swiftui/view/textcase(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textcase(_:)).
  */
 export declare const textCase: (value: "lowercase" | "uppercase") => ModifierConfig;
 type LinePattern = 'solid' | 'dash' | 'dot' | 'dashDot' | 'dashDotDot';
 /**
  * Applies an underline to the text.
  *
- * @param params - Controls whether the underline is visible (`true` to show, false to hide).
- * @see https://developer.apple.com/documentation/swiftui/view/underline(_:pattern:color:)
+ * @param params - Controls whether the underline is visible (`true` to show, `false` to hide).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/underline(_:pattern:color:)).
  */
 export declare const underline: (params: {
     isActive: boolean;
@@ -499,8 +499,8 @@ export declare const underline: (params: {
 /**
  * Applies a strikethrough to the text.
  *
- * @param params - Controls whether the strikethrough is visible (`true` to show, false to hide).
- * @see https://developer.apple.com/documentation/swiftui/text/strikethrough(_:color:)
+ * @param params - Controls whether the strikethrough is visible (`true` to show, `false` to hide).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/strikethrough(_:color:)).
  */
 export declare const strikethrough: (params: {
     isActive: boolean;
@@ -511,19 +511,19 @@ export declare const strikethrough: (params: {
  * An alignment position for text along the horizontal axis.
  *
  * @param alignment - A value that you use to align multiple lines of text within a view.
- * @see https://developer.apple.com/documentation/swiftui/view/multilinetextalignment(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/multilinetextalignment(_:)).
  */
 export declare const multilineTextAlignment: (alignment: "center" | "leading" | "trailing") => ModifierConfig;
 /**
  * Controls whether people can select text within this view.
  * @param value - Enable selection
- * @see https://developer.apple.com/documentation/swiftui/view/textselection(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textselection(_:)).
  */
 export declare const textSelection: (value: boolean) => ModifierConfig;
 /**
  * The distance in points between the bottom of one line fragment and the top of the next.
  * @param value - The amount of space between the bottom of one line and the top of the next line in points. This value is always nonnegative. Otherwise, the default value will be used.
- * @see https://developer.apple.com/documentation/swiftui/view/linespacing(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linespacing(_:)).
  */
 export declare const lineSpacing: (value: number) => ModifierConfig;
 /**
@@ -534,7 +534,7 @@ export declare const headerProminence: (prominence: "standard" | "increased") =>
 /**
  * Applies an inset to the rows in a list.
  * @param params - The inset to apply to the rows in a list.
- * @see https://developer.apple.com/documentation/swiftui/view/listrowinsets(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowinsets(_:)).
  */
 export declare const listRowInsets: (params: {
     top?: number;
@@ -545,20 +545,20 @@ export declare const listRowInsets: (params: {
 /**
  * The prominence to apply to badges associated with this environment.
  * @param badgeType - Select the type of badge
- * @see https://developer.apple.com/documentation/swiftui/view/badgeprominence(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/badgeprominence(_:)).
  */
 export declare const badgeProminence: (badgeType: "standard" | "increased" | "decreased") => ModifierConfig;
 /**
  * Generates a badge for the view from a localized string key.
  * @param value - Text view to display as a badge. Set the value to nil to hide the badge.
- * @see https://developer.apple.com/documentation/swiftui/view/badge(_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/badge(_:)).
  */
 export declare const badge: (value?: string) => ModifierConfig;
 /**
  * Allows a view to ignore safe area constraints.
  * @platform iOS 26+
  * @param params - The margins to apply to the section in a list.
- * @see https://developer.apple.com/documentation/swiftui/view/listsectionmargins(_:_:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listsectionmargins(_:_:)).
  */
 export declare const listSectionMargins: (params?: {
     length?: number;
@@ -572,22 +572,24 @@ export declare const listSectionMargins: (params?: {
  * When `family` is not provided, it uses Font.system() with the specified weight and design.
  *
  * @example
- * ```typescript
+ * ```tsx
  * // Custom font family
  * <Text modifiers={[font({ family: 'Helvetica', size: 18 })]}>Custom Font Text</Text>
  *
  * // System font with weight and design
  * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>System Font Text</Text>
  * ```
- * @see https://developer.apple.com/documentation/swiftui/font/custom(_:size:)
- * @see https://developer.apple.com/documentation/swiftui/font/system(size:weight:design:)
+ * @see Official [SwiftUI documentation for `custom(_:size:)`](https://developer.apple.com/documentation/swiftui/font/custom(_:size:)) and Official [SwiftUI documentation for `system(size:weight:design:)`](https://developer.apple.com/documentation/swiftui/font/system(size:weight:design:)).
  */
 export declare const font: (params: {
-    /** Custom font family name. If provided, uses Font.custom() */
+    /**
+     * Custom font family name.
+     * If provided, uses `Font.custom()`.
+     */
     family?: string;
-    /** Font size in points */
+    /** Font size in points. */
     size?: number;
-    /** Font weight for system fonts */
+    /** Font weight for system fonts. */
     weight?: "ultraLight" | "thin" | "light" | "regular" | "medium" | "semibold" | "bold" | "heavy" | "black";
     /** Font design for system fonts */
     design?: "default" | "rounded" | "serif" | "monospaced";
@@ -609,7 +611,7 @@ export type ViewModifier = BuiltInModifier | ModifierConfig;
  * This function is exported so 3rd party packages can create their own modifiers.
  *
  * @example
- * ```typescript
+ * ```ts
  * // In a 3rd party package
  * export const blurEffect = (params: { radius: number; style?: string }) =>
  *   createModifier('blurEffect', params);

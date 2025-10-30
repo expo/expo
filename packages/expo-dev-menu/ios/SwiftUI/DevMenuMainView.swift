@@ -16,7 +16,7 @@ struct DevMenuMainView: View {
           }
 
           DevMenuActions(
-            isDevLauncherInstalled: viewModel.isDevLauncherInstalled,
+            canNavigateHome: viewModel.canNavigateHome,
             onReload: viewModel.reload,
             onGoHome: viewModel.goHome
           )

@@ -57,7 +57,9 @@ export type ContextMenuProps = {
    */
   style?: StyleProp<ViewStyle>;
 
-  /** Modifiers for the component */
+  /**
+   * Modifiers for the component.
+   */
   modifiers?: ExpoModifier[];
 };
 

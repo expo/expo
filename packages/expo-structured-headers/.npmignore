@@ -9,3 +9,4 @@ __tests__
 /babel.config.js
 /android/src/androidTest/
 /android/src/test/
+/ios/Tests

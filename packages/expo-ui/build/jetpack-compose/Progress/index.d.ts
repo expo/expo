@@ -26,7 +26,9 @@ export type CircularProgressProps = {
      * @platform android
      */
     elementColors?: ProgressElementColors;
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
 };
 export type LinearProgressProps = {
@@ -47,7 +49,9 @@ export type LinearProgressProps = {
      * @platform android
      */
     elementColors?: ProgressElementColors;
-    /** Modifiers for the component */
+    /**
+     * Modifiers for the component.
+     */
     modifiers?: ExpoModifier[];
 };
 /**

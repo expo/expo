@@ -58,9 +58,6 @@ function createEnvironment(input) {
             }
             return mod;
         },
-        handleRouteError(error) {
-            throw error;
-        },
     };
 }
 //# sourceMappingURL=common.js.map
