@@ -74,11 +74,11 @@ function NativeTabTriggerImpl(props) {
 exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     TabBar: NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar,
 });
-function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop }, isDynamic = false) {
+function convertTabPropsToOptions({ unstable_options, hidden, children, role, disablePopToTop, disableScrollToTop, }, isDynamic = false) {
     const initialOptions = isDynamic
-        ? { ...options }
+        ? { ...unstable_options }
         : {
-            ...options,
+            ...unstable_options,
             hidden: !!hidden,
             specialEffects: {
                 repeatedTabSelection: {
@@ -86,7 +86,7 @@ function convertTabPropsToOptions({ options, hidden, children, role, disablePopT
                     scrollToTop: !disableScrollToTop,
                 },
             },
-            role: role ?? options?.role,
+            role: role ?? unstable_options?.role,
         };
     const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [
         elements_1.Badge,

@@ -36,8 +36,8 @@ it('can pass options via options prop', () => {
   renderRouter({
     _layout: () => (
       <NativeTabs>
-        <NativeTabs.Trigger name="index" options={{ ...indexOptions }} />
-        <NativeTabs.Trigger name="second" options={{ ...secondOptions }} />
+        <NativeTabs.Trigger name="index" unstable_options={{ ...indexOptions }} />
+        <NativeTabs.Trigger name="second" unstable_options={{ ...secondOptions }} />
       </NativeTabs>
     ),
     index: () => <View testID="index" />,
@@ -716,12 +716,12 @@ describe('Dynamic options', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+          <NativeTabs.Trigger name="index" unstable_options={{ title: 'Initial Title' }} />
         </NativeTabs>
       ),
       index: () => (
         <View testID="index">
-          <NativeTabs.Trigger name="index" options={{ title: 'Updated Title' }} />
+          <NativeTabs.Trigger name="index" unstable_options={{ title: 'Updated Title' }} />
         </View>
       ),
     });
@@ -757,7 +757,7 @@ describe('Dynamic options', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+          <NativeTabs.Trigger name="index" unstable_options={{ title: 'Initial Title' }} />
         </NativeTabs>
       ),
       index: () => (
@@ -813,7 +813,7 @@ describe('Dynamic options', () => {
         <View testID="index">
           <NativeTabs.Trigger
             name="index"
-            options={{
+            unstable_options={{
               title: 'Updated Title',
               badgeValue: '5',
               icon: { sf: 'homepod.2.fill' },
@@ -929,8 +929,8 @@ describe('Dynamic options', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
-          <NativeTabs.Trigger name="second" options={{ title: 'Second' }} />
+          <NativeTabs.Trigger name="index" unstable_options={{ title: 'Initial Title' }} />
+          <NativeTabs.Trigger name="second" unstable_options={{ title: 'Second' }} />
         </NativeTabs>
       ),
       index: () => (

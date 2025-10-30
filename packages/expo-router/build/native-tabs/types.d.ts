@@ -373,7 +373,7 @@ export interface NativeTabTriggerProps {
      *
      * Use `Icon`, `Label`, and `Badge` components as children to customize the tab, rather then raw options.
      */
-    options?: NativeTabOptions;
+    unstable_options?: NativeTabOptions;
     /**
      * If true, the tab will not pop stack to the root when selected again.
      *
