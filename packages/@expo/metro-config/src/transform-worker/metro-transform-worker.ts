@@ -203,6 +203,7 @@ export function applyImportSupport<TFile extends t.File>(
   {
     filename,
     options,
+    performConstantFolding,
     importDefault,
     importAll,
     collectLocations,
@@ -218,6 +219,7 @@ export function applyImportSupport<TFile extends t.File>(
     >;
     importDefault: string;
     importAll: string;
+    performConstantFolding?: boolean;
     collectLocations?: boolean;
   }
 ): { ast: TFile; metadata?: any } {
@@ -244,7 +246,10 @@ export function applyImportSupport<TFile extends t.File>(
     const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
     plugins.push([
       liveBindings ? importExportLiveBindingsPlugin : importExportPlugin,
-      { ...babelPluginOpts },
+      {
+        ...babelPluginOpts,
+        performConstantFolding: !!performConstantFolding,
+      },
     ]);
   }
 
@@ -368,20 +373,21 @@ async function transformJS(
 
   const unstable_renameRequire = config.unstable_renameRequire;
 
-  // Disable all Metro single-file optimizations when full-graph optimization will be used.
-  if (!optimize) {
-    ast = applyImportSupport(ast, {
-      filename: file.filename,
-      options,
-      importDefault,
-      importAll,
-    }).ast;
-  }
-
   // NOTE(@hassankhan): Constant folding can be an expensive/slow operation, so we limit it to
   // production builds, or files that specifically seen a change in their exports
   if (!options.dev || file.performConstantFolding) {
     ast = performConstantFolding(ast, { filename: file.filename });
+  }
+
+  // Disable all Metro single-file optimizations when full-graph optimization will be used.
+  if (!optimize) {
+    ast = applyImportSupport(ast, {
+      filename: file.filename,
+      performConstantFolding: file.performConstantFolding,
+      options,
+      importDefault,
+      importAll,
+    }).ast;
   }
 
   let dependencyMapName: string = '';

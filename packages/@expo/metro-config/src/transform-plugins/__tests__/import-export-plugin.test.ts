@@ -699,3 +699,19 @@ it('hoists declarations to the top with live bindings', () => {
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
+
+it('removes unreferenced pure imports on `performConstantFolding: true` option', () => {
+  const code = `
+    import {foo} from 'bar';
+    import def from 'def';
+  `;
+
+  // EMPTY:
+  const expected = `
+  `;
+
+  compare([importExportLiveBindingsPlugin], code, expected, {
+    ...opts,
+    performConstantFolding: true,
+  });
+});
