@@ -129,7 +129,6 @@ class AppContext(
 
       registry.register(modulesProvider)
 
-      // Register inline modules
       registerInlineModulesList()
 
       logger.info("✅ AppContext was initialized")
