@@ -39,7 +39,7 @@ class NetworkModule : Module() {
     }
 
     override fun onLost(network: android.net.Network) {
-      emitNetworkState()
+      asyncEmitNetworkState(DELAY_MS)
     }
   }
 
