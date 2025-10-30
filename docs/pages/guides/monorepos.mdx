@@ -4,6 +4,7 @@ description: Learn about setting up Expo projects in a monorepo with workspaces.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
@@ -238,10 +239,14 @@ The **.eas/workflows** directory lives in the same directory as **eas.json**. If
 
 For example:
 
-- **apps/cool-app/.eas/workflows/build.yml**
-- **apps/cool-app/eas.json**
-- **apps/another-app/.eas/workflows/deploy.yml**
-- **apps/another-app/eas.json**
+<FileTree
+  files={[
+    ['apps/cool-app/.eas/workflows/build.yml', ''],
+    ['apps/cool-app/eas.json', ''],
+    ['apps/another-app/.eas/workflows/deploy.yml', ''],
+    ['apps/another-app/eas.json', ''],
+  ]}
+/>
 
 ### Connect GitHub repository
 
