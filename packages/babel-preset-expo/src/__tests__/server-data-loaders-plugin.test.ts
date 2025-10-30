@@ -432,7 +432,6 @@ describe('directory filtering', () => {
     `,
       {
         filename: '/components/MyComponent',
-        isServer: false,
       }
     );
 

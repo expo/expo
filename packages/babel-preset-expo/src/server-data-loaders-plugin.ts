@@ -22,25 +22,11 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
     name: 'expo-server-data-loaders',
 
     pre(file) {
-      const filePath = file.opts.filename ?? '';
-      const normalizedFilePath = toPosixPath(filePath);
-      const normalizedAppRoot = toPosixPath(routerAbsoluteRoot);
-      const isInAppDirectory = normalizedFilePath.startsWith(normalizedAppRoot + '/');
-
       assertExpoMetadata(file.metadata);
-
-      // Early exit if file isn't within the `app/` directory
-      if (!isInAppDirectory) {
-        debug('Skipping file:', filePath);
-        file.metadata.skipped = true;
-        file.path.stop();
-        return;
-      }
 
       // Early exit if file doesn't contain a `loader` named export
       if (!file.code.includes(LOADER_EXPORT_NAME)) {
         debug('Skipping file:', file.opts.filename);
-        file.metadata.skipped = true;
         file.path.stop();
         return;
       }
@@ -55,7 +41,13 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
       ExportNamedDeclaration(path, state) {
         assertExpoMetadata(state.file.metadata);
 
-        if (isServer || state.file.metadata.skipped) {
+        if (isServer) {
+          return;
+        }
+
+        // Check if file is within the `app/` directory
+        if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
+          debug('Skipping file outside app directory:', state.file.opts.filename);
           return;
         }
 
@@ -105,10 +97,18 @@ function isLoaderIdentifier(name: string): boolean {
 
 function assertExpoMetadata(metadata: any): asserts metadata is {
   performConstantFolding?: boolean;
-  skipped?: boolean;
 } {
   if (metadata && typeof metadata === 'object') {
     return;
   }
   throw new Error('Expected Babel state.file.metadata to be an object');
+}
+
+/**
+ * Check if file is within the `app/` directory
+ */
+function isInAppDirectory(filePath: string, routerRoot: string) {
+  const normalizedFilePath = toPosixPath(filePath);
+  const normalizedAppRoot = toPosixPath(routerRoot);
+  return normalizedFilePath.startsWith(normalizedAppRoot + '/');
 }

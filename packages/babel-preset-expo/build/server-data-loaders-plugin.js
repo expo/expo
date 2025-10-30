@@ -11,22 +11,10 @@ function serverDataLoadersPlugin(api) {
     return {
         name: 'expo-server-data-loaders',
         pre(file) {
-            const filePath = file.opts.filename ?? '';
-            const normalizedFilePath = (0, common_1.toPosixPath)(filePath);
-            const normalizedAppRoot = (0, common_1.toPosixPath)(routerAbsoluteRoot);
-            const isInAppDirectory = normalizedFilePath.startsWith(normalizedAppRoot + '/');
             assertExpoMetadata(file.metadata);
-            // Early exit if file isn't within the `app/` directory
-            if (!isInAppDirectory) {
-                debug('Skipping file:', filePath);
-                file.metadata.skipped = true;
-                file.path.stop();
-                return;
-            }
             // Early exit if file doesn't contain a `loader` named export
             if (!file.code.includes(LOADER_EXPORT_NAME)) {
                 debug('Skipping file:', file.opts.filename);
-                file.metadata.skipped = true;
                 file.path.stop();
                 return;
             }
@@ -35,7 +23,12 @@ function serverDataLoadersPlugin(api) {
         visitor: {
             ExportNamedDeclaration(path, state) {
                 assertExpoMetadata(state.file.metadata);
-                if (isServer || state.file.metadata.skipped) {
+                if (isServer) {
+                    return;
+                }
+                // Check if file is within the `app/` directory
+                if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
+                    debug('Skipping file outside app directory:', state.file.opts.filename);
                     return;
                 }
                 const { declaration } = path.node;
@@ -80,4 +73,12 @@ function assertExpoMetadata(metadata) {
         return;
     }
     throw new Error('Expected Babel state.file.metadata to be an object');
+}
+/**
+ * Check if file is within the `app/` directory
+ */
+function isInAppDirectory(filePath, routerRoot) {
+    const normalizedFilePath = (0, common_1.toPosixPath)(filePath);
+    const normalizedAppRoot = (0, common_1.toPosixPath)(routerRoot);
+    return normalizedFilePath.startsWith(normalizedAppRoot + '/');
 }
