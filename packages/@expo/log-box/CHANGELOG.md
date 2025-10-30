@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix missing backdrop blur on Web
+- Fix missing backdrop blur on Web ([#40737](https://github.com/expo/expo/pull/40737) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
