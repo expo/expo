@@ -66,7 +66,7 @@ export declare const frame: (params: {
  * @param params - The padding parameters: `top`, `bottom`, `leading`, `trailing`, `horizontal`, `vertical` and `all`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/padding(_:_:)).
  */
-export declare const padding: (params: {
+export declare const padding: (params?: {
     top?: number;
     bottom?: number;
     leading?: number;

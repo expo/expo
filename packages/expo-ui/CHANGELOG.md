@@ -35,6 +35,7 @@
 
 - [iOS] remove empty section header spacing when no title provided ([#40296](https://github.com/expo/expo/pull/40296) by [@dylancom](https://github.com/dylancom))
 - [iOS] Merge edge and axis paddings correctly in PaddingModifier ([#40414](https://github.com/expo/expo/pull/40414) by [@lucabc2000](https://github.com/lucabc2000))
+- [iOS] Enhance PaddingModifier to support default SwiftUI padding when no custom values are provided ([#40715](https://github.com/expo/expo/pull/40715) by [@betomoedano](https://github.com/betomoedano))
 
 ### 💡 Others
 
