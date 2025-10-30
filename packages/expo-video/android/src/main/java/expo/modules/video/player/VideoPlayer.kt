@@ -21,6 +21,7 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
@@ -44,6 +45,7 @@ import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.MutableWeakReference
 import expo.modules.video.records.VideoTrack
+import expo.modules.video.utils.buildBasicMediaSession
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
@@ -73,6 +75,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   internal lateinit var firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
+  var mediaSession: MediaSession = buildBasicMediaSession(context, player)
   val intervalUpdateClock = IntervalUpdateClock(this)
 
   var playing by IgnoreSameSet(false) { new, old ->
@@ -337,6 +340,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       appContext?.reactContext?.unbindService(serviceConnection)
     }
     serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(player)
+    mediaSession.release()
+
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
     appContext?.mainQueue?.launch {
