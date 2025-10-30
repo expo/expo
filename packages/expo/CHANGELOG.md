@@ -21,6 +21,7 @@
 ### 🐛 Bug fixes
 
 - Fixed DOM Components entry not found from updates on Android. ([#40574](https://github.com/expo/expo/pull/40574) by [@kudo](https://github.com/kudo))
+- Empty HMR update should not reset the error overlay
 
 ### 💡 Others
 
