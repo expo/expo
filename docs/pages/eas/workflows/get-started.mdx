@@ -115,6 +115,39 @@ Once you do, you can see your workflow running on your project's [workflows page
 
 </Step>
 
+## Monorepo setup
+
+The **.eas/workflows** directory lives in the same directory as **eas.json**. This allows you to have multiple Expo apps in the same monorepo, each with its own workflows.
+
+For example, if your monorepo structure looks like this:
+
+<FileTree
+  files={[
+    ['monorepo/apps/mobile-app/.eas/workflows/build-production.yml', ''],
+    ['monorepo/apps/mobile-app/eas.json', ''],
+    ['monorepo/apps/mobile-app/package.json', ''],
+    ['monorepo/apps/admin-app/.eas/workflows/deploy.yml', ''],
+    ['monorepo/apps/admin-app/eas.json', ''],
+    ['monorepo/apps/admin-app/package.json', ''],
+    ['monorepo/packages/shared/', ''],
+    ['monorepo/package.json', ''],
+  ]}
+/>
+
+Each app directory (**apps/mobile-app** and **apps/admin-app**) has its own **eas.json** and **.eas/workflows** directory.
+
+### Connect GitHub repository to a project
+
+When you connect a GitHub repository to your Expo project, you can set a base directory that points to the directory containing both **eas.json** and the **.eas** directory.
+
+To set the base directory:
+
+- Navigate to your project's [GitHub settings](https://expo.dev/accounts/%5Baccount%5D/projects/%5BprojectName%5D/github).
+- Connect your GitHub repository (if not already connected).
+- Set the base directory to the app directory. For example, **apps/mobile-app**.
+
+After setting the base directory, workflows in that app directory will trigger based on the events you configure in your workflow files. For example, you can set up a workflow to build **mobile-app** when changes are pushed to **apps/mobile-app/\*\***.
+
 ## More
 
 ### Automate workflows with GitHub events

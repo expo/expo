@@ -230,6 +230,48 @@ export default function App() {
 }
 ```
 
+## Using EAS Workflows with monorepos
+
+[EAS Workflows](/eas/workflows/introduction/) automate your CI/CD processes, such as creating builds, publishing updates, and running tests. When working with monorepos, each app can have its own workflows.
+
+The **.eas/workflows** directory lives in the same directory as **eas.json**. If you have multiple Expo apps in your monorepo, each app directory will have its own **eas.json** and **.eas/workflows** directory.
+
+For example:
+
+- **apps/cool-app/.eas/workflows/build.yml**
+- **apps/cool-app/eas.json**
+- **apps/another-app/.eas/workflows/deploy.yml**
+- **apps/another-app/eas.json**
+
+### Connect GitHub repository
+
+When you connect a GitHub repository to your Expo project on [expo.dev](https://expo.dev/), you can set a base directory. The base directory points to the directory containing both **eas.json** and the **.eas** directory.
+
+For example, if your app is in **apps/cool-app**, set the base directory to **apps/cool-app** in your project's [GitHub settings](https://expo.dev/accounts/%5Baccount%5D/projects/%5BprojectName%5D/github). Workflows in that directory will then trigger based on the events you configure.
+
+You can use the `on.push.paths` trigger to run workflows only when specific files change:
+
+```yaml .eas/workflows/build.yml
+name: Build on app changes
+
+on:
+  push:
+    branches: ['main']
+    paths:
+      - 'apps/cool-app/**'
+      - 'packages/shared/**'
+
+jobs:
+  build_android:
+    type: build
+    params:
+      platform: android
+```
+
+This workflow runs only when files in **apps/cool-app** or **packages/shared** change.
+
+> Learn more about [setting up EAS Workflows with monorepos](/eas/workflows/get-started/#monorepo-setup).
+
 ## Common issues
 
 Monorepos may cause resolution and dependency issues that a regular project won't. They require more in-depth knowledge and require specific tooling configuration. You take on increased complexity and will need to solve issues you wouldn't run into without workspaces. Here are a couple of common issues you might encounter.
