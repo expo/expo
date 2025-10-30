@@ -41,7 +41,7 @@ describe('Export DOM Components', () => {
     // `npx expo export`
     await executeExpoAsync(
       projectRoot,
-      ['export', '--source-maps', '--dump-assetmap', '--platform', 'ios'],
+      ['export', '--clear', '--source-maps', '--dump-assetmap', '--platform', 'ios'],
       {
         env: {
           NODE_ENV: 'production',
