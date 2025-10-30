@@ -43,4 +43,3 @@ inline fun <T, reified R> ValueOrUndefined<T>.map(transform: (T) -> R): ValueOrU
     is ValueOrUndefined.Undefined -> ValueOrUndefined.getUndefined<R>()
   }
 }
-
