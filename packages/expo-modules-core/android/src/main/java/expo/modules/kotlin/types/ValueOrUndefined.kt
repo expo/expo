@@ -1,6 +1,9 @@
 package expo.modules.kotlin.types
 
 import expo.modules.core.interfaces.DoNotStrip
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 @DoNotStrip
 sealed interface ValueOrUndefined<T> {
@@ -30,8 +33,14 @@ sealed interface ValueOrUndefined<T> {
   }
 }
 
-inline fun <T, reified R> ValueOrUndefined<T>.flatMap(transform: (T) -> ValueOrUndefined<R>): ValueOrUndefined<R> =
-  when (this) {
-    is ValueOrUndefined.Value -> transform(value)
-    is ValueOrUndefined.Undefined -> ValueOrUndefined.Undefined()
+@OptIn(ExperimentalContracts::class)
+inline fun <T, reified R> ValueOrUndefined<T>.map(transform: (T) -> R): ValueOrUndefined<R> {
+  contract {
+    callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
   }
+  return when (this) {
+    is ValueOrUndefined.Value -> ValueOrUndefined.Value(transform(value))
+    is ValueOrUndefined.Undefined -> ValueOrUndefined.getUndefined<R>()
+  }
+}
+
