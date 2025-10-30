@@ -85,6 +85,10 @@ class ExpoVideoPlaybackService : MediaSessionService() {
         .setCustomLayout(ImmutableList.of(seekBackwardButton, seekForwardButton))
         .build()
 
+      // Replace the basic media session with a session connected to our playback service.
+      videoPlayer.mediaSession.release()
+      videoPlayer.mediaSession = mediaSession
+
       mediaSessions[player] = mediaSession
       addSession(mediaSession)
       setShowNotification(videoPlayer.showNowPlayingNotification, player)
