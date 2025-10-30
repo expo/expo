@@ -10,8 +10,6 @@ export type {
   NativeTabsBlurEffect,
   NativeTabsTabBarMinimizeBehavior,
   NativeTabsTabBarItemRole,
-  NativeTabsTriggerTabBarProps,
 } from './types';
-export { NativeTabsTriggerTabBar } from './NativeTabsTriggerTabBar';
 export { NativeTabTrigger } from './NativeTabTrigger';
 export { NativeTabs } from './NativeTabs';

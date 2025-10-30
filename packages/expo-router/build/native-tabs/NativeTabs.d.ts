@@ -18,8 +18,6 @@ import type { NativeTabsProps } from './types';
  * ```
  */
 export declare const NativeTabs: ((props: NativeTabsProps) => import("react").JSX.Element) & {
-    Trigger: ((props: import("./types").NativeTabTriggerProps) => null) & {
-        TabBar: typeof import("./NativeTabsTriggerTabBar").NativeTabsTriggerTabBar;
-    };
+    Trigger: (props: import("./types").NativeTabTriggerProps) => null;
 };
 //# sourceMappingURL=NativeTabs.d.ts.map
