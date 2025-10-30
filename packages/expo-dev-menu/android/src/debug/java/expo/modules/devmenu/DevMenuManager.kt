@@ -35,3 +35,4 @@ object DevMenuManager {
     this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart
   }
 }
+
