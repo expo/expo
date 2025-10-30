@@ -9,7 +9,7 @@ final class GridProps: UIBaseViewProps {
 }
 
 // MARK: - GridRow
-internal final class GridRowProps: UIBaseViewProps {}
+internal final class GridRowProps: ExpoSwiftUI.ViewProps {}
 internal struct GridRowView: ExpoSwiftUI.View {
   @ObservedObject var props: GridRowProps
 
