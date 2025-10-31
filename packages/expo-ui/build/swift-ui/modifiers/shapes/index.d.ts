@@ -5,14 +5,14 @@ export declare const shapes: {
         cornerSize?: number;
     }) => {
         cornerRadius: number | undefined;
-        roundedCornerStyle: "continuous" | "circular" | undefined;
+        roundedCornerStyle: "circular" | "continuous" | undefined;
         cornerSize: number | undefined;
         shape: string;
     };
     capsule: (params?: {
         roundedCornerStyle?: "continuous" | "circular";
     }) => {
-        roundedCornerStyle: "continuous" | "circular" | undefined;
+        roundedCornerStyle: "circular" | "continuous" | undefined;
         shape: string;
     };
     rectangle: () => {

@@ -10,18 +10,21 @@ import {
   Host,
   Section,
   Form,
+  Button,
   Text,
   ZStack,
   ConcentricRectangle,
   EdgeCornerStyle,
+  Label,
 } from '@expo/ui/swift-ui';
 import {
   frame,
   shadow,
   foregroundStyle,
   containerShape,
-  RoundedRectangularShape,
   padding,
+  shapes,
+  background,
 } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
 
@@ -30,12 +33,24 @@ export default function ShapesScreen() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="Rectangle">
-          <VStack spacing={16}>
+          {/* <VStack spacing={16}>
             <Text>Rectangle shape</Text>
             <Rectangle
               modifiers={[frame({ width: 200, height: 100 }), foregroundStyle('#007AFF')]}
             />
-          </VStack>
+          </VStack> */}
+
+          <Button>
+            <Label
+              title="Default Padding"
+              systemImage="gear"
+              modifiers={[
+                foregroundStyle('#000'),
+                padding(),
+                background('yellow', shapes.capsule()),
+              ]}
+            />
+          </Button>
         </Section>
 
         <Section title="RoundedRectangle">
@@ -123,7 +138,7 @@ export default function ShapesScreen() {
               <ZStack
                 modifiers={[
                   frame({ width: 120, height: 120 }),
-                  containerShape(RoundedRectangularShape.rect(40)),
+                  containerShape(shapes.roundedRectangle({ cornerRadius: 10 })),
                 ]}>
                 <ConcentricRectangle modifiers={[foregroundStyle('#000')]} />
                 <ConcentricRectangle

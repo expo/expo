@@ -17,13 +17,16 @@ struct LabelView: ExpoSwiftUI.View {
       // TODO: Deprecate this - recommend using foregroundStyle modifier
       if let color = props.color {
         Label(title, systemImage: systemImage).foregroundStyle(color)
+          .applyFixedSize(props.fixedSize ?? true)
       } else {
         Label(title, systemImage: systemImage)
+          .applyFixedSize(props.fixedSize ?? true)
       }
     }
     // TODO: Deprecate this - recommend using labelStyle modifier
     else if let title = props.title {
       Label(title, systemImage: "").labelStyle(.titleOnly)
+        .applyFixedSize(props.fixedSize ?? true)
     }
   }
 }
