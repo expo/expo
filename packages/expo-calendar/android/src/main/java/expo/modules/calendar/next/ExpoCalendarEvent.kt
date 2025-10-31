@@ -5,8 +5,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.provider.CalendarContract
-import expo.modules.calendar.findAttendeesByEventIdQueryParameters
-import expo.modules.calendar.findEventByIdQueryParameters
+import expo.modules.calendar.domain.attendee.AttendeeRepository
+import expo.modules.calendar.domain.event.EventRepository
 import expo.modules.calendar.next.exceptions.AttendeeNotFoundException
 import expo.modules.calendar.next.exceptions.EventCouldNotBeDeletedException
 import expo.modules.calendar.next.exceptions.EventNotFoundException
@@ -182,7 +182,8 @@ class ExpoCalendarEvent(
 
       val contentResolver = reactContext.contentResolver
       val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
-      val cursor = contentResolver.query(uri, findEventByIdQueryParameters, null, null, null)
+      val projection = EventRepository.findEventByIdQueryParameters
+      val cursor = contentResolver.query(uri, projection, null, null, null)
 
       requireNotNull(cursor) { "Cursor shouldn't be null" }
       cursor.use {
@@ -201,10 +202,11 @@ class ExpoCalendarEvent(
           ?: throw EventNotFoundException("Event ID is required")
 
         val contentResolver = reactContext.contentResolver
+        val projection = AttendeeRepository.findAttendeesByEventIdQueryParameters
         val cursor = CalendarContract.Attendees.query(
           contentResolver,
           eventID,
-          findAttendeesByEventIdQueryParameters
+          projection
         )
 
         cursor.use { serializeExpoCalendarAttendees(it) }
@@ -290,12 +292,13 @@ class ExpoCalendarEvent(
       return withContext(Dispatchers.IO) {
         val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toInt().toLong())
         val selection = "((${CalendarContract.Events.DELETED} != 1))"
+        val projection = EventRepository.findEventByIdQueryParameters
         val contentResolver = appContext.reactContext?.contentResolver
           ?: throw Exceptions.ReactContextLost()
 
         val cursor = contentResolver.query(
           uri,
-          findEventByIdQueryParameters,
+          projection,
           selection,
           null,
           null

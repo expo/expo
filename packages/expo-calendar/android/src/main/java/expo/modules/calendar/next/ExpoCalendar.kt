@@ -5,9 +5,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.provider.CalendarContract
-import expo.modules.calendar.availabilityConstantMatchingString
-import expo.modules.calendar.findCalendarByIdQueryFields
-import expo.modules.calendar.findCalendarsQueryParameters
+import expo.modules.calendar.domain.calendar.CalendarRepository
+import expo.modules.calendar.domain.event.enums.Availability
 import expo.modules.calendar.next.exceptions.CalendarCouldNotBeUpdatedException
 import expo.modules.calendar.next.exceptions.CalendarNotFoundException
 import expo.modules.calendar.next.exceptions.CalendarNotSupportedException
@@ -166,7 +165,7 @@ class ExpoCalendar(
 
           if (calendarRecord.allowedAvailabilities.isNotEmpty()) {
             val availabilityValues = calendarRecord.allowedAvailabilities.map { availability ->
-              availabilityConstantMatchingString(availability)
+              Availability.fromString(availability).contentProviderValue
             }
             if (availabilityValues.isNotEmpty()) {
               put(
@@ -229,7 +228,8 @@ class ExpoCalendar(
               ?: throw Exceptions.ReactContextLost()
             ).contentResolver
           val uri = CalendarContract.Calendars.CONTENT_URI
-          val cursor = contentResolver.query(uri, findCalendarsQueryParameters, null, null, null)
+          val projection = CalendarRepository.findCalendarsQueryParameters
+          val cursor = contentResolver.query(uri, projection, null, null, null)
           requireNotNull(cursor) { "Cursor shouldn't be null" }
           cursor.use { serializeExpoCalendars(context, it) }
         } catch (e: Exception) {
@@ -245,9 +245,10 @@ class ExpoCalendar(
           context.reactContext
             ?: throw Exceptions.ReactContextLost()
           ).contentResolver
+        val projection = CalendarRepository.findCalendarByIdQueryFields
         val cursor = contentResolver.query(
           uri,
-          findCalendarByIdQueryFields,
+          projection,
           null,
           null,
           null
