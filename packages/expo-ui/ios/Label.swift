@@ -11,7 +11,7 @@ final class LabelViewProps: UIBaseViewProps {
 
 struct LabelView: ExpoSwiftUI.View {
   @ObservedObject var props: LabelViewProps
-  
+
   var body: some View {
     if let title = props.title, let systemImage = props.systemImage {
       // TODO: Deprecate this - recommend using foregroundStyle modifier

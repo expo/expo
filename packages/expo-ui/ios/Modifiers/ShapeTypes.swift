@@ -40,21 +40,18 @@ internal func makeRoundedRectangle(
     case .continuous:
       if let cornerSize = cornerSize {
         return RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize), style: .continuous)
-      } else {
-        return RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
       }
+    return RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
     case .circular:
       if let cornerSize = cornerSize {
         return RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize), style: .circular)
-      } else {
-        return RoundedRectangle(cornerRadius: cornerRadius, style: .circular)
       }
+    return RoundedRectangle(cornerRadius: cornerRadius, style: .circular)
     }
   } else {
     if let cornerSize = cornerSize {
       return RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
-    } else {
-      return RoundedRectangle(cornerRadius: cornerRadius)
     }
+  return RoundedRectangle(cornerRadius: cornerRadius)
   }
 }
