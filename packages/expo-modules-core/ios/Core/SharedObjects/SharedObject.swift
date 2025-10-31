@@ -92,7 +92,7 @@ public extension SharedObject { // swiftlint:disable:this no_grouping_extension
         return Conversions.convertFunctionResult(argument, appContext: appContext, dynamicType: dynamicType)
       }
 
-      JSIUtils.emitEvent(event, to: jsObject, withArguments: arguments, in: runtime)
+      JSUtils.emitEvent(event, to: jsObject, withArguments: arguments, in: runtime)
     }
   }
   #else // swift(>=5.9)
