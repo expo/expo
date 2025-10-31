@@ -4,9 +4,9 @@
  */
 
 import { animation } from './animation/index';
+import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
-import { background } from './background';
 import type { Color } from './types';
 
 /**

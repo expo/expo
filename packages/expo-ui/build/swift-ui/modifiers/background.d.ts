@@ -1,5 +1,5 @@
-import type { Color } from './types';
 import type { Shape } from './shapes/index';
+import type { Color } from './types';
 /**
  * Sets the background of a view.
  * @param color - The background color (hex string). For example, `#FF0000`.

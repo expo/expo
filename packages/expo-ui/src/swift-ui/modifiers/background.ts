@@ -1,6 +1,6 @@
 import { createModifier } from './createModifier';
-import type { Color } from './types';
 import type { Shape } from './shapes/index';
+import type { Color } from './types';
 
 /**
  * Sets the background of a view.
