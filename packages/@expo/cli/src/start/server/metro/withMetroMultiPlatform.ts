@@ -12,7 +12,7 @@ import type {
   ResolutionContext,
   CustomResolutionContext,
 } from '@expo/metro/metro-resolver';
-import { resolve as metroResolver } from '@expo/metro/metro-resolver';
+import { resolve as resolver } from '@expo/metro/metro-resolver';
 import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -25,7 +25,7 @@ import {
   AutolinkingModuleResolverInput,
 } from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
-import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
+import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
@@ -168,7 +168,6 @@ export function withExtendedResolver(
     tsconfig,
     autolinkingModuleResolverInput,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
     isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
@@ -176,7 +175,6 @@ export function withExtendedResolver(
     tsconfig: TsConfigPaths | null;
     autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactServerComponentsEnabled?: boolean;
     getMetroBundler: () => Bundler;
@@ -185,21 +183,6 @@ export function withExtendedResolver(
   if (isReactServerComponentsEnabled) {
     Log.warn(`React Server Components (beta) is enabled.`);
   }
-  if (isFastResolverEnabled) {
-    Log.log(chalk.dim`Fast resolver is enabled.`);
-  }
-
-  const defaultResolver = metroResolver;
-  const resolver = isFastResolverEnabled
-    ? createFastResolver({
-        preserveSymlinks: true,
-        blockList: !config.resolver?.blockList
-          ? []
-          : Array.isArray(config.resolver?.blockList)
-            ? config.resolver?.blockList
-            : [config.resolver?.blockList],
-      })
-    : defaultResolver;
 
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
@@ -705,8 +688,9 @@ export function withExtendedResolver(
               moduleName.includes(matcher)
             )
           ) {
-            throw new FailedToResolvePathError(
-              `Importing native-only module "${moduleName}" on web from: ${path.relative(config.projectRoot, context.originModulePath)}`
+            throw new FailedToResolveNativeOnlyModuleError(
+              moduleName,
+              path.relative(config.projectRoot, context.originModulePath)
             );
           }
 
@@ -914,7 +898,6 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
-    isFastResolverEnabled,
     isExporting,
 
     isReactServerComponentsEnabled,
@@ -925,7 +908,6 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     isAutolinkingResolverEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
     isExporting?: boolean;
 
     isReactServerComponentsEnabled: boolean;
@@ -999,7 +981,6 @@ export async function withMetroMultiPlatformAsync(
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
     isReactServerComponentsEnabled,
     getMetroBundler,
   });

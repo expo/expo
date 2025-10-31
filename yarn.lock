@@ -14412,7 +14412,7 @@ resolve-workspace-root@^2.0.0:
   resolved "https://registry.yarnpkg.com/resolve-workspace-root/-/resolve-workspace-root-2.0.0.tgz#a0098daa0067cd0efa6eb525c57c8fb4a61e78f8"
   integrity sha512-IsaBUZETJD5WsI11Wt8PKHwaIe45or6pwNc8yflvLJ4DWtImK9kuLoH5kUva/2Mmx/RdIyr4aONNSa2v9LTJsw==
 
-resolve.exports@^2.0.0, resolve.exports@^2.0.3:
+resolve.exports@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/resolve.exports/-/resolve.exports-2.0.3.tgz#41955e6f1b4013b7586f873749a635dea07ebe3f"
   integrity sha512-OcXjMsGdhL4XnbShKpAcSqPMzQoYkYyhbEaeSko47MjRP9NfEQMhZkXL1DoFlt9LWQn4YttrdnV6X2OiyzBi+A==
