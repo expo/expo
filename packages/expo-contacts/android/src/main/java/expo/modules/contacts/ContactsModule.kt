@@ -198,6 +198,26 @@ class ContactsModule : Module() {
         }
     }
 
+    AsyncFunction("hasContactsAsync") { promise: Promise ->
+      ensureReadPermission()
+
+      appContext
+        .backgroundCoroutineScope
+        .launch {
+          val hasAnyContact = resolver.query(
+            ContactsContract.Contacts.CONTENT_URI,
+            arrayOf(ContactsContract.Contacts._ID),
+            null,
+            null,
+            null
+          )?.use { cursor ->
+            // Only check first row, then stop (cursor closes automatically with .use)
+            cursor.moveToFirst()
+          } ?: false
+          promise.resolve(hasAnyContact)
+        }
+    }
+
     AsyncFunction("addContactAsync") { data: Map<String, Any>, _: String? ->
       ensurePermissions()
 
