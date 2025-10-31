@@ -9,6 +9,7 @@ import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { sortConfig } from '../Sort';
 import { toPosixPath } from '../utils/Path';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
@@ -91,7 +92,7 @@ export async function getCoreAutolinkingSourcesFromRncCliAsync(
   }
   try {
     const { stdout } = await spawnAsync('npx', ['react-native', 'config'], { cwd: projectRoot });
-    const config = JSON.parse(stdout);
+    const config = sortConfig(JSON.parse(stdout));
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
       contentsId: 'rncoreAutolinkingConfig',
@@ -121,7 +122,7 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
   ];
   try {
     const { stdout } = await spawnAsync('node', args, { cwd: projectRoot });
-    const config = JSON.parse(stdout);
+    const config = sortConfig(JSON.parse(stdout));
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
       contentsId: 'rncoreAutolinkingConfig:android',
@@ -155,7 +156,7 @@ export async function getCoreAutolinkingSourcesFromExpoIos(
       ],
       { cwd: projectRoot }
     );
-    const config = JSON.parse(stdout);
+    const config = sortConfig(JSON.parse(stdout));
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
       contentsId: 'rncoreAutolinkingConfig:ios',

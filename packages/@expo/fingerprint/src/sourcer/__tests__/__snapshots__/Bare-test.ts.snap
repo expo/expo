@@ -3,13 +3,6 @@
 exports[`getCoreAutolinkingSources should contain react-native core autolinking projects 1`] = `
 [
   {
-    "filePath": "../../node_modules/react-native-reanimated",
-    "reasons": [
-      "rncoreAutolinkingAndroid",
-    ],
-    "type": "dir",
-  },
-  {
     "filePath": "../../node_modules/react-native-navigation-bar-color",
     "reasons": [
       "rncoreAutolinkingAndroid",
@@ -17,7 +10,14 @@ exports[`getCoreAutolinkingSources should contain react-native core autolinking 
     "type": "dir",
   },
   {
-    "contents": "{"react-native-reanimated":{"root":"../../node_modules/react-native-reanimated","name":"react-native-reanimated","platforms":{"ios":{"podspecPath":"../../node_modules/react-native-reanimated/RNReanimated.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"../../node_modules/react-native-reanimated/android","packageImportPath":"import com.swmansion.reanimated.ReanimatedPackage;","packageInstance":"new ReanimatedPackage()","buildTypes":[],"componentDescriptors":[],"androidMkPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk","cmakeListsPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt"}}},"react-native-navigation-bar-color":{"root":"../../node_modules/react-native-navigation-bar-color","name":"react-native-navigation-bar-color","platforms":{"ios":null,"android":{"sourceDir":"../../node_modules/react-native-navigation-bar-color/android","packageImportPath":"import com.thebylito.navigationbarcolor.NavigationBarColorPackage;","packageInstance":"new NavigationBarColorPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"../../node_modules/react-native-navigation-bar-color/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
+    "filePath": "../../node_modules/react-native-reanimated",
+    "reasons": [
+      "rncoreAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "contents": "{"react-native-navigation-bar-color":{"name":"react-native-navigation-bar-color","platforms":{"android":{"buildTypes":[],"cmakeListsPath":"../../node_modules/react-native-navigation-bar-color/android/build/generated/source/codegen/jni/CMakeLists.txt","componentDescriptors":[],"packageImportPath":"import com.thebylito.navigationbarcolor.NavigationBarColorPackage;","packageInstance":"new NavigationBarColorPackage()","sourceDir":"../../node_modules/react-native-navigation-bar-color/android"},"ios":null},"root":"../../node_modules/react-native-navigation-bar-color"},"react-native-reanimated":{"name":"react-native-reanimated","platforms":{"android":{"androidMkPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk","buildTypes":[],"cmakeListsPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt","componentDescriptors":[],"packageImportPath":"import com.swmansion.reanimated.ReanimatedPackage;","packageInstance":"new ReanimatedPackage()","sourceDir":"../../node_modules/react-native-reanimated/android"},"ios":{"configurations":[],"podspecPath":"../../node_modules/react-native-reanimated/RNReanimated.podspec","scriptPhases":[]}},"root":"../../node_modules/react-native-reanimated"}}",
     "id": "rncoreAutolinkingConfig:android",
     "reasons": [
       "rncoreAutolinkingAndroid",
@@ -30,13 +30,6 @@ exports[`getCoreAutolinkingSources should contain react-native core autolinking 
 exports[`getCoreAutolinkingSources should contain react-native core autolinking projects 2`] = `
 [
   {
-    "filePath": "../../node_modules/react-native-reanimated",
-    "reasons": [
-      "rncoreAutolinkingIos",
-    ],
-    "type": "dir",
-  },
-  {
     "filePath": "../../node_modules/react-native-navigation-bar-color",
     "reasons": [
       "rncoreAutolinkingIos",
@@ -44,7 +37,14 @@ exports[`getCoreAutolinkingSources should contain react-native core autolinking 
     "type": "dir",
   },
   {
-    "contents": "{"react-native-reanimated":{"root":"../../node_modules/react-native-reanimated","name":"react-native-reanimated","platforms":{"ios":{"podspecPath":"../../node_modules/react-native-reanimated/RNReanimated.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"../../node_modules/react-native-reanimated/android","packageImportPath":"import com.swmansion.reanimated.ReanimatedPackage;","packageInstance":"new ReanimatedPackage()","buildTypes":[],"componentDescriptors":[],"androidMkPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk","cmakeListsPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt"}}},"react-native-navigation-bar-color":{"root":"../../node_modules/react-native-navigation-bar-color","name":"react-native-navigation-bar-color","platforms":{"ios":null,"android":{"sourceDir":"../../node_modules/react-native-navigation-bar-color/android","packageImportPath":"import com.thebylito.navigationbarcolor.NavigationBarColorPackage;","packageInstance":"new NavigationBarColorPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"../../node_modules/react-native-navigation-bar-color/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
+    "filePath": "../../node_modules/react-native-reanimated",
+    "reasons": [
+      "rncoreAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "contents": "{"react-native-navigation-bar-color":{"name":"react-native-navigation-bar-color","platforms":{"android":{"buildTypes":[],"cmakeListsPath":"../../node_modules/react-native-navigation-bar-color/android/build/generated/source/codegen/jni/CMakeLists.txt","componentDescriptors":[],"packageImportPath":"import com.thebylito.navigationbarcolor.NavigationBarColorPackage;","packageInstance":"new NavigationBarColorPackage()","sourceDir":"../../node_modules/react-native-navigation-bar-color/android"},"ios":null},"root":"../../node_modules/react-native-navigation-bar-color"},"react-native-reanimated":{"name":"react-native-reanimated","platforms":{"android":{"androidMkPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk","buildTypes":[],"cmakeListsPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt","componentDescriptors":[],"packageImportPath":"import com.swmansion.reanimated.ReanimatedPackage;","packageInstance":"new ReanimatedPackage()","sourceDir":"../../node_modules/react-native-reanimated/android"},"ios":{"configurations":[],"podspecPath":"../../node_modules/react-native-reanimated/RNReanimated.podspec","scriptPhases":[]}},"root":"../../node_modules/react-native-reanimated"}}",
     "id": "rncoreAutolinkingConfig:ios",
     "reasons": [
       "rncoreAutolinkingIos",
@@ -57,13 +57,6 @@ exports[`getCoreAutolinkingSources should contain react-native core autolinking 
 exports[`getCoreAutolinkingSources should contain react-native core autolinking projects 3`] = `
 [
   {
-    "filePath": "../../node_modules/react-native-reanimated",
-    "reasons": [
-      "rncoreAutolinking",
-    ],
-    "type": "dir",
-  },
-  {
     "filePath": "../../node_modules/react-native-navigation-bar-color",
     "reasons": [
       "rncoreAutolinking",
@@ -71,7 +64,14 @@ exports[`getCoreAutolinkingSources should contain react-native core autolinking 
     "type": "dir",
   },
   {
-    "contents": "{"react-native-reanimated":{"root":"../../node_modules/react-native-reanimated","name":"react-native-reanimated","platforms":{"ios":{"podspecPath":"../../node_modules/react-native-reanimated/RNReanimated.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"../../node_modules/react-native-reanimated/android","packageImportPath":"import com.swmansion.reanimated.ReanimatedPackage;","packageInstance":"new ReanimatedPackage()","buildTypes":[],"componentDescriptors":[],"androidMkPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk","cmakeListsPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt"}}},"react-native-navigation-bar-color":{"root":"../../node_modules/react-native-navigation-bar-color","name":"react-native-navigation-bar-color","platforms":{"ios":null,"android":{"sourceDir":"../../node_modules/react-native-navigation-bar-color/android","packageImportPath":"import com.thebylito.navigationbarcolor.NavigationBarColorPackage;","packageInstance":"new NavigationBarColorPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"../../node_modules/react-native-navigation-bar-color/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
+    "filePath": "../../node_modules/react-native-reanimated",
+    "reasons": [
+      "rncoreAutolinking",
+    ],
+    "type": "dir",
+  },
+  {
+    "contents": "{"react-native-navigation-bar-color":{"name":"react-native-navigation-bar-color","platforms":{"android":{"buildTypes":[],"cmakeListsPath":"../../node_modules/react-native-navigation-bar-color/android/build/generated/source/codegen/jni/CMakeLists.txt","componentDescriptors":[],"packageImportPath":"import com.thebylito.navigationbarcolor.NavigationBarColorPackage;","packageInstance":"new NavigationBarColorPackage()","sourceDir":"../../node_modules/react-native-navigation-bar-color/android"},"ios":null},"root":"../../node_modules/react-native-navigation-bar-color"},"react-native-reanimated":{"name":"react-native-reanimated","platforms":{"android":{"androidMkPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk","buildTypes":[],"cmakeListsPath":"../../node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt","componentDescriptors":[],"packageImportPath":"import com.swmansion.reanimated.ReanimatedPackage;","packageInstance":"new ReanimatedPackage()","sourceDir":"../../node_modules/react-native-reanimated/android"},"ios":{"configurations":[],"podspecPath":"../../node_modules/react-native-reanimated/RNReanimated.podspec","scriptPhases":[]}},"root":"../../node_modules/react-native-reanimated"}}",
     "id": "rncoreAutolinkingConfig",
     "reasons": [
       "rncoreAutolinking",

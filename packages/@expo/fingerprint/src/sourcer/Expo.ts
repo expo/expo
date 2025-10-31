@@ -8,6 +8,7 @@ import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync, relativizeJsonPaths, stringifyJsonSorted } from './Utils';
 import type { HashSource, HashSourceFile, NormalizedOptions } from '../Fingerprint.types';
+import { sortConfig } from '../Sort';
 import { toPosixPath } from '../utils/Path';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
@@ -286,7 +287,7 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
       [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', 'android', '--json'],
       { cwd: projectRoot }
     );
-    const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
+    const config = sortConfig(JSON.parse(stdout));
     for (const module of config.modules) {
       for (const project of module.projects) {
         const filePath = toPosixPath(path.relative(projectRoot, project.sourceDir));
@@ -373,7 +374,7 @@ export async function getExpoAutolinkingIosSourcesAsync(
       [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', platform, '--json'],
       { cwd: projectRoot }
     );
-    const config = JSON.parse(stdout);
+    const config = sortConfig(JSON.parse(stdout));
     for (const module of config.modules) {
       for (const pod of module.pods) {
         const filePath = toPosixPath(path.relative(projectRoot, pod.podspecDir));
@@ -392,19 +393,6 @@ export async function getExpoAutolinkingIosSourcesAsync(
   } catch {
     return [];
   }
-}
-
-/**
- * Sort the expo-modules-autolinking android config to make it stable from hashing.
- */
-export function sortExpoAutolinkingAndroidConfig(config: Record<string, any>): Record<string, any> {
-  for (const module of config.modules) {
-    // Sort the projects by project.name
-    module.projects.sort((a: Record<string, any>, b: Record<string, any>) =>
-      a.name < b.name ? -1 : a.name > b.name ? 1 : 0
-    );
-  }
-  return config;
 }
 
 /**

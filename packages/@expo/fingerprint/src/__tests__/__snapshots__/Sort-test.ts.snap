@@ -1,0 +1,778 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sortConfig snapshot - ExpoAutolinkingAndroid.json 1`] = `
+{
+  "modules": [
+    {
+      "modules": [],
+      "packageName": "expo",
+      "packageVersion": "47.0.3",
+      "projects": [
+        {
+          "name": "expo",
+          "sourceDir": "/app/node_modules/expo/android",
+        },
+      ],
+    },
+    {
+      "modules": [],
+      "packageName": "expo-application",
+      "packageVersion": "5.0.1",
+      "projects": [
+        {
+          "name": "expo-application",
+          "sourceDir": "/app/node_modules/expo-application/android",
+        },
+      ],
+    },
+    {
+      "modules": [],
+      "packageName": "expo-constants",
+      "packageVersion": "14.0.2",
+      "projects": [
+        {
+          "name": "expo-constants",
+          "sourceDir": "/app/node_modules/expo-constants/android",
+        },
+      ],
+    },
+    {
+      "modules": [],
+      "packageName": "expo-error-recovery",
+      "packageVersion": "4.0.1",
+      "projects": [
+        {
+          "name": "expo-error-recovery",
+          "sourceDir": "/app/node_modules/expo-error-recovery/android",
+        },
+      ],
+    },
+    {
+      "modules": [],
+      "packageName": "expo-file-system",
+      "packageVersion": "15.1.1",
+      "projects": [
+        {
+          "name": "expo-file-system",
+          "sourceDir": "/app/node_modules/expo-file-system/android",
+        },
+      ],
+    },
+    {
+      "modules": [],
+      "packageName": "expo-font",
+      "packageVersion": "11.0.1",
+      "projects": [
+        {
+          "name": "expo-font",
+          "sourceDir": "/app/node_modules/expo-font/android",
+        },
+      ],
+    },
+    {
+      "modules": [],
+      "packageName": "expo-keep-awake",
+      "packageVersion": "11.0.1",
+      "projects": [
+        {
+          "name": "expo-keep-awake",
+          "sourceDir": "/app/node_modules/expo-keep-awake/android",
+        },
+      ],
+    },
+    {
+      "modules": [],
+      "packageName": "expo-modules-core",
+      "packageVersion": "1.0.2",
+      "projects": [
+        {
+          "name": "expo-modules-core",
+          "sourceDir": "/app/node_modules/expo-modules-core/android",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`sortConfig snapshot - ExpoAutolinkingAndroid55.json 1`] = `
+{
+  "coreFeatures": [],
+  "extraDependencies": [],
+  "modules": [
+    {
+      "packageName": "@expo/dom-webview",
+      "packageVersion": "0.2.8",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.webview.DomWebViewModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-dom-webview",
+          "packages": [],
+          "publication": {
+            "artifactId": "expo.modules.webview",
+            "groupId": "expo.modules.webview",
+            "repository": "local-maven-repo",
+            "version": "0.2.8",
+          },
+          "sourceDir": "/app/node_modules/@expo/dom-webview/android",
+        },
+      ],
+    },
+    {
+      "packageName": "@expo/log-box",
+      "packageVersion": "0.0.13",
+      "projects": [
+        {
+          "modules": [],
+          "name": "expo-log-box",
+          "packages": [
+            "expo.modules.logbox.ExpoLogBoxPackage",
+          ],
+          "sourceDir": "/app/node_modules/@expo/log-box/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo",
+      "packageVersion": "55.0.0",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.fetch.ExpoFetchModule",
+              "name": null,
+            },
+          ],
+          "name": "expo",
+          "packages": [
+            "expo.modules.ExpoModulesPackage",
+          ],
+          "sourceDir": "/app/node_modules/expo/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-asset",
+      "packageVersion": "12.0.10",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.asset.AssetModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-asset",
+          "packages": [],
+          "publication": {
+            "artifactId": "expo.modules.asset",
+            "groupId": "expo.modules.asset",
+            "repository": "local-maven-repo",
+            "version": "12.0.10",
+          },
+          "sourceDir": "/app/node_modules/expo-asset/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-constants",
+      "packageVersion": "18.1.0",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.constants.ConstantsModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-constants",
+          "packages": [
+            "expo.modules.constants.ConstantsPackage",
+          ],
+          "sourceDir": "/app/node_modules/expo-constants/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-file-system",
+      "packageVersion": "19.1.0",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.filesystem.FileSystemModule",
+              "name": null,
+            },
+            {
+              "classifier": "expo.modules.filesystem.legacy.FileSystemLegacyModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-file-system",
+          "packages": [
+            "expo.modules.filesystem.legacy.FileSystemPackage",
+          ],
+          "publication": {
+            "artifactId": "expo.modules.filesystem",
+            "groupId": "host.exp.exponent",
+            "repository": "local-maven-repo",
+            "version": "19.1.0",
+          },
+          "sourceDir": "/app/node_modules/expo-file-system/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-font",
+      "packageVersion": "14.0.10",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.font.FontLoaderModule",
+              "name": null,
+            },
+            {
+              "classifier": "expo.modules.font.FontUtilsModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-font",
+          "packages": [],
+          "publication": {
+            "artifactId": "expo.modules.font",
+            "groupId": "host.exp.exponent",
+            "repository": "local-maven-repo",
+            "version": "14.0.10",
+          },
+          "sourceDir": "/app/node_modules/expo-font/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-haptics",
+      "packageVersion": "15.0.8",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.haptics.HapticsModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-haptics",
+          "packages": [],
+          "publication": {
+            "artifactId": "expo.modules.haptics",
+            "groupId": "host.exp.exponent",
+            "repository": "local-maven-repo",
+            "version": "15.0.8",
+          },
+          "sourceDir": "/app/node_modules/expo-haptics/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-image",
+      "packageVersion": "3.1.0",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.image.ExpoImageModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-image",
+          "packages": [],
+          "publication": {
+            "artifactId": "expo.modules.image",
+            "groupId": "expo.modules.image",
+            "repository": "local-maven-repo",
+            "version": "3.1.0",
+          },
+          "sourceDir": "/app/node_modules/expo-image/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-keep-awake",
+      "packageVersion": "15.0.8",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.keepawake.KeepAwakeModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-keep-awake",
+          "packages": [
+            "expo.modules.keepawake.KeepAwakePackage",
+          ],
+          "publication": {
+            "artifactId": "expo.modules.keepawake",
+            "groupId": "host.exp.exponent",
+            "repository": "local-maven-repo",
+            "version": "15.0.8",
+          },
+          "sourceDir": "/app/node_modules/expo-keep-awake/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-linking",
+      "packageVersion": "8.0.9",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.linking.ExpoLinkingModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-linking",
+          "packages": [
+            "expo.modules.linking.ExpoLinkingPackage",
+          ],
+          "publication": {
+            "artifactId": "expo.modules.linking",
+            "groupId": "host.exp.exponent",
+            "repository": "local-maven-repo",
+            "version": "8.0.9",
+          },
+          "sourceDir": "/app/node_modules/expo-linking/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-modules-core",
+      "packageVersion": "3.1.0",
+      "plugins": [
+        {
+          "applyToRootProject": false,
+          "group": "expo.modules",
+          "id": "expo-module-gradle-plugin",
+          "sourceDir": "/app/node_modules/expo-modules-core/expo-module-gradle-plugin",
+        },
+      ],
+      "projects": [
+        {
+          "modules": [],
+          "name": "expo-modules-core",
+          "packages": [
+            "expo.modules.adapters.react.ReactAdapterPackage",
+            "expo.modules.core.BasePackage",
+            "expo.modules.kotlin.edgeToEdge.EdgeToEdgePackage",
+          ],
+          "sourceDir": "/app/node_modules/expo-modules-core/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-splash-screen",
+      "packageVersion": "31.0.11",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.splashscreen.SplashScreenModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-splash-screen",
+          "packages": [],
+          "publication": {
+            "artifactId": "expo.modules.splashscreen",
+            "groupId": "host.exp.exponent",
+            "repository": "local-maven-repo",
+            "version": "31.0.11",
+          },
+          "sourceDir": "/app/node_modules/expo-splash-screen/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-system-ui",
+      "packageVersion": "6.0.9",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.systemui.SystemUIModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-system-ui",
+          "packages": [
+            "expo.modules.systemui.SystemUIPackage",
+          ],
+          "publication": {
+            "artifactId": "expo.modules.systemui",
+            "groupId": "host.exp.exponent",
+            "repository": "local-maven-repo",
+            "version": "6.0.9",
+          },
+          "sourceDir": "/app/node_modules/expo-system-ui/android",
+        },
+      ],
+    },
+    {
+      "packageName": "expo-web-browser",
+      "packageVersion": "15.0.9",
+      "projects": [
+        {
+          "modules": [
+            {
+              "classifier": "expo.modules.webbrowser.WebBrowserModule",
+              "name": null,
+            },
+          ],
+          "name": "expo-web-browser",
+          "packages": [],
+          "publication": {
+            "artifactId": "expo.modules.webbrowser",
+            "groupId": "host.exp.exponent",
+            "repository": "local-maven-repo",
+            "version": "15.0.9",
+          },
+          "sourceDir": "/app/node_modules/expo-web-browser/android",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`sortConfig snapshot - ExpoAutolinkingIos.json 1`] = `
+{
+  "modules": [
+    {
+      "appDelegateSubscribers": [],
+      "debugOnly": false,
+      "modules": [],
+      "packageName": "expo",
+      "packageVersion": "47.0.3",
+      "pods": [
+        {
+          "podName": "Expo",
+          "podspecDir": "/app/node_modules/expo",
+        },
+      ],
+      "reactDelegateHandlers": [],
+      "swiftModuleNames": [
+        "Expo",
+      ],
+    },
+    {
+      "appDelegateSubscribers": [],
+      "debugOnly": false,
+      "modules": [],
+      "packageName": "expo-application",
+      "packageVersion": "5.0.1",
+      "pods": [
+        {
+          "podName": "EXApplication",
+          "podspecDir": "/app/node_modules/expo-application/ios",
+        },
+      ],
+      "reactDelegateHandlers": [],
+      "swiftModuleNames": [
+        "EXApplication",
+      ],
+    },
+    {
+      "appDelegateSubscribers": [],
+      "debugOnly": false,
+      "modules": [],
+      "packageName": "expo-constants",
+      "packageVersion": "14.0.2",
+      "pods": [
+        {
+          "podName": "EXConstants",
+          "podspecDir": "/app/node_modules/expo-constants/ios",
+        },
+      ],
+      "reactDelegateHandlers": [],
+      "swiftModuleNames": [
+        "EXConstants",
+      ],
+    },
+    {
+      "appDelegateSubscribers": [],
+      "debugOnly": false,
+      "modules": [],
+      "packageName": "expo-error-recovery",
+      "packageVersion": "4.0.1",
+      "pods": [
+        {
+          "podName": "EXErrorRecovery",
+          "podspecDir": "/app/node_modules/expo-error-recovery/ios",
+        },
+      ],
+      "reactDelegateHandlers": [],
+      "swiftModuleNames": [
+        "EXErrorRecovery",
+      ],
+    },
+    {
+      "appDelegateSubscribers": [],
+      "debugOnly": false,
+      "modules": [],
+      "packageName": "expo-file-system",
+      "packageVersion": "15.1.1",
+      "pods": [
+        {
+          "podName": "EXFileSystem",
+          "podspecDir": "/app/node_modules/expo-file-system/ios",
+        },
+      ],
+      "reactDelegateHandlers": [],
+      "swiftModuleNames": [
+        "EXFileSystem",
+      ],
+    },
+    {
+      "appDelegateSubscribers": [],
+      "debugOnly": false,
+      "modules": [],
+      "packageName": "expo-font",
+      "packageVersion": "11.0.1",
+      "pods": [
+        {
+          "podName": "EXFont",
+          "podspecDir": "/app/node_modules/expo-font/ios",
+        },
+      ],
+      "reactDelegateHandlers": [],
+      "swiftModuleNames": [
+        "EXFont",
+      ],
+    },
+    {
+      "appDelegateSubscribers": [],
+      "debugOnly": false,
+      "modules": [
+        "KeepAwakeModule",
+      ],
+      "packageName": "expo-keep-awake",
+      "packageVersion": "11.0.1",
+      "pods": [
+        {
+          "podName": "ExpoKeepAwake",
+          "podspecDir": "/app/node_modules/expo-keep-awake/ios",
+        },
+      ],
+      "reactDelegateHandlers": [],
+      "swiftModuleNames": [
+        "ExpoKeepAwake",
+      ],
+    },
+    {
+      "appDelegateSubscribers": [],
+      "debugOnly": false,
+      "modules": [],
+      "packageName": "expo-modules-core",
+      "packageVersion": "1.0.2",
+      "pods": [
+        {
+          "podName": "ExpoModulesCore",
+          "podspecDir": "/app/node_modules/expo-modules-core",
+        },
+      ],
+      "reactDelegateHandlers": [],
+      "swiftModuleNames": [
+        "ExpoModulesCore",
+      ],
+    },
+  ],
+}
+`;
+
+exports[`sortConfig snapshot - RncoreAutoLinkingFromRncCli.json 1`] = `
+{
+  "commands": [
+    {
+      "description": "starts logkitty",
+      "name": "log-android",
+    },
+    {
+      "description": "starts iOS device syslog tail",
+      "name": "log-ios",
+    },
+    {
+      "description": "builds your app and starts it on a connected Android emulator or device",
+      "name": "run-android",
+      "options": [
+        {
+          "default": false,
+          "description": "Build native libraries only for the current device architecture for debug builds.",
+          "name": "--active-arch-only",
+        },
+        {
+          "default": "",
+          "description": "Specify an applicationId to launch after build. If not specified, \`package\` from AndroidManifest.xml will be used.",
+          "name": "--appId <string>",
+        },
+        {
+          "default": "",
+          "description": "Specify an applicationIdSuffix to launch after build.",
+          "name": "--appIdSuffix <string>",
+        },
+        {
+          "description": "builds your app and starts it on a specific device/simulator with the given device id (listed by running "adb devices" on the command line).",
+          "name": "--deviceId <string>",
+        },
+        {
+          "default": "MainActivity",
+          "description": "Name of the activity to start",
+          "name": "--main-activity <string>",
+        },
+        {
+          "description": "Do not launch packager while building",
+          "name": "--no-packager",
+        },
+        {
+          "default": 8081,
+          "name": "--port <number>",
+        },
+        {
+          "description": "Run custom Gradle tasks. By default it's "installDebug"",
+          "name": "--tasks <list>",
+        },
+        {
+          "default": "tmux",
+          "description": "Launches the Metro Bundler in a new window using the specified terminal path.",
+          "name": "--terminal <string>",
+        },
+        {
+          "default": "debug",
+          "description": "Specify your app's build variant",
+          "name": "--variant <string>",
+        },
+      ],
+    },
+    {
+      "description": "builds your app and starts it on iOS simulator",
+      "examples": [
+        {
+          "cmd": "react-native run-ios --simulator "iPhone SE (2nd generation)"",
+          "desc": "Run on a different simulator, e.g. iPhone SE (2nd generation)",
+        },
+        {
+          "cmd": "react-native run-ios --device "Max's iPhone"",
+          "desc": "Run on a connected device, e.g. Max's iPhone",
+        },
+        {
+          "cmd": "react-native run-ios --simulator "Apple TV"  --scheme "helloworld-tvOS"",
+          "desc": "Run on the AppleTV simulator",
+        },
+      ],
+      "name": "run-ios",
+      "options": [
+        {
+          "default": "Debug",
+          "description": "Explicitly set the scheme configuration to use",
+          "name": "--configuration <string>",
+        },
+        {
+          "description": "Explicitly set device to use by name.  The value is not required if you have a single device connected.",
+          "name": "--device [string]",
+        },
+        {
+          "description": "Do not launch packager while building",
+          "name": "--no-packager",
+        },
+        {
+          "default": 8081,
+          "name": "--port <number>",
+        },
+        {
+          "description": "Explicitly set Xcode scheme to use",
+          "name": "--scheme <string>",
+        },
+        {
+          "default": "iPhone 13",
+          "description": "Explicitly set simulator to use. Optionally include iOS version between parenthesis at the end to match an exact version: "iPhone 6 (10.0)"",
+          "name": "--simulator <string>",
+        },
+        {
+          "description": "Launches the Metro Bundler in a new window using the specified terminal path.",
+          "name": "--terminal <string>",
+        },
+        {
+          "description": "Explicitly set device to use by udid",
+          "name": "--udid <string>",
+        },
+        {
+          "description": "Do not use xcbeautify or xcpretty even if installed",
+          "name": "--verbose",
+        },
+      ],
+    },
+  ],
+  "dependencies": {
+    "react-native-navigation-bar-color": {
+      "name": "react-native-navigation-bar-color",
+      "platforms": {
+        "android": {
+          "buildTypes": [],
+          "cmakeListsPath": "/root/node_modules/react-native-navigation-bar-color/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "componentDescriptors": [],
+          "packageImportPath": "import com.thebylito.navigationbarcolor.NavigationBarColorPackage;",
+          "packageInstance": "new NavigationBarColorPackage()",
+          "sourceDir": "/root/node_modules/react-native-navigation-bar-color/android",
+        },
+        "ios": null,
+      },
+      "root": "/root/node_modules/react-native-navigation-bar-color",
+    },
+    "react-native-reanimated": {
+      "name": "react-native-reanimated",
+      "platforms": {
+        "android": {
+          "androidMkPath": "/root/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk",
+          "buildTypes": [],
+          "cmakeListsPath": "/root/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "componentDescriptors": [],
+          "packageImportPath": "import com.swmansion.reanimated.ReanimatedPackage;",
+          "packageInstance": "new ReanimatedPackage()",
+          "sourceDir": "/root/node_modules/react-native-reanimated/android",
+        },
+        "ios": {
+          "configurations": [],
+          "podspecPath": "/root/node_modules/react-native-reanimated/RNReanimated.podspec",
+          "scriptPhases": [],
+        },
+      },
+      "root": "/root/node_modules/react-native-reanimated",
+    },
+  },
+  "healthChecks": [],
+  "platforms": {
+    "android": {},
+    "ios": {},
+  },
+  "project": {
+    "android": {
+      "appName": "app",
+      "packageName": "com.rn070",
+      "sourceDir": "/root/apps/demo/android",
+    },
+    "ios": {
+      "sourceDir": "/root/apps/demo/ios",
+      "xcodeProject": {
+        "isWorkspace": true,
+        "name": "RN070.xcworkspace",
+      },
+    },
+  },
+  "reactNativePath": "/root/node_modules/react-native",
+  "root": "/root/apps/demo",
+}
+`;

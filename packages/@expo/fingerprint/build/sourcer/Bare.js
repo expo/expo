@@ -19,6 +19,7 @@ const resolve_from_1 = __importDefault(require("resolve-from"));
 const ExpoResolver_1 = require("../ExpoResolver");
 const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
+const Sort_1 = require("../Sort");
 const Path_1 = require("../utils/Path");
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 async function getBareAndroidSourcesAsync(projectRoot, options) {
@@ -83,7 +84,7 @@ async function getCoreAutolinkingSourcesFromRncCliAsync(projectRoot, options, us
     }
     try {
         const { stdout } = await (0, spawn_async_1.default)('npx', ['react-native', 'config'], { cwd: projectRoot });
-        const config = JSON.parse(stdout);
+        const config = (0, Sort_1.sortConfig)(JSON.parse(stdout));
         const results = await parseCoreAutolinkingSourcesAsync({
             config,
             contentsId: 'rncoreAutolinkingConfig',
@@ -109,7 +110,7 @@ async function getCoreAutolinkingSourcesFromExpoAndroid(projectRoot, options, us
     ];
     try {
         const { stdout } = await (0, spawn_async_1.default)('node', args, { cwd: projectRoot });
-        const config = JSON.parse(stdout);
+        const config = (0, Sort_1.sortConfig)(JSON.parse(stdout));
         const results = await parseCoreAutolinkingSourcesAsync({
             config,
             contentsId: 'rncoreAutolinkingConfig:android',
@@ -135,7 +136,7 @@ async function getCoreAutolinkingSourcesFromExpoIos(projectRoot, options, useRNC
             '--platform',
             'ios',
         ], { cwd: projectRoot });
-        const config = JSON.parse(stdout);
+        const config = (0, Sort_1.sortConfig)(JSON.parse(stdout));
         const results = await parseCoreAutolinkingSourcesAsync({
             config,
             contentsId: 'rncoreAutolinkingConfig:ios',
