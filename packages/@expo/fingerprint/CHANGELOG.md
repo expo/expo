@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Sort autolinking result to keep fingerprint stable. **This will introduce fingerprint result breaking changes**. ([#40761](https://github.com/expo/expo/pull/40761) by [@kudo](https://github.com/kudo))
+
 ## 0.15.2 - 2025-10-20
 
 ### 🐛 Bug fixes
