@@ -10,12 +10,10 @@ import {
   Host,
   Section,
   Form,
-  Button,
   Text,
   ZStack,
   ConcentricRectangle,
   EdgeCornerStyle,
-  Label,
 } from '@expo/ui/swift-ui';
 import {
   frame,
