@@ -148,6 +148,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
   '@expo/fingerprint': ['index.ts'],
+  'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
   ...uiPackagesMapping,
@@ -270,7 +271,11 @@ async function action({ packageName, sdk }: ActionOptions) {
           chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`)
         );
       } else {
-        logger.warn(`🚨 Package '${packageName}' API data generation is not supported yet!`);
+        logger.warn(
+          `🚨 Package '${packageName}' API data generation is not supported yet! Add it to the mapping in ${
+            __filename
+          }.`
+        );
       }
     } else {
       const packagesEntries = Object.entries(PACKAGES_MAPPING).map(([key, value]) =>
