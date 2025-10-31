@@ -178,6 +178,13 @@ if (Platform.OS === 'ios') {
       getComponent() {
         return optionalRequire(() => require('./ImageHDRScreen'));
       },
+    },
+    {
+      name: 'Cache eviction',
+      route: 'image/cache-eviction',
+      getComponent() {
+        return optionalRequire(() => require('./ImageCacheEvictionScreen'));
+      },
     }
   );
 }
