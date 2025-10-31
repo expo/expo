@@ -1,17 +1,29 @@
 import { Image } from 'expo-image';
 import * as React from 'react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-Image.configureCache({
-  maxMemoryCount: 3 * 9,
-  maxMemoryCost: 100 * 1024 * 1024,
-});
+function configureCache() {
+  Image.configureCache({
+    maxMemoryCount: 3 * 9,
+  });
+}
+
+function resetCache() {
+  Image.configureCache({
+    maxMemoryCount: 0,
+  });
+}
 
 export default function ImageCacheEvictionScreen() {
   const [changing, setChanging] = useState(false);
   const iRef = useRef(0);
   const timeoutRef = useRef<any>(null);
+
+  useEffect(() => {
+    configureCache();
+    return () => resetCache();
+  }, []);
 
   return (
     <View style={{ flex: 1, justifyContent: 'center' }}>
