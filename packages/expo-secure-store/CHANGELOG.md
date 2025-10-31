@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- [docs] Clarify `SecureStore` data persistence behavior in the documentation. ([#40729](https://github.com/expo/expo/pull/#40729) by [@dileepapeiris](https://github.com/dileepapeiris)) ([#40729](https://github.com/expo/expo/pull/40729) by [@dileepapeiris](https://github.com/dileepapeiris))
+- [docs] Add clarification note about storage isolation and authentication behavior under requireAuthentication prop. ([#40729](https://github.com/expo/expo/pull/#40729) by [@dileepapeiris](https://github.com/dileepapeiris)) ([#40729](https://github.com/expo/expo/pull/40729) by [@dileepapeiris](https://github.com/dileepapeiris))
 
 ### 💡 Others
 
