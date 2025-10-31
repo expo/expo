@@ -13,15 +13,17 @@ struct LabelView: ExpoSwiftUI.View {
   @ObservedObject var props: LabelViewProps
   
   var body: some View {
-    Label {
-      Text(props.title ?? "")
-    } icon: {
-      if let systemImage = props.systemImage, !systemImage.isEmpty {
-        Image(systemName: systemImage)
-          .foregroundStyle(props.color ?? .accentColor)
+    if let title = props.title, let systemImage = props.systemImage {
+      // TODO: Deprecate this - recommend using foregroundStyle modifier
+      if let color = props.color {
+        Label(title, systemImage: systemImage).foregroundStyle(color)
+      } else {
+        Label(title, systemImage: systemImage)
       }
     }
-    .labelStyle(.titleAndIcon) // ensures proper layout when icon exists
-    .applyFixedSize(props.fixedSize ?? true)
+    // TODO: Deprecate this - recommend using labelStyle modifier
+    else if let title = props.title {
+      Label(title, systemImage: "").labelStyle(.titleOnly)
+    }
   }
 }
