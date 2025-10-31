@@ -22,7 +22,6 @@ import {
   containerShape,
   padding,
   shapes,
-  background,
 } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
 
