@@ -81,10 +81,7 @@ export type SecureStoreOptions = {
    * Warning: This option is not supported in Expo Go when biometric authentication is available due to a missing NSFaceIDUsageDescription.
    * In release builds or when using continuous native generation, make sure to use the `expo-secure-store` config plugin.
    *
-   * > **Note:** `expo-secure-store` provides a way to encrypt and securely store key-value pairs locally on the device.
-   * > Each Expo project has its own separate storage system and cannot access the storage of other Expo projects.
-   * > This library requires a real device for testing since simulators do not require biometric authentication
-   * > when retrieving secrets, unlike real iOS devices.
+   * > **Note:** This library requires a real device for testing since simulators do not require biometric authentication when retrieving secrets, unlike real iOS devices.
    */
   requireAuthentication?: boolean;
   /**
