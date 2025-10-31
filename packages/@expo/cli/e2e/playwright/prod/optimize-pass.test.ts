@@ -33,7 +33,6 @@ test.describe(inputDir, () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'tree-shaking',
         EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH: 'true',
-        EXPO_USE_METRO_REQUIRE: 'true',
       },
     });
     console.timeEnd('expo export');
