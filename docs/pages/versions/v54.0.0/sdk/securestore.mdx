@@ -87,7 +87,7 @@ On Android, values are stored in [`SharedPreferences`](https://developer.android
 
 ### iOS
 
-On iOS, values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. **Due to the underlying nature of iOS Keychain, data stored with `expo-secure-store` will persist across app uninstallations when the app is reinstalled with the same bundle ID.** This is an expected behavior of the iOS Keychain system, not a bug, and should be considered when designing your app's data handling. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
+On iOS, values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. **Due to the underlying nature of iOS Keychain, data stored with `expo-secure-store` will persist across app uninstallations when the app is reinstalled with the same bundle ID.** This is an expected behavior of the iOS Keychain system and should be considered when designing your app's data handling. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
 
 ## Data persistence
 
