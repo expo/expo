@@ -530,7 +530,7 @@ export type ImageLoadOptions = {
 };
 /**
  * An object containing options for the [`configureCache`](#configurecacheconfig) function.
- * See [SDImageCacheConfig](https://sdwebimage.github.io/documentation/sdwebimage/sdimagecacheconfig) for more information.
+ * See [`SDImageCacheConfig`](https://sdwebimage.github.io/documentation/sdwebimage/sdimagecacheconfig) for more information.
  * @platform ios
  */
 export type ImageCacheConfig = {
@@ -540,7 +540,9 @@ export type ImageCacheConfig = {
      */
     maxDiskSize?: number;
     /**
-     * The maximum “total cost” of the in-memory image cache. The cost function is the bytes size held in memory.
+     * The maximum "total cost" of the in-memory image cache. The cost function is the bytes size held in memory,
+     * not simply the pixel count. For example, a typical ARGB8888 image uses 4 bytes (32 bits) per pixel.
+     * Defaults to 0, which means there is no memory cost limit.
      */
     maxMemoryCost?: number;
     /**
