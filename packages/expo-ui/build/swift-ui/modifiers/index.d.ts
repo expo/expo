@@ -3,9 +3,9 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 import { animation } from './animation/index';
-import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
+import { background } from './background';
 import type { Color } from './types';
 /**
  * Sets the spacing between adjacent sections.

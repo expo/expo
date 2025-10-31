@@ -16,6 +16,11 @@ internal enum RoundedCornerStyle: String, Enumerable {
   case circular
 }
 
+internal struct CornerSize: Record {
+  @Field var width: Int = 0
+  @Field var height: Int = 0
+}
+
 // MARK: - Shape Helper Functions
 
 internal func makeCapsule(style: RoundedCornerStyle?) -> Capsule {
@@ -32,26 +37,26 @@ internal func makeCapsule(style: RoundedCornerStyle?) -> Capsule {
 
 internal func makeRoundedRectangle(
   cornerRadius: CGFloat,
-  cornerSize: Int?,
+  cornerSize: CornerSize?,
   style: RoundedCornerStyle?
 ) -> RoundedRectangle {
   if let style = style {
     switch style {
     case .continuous:
       if let cornerSize = cornerSize {
-        return RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize), style: .continuous)
+        return RoundedRectangle(cornerSize: CGSize(width: cornerSize.width, height: cornerSize.height), style: .continuous)
       }
-    return RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+      return RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
     case .circular:
       if let cornerSize = cornerSize {
-        return RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize), style: .circular)
+        return RoundedRectangle(cornerSize: CGSize(width: cornerSize.width, height: cornerSize.height), style: .circular)
       }
-    return RoundedRectangle(cornerRadius: cornerRadius, style: .circular)
+      return RoundedRectangle(cornerRadius: cornerRadius, style: .circular)
     }
   } else {
     if let cornerSize = cornerSize {
-      return RoundedRectangle(cornerSize: CGSize(width: cornerSize, height: cornerSize))
+      return RoundedRectangle(cornerSize: CGSize(width: cornerSize.width, height: cornerSize.height))
     }
-  return RoundedRectangle(cornerRadius: cornerRadius)
+    return RoundedRectangle(cornerRadius: cornerRadius)
   }
 }

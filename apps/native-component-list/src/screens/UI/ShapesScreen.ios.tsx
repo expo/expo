@@ -123,7 +123,12 @@ export default function ShapesScreen() {
               <ZStack
                 modifiers={[
                   frame({ width: 120, height: 120 }),
-                  containerShape(shapes.roundedRectangle({ cornerRadius: 10 })),
+                  containerShape(
+                    shapes.roundedRectangle({
+                      cornerRadius: 10,
+                      cornerSize: { width: 50, height: 50 },
+                    })
+                  ),
                 ]}>
                 <ConcentricRectangle modifiers={[foregroundStyle('#000')]} />
                 <ConcentricRectangle

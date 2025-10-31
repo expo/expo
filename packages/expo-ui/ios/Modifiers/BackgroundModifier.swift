@@ -8,7 +8,7 @@ internal struct BackgroundModifier: ViewModifier, Record {
   @Field var shape: ShapeType?
   @Field var cornerRadius: CGFloat = 0
   @Field var roundedCornerStyle: RoundedCornerStyle?
-  @Field var cornerSize: Int?
+  @Field var cornerSize: CornerSize?
 
   @ViewBuilder
   func body(content: Content) -> some View {

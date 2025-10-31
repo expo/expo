@@ -2,17 +2,23 @@ export declare const shapes: {
     roundedRectangle: (params: {
         cornerRadius?: number;
         roundedCornerStyle?: "continuous" | "circular";
-        cornerSize?: number;
+        cornerSize?: {
+            width: number;
+            height: number;
+        };
     }) => {
         cornerRadius: number | undefined;
-        roundedCornerStyle: "circular" | "continuous" | undefined;
-        cornerSize: number | undefined;
+        roundedCornerStyle: "continuous" | "circular" | undefined;
+        cornerSize: {
+            width: number;
+            height: number;
+        } | undefined;
         shape: string;
     };
     capsule: (params?: {
         roundedCornerStyle?: "continuous" | "circular";
     }) => {
-        roundedCornerStyle: "circular" | "continuous" | undefined;
+        roundedCornerStyle: "continuous" | "circular" | undefined;
         shape: string;
     };
     rectangle: () => {

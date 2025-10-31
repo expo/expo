@@ -2,7 +2,7 @@ export const shapes = {
   roundedRectangle: (params: {
     cornerRadius?: number;
     roundedCornerStyle?: 'continuous' | 'circular';
-    cornerSize?: number;
+    cornerSize?: { width: number; height: number };
   }) => ({
     cornerRadius: params.cornerRadius,
     roundedCornerStyle: params.roundedCornerStyle,
