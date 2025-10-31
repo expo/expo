@@ -93,6 +93,10 @@ class NetworkModule : Module() {
     sendEvent(NETWORK_STATE_EVENT_NAME, networkState)
   }
 
+  /**
+   * Emits the network state with a delay to prevent a race condition.
+   * This delay ensures we read the actual current network state rather than stale information.
+   */
   private fun asyncEmitNetworkState(delay: Int) {
     Handler(Looper.getMainLooper()).postDelayed({
       try {
