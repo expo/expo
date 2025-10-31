@@ -69,6 +69,9 @@ public class DevMenuInternalModule: Module {
     AsyncFunction("copyToClipboardAsync") { (content: String) in
       #if os(tvOS)
       throw Exception(name: "ERR_DEVMENU_ACTION_FAILED", description: "copy to clipboard is not available in tvOS")
+      #elseif os(macOS)
+      let clipboard = NSPasteboard.general
+      clipboard.setString(content, forType: .string)
       #else
       let clipboard = UIPasteboard.general
       clipboard.string = content as String

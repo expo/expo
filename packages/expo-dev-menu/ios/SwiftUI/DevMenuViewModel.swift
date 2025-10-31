@@ -112,7 +112,11 @@ class DevMenuViewModel: ObservableObject {
 
   func copyToClipboard(_ content: String) {
     #if !os(tvOS)
+    #if os(macOS)
+    NSPasteboard.general.setString(content, forType: .string)
+    #else
     UIPasteboard.general.string = content
+    #endif
     hostUrlCopiedMessage = "Copied!"
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -143,7 +147,11 @@ class DevMenuViewModel: ObservableObject {
     let jsonData = try? JSONSerialization.data(withJSONObject: info, options: .prettyPrinted)
     let jsonString = jsonData.flatMap { String(data: $0, encoding: .utf8) } ?? "Unable to serialize app info"
 
+    #if os(macOS)
+      NSPasteboard.general.setString(jsonString, forType: .string)
+    #else
     UIPasteboard.general.string = jsonString
+    #endif
     clipboardMessage = "Copied to clipboard!"
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

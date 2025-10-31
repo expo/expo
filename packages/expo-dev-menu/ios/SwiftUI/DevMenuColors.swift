@@ -1,4 +1,5 @@
 import SwiftUI
+import ExpoModulesCore
 
 struct DevMenuColors {
   let colorScheme: ColorScheme

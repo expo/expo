@@ -323,9 +323,11 @@ open class DevMenuManager: NSObject {
     }
   }
 
+#if !os(macOS)
   var userInterfaceStyle: UIUserInterfaceStyle {
     return UIUserInterfaceStyle.unspecified
   }
+#endif
 
   private func setVisibility(_ visible: Bool, screen: String? = nil) -> Bool {
     if !canChangeVisibility(to: visible) {

@@ -3,7 +3,6 @@
 import Foundation
 #if os(iOS) || os(tvOS)
 import UIKit
-#endif
 
 class DevMenuTouchInterceptor {
   static fileprivate let recognizer: DevMenuGestureRecognizer = DevMenuGestureRecognizer()
@@ -54,3 +53,5 @@ extension UIWindow {
     return self.EXDevMenu_gestureRecognizers
   }
 }
+
+#endif

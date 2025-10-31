@@ -4,6 +4,7 @@
 import UIKit
 #endif
 import SwiftUI
+import ExpoModulesCore
 
 class DevMenuViewController: UIViewController {
   private let manager: DevMenuManager
@@ -27,7 +28,7 @@ class DevMenuViewController: UIViewController {
     setupSwiftUIView()
   }
 
-  #if !os(tvOS)
+  #if !os(tvOS) && !os(macOS)
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     return UIInterfaceOrientationMask.all
   }
