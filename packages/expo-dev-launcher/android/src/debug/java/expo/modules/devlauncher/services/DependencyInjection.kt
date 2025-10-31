@@ -1,5 +1,6 @@
 package expo.modules.devlauncher.services
 
+import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -32,7 +33,7 @@ object DependencyInjection {
   var packagerService: PackagerService = PackagerService(httpClientService)
     private set
 
-  var appService: AppService = AppService()
+  var appService: AppService? = null
     private set
 
   var errorRegistryService: ErrorRegistryService? = null
@@ -44,6 +45,8 @@ object DependencyInjection {
     }
 
     wasInitialized = true
+
+    appService = AppService(context.applicationContext as Application)
 
     this.devLauncherController = devLauncherController
 

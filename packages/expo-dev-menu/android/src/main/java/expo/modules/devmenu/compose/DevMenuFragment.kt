@@ -22,6 +22,7 @@ import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devmenu.AppInfo
 import expo.modules.devmenu.DevMenuManager
+import expo.modules.devmenu.DevMenuPreferences
 import expo.modules.devmenu.DevMenuPreferencesHandle
 import expo.modules.devmenu.compose.newtheme.AppTheme
 import expo.modules.devmenu.compose.ui.DevMenuBottomSheet
@@ -36,10 +37,11 @@ import kotlin.reflect.KProperty
 
 @SuppressLint("ViewConstructor")
 class DevMenuFragment(
-  val reactHostHolder: WeakReference<ReactHost>
+  val reactHostHolder: WeakReference<ReactHost>,
+  val preferences: DevMenuPreferences
 ) : Fragment() {
   val viewModel by viewModels<DevMenuViewModel> {
-    DevMenuViewModel.Factory(reactHostHolder)
+    DevMenuViewModel.Factory(reactHostHolder, preferences)
   }
   private val threeFingerLongPressDetector = ThreeFingerLongPressDetector(::onThreeFingerLongPressDetected)
   private val shakeDetector = ShakeDetector(this::onShakeDetected)
@@ -51,11 +53,11 @@ class DevMenuFragment(
     super.onCreate(savedInstanceState)
 
     if (DevMenuManager.shouldDisableOnboarding()) {
-      DevMenuPreferencesHandle.isOnboardingFinished = true
+      preferences.isOnboardingFinished = true
     }
 
     val shouldShowAtLaunch = DevMenuManager.canLaunchDevMenuOnStart &&
-      (DevMenuPreferencesHandle.showsAtLaunch || !DevMenuPreferencesHandle.isOnboardingFinished)
+      (preferences.showsAtLaunch || !preferences.isOnboardingFinished)
     if (shouldShowAtLaunch) {
       val onReactContext = object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
@@ -77,7 +79,7 @@ class DevMenuFragment(
 
     reactHost?.let {
       viewModel.updateAppInfo(
-        AppInfo.getAppInfo(it)
+        AppInfo.getAppInfo(it, requireContext())
       )
     }
 
@@ -91,7 +93,11 @@ class DevMenuFragment(
     shakeDetector.stop()
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View? {
     val context = requireContext()
     return LinearLayout(context).apply {
       z = Float.MAX_VALUE
@@ -137,7 +143,7 @@ class DevMenuFragment(
       return true
     }
 
-    if (!DevMenuPreferencesHandle.keyCommandsEnabled) {
+    if (!preferences.keyCommandsEnabled) {
       return false
     }
 
@@ -157,13 +163,13 @@ class DevMenuFragment(
   }
 
   private fun onShakeDetected() {
-    if (DevMenuPreferencesHandle.motionGestureEnabled) {
+    if (preferences.motionGestureEnabled) {
       toggleDevMenu()
     }
   }
 
   private fun onThreeFingerLongPressDetected() {
-    if (DevMenuPreferencesHandle.touchGestureEnabled) {
+    if (preferences.touchGestureEnabled) {
       toggleDevMenu()
     }
   }
@@ -191,7 +197,8 @@ class DevMenuFragment(
 
     fun createFragmentHost(
       activity: Activity,
-      reactHostHolder: WeakReference<ReactHost>
+      reactHostHolder: WeakReference<ReactHost>,
+      preferences: DevMenuPreferences = DevMenuPreferencesHandle(activity.application)
     ): ViewGroup {
       var fragmentHolder = WeakReference<DevMenuFragment>(null)
       val interceptTouchEventCallback: (event: MotionEvent?) -> Unit = { event ->
@@ -210,7 +217,12 @@ class DevMenuFragment(
         }
       }
 
-      val fragment = addTo(activity, layout, reactHostHolder)
+      val fragment = addTo(
+        activity,
+        layout,
+        reactHostHolder,
+        preferences
+      )
       @Suppress("AssignedValueIsNeverRead")
       fragmentHolder = fragment.weak()
 
@@ -220,11 +232,12 @@ class DevMenuFragment(
     private fun addTo(
       activity: Activity,
       container: ViewGroup,
-      reactHostHolder: WeakReference<ReactHost>
+      reactHostHolder: WeakReference<ReactHost>,
+      preferences: DevMenuPreferences
     ): DevMenuFragment {
       val fragmentManager = (activity as FragmentActivity).supportFragmentManager
 
-      val fragment = DevMenuFragment(reactHostHolder)
+      val fragment = DevMenuFragment(reactHostHolder, preferences)
 
       fragmentManager.commit(true) {
         setReorderingAllowed(true)
@@ -252,6 +265,6 @@ class DevMenuFragment(
       operator fun getValue(thisRef: Any?, property: KProperty<*>): T? = value
     }
 
-    private  data class KeyCommand(val code: Int, val withShift: Boolean = false)
+    private data class KeyCommand(val code: Int, val withShift: Boolean = false)
   }
 }

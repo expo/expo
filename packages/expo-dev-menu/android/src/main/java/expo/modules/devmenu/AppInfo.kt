@@ -1,14 +1,15 @@
 package expo.modules.devmenu
 
 import android.app.Application
+import android.content.Context
 import android.content.pm.PackageManager
 import com.facebook.react.ReactHost
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
-import java.lang.reflect.Field
 import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.manifests.core.ExpoUpdatesManifest
+import java.lang.reflect.Field
 
 object AppInfo {
   data class Native(
@@ -16,13 +17,7 @@ object AppInfo {
     val appVersion: String? = null
   )
 
-  lateinit var native: Native
-
-  fun init(application: Application) {
-    native = getNativeAppInfo(application)
-  }
-
-  private fun getNativeAppInfo(application: Application): Native {
+  fun getNativeAppInfo(application: Application): Native {
     val packageManager = application.packageManager
     val packageName = application.packageName
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
@@ -38,8 +33,9 @@ object AppInfo {
   }
 
   @OptIn(UnstableReactNativeAPI::class)
-  fun getAppInfo(reactHost: ReactHost): DevMenuState.AppInfo {
+  fun getAppInfo(reactHost: ReactHost, context: Context): DevMenuState.AppInfo {
     // We want to override the native app name and version with the manifest values if available.
+    val native = getNativeAppInfo(context.applicationContext as Application)
     var appName = native.appName
     var appVersion = native.appVersion
 
