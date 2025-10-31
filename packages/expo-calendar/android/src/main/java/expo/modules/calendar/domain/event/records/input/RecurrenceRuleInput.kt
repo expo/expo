@@ -24,6 +24,9 @@ data class RecurrenceRuleInput(
     return recurrenceRuleSDF.format(calendar.time)
   }
 
+  /**
+   * @return A string defined by RFC 5455 section 3.3.10
+   */
   fun toRuleString(): String {
     var rrule: String = when (frequency) {
       "daily" -> "FREQ=DAILY"
