@@ -206,11 +206,26 @@ const HMRClient = {
       }
     });
 
-    client.on('update', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
-      if (client.isEnabled() && !isInitialUpdate) {
-        resetErrorOverlay();
+    client.on(
+      'update',
+      ({
+        isInitialUpdate,
+        added,
+        modified,
+        deleted,
+      }: {
+        isInitialUpdate?: boolean;
+        added: unknown[];
+        modified: unknown[];
+        deleted: unknown[];
+      }) => {
+        // NOTE(@krystofwoldrich): I don't know why sometimes empty updates are sent. But they should not reset the overlay.
+        const isEmpty = added.length === 0 && modified.length === 0 && deleted.length === 0;
+        if (client.isEnabled() && !isInitialUpdate && !isEmpty) {
+          resetErrorOverlay();
+        }
       }
-    });
+    );
 
     client.on('update-done', () => {
       hideLoading();

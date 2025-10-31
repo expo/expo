@@ -11,12 +11,17 @@ final class LabelViewProps: UIBaseViewProps {
 
 struct LabelView: ExpoSwiftUI.View {
   @ObservedObject var props: LabelViewProps
-
+  
   var body: some View {
-    Label(
-      title: { Text(props.title ?? "") },
-      icon: { Image(systemName: props.systemImage ?? "").foregroundStyle(props.color ?? Color.accentColor) }
-    )
+    Label {
+      Text(props.title ?? "")
+    } icon: {
+      if let systemImage = props.systemImage, !systemImage.isEmpty {
+        Image(systemName: systemImage)
+          .foregroundStyle(props.color ?? .accentColor)
+      }
+    }
+    .labelStyle(.titleAndIcon) // ensures proper layout when icon exists
     .applyFixedSize(props.fixedSize ?? true)
   }
 }

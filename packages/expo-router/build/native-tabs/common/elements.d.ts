@@ -1,6 +1,6 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import type { NativeTabsLabelStyle } from '../NativeBottomTabs/types';
+import type { NativeTabsLabelStyle } from '../types';
 export interface LabelProps {
     /**
      * The text to display as the label for the tab.

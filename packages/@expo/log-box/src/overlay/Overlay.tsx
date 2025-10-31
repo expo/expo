@@ -67,7 +67,7 @@ function LogBoxInspector({
 
   const onMinimize = useCallback(
     (cb?: () => void): void => {
-      if (['ios', 'android'].includes(process.env.EXPO_DOM_HOST_OS)) {
+      if (['ios', 'android'].includes(process.env.EXPO_DOM_HOST_OS ?? '')) {
         onMinimizeAction?.();
         cb?.();
       } else {
@@ -86,14 +86,14 @@ function LogBoxInspector({
         styles.overlay,
         process.env.EXPO_DOM_HOST_OS === 'ios' ? styles.overlayIos : null,
         process.env.EXPO_DOM_HOST_OS === 'android' ? styles.overlayAndroid : null,
-        process.env.EXPO_DOM_HOST_OS === 'web' ? styles.overlayWeb : null,
+        process.env.EXPO_DOM_HOST_OS === undefined ? styles.overlayWeb : null,
       ]
         .filter(Boolean)
         .join(' ')}>
       <div
         data-expo-log-backdrop="true"
         className={
-          process.env.EXPO_DOM_HOST_OS === 'web'
+          process.env.EXPO_DOM_HOST_OS === undefined
             ? `${styles.bg} ${closing ? styles.bgExit : ''}`
             : undefined
         }

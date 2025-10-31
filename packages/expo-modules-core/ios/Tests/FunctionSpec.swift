@@ -343,6 +343,10 @@ class FunctionSpec: ExpoSpec {
             p.resolve(SharedString("Test with Promise"))
           }
 
+          Function("returnBaseSharedRef") {
+            return BaseSharedRef(1.2)
+          }
+
           Function("withEither") { (either: Either<Bool, String>) in
             return either
           }
@@ -549,6 +553,15 @@ class FunctionSpec: ExpoSpec {
         expect(result.getString()) == "Test with Promise"
       }
 
+      it("returns shared ref without the Class definition") {
+        // In this case the native shared ref type is not defined as a class in the module's definition.
+        // Nevertheless, it should be converted to JS object that is an instance of the base `SharedRef` class.
+        let isSharedRef = try runtime.eval("expo.modules.TestModule.returnBaseSharedRef() instanceof expo.SharedRef")
+
+        expect(isSharedRef.kind) == .bool
+        expect(isSharedRef.getBool()) == true
+      }
+
       it("accepts and returns Either value") {
         let stringResult = try runtime.eval("expo.modules.TestModule.withEither('test string')")
         expect(stringResult.kind) == .string
@@ -582,5 +595,11 @@ class FunctionSpec: ExpoSpec {
 private class SharedString: SharedRef<String> {
   override var nativeRefType: String {
     "string"
+  }
+}
+
+private class BaseSharedRef: SharedRef<Double> {
+  override var nativeRefType: String {
+    "none"
   }
 }

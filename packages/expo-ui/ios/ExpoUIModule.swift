@@ -60,6 +60,7 @@ public final class ExpoUIModule: Module {
     View(SectionContent.self)
     View(SectionHeader.self)
     View(SectionFooter.self)
+    View(GridRowView.self)
 
     View(HostView.self)
 
@@ -101,5 +102,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ConcentricRectangleView.self)
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
+    ExpoUIView(GridView.self)
   }
 }

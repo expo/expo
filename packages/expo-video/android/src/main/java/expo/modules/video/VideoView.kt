@@ -114,6 +114,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
         VideoManager.onVideoPlayerDetachedFromView(it, this)
       }
       videoPlayer?.removeListener(this)
+      videoPlayer?.changePlayerView(null)
       newPlayer?.addListener(this)
       field = newPlayer
       shouldHideSurfaceView = true
