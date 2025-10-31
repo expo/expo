@@ -6,13 +6,17 @@ import android.content.Intent
 import android.provider.Settings
 import android.util.Log
 import androidx.core.net.toUri
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.devmenu.DEV_MENU_TAG
-import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.compose.BindingView
+import expo.modules.devmenu.api.DevMenuMetroClient
+import expo.modules.devmenu.compose.DevMenuFragment
 import expo.modules.devmenu.compose.DevMenuAction
-import expo.modules.devmenu.compose.DevMenuViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
@@ -28,20 +32,21 @@ class DevMenuDevToolsDelegate(
   private val context: Context?
     get() = devSupportManager?.currentReactContext ?: currentActivity
 
-  private fun findDevMenuModel(): DevMenuViewModel? {
-    return currentActivity?.let { BindingView.findIn(activity = it)?.viewModel }
-  }
+  private val reactContext: ReactContext?
+    get() = devSupportManager?.currentReactContext
+
+  private val viewModel by DevMenuFragment.model { currentActivity }
 
   val devSettings
     get() = devSupportManager?.devSettings
 
   fun toggleMenu() {
-    findDevMenuModel()
+    viewModel
       ?.onAction(DevMenuAction.Toggle)
   }
 
   fun reload() {
-    findDevMenuModel()
+    viewModel
       ?.onAction(DevMenuAction.Close)
 
     UiThreadUtil.runOnUiThread {
@@ -62,15 +67,36 @@ class DevMenuDevToolsDelegate(
     devSupportManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
   }
 
+  fun toggleFastRefresh() {
+    val internalSettings = devSettings ?: return
+
+    val nextEnabled = !internalSettings.isHotModuleReplacementEnabled
+    internalSettings.isHotModuleReplacementEnabled = nextEnabled
+
+    if (nextEnabled) {
+      reactContext?.getJSModule(HMRClient::class.java)?.enable()
+    } else {
+      reactContext?.getJSModule(HMRClient::class.java)?.disable()
+    }
+
+    if (nextEnabled && !internalSettings.isJSDevModeEnabled) {
+      internalSettings.isJSDevModeEnabled = true
+      reload()
+    }
+  }
+
+  @OptIn(DelicateCoroutinesApi::class)
   fun openJSInspector() {
     val devSettings = devSettings ?: return
     val context = context ?: return
 
     val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
 
-    DevMenuManager.coroutineScope.launch {
+    // We can use GlobalScope here because this operation is not tied to any specific lifecycle.
+    // We just want to fire and forget.
+    GlobalScope.launch(Dispatchers.Default) {
       try {
-        DevMenuManager.metroClient.openJSInspector(metroHost, context.packageName)
+        DevMenuMetroClient.openJSInspector(metroHost, context.packageName)
       } catch (e: Exception) {
         Log.w(DEV_MENU_TAG, "Unable to open js inspector: ${e.message}", e)
       }

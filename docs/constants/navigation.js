@@ -467,6 +467,7 @@ export const eas = [
         makePage('build-reference/infrastructure.mdx'),
         makePage('build-reference/app-extensions.mdx'),
         makePage('build-reference/easignore.mdx'),
+        makePage('build-reference/npx-testflight.mdx'),
         makePage('build-reference/limitations.mdx'),
       ],
       { expanded: false }

@@ -67,7 +67,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
         if let jsObject = sharedObject.getJavaScriptObject() {
           return jsObject
         }
-        guard let jsObject = try? appContext.newObject(nativeClassId: typeIdentifier) else {
+        guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, nativeType: innerType)) else {
           // Throwing is not possible here due to swift-objC interop.
           log.warn("Unable to create a JS object for \(description)")
           return JavaScriptObject()
@@ -92,6 +92,16 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
     }
     throw NativeSharedObjectNotFoundException()
   }
+}
+
+private func getBaseSharedType(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject {
+  return try nativeType is AnySharedRef.Type ? appContext.runtime.getSharedRefClass() : appContext.runtime.getSharedObjectClass()
+}
+
+private func newBaseSharedObject(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject? {
+  let jsClass = try getBaseSharedType(appContext, nativeType: nativeType)
+  let prototype = try jsClass.getProperty("prototype").asObject()
+  return try appContext.runtime.createObject(withPrototype: prototype)
 }
 
 internal final class NativeSharedObjectNotFoundException: Exception {

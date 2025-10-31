@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix dependecy check failure when using EXPO_DEBUG=1 ([#39929](https://github.com/expo/expo/pull/39929) by [@betomoedano](https://github.com/betomoedano))
+- Circumvent `npx expo` Expo CLI invocation to avoid debug warnings from npm polluting standard output ([#40731](https://github.com/expo/expo/pull/40731) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 1.17.11 - 2025-10-20

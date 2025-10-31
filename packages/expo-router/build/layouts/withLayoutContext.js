@@ -37,8 +37,9 @@ exports.useFilterScreenChildren = useFilterScreenChildren;
 exports.withLayoutContext = withLayoutContext;
 const react_1 = __importStar(require("react"));
 const Route_1 = require("../Route");
-const NativeTabTrigger_1 = require("../native-tabs/NativeBottomTabs/NativeTabTrigger");
+const NativeTabTrigger_1 = require("../native-tabs/NativeTabTrigger");
 const useScreens_1 = require("../useScreens");
+const IsWithinLayoutContext_1 = require("./IsWithinLayoutContext");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
 function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = {}) {
@@ -153,7 +154,9 @@ function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
         if (!sorted.length) {
             return null;
         }
-        return <Nav {...props} id={contextKey} ref={ref} children={sorted}/>;
+        return (<IsWithinLayoutContext_1.IsWithinLayoutContext value>
+          <Nav {...props} id={contextKey} ref={ref} children={sorted}/>
+        </IsWithinLayoutContext_1.IsWithinLayoutContext>);
     }), {
         Screen: Screen_1.Screen,
         Protected: Protected_1.Protected,

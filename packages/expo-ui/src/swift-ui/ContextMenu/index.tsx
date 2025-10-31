@@ -57,7 +57,7 @@ ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
 
 /**
- * @deprecated Use `ContextMenu` component as Submenu instead.
+ * @deprecated Use `ContextMenu` component as submenu instead.
  */
 const Submenu = (props: SubmenuProps) => {
   const { button, children, ...rest } = props;

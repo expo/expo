@@ -18,7 +18,10 @@ function defaultShouldIncludeDependency(dependencyName) {
     if (scopeName === 'babel' ||
         scopeName === 'types' ||
         scopeName === 'eslint' ||
-        scopeName === 'typescript-eslint') {
+        scopeName === 'typescript-eslint' ||
+        scopeName === 'testing-library' ||
+        scopeName === 'aws-crypto' ||
+        scopeName === 'aws-sdk') {
         return false;
     }
     switch (dependencyName) {
@@ -27,11 +30,20 @@ function defaultShouldIncludeDependency(dependencyName) {
         case '@expo/metro-config':
         case '@expo/package-manager':
         case '@expo/prebuild-config':
+        case '@expo/webpack-config':
         case '@expo/env':
         case '@react-native/codegen':
+        case '@react-native/community-cli-plugin':
         case 'eslint':
         case 'eslint-config-expo':
         case 'eslint-plugin-expo':
+        case 'eslint-plugin-import':
+        case 'jest-expo':
+        case 'jest':
+        case 'metro':
+        case 'ts-node':
+        case 'typescript':
+        case 'webpack':
             return false;
         default:
             return true;
@@ -118,11 +130,11 @@ async function filterMapResolutionResult(results, filterMap) {
     }
     return output;
 }
-function mergeResolutionResults(results) {
-    if (results.length === 1) {
+function mergeResolutionResults(results, base) {
+    if (base == null && results.length === 1) {
         return results[0];
     }
-    const output = Object.create(null);
+    const output = base == null ? Object.create(null) : base;
     for (let idx = 0; idx < results.length; idx++) {
         for (const key in results[idx]) {
             const resolution = results[idx][key];

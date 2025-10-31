@@ -15,6 +15,11 @@ protocol AnyEither: AnyArgument {
    A dynamic either type for the current either type.
    */
   static func getDynamicType() -> any AnyDynamicType
+
+  /**
+   The underlying type-erased value.
+   */
+  var value: Any? { get }
 }
 
 /*

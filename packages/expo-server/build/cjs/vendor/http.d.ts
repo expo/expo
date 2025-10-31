@@ -1,8 +1,11 @@
 import * as http from 'http';
-import { type RequestHandlerParams } from './abstract';
+import { type RequestHandlerInput as ExpoRequestHandlerInput, type RequestHandlerParams as ExpoRequestHandlerParams } from './abstract';
 export { ExpoError } from './abstract';
 type NextFunction = (err?: any) => void;
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
+export interface RequestHandlerParams extends ExpoRequestHandlerParams, Partial<ExpoRequestHandlerInput> {
+    handleRouteError?(error: Error): Promise<Response>;
+}
 /**
  * Returns a request handler for http that serves the response using Remix.
  */

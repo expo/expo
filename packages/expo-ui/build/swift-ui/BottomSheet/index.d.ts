@@ -21,16 +21,16 @@ export type BottomSheetProps = {
     /**
      * Array of presentation detents for the `BottomSheet`.
      * Controls the heights that the sheet can snap to.
-     * - 'medium': Medium height sheet
-     * - 'large': Full height sheet
-     * - number (0-1): Fraction of screen height (e.g. 0.4 = 40% of screen)
+     * - `medium` - Medium height sheet
+     * - `large` - Full height sheet
+     * - number (0-1) - Fraction of screen height (for example, 0.4 equals to 40% of screen)
      */
     presentationDetents?: PresentationDetent[];
     /**
      * Controls the visibility of the drag indicator for the `BottomSheet`.
-     * - 'automatic': System decides based on context (default)
-     * - 'visible': Always show the drag indicator
-     * - 'hidden': Never show the drag indicator
+     * - `automatic` - System decides based on context (default)
+     * - `visible` - Always show the drag indicator
+     * - `hidden` - Never show the drag indicator
      */
     presentationDragIndicator?: PresentationDragIndicatorVisibility;
 } & CommonViewModifierProps;

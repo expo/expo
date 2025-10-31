@@ -216,7 +216,7 @@ export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;
  * // Configure audio for recording
  * await setAudioModeAsync({
  *   allowsRecording: true,
- *   playsInSilentMode: false
+ *   playsInSilentMode: true
  * });
  * ```
  */
