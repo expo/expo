@@ -226,6 +226,13 @@ async function copyCommonFixturesToProject(
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
+  // Copy react-native patch
+  await fs.mkdir(path.join(projectRoot, 'patches'));
+  await fs.copyFile(
+    path.resolve(repoRoot, 'patches', 'react-native+0.83.0-nightly-20251030-26ad9492b.patch'),
+    path.join(projectRoot, 'patches', 'react-native+0.83.0-nightly-20251030-26ad9492b.patch')
+  );
+
   // Modify specific files for TV
   if (isTV) {
     // Add TV environment variable to EAS build config
@@ -319,7 +326,7 @@ async function preparePackageJson(
     ? {
         start: 'expo start --private-key-path ./keys/private-key.pem',
         'ios:pod-install-old-arch': 'npx pod-install',
-        'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 npx pod-install',
+        'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=0 RCT_USE_RN_DEP=1 npx pod-install',
         'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
         'maestro:android:debug:install':
           'adb install android/app/build/outputs/apk/debug/app-debug.apk',
