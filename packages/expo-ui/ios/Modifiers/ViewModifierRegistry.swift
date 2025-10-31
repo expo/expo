@@ -1098,6 +1098,126 @@ internal struct ListSectionMargins: ViewModifier, Record {
   }
 }
 
+internal enum AxisOptions: String, Enumerable {
+  case horizontal
+  case vertical
+}
+
+internal struct GridCellUnsizedAxes: ViewModifier, Record {
+  @Field var axes: AxisOptions?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let axes {
+        switch axes {
+        case .horizontal:
+          content.gridCellUnsizedAxes(.horizontal)
+        case .vertical:
+          content.gridCellUnsizedAxes(.vertical)
+        }
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal struct GridCellColumns: ViewModifier, Record {
+  @Field var count: Int?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let count {
+          content.gridCellColumns(count)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal enum GridColumnAlignmentType: String, Enumerable {
+  case leading
+  case center
+  case trailing
+
+  var alignment: HorizontalAlignment {
+    switch self {
+      case .center: return .center
+      case .leading: return .leading
+      case .trailing: return .trailing
+    }
+  }
+}
+
+internal struct GridColumnAlignment: ViewModifier, Record {
+  @Field var alignment: GridColumnAlignmentType?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let alignment {
+        content.gridColumnAlignment(alignment.alignment)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal enum UnitPointOptions: String, Enumerable {
+  case zero
+  case topLeading
+  case top
+  case topTrailing
+  case leading
+  case center
+  case trailing
+  case bottomLeading
+  case bottom
+  case bottomTrailing
+
+  var toUnitPoint: UnitPoint {
+    switch self {
+    case .zero: return .zero
+    case .topLeading: return .topLeading
+    case .top: return .top
+    case .topTrailing: return .topTrailing
+    case .leading: return .leading
+    case .center: return .center
+    case .trailing: return .trailing
+    case .bottomLeading: return .bottomLeading
+    case .bottom: return .bottom
+    case .bottomTrailing: return .bottomTrailing
+    }
+  }
+}
+
+internal struct GridCellAnchor: ViewModifier, Record {
+  @Field var points: UnitPoint?
+  @Field var type: String?
+  @Field var anchor: UnitPointOptions?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let points {
+        content.gridCellAnchor(points)
+      } else if type == "preset", let anchor {
+        content.gridCellAnchor(anchor.toUnitPoint)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Registry
 
 /**
@@ -1490,6 +1610,22 @@ extension ViewModifierRegistry {
 
     register("font") { params, appContext, _ in
       return try FontModifier(from: params, appContext: appContext)
+    }
+
+    register("gridCellUnsizedAxes") { params, appContext, _ in
+      return try GridCellUnsizedAxes(from: params, appContext: appContext)
+    }
+
+    register("gridCellColumns") { params, appContext, _ in
+      return try GridCellColumns(from: params, appContext: appContext)
+    }
+
+    register("gridColumnAlignment") { params, appContext, _ in
+      return try GridColumnAlignment(from: params, appContext: appContext)
+    }
+
+    register("gridCellAnchor") { params, appContext, _ in
+      return try GridCellAnchor(from: params, appContext: appContext)
     }
   }
 }
