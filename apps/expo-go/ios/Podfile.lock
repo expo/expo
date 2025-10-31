@@ -4404,7 +4404,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: d98188d71d8656a0ccd119b8aaf00e7d6f80b7ab
+  hermes-engine: f5ba1527a98aaf895085220a370fd82301ac7ec8
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4497,10 +4497,10 @@ SPEC CHECKSUMS:
   RNCMaskedView: 63268de1986a098b5f4d1fb5b1bc1e97fade0aee
   RNCPicker: 51992b3407f6b70ddb8e417ec5714c3f2d48d8a4
   RNDateTimePicker: c4a42c6a77d474f05162d61a4ab4253d13008277
-  RNGestureHandler: 310fefa1b72004d0b0a6a361b537a74724f45d5b
-  RNReanimated: 451f6574c6913b15ea3e3a33f2d0a95f68f83081
+  RNGestureHandler: afae32614741017de0f813f74586eee29773f31a
+  RNReanimated: ef9140fe842a253834fdf8aaff0c0edacf560dde
   RNScreens: 74985ca8e102294a60cec7513fa84c936fa0b20b
-  RNSVG: 42c67442bd1f7568e8a4abbd42a093d00e1e2dde
+  RNSVG: 6e742388ed2c7bfe7c9f5baf42b8eb850adc0442
   RNWorklets: 089683f4a4564f30393d32352d41d9e92c3e5a55
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90

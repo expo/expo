@@ -13,6 +13,7 @@ function importHermesCommandFromProject(projectRoot: string): string {
   const platformExecutable = getHermesCommandPlatform();
 
   const reactNativeRoot = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
+  const hermesCompilerRoot = path.dirname(require.resolve('hermes-compiler/package.json'));
 
   const hermescPaths = [
     // Override hermesc dir by environment variables
@@ -25,6 +26,9 @@ function importHermesCommandFromProject(projectRoot: string): string {
 
     // Prebuilt hermesc in official react-native 0.69+
     `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,
+
+    // react-native 0.83+ moved hermesc to a separate package
+    `${hermesCompilerRoot}/hermesc/${platformExecutable}`,
   ];
 
   for (const hermescPath of hermescPaths) {

@@ -46,7 +46,7 @@
     "sf-symbols-typescript": "^2.1.0"
   },
   "devDependencies": {
-    "@types/react": "~19.1.10",
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "^5.0.7"
   },
   "peerDependencies": {
