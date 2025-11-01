@@ -25,6 +25,7 @@ import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 import { reactServerActionsPlugin } from './server-actions-plugin';
+import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 
 type BabelPresetExpoPlatformOptions = {
@@ -269,6 +270,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   }
 
   extraPlugins.push(reactClientReferencesPlugin);
+
+  // Strip loader() functions from client bundles
+  if (!isServerEnv) {
+    extraPlugins.push(serverDataLoadersPlugin);
+  }
 
   // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
   // users who are bundling using the client-only system.

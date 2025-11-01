@@ -28,6 +28,8 @@ declare module '@expo/metro/metro-babel-transformer' {
     expoDomComponentReference?: string;
     /** @privateRemarks Augmentation used in babel-preset-expo/src/detect-dynamic-exports.ts */
     hasCjsExports?: boolean;
+    /** @privateRemarks Augmentation used in babel-preset-expo/src/server-data-loaders-plugin.ts */
+    performConstantFolding?: boolean;
   }
 }
 
