@@ -8,7 +8,6 @@ export declare function S({ style, ...props }: TextProps): React.JSX.Element;
 export declare function I({ style, ...props }: TextProps): React.JSX.Element;
 export declare function Q({ children, cite, style, ...props }: QuoteProps): React.JSX.Element;
 export declare function BlockQuote({ style, cite, ...props }: BlockQuoteProps): React.JSX.Element;
-export declare function BR({ style, ...props }: TextProps): React.JSX.Element;
 export declare function Mark({ style, ...props }: TextProps): React.JSX.Element;
 export declare function Code({ style, ...props }: TextProps): React.JSX.Element;
 type PreProps = TextProps | ViewProps;
