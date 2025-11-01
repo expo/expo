@@ -19,10 +19,12 @@ Head over to [database.new](https://database.new?utm_source=expo&utm_medium=refe
 
 ### Get the API Keys
 
-Get the Project URL and `anon` key from the API settings.
+Get the `Project URL` from the API settings and `Publishable key` from the API Keys.
 
 1. Go to the [API Settings](https://supabase.com/dashboard/project/_/settings/api) page in the Dashboard.
-1. Find your Project `URL`, `anon`, and `service_role` keys on this page.
+2. Find your Project `URL` and `service_role` keys on this page.
+3. Then go to the [API Keys](https://supabase.com/dashboard/project/_/settings/api-keys)
+4. Find your Project `Publishable key` on this page under API Keys tab.
 
 ## Using the Supabase TypeScript SDK
 
@@ -46,9 +48,9 @@ import 'expo-sqlite/localStorage/install';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = YOUR_REACT_NATIVE_SUPABASE_URL;
-const supabaseAnonKey = YOUR_REACT_NATIVE_SUPABASE_ANON_KEY;
+const supabasePublishableKey = YOUR_REACT_NATIVE_SUPABASE_PUBLISHABLE_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {
     storage: localStorage,
     autoRefreshToken: true,
