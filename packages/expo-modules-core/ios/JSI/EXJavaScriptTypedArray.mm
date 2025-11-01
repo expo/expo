@@ -1,7 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJavaScriptTypedArray.h>
-#import <ExpoModulesCore/TypedArray.h>
+#import <ExpoModulesJSI/EXJavaScriptTypedArray.h>
+#import <ExpoModulesJSI/TypedArray.h>
 
 @implementation EXJavaScriptTypedArray {
   __weak EXJavaScriptRuntime *_runtime;

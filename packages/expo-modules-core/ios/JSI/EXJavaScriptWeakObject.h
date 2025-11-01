@@ -1,8 +1,8 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 #ifdef __cplusplus
 #import <jsi/jsi.h>

@@ -71,7 +71,7 @@ public final class ModuleDefinition: ObjectDefinition {
 
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
     // Create an instance of `global.expo.NativeModule`
-    let object = JSIUtils.createNativeModuleObject(try appContext.runtime)
+    let object = JSUtils.createNativeModuleObject(try appContext.runtime)
 
     try super.decorate(object: object, appContext: appContext)
 

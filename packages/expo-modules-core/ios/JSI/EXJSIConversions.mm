@@ -1,15 +1,14 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <react/bridging/CallbackWrapper.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptObject.h>
-#import <ExpoModulesCore/EXJavaScriptWeakObject.h>
-#import <ExpoModulesCore/EXJSIConversions.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
-#import <ExpoModulesCore/EXJavaScriptSharedObjectBinding.h>
-#import <ExpoModulesCore/EXStringUtils.h>
-#import <Foundation/NSURL.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
+#import <ExpoModulesJSI/EXJavaScriptWeakObject.h>
+#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXStringUtils.h>
+#import <ExpoModulesJSI/EXJavaScriptObjectBinding.h>
 
 namespace expo {
 
@@ -99,8 +98,8 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   if ([value isKindOfClass:[EXJavaScriptWeakObject class]]) {
     return jsi::Value(runtime, *[[(EXJavaScriptWeakObject *)value lock] get]);
   }
-  if ([value isKindOfClass:[EXJavaScriptSharedObjectBinding class]]) {
-    return jsi::Value(runtime, *[[(EXJavaScriptSharedObjectBinding *)value get] get]);
+  if ([value isKindOfClass:[EXJavaScriptObjectBinding class]]) {
+    return jsi::Value(runtime, *[[(EXJavaScriptObjectBinding *)value get] get]);
   }
   if ([value isKindOfClass:[NSString class]]) {
     return convertNSStringToJSIString(runtime, (NSString *)value);

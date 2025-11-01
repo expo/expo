@@ -23,6 +23,7 @@ file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/javaclasses/*.cpp")
 file(GLOB sources_android_decorators "${SRC_DIR}/main/cpp/decorators/*.cpp")
 file(GLOB sources_android_worklets "${SRC_DIR}/main/cpp/worklets/*.cpp")
 file(GLOB common_sources "${COMMON_DIR}/*.cpp")
+file(GLOB common_sources_jsi "${COMMON_DIR}/JSI/*.cpp")
 
 # shared
 
@@ -40,6 +41,7 @@ add_library(
   ${PACKAGE_NAME}
   SHARED
   ${common_sources}
+  ${common_sources_jsi}
   ${sources_android}
   ${sources_android_types}
   ${sources_android_javaclasses}
@@ -116,6 +118,7 @@ target_include_directories(
   # header only imports from turbomodule, e.g. CallInvokerHolder.h
   "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
   "${COMMON_DIR}"
+  "${COMMON_DIR}/JSI"
   "${SRC_DIR}/fabric"
 )
 

@@ -1,7 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJSIUtils.h>
-#import <ExpoModulesCore/EXJavaScriptWeakObject.h>
+#import <ExpoModulesJSI/EXJSIUtils.h>
+#import <ExpoModulesJSI/EXJavaScriptWeakObject.h>
 
 @implementation EXJavaScriptWeakObject {
   /**

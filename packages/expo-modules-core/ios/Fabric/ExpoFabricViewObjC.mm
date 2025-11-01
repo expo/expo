@@ -3,14 +3,15 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 
 #import <objc/runtime.h>
-#import <ExpoModulesCore/ExpoFabricViewObjC.h>
+#import <string.h>
 
-#import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
-#import <ExpoModulesCore/EXJSIConversions.h>
+#import <ExpoModulesCore/ExpoFabricViewObjC.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/Swift.h>
 
-#import <string.h>
+#import <ExpoModulesJSI/EXJSIConversions.h>
+
+#import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 
 using namespace expo;
 

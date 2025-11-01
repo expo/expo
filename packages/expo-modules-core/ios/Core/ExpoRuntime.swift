@@ -4,8 +4,7 @@
  Class that extends the standard JavaScript runtime with some Expo-specific features.
  For instance, the global `expo` object is available only in Expo runtimes.
  */
-@objc(EXRuntime)
-public final class ExpoRuntime: JavaScriptRuntime {
+public extension ExpoRuntime {
   internal func initializeCoreObject(_ coreObject: JavaScriptObject) throws {
     global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
   }

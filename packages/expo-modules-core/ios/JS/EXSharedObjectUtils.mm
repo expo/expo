@@ -1,8 +1,9 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/EXSharedObjectUtils.h>
 #import <ExpoModulesCore/SharedObject.h>
+
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 @implementation EXSharedObjectUtils
 

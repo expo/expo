@@ -2,7 +2,7 @@
 
 #ifdef __cplusplus
 
-#import <ExpoModulesCore/MainThreadInvoker.h>
+#import <ExpoModulesJSI/MainThreadInvoker.h>
 #import <Foundation/Foundation.h>
 
 void MainThreadInvoker::invokeOnMainThread(const std::function<void()> task) {

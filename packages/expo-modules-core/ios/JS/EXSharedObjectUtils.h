@@ -1,6 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
 
 typedef void (^ObjectReleaser)(long objectId);
 

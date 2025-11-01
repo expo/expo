@@ -1,7 +1,13 @@
 {
-  "platforms": ["apple", "android"],
+  "platforms": [
+    "apple",
+    "android"
+  ],
   "apple": {
-    "podspecPath": "./ExpoModulesCore.podspec"
+    "podspecPath": [
+      "./ExpoModulesCore.podspec",
+      "./ExpoModulesJSI.podspec"
+    ]
   },
   "android": {
     "gradlePlugins": [

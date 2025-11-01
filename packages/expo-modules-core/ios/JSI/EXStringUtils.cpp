@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 #import <cstdint>
-#import <ExpoModulesCore/EXStringUtils.h>
+#import <ExpoModulesJSI/EXStringUtils.h>
 
 namespace expo {
 

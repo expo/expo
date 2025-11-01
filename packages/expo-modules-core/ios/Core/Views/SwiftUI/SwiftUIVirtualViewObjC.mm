@@ -8,10 +8,11 @@
  */
 
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
-
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
-#import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
+
+#import <ExpoModulesJSI/EXJSIConversions.h>
+
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewProtocol.h>
 

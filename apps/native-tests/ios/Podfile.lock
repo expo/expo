@@ -320,6 +320,7 @@ PODS:
     - ExpoModulesTestCore
     - React-Core
   - ExpoModulesCore (3.0.16):
+    - ExpoModulesJSI
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -343,6 +344,54 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - ExpoModulesCore/Tests (3.0.16):
+    - ExpoModulesJSI
+    - ExpoModulesTestCore
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-jsinspector
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - ExpoModulesJSI (3.0.16):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-jsinspector
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - ExpoModulesJSI/Tests (3.0.16):
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -2185,6 +2234,8 @@ DEPENDENCIES:
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
+  - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
+  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../../../packages/expo-structured-headers/ios`)
@@ -2308,6 +2359,9 @@ EXTERNAL SOURCES:
     inhibit_warnings: false
     :path: "../../../packages/expo-media-library/ios"
   ExpoModulesCore:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-modules-core"
+  ExpoModulesJSI:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core"
   ExpoModulesTestCore:
@@ -2473,7 +2527,8 @@ SPEC CHECKSUMS:
   ExpoClipboard: 99109306a2d9ed2fbd16f6b856e6267b2afa8472
   ExpoImage: 0fc185a4a4e462fedfe877ae66204a7c541dfee0
   ExpoMediaLibrary: 648cee3f5dcba13410ec9cc8ac9a426e89a61a31
-  ExpoModulesCore: ce55349fc14e3a993eeea921f6b56ee5581d6686
+  ExpoModulesCore: 58d064b84feb9fd140a67ee26604bbde6aff5c4f
+  ExpoModulesJSI: edc554bdcaa0b7faf081d595aa9ea78c18322681
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
   EXUpdates: 83e4d666a085b44149f3b21d5bd057ad37b2c3e5

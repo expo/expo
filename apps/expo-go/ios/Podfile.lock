@@ -62,6 +62,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - ExpoAgeRange (0.1.0):
+    - ExpoModulesCore
   - ExpoAppleAuthentication (8.0.7):
     - ExpoModulesCore
   - ExpoAsset (12.0.8):
@@ -166,6 +168,7 @@ PODS:
   - ExpoModulesCore (3.0.16):
     - boost
     - DoubleConversion
+    - ExpoModulesJSI
     - fast_float
     - fmt
     - glog
@@ -195,6 +198,7 @@ PODS:
   - ExpoModulesCore/Tests (3.0.16):
     - boost
     - DoubleConversion
+    - ExpoModulesJSI
     - ExpoModulesTestCore
     - fast_float
     - fmt
@@ -222,6 +226,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - ExpoModulesJSI (3.0.16):
+    - hermes-engine
+    - React-Core
+    - ReactCommon
+  - ExpoModulesJSI/Tests (3.0.16):
+    - ExpoModulesTestCore
+    - hermes-engine
+    - React-Core
+    - ReactCommon
   - ExpoModulesTestCore (1.0.0):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
@@ -3767,6 +3780,7 @@ DEPENDENCIES:
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
+  - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
@@ -3809,6 +3823,8 @@ DEPENDENCIES:
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
+  - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
+  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
@@ -4004,6 +4020,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-notifications/ios"
   Expo:
     :path: "../../../packages/expo"
+  ExpoAgeRange:
+    :path: "../../../packages/expo-age-range/ios"
   ExpoAppleAuthentication:
     :path: "../../../packages/expo-apple-authentication/ios"
   ExpoAsset:
@@ -4079,6 +4097,8 @@ EXTERNAL SOURCES:
   ExpoMeshGradient:
     :path: "../../../packages/expo-mesh-gradient/ios"
   ExpoModulesCore:
+    :path: "../../../packages/expo-modules-core"
+  ExpoModulesJSI:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesTestCore:
     :path: "../../../packages/expo-modules-test-core/ios"
@@ -4327,6 +4347,7 @@ SPEC CHECKSUMS:
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
   Expo: b49d6f57d85cbbd1c74ff97237153846dc67a319
+  ExpoAgeRange: 5203a372b2f4ef4e5510acf025373d52de60f8df
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
   ExpoAsset: 4375a46b45b12bbfcf6efac8c8a33aebdb8ba12b
   ExpoAudio: 80c3cce8e252081c24837ef4c7bedda78f3ce8de
@@ -4364,7 +4385,8 @@ SPEC CHECKSUMS:
   ExpoMailComposer: 8771121c8d5e6e0e194537fab79360d0f443f70d
   ExpoMediaLibrary: 648cee3f5dcba13410ec9cc8ac9a426e89a61a31
   ExpoMeshGradient: 763087d3b1e6e9a0974e9700ea24cb598816d93c
-  ExpoModulesCore: 0e7c7b65c56452e6a1832dc755676d79689cadd8
+  ExpoModulesCore: 5fc878ddc946322e80cd7b27ec63a1c716433324
+  ExpoModulesJSI: b1e8632121ef2d97cdabb1c6d1683486984bfda4
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   ExpoNetwork: 97073786edfe405aba5d0987a544617ed0671ad1
   ExpoPrint: ad836bb90da10793509651c0ea1f39e120db001e
@@ -4404,7 +4426,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: d98188d71d8656a0ccd119b8aaf00e7d6f80b7ab
+  hermes-engine: 5c94409a065349d178c8d6d6927ad57d27a11b88
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
