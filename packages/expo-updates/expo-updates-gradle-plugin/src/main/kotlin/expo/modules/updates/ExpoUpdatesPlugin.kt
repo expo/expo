@@ -45,6 +45,9 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
         it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs.get())
         it.debuggableVariant.set(isDebuggableVariant)
         it.entryFile.set(entryFile.toPath().toString())
+
+        // Force task to run every time to regenerate id and commitTime
+        it.outputs.upToDateWhen { false }
       }
       variant.sources.assets?.addGeneratedSourceDirectory(createUpdatesResourcesTask, CreateUpdatesResourcesTask::assetDir)
     }
