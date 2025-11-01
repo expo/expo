@@ -1,7 +1,6 @@
 package expo.modules.devmenu
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.view.KeyEvent
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactHost
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactNativeHostHandler
@@ -74,21 +72,6 @@ class DevMenuPackage : Package {
         override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
           val fragment = fragment ?: return false
           return fragment.onKeyUp(keyCode, event)
-        }
-      }
-    )
-  }
-
-  override fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener?>? {
-    if (!BuildConfig.DEBUG) {
-      return emptyList()
-    }
-
-    return listOf(
-      object : ApplicationLifecycleListener {
-        override fun onCreate(application: Application) {
-          DevMenuPreferencesHandle.init(application)
-          AppInfo.init(application)
         }
       }
     )

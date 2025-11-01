@@ -6,16 +6,16 @@ import androidx.lifecycle.ViewModelProvider
 import com.facebook.react.ReactHost
 import expo.modules.devmenu.DevMenuDevSettings
 import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.DevMenuPreferencesHandle
+import expo.modules.devmenu.DevMenuPreferences
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
 
 class DevMenuViewModel(
-  val reactHostHolder: WeakReference<ReactHost>
+  val reactHostHolder: WeakReference<ReactHost>,
+  val menuPreferences: DevMenuPreferences
 ) : ViewModel() {
-  private val menuPreferences = DevMenuPreferencesHandle
   private val reactHost
     get() = reactHostHolder.get()
 
@@ -27,7 +27,8 @@ class DevMenuViewModel(
 
   private val _state = mutableStateOf(
     DevMenuState(
-      devToolsSettings = devSettings
+      devToolsSettings = devSettings,
+      showFab = menuPreferences.showFab
     )
   )
 
@@ -117,10 +118,13 @@ class DevMenuViewModel(
     }
   }
 
-  class Factory(private val reactHostHolder: WeakReference<ReactHost>) : ViewModelProvider.Factory {
+  class Factory(
+    private val reactHostHolder: WeakReference<ReactHost>,
+    private val menuPreferences: DevMenuPreferences
+  ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       @Suppress("UNCHECKED_CAST")
-      return DevMenuViewModel(reactHostHolder) as T
+      return DevMenuViewModel(reactHostHolder, menuPreferences) as T
     }
   }
 }

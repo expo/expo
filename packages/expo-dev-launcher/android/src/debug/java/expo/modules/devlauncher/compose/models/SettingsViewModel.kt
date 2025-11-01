@@ -27,7 +27,7 @@ sealed interface SettingsAction {
 }
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
-  private val menuPreferences = DevMenuPreferencesHandle
+  private val menuPreferences = DevMenuPreferencesHandle(application)
   private val appService = inject<AppService>()
 
   private val _state = mutableStateOf(

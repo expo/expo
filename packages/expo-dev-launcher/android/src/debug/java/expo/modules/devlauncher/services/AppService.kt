@@ -1,5 +1,6 @@
 package expo.modules.devlauncher.services
 
+import android.app.Application
 import android.content.Context
 import androidx.core.net.toUri
 import expo.modules.devlauncher.DevLauncherController
@@ -43,22 +44,16 @@ sealed interface ApplicationInfo {
   }
 }
 
-class AppService {
-  private var _applicationInfo: ApplicationInfo? = null
+class AppService(application: Application) {
+  var applicationInfo: ApplicationInfo = run {
+    val devMenuInfo = AppInfo.getNativeAppInfo(application)
 
-  val applicationInfo: ApplicationInfo
-    get() {
-      if (_applicationInfo == null) {
-        val devMenuInfo = AppInfo.native
-
-        _applicationInfo = ApplicationInfo.Native(
-          appName = devMenuInfo.appName,
-          appVersion = devMenuInfo.appVersion
-        )
-      }
-
-      return _applicationInfo!!
-    }
+    ApplicationInfo.Native(
+      appName = devMenuInfo.appName,
+      appVersion = devMenuInfo.appVersion
+    )
+  }
+    private set
 
   internal fun setUpUpdateInterface(updatesInterface: UpdatesInterface, context: Context) {
     val projectUrl = DevLauncherController.getMetadataValue(context, "expo.modules.updates.EXPO_UPDATE_URL")
@@ -69,9 +64,9 @@ class AppService {
       return
     }
 
-    val devMenuInfo = AppInfo.native
+    val devMenuInfo = AppInfo.getNativeAppInfo(context.applicationContext as Application)
 
-    _applicationInfo = ApplicationInfo.Updates(
+    applicationInfo = ApplicationInfo.Updates(
       appName = devMenuInfo.appName,
       appVersion = devMenuInfo.appVersion,
       appId = appId,

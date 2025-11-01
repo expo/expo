@@ -75,7 +75,7 @@ class DevLauncherController private constructor() :
     get() = internalUpdatesInterface
     set(value) = run {
       if (value != null) {
-        DependencyInjection.appService.setUpUpdateInterface(value, context)
+        DependencyInjection.appService?.setUpUpdateInterface(value, context)
       }
 
       DevLauncherKoinContext.app.koin.loadModules(
