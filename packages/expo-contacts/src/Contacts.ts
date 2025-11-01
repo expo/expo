@@ -593,6 +593,24 @@ export async function isAvailableAsync(): Promise<boolean> {
   return !!ExpoContacts.getContactsAsync;
 }
 
+/**
+ * Checks if any contacts exist on the device without querying all contacts. This method requires contacts read permission.
+ * @return A promise that fulfills with a `boolean`, indicating whether there are any contacts on the device.
+ * @example
+ * ```js
+ * const hasContacts = await Contacts.hasContactsAsync();
+ * if (hasContacts) {
+ *   console.log('Contacts are available');
+ * }
+ * ```
+ */
+export async function hasContactsAsync(): Promise<boolean> {
+  if (!ExpoContacts.hasContactsAsync) {
+    throw new UnavailabilityError('Contacts', 'hasContactsAsync');
+  }
+  return await ExpoContacts.hasContactsAsync();
+}
+
 // @docsMissing
 export async function shareContactAsync(
   contactId: string,

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Implement `hasContactsAsync` function ([#40756](https://github.com/expo/expo/pull/40756) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
