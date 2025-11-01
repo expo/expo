@@ -4,7 +4,6 @@ import { View, Text, Spacer, useExpoTheme } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import url from 'url';
 
 import ApolloClient from '../../api/ApolloClient';
 import Config from '../../api/Config';
@@ -110,8 +109,8 @@ export function LoggedOutAccountView({ refetch }: Props) {
       }
 
       if (result.type === 'success') {
-        const resultURL = url.parse(result.url, true);
-        const encodedSessionSecret = resultURL.query['session_secret'] as string;
+        const resultURL = new URL(result.url);
+        const encodedSessionSecret = resultURL.searchParams.get('session_secret');
         if (!encodedSessionSecret) {
           throw new Error('session_secret is missing in auth redirect query');
         }
