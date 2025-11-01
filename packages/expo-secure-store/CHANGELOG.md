@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 15.0.7 — 2025-10-29
+
+### 💡 Others
+
+- [docs] Add clarification note about storage isolation and authentication behavior under requireAuthentication prop. ([#40729](https://github.com/expo/expo/pull/#40729) by [@dileepapeiris](https://github.com/dileepapeiris)) ([#40729](https://github.com/expo/expo/pull/40729) by [@dileepapeiris](https://github.com/dileepapeiris))
+
 ### 💡 Others
 
 - [iOS] Remove byte limit warning. ([#40187](https://github.com/expo/expo/pull/40187) by [@alanjhughes](https://github.com/alanjhughes))
