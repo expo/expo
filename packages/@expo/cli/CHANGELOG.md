@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Clarify Expo Go instructions for scanning QR Code. ([#34811](https://github.com/expo/expo/pull/34811) by [@betomoedano](https://github.com/betomoedano))
+
 ### 🛠 Breaking changes
 
 - Drop `EXPO_USE_FAST_RESOLVER` flag and implementation ([#40673](https://github.com/expo/expo/pull/40673) by [@kitten](https://github.com/kitten))
