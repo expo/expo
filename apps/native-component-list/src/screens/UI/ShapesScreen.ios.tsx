@@ -20,8 +20,8 @@ import {
   shadow,
   foregroundStyle,
   containerShape,
-  RoundedRectangularShape,
   padding,
+  shapes,
 } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
 
@@ -123,7 +123,12 @@ export default function ShapesScreen() {
               <ZStack
                 modifiers={[
                   frame({ width: 120, height: 120 }),
-                  containerShape(RoundedRectangularShape.rect(40)),
+                  containerShape(
+                    shapes.roundedRectangle({
+                      cornerRadius: 10,
+                      cornerSize: { width: 50, height: 50 },
+                    })
+                  ),
                 ]}>
                 <ConcentricRectangle modifiers={[foregroundStyle('#000')]} />
                 <ConcentricRectangle

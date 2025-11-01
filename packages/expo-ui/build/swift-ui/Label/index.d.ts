@@ -12,6 +12,7 @@ export type LabelProps = {
     systemImage?: SFSymbol;
     /**
      * The color of the label icon.
+     * @deprecated Use `foregroundStyle` modifier instead.
      */
     color?: ColorValue;
 } & CommonViewModifierProps;

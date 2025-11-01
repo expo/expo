@@ -18,6 +18,7 @@ export type LabelProps = {
 
   /**
    * The color of the label icon.
+   * @deprecated Use `foregroundStyle` modifier instead.
    */
   color?: ColorValue;
 } & CommonViewModifierProps;

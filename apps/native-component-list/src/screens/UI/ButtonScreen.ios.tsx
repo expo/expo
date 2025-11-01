@@ -7,7 +7,13 @@ import {
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
-import { background, fixedSize, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
+import {
+  background,
+  fixedSize,
+  foregroundStyle,
+  padding,
+  shapes,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
@@ -21,7 +27,12 @@ export default function ButtonScreen() {
           <Button style={styles.button}>
             <Label
               title="Default Padding"
-              modifiers={[foregroundStyle('black'), padding(), background('yellow')]}
+              systemImage="gear"
+              modifiers={[
+                foregroundStyle('black'),
+                padding(),
+                background('yellow', shapes.capsule()),
+              ]}
             />
           </Button>
           <Button style={styles.button}>

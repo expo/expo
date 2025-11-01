@@ -35,18 +35,6 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   }
 }
 
-internal struct BackgroundModifier: ViewModifier, Record {
-  @Field var color: Color?
-
-  func body(content: Content) -> some View {
-    if let color = color {
-      content.background(color)
-    } else {
-      content
-    }
-  }
-}
-
 internal struct CornerRadiusModifier: ViewModifier, Record {
   @Field var radius: CGFloat = 0
 
@@ -1288,14 +1276,6 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
     } else {
       content
     }
-  }
-}
-
-internal struct ContainerShapeModifier: ViewModifier, Record {
-  @Field var cornerRadius: CGFloat = 0
-
-  func body(content: Content) -> some View {
-    content.containerShape(.rect(cornerRadius: cornerRadius))
   }
 }
 
