@@ -83,6 +83,9 @@ jobs:
   fingerprint:
     name: Fingerprint
     type: fingerprint
+    # @info Use the same environment as your build profile #
+    environment: production
+    # @end #
   get_android_build:
     name: Check for existing android build
     needs: [fingerprint]

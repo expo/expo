@@ -672,6 +672,7 @@ jobs:
     # @info #
     type: fingerprint
     # @end #
+    environment: production # Should match your build profile
 ```
 
 This job outputs the following properties:
@@ -682,6 +683,8 @@ This job outputs the following properties:
   "ios_fingerprint_hash": string,
 }
 ```
+
+> **Note:** For accurate fingerprint matching, ensure the fingerprint job's `environment` matches your build profile. Consider using [EAS environment variables](/eas/environment-variables/) instead of `env` for better consistency across jobs.
 
 #### `get-build`
 
