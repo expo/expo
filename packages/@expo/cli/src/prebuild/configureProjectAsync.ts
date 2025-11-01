@@ -14,10 +14,12 @@ export async function configureProjectAsync(
   projectRoot: string,
   {
     platforms,
+    templateProjectRoot,
     exp,
     templateChecksum,
   }: {
     platforms: ModPlatform[];
+    templateProjectRoot?: string;
     exp?: ExpoConfig;
     templateChecksum?: string;
   }
@@ -50,6 +52,7 @@ export async function configureProjectAsync(
     projectRoot,
     platforms,
     assertMissingModProviders: false,
+    templateProjectRoot,
   });
 
   if (env.EXPO_DEBUG) {

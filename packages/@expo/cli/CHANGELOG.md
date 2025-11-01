@@ -1257,6 +1257,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add fast reset system for prebuild.
 - Add `--no-bytecode` flag to `expo export` to disable generating Hermes bytecode for use with debugging tools. ([#26985](https://github.com/expo/expo/pull/26985) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.17.5 - 2024-02-06
