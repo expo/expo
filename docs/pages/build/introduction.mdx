@@ -1,60 +1,186 @@
----
-title: EAS Build
-sidebar_title: Introduction
-hideTOC: true
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+import React, { useState } from "react";
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+// App.js - Single-file React demo of "Casa dos Assados" (mobile-first layout) // NOTE: put your logo image at public/assets/logo.png and background wood image at public/assets/wood.jpg // This demo implements categories, product selection, cart, address & contact, and simple payment choices.
 
-import { BoxLink } from '~/ui/components/BoxLink';
+export default function App() { const categories = [ { id: "promos", name: "Promoções" }, { id: "frangos", name: "Frangos" }, { id: "carnes", name: "Carnes" }, { id: "guarni", name: "Guarnições" }, { id: "bebidas", name: "Bebidas" }, { id: "onde", name: "Onde nos encontrar" }, { id: "contato", name: "Redes & Contato" }, ];
 
-**EAS Build** is a hosted service for building app binaries for your Expo and React Native projects.
+// sample product catalog (in a real app this comes from API) const productCatalog = [ { id: 1, category: "promos", name: "Combo Família - Frango + 2 guarnições", price: 49.9 }, { id: 2, category: "frangos", name: "Frango Assado Inteiro", price: 22.5 }, { id: 3, category: "carnes", name: "Picanha 500g", price: 39.9 }, { id: 4, category: "guarni", name: "Arroz Branco 500g", price: 7.5 }, { id: 5, category: "guarni", name: "Farofa Especial 300g", price: 6.0 }, { id: 6, category: "bebidas", name: "Refrigerante 2L", price: 8.5, sub: "refrigerantes" }, { id: 7, category: "bebidas", name: "Cerveja Long Neck", price: 6.5, sub: "bebidas alcoolicas" }, { id: 8, category: "bebidas", name: "Vodka 1L", price: 45.0, sub: "destilados" }, { id: 9, category: "promos", name: "Meio frango + bebida", price: 19.9 }, ];
 
-It makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using ad hoc and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+const [activeCat, setActiveCat] = useState("promos"); const [cart, setCart] = useState([]); const [showCart, setShowCart] = useState(false); const [address, setAddress] = useState(""); const [contactNumber, setContactNumber] = useState(""); const [paymentMethod, setPaymentMethod] = useState("cash"); const [notes, setNotes] = useState("");
 
-It's designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+function addToCart(product, qty = 1) { setCart((prev) => { const found = prev.find((p) => p.id === product.id); if (found) { return prev.map((p) => (p.id === product.id ? { ...p, qty: p.qty + qty } : p)); } return [...prev, { ...product, qty }]; }); }
 
-### Get started
+function updateQty(id, qty) { setCart((prev) => prev.map((p) => (p.id === id ? { ...p, qty: Math.max(1, qty) } : p))); }
 
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
+function removeItem(id) { setCart((prev) => prev.filter((p) => p.id !== id)); }
 
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
+function clearCart() { setCart([]); }
 
-<BoxLink
-  title="Automate submissions"
-  description="Learn how you can have the service take your successful builds and handle uploading them to app stores for you automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
+function total() { return cart.reduce((s, p) => s + p.price * p.qty, 0).toFixed(2); }
 
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
+function checkout() { // This is a demo checkout: in real app, connect to backend/payment gateway if (!address) return alert("Por favor, informe o endereço de entrega."); if (!contactNumber) return alert("Por favor, informe um número de contato."); if (cart.length === 0) return alert("Seu carrinho está vazio.");
 
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, but you can also run it on your own machine, for example, to debug or to comply with any company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
+const order = {
+  cart,
+  address,
+  contactNumber,
+  paymentMethod,
+  notes,
+  total: total(),
+  timestamp: new Date().toISOString(),
+};
 
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+console.log("Simulando envio de pedido:", order);
+alert("Pedido criado com sucesso (simulação). Veja o console para detalhes.");
+clearCart();
+setShowCart(false);
+
+}
+
+// UI pieces const productsToShow = productCatalog.filter((p) => p.category === activeCat);
+
+return ( <div className="min-h-screen flex flex-col items-center p-4" style={{ backgroundImage: "url('/assets/wood.jpg')", backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', fontFamily: 'Inter, sans-serif' }}> <div className="w-full max-w-md bg-black bg-opacity-60 rounded-2xl shadow-xl p-4 backdrop-blur-sm"> <header className="flex items-center justify-between"> <div className="flex items-center gap-3"> <img src="/assets/logo.png" alt="Casa dos Assados" className="w-16 h-16 rounded-full object-cover border-2 border-white" /> <div> <h1 className="text-white text-2xl font-bold">Casa dos Assados</h1> <p className="text-sm text-gray-200">Peça online e receba em casa</p> </div> </div>
+
+<div className="flex flex-col items-end">
+        <button className="bg-red-600 px-3 py-2 rounded-lg text-white font-semibold" onClick={() => setShowCart(true)}>
+          Carrinho ({cart.reduce((s, p) => s + p.qty, 0)})
+        </button>
+        <span className="text-xs text-gray-300">{total()} R$</span>
+      </div>
+    </header>
+
+    <nav className="mt-4 grid grid-cols-4 gap-2">
+      {categories.map((c) => (
+        <button
+          key={c.id}
+          onClick={() => setActiveCat(c.id)}
+          className={`py-2 rounded-lg text-sm font-medium ${activeCat === c.id ? 'bg-red-500 text-white' : 'bg-white bg-opacity-10 text-gray-100'}`}>
+          {c.name}
+        </button>
+      ))}
+    </nav>
+
+    <main className="mt-4">
+      <h2 className="text-white text-lg font-semibold mb-2">{categories.find((c) => c.id === activeCat)?.name}</h2>
+
+      {activeCat === 'onde' && (
+        <div className="p-3 rounded-lg bg-white bg-opacity-10 text-gray-100">
+          <p>Endereço: Av. Principal, 123 - Bairro Central</p>
+          <p>Coloque a localização real no mapa em produção.</p>
+          <button className="mt-2 underline" onClick={() => alert('Abrir mapa (simulação)')}>Abrir mapa</button>
+        </div>
+      )}
+
+      {activeCat === 'contato' && (
+        <div className="p-3 rounded-lg bg-white bg-opacity-10 text-gray-100">
+          <p>Telefone: 31 97210-1762</p>
+          <p>Redes: Instagram: @casadosassados | Facebook: /casadosassados</p>
+        </div>
+      )}
+
+      {activeCat !== 'onde' && activeCat !== 'contato' && (
+        <div className="grid grid-cols-1 gap-3">
+          {productsToShow.length === 0 && <p className="text-gray-200">Nenhum produto nesta categoria.</p>}
+          {productsToShow.map((p) => (
+            <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-white bg-opacity-10">
+              <div>
+                <div className="text-white font-semibold">{p.name}</div>
+                <div className="text-sm text-gray-200">{p.sub ? p.sub : ''}</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="text-white font-bold">R$ {p.price.toFixed(2)}</div>
+                <button className="px-3 py-1 bg-green-600 rounded-lg text-white" onClick={() => addToCart(p)}>
+                  +
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </main>
+
+    <footer className="mt-4 text-center text-gray-300 text-xs">
+      <div>"Tudo posso naquele que me fortalece"</div>
+      <div className="mt-2">Versão demo — integre API/Backend para produção</div>
+    </footer>
+  </div>
+
+  {/* Cart drawer/modal */}
+  {showCart && (
+    <div className="fixed inset-0 flex items-end justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-t-2xl shadow-2xl p-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold">Seu Pedido</h3>
+          <div className="flex items-center gap-2">
+            <button className="text-sm text-red-600" onClick={() => { setShowCart(false); }}>Fechar</button>
+            <button className="text-sm" onClick={() => clearCart()}>Limpar</button>
+          </div>
+        </div>
+
+        <div className="mt-3 max-h-64 overflow-auto">
+          {cart.length === 0 && <p className="text-gray-600">Carrinho vazio.</p>}
+          {cart.map((item) => (
+            <div key={item.id} className="flex items-center justify-between py-2 border-b">
+              <div>
+                <div className="font-semibold">{item.name}</div>
+                <div className="text-sm text-gray-500">R$ {item.price.toFixed(2)}</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="number" min="1" value={item.qty} onChange={(e) => updateQty(item.id, Number(e.target.value))} className="w-16 p-1 border rounded" />
+                <button className="text-red-600" onClick={() => removeItem(item.id)}>Remover</button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-3">
+          <div className="flex justify-between items-center">
+            <div className="font-semibold">Total</div>
+            <div className="font-bold">R$ {total()}</div>
+          </div>
+
+          <div className="mt-3 space-y-2">
+            <label className="block">
+              <div className="text-sm text-gray-700">Endereço de entrega</div>
+              <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Rua, Número, Complemento" className="w-full p-2 border rounded mt-1" />
+            </label>
+
+            <label className="block">
+              <div className="text-sm text-gray-700">Número para contato</div>
+              <input value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} placeholder="(31) 9xxxx-xxxx" className="w-full p-2 border rounded mt-1" />
+            </label>
+
+            <label className="block">
+              <div className="text-sm text-gray-700">Forma de pagamento</div>
+              <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className="w-full p-2 border rounded mt-1">
+                <option value="cash">Dinheiro</option>
+                <option value="card">Cartão na entrega</option>
+                <option value="card-online">Cartão (pagamento online - simulação)</option>
+                <option value="ifood">Pagamento via iFood (simulação)</option>
+                <option value="anotaai">Anota.ai (simulação)</option>
+              </select>
+            </label>
+
+            <label className="block">
+              <div className="text-sm text-gray-700">Observações</div>
+              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Ex: sem cebola, trocar guarnição" className="w-full p-2 border rounded mt-1" />
+            </label>
+
+            <div className="flex gap-2 mt-2">
+              <button className="flex-1 py-2 bg-green-600 text-white font-semibold rounded" onClick={checkout}>Finalizar Pedido</button>
+              <button className="flex-1 py-2 bg-gray-200 font-semibold rounded" onClick={() => alert('Compartilhar pedido (simulação)')}>Compartilhar</button>
+            </div>
+
+            <div className="text-xs text-gray-400 mt-2">Em produção:
+              conectar com API de pagamentos, sistema de entregas e integração com ifood/anota.ai conforme contratos.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )}
+
+</div>
+
+); }
