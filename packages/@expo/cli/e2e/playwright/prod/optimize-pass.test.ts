@@ -33,7 +33,6 @@ test.describe(inputDir, () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'tree-shaking',
         EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH: 'true',
-        EXPO_USE_METRO_REQUIRE: 'true',
       },
     });
     console.timeEnd('expo export');
@@ -56,8 +55,6 @@ test.describe(inputDir, () => {
     const largest = [...jsFile].sort((a, b) => b.stats.size - a.stats.size)[0].path;
     const largestFile = fs.readFileSync(largest, 'utf8');
 
-    // Sanity
-    expect(largestFile).toMatch(/__r\("packages\/expo-router\/entry.js"\);/);
     // This icon will remain because tree shaking is disabled.
     expect(largestFile).toMatch(/test-icon-apple/);
     // This icon remains.

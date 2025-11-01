@@ -29,6 +29,8 @@ test.describe(inputDir, () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'compiler',
         E2E_ROUTER_COMPILER: 'true',
+
+        // NOTE: This is the feature flag we're intentionally testing here:
         EXPO_USE_METRO_REQUIRE: 'true',
       },
     });
