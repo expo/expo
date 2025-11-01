@@ -1,0 +1,337 @@
+{
+  "extraDependencies": [],
+  "coreFeatures": [],
+  "modules": [
+    {
+      "packageName": "@expo/dom-webview",
+      "projects": [
+        {
+          "name": "expo-dom-webview",
+          "sourceDir": "/app/node_modules/@expo/dom-webview/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.webview.DomWebViewModule",
+              "name": null
+            }
+          ],
+          "packages": [],
+          "publication": {
+            "groupId": "expo.modules.webview",
+            "artifactId": "expo.modules.webview",
+            "version": "0.2.8",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "0.2.8"
+    },
+    {
+      "packageName": "@expo/log-box",
+      "projects": [
+        {
+          "name": "expo-log-box",
+          "sourceDir": "/app/node_modules/@expo/log-box/android",
+          "modules": [],
+          "packages": ["expo.modules.logbox.ExpoLogBoxPackage"]
+        }
+      ],
+      "packageVersion": "0.0.13"
+    },
+    {
+      "packageName": "expo",
+      "projects": [
+        {
+          "name": "expo",
+          "sourceDir": "/app/node_modules/expo/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.fetch.ExpoFetchModule",
+              "name": null
+            }
+          ],
+          "packages": ["expo.modules.ExpoModulesPackage"]
+        }
+      ],
+      "packageVersion": "55.0.0"
+    },
+    {
+      "packageName": "expo-asset",
+      "projects": [
+        {
+          "name": "expo-asset",
+          "sourceDir": "/app/node_modules/expo-asset/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.asset.AssetModule",
+              "name": null
+            }
+          ],
+          "packages": [],
+          "publication": {
+            "groupId": "expo.modules.asset",
+            "artifactId": "expo.modules.asset",
+            "version": "12.0.10",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "12.0.10"
+    },
+    {
+      "packageName": "expo-constants",
+      "projects": [
+        {
+          "name": "expo-constants",
+          "sourceDir": "/app/node_modules/expo-constants/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.constants.ConstantsModule",
+              "name": null
+            }
+          ],
+          "packages": ["expo.modules.constants.ConstantsPackage"]
+        }
+      ],
+      "packageVersion": "18.1.0"
+    },
+    {
+      "packageName": "expo-file-system",
+      "projects": [
+        {
+          "name": "expo-file-system",
+          "sourceDir": "/app/node_modules/expo-file-system/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.filesystem.FileSystemModule",
+              "name": null
+            },
+            {
+              "classifier": "expo.modules.filesystem.legacy.FileSystemLegacyModule",
+              "name": null
+            }
+          ],
+          "packages": ["expo.modules.filesystem.legacy.FileSystemPackage"],
+          "publication": {
+            "groupId": "host.exp.exponent",
+            "artifactId": "expo.modules.filesystem",
+            "version": "19.1.0",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "19.1.0"
+    },
+    {
+      "packageName": "expo-font",
+      "projects": [
+        {
+          "name": "expo-font",
+          "sourceDir": "/app/node_modules/expo-font/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.font.FontLoaderModule",
+              "name": null
+            },
+            {
+              "classifier": "expo.modules.font.FontUtilsModule",
+              "name": null
+            }
+          ],
+          "packages": [],
+          "publication": {
+            "groupId": "host.exp.exponent",
+            "artifactId": "expo.modules.font",
+            "version": "14.0.10",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "14.0.10"
+    },
+    {
+      "packageName": "expo-haptics",
+      "projects": [
+        {
+          "name": "expo-haptics",
+          "sourceDir": "/app/node_modules/expo-haptics/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.haptics.HapticsModule",
+              "name": null
+            }
+          ],
+          "packages": [],
+          "publication": {
+            "groupId": "host.exp.exponent",
+            "artifactId": "expo.modules.haptics",
+            "version": "15.0.8",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "15.0.8"
+    },
+    {
+      "packageName": "expo-image",
+      "projects": [
+        {
+          "name": "expo-image",
+          "sourceDir": "/app/node_modules/expo-image/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.image.ExpoImageModule",
+              "name": null
+            }
+          ],
+          "packages": [],
+          "publication": {
+            "groupId": "expo.modules.image",
+            "artifactId": "expo.modules.image",
+            "version": "3.1.0",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "3.1.0"
+    },
+    {
+      "packageName": "expo-keep-awake",
+      "projects": [
+        {
+          "name": "expo-keep-awake",
+          "sourceDir": "/app/node_modules/expo-keep-awake/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.keepawake.KeepAwakeModule",
+              "name": null
+            }
+          ],
+          "packages": ["expo.modules.keepawake.KeepAwakePackage"],
+          "publication": {
+            "groupId": "host.exp.exponent",
+            "artifactId": "expo.modules.keepawake",
+            "version": "15.0.8",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "15.0.8"
+    },
+    {
+      "packageName": "expo-linking",
+      "projects": [
+        {
+          "name": "expo-linking",
+          "sourceDir": "/app/node_modules/expo-linking/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.linking.ExpoLinkingModule",
+              "name": null
+            }
+          ],
+          "packages": ["expo.modules.linking.ExpoLinkingPackage"],
+          "publication": {
+            "groupId": "host.exp.exponent",
+            "artifactId": "expo.modules.linking",
+            "version": "8.0.9",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "8.0.9"
+    },
+    {
+      "packageName": "expo-modules-core",
+      "projects": [
+        {
+          "name": "expo-modules-core",
+          "sourceDir": "/app/node_modules/expo-modules-core/android",
+          "modules": [],
+          "packages": [
+            "expo.modules.adapters.react.ReactAdapterPackage",
+            "expo.modules.core.BasePackage",
+            "expo.modules.kotlin.edgeToEdge.EdgeToEdgePackage"
+          ]
+        }
+      ],
+      "plugins": [
+        {
+          "id": "expo-module-gradle-plugin",
+          "group": "expo.modules",
+          "sourceDir": "/app/node_modules/expo-modules-core/expo-module-gradle-plugin",
+          "applyToRootProject": false
+        }
+      ],
+      "packageVersion": "3.1.0"
+    },
+    {
+      "packageName": "expo-splash-screen",
+      "projects": [
+        {
+          "name": "expo-splash-screen",
+          "sourceDir": "/app/node_modules/expo-splash-screen/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.splashscreen.SplashScreenModule",
+              "name": null
+            }
+          ],
+          "packages": [],
+          "publication": {
+            "groupId": "host.exp.exponent",
+            "artifactId": "expo.modules.splashscreen",
+            "version": "31.0.11",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "31.0.11"
+    },
+    {
+      "packageName": "expo-system-ui",
+      "projects": [
+        {
+          "name": "expo-system-ui",
+          "sourceDir": "/app/node_modules/expo-system-ui/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.systemui.SystemUIModule",
+              "name": null
+            }
+          ],
+          "packages": ["expo.modules.systemui.SystemUIPackage"],
+          "publication": {
+            "groupId": "host.exp.exponent",
+            "artifactId": "expo.modules.systemui",
+            "version": "6.0.9",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "6.0.9"
+    },
+    {
+      "packageName": "expo-web-browser",
+      "projects": [
+        {
+          "name": "expo-web-browser",
+          "sourceDir": "/app/node_modules/expo-web-browser/android",
+          "modules": [
+            {
+              "classifier": "expo.modules.webbrowser.WebBrowserModule",
+              "name": null
+            }
+          ],
+          "packages": [],
+          "publication": {
+            "groupId": "host.exp.exponent",
+            "artifactId": "expo.modules.webbrowser",
+            "version": "15.0.9",
+            "repository": "local-maven-repo"
+          }
+        }
+      ],
+      "packageVersion": "15.0.9"
+    }
+  ]
+}
