@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Mute require cycle warnings triggered from node_modules in API routes. [#27039](https://github.com/expo/expo/pull/27039) by [@hdwatts](https://github.com/hdwatts)
+
 ### 🛠 Breaking changes
 
 - Drop `EXPO_USE_FAST_RESOLVER` flag and implementation ([#40673](https://github.com/expo/expo/pull/40673) by [@kitten](https://github.com/kitten))
