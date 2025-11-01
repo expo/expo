@@ -11,9 +11,11 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
         }
         return moduleSpecifiers;
     };
-    const addImport = (path, state, source) => {
+    const addImport = (path, state, source, sideEffect = false) => {
         const moduleSpecifiers = addModuleSpecifiers(state, source);
-        moduleSpecifiers.sideEffect = true;
+        if (sideEffect || !state.opts.performConstantFolding) {
+            moduleSpecifiers.sideEffect = true;
+        }
         let id = moduleSpecifiers["REQUIRE" /* ImportDeclarationKind.REQUIRE */];
         if (!id) {
             id = path.scope.generateUid(source.value);
@@ -79,7 +81,7 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
                 }
                 const source = path.node.source;
                 if (!path.node.specifiers.length) {
-                    addImport(path, state, source);
+                    addImport(path, state, source, true);
                     path.remove();
                     return;
                 }
@@ -184,7 +186,7 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
                 }
                 const source = path.node.source;
                 if (!path.node.specifiers.length) {
-                    addImport(path, state, source);
+                    addImport(path, state, source, true);
                     path.remove();
                     return;
                 }

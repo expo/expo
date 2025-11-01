@@ -29,7 +29,7 @@ function resetReactNavigationContexts() {
   (globalThis as any)[contexts] = new Map<string, React.Context<any>>();
 }
 
-type GetStaticContentOptions = {
+export type GetStaticContentOptions = {
   loader?: {
     data?: any;
   };

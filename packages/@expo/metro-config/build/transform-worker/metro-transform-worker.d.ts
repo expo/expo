@@ -28,12 +28,13 @@ export declare const minifyCode: (config: Pick<JsTransformerConfig, "minifierPat
     code: string;
     map: MetroSourceMapSegmentTuple[];
 }>;
-export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { filename, options, importDefault, importAll, collectLocations, }: {
+export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { filename, options, importDefault, importAll, collectLocations, performConstantFolding, }: {
     filename: string;
     options: Pick<JsTransformOptions, 'experimentalImportSupport' | 'inlineRequires' | 'nonInlinedRequires' | 'customTransformOptions'>;
     importDefault: string;
     importAll: string;
     collectLocations?: boolean;
+    performConstantFolding?: boolean;
 }): {
     ast: TFile;
     metadata?: any;
