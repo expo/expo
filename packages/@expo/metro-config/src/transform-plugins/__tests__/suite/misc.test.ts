@@ -71,7 +71,9 @@ it('export expression with conflicting name', () => {
   expect(mod.exports.default()).toBe(42);
   expect(mod).toEqual({
     exports: { default: expect.any(Function) },
-    requests: ['foo'],
+    requests: [
+      /*'foo'*/
+    ],
   });
 });
 
@@ -348,7 +350,7 @@ it('shadowed namespace import', () => {
   });
   expect(mod).toEqual({
     exports: { foo: expect.any(Function) },
-    requests: ['e', 't'],
+    requests: [/*'e',*/ 't'],
   });
   expect(mod.exports.foo('x')).toEqual({ amount: 1, e: 'x' });
 });
@@ -367,7 +369,7 @@ it('shadowed namespace import (unused)', () => {
   });
   expect(mod).toEqual({
     exports: { foo: expect.any(Function) },
-    requests: ['e', 't'],
+    requests: [/*'e',*/ 't'],
   });
   expect(mod.exports.foo()).toEqual({ amount: 1 });
 });

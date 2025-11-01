@@ -34,14 +34,16 @@ describe('Export DOM Components', () => {
   let projectRoot: string;
 
   beforeAll(async () => {
-    projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom');
+    projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom', {
+      reuseExisting: false,
+    });
   });
 
   it('runs `npx expo export`', async () => {
     // `npx expo export`
     await executeExpoAsync(
       projectRoot,
-      ['export', '--source-maps', '--dump-assetmap', '--platform', 'ios'],
+      ['export', '--clear', '--source-maps', '--dump-assetmap', '--platform', 'ios'],
       {
         env: {
           NODE_ENV: 'production',

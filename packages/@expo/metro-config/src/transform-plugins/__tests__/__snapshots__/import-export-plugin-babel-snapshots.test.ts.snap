@@ -1314,7 +1314,7 @@ foo.default;
 foo.default;"
 `;
 
-exports[`interop imports-glob 1`] = `"require("foo");"`;
+exports[`interop imports-glob 1`] = `""`;
 
 exports[`interop imports-hoisting 1`] = `"tag\`foo\`;"`;
 
@@ -1342,9 +1342,7 @@ _foo.xyz;"
 
 exports[`interop imports-ordering 1`] = `
 "require('./foo');
-require('./bar');
-require('./derp');
-require('./qux');"
+require('./derp');"
 `;
 
 exports[`interop module-shadow 1`] = `
@@ -1388,7 +1386,6 @@ require("foo-bar");
 require("./directory/foo-bar");
 var _foo2 = require("foo2");
 var foo = _interopDefault(_foo2);
-require("foo3");
 var _foo4 = require("foo4");
 var _foo5 = require("foo5");
 var test;
@@ -1528,7 +1525,6 @@ Object.defineProperty(exports, "default", {
     return _default;
   }
 });
-require('./b');
 var _default = function someFunction() {};"
 `;
 
@@ -1763,8 +1759,7 @@ for ([...Baz] in {}) {}"
 `;
 
 exports[`misc import-shadowed-assign 1`] = `
-"require("x");
-function f(foo) {
+"function f(foo) {
   foo = 2;
   [foo] = [];
   ({

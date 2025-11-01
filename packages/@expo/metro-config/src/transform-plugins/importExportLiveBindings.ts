@@ -1,5 +1,6 @@
 import type { ConfigAPI, PluginObj, NodePath, types as t } from '@babel/core';
 
+import type { ExpoBabelCaller } from '../babel-transformer';
 import {
   defaultWrapHelper,
   namespaceWrapHelper,
@@ -82,9 +83,22 @@ interface State {
 }
 
 export function importExportLiveBindingsPlugin({
+  caller,
   template,
   types: t,
 }: ConfigAPI & typeof import('@babel/core')): PluginObj<State> {
+  const isImpure = caller((_caller) => {
+    const callee = _caller as ExpoBabelCaller | undefined;
+    const metroSourceType = callee?.metroSourceType;
+    switch (metroSourceType) {
+      case 'script':
+      case 'asset':
+        return true;
+      default:
+        return !!(callee?.isServer || callee?.isNodeModule);
+    }
+  });
+
   const addModuleSpecifiers = (state: State, source: ModuleRequest): ModuleSpecifiers => {
     let moduleSpecifiers = state.importSpecifiers.get(source.value);
     if (!moduleSpecifiers) {
@@ -94,9 +108,16 @@ export function importExportLiveBindingsPlugin({
     return moduleSpecifiers;
   };
 
-  const addImport = (path: NodePath, state: State, source: ModuleRequest): ID => {
+  const addImport = (
+    path: NodePath,
+    state: State,
+    source: ModuleRequest,
+    isSideEffect: boolean
+  ): ID => {
     const moduleSpecifiers = addModuleSpecifiers(state, source);
-    moduleSpecifiers.sideEffect = true;
+    if (isSideEffect || isImpure) {
+      moduleSpecifiers.sideEffect = true;
+    }
     let id = moduleSpecifiers[ImportDeclarationKind.REQUIRE];
     if (!id) {
       id = path.scope.generateUid(source.value);
@@ -121,7 +142,7 @@ export function importExportLiveBindingsPlugin({
     if (!id) {
       // Use the given name, if possible, or generate one. If no initial name is given,
       // we'll create one based on the parent import
-      const parentImportLocal = addImport(path, state, source);
+      const parentImportLocal = addImport(path, state, source, false);
       id =
         !name || !t.isValidIdentifier(name)
           ? path.scope.generateUid(name ?? parentImportLocal)
@@ -147,7 +168,7 @@ export function importExportLiveBindingsPlugin({
     if (!id) {
       // Use the given name, if possible, or generate one. If no initial name is given,
       // we'll create one based on the parent import
-      const parentImportLocal = addImport(path, state, source);
+      const parentImportLocal = addImport(path, state, source, false);
       id =
         !name || !t.isValidIdentifier(name)
           ? path.scope.generateUid(name ?? parentImportLocal)
@@ -173,7 +194,7 @@ export function importExportLiveBindingsPlugin({
         }
         const source: ModuleRequest = path.node.source;
         if (!path.node.specifiers.length) {
-          addImport(path, state, source);
+          addImport(path, state, source, true);
           path.remove();
           return;
         }
@@ -198,7 +219,7 @@ export function importExportLiveBindingsPlugin({
               importId =
                 member === 'default'
                   ? addDefaultImport(path, state, source, localId)
-                  : addImport(path, state, source);
+                  : addImport(path, state, source, false);
               break;
             case 'ImportDefaultSpecifier':
               // The `defaultWrapHelper` works by wrapping CommonJS modules in a fake module wrapper
@@ -223,7 +244,7 @@ export function importExportLiveBindingsPlugin({
         }
         const loc = path.node.loc;
         const source: ModuleRequest = path.node.source;
-        const importId = addImport(path, state, source);
+        const importId = addImport(path, state, source, false);
         if (!state.exportAll.has(importId)) {
           state.referencedLocals.add(importId);
           state.exportAll.set(importId, withLocation(liveExportAllHelper(template, importId), loc));
@@ -286,7 +307,7 @@ export function importExportLiveBindingsPlugin({
         }
         const source: ModuleRequest = path.node.source;
         if (!path.node.specifiers.length) {
-          addImport(path, state, source);
+          addImport(path, state, source, true);
           path.remove();
           return;
         }
@@ -310,7 +331,7 @@ export function importExportLiveBindingsPlugin({
               importId =
                 specifierLocal === 'default'
                   ? addDefaultImport(path, state, source)
-                  : addImport(path, state, source);
+                  : addImport(path, state, source, false);
               exportExpression = t.memberExpression(
                 t.identifier(importId),
                 t.identifier(specifierLocal)
