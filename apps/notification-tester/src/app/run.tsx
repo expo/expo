@@ -7,9 +7,24 @@ const NotificationTestScreen = require('test-suite/tests/Notifications');
 
 // yes, this is a hack - but the cost is low and benefit is high
 export default class NotificationTesterScreen extends TestScreen {
-  componentDidMount() {
-    const selectedModules = [NotificationTestScreen];
-    this._runTests(selectedModules);
-    this._isMounted = true;
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      ...this.state,
+      // @ts-expect-error
+      selectedModules: [NotificationTestScreen],
+    };
+  }
+
+  _handleTestsParam() {
+    this._runTests([NotificationTestScreen]);
+  }
+
+  componentDidUpdate() {
+    // noop
+  }
+
+  getSelectionQuery() {
+    return '';
   }
 }

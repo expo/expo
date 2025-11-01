@@ -1,6 +1,9 @@
 import { ProxyNativeModule } from 'expo-modules-core';
 
 // @docsMissing
+/**
+ * @platform android
+ * */
 export enum AndroidNotificationVisibility {
   UNKNOWN = 0,
   PUBLIC = 1,
@@ -9,6 +12,9 @@ export enum AndroidNotificationVisibility {
 }
 
 // @docsMissing
+/**
+ * @platform android
+ * */
 export enum AndroidAudioContentType {
   UNKNOWN = 0,
   SPEECH = 1,
@@ -18,6 +24,9 @@ export enum AndroidAudioContentType {
 }
 
 // @docsMissing
+/**
+ * @platform android
+ * */
 export enum AndroidImportance {
   UNKNOWN = 0,
   UNSPECIFIED = 1,
@@ -30,6 +39,9 @@ export enum AndroidImportance {
 }
 
 // @docsMissing
+/**
+ * @platform android
+ * */
 export enum AndroidAudioUsage {
   UNKNOWN = 0,
   MEDIA = 1,
@@ -84,6 +96,9 @@ export interface NotificationChannel {
   enableVibrate: boolean;
 }
 
+/**
+ * @hidden
+ * */
 export type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
 
 /**

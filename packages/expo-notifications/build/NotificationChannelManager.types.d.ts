@@ -1,10 +1,16 @@
 import { ProxyNativeModule } from 'expo-modules-core';
+/**
+ * @platform android
+ * */
 export declare enum AndroidNotificationVisibility {
     UNKNOWN = 0,
     PUBLIC = 1,
     PRIVATE = 2,
     SECRET = 3
 }
+/**
+ * @platform android
+ * */
 export declare enum AndroidAudioContentType {
     UNKNOWN = 0,
     SPEECH = 1,
@@ -12,6 +18,9 @@ export declare enum AndroidAudioContentType {
     MOVIE = 3,
     SONIFICATION = 4
 }
+/**
+ * @platform android
+ * */
 export declare enum AndroidImportance {
     UNKNOWN = 0,
     UNSPECIFIED = 1,
@@ -22,6 +31,9 @@ export declare enum AndroidImportance {
     HIGH = 6,
     MAX = 7
 }
+/**
+ * @platform android
+ * */
 export declare enum AndroidAudioUsage {
     UNKNOWN = 0,
     MEDIA = 1,
@@ -68,6 +80,9 @@ export interface NotificationChannel {
     enableLights: boolean;
     enableVibrate: boolean;
 }
+/**
+ * @hidden
+ * */
 export type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
 /**
  * An object which represents a notification channel to be set.

@@ -16,20 +16,16 @@ export declare const mapNotificationResponse: (response: NotificationResponse) =
                 title: string | null;
                 subtitle: string | null;
                 body: string | null;
-                data: {
-                    [key: string]: unknown;
-                };
+                data?: Record<string, unknown>;
                 categoryIdentifier: string | null;
-                sound: "default" | "defaultCritical" | "custom" | null;
+                sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
             } & import("..").NotificationContentIos) | ({
                 title: string | null;
                 subtitle: string | null;
                 body: string | null;
-                data: {
-                    [key: string]: unknown;
-                };
+                data?: Record<string, unknown>;
                 categoryIdentifier: string | null;
-                sound: "default" | "defaultCritical" | "custom" | null;
+                sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
             } & import("..").NotificationContentAndroid);
             identifier: string;
             trigger: import("..").NotificationTrigger;
@@ -54,20 +50,16 @@ export declare const mapNotification: (notification: Notification) => {
             title: string | null;
             subtitle: string | null;
             body: string | null;
-            data: {
-                [key: string]: unknown;
-            };
+            data?: Record<string, unknown>;
             categoryIdentifier: string | null;
-            sound: "default" | "defaultCritical" | "custom" | null;
+            sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
         } & import("..").NotificationContentIos) | ({
             title: string | null;
             subtitle: string | null;
             body: string | null;
-            data: {
-                [key: string]: unknown;
-            };
+            data?: Record<string, unknown>;
             categoryIdentifier: string | null;
-            sound: "default" | "defaultCritical" | "custom" | null;
+            sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
         } & import("..").NotificationContentAndroid);
         identifier: string;
         trigger: import("..").NotificationTrigger;
@@ -88,20 +80,16 @@ export declare const mapNotificationRequest: (request: NotificationRequest) => {
         title: string | null;
         subtitle: string | null;
         body: string | null;
-        data: {
-            [key: string]: unknown;
-        };
+        data?: Record<string, unknown>;
         categoryIdentifier: string | null;
-        sound: "default" | "defaultCritical" | "custom" | null;
+        sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
     } & import("..").NotificationContentIos) | ({
         title: string | null;
         subtitle: string | null;
         body: string | null;
-        data: {
-            [key: string]: unknown;
-        };
+        data?: Record<string, unknown>;
         categoryIdentifier: string | null;
-        sound: "default" | "defaultCritical" | "custom" | null;
+        sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
     } & import("..").NotificationContentAndroid);
     identifier: string;
     trigger: import("..").NotificationTrigger;
@@ -118,19 +106,15 @@ export declare const mapNotificationContent: (content: NotificationContent) => (
     title: string | null;
     subtitle: string | null;
     body: string | null;
-    data: {
-        [key: string]: unknown;
-    };
+    data?: Record<string, unknown>;
     categoryIdentifier: string | null;
-    sound: "default" | "defaultCritical" | "custom" | null;
+    sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
 } & import("..").NotificationContentIos) | ({
     title: string | null;
     subtitle: string | null;
     body: string | null;
-    data: {
-        [key: string]: unknown;
-    };
+    data?: Record<string, unknown>;
     categoryIdentifier: string | null;
-    sound: "default" | "defaultCritical" | "custom" | null;
+    sound: "default" | "defaultCritical" | "custom" | "defaultRingtone" | null;
 } & import("..").NotificationContentAndroid);
 //# sourceMappingURL=mapNotificationResponse.d.ts.map

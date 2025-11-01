@@ -28,9 +28,9 @@ export default class TestScreen extends React.Component {
   _results = '';
   _failures = '';
 
-  getSelectionQuery = () => {
+  getSelectionQuery() {
     return this.props.route.params?.tests ?? '';
-  };
+  }
 
   componentDidMount() {
     this._isMounted = true;
@@ -42,7 +42,7 @@ export default class TestScreen extends React.Component {
     const previousTestsParam = prevProps.route.params?.tests ?? '';
 
     // Re-run tests if the tests param has changed
-    if (currentTestsParam !== previousTestsParam) {
+    if (currentTestsParam && currentTestsParam !== previousTestsParam) {
       this._handleTestsParam(currentTestsParam);
     }
   }
@@ -80,7 +80,7 @@ export default class TestScreen extends React.Component {
     });
   };
 
-  _runTests = async (selectedModules) => {
+  async _runTests(selectedModules) {
     // Reset results state
     this.setState({ ...initialState, selectedModules });
 
@@ -96,7 +96,7 @@ export default class TestScreen extends React.Component {
     );
 
     jasmineEnv.execute();
-  };
+  }
 
   async _setupJasmine() {
     // Init
@@ -289,7 +289,7 @@ export default class TestScreen extends React.Component {
       testPortal,
       selectedModules,
     } = this.state;
-    if (!selectedModules?.length) {
+    if (this._isMounted && !selectedModules?.length) {
       const moduleLinks = getTestModules().map(getScreenIdForLinking);
 
       return (

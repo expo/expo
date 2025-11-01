@@ -39,6 +39,7 @@ export interface CalendarNotificationTrigger {
         yearForWeekOfYear?: number;
         nanosecond?: number;
         isLeapMonth: boolean;
+        isRepeatedDay: boolean;
         timeZone?: string;
         calendar?: string;
     };
@@ -367,7 +368,7 @@ export declare enum AndroidNotificationPriority {
     MAX = "max"
 }
 /**
- * An object represents notification's content.
+ * An object representing notification's content when reading a notification (on the "output", when it is presented by the system). For the input type, see [`NotificationContentInput`](#notificationcontentinput).
  */
 export type NotificationContent = {
     /**
@@ -387,17 +388,26 @@ export type NotificationContent = {
     /**
      * Data associated with the notification, not displayed
      */
-    data: {
-        [key: string]: unknown;
-    };
+    data?: Record<string, unknown>;
     /**
      * The identifier of the notification’s category.
      */
     categoryIdentifier: string | null;
-    sound: 'default' | 'defaultCritical' | 'custom' | null;
+    sound: 'default' | 'defaultCritical' | 'custom' | 'defaultRingtone' | null;
 } & (NotificationContentIos | NotificationContentAndroid);
 /**
+ * The notification’s importance and required delivery timing.
+ * Possible values:
+ * - 'passive' - the system adds the notification to the notification list without lighting up the screen or playing a sound
+ * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
+ * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
+ * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
+ * @platform ios
+ */
+export type InterruptionLevel = 'passive' | 'active' | 'timeSensitive' | 'critical';
+/**
  * See [Apple documentation](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) for more information on specific fields.
+ * @platform ios
  */
 export type NotificationContentIos = {
     /**
@@ -428,16 +438,7 @@ export type NotificationContentIos = {
      * The value your app uses to determine which scene to display to handle the notification.
      */
     targetContentIdentifier?: string;
-    /**
-     * The notification’s importance and required delivery timing.
-     * Possible values:
-     * - 'passive' - the system adds the notification to the notification list without lighting up the screen or playing a sound
-     * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
-     * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
-     * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
-     * @platform ios
-     */
-    interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
+    interruptionLevel?: InterruptionLevel;
 };
 /**
  * @platform ios
@@ -458,6 +459,7 @@ export type NotificationContentAttachmentIos = {
 };
 /**
  * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification#fields) for more information on specific fields.
+ * @platform android
  */
 export type NotificationContentAndroid = {
     /**
@@ -514,7 +516,12 @@ export type NotificationContentInput = {
      * Application badge number associated with the notification.
      */
     badge?: number;
-    sound?: boolean | string;
+    /**
+     * The notification sound. Use `false` for a silent notification.
+     * On Android version 8 and later, control the sounds via [notification channels](#setNotificationChannelAsync).
+     * `defaultCritical` and `defaultRingtone` are applicable only on iOS, with `defaultCritical` requiring the critical alerts entitlement.
+     * */
+    sound?: boolean | 'default' | 'defaultCritical' | 'defaultRingtone' | (string & {});
     /**
      * The name of the image or storyboard to use when your app launches because of the notification.
      */
@@ -567,7 +574,7 @@ export type NotificationContentInput = {
      * @platform ios
      */
     attachments?: NotificationContentAttachmentIos[];
-    interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
+    interruptionLevel?: InterruptionLevel;
 };
 /**
  * An object which represents a notification request you can pass into `scheduleNotificationAsync`.
@@ -660,6 +667,14 @@ export interface NotificationAction {
         opensAppToForeground?: boolean;
     };
 }
+/**
+ * Defines a group of notification actions and their behavior. Categories allow you to create custom
+ * action buttons that appear with notifications, enabling users to respond to notifications.
+ *
+ * Categories must be registered with [`setNotificationCategoryAsync`](#notificationssetnotificationcategoryasyncidentifier-actions-options)
+ * before they can be used. When scheduling a notification, reference the category by its `identifier` in the
+ * [`NotificationContentInput.categoryIdentifier`](#notificationcontentinput) field.
+ */
 export interface NotificationCategory {
     identifier: string;
     actions: NotificationAction[];
@@ -712,6 +727,9 @@ export type NotificationCategoryOptions = {
      */
     allowAnnouncement?: boolean;
 };
+/**
+ * @hidden
+ * */
 export type MaybeNotificationResponse = NotificationResponse | null | undefined;
 /**
  * @deprecated use the [`EventSubscription`](#eventsubscription) type instead

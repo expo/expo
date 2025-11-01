@@ -1,15 +1,24 @@
+/**
+ * @platform ios
+ * */
 export var IosAlertStyle;
 (function (IosAlertStyle) {
     IosAlertStyle[IosAlertStyle["NONE"] = 0] = "NONE";
     IosAlertStyle[IosAlertStyle["BANNER"] = 1] = "BANNER";
     IosAlertStyle[IosAlertStyle["ALERT"] = 2] = "ALERT";
 })(IosAlertStyle || (IosAlertStyle = {}));
+/**
+ * @platform ios
+ * */
 export var IosAllowsPreviews;
 (function (IosAllowsPreviews) {
     IosAllowsPreviews[IosAllowsPreviews["NEVER"] = 0] = "NEVER";
     IosAllowsPreviews[IosAllowsPreviews["ALWAYS"] = 1] = "ALWAYS";
     IosAllowsPreviews[IosAllowsPreviews["WHEN_AUTHENTICATED"] = 2] = "WHEN_AUTHENTICATED";
 })(IosAllowsPreviews || (IosAllowsPreviews = {}));
+/**
+ * @platform ios
+ * */
 export var IosAuthorizationStatus;
 (function (IosAuthorizationStatus) {
     IosAuthorizationStatus[IosAuthorizationStatus["NOT_DETERMINED"] = 0] = "NOT_DETERMINED";
