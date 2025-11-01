@@ -52,6 +52,12 @@ import kotlin.math.min
 private const val PATCH_CONTENT_TYPE = "application/vnd.bsdiff"
 private const val PATCH_TEMP_SUFFIX = ".patch"
 private const val PATCHED_TEMP_SUFFIX = ".patched"
+private const val A_IM_HEADER = "A-IM"
+private const val IM_HEADER = "im"
+private const val DELTA_BASE_HEADER = "delta-base"
+private const val ETAG_HEADER = "etag"
+private const val IF_NONE_MATCH_HEADER = "If-None-Match"
+private const val IF_MATCH_HEADER = "If-Match"
 private const val EXPO_CURRENT_UPDATE_ID_HEADER = "Expo-Current-Update-ID"
 private const val EXPO_REQUESTED_UPDATE_ID_HEADER = "Expo-Requested-Update-ID"
 private const val EXPO_EMBEDDED_UPDATE_ID_HEADER = "Expo-Embedded-Update-ID"
@@ -120,8 +126,8 @@ class FileDownloader(
         val responseBody = resp.body
           ?: throw IOException("Asset download response from ${request.url} had no body")
         responseBody.use { body ->
-          val isPatch = isPatchResponse(body)
-          if (!isPatch) {
+          val patchMetadata = parsePatchResponseMetadata(resp)
+          if (patchMetadata == null) {
             body.byteStream().use { inputStream ->
               UpdatesUtils.verifySHA256AndWriteToFile(
                 inputStream,
@@ -131,12 +137,28 @@ class FileDownloader(
             }
           } else {
             val requestedUpdateId = requestedUpdate?.id?.toString()
-            val idsAreSame = launchedUpdate != null && requestedUpdate != null && launchedUpdate.id != requestedUpdate.id
-            val shouldAttemptPatch = allowPatch && asset.isLaunchAsset && idsAreSame
+            val idsAreDifferent = launchedUpdate != null && requestedUpdate != null && launchedUpdate.id != requestedUpdate.id
+            val shouldAttemptPatch = allowPatch && asset.isLaunchAsset && idsAreDifferent
 
             if (!shouldAttemptPatch) {
               logger.warn(
                 "Received patch response even though patch application is disabled; retrying with full asset download",
+                UpdatesErrorCode.AssetsFailedToLoad,
+                requestedUpdateId,
+                asset.key
+              )
+              return@use fallbackBundleDownload(
+                asset = asset,
+                extraHeaders = extraHeaders,
+                progressListener = progressListener,
+                destination = destination,
+                expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash
+              )
+            }
+
+            if (!validatePatchResponseMetadata(patchMetadata, launchedUpdate, requestedUpdate)) {
+              logger.warn(
+                "Patch response missing required headers or had mismatched identifiers; retrying with full asset download",
                 UpdatesErrorCode.AssetsFailedToLoad,
                 requestedUpdateId,
                 asset.key
@@ -221,9 +243,64 @@ class FileDownloader(
     }
   }
 
-  private fun isPatchResponse(responseBody: ResponseBody): Boolean {
-    val mediaType = responseBody.contentType()
-    return mediaType?.let { it.type == "application" && it.subtype == "vnd.bsdiff" } ?: false
+  private data class PatchResponseMetadata(
+    val imHeaderRaw: String?,
+    val hasImBsdiff: Boolean,
+    val hasLegacyContentType: Boolean,
+    val statusCode: Int,
+    val deltaBase: String?,
+    val eTag: String?
+  )
+
+  private fun parsePatchResponseMetadata(response: Response): PatchResponseMetadata? {
+    val responseBody = response.body
+    val mediaType = responseBody?.contentType()
+    val hasLegacyContentType = mediaType?.let { it.type == "application" && it.subtype == "vnd.bsdiff" } ?: false
+    val imHeaderRaw = response.header(IM_HEADER)
+    val hasImBsdiff = imHeaderRaw
+      ?.split(',')
+      ?.map { it.trim() }
+      ?.any { it.equals("bsdiff", ignoreCase = true) }
+      ?: false
+    val statusCode = response.code
+
+    if (!hasLegacyContentType && !hasImBsdiff && statusCode != 226) {
+      return null
+    }
+
+    return PatchResponseMetadata(
+      imHeaderRaw = imHeaderRaw,
+      hasImBsdiff = hasImBsdiff,
+      hasLegacyContentType = hasLegacyContentType,
+      statusCode = statusCode,
+      deltaBase = response.header(DELTA_BASE_HEADER),
+      eTag = response.header(ETAG_HEADER)
+    )
+  }
+
+  private fun validatePatchResponseMetadata(
+    metadata: PatchResponseMetadata,
+    launchedUpdate: UpdateEntity?,
+    requestedUpdate: UpdateEntity?
+  ): Boolean {
+    val expectedBase = launchedUpdate?.id?.toString()?.lowercase()
+    val expectedTarget = requestedUpdate?.id?.toString()?.lowercase()
+    val deltaBase = metadata.deltaBase?.lowercase()
+    val eTag = metadata.eTag?.lowercase()
+
+    if (!metadata.hasImBsdiff || deltaBase == null || eTag == null) {
+      return false
+    }
+
+    if (expectedBase != null && deltaBase != expectedBase) {
+      return false
+    }
+
+    if (expectedTarget != null && eTag != expectedTarget) {
+      return false
+    }
+
+    return true
   }
 
   @Throws(IOException::class)
@@ -641,7 +718,6 @@ class FileDownloader(
           launchedUpdate.id != requestedUpdate.id
 
       try {
-        val allowPatch = asset.isLaunchAsset && configuration.enableBsdiffPatchSupport
         val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
           asset,
           extraHeaders,
@@ -718,7 +794,30 @@ class FileDownloader(
     .header("Expo-API-Version", "1")
     .header("Expo-Updates-Environment", "BARE")
     .header("EAS-Client-ID", easClientID)
-    .header("Accept", if (allowPatch && assetEntity.isLaunchAsset && configuration.enableBsdiffPatchSupport) "$PATCH_CONTENT_TYPE,*/*" else "*/*")
+    .apply {
+      val shouldRequestPatch = allowPatch && assetEntity.isLaunchAsset && configuration.enableBsdiffPatchSupport
+      val currentId = extraHeaders.optString(EXPO_CURRENT_UPDATE_ID_HEADER, "")
+      val requestedId = extraHeaders.optString(EXPO_REQUESTED_UPDATE_ID_HEADER, "")
+      if (shouldRequestPatch) {
+        header(A_IM_HEADER, "bsdiff")
+        header("Accept", "$PATCH_CONTENT_TYPE,*/*")
+        if (currentId.isNotEmpty()) {
+          header(IF_NONE_MATCH_HEADER, currentId)
+        }
+        if (requestedId.isNotEmpty()) {
+          header(IF_MATCH_HEADER, requestedId)
+        }
+      } else {
+        removeHeader(A_IM_HEADER)
+        header("Accept", "application/javascript")
+        if (currentId.isNotEmpty()) {
+          removeHeader(IF_NONE_MATCH_HEADER)
+        }
+        if (requestedId.isNotEmpty()) {
+          removeHeader(IF_MATCH_HEADER)
+        }
+      }
+    }
     .apply {
       for ((key, value) in configuration.requestHeaders) {
         header(key, value)
@@ -892,10 +991,10 @@ class FileDownloader(
       val extraHeaders = JSONObject()
 
       launchedUpdate?.let {
-        extraHeaders.put("Expo-Current-Update-ID", it.id.toString().lowercase())
+        extraHeaders.put(EXPO_CURRENT_UPDATE_ID_HEADER, it.id.toString().lowercase())
       }
       embeddedUpdate?.let {
-        extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
+        extraHeaders.put(EXPO_EMBEDDED_UPDATE_ID_HEADER, it.id.toString().lowercase())
       }
       requestedUpdate?.let {
         extraHeaders.put(EXPO_REQUESTED_UPDATE_ID_HEADER, it.id.toString().lowercase())

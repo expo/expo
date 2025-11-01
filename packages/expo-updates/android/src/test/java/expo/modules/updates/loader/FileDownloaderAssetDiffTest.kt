@@ -22,6 +22,7 @@ import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Rule
@@ -155,8 +156,90 @@ class FileDownloaderAssetDiffTest {
 
     val firstRequest = server.takeRequest()
     assertEquals("application/vnd.bsdiff,*/*", firstRequest.getHeader("Accept"))
+    assertEquals("bsdiff", firstRequest.getHeader("A-IM"))
     val secondRequest = server.takeRequest()
-    assertEquals("*/*", secondRequest.getHeader("Accept"))
+    assertEquals("application/javascript", secondRequest.getHeader("Accept"))
+    assertNull(secondRequest.getHeader("A-IM"))
+  }
+
+  @Test
+  fun downloadAssetAndVerifyHashAndWriteToPath_missingPatchHeadersFallsBackToFullAsset() = runTest {
+    val fallbackBytes = loadFixture("new.hbc")
+    val expectedFile = temporaryFolder.newFile("expected.hbc").apply {
+      writeBytes(fallbackBytes)
+    }
+    val expectedHashBytes = UpdatesUtils.sha256(expectedFile)
+    val expectedHash = UpdatesUtils.toBase64Url(expectedHashBytes)
+
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(226)
+        .setHeader("Content-Type", "application/vnd.bsdiff")
+        .setHeader("im", "bsdiff")
+        .setBody("diff")
+    )
+
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(200)
+        .setHeader("Content-Type", "*/*")
+        .setBody(Buffer().write(fallbackBytes))
+    )
+
+    val asset = AssetEntity("bundle", "hbc").apply {
+      url = Uri.parse(server.url("/bundle.hbc").toString())
+      isLaunchAsset = true
+    }
+
+    val launchedUpdate = createUpdate(UUID.randomUUID())
+    val requestedUpdate = createUpdate(UUID.randomUUID())
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(
+      launchedUpdate = launchedUpdate,
+      embeddedUpdate = null,
+      requestedUpdate = requestedUpdate
+    )
+
+    val downloader = FileDownloader(
+      filesDirectory,
+      "test-eas-client",
+      configuration,
+      logger,
+      defaultDatabase,
+      OkHttpClient()
+    )
+    val request = downloader.createRequestForAsset(
+      asset,
+      extraHeaders,
+      configuration,
+      allowPatch = true
+    )
+    val destination = File(updatesDirectory, "missing-headers.hbc")
+
+    val result = downloader.downloadAssetAndVerifyHashAndWriteToPath(
+      asset = asset,
+      extraHeaders = extraHeaders,
+      request = request,
+      expectedBase64URLEncodedSHA256Hash = expectedHash,
+      destination = destination,
+      updatesDirectory = updatesDirectory,
+      progressListener = null,
+      allowPatch = true,
+      launchedUpdate = launchedUpdate,
+      requestedUpdate = requestedUpdate
+    )
+
+    assertArrayEquals(expectedHashBytes, result.hash)
+    assertArrayEquals(fallbackBytes, destination.readBytes())
+
+    val firstRequest = server.takeRequest()
+    assertEquals("bsdiff", firstRequest.getHeader("A-IM"))
+    assertEquals(launchedUpdate.id.toString().lowercase(), firstRequest.getHeader("If-None-Match"))
+    assertEquals(requestedUpdate.id.toString().lowercase(), firstRequest.getHeader("If-Match"))
+
+    val secondRequest = server.takeRequest()
+    assertNull(secondRequest.getHeader("A-IM"))
+    assertEquals(launchedUpdate.id.toString().lowercase(), secondRequest.getHeader("If-None-Match"))
+    assertEquals(requestedUpdate.id.toString().lowercase(), secondRequest.getHeader("If-Match"))
   }
 
   @Test
