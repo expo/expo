@@ -17,14 +17,17 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
-import { ComponentProps, useMemo } from 'react';
+import React, { Children, ComponentProps, useMemo } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import { getInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { SingularOptions, getSingularId } from '../useScreens';
-import { Protected } from '../views/Protected';
+import { StackHeader, StackScreen } from './stack-utils/elements';
+import { appendScreenStackPropsToOptions, isChildOfType } from './stack-utils/options';
+import { Protected, type ProtectedProps } from '../views/Protected';
+import { Screen } from '../views/Screen';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
@@ -490,6 +493,22 @@ function filterSingular<
   };
 }
 
+function mapProtectedScreen(props: ProtectedProps) {
+  return {
+    ...props,
+    children: Children.toArray(props.children).map((child, index) => {
+      if (isChildOfType(child, StackScreen)) {
+        const options = appendScreenStackPropsToOptions({}, child.props);
+        const { children, ...rest } = child.props;
+        return <Screen key={child.props.name} {...rest} options={options} />;
+      } else if (isChildOfType(child, Protected)) {
+        return <Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)} />;
+      }
+      return child;
+    }),
+  };
+}
+
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();
@@ -500,15 +519,24 @@ const Stack = Object.assign(
       return disableAnimationInScreenOptions(props.screenOptions, condition);
     }, [props.screenOptions, isStackAnimationDisabled]);
 
+    const rnChildren = useMemo(
+      () => mapProtectedScreen({ guard: true, children: props.children }).children,
+      [props.children]
+    );
+
     return (
-      <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
+      <RNStack
+        {...props}
+        children={rnChildren}
+        screenOptions={screenOptions}
+        UNSTABLE_router={stackRouterOverride}
+      />
     );
   },
   {
-    Screen: RNStack.Screen as (
-      props: ComponentProps<typeof RNStack.Screen> & { singular?: boolean }
-    ) => null,
+    Screen: StackScreen,
     Protected,
+    Header: StackHeader,
   }
 );
 
