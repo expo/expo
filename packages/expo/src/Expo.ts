@@ -32,3 +32,12 @@ export type {
 } from 'expo-modules-core/types';
 
 export { useEvent, useEventListener } from './hooks/useEvent';
+
+export {
+  Color,
+  ColorType,
+  AndroidAttrColorName,
+  AndroidBaseColorName,
+  IOSColorName,
+  AndroidMaterialColorName,
+} from './color';
