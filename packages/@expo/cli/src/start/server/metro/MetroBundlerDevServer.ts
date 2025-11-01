@@ -284,7 +284,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       debug('Adding RSC route to the manifest:', rscPath);
       // NOTE: This might need to be sorted to the correct spot in the future.
       manifest.apiRoutes.push({
-        file: resolveFrom(this.projectRoot, '@expo/cli/static/template/[...rsc]+api.ts'),
+        // TODO(@kitten): This isn't great, we shouldn't be needing to rely on files like this
+        // It might even be better to make templating strings since that'd be type-checked, but currently,
+        // we rely on this being an entrypoint for Metro
+        file: require.resolve('@expo/cli/static/template/[...rsc]+api.ts'),
         page: rscPath,
         namedRegex: '^/_flight(?:/(?<rsc>.+?))?(?:/)?$',
         routeKeys: { rsc: 'rsc' },
