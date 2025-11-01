@@ -155,3 +155,12 @@ These guides assume your project has **android** and/or **ios** directories cont
   Icon={BookOpen02Icon}
   href="/distribution/app-stores/"
 />
+Future<void> sendMessage(String channel, String uid, String text) async {
+await FirebaseFirestore.instance
+.collection('rooms').doc(channel)
+.collection('messages').add({
+'uid': uid,
+'text': text,
+'createdAt': FieldValue.serverTimestamp(),
+});
+}
