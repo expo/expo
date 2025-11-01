@@ -3,6 +3,7 @@ title: Submit to the Google Play Store
 description: Learn how to submit your app to the Google Play Store from your computer and CI/CD services.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -98,22 +99,17 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
     ```
 
   </Requirement>
-  <Requirement number={6} title="Provide a submission profile in eas.json">
-    Then, you'll need to provide a submission profile in **eas.json** that includes your app's `serviceAccountKeyPath`:
+  <Requirement number={6} title="Upload your Google Service Account key to EAS dashboard">
+    Then, you need to upload your Google Service Account key to EAS dashboard under project's credentials.
+    - Go to your project's EAS dashboard, click **Credentials**, and under **Android**, click your app's **Application identifier**.
+    - Under **Service Credentials**, click **Add a Google Service Account Key**.
+    - Under **Change Google Service Account Key**, ensure **Upload new key** is selected and upload the downloaded JSON key. This will add the key to your project's credentials.
 
-    ```json eas.json
-    {
-      "submit": {
-        "production": {
-          "android": {
-            "serviceAccountKeyPath": "../path/to/api-xxx-yyy-zzz.json"
-          }
-        }
-      }
-    }
-    ```
-
-    There are additional options available for Android submissions. Learn more from the [eas.json reference](/eas/json/#android-specific-options-1).
+    <ContentSpotlight
+      alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
+      src="/static/images/tutorial/eas/credentials-03.png"
+      className="max-w-[540px]"
+    />
 
   </Requirement>
   <Requirement number={7} title="Build a production app">

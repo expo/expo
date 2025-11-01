@@ -92,21 +92,13 @@ After the app is created on Google Play Console, it redirects us to the app's Da
   className="max-w-[800px]"
 />
 
-- Google Play Console prompts us to create a **Release**.
-- To create a new release, go to **Releases** and click **Create new release**.
+- Google Play Console prompts us to create an internal testing release.
+- To create a new release, go to **Dashboard** and click **Create new release**. The first thing you will notice that the signing key is automatically generated under **App integrity** by Google Play Console.
 
 <ContentSpotlight
   alt="Selecting the signing key for the app bundle"
   src="/static/images/tutorial/eas/play-store-05.png"
   className="max-w-[800px]"
-/>
-
-- To store the signing key, go to **App integrity** > **App bundles** and click **Choose signing key** > **Use Google-generated key**.
-
-<ContentSpotlight
-  alt="Creating a new internal release"
-  src="/static/images/tutorial/eas/play-store-06.png"
-  className="max-w-[400px]"
 />
 
 </Step>
@@ -124,8 +116,8 @@ After EAS has created a production build:
   src="/static/images/tutorial/eas/play-store-07.png"
 />
 
-- Return to the Google Play Console and go to **App bundles**. Click on **Upload** to add the **.aab**.
-- Provide the release details for our app and click on **Next**.
+- Return to Google Play Console and go to **Test and release** > **Testing** > **Internal testing**.
+- Under **App bundles**, click on **Upload** to add the **.aab** file. Then, provide the release details for our app and click on **Next**.
 - On the following screen, click on **Save and publish**.
 
 <ContentSpotlight
@@ -150,8 +142,8 @@ Under **Track Summary**, we see that the latest release shows a temporary app na
 
 Under **Releases**, we see that the app is available to internal testers. To share the app with a team of testers:
 
-- Open the Internal testing dashboard, then click on **View release details**.
-- Click on **copy link** under **How testers join your test**.
+- Switch to the **Testers** tab next to **Releases**.
+- Click on **copy link** under **How testers join your test**. You can use this link to share with your team of testers by sending them an email or a message.
 
 <ContentSpotlight
   alt="Sharing the internal release version"
@@ -189,8 +181,8 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 
 To promote our internal test release version to **alpha**, in Google Play Store Console:
 
-- Go to internal testing and click **Promote release**.
-- Open the dropdown menu and click **Closes testing** > **Closed testing - Alpha**.
+- Under **Test and release**, go to **Testing** > **Closed testing**.
+- Click **Manage track** next to **Closed testing - Alpha**.
 
 </Collapsible>
 
@@ -202,12 +194,33 @@ To promote our internal test release version to **alpha**, in Google Play Store 
 
 > **info** **Tip**: Before following the steps in this section, see the instructions on [creating a Google Service Account key or downloading it from an existing account ](https://expo.fyi/creating-google-service-account) guide.
 
-From now on, we can use [EAS Submit](/submit/introduction/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's **eas.json**.
+From now on, we can use [EAS Submit](/submit/introduction/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's credentials.
 
-After following the Google Service Account guide steps, we can use the downloaded JSON key:
+After following the Google Service Account guide steps, we can upload the downloaded JSON key to EAS dashboard:
 
-- Open our project and copy the JSON file from the Google Service Account to the project's root directory.
-- To secure sensitive data, ensure this file is excluded from version control by listing it in our **.gitignore**.
+- Go to your project's EAS dashboard, click **Credentials**, and under **Android**, click your app's **Application identifier**.
+
+<ContentSpotlight
+  alt="Adding a new Google Service Account key to EAS dashboard"
+  src="/static/images/tutorial/eas/credentials-01.png"
+  className="max-w-[640px]"
+/>
+
+- Under **Service Credentials**, click **Add a Google Service Account Key**.
+
+<ContentSpotlight
+  alt="Uploading the Google Service Account key to EAS dashboard under Change Google Service Account Key"
+  src="/static/images/tutorial/eas/credentials-02.png"
+  className="max-w-[640px]"
+/>
+
+- Under **Change Google Service Account Key**, ensure **Upload new key** is selected and upload the downloaded JSON key. This will add the key to your project's credentials.
+
+<ContentSpotlight
+  alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
+  src="/static/images/tutorial/eas/credentials-03.png"
+  className="max-w-[640px]"
+/>
 
 </Step>
 
@@ -215,9 +228,9 @@ After following the Google Service Account guide steps, we can use the downloade
 
 ## Internal release
 
-Let's add the path to the Google Service Account file path in **eas.json**.
+Let's set the track to `internal` in **eas.json**.
 
-- Under `submit.production` profile, add `android.serviceAccountKeyPath` and the relative file path as its value:
+- Under `submit.production` profile, set `track` to `internal`:
 
 {/* prettier-ignore */}
 ```json
@@ -225,9 +238,8 @@ Let's add the path to the Google Service Account file path in **eas.json**.
   /* @hide ... */ /* @end */
   "submit": {
     "production": {
-      /* @info Add the path to the Google Service Account file and set <CODE>track</CODE> to <CODE>internal</CODE> */
+      /* @info Set <CODE>track</CODE> to <CODE>internal</CODE>. */
       "android": {
-        "serviceAccountKeyPath": "./service-account-file.json",
         "track": "internal"
       }
       /* @end */
@@ -236,7 +248,7 @@ Let's add the path to the Google Service Account file path in **eas.json**.
 }
 ```
 
-In the above snippet, we're also adding [`track`](/eas/json/#track) property and setting its value to `internal`. This will enable the `eas submit` command to upload our production build and release it for internal testing on the Google Play Store.
+In the above snippet, we're adding [`track`](/eas/json/#track) property and setting its value to `internal`. This will enable the `eas submit` command to upload our production build and release it for internal testing on the Google Play Store.
 
 - Now run the `eas submit` command to release a new internal testing version:
 
@@ -266,8 +278,7 @@ To release the app for production:
   "submit": {
     "production": {
       "android": {
-        "serviceAccountKeyPath": "./service-account-file.json",
-        /* @info Change the track to production */
+        /* @info Change the track to <CODE>production</CODE>. */
         "track": "production"
         /* @end */
       }
@@ -280,13 +291,7 @@ To release the app for production:
 
 <Terminal cmd={['$ eas submit --platform android']} />
 
-- To create a track and submit our app to the Google Play Store's review process, we need to **Release** > **Production** and under **Releases**, select the build we want to send for review.
-
-<ContentSpotlight
-  alt="Submitting app for Google Play Store review process"
-  src="/static/images/tutorial/eas/play-store-19.png"
-  className="max-w-[800px]"
-/>
+- To create a track and submit our app to the Google Play Store's review process, we need to go to **Test and release** > **Production** and under **Releases**, select the build we want to send for review.
 
 </Step>
 
