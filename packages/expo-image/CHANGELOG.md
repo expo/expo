@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix disk cache not working when `uri` is empty ([#40644](https://github.com/expo/expo/pull/40644) by [@kosmydel](https://github.com/kosmydel))
+
 ### 💡 Others
 
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
