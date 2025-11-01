@@ -71,7 +71,6 @@
     self->_regionStates = regionStates;
 
     locationManager.delegate = self;
-    locationManager.allowsBackgroundLocationUpdates = YES;
     locationManager.pausesLocationUpdatesAutomatically = NO;
 
     for (NSDictionary *regionDict in regions) {
