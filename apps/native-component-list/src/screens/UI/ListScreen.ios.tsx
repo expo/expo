@@ -19,6 +19,7 @@ import {
   frame,
   headerProminence,
   padding,
+  refreshable,
   scrollDismissesKeyboard,
 } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
@@ -64,6 +65,8 @@ export default function ListScreen() {
     header: boolean;
     footer: boolean;
   }>({ header: false, footer: false });
+  const [lastRefresh, setLastRefresh] = React.useState<Date | null>(null);
+  const [refreshEnabled, setRefreshEnabled] = React.useState<boolean>(false);
 
   const navigation = useNavigation();
 
@@ -90,6 +93,15 @@ export default function ListScreen() {
             scrollDismissesKeyboardOptions[scrollDismissesKeyboardIndex ?? 0]
           ),
           headerProminence(increasedHeader ? 'increased' : 'standard'),
+          ...(refreshEnabled
+            ? [
+                refreshable(async () => {
+                  // Simulate async data fetching
+                  await new Promise((resolve) => setTimeout(resolve, 2000));
+                  setLastRefresh(new Date());
+                }),
+              ]
+            : []),
         ]}
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
@@ -142,6 +154,16 @@ export default function ListScreen() {
           <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
           <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
           <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
+          <Switch
+            value={refreshEnabled}
+            label="Refreshable enabled"
+            onValueChange={setRefreshEnabled}
+          />
+          {lastRefresh && (
+            <Text size={12} color="gray">
+              Last refresh: {lastRefresh.toLocaleTimeString()}
+            </Text>
+          )}
           <ColorPicker
             label="Item icon color"
             selection={color}

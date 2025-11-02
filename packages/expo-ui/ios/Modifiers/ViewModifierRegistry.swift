@@ -450,6 +450,58 @@ internal struct OnDisappearModifier: ViewModifier, Record {
   }
 }
 
+/**
+ * Manages refresh operation continuations for the refreshable modifier.
+ * This singleton stores continuations that are resumed when JavaScript signals completion.
+ */
+internal final class RefreshableManager {
+  static let shared = RefreshableManager()
+
+  private var continuations: [String: CheckedContinuation<Void, Never>] = [:]
+  private let queue = DispatchQueue(label: "expo.ui.refreshable")
+
+  private init() {}
+
+  func storeContinuation(_ continuation: CheckedContinuation<Void, Never>, for id: String) {
+    queue.async {
+      self.continuations[id] = continuation
+    }
+  }
+
+  func completeRefresh(id: String) {
+    queue.async {
+      if let continuation = self.continuations.removeValue(forKey: id) {
+        continuation.resume()
+      }
+    }
+  }
+}
+
+internal struct RefreshableModifier: ViewModifier, Record {
+  var eventDispatcher: EventDispatcher?
+
+  init() {}
+
+  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    try self = .init(from: params, appContext: appContext)
+    self.eventDispatcher = eventDispatcher
+  }
+
+  func body(content: Content) -> some View {
+    if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+      content.refreshable {
+        await withCheckedContinuation { continuation in
+          let refreshId = UUID().uuidString
+          RefreshableManager.shared.storeContinuation(continuation, for: refreshId)
+          eventDispatcher?(["refreshable": ["id": refreshId]])
+        }
+      }
+    } else {
+      content
+    }
+  }
+}
+
 internal struct HueRotationModifier: ViewModifier, Record {
   @Field var angle: Double = 0
 
@@ -1467,6 +1519,10 @@ extension ViewModifierRegistry {
 
     register("onDisappear") { params, appContext, eventDispatcher in
       return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("refreshable") { params, appContext, eventDispatcher in
+      return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
     register("hueRotation") { params, appContext, _ in

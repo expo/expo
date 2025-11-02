@@ -3,11 +3,14 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
+import { requireNativeModule } from 'expo';
 import { ColorValue } from 'react-native';
 
 import { animation } from './animation/index';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
+
+const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
  * Creates a modifier with an event listener.
@@ -186,6 +189,21 @@ export const onAppear = (handler: () => void) =>
  */
 export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
+
+/**
+ * Marks a view as refreshable. Adds pull-to-refresh functionality.
+ * @param handler - Async function to call when refresh is triggered.
+ * @platform ios 15.0+, macOS 12.0+, tvOS 15.0+, watchOS 8.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/refreshable(action:)).
+ */
+export const refreshable = (handler: () => Promise<void>) =>
+  createModifierWithEventListener('refreshable', async (args: { id: string }) => {
+    try {
+      await handler();
+    } finally {
+      await ExpoUI.completeRefresh(args.id);
+    }
+  });
 
 // Note: Complex gesture modifiers like onDragGesture are not available
 // in the modifier system. Use component-level props instead.
