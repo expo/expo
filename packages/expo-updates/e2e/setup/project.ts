@@ -227,13 +227,15 @@ async function copyCommonFixturesToProject(
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
-  // Copy react-native patch
-  await fs.mkdir(path.join(projectRoot, 'patches'));
-  const patchFile = await glob('react-native+*.patch', {
-    cwd: path.join(repoRoot, 'patches'),
-    absolute: true,
-  });
-  await fs.copyFile(patchFile[0], path.join(projectRoot, 'patches', path.basename(patchFile[0])));
+  if (!isTV) {
+    // Copy react-native patch
+    await fs.mkdir(path.join(projectRoot, 'patches'));
+    const patchFile = await glob('react-native+*.patch', {
+      cwd: path.join(repoRoot, 'patches'),
+      absolute: true,
+    });
+    await fs.copyFile(patchFile[0], path.join(projectRoot, 'patches', path.basename(patchFile[0])));
+  }
 
   // Modify specific files for TV
   if (isTV) {
