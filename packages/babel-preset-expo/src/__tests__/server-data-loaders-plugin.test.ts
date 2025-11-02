@@ -75,7 +75,7 @@ function transformTest(
   };
 }
 
-describe('export function loader()', () => {
+describe('`export function loader() {}`', () => {
   it('removes `export async function loader() {}`', () => {
     const res = transformTest(
       `
@@ -137,7 +137,7 @@ describe('export function loader()', () => {
   });
 });
 
-describe('export const loader = () => {}', () => {
+describe('`export const loader = () => {}`', () => {
   it('removes `export const loader = async () => {}`', () => {
     const res = transformTest(
       `
@@ -199,7 +199,7 @@ describe('export const loader = () => {}', () => {
   });
 });
 
-describe('export const loader = function() {}', () => {
+describe('`export const loader = function() {}`', () => {
   it('removes `export const loader = async function() {}`', () => {
     const res = transformTest(
       `

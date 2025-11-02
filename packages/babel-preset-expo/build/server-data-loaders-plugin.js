@@ -22,14 +22,18 @@ function serverDataLoadersPlugin(api) {
                 }
                 debug(isServer ? 'Processing server bundle:' : 'Processing client bundle:', state.file.opts.filename);
                 const { declaration, specifiers } = path.node;
-                const hasNoSpecifiers = specifiers.length === 0;
-                if (path.node.exportKind === 'type') {
+                // Is this a type export like `export type Foo`?
+                const isTypeExport = path.node.exportKind === 'type';
+                // Does this export with `export { loader }`?
+                // NOTE(@hassankhan): We should add proper handling for specifiers too
+                const hasSpecifiers = specifiers.length > 0;
+                if (isTypeExport || hasSpecifiers) {
                     return;
                 }
                 // Handles `export function loader() {}`
                 if (t.isFunctionDeclaration(declaration)) {
                     const name = declaration.id?.name;
-                    if (name && isLoaderIdentifier(name) && hasNoSpecifiers) {
+                    if (name && isLoaderIdentifier(name)) {
                         debug('Found and removed loader function declaration');
                         markForConstantFolding(path, state);
                     }
@@ -45,7 +49,7 @@ function serverDataLoadersPlugin(api) {
                         return true;
                     });
                     // If all declarations were removed, remove the export
-                    if (declaration.declarations.length === 0 && hasNoSpecifiers) {
+                    if (declaration.declarations.length === 0) {
                         markForConstantFolding(path, state);
                     }
                 }
