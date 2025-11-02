@@ -59,7 +59,7 @@ val projectRoot = File(rootDir.absoluteFile, "../../minimal-tester").absolutePat
 react {
     entryFile = file(listOf("node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() })
     reactNativeDir = file(listOf("node", "--print", "require.resolve('react-native/package.json')").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absoluteFile
-    hermesCommand = file(listOf("node", "--print", "require.resolve('hermes-compiler/package.json')").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absolutePath + "/hermesc/%OS-BIN%/hermesc"
+    hermesCommand = file(listOf("node", "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absolutePath + "/hermesc/%OS-BIN%/hermesc"
     codegenDir = file(listOf("node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absoluteFile
     enableBundleCompression = false
 
