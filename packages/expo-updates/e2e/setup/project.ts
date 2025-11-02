@@ -3,6 +3,7 @@
 import spawnAsync from '@expo/spawn-async';
 import { rmSync, existsSync } from 'fs';
 import fs from 'fs/promises';
+import { glob } from 'glob';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -227,13 +228,12 @@ async function copyCommonFixturesToProject(
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
   // Copy react-native patch
-  // FIXME: when we remove the patch, also revert the `RCT_USE_PREBUILT_RNCORE=0` change
   await fs.mkdir(path.join(projectRoot, 'patches'));
-  const patchFile = await glob('react-native+*.patch', { cwd: path.join(repoRoot, 'patches'), absolute: true });
-  await fs.copyFile(
-    patchFile,
-    path.join(projectRoot, 'patches', path.basename(patchFile)
-  );
+  const patchFile = await glob('react-native+*.patch', {
+    cwd: path.join(repoRoot, 'patches'),
+    absolute: true,
+  });
+  await fs.copyFile(patchFile[0], path.join(projectRoot, 'patches', path.basename(patchFile[0])));
 
   // Modify specific files for TV
   if (isTV) {
