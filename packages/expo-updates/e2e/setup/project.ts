@@ -328,7 +328,7 @@ async function preparePackageJson(
     ? {
         start: 'expo start --private-key-path ./keys/private-key.pem',
         'ios:pod-install-old-arch': 'npx pod-install',
-        'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=0 RCT_USE_RN_DEP=1 npx pod-install',
+        'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 npx pod-install',
         'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
         'maestro:android:debug:install':
           'adb install android/app/build/outputs/apk/debug/app-debug.apk',
