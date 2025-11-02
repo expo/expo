@@ -44,7 +44,6 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
           return;
         }
 
-
         // Handles `export function loader() {}`
         if (t.isFunctionDeclaration(declaration)) {
           const name = declaration.id?.name;

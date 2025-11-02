@@ -22,13 +22,14 @@ function serverDataLoadersPlugin(api) {
                 }
                 debug(isServer ? 'Processing server bundle:' : 'Processing client bundle:', state.file.opts.filename);
                 const { declaration, specifiers } = path.node;
-                if (path.node.exportKind === 'type' || specifiers) {
+                const hasNoSpecifiers = specifiers.length === 0;
+                if (path.node.exportKind === 'type') {
                     return;
                 }
                 // Handles `export function loader() {}`
                 if (t.isFunctionDeclaration(declaration)) {
                     const name = declaration.id?.name;
-                    if (name && isLoaderIdentifier(name)) {
+                    if (name && isLoaderIdentifier(name) && hasNoSpecifiers) {
                         debug('Found and removed loader function declaration');
                         markForConstantFolding(path, state);
                     }
@@ -44,7 +45,7 @@ function serverDataLoadersPlugin(api) {
                         return true;
                     });
                     // If all declarations were removed, remove the export
-                    if (declaration.declarations.length === 0) {
+                    if (declaration.declarations.length === 0 && hasNoSpecifiers) {
                         markForConstantFolding(path, state);
                     }
                 }
@@ -72,6 +73,11 @@ function isInAppDirectory(filePath, routerRoot) {
     const normalizedAppRoot = (0, common_1.toPosixPath)(routerRoot);
     return normalizedFilePath.startsWith(normalizedAppRoot + '/');
 }
+/**
+ * Marks a file for Metro's constant folding. This will work for both development and production bundles.
+ *
+ * @see packages/@expo/metro-config/src/transform-worker/metro-transform-worker.ts#transformJS
+ */
 function markForConstantFolding(path, state) {
     assertExpoMetadata(state.file.metadata);
     state.file.metadata.performConstantFolding = true;
