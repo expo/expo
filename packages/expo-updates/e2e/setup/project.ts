@@ -227,10 +227,12 @@ async function copyCommonFixturesToProject(
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
   // Copy react-native patch
+  // FIXME: when we remove the patch, also revert the `RCT_USE_PREBUILT_RNCORE=0` change
   await fs.mkdir(path.join(projectRoot, 'patches'));
+  const patchFile = await glob('react-native+*.patch', { cwd: path.join(repoRoot, 'patches'), absolute: true });
   await fs.copyFile(
-    path.resolve(repoRoot, 'patches', 'react-native+0.83.0-nightly-20251030-26ad9492b.patch'),
-    path.join(projectRoot, 'patches', 'react-native+0.83.0-nightly-20251030-26ad9492b.patch')
+    patchFile,
+    path.join(projectRoot, 'patches', path.basename(patchFile)
   );
 
   // Modify specific files for TV
