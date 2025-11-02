@@ -267,14 +267,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (hasModule('expo-router')) {
     extraPlugins.push(expoRouterBabelPlugin);
+
+    // Strip loader() functions from client bundles
+    if (!isServerEnv) {
+      extraPlugins.push(serverDataLoadersPlugin);
+    }
   }
 
   extraPlugins.push(reactClientReferencesPlugin);
 
-  // Strip loader() functions from client bundles
-  if (!isServerEnv) {
-    extraPlugins.push(serverDataLoadersPlugin);
-  }
 
   // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
   // users who are bundling using the client-only system.
