@@ -54,26 +54,34 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
           const name = declaration.id?.name;
           if (name && isLoaderIdentifier(name)) {
             debug('Found and removed loader function declaration');
-            markForConstantFolding(path, state);
+            markForConstantFolding(state);
+            path.remove();
           }
         }
 
         // Handles `export const loader = ...`
         if (t.isVariableDeclaration(declaration)) {
+          let hasRemovedLoader = false;
+
           declaration.declarations = declaration.declarations.filter(
             (declarator: t.VariableDeclarator) => {
               const name = t.isIdentifier(declarator.id) ? declarator.id.name : null;
               if (name && isLoaderIdentifier(name)) {
                 debug('Found and removed loader variable declaration');
+                hasRemovedLoader = true;
                 return false;
               }
               return true;
             }
           );
 
-          // If all declarations were removed, remove the export
-          if (declaration.declarations.length === 0) {
-            markForConstantFolding(path, state);
+          if (hasRemovedLoader) {
+            markForConstantFolding(state);
+
+            // If all declarations were removed, remove the export
+            if (declaration.declarations.length === 0) {
+              path.remove();
+            }
           }
         }
       },
@@ -111,8 +119,7 @@ function isInAppDirectory(filePath: string, routerRoot: string) {
  *
  * @see packages/@expo/metro-config/src/transform-worker/metro-transform-worker.ts#transformJS
  */
-function markForConstantFolding(path: NodePath<t.ExportNamedDeclaration>, state: PluginPass) {
+function markForConstantFolding(state: PluginPass) {
   assertExpoMetadata(state.file.metadata);
   state.file.metadata.performConstantFolding = true;
-  path.remove();
 }

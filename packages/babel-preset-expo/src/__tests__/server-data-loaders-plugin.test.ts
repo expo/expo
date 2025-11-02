@@ -353,7 +353,7 @@ describe('preserves', () => {
       { isServer: false }
     );
 
-    expect(res.metadata.performConstantFolding).toBeUndefined();
+    expect(res.metadata.performConstantFolding).toBe(true);
     expect(res.code).toMatchInlineSnapshot(`
       "import { useLoaderData } from 'expo-router';
       import { jsx as _jsx } from "react/jsx-runtime";
