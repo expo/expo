@@ -163,12 +163,12 @@ function babelPresetExpo(api, options = {}) {
     }
     if ((0, common_1.hasModule)('expo-router')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
+        // Strip loader() functions from client bundles
+        if (!isServerEnv) {
+            extraPlugins.push(server_data_loaders_plugin_1.serverDataLoadersPlugin);
+        }
     }
     extraPlugins.push(client_module_proxy_plugin_1.reactClientReferencesPlugin);
-    // Strip loader() functions from client bundles
-    if (!isServerEnv) {
-        extraPlugins.push(server_data_loaders_plugin_1.serverDataLoadersPlugin);
-    }
     // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
     // users who are bundling using the client-only system.
     if (isReactServer) {
