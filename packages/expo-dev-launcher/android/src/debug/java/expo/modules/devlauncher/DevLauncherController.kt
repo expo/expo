@@ -399,7 +399,10 @@ class DevLauncherController private constructor() :
       ) { "Couldn't find the launcher class." }
     } else {
       Intent(context, sLauncherClass!!)
-    }.apply { addFlags(NEW_ACTIVITY_FLAGS) }
+    }.apply {
+      addFlags(NEW_ACTIVITY_FLAGS)
+      putExtra("isLeavingDevLauncher", true)
+    }
 
   companion object {
     private var sErrorHandlerWasInitialized = false
