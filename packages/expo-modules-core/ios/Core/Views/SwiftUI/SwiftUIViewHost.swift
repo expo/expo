@@ -50,7 +50,7 @@ extension ExpoSwiftUI {
     // MARK: - AnyChild implementations
 
     var childView: some SwiftUI.View {
-      ViewSizeWrapper(view: view)
+      ViewSizeWrapper(viewHost: self)
     }
 
     var id: ObjectIdentifier {
@@ -60,16 +60,16 @@ extension ExpoSwiftUI {
 }
 
 private struct ViewSizeWrapper: View {
-  let view: UIView
+  let viewHost: ExpoSwiftUI.UIViewHost
   @StateObject private var viewSizeModel: ViewSizeModel
 
-  init(view: UIView) {
-    self.view = view
-    _viewSizeModel = StateObject(wrappedValue: ViewSizeModel(view: view))
+  init(viewHost: ExpoSwiftUI.UIViewHost) {
+    self.viewHost = viewHost
+    _viewSizeModel = StateObject(wrappedValue: ViewSizeModel(viewHost: viewHost))
   }
 
   var body: some View {
-      ExpoSwiftUI.UIViewHost(view: view)
+      viewHost
         .frame(width: viewSizeModel.viewFrame.width, height: viewSizeModel.viewFrame.height)
   }
 }
@@ -79,7 +79,8 @@ private class ViewSizeModel: ObservableObject {
   @Published var viewFrame: CGSize
   private var observer: NSKeyValueObservation?
 
-  init(view: UIView) {
+  init(viewHost: ExpoSwiftUI.UIViewHost) {
+    let view = viewHost.view
     self.viewFrame = view.bounds.size
     observer = view.observe(\.bounds) { [weak self] view, _ in
       MainActor.assumeIsolated {
