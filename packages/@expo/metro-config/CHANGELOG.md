@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added support for functional CSS.
+- Added support for functional CSS. ([#40342](https://github.com/expo/expo/pull/40342) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

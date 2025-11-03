@@ -9,7 +9,7 @@
 
 ### 🎉 New features
 
-- Add `expo/css` import for functional CSS.
+- Add `expo/css` import for functional CSS. ([#40342](https://github.com/expo/expo/pull/40342) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `process.env.EXPO_DOM_HOST_OS` for detecting the original platform of a DOM Component. ([#40382](https://github.com/expo/expo/pull/40382) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove `ExpoAppDelegate` inheritance requirement in ExpoReactNativeFactory ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove bindReactNativeFactory function ([#39418](https://github.com/expo/expo/pull/39418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
