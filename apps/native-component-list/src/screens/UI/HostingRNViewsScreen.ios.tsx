@@ -1,7 +1,7 @@
-import { Host, Text as SwiftUIText, VStack, HStack, List, Section, Label } from '@expo/ui/swift-ui';
+import { Host, Text as SwiftUIText, VStack, HStack, List, Section } from '@expo/ui/swift-ui';
 import { frame, padding } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
-import { StyleSheet, Text as RNText, View, Pressable } from 'react-native';
+import { Text as RNText, View, Pressable } from 'react-native';
 
 export default function HostingRNViewsScreen() {
   const [counter, setCounter] = useState(0);
