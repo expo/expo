@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Hide Action button in PiP mode to prevent crash ([#40792](https://github.com/expo/expo/pull/40792) by [@kosmydel](https://github.com/kosmydel))
+
 ### 💡 Others
 
 - change debugger connection "warning" to a "tip" ([#39942](https://github.com/expo/expo/pull/39942) by [@vonovak](https://github.com/vonovak))
