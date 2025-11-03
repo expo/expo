@@ -120,7 +120,6 @@ export declare const onDisappear: (handler: () => void) => ModifierConfig;
 /**
  * Marks a view as refreshable. Adds pull-to-refresh functionality.
  * @param handler - Async function to call when refresh is triggered.
- * @platform ios 15.0+, macOS 12.0+, tvOS 15.0+, watchOS 8.0+
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/refreshable(action:)).
  */
 export declare const refreshable: (handler: () => Promise<void>) => ModifierConfig;
