@@ -4,7 +4,6 @@
  */
 
 import { requireNativeModule } from 'expo';
-import { ColorValue } from 'react-native';
 
 import { animation } from './animation/index';
 import { background } from './background';
