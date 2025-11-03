@@ -54,6 +54,6 @@ public protocol UpdatesExternalInterfaceDelegate {
 public protocol UpdatesExternalMetricsInterface {
   @objc var runtimeVersion: String? { get }
   @objc var updateURL: URL? { get }
-  @objc var launchedUpdateId: String { get }
-  @objc var embeddedUpdateId: String { get }
+  @objc var launchedUpdateId: String? { get }
+  @objc var embeddedUpdateId: String? { get }
 }

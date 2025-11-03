@@ -174,12 +174,12 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesExtern
     }
   }
 
-  public var launchedUpdateId: String {
-    return getConstantsForModule().launchedUpdate?.updateId.uuidString ?? ""
+  public var launchedUpdateId: String? {
+    return getConstantsForModule().launchedUpdate?.updateId.uuidString
   }
 
-  public var embeddedUpdateId: String {
-    return getConstantsForModule().embeddedUpdate?.updateId.uuidString ?? ""
+  public var embeddedUpdateId: String? {
+    return getConstantsForModule().embeddedUpdate?.updateId.uuidString
   }
   // swiftlint:enable implicit_getter
 
