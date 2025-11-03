@@ -2,11 +2,12 @@
 
 import SwiftUI
 import ExpoModulesCore
+import EXUpdatesInterface
 
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
-public class EnabledAppController: InternalAppControllerInterface, StartupProcedureDelegate {
+public class EnabledAppController: InternalAppControllerInterface, UpdatesExternalMetricsInterface, StartupProcedureDelegate {
   public weak var delegate: AppControllerDelegate?
   public var reloadScreenManager: Reloadable? = ReloadScreenManager()
 
@@ -58,6 +59,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     self.logger.info(message: "AppController sharedInstance created")
     self.eventManager = QueueUpdatesEventManager(logger: logger)
     self.stateMachine = UpdatesStateMachine(logger: self.logger, eventManager: self.eventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+    UpdatesControllerRegistry.sharedInstance.metricsController = self
   }
 
   public func start() {
@@ -156,6 +158,30 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
 
     stateMachine.queueExecution(stateMachineProcedure: procedure)
   }
+
+  // MARK: - UpdatesExternalMetricsInterface
+
+  // swiftlint:disable implicit_getter
+  public var runtimeVersion: String? {
+    get {
+      return getConstantsForModule().runtimeVersion
+    }
+  }
+
+  public var updateURL: URL? {
+    get {
+      return config.updateUrl
+    }
+  }
+
+  public var launchedUpdateId: String {
+    return getConstantsForModule().launchedUpdate?.updateId.uuidString ?? ""
+  }
+
+  public var embeddedUpdateId: String {
+    return getConstantsForModule().embeddedUpdate?.updateId.uuidString ?? ""
+  }
+  // swiftlint:enable implicit_getter
 
   // MARK: - Internal
 
