@@ -6,6 +6,7 @@ description: Learn how to submit your app to the Google Play Store from your com
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 This guide outlines how to submit your app to the Google Play Store from your computer or from a CI/CD service.
 
@@ -101,6 +102,8 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
   </Requirement>
   <Requirement number={6} title="Upload your Google Service Account key to EAS dashboard">
     Then, you need to upload your Google Service Account key to EAS dashboard under project's credentials.
+    <Tabs>
+    <Tab label="EAS dashboard">
     - Go to your project's EAS dashboard, click **Credentials**, and under **Android**, click your app's **Application identifier**.
     - Under **Service Credentials**, click **Add a Google Service Account Key**.
     - Under **Change Google Service Account Key**, ensure **Upload new key** is selected and upload the downloaded JSON key. This will add the key to your project's credentials.
@@ -110,6 +113,22 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
       src="/static/images/tutorial/eas/credentials-03.png"
       className="max-w-[540px]"
     />
+    </Tab>
+    <Tab label="EAS CLI">
+    You can also upload the JSON key to the EAS dashboard using EAS CLI:
+    - Run `eas credentials --platform android`
+    - When prompted **Which build profile do you want to configure?**, select **production**
+    - When prompted **What do you want to do?**, select **Google Service Account** > **Upload a Google Service Account Key**
+    - Then add the JSON key file path to the upload the file to EAS dashboard
+
+    <ContentSpotlight
+      alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
+      src="/static/images/tutorial/eas/credentials-03.png"
+      className="max-w-[540px]"
+    />
+
+    </Tab>
+    </Tabs>
 
   </Requirement>
   <Requirement number={7} title="Build a production app">
