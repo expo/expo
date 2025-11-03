@@ -5,6 +5,10 @@ export type LabeledContentProps = {
      */
     label?: string;
     children: React.ReactNode;
+    /**
+     * Sets a custom view for the label.
+     */
+    labelView?: React.ReactNode;
 } & CommonViewModifierProps;
 /**
  * LabeledContent component uses the native [LabeledContent](https://developer.apple.com/documentation/swiftui/labeledcontent) component.

@@ -61,6 +61,8 @@ public final class ExpoUIModule: Module {
     View(SectionHeader.self)
     View(SectionFooter.self)
     View(GridRowView.self)
+    View(LabeledContentLabel.self)
+    View(LabeledContentContent.self)
 
     View(HostView.self)
 
