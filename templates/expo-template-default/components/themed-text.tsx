@@ -78,12 +78,6 @@ const styles = StyleSheet.create({
   code: {
     fontFamily: Fonts.mono,
     fontWeight: Platform.select({ ios: 500, android: 700, web: 500 }),
-    // font-style: Medium;
     fontSize: 12,
-    // leading-trim: NONE;
-    // line-height: 100%;
-    // letter-spacing: -0.5px;
-    // text-align: center;
-    // text-transform: uppercase;
   },
 });
