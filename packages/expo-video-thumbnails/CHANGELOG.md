@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix crash on android API < 29. ([#39460](https://github.com/expo/expo/pull/39460) by [@ACHP](https://github.com/ACHP))
+
 ### 💡 Others
 
 - [Android] Remove unused `androidx.annotation:annotation` dependency. ([#39755](https://github.com/expo/expo/pull/39755) by [@lukmccall](https://github.com/lukmccall))
