@@ -135,9 +135,6 @@ export async function loadMetroConfigAsync(
     );
   }
 
-  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
-    Log.warn(`Experimental fast resolver is enabled.`);
-  }
   if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
   }
@@ -163,7 +160,6 @@ export async function loadMetroConfigAsync(
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
-    isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
