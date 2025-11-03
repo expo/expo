@@ -5,27 +5,24 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    text: '#000000',
+    background: '#ffffff',
+    backgroundElement: '#F0F0F3',
+    backgroundSelected: '#E0E1E6',
+    textSecondary: '#60646C',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    text: '#ffffff',
+    background: '#000000',
+    backgroundElement: '#212225',
+    backgroundSelected: '#2E3135',
+    textSecondary: '#B0B4BA',
   },
 };
+
+export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 export const Fonts = Platform.select({
   ios: {
@@ -51,3 +48,16 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+export const Spacing = {
+  half: 2 as const,
+  one: 4 as const,
+  two: 8 as const,
+  three: 16 as const,
+  four: 24 as const,
+  five: 32 as const,
+  six: 64 as const,
+};
+
+export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
+export const MaxContentWidth = 800;
