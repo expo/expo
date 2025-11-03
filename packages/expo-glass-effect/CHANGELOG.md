@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.1.6 — 2025-11-03
+
+### 🐛 Bug fixes
+
 - Fix `border(Left|Right|Start|End)Radius` ([#40780](https://github.com/expo/expo/pull/40780) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
