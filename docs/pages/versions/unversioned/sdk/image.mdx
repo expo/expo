@@ -77,7 +77,7 @@ You can configure build-time settings for `expo-image` using its [config plugin]
       name: 'disableLibdav1d',
       platform: 'ios',
       description:
-        'When true, skips adding the bundled `libavif/libdav1d` Pod. Use this when another dependency (such as FFmpegKit) already links `libdav1d`. Disabling the Pod removes AVIF image support on iOS unless another decoder is available.',
+        'When `true`, skips adding the bundled `libavif/libdav1d` Pod. Use this when another dependency (such as `FFmpegKit`) already links `libdav1d`. Disabling the Pod removes AVIF image support on iOS unless another decoder is available.',
       default: 'false',
     },
   ]}
