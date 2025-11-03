@@ -882,4 +882,4 @@ export * from './animation/index';
 export * from './containerShape';
 export * from './shapes/index';
 export * from './background';
-export * from './types';
+export type * from './types';
