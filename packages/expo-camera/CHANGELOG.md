@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Support all valid gps tags from `CGImageProperties` in exif data. ([#40801](https://github.com/expo/expo/pull/40801) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 17.0.8 — 2025-09-16
 
 ### 🐛 Bug fixes
