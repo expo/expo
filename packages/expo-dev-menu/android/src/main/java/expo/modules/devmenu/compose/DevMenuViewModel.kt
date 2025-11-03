@@ -69,6 +69,13 @@ class DevMenuViewModel(
     _state.value = _state.value.copy(customItems = items)
   }
 
+  fun setInPictureInPictureMode(isInPictureInPictureMode: Boolean) {
+    if (state.isInPictureInPictureMode == isInPictureInPictureMode) {
+      return
+    }
+    _state.value = _state.value.copy(isInPictureInPictureMode = isInPictureInPictureMode)
+  }
+
   private fun closeMenu() {
     _state.value = _state.value.copy(isOpen = false)
   }

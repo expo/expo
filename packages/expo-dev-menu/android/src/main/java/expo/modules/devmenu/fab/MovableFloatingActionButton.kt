@@ -63,6 +63,10 @@ fun MovableFloatingActionButton(
       x = constraints.maxWidth - totalFabSizePx.x,
       y = constraints.maxHeight - totalFabSizePx.y
     )
+    val isFabDisplayable = state.showFab &&
+      !state.isInPictureInPictureMode &&
+      bounds.x >= 0f &&
+      bounds.y >= 0f
 
     val previousBounds = rememberPrevious(bounds)
     val velocityTracker = remember { ExpoVelocityTracker() }
@@ -70,7 +74,10 @@ fun MovableFloatingActionButton(
     val animatedOffset = remember { Animatable(defaultOffset, Offset.VectorConverter) }
     val pillInteractionSource = remember { MutableInteractionSource() }
 
-    LaunchedEffect(bounds.x, bounds.y) {
+    LaunchedEffect(bounds.x, bounds.y, isFabDisplayable) {
+      if (!isFabDisplayable) {
+        return@LaunchedEffect
+      }
       previousBounds?.let {
         val oldX = animatedOffset.value.x
         val oldY = animatedOffset.value.y
@@ -88,7 +95,7 @@ fun MovableFloatingActionButton(
     }
 
     AnimatedVisibility(
-      visible = state.showFab,
+      visible = isFabDisplayable,
       enter = fadeIn(),
       exit = fadeOut()
     ) {

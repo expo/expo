@@ -11,7 +11,8 @@ data class DevMenuState(
   val devToolsSettings: DevToolsSettings = DevToolsSettings(),
   val isOnboardingFinished: Boolean = false,
   val showFab: Boolean = DevMenuPreferencesHandle.showFab,
-  val customItems: List<CustomItem> = emptyList()
+  val customItems: List<CustomItem> = emptyList(),
+  val isInPictureInPictureMode: Boolean = false
 ) {
   data class CustomItem(
     val name: String,
