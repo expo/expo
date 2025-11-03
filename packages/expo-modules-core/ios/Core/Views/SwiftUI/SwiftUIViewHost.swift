@@ -50,11 +50,45 @@ extension ExpoSwiftUI {
     // MARK: - AnyChild implementations
 
     var childView: some SwiftUI.View {
-      self
+      ViewSizeWrapper(view: view)
     }
 
     var id: ObjectIdentifier {
       ObjectIdentifier(view)
     }
+  }
+}
+
+private struct ViewSizeWrapper: View {
+  let view: UIView
+  @StateObject private var viewSizeModel: ViewSizeModel
+
+  init(view: UIView) {
+    self.view = view
+    _viewSizeModel = StateObject(wrappedValue: ViewSizeModel(view: view))
+  }
+
+  var body: some View {
+      ExpoSwiftUI.UIViewHost(view: view)
+        .frame(width: viewSizeModel.viewFrame.width, height: viewSizeModel.viewFrame.height)
+  }
+}
+
+@MainActor
+private class ViewSizeModel: ObservableObject {
+  @Published var viewFrame: CGSize
+  private var observer: NSKeyValueObservation?
+
+  init(view: UIView) {
+    self.viewFrame = view.bounds.size
+    observer = view.observe(\.bounds) { [weak self] view, _ in
+      MainActor.assumeIsolated {
+        self?.viewFrame = view.bounds.size
+      }
+    }
+  }
+
+  deinit {
+    observer?.invalidate()
   }
 }
