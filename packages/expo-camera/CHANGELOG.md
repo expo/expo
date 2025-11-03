@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Support all valid gps tags from `CGImageProperties` in exif data.
+
 ## 17.0.8 — 2025-09-16
 
 ### 🐛 Bug fixes
