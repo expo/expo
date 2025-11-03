@@ -7,8 +7,10 @@ import { requireNativeModule } from 'expo';
 import { ColorValue } from 'react-native';
 
 import { animation } from './animation/index';
+import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
+import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -22,28 +24,6 @@ function createModifierWithEventListener(
 ): ModifierConfig {
   return { $type: type, ...params, eventListener };
 }
-
-type NamedColor =
-  | 'primary'
-  | 'secondary'
-  | 'red'
-  | 'orange'
-  | 'yellow'
-  | 'green'
-  | 'blue'
-  | 'purple'
-  | 'pink'
-  | 'white'
-  | 'gray'
-  | 'black'
-  | 'clear'
-  | 'mint'
-  | 'teal'
-  | 'cyan'
-  | 'indigo'
-  | 'brown';
-
-type Color = string | ColorValue | NamedColor;
 
 // =============================================================================
 // Built-in Modifier Functions
@@ -64,13 +44,6 @@ export const listSectionSpacing = (spacing: 'default' | 'compact' | number) => {
 
   return createModifier('listSectionSpacing', { spacing });
 };
-
-/**
- * Sets the background of a view.
- * @param color - The background color (hex string). For example, `#FF0000`.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)).
- */
-export const background = (color: Color) => createModifier('background', { color });
 
 /**
  * Applies corner radius to a view.
@@ -926,3 +899,6 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 
 export * from './animation/index';
 export * from './containerShape';
+export * from './shapes/index';
+export * from './background';
+export type * from './types';

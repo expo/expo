@@ -11,13 +11,13 @@ exports[`Native Bottom Tabs Navigation renders tabs correctly for two elements 1
   tabindex="0"
 >
   <button
-    aria-controls="radix-«r0»-content-r-0"
+    aria-controls="radix-_r_0_-content-r-0"
     aria-selected="true"
     class=""
     data-orientation="horizontal"
     data-radix-collection-item=""
     data-state="active"
-    id="radix-«r0»-trigger-r-0"
+    id="radix-_r_0_-trigger-r-0"
     role="tab"
     tabindex="-1"
     type="button"
@@ -27,13 +27,13 @@ exports[`Native Bottom Tabs Navigation renders tabs correctly for two elements 1
     </span>
   </button>
   <button
-    aria-controls="radix-«r0»-content-r-1"
+    aria-controls="radix-_r_0_-content-r-1"
     aria-selected="false"
     class=""
     data-orientation="horizontal"
     data-radix-collection-item=""
     data-state="inactive"
-    id="radix-«r0»-trigger-r-1"
+    id="radix-_r_0_-trigger-r-1"
     role="tab"
     tabindex="-1"
     type="button"
