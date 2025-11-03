@@ -1,3 +1,18 @@
+diff --git a/node_modules/react-native/Libraries/Core/ReactNativeVersionCheck.js b/node_modules/react-native/Libraries/Core/ReactNativeVersionCheck.js
+index 7ed749f..5ca9684 100644
+--- a/node_modules/react-native/Libraries/Core/ReactNativeVersionCheck.js
++++ b/node_modules/react-native/Libraries/Core/ReactNativeVersionCheck.js
+@@ -22,6 +22,10 @@ const ReactNativeVersion = require('./ReactNativeVersion');
+  * and rely on its existence as a separate module.
+  */
+ export function checkVersions(): void {
++  // Ignore version mismatch for nightlies
++  if (ReactNativeVersion.version.prerelease.includes('nightly')) {
++    return;
++  }
+   const nativeVersion = Platform.constants.reactNativeVersion;
+   if (
+     ReactNativeVersion.version.major !== nativeVersion.major ||
 diff --git a/node_modules/react-native/scripts/cocoapods/rndependencies.rb b/node_modules/react-native/scripts/cocoapods/rndependencies.rb
 index 33a13c9..a901840 100644
 --- a/node_modules/react-native/scripts/cocoapods/rndependencies.rb
