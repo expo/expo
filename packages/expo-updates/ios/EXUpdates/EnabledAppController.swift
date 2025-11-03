@@ -164,7 +164,7 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesExtern
   // swiftlint:disable implicit_getter
   public var runtimeVersion: String? {
     get {
-      return getConstantsForModule().runtimeVersion
+      return config.runtimeVersion
     }
   }
 
