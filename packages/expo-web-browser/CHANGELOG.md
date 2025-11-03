@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `dismissBrowser` hanging when called with no browser open.
+- [iOS] Fix `dismissBrowser` hanging when called with no browser open. ([#40799](https://github.com/expo/expo/pull/40799) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
