@@ -1,0 +1,83 @@
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+
+// Nümunə məhsullar (mətn tam Azərbaycan dilindədir)
+const mehsullar = [
+  { id: 1, ad: 'Qadın Tünd Göy Don', qiymet: '45.00 AZN' },
+  { id: 2, ad: 'Kişi Qara Slim Fit Köynək', qiymet: '29.99 AZN' },
+  { id: 3, ad: 'Uşaq Cins Şalvarı', qiymet: '19.50 AZN' },
+  { id: 4, ad: 'Qış Sviteri', qiymet: '55.50 AZN' },
+];
+
+export default function App() {
+  // Səbətə əlavə olunan məhsulları saxlamaq üçün dəyişən
+  const [sebetSayi, setSebetSayi] = useState(0);
+
+  // Məhsulu səbətə əlavə etmə funksiyası
+  const sebeteElaveEt = (mehsulAdi) => {
+    setSebetSayi(prevSayi => prevSayi + 1);
+    Alert.alert("Əlavə Edildi", `${mehsulAdi} səbətə əlavə olundu!`);
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* BAŞLIQ */}
+      <View style={styles.header}>
+        <Text style={styles.logo}>Moda Mağazam</Text>
+        <TouchableOpacity style={styles.cartContainer} onPress={() => Alert.alert("Səbətiniz", `Səbətdə ${sebetSayi} məhsul var.`)}>
+          <Text style={{ fontSize: 24 }}>🛒</Text>
+          {sebetSayi > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{sebetSayi}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {/* MƏHSUL SİYAHISI */}
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.sectionTitle}>Yeni Gələnlər</Text>
+        
+        <View style={styles.productGrid}>
+          {mehsullar.map((mehsul) => (
+            <View key={mehsul.id} style={styles.productCard}>
+              <View style={styles.imagePlaceholder}><Text>Şəkil Yeri</Text></View>
+              <Text style={styles.productName}>{mehsul.ad}</Text>
+              <Text style={styles.productPrice}>{mehsul.qiymet}</Text>
+              
+              {/* Səbətə Əlavə Et Düyməsi */}
+              <TouchableOpacity 
+                style={styles.addButton}
+                onPress={() => sebeteElaveEt(mehsul.ad)}
+              >
+                <Text style={styles.addButtonText}>🛒 Səbətə Əlavə Et</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  );
+}
+
+// Üslublar (Dizayn Kodları)
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f8f8f8', paddingTop: 50 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 15, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#ff6f00' },
+  logo: { fontSize: 22, fontWeight: 'bold', color: '#ff6f00' },
+  cartContainer: { position: 'relative' },
+  badge: {
+    position: 'absolute', top: -5, right: -5, backgroundColor: 'red',
+    borderRadius: 9, width: 18, height: 18, justifyContent: 'center', alignItems: 'center',
+  },
+  badgeText: { color: 'white', fontSize: 10, fontWeight: 'bold' },
+  content: { padding: 10 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginVertical: 15, color: '#333' },
+  productGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  productCard: { width: '48%', marginBottom: 20, backgroundColor: '#fff', borderRadius: 8, padding: 10, alignItems: 'center', elevation: 2 },
+  imagePlaceholder: { width: '100%', height: 150, backgroundColor: '#e0e0e0', borderRadius: 6, marginBottom: 10, justifyContent: 'center', alignItems: 'center' },
+  productName: { fontSize: 14, fontWeight: '600', textAlign: 'center', marginBottom: 5 },
+  productPrice: { fontSize: 16, fontWeight: 'bold', color: '#ff6f00', marginBottom: 10 },
+  addButton: { backgroundColor: '#00bcd4', padding: 10, borderRadius: 5, width: '100%', alignItems: 'center' },
+  addButtonText: { color: 'white', fontWeight: 'bold' },
+});
