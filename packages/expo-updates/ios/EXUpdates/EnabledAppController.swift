@@ -161,27 +161,21 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesExtern
 
   // MARK: - UpdatesExternalMetricsInterface
 
-  // swiftlint:disable implicit_getter
   public var runtimeVersion: String? {
-    get {
-      return config.runtimeVersion
-    }
+    return config.runtimeVersion
   }
 
   public var updateURL: URL? {
-    get {
-      return config.updateUrl
-    }
+    return config.updateUrl
   }
 
   public var launchedUpdateId: String? {
-    return getConstantsForModule().launchedUpdate?.updateId.uuidString
+    return startupProcedure.launchedUpdate()?.updateId.uuidString
   }
 
   public var embeddedUpdateId: String? {
-    return getConstantsForModule().embeddedUpdate?.updateId.uuidString
+    return getEmbeddedUpdate()?.updateId.uuidString
   }
-  // swiftlint:enable implicit_getter
 
   // MARK: - Internal
 
