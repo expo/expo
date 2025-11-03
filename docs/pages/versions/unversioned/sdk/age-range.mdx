@@ -12,7 +12,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-> **important** This library is currently in alpha and will frequently experience breaking changes.
+> **important** **This library is currently in alpha and will frequently experience breaking changes.**
 
 `expo-age-range` provides access to user age range information. It uses Google's [Play Age Signals API](https://developer.android.com/google/play/age-signals/use-age-signals-api) on Android and Apple's [Declared Age Range framework](https://developer.apple.com/documentation/declaredagerange/) on iOS.
 
@@ -124,11 +124,10 @@ import * as AgeRange from 'expo-age-range';
 
 ## Error codes
 
-Available in the `code` property of any error thrown by the native module.
-For Android-specific error codes, see "Handle API error codes" in [Use Play Age Signals API docs](https://developer.android.com/google/play/age-signals/use-age-signals-api#handle-api-errors)
+Available in the `code` property of any error thrown by the native module. For Android-specific error codes, see "Handle API error codes" in [Use Play Age Signals API docs](https://developer.android.com/google/play/age-signals/use-age-signals-api#handle-api-errors).
 
 | Code                            | Description                                                                                                                      |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `ERR_AGE_RANGE_USER_DECLINED`   | **iOS Only.** User declined to shar their age range.                                                                             |
+| `ERR_AGE_RANGE_USER_DECLINED`   | **iOS Only.** User declined to share their age range.                                                                            |
 | `ERR_AGE_RANGE_NOT_AVAILABLE`   | **iOS Only.** Age range not available. The most likely cause is that user is not signed in to their Apple account on the device. |
 | `ERR_AGE_RANGE_INVALID_REQUEST` | **iOS Only.** The provided params were invalid. The age ranges need to be minimum 2 years apart.                                 |
