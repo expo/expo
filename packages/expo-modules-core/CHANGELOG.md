@@ -33,6 +33,7 @@
 - [Android] Fix `androidNavigationBar.enforceContrast` app config property not working. ([#40263](https://github.com/expo/expo/pull/40263) by [@behenate](https://github.com/behenate))
 - [iOS] Fix `ValueOrUndefined` conversion in `Record`. ([#40289](https://github.com/expo/expo/pull/40289) by [@jakex7](https://github.com/jakex7))
 - [iOS] Fix sizing glitch when React Native components are used as child in Expo UI components ([#40693](https://github.com/expo/expo/pull/40693) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Improve RN component layout when hosted in SwiftUI ([#40794](https://github.com/expo/expo/pull/40794) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
