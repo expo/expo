@@ -814,7 +814,9 @@ describe('Dynamic options', () => {
             unstable_nativeProps={{
               title: 'Updated Title',
               badgeValue: '5',
-              icon: { sfSymbolName: 'homepod.2.fill' },
+              icon: {
+                ios: { type: 'sfSymbol', name: 'homepod.2.fill' },
+              },
             }}
           />
         </View>
