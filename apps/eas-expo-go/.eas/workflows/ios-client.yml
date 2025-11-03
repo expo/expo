@@ -43,48 +43,23 @@ jobs:
   notify_failure:
     name: 🔔 Notify on Slack
     after: [build_ios]
-    steps:
-      - run: |
-          BUILD_STATUS="${{ after.build_ios.status }}"
-          COMMIT_SHA="${{ github.sha }}"
-          BRANCH="${{ github.ref_name }}"
-          WF_ID="${{ workflow.id }}"
-
-          echo "Build Status: $BUILD_STATUS"
-          echo "Branch: $BRANCH"
-          echo "Commit: $COMMIT_SHA"
-          echo "WF_ID: $WF_ID"
-
-          if [ "$BUILD_STATUS" = "failure" ]; then
-            curl -X POST "$SLACK_WEBHOOK_IOS" \
-              -H 'Content-Type: application/json' \
-              -d "{
-                \"text\": \"🚨 Expo Go (iOS) build failed\",
-                \"blocks\": [
-                  {
-                    \"type\": \"section\",
-                    \"text\": {
-                      \"type\": \"mrkdwn\",
-                      \"text\": \"*Expo Go (iOS) build failed*\"
-                    }
-                  },
-                  {
-                    \"type\": \"section\",
-                    \"fields\": [
-                      {
-                        \"type\": \"mrkdwn\",
-                        \"text\": \"*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/unversioned-expo-go/workflows/$WF_ID|$WF_ID>\"
-                      },
-                      {
-                        \"type\": \"mrkdwn\",
-                        \"text\": \"*Branch:*\n<https://github.com/expo/expo/tree/$BRANCH|$BRANCH>\"
-                      },
-                      {
-                        \"type\": \"mrkdwn\",
-                        \"text\": \"*Commit:*\n<https://github.com/expo/expo/commit/$COMMIT_SHA|$COMMIT_SHA>\"
-                      }
-                    ]
-                  }
-                ]
-              }"
-          fi
+    if: ${{ after.build_ios.status == 'failure' }}
+    type: slack
+    params:
+      webhook_url: ${{ SLACK_WEBHOOK_IOS }}
+      payload:
+        blocks:
+          - type: header
+            text:
+              type: plain_text
+              text: '🚨 Expo Go (iOS) build failed'
+          - type: section
+            fields:
+              - type: mrkdwn
+                text: "*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/unversioned-expo-go/workflows/${{ workflow.id }}|${{ workflow.id }}>"
+              - type: mrkdwn
+                text: "*Branch:*\n<https://github.com/expo/expo/tree/${{ github.ref_name }}|${{ github.ref_name }}>"
+              - type: mrkdwn
+                text: "*Commit:*\n<https://github.com/expo/expo/commit/${{ github.sha }}|${{ github.sha }}>"
+              - type: mrkdwn
+                text: "*Event:*\n${{ github.event_name }}"
