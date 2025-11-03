@@ -28,7 +28,6 @@ describe(createRequestHandler, () => {
       getHtml: jest.fn(async () => '<html></html>'),
       getApiRoute: jest.fn(),
       getMiddleware: jest.fn(),
-      handleRouteError: jest.fn(),
     });
 
     const request = new Request('http://localhost/');

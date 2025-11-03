@@ -8,11 +8,11 @@
 import type { ProjectConfig } from '@expo/config';
 import type { MiddlewareSettings } from 'expo-server';
 import { createRequestHandler } from 'expo-server/adapter/http';
-import resolve from 'resolve';
+import { type RouteInfo } from 'expo-server/private';
+import path from 'path';
 import resolveFrom from 'resolve-from';
-import { promisify } from 'util';
 
-import { fetchManifest, type ExpoRouterServerManifestV1Route } from './fetchRouterManifest';
+import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import {
   warnInvalidWebOutput,
@@ -23,11 +23,6 @@ import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
-const resolveAsync = promisify(resolve) as any as (
-  id: string,
-  opts: resolve.AsyncOpts
-) => Promise<string | null>;
-
 export function createRouteHandlerMiddleware(
   projectRoot: string,
   options: {
@@ -35,14 +30,14 @@ export function createRouteHandlerMiddleware(
     routerRoot: string;
     getStaticPageAsync: (
       pathname: string,
-      route: ExpoRouterServerManifestV1Route<RegExp>
+      route: RouteInfo<RegExp>
     ) => Promise<{ content: string }>;
     bundleApiRoute: (
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;
     config: ProjectConfig;
     headers: Record<string, string | string[]>;
-  } & import('expo-router/build/routes-manifest').Options
+  } & import('@expo/router-server/build/routes-manifest').Options
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {
     throw new CommandError(
@@ -143,11 +138,10 @@ export function createRouteHandlerMiddleware(
           warnInvalidWebOutput();
         }
 
-        const resolvedFunctionPath = await resolveAsync(route.file, {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-          basedir: options.appDir,
-        })!;
-
+        // TODO(@kitten): Unify with MetroBundlerDevServer#exportExpoRouterApiRoutesAsync
+        const resolvedFunctionPath = path.isAbsolute(route.file)
+          ? route.file
+          : path.join(options.appDir, route.file);
         try {
           debug(`Bundling API route at: ${resolvedFunctionPath}`);
           return await options.bundleApiRoute(resolvedFunctionPath!);
@@ -187,11 +181,10 @@ export function createRouteHandlerMiddleware(
           };
         }
 
-        const resolvedFunctionPath = await resolveAsync(route.file, {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-          basedir: options.appDir,
-        })!;
-
+        // TODO(@kitten): Unify with MetroBundlerDevServer#exportMiddleware
+        const resolvedFunctionPath = path.isAbsolute(route.file)
+          ? route.file
+          : path.join(options.appDir, route.file);
         try {
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
           const middlewareModule = (await options.bundleApiRoute(resolvedFunctionPath!)) as any;

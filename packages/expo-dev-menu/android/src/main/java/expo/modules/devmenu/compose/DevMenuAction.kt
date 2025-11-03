@@ -3,6 +3,7 @@ package expo.modules.devmenu.compose
 sealed class DevMenuAction(val shouldCloseMenu: Boolean = false) {
   object Open : DevMenuAction()
   object Close : DevMenuAction()
+  object Toggle : DevMenuAction()
   object Reload : DevMenuAction(shouldCloseMenu = true)
   object GoHome : DevMenuAction(shouldCloseMenu = true)
   object TogglePerformanceMonitor : DevMenuAction(shouldCloseMenu = true)
@@ -13,9 +14,8 @@ sealed class DevMenuAction(val shouldCloseMenu: Boolean = false) {
   object OpenReactNativeDevMenu : DevMenuAction(shouldCloseMenu = true)
   object FinishOnboarding : DevMenuAction(shouldCloseMenu = false)
   data class TriggerCustomCallback(
-    val name: String,
-    val shouldCollapse: Boolean
-  ) : DevMenuAction(shouldCloseMenu = shouldCollapse)
+    val item: DevMenuState.CustomItem
+  ) : DevMenuAction(shouldCloseMenu = item.shouldCollapse)
 }
 
 typealias DevMenuActionHandler = (DevMenuAction) -> Unit

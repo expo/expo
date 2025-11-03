@@ -1,0 +1,53 @@
+---
+title: BottomSheet
+description: A SwiftUI BottomSheet component that presents content from the bottom of the screen.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A bottom sheet component that slides up from the bottom of the screen to present content.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+
+<Tab label="Preview">
+  <ContentSpotlight
+    alt="BottomSheet component on iOS."
+    src="/static/images/expo-ui/bottomsheet/ios.png"
+    className="max-w-[240px]"
+  />
+</Tab>
+
+  <Tab label="Code">
+    ```tsx
+    import { BottomSheet, Host, Text } from '@expo/ui/swift-ui';
+    import { useWindowDimensions } from 'react-native';
+
+    const { width } = useWindowDimensions();
+
+    <Host style={{ position: 'absolute', width }}>
+      <BottomSheet isOpened={isOpened} onIsOpenedChange={e => setIsOpened(e)}>
+        <Text>Hello, world!</Text>
+      </BottomSheet>
+    </Host>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official SwiftUI documentation](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/bottomsheet" apiName="BottomSheet" />

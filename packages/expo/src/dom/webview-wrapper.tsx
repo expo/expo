@@ -1,9 +1,14 @@
 // A webview without babel to test faster.
+//
+// Keep in sync with ExpoLogBox native webview wrappers.
+// Android https://github.com/expo/expo/blob/main/packages/%40expo/log-box/android/src/main/expo/modules/logbox/ExpoLogBoxWebViewWrapper.kt
+// iOS https://github.com/expo/expo/blob/main/packages/%40expo/log-box/ios/ExpoLogBoxWebViewWrapper.swift
 import React from 'react';
 import { AppState } from 'react-native';
 
 import { getBaseURL } from './base';
-import type { BridgeMessage, DOMProps, WebViewProps, WebViewRef } from './dom.types';
+import { DOMPropsInternal } from './dom-internal.types';
+import type { BridgeMessage, WebViewProps, WebViewRef } from './dom.types';
 import { _emitGlobalEvent } from './global-events';
 import {
   getInjectBodySizeObserverScript,
@@ -22,14 +27,15 @@ type RawWebViewProps = React.ComponentProps<Exclude<typeof ExpoDomWebView, undef
 
 interface Props {
   children?: any;
-  dom?: DOMProps;
+  dom?: DOMPropsInternal;
   filePath: string;
   ref: React.Ref<object>;
   [propName: string]: unknown;
 }
 
 const RawWebView = React.forwardRef<object, Props>((props, ref) => {
-  const { children, dom, filePath, ref: _ref, ...marshalProps } = props as Props;
+  const { children, dom: domProps, filePath, ref: _ref, ...marshalProps } = props as Props;
+  const { overrideUri, ...dom } = domProps || {};
   if (__DEV__) {
     if (children !== undefined) {
       throw new Error(
@@ -66,7 +72,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
   const webView = resolveWebView(dom?.useExpoDOMWebView ?? false);
   const webviewRef = React.useRef<WebViewRef>(null);
   const domImperativeHandlePropsRef = React.useRef<string[]>([]);
-  const source = { uri: `${getBaseURL()}/${filePath}` };
+  const source = { uri: overrideUri ?? `${getBaseURL()}/${filePath}` };
   const [containerStyle, setContainerStyle] = React.useState<WebViewProps['containerStyle']>(null);
 
   const { debugZeroHeightStyle, debugOnLayout } = useDebugZeroHeight(dom);
@@ -129,10 +135,12 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
         subscription.remove();
       });
     },
-    ...dom,
+    ...domProps,
     containerStyle: [containerStyle, debugZeroHeightStyle, dom?.containerStyle],
     onLayout: __DEV__ ? debugOnLayout : dom?.onLayout,
     injectedJavaScriptBeforeContentLoaded: [
+      // Inject the top-most OS for the DOM component to read.
+      `window.$$EXPO_DOM_HOST_OS = ${JSON.stringify(process.env.EXPO_OS)};true;`,
       // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
       `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
       dom?.matchContents ? getInjectBodySizeObserverScript() : null,

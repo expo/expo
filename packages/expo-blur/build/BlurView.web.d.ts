@@ -6,6 +6,7 @@ declare const BlurView: import("react").ForwardRefExoticComponent<{
     intensity?: number;
     blurReductionFactor?: number;
     experimentalBlurMethod?: import("./BlurView.types").ExperimentalBlurMethod;
+    blurMethod?: import("./BlurView.types").BlurMethod;
 } & import("react-native").ViewProps & import("react").RefAttributes<{
     setNativeProps: (props: BlurViewProps) => void;
 }>>;

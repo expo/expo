@@ -5,7 +5,7 @@ import { TurboModuleRegistry } from 'react-native';
  * Otherwise, it synchronously calls a native function that installs them.
  */
 export function ensureNativeModulesAreInstalled(): void {
-  if (globalThis.expo) {
+  if (globalThis.expo || typeof window === 'undefined') {
     return;
   }
 

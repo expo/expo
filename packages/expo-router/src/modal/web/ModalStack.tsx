@@ -51,8 +51,14 @@ function ModalStackNavigator({
     () =>
       // @ts-expect-error: there may not be a tab navigator in parent
       navigation?.addListener?.('tabPress', (e: EventArg<'tabPress', true>) => {
+        const isFocused = navigation.isFocused();
+
+        // Run the operation in the next frame so we're sure all listeners have been run
+        // This is necessary to know if preventDefault() has been called
         requestAnimationFrame(() => {
-          if (navigation.isFocused() && !e.defaultPrevented) {
+          if (state.index > 0 && isFocused && !e.defaultPrevented) {
+            // When user taps on already focused tab and we're inside the tab,
+            // reset the stack to replicate native behaviour
             navigation.dispatch({
               ...StackActions.popToTop(),
               target: state.key,
@@ -60,7 +66,7 @@ function ModalStackNavigator({
           }
         });
       }),
-    [navigation, state.key]
+    [navigation, state.index, state.key]
   );
 
   return (

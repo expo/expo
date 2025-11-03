@@ -49,11 +49,7 @@ def reactNativeArchitectures() {
 }
 
 // HERMES
-def USE_HERMES = true
-if (findProject(":app")) {
-  def appProject = project(":app")
-  USE_HERMES = appProject?.hermesEnabled?.toBoolean() || appProject?.ext?.react?.enableHermes?.toBoolean()
-}
+def USE_HERMES = findProperty("hermesEnabled") ?: true
 
 // Currently the needs for hermes/jsc are only for androidTest, so we turn on this flag only when `isExpoModulesCoreTests` is true
 USE_HERMES = USE_HERMES && isExpoModulesCoreTests
@@ -62,6 +58,19 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
+
+def enableWorkletsIntegration = findProperty("expo.core.worklets") == "true"
+def workletsProject = enableWorkletsIntegration ? findProject(":react-native-worklets") : null
+
+if (enableWorkletsIntegration && workletsProject == null) {
+  throw new GradleException("The 'expo.core.worklets' property is set to true, but the ':react-native-worklets' project is not found.")
+}
+
+if (workletsProject != null) {
+  evaluationDependsOn(":react-native-worklets")
+}
+
+def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
 
 expoModule {
   canBePublished false
@@ -87,14 +96,22 @@ android {
 
     externalNativeBuild {
       cmake {
-        abiFilters(*reactNativeArchitectures())
-        arguments "-DANDROID_STL=c++_shared",
+        def cppArguments = [
+          "-DANDROID_STL=c++_shared",
           "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
           "-DREACT_NATIVE_DIR=${expoModuleExtension.reactNativeDir}",
           "-DREACT_NATIVE_TARGET_VERSION=${expoModuleExtension.reactNativeVersion.minor}",
           "-DUSE_HERMES=${USE_HERMES}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
           "-DUNIT_TEST=${isExpoModulesCoreTests}"
+        ]
+
+        if (reactNativeWorkletsRootDir != null) {
+          cppArguments += "-DREACT_NATIVE_WORKLETS_DIR=${reactNativeWorkletsRootDir.absolutePath}"
+        }
+
+        abiFilters(*reactNativeArchitectures())
+        arguments(*cppArguments)
       }
     }
   }
@@ -286,4 +303,11 @@ def generatePCHTask = tasks.register("generatePCH") {
 // This task will run on the IDE project sync, ensuring the PCH file is generated early enough
 tasks.register("prepareKotlinBuildScriptModel") {
   dependsOn(generatePCHTask)
+}
+
+if (workletsProject != null) {
+  afterEvaluate {
+    tasks.getByName("externalNativeBuildDebug").dependsOn(findProject(":react-native-worklets").tasks.getByName("externalNativeBuildDebug"))
+    tasks.getByName("externalNativeBuildRelease").dependsOn(findProject(":react-native-worklets").tasks.getByName("externalNativeBuildRelease"))
+  }
 }

@@ -6,13 +6,11 @@ import { type CommonViewModifierProps } from '../types';
 
 /**
  * The type of `Gauge`.
- * @platform ios
  */
 export type GaugeType = 'default' | 'circular' | 'circularCapacity' | 'linear' | 'linearCapacity';
 
 /**
  * Value options for the `Gauge` component.
- * @platform ios
  */
 export type ValueOptions = {
   /**
@@ -64,7 +62,7 @@ const GaugeNativeView: React.ComponentType<GaugeProps> = requireNativeView('Expo
 
 /**
  * Renders a native `Gauge` component.
- * @platform ios
+ * @platform ios 16.0+
  */
 export function Gauge({ type = 'default', modifiers, ...props }: GaugeProps) {
   return (

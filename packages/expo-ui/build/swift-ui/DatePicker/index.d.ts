@@ -9,7 +9,6 @@ export type DateTimePickerProps = {
     initialDate?: string | null;
     /**
      * A title displayed on the picker on iOS.
-     * @platform ios
      */
     title?: string;
     /**

@@ -66,6 +66,16 @@ abstract class ExpoComposeView<T : ComposeProps>(
     }
   }
 
+  @Composable
+  protected fun Child(composableScope: ComposableScope, index: Int) {
+    val child = getChildAt(index) as? ExpoComposeView<*> ?: return
+    with(composableScope) {
+      with(child) {
+        Content()
+      }
+    }
+  }
+
   init {
     if (withHostingView) {
       addComposeView()

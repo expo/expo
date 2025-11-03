@@ -1,8 +1,8 @@
 /// <reference types="jest-expo/rsc/expect" />
 import * as React from 'react';
 
-import { NativeTabs } from '../NativeBottomTabs/NativeTabs';
-import { NativeTabsTriggerTabBar } from '../NativeBottomTabs/NativeTabsTriggerTabBar';
+import { NativeTabs } from '../NativeTabs';
+import { NativeTabsTriggerTabBar } from '../NativeTabsTriggerTabBar';
 import { Badge, Icon, Label } from '../common/elements';
 
 it(`renders NativeTabs`, async () => {

@@ -16,7 +16,7 @@ import type {
   Module,
   DeltaResult,
   TransformInputOptions,
-} from '@expo/metro/metro/DeltaBundler/types.flow';
+} from '@expo/metro/metro/DeltaBundler/types';
 import type {
   default as MetroHmrServer,
   Client as MetroHmrClient,
@@ -30,6 +30,7 @@ import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
+import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -38,12 +39,7 @@ import {
   fileURLToFilePath,
 } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import {
-  type ExpoRouterServerManifestV1,
-  type ExpoRouterServerManifestV1Route,
-  fetchManifest,
-  inflateManifest,
-} from './fetchRouterManifest';
+import { fetchManifest, inflateManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import {
   attachImportStackToRootMessage,
@@ -97,10 +93,11 @@ import {
   getMetroDirectBundleOptions,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
 export type ExpoRouterRuntimeManifest = Awaited<
-  ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
+  ReturnType<typeof import('@expo/router-server/build/static/renderStaticContent').getManifest>
 >;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
@@ -222,7 +219,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     platform,
     includeSourceMaps,
   }: {
-    manifest: ExpoRouterServerManifestV1;
+    manifest: RoutesManifest;
     appDir: string;
     outputDir: string;
     files: ExportAssetMap;
@@ -262,9 +259,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps?: boolean;
     outputDir: string;
     // This does not contain the API routes info.
-    prerenderManifest: ExpoRouterServerManifestV1;
+    prerenderManifest: RoutesManifest<string>;
     platform: string;
-  }): Promise<{ files: ExportAssetMap; manifest: ExpoRouterServerManifestV1<string> }> {
+  }): Promise<{ files: ExportAssetMap; manifest: RoutesManifest<string> }> {
     const { routerRoot } = this.instanceMetroOptions;
     assert(
       routerRoot != null,
@@ -358,14 +355,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   async getServerManifestAsync(): Promise<{
-    serverManifest: ExpoRouterServerManifestV1;
+    serverManifest: RoutesManifest<string>;
     htmlManifest: ExpoRouterRuntimeManifest;
   }> {
     const { exp } = getConfig(this.projectRoot);
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync, getManifest } = await this.ssrLoadModule<
-      typeof import('expo-router/build/static/getServerManifest')
-    >('expo-router/build/static/getServerManifest.js', {
+      typeof import('@expo/router-server/build/static/getServerManifest')
+    >('@expo/router-server/build/static/getServerManifest.js', {
       // Only use react-server environment when the routes are using react-server rendering by default.
       environment: this.isReactServerRoutesEnabled ? 'react-server' : 'node',
     });
@@ -380,21 +377,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
    * This function is invoked when exporting via `expo export`
    */
   async getStaticRenderFunctionAsync(): Promise<{
-    serverManifest: ExpoRouterServerManifestV1;
+    serverManifest: RoutesManifest<string>;
     manifest: ExpoRouterRuntimeManifest;
     renderAsync: (path: string) => Promise<string>;
   }> {
     const url = this.getDevServerUrlOrAssert();
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
-      await this.ssrLoadModule<typeof import('expo-router/build/static/renderStaticContent')>(
-        'expo-router/node/render.js',
-        {
-          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
-          // the previous React SSG utilities which aren't available in React 19.
-          environment: 'node',
-        }
-      );
+      await this.ssrLoadModule<
+        typeof import('@expo/router-server/build/static/renderStaticContent')
+      >('@expo/router-server/node/render.js', {
+        // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+        // the previous React SSG utilities which aren't available in React 19.
+        environment: 'node',
+      });
 
     const { exp } = getConfig(this.projectRoot);
 
@@ -461,10 +457,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   /**
    * This function is invoked when running in development via `expo start`
    */
-  private async getStaticPageAsync(
-    pathname: string,
-    route: ExpoRouterServerManifestV1Route<RegExp>
-  ) {
+  private async getStaticPageAsync(pathname: string, route: RouteInfo<RegExp>) {
     const { exp } = getConfig(this.projectRoot);
     const {
       mode,
@@ -506,8 +499,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const bundleStaticHtml = async (): Promise<string> => {
       const { getStaticContent } = await this.ssrLoadModule<
-        typeof import('expo-router/build/static/renderStaticContent')
-      >('expo-router/node/render.js', {
+        typeof import('@expo/router-server/build/static/renderStaticContent')
+      >('@expo/router-server/node/render.js', {
         // This must always use the legacy rendering resolution (no `react-server`) because it leverages
         // the previous React SSG utilities which aren't available in React 19.
         environment: 'node',
@@ -640,7 +633,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const transformOptions: TransformInputOptions = {
       dev: expoBundleOptions.dev ?? true,
-      hot: true,
       minify: expoBundleOptions.minify ?? false,
       type: 'module',
       unstable_transformProfile:
@@ -1145,7 +1137,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Maybe put behind a flag for now?
       middleware.use(domComponentRenderer);
 
+      // TODO: Disable both of these when tunneling to prevent security issues
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
+
+      // For providing info to the error overlay.
+      middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+        // Use by `@expo/log-box` https://github.com/expo/expo/blob/f29b9f3715e42dca87bf3eebf11f7e7dd1ff73c1/packages/%40expo/log-box/src/utils/devServerEndpoints.ts#L82
+        if (req.url?.startsWith('/_expo/error-overlay-meta')) {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(
+            JSON.stringify({
+              projectRoot: this.projectRoot,
+              serverRoot,
+              sdkVersion: exp.sdkVersion,
+            })
+          );
+          return;
+        }
+        return next();
+      });
 
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {
@@ -1153,7 +1164,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const loaderModuleMiddleware = new DataLoaderModuleMiddleware(
             this.projectRoot,
             appDir,
-            async (location: URL, route: ExpoRouterServerManifestV1Route<RegExp>) => {
+            async (location: URL, route: RouteInfo<RegExp>) => {
               return this.executeServerDataLoaderAsync(location, route);
             },
             () => this.getDevServerUrlOrAssert()
@@ -1558,7 +1569,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
    */
   async executeServerDataLoaderAsync(
     location: URL,
-    route: ExpoRouterServerManifestV1Route<RegExp>
+    route: RouteInfo<RegExp>
   ): Promise<Record<string, any> | undefined> {
     const { exp } = getConfig(this.projectRoot);
     const { unstable_useServerDataLoaders } = exp.extra?.router;
@@ -1832,44 +1843,48 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       const serializer = this.getMetroSerializer();
 
+      const options = {
+        asyncRequireModulePath: await this.metro._resolveRelativePath(
+          config.transformer.asyncRequireModulePath,
+          {
+            relativeTo: 'project',
+            resolverOptions,
+            transformOptions,
+          }
+        ),
+        // ...serializerOptions,
+        processModuleFilter: config.serializer.processModuleFilter,
+        createModuleId: this.metro._createModuleId,
+        getRunModuleStatement: config.serializer.getRunModuleStatement,
+        globalPrefix: config.transformer.globalPrefix,
+        includeAsyncPaths: graphOptions.lazy,
+        dev: transformOptions.dev,
+        projectRoot: config.projectRoot,
+        modulesOnly: serializerOptions.modulesOnly,
+        runBeforeMainModule: config.serializer.getModulesRunBeforeMainModule(
+          resolvedEntryFilePath
+          // path.relative(config.projectRoot, entryFile)
+        ),
+        runModule: serializerOptions.runModule,
+        sourceMapUrl: serializerOptions.sourceMapUrl,
+        sourceUrl: serializerOptions.sourceUrl,
+        inlineSourceMap: serializerOptions.inlineSourceMap,
+        serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
+        shouldAddToIgnoreList,
+
+        // TODO(@kitten): This is incoherently typed. The target should be typed to accept this coherently
+        // but we have no type overrides or a proper type chain for this
+        serializerOptions,
+      };
+
+      // TODO(@kitten): Yearns for a refactor. The typings here were and are questionable
       const bundle = await serializer(
         // NOTE: Using absolute path instead of relative input path is a breaking change.
         // entryFile,
         resolvedEntryFilePath,
-
-        revision.prepend as any,
-        revision.graph as any,
-        {
-          asyncRequireModulePath: await this.metro._resolveRelativePath(
-            config.transformer.asyncRequireModulePath,
-            {
-              relativeTo: 'project',
-              resolverOptions,
-              transformOptions,
-            }
-          ),
-          // ...serializerOptions,
-          processModuleFilter: config.serializer.processModuleFilter,
-          createModuleId: this.metro._createModuleId,
-          getRunModuleStatement: config.serializer.getRunModuleStatement,
-          includeAsyncPaths: graphOptions.lazy,
-          dev: transformOptions.dev,
-          projectRoot: config.projectRoot,
-          modulesOnly: serializerOptions.modulesOnly,
-          runBeforeMainModule: config.serializer.getModulesRunBeforeMainModule(
-            resolvedEntryFilePath
-            // path.relative(config.projectRoot, entryFile)
-          ),
-          runModule: serializerOptions.runModule,
-          sourceMapUrl: serializerOptions.sourceMapUrl,
-          sourceUrl: serializerOptions.sourceUrl,
-          inlineSourceMap: serializerOptions.inlineSourceMap,
-          serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
-          shouldAddToIgnoreList,
-
-          // @ts-expect-error: passed to our serializer to enable non-serial return values.
-          serializerOptions,
-        }
+        revision.prepend,
+        revision.graph,
+        options
       );
 
       this.metro._reporter.update({

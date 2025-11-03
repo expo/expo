@@ -6,6 +6,7 @@ import { StyleSheet, type View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 import {
+  ImageCacheConfig,
   ImageLoadOptions,
   ImagePrefetchOptions,
   ImageProps,
@@ -125,6 +126,15 @@ export class Image extends React.PureComponent<ImageProps> {
    */
   static async getCachePathAsync(cacheKey: string): Promise<string | null> {
     return await ImageModule.getCachePathAsync(cacheKey);
+  }
+
+  /**
+   * Configures the image cache. This allows you to manage the cache eviction policy.
+   * @param config - The cache configuration.
+   * @platform ios
+   */
+  static configureCache(config: ImageCacheConfig): void {
+    return ImageModule.configureCache(config);
   }
 
   /**

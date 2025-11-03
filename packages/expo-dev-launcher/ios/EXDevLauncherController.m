@@ -40,9 +40,6 @@
 #define VERSION @ STRINGIZE2(EX_DEV_LAUNCHER_VERSION)
 #endif
 
-#define EX_DEV_LAUNCHER_PACKAGER_PATH @"packages/expo-dev-launcher/index.bundle?platform=ios&dev=true&minify=false"
-
-
 @interface EXDevLauncherController ()
 
 @property (nonatomic, weak) UIWindow *window;
@@ -56,9 +53,10 @@
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
-@property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, strong) EXDevLauncherReactNativeFactory *reactNativeFactory;
+@property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
+@property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
 
 @end
 
@@ -87,21 +85,10 @@
 
     self.dependencyProvider = [RCTAppDependencyProvider new];
     self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
+    self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
+    [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
   }
   return self;
-}
-
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
-{
-  NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
-
-  [modules addObject:[RCTDevMenu new]];
-#ifndef EX_DEV_LAUNCHER_URL
-  [modules addObject:[EXDevLauncherRCTDevSettings new]];
-#endif
-  [modules addObject:[DevClientNoOpLoadingView new]];
-
-  return modules;
 }
 
 + (NSString * _Nullable)version {
@@ -109,88 +96,6 @@
   return VERSION;
 #endif
   return nil;
-}
-
-// Expo developers: Enable the below code by running
-//     export EX_DEV_LAUNCHER_URL=http://localhost:8090
-// in your shell before doing pod install. This will cause the controller to see if
-// the expo-launcher packager is running, and if so, use that instead of
-// the prebuilt bundle.
-// See the pod_target_xcconfig definition in expo-dev-launcher.podspec
-
-- (nullable NSURL *)devLauncherBaseURL
-{
-#ifdef EX_DEV_LAUNCHER_URL
-  return [NSURL URLWithString:@EX_DEV_LAUNCHER_URL];
-#endif
-  return nil;
-}
-- (nullable NSURL *)devLauncherURL
-{
-#ifdef EX_DEV_LAUNCHER_URL
-  return [NSURL URLWithString:EX_DEV_LAUNCHER_PACKAGER_PATH
-                relativeToURL:[self devLauncherBaseURL]];
-#endif
-  return nil;
-}
-
-- (nullable NSURL *)devLauncherStatusURL
-{
-#ifdef EX_DEV_LAUNCHER_URL
-  return [NSURL URLWithString:@"status"
-                relativeToURL:[self devLauncherBaseURL]];
-#endif
-  return nil;
-}
-
-- (BOOL)isLauncherPackagerRunning
-{
-  // Shamelessly copied from RN core (RCTBundleURLProvider)
-
-  // If we are not running in the main thread, run away
-  if (![NSThread isMainThread]) {
-    return NO;
-  }
-
-  NSURL *url = [self devLauncherStatusURL];
-  NSURLSession *session = [NSURLSession sharedSession];
-  NSURLRequest *request = [NSURLRequest requestWithURL:url
-                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                       timeoutInterval:1];
-  __block NSURLResponse *response;
-  __block NSData *data;
-
-  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-  [[session dataTaskWithRequest:request
-              completionHandler:^(NSData *d, NSURLResponse *res, __unused NSError *err) {
-                data = d;
-                response = res;
-                dispatch_semaphore_signal(semaphore);
-              }] resume];
-  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-
-  NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-  return [status isEqualToString:@"packager-status:running"];
-}
-
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-{
-  return [self getSourceURL];
-}
-
-- (NSURL *)bundleURL
-{
-  return [self getSourceURL];
-}
-
-- (NSURL *)getSourceURL
-{
-  NSURL *launcherURL = [self devLauncherURL];
-  if (launcherURL != nil && [self isLauncherPackagerRunning]) {
-    return launcherURL;
-  }
-  NSURL *bundleURL = [[NSBundle mainBundle] URLForResource:@"EXDevLauncher" withExtension:@"bundle"];
-  return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
 }
 
 - (void)clearRecentlyOpenedApps
@@ -242,27 +147,22 @@
   return _possibleManifestURL;
 }
 
-- (UIWindow *)currentWindow
-{
-  return _window;
-}
 
 - (EXDevLauncherErrorManager *)errorManage
 {
   return _errorManager;
 }
 
-- (void)startWithWindow:(UIWindow *)window
+- (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
-  _isStarted = YES;
-  _window = window;
-  EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
-
-  if (_launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
-    [_window makeKeyWindow];
-    return;
+  _delegate = delegate;
+  _launchOptions = launchOptions;
+  NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
+  if (lastOpenedApp != nil) {
+    _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
   }
+  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
+  EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
   void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
     __weak typeof(self) weakSelf = self;
@@ -294,26 +194,6 @@
   [self navigateToLauncher];
 }
 
-- (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
-{
-  _delegate = delegate;
-  _launchOptions = launchOptions;
-  NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
-  if (lastOpenedApp != nil) {
-    _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
-  }
-  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
-}
-
-- (void)autoSetupStart:(UIWindow *)window
-{
-  if (_delegate != nil) {
-    [self startWithWindow:window];
-  } else {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"[EXDevLauncherController autoSetupStart:] was called before autoSetupPrepare:. Make sure you've set up expo-modules correctly in AppDelegate and are using ReactDelegate to create a bridge before calling [super application:didFinishLaunchingWithOptions:]." userInfo:nil];
-  }
-}
-
 - (void)navigateToLauncher
 {
   NSAssert([NSThread isMainThread], @"This function must be called on main thread");
@@ -330,23 +210,11 @@
   [self.delegate destroyReactInstance];
 
 #if RCT_DEV
-  NSURL *url = [self devLauncherURL];
-  if (url != nil) {
-    // Connect to the websocket
-    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
-  }
-
   [self _addInitModuleObserver];
 #endif
-
-  DevLauncherViewController *swiftUIViewController = [[DevLauncherViewController alloc] init];
-
-  _window.rootViewController = swiftUIViewController;
-  [_window makeKeyAndVisible];
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self onAppContentDidAppear];
-  });
+  if (_devLauncherViewController != nil) {
+    [_devLauncherViewController resetHostingController];
+  }
 }
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
@@ -766,20 +634,20 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = self.appBridge.parentBridge;
+  [manager updateCurrentBridge:self.appBridge.parentBridge];
 
   if (self.manifest != nil) {
-    manager.currentManifest = self.manifest;
-    manager.currentManifestURL = self.manifestURL;
+    [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];
+  } else {
+    [manager updateCurrentManifest:nil manifestURL:nil];
   }
 }
 
 - (void)invalidateDevMenuApp
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = nil;
-  manager.currentManifest = nil;
-  manager.currentManifestURL = nil;
+  [manager updateCurrentBridge:nil];
+  [manager updateCurrentManifest:nil manifestURL:nil];
 }
 
 -(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants
@@ -863,7 +731,10 @@
 
 - (UIViewController *)createRootViewController
 {
-  return [[DevLauncherViewController alloc] init];
+  if (_devLauncherViewController == nil){
+    _devLauncherViewController = [[DevLauncherViewController alloc] init];
+  }
+  return _devLauncherViewController;
 }
 
 - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController

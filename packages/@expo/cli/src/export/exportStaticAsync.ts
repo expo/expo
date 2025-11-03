@@ -9,6 +9,7 @@ import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
+import { type RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -21,7 +22,6 @@ import {
   ExpoRouterRuntimeManifest,
   MetroBundlerDevServer,
 } from '../start/server/metro/MetroBundlerDevServer';
-import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
@@ -94,7 +94,7 @@ export async function getFilesToExportFromServerAsync(
     files = new Map(),
   }: {
     manifest: ExpoRouterRuntimeManifest;
-    serverManifest: ExpoRouterServerManifestV1;
+    serverManifest: RoutesManifest;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     exportServer?: boolean;
     files?: ExportAssetMap;
@@ -503,7 +503,7 @@ async function exportApiRoutesAsync({
   ...props
 }: Pick<Options, 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
-  manifest: ExpoRouterServerManifestV1;
+  manifest: RoutesManifest<string>;
   platform: string;
   apiRoutesOnly?: boolean;
 }): Promise<ExportAssetMap> {

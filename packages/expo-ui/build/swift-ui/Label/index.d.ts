@@ -12,6 +12,7 @@ export type LabelProps = {
     systemImage?: SFSymbol;
     /**
      * The color of the label icon.
+     * @deprecated Use `foregroundStyle` modifier instead.
      */
     color?: ColorValue;
 } & CommonViewModifierProps;
@@ -20,7 +21,6 @@ export type LabelProps = {
  *
  * @param {LabelProps} props - The properties passed to the Label component.
  * @returns {JSX.Element} The rendered native Label component.
- * @platform ios
  */
 export declare function Label(props: LabelProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

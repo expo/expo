@@ -4,6 +4,7 @@ extension ExpoSwiftUI {
   /**
    Observes for view frame changes, usually applied by React Native.
    */
+  @MainActor
   internal class UIViewFrameObserver {
     private let view: UIView
     private var observer: NSKeyValueObservation?
@@ -12,7 +13,7 @@ extension ExpoSwiftUI {
       self.view = view
     }
 
-    func observe(_ callback: @escaping (CGRect) -> Void) {
+    func observe(_ callback: @Sendable @escaping (CGRect) -> Void) {
       // When React Native lays out views, it sets `center` and `bounds` properties to control the `frame`.
       // You can find this implementation in `updateLayoutMetrics:oldLayoutMetrics:` in `UIView+ComponentViewProtocol.mm`.
       // We observe changes on `bounds` because:
@@ -30,3 +31,4 @@ extension ExpoSwiftUI {
     }
   }
 }
+

@@ -28,7 +28,6 @@ struct Button: ExpoSwiftUI.View {
     .disabled(props.disabled)
     .tint(props.color)
     .controlSize(props.controlSize?.toNativeControlSize() ?? .regular)
-    .modifier(CommonViewModifiers(props: props))
     // TODO: Maybe there is a way to do a switch statement similarly to the `if` extension?
     .if(props.variant == .bordered, {
       $0.buttonStyle(.bordered)

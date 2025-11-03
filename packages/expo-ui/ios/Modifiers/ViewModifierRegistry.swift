@@ -5,15 +5,33 @@ import SwiftUI
 
 // MARK: - Individual ViewModifier Structs
 
-internal struct BackgroundModifier: ViewModifier, Record {
-  @Field var color: Color?
+internal enum ListSectionSpacingType: String, Enumerable {
+  case `default`
+  case compact
+  case custom
+}
+
+internal struct ListSectionSpacingModifier: ViewModifier, Record {
+  @Field var spacing: ListSectionSpacingType = .default
+  @Field var value: CGFloat = 0
 
   func body(content: Content) -> some View {
-    if let color = color {
-      content.background(color)
-    } else {
+    #if os(tvOS)
       content
-    }
+    #else
+      if #available(iOS 17.0, *) {
+        switch spacing {
+        case .compact:
+          content.listSectionSpacing(.compact)
+        case .custom:
+          content.listSectionSpacing(value)
+        default:
+          content.listSectionSpacing(.default)
+        }
+      } else {
+        content
+      }
+    #endif
   }
 }
 
@@ -68,23 +86,28 @@ internal struct PaddingModifier: ViewModifier, Record {
   @Field var all: CGFloat?
   @Field var horizontal: CGFloat?
   @Field var vertical: CGFloat?
-
+  
   @Field var top: CGFloat?
   @Field var leading: CGFloat?
   @Field var bottom: CGFloat?
   @Field var trailing: CGFloat?
-
+  
   func body(content: Content) -> some View {
-    if let all {
-      content.padding(all)
-    } else if let horizontal, let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: horizontal, bottom: vertical, trailing: horizontal))
-    } else if let horizontal {
-      content.padding(EdgeInsets(top: 0, leading: horizontal, bottom: 0, trailing: horizontal))
-    } else if let vertical {
-      content.padding(EdgeInsets(top: vertical, leading: 0, bottom: vertical, trailing: 0))
+    let hasCustomPadding = [
+      all, horizontal, vertical, top, leading, bottom, trailing
+    ].contains { $0 != nil }
+    
+    if !hasCustomPadding {
+      // Default SwiftUI padding (system spacing)
+      content.padding()
     } else {
-      content.padding(EdgeInsets(top: top ?? 0, leading: leading ?? 0, bottom: bottom ?? 0, trailing: trailing ?? 0))
+      let insets = EdgeInsets(
+        top: top ?? vertical ?? all ?? 0,
+        leading: leading ?? horizontal ?? all ?? 0,
+        bottom: bottom ?? vertical ?? all ?? 0,
+        trailing: trailing ?? horizontal ?? all ?? 0
+      )
+      content.padding(insets)
     }
   }
 }
@@ -609,76 +632,6 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
-internal struct GlassEffectOptions: Record {
-  @Field var variant: String?
-  @Field var interactive: Bool?
-  @Field var tint: Color?
-}
-
-internal struct GlassEffectModifier: ViewModifier, Record {
-  @Field var glass: GlassEffectOptions?
-  @Field var shape: String = "capsule"
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
-      let interactive = glass?.interactive ?? false
-      let tint = glass?.tint
-      let glass = parseGlassVariant(glass?.variant ?? "regular")
-      switch shape {
-      case "capsule":
-        content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
-      case "circle":
-        content.glassEffect(glass.interactive(interactive).tint(tint), in: Circle())
-      case "ellipse":
-        content.glassEffect(glass.interactive(interactive).tint(tint), in: Ellipse())
-      default:
-        content.glassEffect(glass.interactive(interactive).tint(tint), in: Rectangle())
-      }
-      #else
-      content
-      #endif
-    } else {
-      content
-    }
-  }
-
-  #if compiler(>=6.2) // Xcode 26
-  @available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
-  private func parseGlassVariant(_ glassString: String) -> Glass {
-    switch glassString {
-    case "regular":
-      return .regular
-    case "clear":
-      return .clear
-    default:
-      return .identity
-    }
-  }
-  #endif
-}
-
-internal struct GlassEffectIdModifier: ViewModifier, Record {
-  @Field var id: String?
-  @Field var namespaceId: String?
-
-  func body(content: Content) -> some View {
-    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
-      if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
-        content.glassEffectID(id, in: namespace)
-      } else {
-        content
-      }
-      #else
-      content
-      #endif
-    } else {
-      content
-    }
-  }
-}
 
 internal enum AnimationType: String, Enumerable {
   case easeInOut
@@ -1019,6 +972,240 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
+internal enum Prominence: String, Enumerable {
+  case standard
+  case increased
+}
+
+internal struct HeaderProminence: ViewModifier, Record {
+  @Field var prominence: Prominence?
+
+  func body(content: Content) -> some View {
+    if let prominence = prominence {
+      switch prominence {
+        case .standard:
+          content.headerProminence(.standard)
+        case .increased:
+          content.headerProminence(.increased)
+        }
+    } else {
+      content
+    }
+  }
+}
+
+internal struct ListRowInsets: ViewModifier, Record {
+  @Field var top: CGFloat = 0
+  @Field var leading: CGFloat = 0
+  @Field var bottom: CGFloat = 0
+  @Field var trailing: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    if top != 0 || leading != 0 || bottom != 0 || trailing != 0 {
+      content.listRowInsets(.init(
+        top: top,
+        leading: leading,
+        bottom: bottom,
+        trailing: trailing
+      ))
+    } else {
+      content
+    }
+  }
+}
+
+internal enum BadgeProminenceType: String, Enumerable {
+  case standard
+  case increased
+  case decreased
+}
+
+internal struct BadgeProminence: ViewModifier, Record {
+  @Field var badgeType: BadgeProminenceType = .standard
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if #available(iOS 17.0, macOS 14.0, *) {
+        switch badgeType {
+          case .standard:         
+            content.badgeProminence(.standard)
+          case .increased:         
+            content.badgeProminence(.increased)
+          case .decreased:         
+            content.badgeProminence(.decreased)
+        }
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
+internal struct Badge: ViewModifier, Record {
+  @Field var value: String?
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if let value {
+        content.badge(value)
+      } else {
+        content
+      }
+    #endif
+  }
+}
+
+internal struct ListSectionMargins: ViewModifier, Record {
+  @Field var length: CGFloat?
+  @Field var edges: EdgeOptions?
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      #if compiler(>=6.2) // Xcode 26
+        if #available(iOS 26.0, *) {
+          if let edges, let length {
+            content.listSectionMargins(edges.toEdge(), length)
+          } else if let edges {
+            content.listSectionMargins(edges.toEdge(), 0)
+          } else {
+            content
+          }
+        } else {
+          content
+        }
+      #else 
+        content
+      #endif
+    #endif
+  }
+}
+
+internal enum AxisOptions: String, Enumerable {
+  case horizontal
+  case vertical
+}
+
+internal struct GridCellUnsizedAxes: ViewModifier, Record {
+  @Field var axes: AxisOptions?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let axes {
+        switch axes {
+        case .horizontal:
+          content.gridCellUnsizedAxes(.horizontal)
+        case .vertical:
+          content.gridCellUnsizedAxes(.vertical)
+        }
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal struct GridCellColumns: ViewModifier, Record {
+  @Field var count: Int?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let count {
+          content.gridCellColumns(count)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal enum GridColumnAlignmentType: String, Enumerable {
+  case leading
+  case center
+  case trailing
+
+  var alignment: HorizontalAlignment {
+    switch self {
+      case .center: return .center
+      case .leading: return .leading
+      case .trailing: return .trailing
+    }
+  }
+}
+
+internal struct GridColumnAlignment: ViewModifier, Record {
+  @Field var alignment: GridColumnAlignmentType?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let alignment {
+        content.gridColumnAlignment(alignment.alignment)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal enum UnitPointOptions: String, Enumerable {
+  case zero
+  case topLeading
+  case top
+  case topTrailing
+  case leading
+  case center
+  case trailing
+  case bottomLeading
+  case bottom
+  case bottomTrailing
+
+  var toUnitPoint: UnitPoint {
+    switch self {
+    case .zero: return .zero
+    case .topLeading: return .topLeading
+    case .top: return .top
+    case .topTrailing: return .topTrailing
+    case .leading: return .leading
+    case .center: return .center
+    case .trailing: return .trailing
+    case .bottomLeading: return .bottomLeading
+    case .bottom: return .bottom
+    case .bottomTrailing: return .bottomTrailing
+    }
+  }
+}
+
+internal struct GridCellAnchor: ViewModifier, Record {
+  @Field var points: UnitPoint?
+  @Field var type: String?
+  @Field var anchor: UnitPointOptions?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let points {
+        content.gridCellAnchor(points)
+      } else if type == "preset", let anchor {
+        content.gridCellAnchor(anchor.toUnitPoint)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Registry
 
 /**
@@ -1092,14 +1279,6 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   }
 }
 
-internal struct ContainerShapeModifier: ViewModifier, Record {
-  @Field var cornerRadius: CGFloat = 0
-
-  func body(content: Content) -> some View {
-    content.containerShape(.rect(cornerRadius: cornerRadius))
-  }
-}
-
 internal enum ButtonStyle: String, Enumerable {
   case automatic
   case bordered
@@ -1158,6 +1337,10 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
 // swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
+    register("listSectionSpacing") { params, appContext, _ in
+      return try ListSectionSpacingModifier(from: params, appContext: appContext)
+    }
+
     register("background") { params, appContext, _ in
       return try BackgroundModifier(from: params, appContext: appContext)
     }
@@ -1381,8 +1564,48 @@ extension ViewModifierRegistry {
       return try LineSpacing(from: params, appContext: appContext)
     }
 
+    register("listRowInsets") { params, appContext, _ in
+      return try ListRowInsets(from: params, appContext: appContext)
+    }
+
+    register("badgeProminence") { params, appContext, _ in
+      return try BadgeProminence(from: params, appContext: appContext)
+    }
+
+    register("badge") { params, appContext, _ in
+      return try Badge(from: params, appContext: appContext)
+    }
+
+    register("listSectionMargins") { params, appContext, _ in
+      return try ListSectionMargins(from: params, appContext: appContext)
+    }
+
     register("scrollDismissesKeyboard") { params, appContext, _ in
       return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
+    }
+
+    register("headerProminence") { params, appContext, _ in
+      return try HeaderProminence(from: params, appContext: appContext)
+    }
+
+    register("font") { params, appContext, _ in
+      return try FontModifier(from: params, appContext: appContext)
+    }
+
+    register("gridCellUnsizedAxes") { params, appContext, _ in
+      return try GridCellUnsizedAxes(from: params, appContext: appContext)
+    }
+
+    register("gridCellColumns") { params, appContext, _ in
+      return try GridCellColumns(from: params, appContext: appContext)
+    }
+
+    register("gridColumnAlignment") { params, appContext, _ in
+      return try GridColumnAlignment(from: params, appContext: appContext)
+    }
+
+    register("gridCellAnchor") { params, appContext, _ in
+      return try GridCellAnchor(from: params, appContext: appContext)
     }
   }
 }

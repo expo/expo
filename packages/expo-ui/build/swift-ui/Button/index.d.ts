@@ -23,17 +23,19 @@ export type ButtonControlSize = 'mini' | 'small' | 'regular' | 'large' | 'extraL
  *
  * Common styles:
  * - `default` - The default system button style.
- * - `bordered` - A button with a light fill. On Android, equivalent to `FilledTonalButton`.
- * - `borderless` - A button with no background or border. On Android, equivalent to `TextButton`.
+ * - `bordered` - A button with a light fill.
+ * - `borderless` - A button with no background or border
  * - `borderedProminent` - A bordered button with a prominent appearance.
  * - `plain` - A button with no border or background and a less prominent text.
- * - `glass` – A liquid glass button effect – (available only from iOS 26, when built with Xcode 26)
+ * - `glass` – A liquid glass button effect (available only from iOS 26, when built with Xcode 26).
  * - `glassProminent` – A liquid glass button effect – (available only from iOS 26, when built with Xcode 26)
  * macOS-only styles:
- * - `accessoryBar` - A button style for accessory bars.
+ *  - `accessoryBar` - A button style for accessory bars.
  * - `accessoryBarAction` - A button style for accessory bar actions.
  * - `card` - A button style for cards.
  * - `link` - A button style for links.
+ *
+ * > **warning** The `borderless` variant is unavailable on Apple TV.
  */
 export type ButtonVariant = 'default' | 'bordered' | 'plain' | 'glass' | 'glassProminent' | 'borderedProminent' | 'borderless' | 'accessoryBar' | 'accessoryBarAction' | 'card' | 'link';
 export type ButtonProps = {
@@ -49,7 +51,6 @@ export type ButtonProps = {
     systemImage?: SFSymbol;
     /**
      * Indicated the role of the button.
-     * @platform ios
      */
     role?: ButtonRole;
     /**

@@ -1,7 +1,7 @@
 import { Platform } from 'expo-modules-core';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
 export const ImageScreens = [
   {
@@ -178,17 +178,18 @@ if (Platform.OS === 'ios') {
       getComponent() {
         return optionalRequire(() => require('./ImageHDRScreen'));
       },
+    },
+    {
+      name: 'Cache eviction',
+      route: 'image/cache-eviction',
+      getComponent() {
+        return optionalRequire(() => require('./ImageCacheEvictionScreen'));
+      },
     }
   );
 }
 
 export default function ImageScreen() {
-  const apis: ListElement[] = ImageScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/components/${screen.route}`,
-    };
-  });
+  const apis = componentScreensToListElements(ImageScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

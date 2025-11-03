@@ -1,1 +1,0 @@
-{"version":3,"file":"AnsiHighlight.d.ts","sourceRoot":"","sources":["../../../src/error-overlay/UI/AnsiHighlight.tsx"],"names":[],"mappings":"AAQA,OAAO,KAAK,MAAM,OAAO,CAAC;AAE1B,OAAO,KAAK,EAAE,SAAS,EAAE,SAAS,EAAE,MAAM,cAAc,CAAC;AAuBzD,wBAAgB,IAAI,CAAC,EAAE,IAAI,EAAE,KAAK,EAAE,EAAE;IAAE,IAAI,EAAE,MAAM,CAAC;IAAC,KAAK,EAAE,SAAS,CAAC,SAAS,CAAC,CAAA;CAAE,qBAyDlF"}

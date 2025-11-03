@@ -1,5 +1,7 @@
+import { Platform } from 'react-native';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 
 export const MediaLibraryScreens = [
   {
@@ -25,14 +27,17 @@ export const MediaLibraryScreens = [
   },
 ];
 
-export default function MediaLibraryScreen() {
-  const apis: ListElement[] = MediaLibraryScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/apis/${screen.route}`,
-    };
+if (Platform.OS === 'android' && Platform.Version >= 33) {
+  MediaLibraryScreens.push({
+    name: 'Granular Permissions',
+    route: 'medialibrary@next/granular-permissions',
+    getComponent() {
+      return optionalRequire(() => require('./GranularPermissionsScreen'));
+    },
   });
+}
 
+export default function MediaLibraryScreen() {
+  const apis = apiScreensToListElements(MediaLibraryScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

@@ -13,12 +13,8 @@ react {
       workingDir(rootDir)
       commandLine("node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute")
     }.standardOutput.asText.get().trim())
-    def reactNativeRelativeDir = file(providers.exec {
-      workingDir(rootDir)
-      commandLine("node", "--print", "require.resolve('react-native/package.json')")
-    }.standardOutput.asText.get().trim()).getParentFile()
-    reactNativeDir = reactNativeRelativeDir.getAbsoluteFile()
-    hermesCommand = reactNativeRelativeDir.getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+    reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+    hermesCommand = new File(["node", "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/hermesc/%OS-BIN%/hermesc"
     codegenDir = file(providers.exec {
       workingDir(rootDir)
       commandLine("node", "--print", "require.resolve('@react-native/codegen/package.json')")

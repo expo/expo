@@ -12,7 +12,8 @@ import type {
   ResolutionContext,
   CustomResolutionContext,
 } from '@expo/metro/metro-resolver';
-import { resolve as metroResolver } from '@expo/metro/metro-resolver';
+import { resolve as resolver } from '@expo/metro/metro-resolver';
+import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -24,8 +25,8 @@ import {
   AutolinkingModuleResolverInput,
 } from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
-import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
-import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
+import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
+import { isNodeExternal, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
@@ -34,7 +35,6 @@ import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTrans
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
@@ -161,7 +161,6 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * - Alias `react-native` to `react-native-web` on web.
  * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
- * - Alias react-native renderer code to a vendored React canary build on native.
  */
 export function withExtendedResolver(
   config: ConfigT,
@@ -169,9 +168,7 @@ export function withExtendedResolver(
     tsconfig,
     autolinkingModuleResolverInput,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
     isExporting,
-    isReactCanaryEnabled,
     isReactServerComponentsEnabled,
     isFunctionalCSSEnabled,
     getMetroBundler,
@@ -179,35 +176,15 @@ export function withExtendedResolver(
     tsconfig: TsConfigPaths | null;
     autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
     isExporting?: boolean;
-    isReactCanaryEnabled?: boolean;
-    isFunctionalCSSEnabled?: boolean;
     isReactServerComponentsEnabled?: boolean;
+    isFunctionalCSSEnabled?: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
   if (isReactServerComponentsEnabled) {
     Log.warn(`React Server Components (beta) is enabled.`);
   }
-  if (isReactCanaryEnabled) {
-    Log.warn(`Experimental React 19 canary is enabled.`);
-  }
-  if (isFastResolverEnabled) {
-    Log.log(chalk.dim`Fast resolver is enabled.`);
-  }
-
-  const defaultResolver = metroResolver;
-  const resolver = isFastResolverEnabled
-    ? createFastResolver({
-        preserveSymlinks: true,
-        blockList: !config.resolver?.blockList
-          ? []
-          : Array.isArray(config.resolver?.blockList)
-            ? config.resolver?.blockList
-            : [config.resolver?.blockList],
-      })
-    : defaultResolver;
 
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
@@ -216,14 +193,6 @@ export function withExtendedResolver(
       'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
-
-  // The vendored canary modules live inside /static/canary-full/node_modules
-  // Adding the `index.js` allows us to add this path as `originModulePath` to
-  // resolve the nested `node_modules` folder properly.
-  const canaryModulesPath = path.join(
-    require.resolve('@expo/cli/package.json'),
-    '../static/canary-full/index.js'
-  );
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -341,6 +310,20 @@ export function withExtendedResolver(
     id: number | string,
     context: { platform: string; environment?: string }
   ) => number | string;
+
+  // We're manually resolving the `asyncRequireModulePath` since it's a module request
+  // However, in isolated installations it might not resolve from all paths, so we're resolving
+  // it from the project root manually
+  let _asyncRequireModuleResolvedPath: string | null | undefined;
+  const getAsyncRequireModule = () => {
+    if (_asyncRequireModuleResolvedPath === undefined) {
+      _asyncRequireModuleResolvedPath =
+        resolveFrom.silent(config.projectRoot, config.transformer.asyncRequireModulePath) ?? null;
+    }
+    return _asyncRequireModuleResolvedPath
+      ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)
+      : null;
+  };
 
   const getAssetRegistryModule = () => {
     const virtualModuleId = `\0polyfill:assets-registry`;
@@ -646,12 +629,17 @@ export function withExtendedResolver(
       return null;
     },
 
-    // Polyfill for asset registry
-    function requestStableAssetRegistry(
+    // Polyfill for asset registry (assetRegistryPath) and async require module (asyncRequireModulePath)
+    function requestStableConfigModules(
       context: ResolutionContext,
       moduleName: string,
       platform: string | null
     ) {
+      if (moduleName === config.transformer.asyncRequireModulePath) {
+        return getAsyncRequireModule();
+      }
+
+      // TODO(@kitten): Compare against `config.transformer.assetRegistryPath`
       if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
         return getAssetRegistryModule();
       }
@@ -686,6 +674,28 @@ export function withExtendedResolver(
         return result;
       }
 
+      const normalizedPath = normalizeSlashes(result.filePath);
+
+      const doReplace = (from: string, to: string | undefined, options?: { throws?: boolean }) =>
+        doReplaceHelper(from, to, {
+          normalizedPath,
+          doResolve,
+          ...options,
+        });
+      const doReplaceStrict = (from: string, to: string | undefined) =>
+        doReplace(from, to, { throws: true });
+
+      if (env.EXPO_UNSTABLE_WEB_MODAL) {
+        const webModalModule = doReplace(
+          'expo-router/build/layouts/_web-modal.js',
+          'expo-router/build/layouts/ExperimentalModalStack.js'
+        );
+        if (webModalModule) {
+          debug('Using `_unstable-web-modal` implementation.');
+          return webModalModule;
+        }
+      }
+
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
           // Disallow importing confusing native modules on web
@@ -699,16 +709,16 @@ export function withExtendedResolver(
               moduleName.includes(matcher)
             )
           ) {
-            throw new FailedToResolvePathError(
-              `Importing native-only module "${moduleName}" on web from: ${path.relative(config.projectRoot, context.originModulePath)}`
+            throw new FailedToResolveNativeOnlyModuleError(
+              moduleName,
+              path.relative(config.projectRoot, context.originModulePath)
             );
           }
 
           // Replace with static shims
 
-          const normalName = normalizeSlashes(result.filePath)
-            // Drop everything up until the `node_modules` folder.
-            .replace(/.*node_modules\//, '');
+          // Drop everything up until the `node_modules` folder.
+          const normalName = normalizedPath.replace(/.*node_modules\//, '');
 
           const shimFile = shouldCreateVirtualShim(normalName);
           if (shimFile) {
@@ -730,34 +740,33 @@ export function withExtendedResolver(
           context.customResolverOptions?.environment === 'node' ||
           context.customResolverOptions?.environment === 'react-server';
 
-        // react-native/Libraries/Core/InitializeCore
-        const normal = normalizeSlashes(result.filePath);
-
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          if (normal.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
+          const emptyModule = doReplace('react-native/Libraries/Core/InitializeCore.js', undefined);
+          if (emptyModule) {
             debug('Shimming out InitializeCore for React Native in native SSR bundle');
-            return {
-              type: 'empty',
-            };
+            return emptyModule;
           }
         }
 
-        // When server components are enabled, redirect React Native's renderer to the canary build
-        // this will enable the use hook and other requisite features from React 19.
-        if (isReactCanaryEnabled && result.filePath.includes('node_modules')) {
-          const normalName = normalizeSlashes(result.filePath)
-            // Drop everything up until the `node_modules` folder.
-            .replace(/.*node_modules\//, '');
+        const hmrModule = doReplaceStrict(
+          'react-native/Libraries/Utilities/HMRClient.js',
+          'expo/src/async-require/hmr.ts'
+        );
+        if (hmrModule) return hmrModule;
 
-          const canaryFile = shouldCreateVirtualCanary(normalName);
-          if (canaryFile) {
-            debug(`Redirecting React Native module "${result.filePath}" to canary build`);
-            return {
-              ...result,
-              filePath: canaryFile,
-            };
-          }
+        if (env.EXPO_UNSTABLE_LOG_BOX) {
+          const logBoxModule = doReplace(
+            'react-native/Libraries/LogBox/LogBoxInspectorContainer.js',
+            '@expo/log-box/swap-rn-logbox.js'
+          );
+          if (logBoxModule) return logBoxModule;
+
+          const logBoxParserModule = doReplace(
+            'react-native/Libraries/LogBox/Data/parseLogBoxLog.js',
+            '@expo/log-box/swap-rn-logbox-parser.js'
+          );
+          if (logBoxParserModule) return logBoxParserModule;
         }
       }
 
@@ -785,18 +794,6 @@ export function withExtendedResolver(
         ...immutableContext,
         preferNativePlatform: platform !== 'web',
       };
-
-      // TODO: Remove this when we have React 19 in the expo/expo monorepo.
-      if (
-        isReactCanaryEnabled &&
-        // Change the node modules path for react and react-dom to use the vendor in Expo CLI.
-        /^(react|react\/.*|react-dom|react-dom\/.*)$/.test(moduleName)
-      ) {
-        // Modifying the origin module path changes the starting Node module resolution path to this folder
-        context.originModulePath = canaryModulesPath;
-        // Hierarchical lookup has to be enabled for this to work
-        context.disableHierarchicalLookup = false;
-      }
 
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
@@ -856,6 +853,47 @@ export function withExtendedResolver(
   );
 }
 
+function doReplaceHelper(
+  from: string,
+  to: string | undefined,
+  {
+    throws = false,
+    normalizedPath,
+    doResolve,
+  }: {
+    throws?: boolean;
+    normalizedPath: string;
+    doResolve: StrictResolver;
+  }
+): SourceFileResolution | { type: 'empty' } | undefined {
+  if (!normalizedPath.endsWith(from)) {
+    return undefined;
+  }
+
+  if (to === undefined) {
+    return {
+      type: 'empty',
+    };
+  }
+
+  try {
+    const hmrModule = doResolve(to);
+    if (hmrModule.type === 'sourceFile') {
+      debug(`Using \`${to}\` implementation.`);
+      return hmrModule;
+    }
+  } catch (resolutionError) {
+    if (throws) {
+      throw new Error(`Failed to replace ${from} with ${to}. Resolution of ${to} failed.`, {
+        cause: resolutionError,
+      });
+    }
+
+    debug(`Failed to resolve ${to} when swapping from ${from}: ${resolutionError}`);
+  }
+  return undefined;
+}
+
 /** @returns `true` if the incoming resolution should be swapped. */
 export function shouldAliasModule(
   input: {
@@ -881,9 +919,8 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
-    isFastResolverEnabled,
     isExporting,
-    isReactCanaryEnabled,
+
     isReactServerComponentsEnabled,
     isFunctionalCSSEnabled,
     getMetroBundler,
@@ -893,9 +930,8 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     isAutolinkingResolverEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
     isExporting?: boolean;
-    isReactCanaryEnabled: boolean;
+
     isReactServerComponentsEnabled: boolean;
     isFunctionalCSSEnabled: boolean;
     isNamedRequiresEnabled: boolean;
@@ -932,10 +968,6 @@ export async function withMetroMultiPlatformAsync(
       // For virtual modules
       path.join(require.resolve('expo/package.json'), '..')
     );
-    if (isReactCanaryEnabled) {
-      // @ts-expect-error: watchFolders is readonly
-      config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
-    }
   }
 
   let tsconfig: null | TsConfigPaths = null;
@@ -972,8 +1004,6 @@ export async function withMetroMultiPlatformAsync(
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
-    isReactCanaryEnabled,
     isFunctionalCSSEnabled,
     isReactServerComponentsEnabled,
     getMetroBundler,

@@ -3,13 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class StepperProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class StepperProps: UIBaseViewProps {
   @Field var label: String
   @Field var defaultValue: Int?
   @Field var min: Int = 0
@@ -44,7 +38,6 @@ struct StepperView: ExpoSwiftUI.View {
           value = clampedValue
         }
       }
-      .modifier(CommonViewModifiers(props: props))
 #else
     EmptyView()
 #endif

@@ -65,7 +65,8 @@ object ExpoReactHostFactory {
         if (backingJSBundleLoader != null) {
           return backingJSBundleLoader
         }
-        val context = weakContext.get() ?: throw IllegalStateException("Unable to get concrete Context")
+        val context = weakContext.get()
+          ?: throw IllegalStateException("Unable to get concrete Context")
         hostDelegateJsBundleFilePath?.let { jsBundleFile ->
           if (jsBundleFile.startsWith("assets://")) {
             return JSBundleLoader.createAssetLoader(context, jsBundleFile, true)
@@ -128,13 +129,14 @@ object ExpoReactHostFactory {
       val reactHostImpl =
         ReactHostImpl(
           context,
-          reactHostDelegate,
-          componentFactory,
-          true,
-          useDevSupport
+          delegate = reactHostDelegate,
+          componentFactory = componentFactory,
+          allowPackagerServerAccess = true,
+          useDevSupport = useDevSupport
         )
 
       hostHandlers.forEach { handler ->
+        handler.onDidCreateReactHost(context, reactHostImpl)
         handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
       }
 

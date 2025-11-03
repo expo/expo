@@ -185,22 +185,8 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
         for (key, value) in additionalExif {
           updatedExif[key] = value
         }
-        var gpsDict = [String: Any]()
 
-        if let latitude = additionalExif["GPSLatitude"] as? Double {
-          gpsDict[kCGImagePropertyGPSLatitude as String] = abs(latitude)
-          gpsDict[kCGImagePropertyGPSLatitudeRef as String] = latitude >= 0 ? "N" : "S"
-        }
-
-        if let longitude = additionalExif["GPSLongitude"] as? Double {
-          gpsDict[kCGImagePropertyGPSLongitude as String] = abs(longitude)
-          gpsDict[kCGImagePropertyGPSLongitudeRef as String] = longitude >= 0 ? "E" : "W"
-        }
-
-        if let altitude = additionalExif["GPSAltitude"] as? Double {
-          gpsDict[kCGImagePropertyGPSAltitude as String] = abs(altitude)
-          gpsDict[kCGImagePropertyGPSAltitudeRef as String] = altitude >= 0 ? 0 : 1
-        }
+        let gpsDict = createGPSDict(additionalExif: options.additionalExif)
 
         if updatedMetadata[kCGImagePropertyGPSDictionary as String] == nil {
           updatedMetadata[kCGImagePropertyGPSDictionary as String] = gpsDict
@@ -261,5 +247,74 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
   func cleanup() {
     photoCapturedContinuation?.resume(throwing: CameraUnmountedException())
     self.photoCapturedContinuation = nil
+  }
+
+  private func createGPSDict(additionalExif: [String: Any]?) -> [String: Any] {
+    guard let additionalExif else {
+      return [:]
+    }
+
+    var gpsDict = [String: Any]()
+
+    if let latitude = additionalExif["GPSLatitude"], let latValue = toDouble(latitude) {
+      gpsDict[kCGImagePropertyGPSLatitude as String] = abs(latValue)
+      gpsDict[kCGImagePropertyGPSLatitudeRef as String] = latValue >= 0 ? "N" : "S"
+    }
+
+    if let longitude = additionalExif["GPSLongitude"], let lonValue = toDouble(longitude) {
+      gpsDict[kCGImagePropertyGPSLongitude as String] = abs(lonValue)
+      gpsDict[kCGImagePropertyGPSLongitudeRef as String] = lonValue >= 0 ? "E" : "W"
+    }
+
+    if let altitude = additionalExif["GPSAltitude"], let altValue = toDouble(altitude) {
+      gpsDict[kCGImagePropertyGPSAltitude as String] = abs(altValue)
+      gpsDict[kCGImagePropertyGPSAltitudeRef as String] = altValue >= 0 ? 0 : 1
+    }
+
+    if let speed = additionalExif["GPSSpeed"], let speedValue = toDouble(speed) {
+      gpsDict[kCGImagePropertyGPSSpeed as String] = speedValue
+    }
+    if let speedRef = additionalExif["GPSSpeedRef"] as? String {
+      gpsDict[kCGImagePropertyGPSSpeedRef as String] = speedRef
+    }
+
+    if let imgDirection = additionalExif["GPSImgDirection"], let dirValue = toDouble(imgDirection) {
+      gpsDict[kCGImagePropertyGPSImgDirection as String] = dirValue
+    }
+    if let imgDirectionRef = additionalExif["GPSImgDirectionRef"] as? String {
+      gpsDict[kCGImagePropertyGPSImgDirectionRef as String] = imgDirectionRef
+    }
+
+    if let destBearing = additionalExif["GPSDestBearing"], let bearingValue = toDouble(destBearing) {
+      gpsDict[kCGImagePropertyGPSDestBearing as String] = bearingValue
+    }
+    if let destBearingRef = additionalExif["GPSDestBearingRef"] as? String {
+      gpsDict[kCGImagePropertyGPSDestBearingRef as String] = destBearingRef
+    }
+
+    if let dateStamp = additionalExif["GPSDateStamp"] as? String {
+      gpsDict[kCGImagePropertyGPSDateStamp as String] = dateStamp
+    }
+
+    if let timeStamp = additionalExif["GPSTimeStamp"] as? String {
+      gpsDict[kCGImagePropertyGPSTimeStamp as String] = timeStamp
+    }
+
+    if let hPositioningError = additionalExif["GPSHPositioningError"], let errorValue = toDouble(hPositioningError) {
+      gpsDict[kCGImagePropertyGPSHPositioningError as String] = errorValue
+    }
+
+    return gpsDict
+  }
+
+  private func toDouble(_ value: Any) -> Double? {
+    if let doubleValue = value as? Double {
+      return doubleValue
+    } else if let intValue = value as? Int {
+      return Double(intValue)
+    } else if let floatValue = value as? Float {
+      return Double(floatValue)
+    }
+    return nil
   }
 }

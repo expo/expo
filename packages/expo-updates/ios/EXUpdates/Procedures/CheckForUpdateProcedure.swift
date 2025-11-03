@@ -12,7 +12,6 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
   private let getLaunchedUpdate: () -> Update?
   private let successBlock: (_ checkForUpdateResult: CheckForUpdateResult) -> Void
   private let errorBlock: (_ error: Exception) -> Void
-
   private let fileDownloader: FileDownloader
 
   init(
@@ -20,6 +19,7 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
     config: UpdatesConfig,
     selectionPolicy: SelectionPolicy,
     logger: UpdatesLogger,
+    updatesDirectory: URL,
     getLaunchedUpdate: @escaping () -> Update?,
     successBlock: @escaping (_: CheckForUpdateResult) -> Void,
     errorBlock: @escaping (_: Exception) -> Void
@@ -32,7 +32,12 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
     self.successBlock = successBlock
     self.errorBlock = errorBlock
 
-    self.fileDownloader = FileDownloader(config: self.config, logger: self.logger)
+    self.fileDownloader = FileDownloader(
+      config: self.config,
+      logger: self.logger,
+      updatesDirectory: updatesDirectory,
+      database: self.database
+    )
   }
 
   func getLoggerTimerLabel() -> String {

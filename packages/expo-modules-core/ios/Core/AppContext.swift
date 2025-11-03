@@ -1,10 +1,10 @@
-import React
+@preconcurrency import React
 
 /**
  The app context is an interface to a single Expo app.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject {
+public final class AppContext: NSObject, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
@@ -124,7 +124,7 @@ public final class AppContext: NSObject {
   /**
    The module holder for the core module.
    */
-  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule)
+  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule, name: nil)
 
   internal private(set) lazy var converter = MainValueConverter(appContext: self)
 
@@ -136,7 +136,7 @@ public final class AppContext: NSObject {
 
     super.init()
 
-    self.moduleRegistry.register(module: JSLoggerModule(appContext: self))
+    self.moduleRegistry.register(module: JSLoggerModule(appContext: self), name: nil)
     listenToClientAppNotifications()
   }
 
@@ -195,8 +195,7 @@ public final class AppContext: NSObject {
    */
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
     guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
-      // TODO: Define a JS class for SharedRef in the CoreModule and then use it here instead of a raw object (?)
-      return try runtime.createObject()
+      throw JavaScriptClassNotFoundException()
     }
     let prototype = try jsClass.getProperty("prototype").asObject()
     let object = try runtime.createObject(withPrototype: prototype)
@@ -512,6 +511,12 @@ public final class AppContext: NSObject {
 }
 
 // MARK: - Public exceptions
+
+public class JavaScriptClassNotFoundException: Exception, @unchecked Sendable {
+  public override var reason: String {
+    "Unable to find a JavaScript class in the class registry"
+  }
+}
 
 // Deprecated since v1.0.0
 @available(*, deprecated, renamed: "Exceptions.AppContextLost")

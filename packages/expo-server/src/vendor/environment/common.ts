@@ -67,9 +67,5 @@ export function createEnvironment(input: EnvironmentInput) {
       }
       return mod;
     },
-
-    handleRouteError(error: Error): Promise<Response> {
-      throw error;
-    },
   };
 }

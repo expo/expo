@@ -49,10 +49,6 @@ fun injectReactInterceptor(
 
 private fun injectDevSupportManager(reactHost: ReactHost) {
   DevLauncherDevSupportManagerSwapper().swapDevSupportManagerImpl(reactHost)
-
-  // Swapping dev support manager overrides dev menu setup.
-  // We need to reinitialize it.
-  DevMenuManager.initializeWithReactHost(reactHost)
 }
 
 fun injectDebugServerHost(

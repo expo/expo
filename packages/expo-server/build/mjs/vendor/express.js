@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { createRequestHandler as createExpoHandler } from './abstract';
+import { createRequestHandler as createExpoHandler, } from './abstract';
 import { createNodeEnv, createNodeRequestScope } from './environment/node';
 export { ExpoError } from './abstract';
 const STORE = new AsyncLocalStorage();
@@ -14,13 +14,30 @@ export function createRequestHandler(params, setup) {
         ...createNodeEnv(params),
         ...setup,
     });
+    async function requestHandler(request) {
+        try {
+            return await run(onRequest, request);
+        }
+        catch (error) {
+            const handleRouteError = setup?.handleRouteError;
+            if (handleRouteError && error != null && typeof error === 'object') {
+                try {
+                    return await handleRouteError(error);
+                }
+                catch {
+                    // Rethrow original error below
+                }
+            }
+            throw error;
+        }
+    }
     return async (req, res, next) => {
         if (!req?.url || !req.method) {
             return next();
         }
         try {
             const request = convertRequest(req, res);
-            const response = await run(onRequest, request);
+            const response = await requestHandler(request);
             await respond(res, response);
         }
         catch (error) {

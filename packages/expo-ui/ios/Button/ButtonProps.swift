@@ -63,13 +63,7 @@ internal enum ButtonVariant: String, Enumerable {
   case glassProminent
 }
 
-final class ButtonProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps, Observable {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+final class ButtonProps: UIBaseViewProps, Observable {
   @Field var text: String?
   @Field var systemImage: String?
   @Field var color: Color?

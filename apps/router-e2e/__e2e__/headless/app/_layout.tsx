@@ -16,10 +16,21 @@ export default function Layout() {
     <Tabs style={styles.root}>
       <TabSlot />
       <TabList style={styles.tabList}>
-        <TabTrigger name="home" href="/" asChild style={styles.tabTrigger}>
+        <TabTrigger
+          testID="tab-home"
+          name="home"
+          href="/"
+          asChild
+          style={styles.tabTrigger}
+          resetOnFocus>
           <TabButton icon="home">Index</TabButton>
         </TabTrigger>
-        <TabTrigger name="movies" asChild href="/movies" style={styles.tabTrigger}>
+        <TabTrigger
+          testID="tab-movies"
+          name="movies"
+          asChild
+          href="/movies"
+          style={styles.tabTrigger}>
           <TabButton icon="film">Movies</TabButton>
         </TabTrigger>
         <TabTrigger name="old-tabs" asChild href="/old-tabs" style={styles.tabTrigger}>

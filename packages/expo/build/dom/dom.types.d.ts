@@ -29,6 +29,11 @@ export interface DOMProps extends Omit<RNWebViewProps, 'source'> {
      * @default false
      */
     useExpoDOMWebView?: boolean;
+    /**
+     * Allows dynamically redirecting a component to a different source, for example a prebuilt version.
+     * @internal
+     */
+    overrideUri?: string;
 }
 export {};
 //# sourceMappingURL=dom.types.d.ts.map

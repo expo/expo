@@ -24,71 +24,26 @@
     "expo-router": "6.0.6",
     "expo-device": "8.0.7",
     "expo-constants": "18.0.9",
-    "expo-splash-screen": "31.0.10",
+    "expo-dev-client": "~6.0.12",
     "expo-sqlite": "16.0.8",
     "expo-status-bar": "3.0.8",
     "expo-notifications": "0.32.11",
     "expo-task-manager": "14.0.7",
     "react-native-gesture-handler": "~2.28.0",
-    "react": "19.1.1",
-    "react-native": "0.82.0",
+    "react": "19.2.0",
+    "react-native": "0.83.0-nightly-20251030-26ad9492b",
     "react-native-safe-area-context": "5.6.0",
     "react-native-screens": "4.16.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/jest": "^29.5.12",
-    "@types/react": "~19.1.10"
+    "@types/react": "~19.2.0"
   },
   "resolutions": {
-    "react-test-renderer": "19.1.1"
+    "react-test-renderer": "19.2.0"
   },
   "expo": {
-    "autolinking": {
-      "exclude": [
-        "@expo/ui",
-        "expo-audio",
-        "expo-av",
-        "expo-battery",
-        "expo-blur",
-        "expo-brightness",
-        "expo-calendar",
-        "expo-camera",
-        "expo-cellular",
-        "expo-updates",
-        "expo-updates-interface",
-        "expo-clipboard",
-        "expo-contacts",
-        "expo-crypto",
-        "expo-document-picker",
-        "expo-file-system",
-        "expo-gl",
-        "expo-haptics",
-        "expo-image-manipulator",
-        "expo-image-picker",
-        "expo-intent-launcher",
-        "expo-linear-gradient",
-        "expo-local-authentication",
-        "expo-localization",
-        "expo-location",
-        "expo-mail-composer",
-        "expo-maps",
-        "expo-media-library",
-        "expo-print",
-        "expo-screen-capture",
-        "expo-screen-orientation",
-        "expo-secure-store",
-        "expo-sensors",
-        "expo-sharing",
-        "expo-sms",
-        "expo-speech",
-        "expo-store-review",
-        "expo-video",
-        "expo-video-thumbnails",
-        "expo-tracking-transparency",
-        "expo-web-browser"
-      ]
-    }
   },
   "private": true
 }

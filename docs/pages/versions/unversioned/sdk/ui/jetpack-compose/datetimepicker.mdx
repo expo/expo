@@ -1,0 +1,80 @@
+---
+title: DateTimePicker
+description: A Jetpack Compose DateTimePicker component for selecting dates and times.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A date and time picker component that allows users to select dates, times, or both using native Android dialogs.
+
+## Installation
+
+<APIInstallSection />
+
+## Date time picker
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="DateTimePicker component on Android."
+      src="/static/images/expo-ui/datetimepicker/date/android.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker } from '@expo/ui/jetpack-compose';
+
+    <DateTimePicker
+      onDateSelected={date => {
+        setSelectedDate(date);
+      }}
+      displayedComponents='date'
+      initialDate={selectedDate.toISOString()}
+      variant='picker'
+    />
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/datepickers) for more information.
+
+## Time picker
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="DateTimePicker (time) component on Android."
+      src="/static/images/expo-ui/datetimepicker/time/android.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker } from '@expo/ui/jetpack-compose';
+
+    <DateTimePicker
+      onDateSelected={date => {
+        setSelectedDate(date);
+      }}
+      displayedComponents='hourAndMinute'
+      initialDate={selectedDate.toISOString()}
+      variant='picker'
+    />
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/time-pickers) for more information.
+
+## API
+
+<APISection packageName="expo-ui/jetpack-compose/datetimepicker" apiName="DateTimePicker" />

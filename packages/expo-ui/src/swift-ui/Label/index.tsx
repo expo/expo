@@ -18,6 +18,7 @@ export type LabelProps = {
 
   /**
    * The color of the label icon.
+   * @deprecated Use `foregroundStyle` modifier instead.
    */
   color?: ColorValue;
 } & CommonViewModifierProps;
@@ -29,7 +30,6 @@ const LabelNativeView: React.ComponentType<LabelProps> = requireNativeView('Expo
  *
  * @param {LabelProps} props - The properties passed to the Label component.
  * @returns {JSX.Element} The rendered native Label component.
- * @platform ios
  */
 export function Label(props: LabelProps) {
   const { modifiers, ...restProps } = props;

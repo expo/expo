@@ -47,7 +47,7 @@ class MediaLibraryNextModule : Module() {
 
   private val albumFactory by lazy {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      AlbumModernFactory(assetFactory, assetDeleter, context)
+      AlbumModernFactory(assetFactory, assetDeleter, mediaStorePermissionsDelegate, context)
     } else {
       AlbumLegacyFactory(assetFactory, assetDeleter, context)
     }
@@ -55,9 +55,9 @@ class MediaLibraryNextModule : Module() {
 
   private val assetFactory by lazy {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      AssetModernFactory(assetDeleter, context)
+      AssetModernFactory(assetDeleter, mediaStorePermissionsDelegate, context)
     } else {
-      AssetLegacyFactory(assetDeleter, context)
+      AssetLegacyFactory(assetDeleter, systemPermissionsDelegate, context)
     }
   }
 
@@ -65,7 +65,7 @@ class MediaLibraryNextModule : Module() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       AssetModernDeleter(mediaStorePermissionsDelegate)
     } else {
-      AssetLegacyDeleter(context)
+      AssetLegacyDeleter(systemPermissionsDelegate, context)
     }
   }
 
@@ -78,62 +78,50 @@ class MediaLibraryNextModule : Module() {
       }
 
       Property("id") { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.contentUri
       }
 
       AsyncFunction("getCreationTime") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getCreationTime()
       }
 
       AsyncFunction("getDuration") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getDuration()
       }
 
       AsyncFunction("getExif") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getExif()
       }
 
       AsyncFunction("getLocation") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getLocation()
       }
 
       AsyncFunction("getFilename") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getFilename()
       }
 
       AsyncFunction("getHeight") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getHeight()
       }
 
       AsyncFunction("getMediaType") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getMediaType()
       }
 
       AsyncFunction("getModificationTime") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getModificationTime()
       }
 
       AsyncFunction("getUri") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getUri()
       }
 
       AsyncFunction("getWidth") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getWidth()
       }
 
       AsyncFunction("delete") Coroutine { self: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(true)
         self.delete()
       }
     }
@@ -148,23 +136,18 @@ class MediaLibraryNextModule : Module() {
       }
 
       AsyncFunction("getTitle") Coroutine { self: Album ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getTitle()
       }
 
       AsyncFunction("getAssets") Coroutine { self: Album ->
-        systemPermissionsDelegate.requireSystemPermissions(false)
         self.getAssets()
       }
 
       AsyncFunction("add") Coroutine { self: Album, asset: Asset ->
-        systemPermissionsDelegate.requireSystemPermissions(true)
-        mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(listOf(asset.contentUri))
         self.add(asset)
       }
 
       AsyncFunction("delete") Coroutine { self: Album ->
-        systemPermissionsDelegate.requireSystemPermissions(true)
         self.delete()
       }
     }
@@ -227,13 +210,11 @@ class MediaLibraryNextModule : Module() {
     }
 
     AsyncFunction("createAsset") Coroutine { filePath: Uri, album: Album? ->
-      systemPermissionsDelegate.requireSystemPermissions(true)
       return@Coroutine assetFactory.create(filePath, album?.getRelativePath())
     }
 
     @OptIn(EitherType::class)
     AsyncFunction("createAlbum") Coroutine { name: String, assetRefs: Either<List<Asset>, List<Uri>>, move: Boolean ->
-      systemPermissionsDelegate.requireSystemPermissions(true)
       val assetListKClass = toKClass<List<Asset>>()
       if (assetRefs.`is`(assetListKClass)) {
         val assetList = assetRefs.get(assetListKClass)
@@ -244,12 +225,10 @@ class MediaLibraryNextModule : Module() {
     }
 
     AsyncFunction("getAlbum") Coroutine { title: String ->
-      systemPermissionsDelegate.requireSystemPermissions(false)
       albumQuery.getAlbum(title)
     }
 
     AsyncFunction("deleteAlbums") Coroutine { albums: List<Album> ->
-      systemPermissionsDelegate.requireSystemPermissions(true)
       val contentUris = albums
         .map { it.getAssets() }
         .flatten()
@@ -258,7 +237,6 @@ class MediaLibraryNextModule : Module() {
     }
 
     AsyncFunction("deleteAssets") Coroutine { assets: List<Asset> ->
-      systemPermissionsDelegate.requireSystemPermissions(true)
       assetDeleter.delete(assets.map { it.contentUri })
     }
 

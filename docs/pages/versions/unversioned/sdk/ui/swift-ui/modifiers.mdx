@@ -1,0 +1,82 @@
+---
+title: Modifiers
+description: SwiftUI view modifiers for customizing component appearance and behavior.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+SwiftUI view modifiers that allow you to customize the appearance and behavior of UI components.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+Modifiers are applied to components using the `modifiers` prop with an array syntax. You can combine multiple modifiers to create complex styling and behavior.
+
+```tsx
+import { Text, Host, VStack } from '@expo/ui/swift-ui';
+import {
+  background,
+  cornerRadius,
+  padding,
+  shadow,
+  foregroundColor,
+  onTapGesture,
+} from '@expo/ui/swift-ui/modifiers';
+
+function ModifiersExample() {
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={20}>
+        {/* Basic styling modifiers */}
+        <Text
+          modifiers={[
+            background('#FF6B6B'),
+            cornerRadius(12),
+            padding({ all: 16 }),
+            foregroundColor('#FFFFFF'),
+          ]}>
+          Basic styled text
+        </Text>
+
+        {/* Complex combination with shadow and interaction */}
+        <Text
+          modifiers={[
+            background('#4ECDC4'),
+            cornerRadius(16),
+            padding({ horizontal: 20, vertical: 12 }),
+            shadow({ radius: 4, x: 0, y: 2, color: '#4ECDC440' }),
+            onTapGesture(() => console.log('Tapped!')),
+          ]}>
+          Styled with shadow and tap gesture
+        </Text>
+
+        {/* Conditional modifiers using spread operator */}
+        <Text
+          modifiers={[
+            background('#9B59B6'),
+            cornerRadius(8),
+            padding({ all: 14 }),
+            ...(isEnabled
+              ? [shadow({ radius: 6, y: 3 }), scaleEffect(1.02)]
+              : [grayscale(0.5), opacity(0.7)]),
+          ]}>
+          Conditional styling
+        </Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/modifiers" />

@@ -1,0 +1,49 @@
+---
+title: BottomSheet
+description: A Jetpack Compose BottomSheet component that presents content from the bottom of the screen.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A bottom sheet component that slides up from the bottom of the screen to present content using native Android bottom sheet behavior.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="BottomSheet component on Android."
+      src="/static/images/expo-ui/bottomsheet/android.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { BottomSheet } from '@expo/ui/jetpack-compose';
+
+    <BottomSheet
+      isOpened={isOpened}
+      onIsOpenedChange={setIsOpened}
+      style={{ minHeight: 200 }}>
+      <Text>Hello from bottom sheet!</Text>
+    </BottomSheet>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/bottom-sheets) for more information.
+
+## API
+
+<APISection packageName="expo-ui/jetpack-compose/bottomsheet" apiName="BottomSheet" />

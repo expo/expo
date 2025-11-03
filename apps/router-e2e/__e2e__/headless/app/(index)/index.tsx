@@ -6,7 +6,9 @@ import { MovieList } from '../../components/MovieList';
 export default function Home() {
   return (
     <>
-      <Text style={styles.header}>Home</Text>
+      <Text style={styles.header} testID="tab-home-index">
+        Home
+      </Text>
       <Text style={styles.subheader}>Test pages</Text>
       <Link href="/tab-functions" style={styles.link}>
         Go to Tab functions

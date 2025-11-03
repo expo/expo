@@ -7,7 +7,7 @@ import SwiftUI
 
   @objc public override init(nibName: String?, bundle: Bundle?) {
     super.init(nibName: nibName, bundle: bundle)
-    setupViewController()
+    addHostingController()
   }
 
   @objc public convenience init() {
@@ -16,7 +16,7 @@ import SwiftUI
 
   required init?(coder: NSCoder) {
     super.init(coder: coder)
-    setupViewController()
+    addHostingController()
   }
 
   private func setupViewController() {
@@ -27,9 +27,13 @@ import SwiftUI
     hostingController?.view.backgroundColor = UIColor.clear
   }
 
-  public override func viewDidLoad() {
-    super.viewDidLoad()
+  @objc public func resetHostingController() {
+    hostingController = nil
+    view = UIView()
+    addHostingController()
+  }
 
+  private func addHostingController() {
     if hostingController == nil {
       setupViewController()
     }

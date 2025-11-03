@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
+import { parseWebBuildErrors } from '@expo/log-box/utils';
 import chalk from 'chalk';
 import { stripVTControlCharacters } from 'node:util';
 import path from 'path';
@@ -12,7 +13,7 @@ import resolveFrom from 'resolve-from';
 import { parse, StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
-import { LogBoxLog } from './log-box/LogBoxLog';
+import { LogBoxLog, LogBoxLogData } from './log-box/LogBoxLog';
 import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxSymbolication';
 import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 import { Log } from '../../../log';
@@ -246,55 +247,14 @@ export async function logMetroError(
   });
 }
 
-function isTransformError(
-  error: any
-): error is { type: 'TransformError'; filename: string; lineNumber: number; column: number } {
-  return error.type === 'TransformError';
-}
-
 /** @returns the html required to render the static metro error as an SPA. */
-function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }) {
-  // Remap direct Metro Node.js errors to a format that will appear more client-friendly in the logbox UI.
-  let stack: MetroStackFrame[] | undefined;
-  if (isTransformError(error) && error.filename) {
-    // Syntax errors in static rendering.
-    stack = [
-      {
-        file: path.join(projectRoot, error.filename),
-        methodName: '<unknown>',
-        arguments: [],
-        // TODO: Import stack
-        lineNumber: error.lineNumber,
-        column: error.column,
-      },
-    ];
-  } else if ('originModulePath' in error && typeof error.originModulePath === 'string') {
-    // TODO: Use import stack here when the error is resolution based.
-    stack = [
-      {
-        file: error.originModulePath,
-        methodName: '<unknown>',
-        arguments: [],
-        // TODO: Import stack
-        lineNumber: 0,
-        column: 0,
-      },
-    ];
-  } else {
-    stack = parseErrorStack(projectRoot, error.stack);
-  }
-
-  return new LogBoxLog({
-    level: 'static',
-    message: {
-      content: error.message,
-      substitutions: [],
-    },
-    isComponentError: false,
-    stack,
-    category: 'static',
-    componentStack: [],
+function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): LogBoxLog {
+  const data = parseWebBuildErrors({
+    error,
+    projectRoot,
+    parseErrorStack,
   });
+  return new LogBoxLog(data as LogBoxLogData);
 }
 
 /** @returns the html required to render the static metro error as an SPA. */
@@ -345,10 +305,11 @@ export async function getErrorOverlayHtmlAsync({
     isDisabled: false,
     logs: [log],
   };
-  const html = `<html><head><style>#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}</style></head><body><div id="root"></div><script id="_expo-static-error" type="application/json">${JSON.stringify(
+  const html = `<html><head><style>#root,body,html{height:100%;background-color:black}body{overflow:hidden}#root{display:flex}</style></head><body><div id="root"></div><script id="_expo-static-error" type="application/json">${JSON.stringify(
     logBoxContext
   )}</script></body></html>`;
 
+  // TODO: We could reuse the pre-built DOM Log Box from @expo/log-box
   const errorOverlayEntry = await createMetroEndpointAsync(
     projectRoot,
     // Keep the URL relative

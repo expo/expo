@@ -8,4 +8,6 @@
 
 import { createContext } from 'react';
 
-export const ServerDataLoaderContext = createContext<Record<string, any> | null>(null);
+export type ServerDataLoaderData = Record<string, any> | null;
+
+export const ServerDataLoaderContext = createContext<ServerDataLoaderData>(null);

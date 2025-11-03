@@ -211,6 +211,12 @@ export interface HashSourceFile {
    * Reasons of this source coming from.
    */
   reasons: string[];
+
+  /**
+   * Override key for hashing.
+   * Without this key, the `filePath` is used as the hash key.
+   */
+  overrideHashKey?: string;
 }
 
 export interface HashSourceDir {
@@ -221,6 +227,12 @@ export interface HashSourceDir {
    * Reasons of this source coming from.
    */
   reasons: string[];
+
+  /**
+   * Override key for hashing.
+   * Without this key, the `filePath` is used as the hash key.
+   */
+  overrideHashKey?: string;
 }
 
 export interface HashSourceContents {

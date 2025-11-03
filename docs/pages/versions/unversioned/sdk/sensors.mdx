@@ -26,7 +26,7 @@ import {
 
 ## Configuration in app config
 
-You can configure `expo-sensors` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-sensors` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
 <ConfigPluginExample>
 
@@ -82,7 +82,7 @@ import {
 
 Starting in Android 12 (API level 31), the system has a 200Hz limit for each sensor updates.
 
-If you need an update interval of less than 200Hz, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
+If you need an update interval greater than 200Hz, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
 
 <AndroidPermissions permissions={['HIGH_SAMPLING_RATE_SENSORS']} />
 

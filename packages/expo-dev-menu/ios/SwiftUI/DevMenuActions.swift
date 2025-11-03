@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DevMenuActions: View {
-  let isDevLauncherInstalled: Bool
+  let canNavigateHome: Bool
   let onReload: () -> Void
   let onGoHome: () -> Void
 
@@ -14,7 +14,7 @@ struct DevMenuActions: View {
       )
       .cornerRadius(18)
 
-      if isDevLauncherInstalled {
+      if canNavigateHome {
         DevMenuActionButton(
           title: "Go home",
           icon: "house.fill",

@@ -6,8 +6,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class DevMenuMetroClient {
-  private val httpClient = OkHttpClient()
+object DevMenuMetroClient {
+  private val httpClient by lazy { OkHttpClient() }
 
   suspend fun openJSInspector(metroHost: String, applicationId: String) {
     val url = "$metroHost/_expo/debugger".toUri()
