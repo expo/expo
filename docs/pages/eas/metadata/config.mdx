@@ -1,115 +1,292 @@
----
-title: Configuring EAS Metadata
-sidebar_title: store.config.json
-description: Learn about different ways to configure EAS Metadata.
----
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Aziko Flappy — O'yin</title>
+  <style>
+    :root{
+      --bg:#7ec8ff;
+      --ground:#5dbb5d;
+      --pipe:#2f8f3f;
+      --bird:#ffdd57;
+      --text:#032b43;
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;}
+    .wrap{display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(180deg,var(--bg),#9fd9ff);}
+    canvas{border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.15); touch-action: manipulation;}
+    .ui{
+      position:fixed; left:12px; top:12px; color:var(--text);
+      font-weight:600; text-shadow:0 1px 0 rgba(255,255,255,0.5);
+    }
+    .hint{position:fixed; right:12px; top:12px; color:#013f5a; font-weight:600;}
+    .center-msg{
+      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+      background:rgba(255,255,255,0.9); padding:14px 18px; border-radius:10px;
+      box-shadow:0 6px 20px rgba(0,0,0,0.12); text-align:center;
+    }
+    button{background:#0b6; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700;}
+    small{display:block; margin-top:6px; color:#065;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <canvas id="game" width="420" height="680" aria-label="Aziko Flappy o'yini"></canvas>
+  </div>
 
-import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+  <div class="ui" id="score">Score: 0</div>
+  <div class="hint">Touch / Space = Flap</div>
 
-> **important** **EAS Metadata** is in preview and subject to breaking changes.
+  <div id="overlay" class="center-msg" style="display:none;">
+    <div id="overlay-title" style="font-size:20px; margin-bottom:8px;"></div>
+    <div id="overlay-sub" style="font-size:14px; color:#025;"></div>
+    <div style="margin-top:10px;">
+      <button id="btn-start">O'yinni boshlash</button>
+    </div>
+  </div>
 
-EAS Metadata is configured by a **store.config.json** file at the _root of your project_.
+<script>
+(() => {
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d', { alpha: false });
+  const scoreEl = document.getElementById('score');
+  const overlay = document.getElementById('overlay');
+  const overlayTitle = document.getElementById('overlay-title');
+  const overlaySub = document.getElementById('overlay-sub');
+  const btnStart = document.getElementById('btn-start');
 
-You can configure the path or name of the store config file with the **eas.json** [`metadataPath`](../../submit/eas-json.mdx#metadatapath) property.
-Besides the default JSON format, EAS Metadata also supports more dynamic config using JavaScript files.
+  // Responsive scale for mobile
+  function fitCanvas(){
+    const maxW = Math.min(window.innerWidth - 24, 420);
+    const scale = maxW / 420;
+    canvas.style.width = `${420 * scale}px`;
+    canvas.style.height = `${680 * scale}px`;
+  }
+  window.addEventListener('resize', fitCanvas);
+  fitCanvas();
 
-## Static store config
+  // Game state
+  let bird = { x: 100, y: 300, w: 28, h: 20, vy: 0, rotation: 0 };
+  const gravity = 0.55;
+  const flapPower = -10.5;
+  let pipes = [];
+  let frame = 0;
+  let score = 0;
+  let highScore = 0;
+  let gameState = 'menu'; // 'menu', 'playing', 'over'
 
-The default store config type for EAS Metadata is a simple JSON file.
-The code snippet below shows an example store config with basic App Store information written in English (U.S.).
+  // Pipe parameters
+  const pipeGap = 150; // vertical gap between top and bottom pipes
+  const pipeSpacing = 140; // horizontal spacing between consecutive pipes
+  const pipeWidth = 56;
+  const groundHeight = 80;
 
-You can find all configuration options in the [store config schema](/eas/metadata/schema/).
+  // Input
+  function flap(){
+    if (gameState === 'menu'){
+      startGame();
+      return;
+    }
+    if (gameState === 'over'){
+      showMenu();
+      return;
+    }
+    bird.vy = flapPower;
+  }
 
-> If you have the [VS Code Expo Tools extension](https://github.com/expo/vscode-expo#readme) installed, you get auto-complete, suggestions, and warnings for **store.config.json** files.
+  // Touch + mouse + keyboard
+  canvas.addEventListener('touchstart', (e) => { e.preventDefault(); flap(); }, {passive:false});
+  canvas.addEventListener('mousedown', () => flap());
+  window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); flap(); } });
 
-```json store.config.json
-{
-  "configVersion": 0,
-  "apple": {
-    "info": {
-      "en-US": {
-        "title": "Awesome App",
-        "subtitle": "Your self-made awesome app",
-        "description": "The most awesome app you have ever seen",
-        "keywords": ["awesome", "app"],
-        "marketingUrl": "https://example.com/en/promo",
-        "supportUrl": "https://example.com/en/support",
-        "privacyPolicyUrl": "https://example.com/en/privacy"
+  btnStart.addEventListener('click', startGame);
+
+  // Helpers
+  function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+  function reset(){
+    bird = { x: 100, y: 300, w: 28, h: 20, vy: 0, rotation: 0 };
+    pipes = [];
+    frame = 0;
+    score = 0;
+    scoreEl.textContent = 'Score: 0';
+  }
+
+  function spawnPipe(){
+    // choose center Y for gap
+    const minCenter = 120;
+    const maxCenter = canvas.height - groundHeight - 120;
+    const centerY = rand(minCenter, maxCenter);
+    const x = canvas.width + 20;
+    pipes.push({ x, centerY, passed: false });
+  }
+
+  function startGame(){
+    reset();
+    gameState = 'playing';
+    overlay.style.display = 'none';
+  }
+
+  function showMenu(){
+    gameState = 'menu';
+    overlayTitle.textContent = 'Aziko Flappy';
+    overlaySub.textContent = 'Touch yoki Space belgisini bosib sakratuvchi qushni boshqaring.';
+    btnStart.textContent = 'Boshlash';
+    overlay.style.display = 'block';
+  }
+
+  function showGameOver(){
+    gameState = 'over';
+    overlayTitle.textContent = 'Oʻyin tugadi';
+    overlaySub.textContent = `Ball: ${score} — Eng yaxshi: ${highScore}`;
+    btnStart.textContent = 'Qayta urinish';
+    overlay.style.display = 'block';
+    if (score > highScore) { highScore = score; localStorage.setItem('aziko_high', highScore); }
+  }
+
+  // Collision detection with pipe rectangles
+  function rectsOverlap(ax,ay,aw,ah,bx,by,bw,bh){
+    return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+  }
+
+  // Game loop
+  function update(){
+    if (gameState === 'playing'){
+      frame++;
+
+      // spawn pipes periodically
+      if (frame % pipeSpacing === 0) spawnPipe();
+
+      // update pipes
+      for (let p of pipes){
+        p.x -= 2.6; // pipe speed
+        // check scoring
+        if (!p.passed && p.x + pipeWidth < bird.x){
+          p.passed = true;
+          score++;
+          scoreEl.textContent = 'Score: ' + score;
+        }
+      }
+      // remove off-screen pipes
+      pipes = pipes.filter(p => p.x + pipeWidth > -40);
+
+      // bird physics
+      bird.vy += gravity;
+      bird.y += bird.vy;
+      bird.rotation = Math.max(Math.min(bird.vy * 0.05, 0.9), -1.2);
+
+      // ground collision
+      if (bird.y + bird.h > canvas.height - groundHeight){
+        bird.y = canvas.height - groundHeight - bird.h;
+        // hit ground -> game over
+        showGameOver();
+      }
+
+      // pipe collisions
+      for (let p of pipes){
+        const topH = p.centerY - pipeGap/2;
+        const bottomY = p.centerY + pipeGap/2;
+        if ( rectsOverlap(bird.x, bird.y, bird.w, bird.h, p.x, 0, pipeWidth, topH) ||
+             rectsOverlap(bird.x, bird.y, bird.w, bird.h, p.x, bottomY, pipeWidth, canvas.height - bottomY - groundHeight) ){
+          showGameOver();
+        }
       }
     }
+
+    draw();
+    requestAnimationFrame(update);
   }
-}
-```
 
-## Dynamic store config
+  function drawRoundedRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+    ctx.fill();
+  }
 
-At times, Metadata properties can benefit from dynamic values. For example, the Metadata **copyright notice** should contain the current year. This can be automated with EAS Metadata.
+  function draw(){
+    // Background
+    ctx.fillStyle = '#9fe0ff';
+    ctx.fillRect(0,0,canvas.width, canvas.height);
 
-To generate content dynamically, start by creating a JavaScript config file **store.config.js**. Then, use the [`metadataPath`](/eas/json/#metadatapath) property in the **eas.json** file to pick the JS config file.
-
-> `eas metadata:pull` can't update dynamic store config files. Instead, it creates a JSON file with the same name as the configured file. You can import the JSON file to reuse the data from `eas metadata:pull`.
-
-<CodeBlocksTable tabs={['store.config.js', 'eas.json']}>
-
-```js
-// Use the data from `eas metadata:pull`
-const config = require('./store.config.json');
-
-const year = new Date().getFullYear();
-config.apple.copyright = `${year} Acme, Inc.`;
-
-module.exports = config;
-```
-
-```json
-{
-  "submit": {
-    "production": {
-      "ios": {
-        "metadataPath": "./store.config.js"
-      }
+    // clouds (simple)
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    for (let i=0;i<3;i++){
+      const cx = (i*160 + (frame*0.2 % 160))%canvas.width;
+      ctx.beginPath();
+      ctx.ellipse(cx+40, 80+i*40, 36, 20, 0, 0, Math.PI*2);
+      ctx.ellipse(cx+70, 80+i*40, 28, 16, 0, 0, Math.PI*2);
+      ctx.fill();
     }
-  }
-}
-```
 
-</CodeBlocksTable>
+    // pipes
+    for (let p of pipes){
+      ctx.fillStyle = '#2f8f3f';
+      // top pipe
+      const topH = p.centerY - pipeGap/2;
+      drawRoundedRect(p.x, 0, pipeWidth, topH, 6);
+      // cap
+      ctx.fillStyle = '#246b2c';
+      drawRoundedRect(p.x-4, topH-16, pipeWidth+8, 16, 4);
 
-## Store config with external content
-
-When using external services for localizations, you have to fetch external content.
-EAS Metadata supports synchronous and asynchronous functions exported from dynamic store config files.
-The function results are awaited before validating and syncing with the stores.
-
-> The **store.config.js** function is evaluated in Node.js. If you need special values, like secrets, use environment variables.
-
-<CodeBlocksTable tabs={['store.config.js', 'eas.json']}>
-
-```js
-// Use the data from `eas metadata:pull`
-const config = require('./store.config.json');
-
-module.exports = async () => {
-  const year = new Date().getFullYear();
-  const info = await fetchLocalizations('...').then(response => response.json());
-
-  config.apple.copyright = `${year} Acme, Inc.`;
-  config.apple.info = info;
-
-  return config;
-};
-```
-
-```json
-{
-  "submit": {
-    "production": {
-      "ios": {
-        "metadataPath": "./store.config.js"
-      }
+      // bottom pipe
+      ctx.fillStyle = '#2f8f3f';
+      const bottomY = p.centerY + pipeGap/2;
+      drawRoundedRect(p.x, bottomY, pipeWidth, canvas.height - bottomY - groundHeight, 6);
+      ctx.fillStyle = '#246b2c';
+      drawRoundedRect(p.x-4, bottomY, pipeWidth+8, 16, 4);
     }
-  }
-}
-```
 
-</CodeBlocksTable>
+    // ground
+    ctx.fillStyle = '#52b24b';
+    drawRoundedRect(0, canvas.height - groundHeight, canvas.width, groundHeight, 0);
+
+    // bird
+    ctx.save();
+    ctx.translate(bird.x + bird.w/2, bird.y + bird.h/2);
+    ctx.rotate(bird.rotation);
+    ctx.translate(-bird.x - bird.w/2, -bird.y - bird.h/2);
+
+    // body
+    ctx.fillStyle = '#ffdd57';
+    ctx.beginPath();
+    ctx.ellipse(bird.x + bird.w/2, bird.y + bird.h/2, bird.w/2, bird.h/2, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // wing (simple flapping visual based on vy)
+    ctx.save();
+    ctx.translate(bird.x + bird.w/2, bird.y + bird.h/2);
+    ctx.rotate(Math.sin(frame*0.25) * 0.7 + Math.min(Math.max(-bird.vy*0.03, -1), 1));
+    ctx.fillStyle = '#f0c035';
+    ctx.fillRect(-8, 0, 18, 6);
+    ctx.restore();
+
+    // eye
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(bird.x + bird.w*0.65, bird.y + bird.h*0.4, 2.6, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.restore();
+
+    // simple score top-left handled by DOM; draw some floating score
+    ctx.fillStyle = 'rgba(3,43,67,0.08)';
+    ctx.fillRect(8,8,120,36);
+  }
+
+  // load highscore
+  try { highScore = parseInt(localStorage.getItem('aziko_high')) || 0; } catch(e){ highScore = 0; }
+
+  // initial menu
+  showMenu();
+  // start loop
+  requestAnimationFrame(update);
+
+})();
+</script>
+</body>
+</html>
