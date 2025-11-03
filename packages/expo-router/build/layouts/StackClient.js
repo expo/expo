@@ -44,7 +44,7 @@ const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
 const elements_1 = require("./stack-utils/elements");
-const options_1 = require("./stack-utils/options");
+const utils_1 = require("./stack-utils/utils");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
@@ -379,25 +379,62 @@ function filterSingular(state, getId) {
 function mapProtectedScreen(props) {
     return {
         ...props,
-        children: react_1.Children.toArray(props.children).map((child, index) => {
-            if ((0, options_1.isChildOfType)(child, elements_1.StackScreen)) {
-                const options = (0, options_1.appendScreenStackPropsToOptions)({}, child.props);
+        children: react_1.Children.toArray(props.children)
+            .map((child, index) => {
+            if ((0, utils_1.isChildOfType)(child, elements_1.StackScreen)) {
+                const options = (0, elements_1.appendScreenStackPropsToOptions)({}, child.props);
                 const { children, ...rest } = child.props;
                 return <Screen_1.Screen key={child.props.name} {...rest} options={options}/>;
             }
-            else if ((0, options_1.isChildOfType)(child, Protected_1.Protected)) {
+            else if ((0, utils_1.isChildOfType)(child, Protected_1.Protected)) {
                 return <Protected_1.Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)}/>;
             }
-            return child;
-        }),
+            else if ((0, utils_1.isChildOfType)(child, elements_1.StackHeader)) {
+                // Ignore Stack.Header, because it can be used to set header options for Stack
+                // and we use this function to process children of Stack, as well.
+                return null;
+            }
+            else {
+                if (react_1.default.isValidElement(child)) {
+                    console.warn(`Warning: Unknown child element passed to Stack: ${child.type}`);
+                }
+                else {
+                    console.warn(`Warning: Unknown child element passed to Stack: ${child}`);
+                }
+            }
+            return null;
+        })
+            .filter(Boolean),
     };
 }
 const Stack = Object.assign((props) => {
     const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
+    const screenOptionsWithCompositionAPIOptions = (0, react_1.useMemo)(() => {
+        const stackHeader = react_1.Children.toArray(props.children).find((child) => (0, utils_1.isChildOfType)(child, elements_1.StackHeader));
+        if (stackHeader) {
+            const screenStackProps = { children: stackHeader };
+            const currentOptions = props.screenOptions;
+            if (currentOptions) {
+                if (typeof currentOptions === 'function') {
+                    return (...args) => {
+                        const options = currentOptions(...args);
+                        return (0, elements_1.appendScreenStackPropsToOptions)(options, screenStackProps);
+                    };
+                }
+                return (0, elements_1.appendScreenStackPropsToOptions)(currentOptions, screenStackProps);
+            }
+            else {
+                return (0, elements_1.appendScreenStackPropsToOptions)({}, screenStackProps);
+            }
+        }
+        else {
+            return props.screenOptions;
+        }
+    }, [props.screenOptions, props.children]);
     const screenOptions = (0, react_1.useMemo)(() => {
         const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
-        return disableAnimationInScreenOptions(props.screenOptions, condition);
-    }, [props.screenOptions, isStackAnimationDisabled]);
+        return disableAnimationInScreenOptions(screenOptionsWithCompositionAPIOptions, condition);
+    }, [screenOptionsWithCompositionAPIOptions, isStackAnimationDisabled]);
     const rnChildren = (0, react_1.useMemo)(() => mapProtectedScreen({ guard: true, children: props.children }).children, [props.children]);
     return (<RNStack {...props} children={rnChildren} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {

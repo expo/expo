@@ -39,6 +39,7 @@
     "start:split-view": "E2E_ROUTER_SPLIT_VIEW=true E2E_ROUTER_SRC=split-view expo start",
     "ios:split-view": "E2E_ROUTER_SPLIT_VIEW=true E2E_ROUTER_SRC=split-view expo run:ios",
     "prebuild:split-view": "E2E_ROUTER_SPLIT_VIEW=true yarn prebuild",
+    "start:stack": "E2E_ROUTER_SRC=stack expo start",
     "lint": "expo lint __e2e__",
     "android": "expo run:android",
     "ios": "expo run:ios"

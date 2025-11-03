@@ -7,15 +7,15 @@ export type StackHeaderTitleProps = {
     style?: StyleProp<{
         fontFamily?: TextStyle['fontFamily'];
         fontSize?: TextStyle['fontSize'];
-        fontWeight?: TextStyle['fontWeight'];
-        color?: TextStyle['color'];
+        fontWeight?: Exclude<TextStyle['fontWeight'], number>;
+        color?: string;
         textAlign?: 'left' | 'center';
     }>;
     largeStyle?: StyleProp<{
         fontFamily?: TextStyle['fontFamily'];
         fontSize?: TextStyle['fontSize'];
-        fontWeight?: TextStyle['fontWeight'];
-        color?: TextStyle['color'];
+        fontWeight?: Exclude<TextStyle['fontWeight'], number>;
+        color?: string;
     }>;
     large?: boolean;
 };

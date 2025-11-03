@@ -13,15 +13,19 @@ export type StackHeaderTitleProps = {
   style?: StyleProp<{
     fontFamily?: TextStyle['fontFamily'];
     fontSize?: TextStyle['fontSize'];
-    fontWeight?: TextStyle['fontWeight'];
-    color?: TextStyle['color'];
+    fontWeight?: Exclude<TextStyle['fontWeight'], number>;
+    // TODO(@ubax): This should be ColorValue, but react-navigation types
+    // currently only accept string for color props. In RN v8 we can change this to ColorValue.
+    color?: string;
     textAlign?: 'left' | 'center';
   }>;
   largeStyle?: StyleProp<{
     fontFamily?: TextStyle['fontFamily'];
     fontSize?: TextStyle['fontSize'];
-    fontWeight?: TextStyle['fontWeight'];
-    color?: TextStyle['color'];
+    fontWeight?: Exclude<TextStyle['fontWeight'], number>;
+    // TODO(@ubax): This should be ColorValue, but react-navigation types
+    // currently only accept string for color props. In RN v8 we can change this to ColorValue.
+    color?: string;
   }>;
   large?: boolean;
 };
