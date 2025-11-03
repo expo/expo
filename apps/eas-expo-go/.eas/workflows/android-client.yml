@@ -1,4 +1,4 @@
-name: Android Client - EAS Build (migrated to EAS)
+name: Android Client (Expo Go) - EAS Build
 
 on:
   workflow_dispatch: {}
@@ -21,6 +21,7 @@ concurrency:
 # note that there are also hooks in the `scripts` directory that run at different moments of the build process such as checking out the react-native submodule
 jobs:
   build_android:
+    if: ${{ !(github.event_name == 'pull_request' && github.triggering_actor == 'dependabot[bot]') }}
     name: Android Client Build
     type: build
     env:
@@ -28,26 +29,54 @@ jobs:
     params:
       platform: android
       profile: unversioned-client
+
+  # see "Currently only hardcoded strings are supported. Using webhooks stored in env are upcoming but not yet supported."
+  # https://docs.expo.dev/eas/workflows/pre-packaged-jobs/#slack
+  # you can use https://github.com/expo/expo/pull/40224/commits/e5295e8518d07e9b16ad3ed23c46977232b6bb90 when the limitation drops
   notify_failure:
+    if: ${{ failure() && (github.event_name == 'schedule' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-')) }}
     name: 🔔 Notify on Slack
     after: [build_android]
-    if: ${{ after.build_android.status == 'failure' }}
-    type: slack
-    params:
-      webhook_url: ${{ SLACK_WEBHOOK_ANDROID }}
-      payload:
-        blocks:
-          - type: header
-            text:
-              type: plain_text
-              text: '🚨 Expo Go (Android) build failed'
-          - type: section
-            fields:
-              - type: mrkdwn
-                text: "*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/unversioned-expo-go/workflows/${{ workflow.id }}|${{ workflow.id }}>"
-              - type: mrkdwn
-                text: "*Branch:*\n<https://github.com/expo/expo/tree/${{ github.ref_name }}|${{ github.ref_name }}>"
-              - type: mrkdwn
-                text: "*Commit:*\n<https://github.com/expo/expo/commit/${{ github.sha }}|${{ github.sha }}>"
-              - type: mrkdwn
-                text: "*Event:*\n${{ github.event_name }}"
+    steps:
+      - run: |
+          BUILD_STATUS="${{ after.build_android.status }}"
+          COMMIT_SHA="${{ github.sha }}"
+          BRANCH="${{ github.ref_name }}"
+          WF_ID="${{ workflow.id }}"
+
+          echo "Build Status: $BUILD_STATUS"
+          echo "Branch: $BRANCH"
+          echo "Commit: $COMMIT_SHA"
+          echo "WF_ID: $WF_ID"
+
+          curl -X POST "$SLACK_WEBHOOK_ANDROID" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"text\": \"🚨 Expo Go (Android) build failed\",
+              \"blocks\": [
+                {
+                  \"type\": \"section\",
+                  \"text\": {
+                    \"type\": \"mrkdwn\",
+                    \"text\": \"*Expo Go (Android) build failed*\"
+                  }
+                },
+                {
+                  \"type\": \"section\",
+                  \"fields\": [
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/unversioned-expo-go/workflows/$WF_ID|$WF_ID>\"
+                    },
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Branch:*\n<https://github.com/expo/expo/tree/$BRANCH|$BRANCH>\"
+                    },
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Commit:*\n<https://github.com/expo/expo/commit/$COMMIT_SHA|$COMMIT_SHA>\"
+                    }
+                  ]
+                }
+              ]
+            }"
