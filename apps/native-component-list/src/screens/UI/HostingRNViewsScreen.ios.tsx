@@ -31,7 +31,7 @@ export default function HostingRNViewsScreen() {
                   -
                 </RNText>
               </Pressable>
-              <SwiftUIText>{counter}</SwiftUIText>
+              <SwiftUIText modifiers={[frame({ width: 50 })]}>{counter}</SwiftUIText>
               <Pressable
                 onPress={() => setCounter((prev) => prev + 1)}
                 style={{
