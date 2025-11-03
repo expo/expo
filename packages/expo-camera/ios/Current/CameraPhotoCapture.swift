@@ -185,7 +185,7 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
         for (key, value) in additionalExif {
           updatedExif[key] = value
         }
-        
+
         let gpsDict = createGPSDict(additionalExif: options.additionalExif)
 
         if updatedMetadata[kCGImagePropertyGPSDictionary as String] == nil {
@@ -248,12 +248,12 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     photoCapturedContinuation?.resume(throwing: CameraUnmountedException())
     self.photoCapturedContinuation = nil
   }
-  
+
   private func createGPSDict(additionalExif: [String: Any]?) -> [String: Any] {
     guard let additionalExif else {
       return [:]
     }
-    
+
     var gpsDict = [String: Any]()
 
     if let latitude = additionalExif["GPSLatitude"], let latValue = toDouble(latitude) {
@@ -303,10 +303,10 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     if let hPositioningError = additionalExif["GPSHPositioningError"], let errorValue = toDouble(hPositioningError) {
       gpsDict[kCGImagePropertyGPSHPositioningError as String] = errorValue
     }
-    
+
     return gpsDict
   }
-  
+
   private func toDouble(_ value: Any) -> Double? {
     if let doubleValue = value as? Double {
       return doubleValue
