@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 import nock from 'nock';
-import * as semver from 'semver';
 import { FormData } from 'undici';
 
 import type { FetchLike } from '../../client.types';
@@ -58,11 +57,6 @@ it('returns cached response for post request formdata body', async () => {
 
   nock('http://expo.test')
     .post('/post', (body) => {
-      // @ts-expect-error: process.version is not typed
-      const major = semver.coerce(process.version)!.major;
-      if (major >= 24) {
-        return body === '[object FormData]';
-      }
       return body.includes('formdata-body');
     })
     .reply(201, server);
@@ -70,7 +64,11 @@ it('returns cached response for post request formdata body', async () => {
   function fetchAction() {
     const body = new FormData();
     body.append('test', 'formdata-body');
-
+    // nock doesn't support FormData, so it will call toString on it.
+    // On Node 24, FormData.toString() returns '[object FormData]', but on Node 22, it returns multipart form data.
+    // If it returns '[object FormData]', we have no way to distinguish this FormData from our request body,
+    // so we need to override the toString method to return 'formdata-body'.
+    body.toString = () => 'formdata-body';
     const request = fetchWithCache('http://expo.test/post', { body, method: 'POST' });
     return request.then((response) => response.json());
   }

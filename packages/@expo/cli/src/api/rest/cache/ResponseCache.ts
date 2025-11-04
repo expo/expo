@@ -94,7 +94,7 @@ export function getRequestBodyCacheData(body: RequestInit['body']) {
     return body.path;
   }
 
-  if (body.toString && body.toString() === '[object FormData]') {
+  if (body.constructor.name === 'FormData') {
     return new URLSearchParams(body as any).toString();
   }
 
