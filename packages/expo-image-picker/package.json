@@ -36,7 +36,8 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-image-loader": "~6.0.0"
+    "expo-image-loader": "~6.0.0",
+    "@expo/prebuild-config": "^54.0.3"
   },
   "devDependencies": {
     "expo-module-scripts": "^5.0.7",
