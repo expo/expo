@@ -172,10 +172,6 @@ struct DevServerRow: View {
   let server: DevServer
   let onTap: () -> Void
 
-  private var isLoading: Bool {
-    viewModel.loadingServerUrl == server.url
-  }
-
   var body: some View {
     Button {
       onTap()
@@ -191,11 +187,8 @@ struct DevServerRow: View {
 
         Spacer()
 
-        if isLoading {
+        if viewModel.isLoadingServer {
           ProgressView()
-            #if os(tvOS)
-            .scaleEffect(1.5)
-            #endif
         } else {
           Image(systemName: "chevron.right")
             .font(.caption)
