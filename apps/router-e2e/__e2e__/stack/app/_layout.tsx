@@ -1,6 +1,6 @@
-import { Stack } from 'expo-router';
+import { Icon, Label, Stack } from 'expo-router';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 
 import { IsProtectedContext } from '../utils/contexts';
 
@@ -27,13 +27,38 @@ export default function Layout() {
               large>
               Custom Header Title
             </Stack.Header.Title>
-            <Stack.Header.Left asChild>
-              <View style={{ padding: 10 }}>
-                <Text style={{ color: 'purple' }}>Custom Left</Text>
-              </View>
+            <Stack.Header.Left>
+              <Stack.Header.Button
+                style={{ color: 'green' }}
+                icon="arrow.left.circle"
+                onPress={() => alert('Left button pressed!')}
+              />
+              <Stack.Header.Button style={{ color: 'green' }} onPress={() => alert('2 pressed!')}>
+                <Label>2</Label>
+                <Icon sf="star.fill" />
+              </Stack.Header.Button>
             </Stack.Header.Left>
-            <Stack.Header.Right asChild>
-              <Text style={{ color: 'orange', marginRight: 10 }}>Custom Right</Text>
+            <Stack.Header.Right>
+              <Stack.Header.Menu>
+                <Stack.Header.Label>Menu</Stack.Header.Label>
+                <Stack.Header.Icon sf="ellipsis.circle" />
+                <Stack.Header.MenuAction onPress={() => Alert.alert('Action 1 pressed!')}>
+                  Action 1
+                </Stack.Header.MenuAction>
+                <Stack.Header.MenuAction
+                  isOn
+                  icon="star.fill"
+                  onPress={() => Alert.alert('Action 2 pressed!')}>
+                  Action 2
+                </Stack.Header.MenuAction>
+              </Stack.Header.Menu>
+              <Stack.Header.Button
+                style={{ color: 'green', backgroundColor: 'transparent' }}
+                separateBackground
+                icon="arrow.right.circle"
+                onPress={() => alert('Left button pressed!')}>
+                Right
+              </Stack.Header.Button>
             </Stack.Header.Right>
           </Stack.Header>
         </Stack.Screen>
