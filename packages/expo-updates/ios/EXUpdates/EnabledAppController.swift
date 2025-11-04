@@ -169,12 +169,12 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesExtern
     return config.updateUrl
   }
 
-  public var launchedUpdateId: String? {
-    return startupProcedure.launchedUpdate()?.updateId.uuidString
+  public var launchedUpdateId: UUID? {
+    return startupProcedure.launchedUpdate()?.updateId
   }
 
-  public var embeddedUpdateId: String? {
-    return getEmbeddedUpdate()?.updateId.uuidString
+  public var embeddedUpdateId: UUID? {
+    return getEmbeddedUpdate()?.updateId
   }
 
   // MARK: - Internal
