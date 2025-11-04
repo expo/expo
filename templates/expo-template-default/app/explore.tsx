@@ -10,7 +10,7 @@ import { Collapsible } from '@/components/ui/collapsible';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function TabTwoScreen() {
   const safeAreaInsets = useSafeAreaInsets();
@@ -18,7 +18,7 @@ export default function TabTwoScreen() {
     ...safeAreaInsets,
     bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
   };
-  const textColor = useThemeColor({}, 'text');
+  const theme = useTheme();
 
   const contentPlatformStyle = Platform.select({
     android: {
@@ -50,7 +50,7 @@ export default function TabTwoScreen() {
               <Pressable style={({ pressed }) => pressed && styles.pressed}>
                 <ThemedView type="backgroundElement" style={styles.linkButton}>
                   <ThemedText type="link">Expo documentation</ThemedText>
-                  <IconSymbol color={textColor} name="arrow.up.right.square" size={12} />
+                  <IconSymbol color={theme.text} name="arrow.up.right.square" size={12} />
                 </ThemedView>
               </Pressable>
             </ExternalLink>
