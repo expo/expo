@@ -12,6 +12,7 @@ import {
   ContentUnavailableView,
   LabeledContent,
 } from '@expo/ui/swift-ui';
+import { scrollContentBackground, background } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
 export default function FormScreen() {
@@ -27,7 +28,7 @@ export default function FormScreen() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Form>
+      <Form modifiers={[scrollContentBackground('hidden'), background('red')]}>
         <Section title="My form Section">
           <Text size={17} testID="test-id-from-expo-ui!">
             Some text!

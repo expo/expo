@@ -4,6 +4,8 @@ import SwiftUI
 final class DateTimePickerProps: UIBaseViewProps {
   @Field var title: String?
   @Field var initialDate: Date?
+  @Field var minimumDate: Date?
+  @Field var maximumDate: Date?
   @Field var variant: PickerStyle = .automatic
   @Field var displayedComponents: DisplayedComponents = .date
   @Field var color: Color?
@@ -23,8 +25,9 @@ struct DateTimePickerView: ExpoSwiftUI.View {
     return Text("DateTimePicker is not supported on tvOS")
     #else
     let displayedComponents = props.displayedComponents.toDatePickerComponent()
+    let dateRange = getDateRange()
 
-    DatePicker(props.title ?? "", selection: $date, displayedComponents: displayedComponents)
+    DatePicker(props.title ?? "", selection: $date, in: dateRange, displayedComponents: displayedComponents)
       .onAppear {
         date = props.initialDate ?? Date()
       }
@@ -36,6 +39,18 @@ struct DateTimePickerView: ExpoSwiftUI.View {
       .tint(props.color)
       .foregroundStyle(props.color ?? .accentColor)
     #endif
+  }
+
+  private func getDateRange() -> ClosedRange<Date> {
+    let minDate = props.minimumDate ?? Date.distantPast
+    let maxDate = props.maximumDate ?? Date.distantFuture
+
+    if minDate > maxDate {
+      log.warn("minimumDate (\(minDate)) is greater than maximumDate (\(maxDate)). Using maximumDate as both bounds.")
+      return maxDate...maxDate
+    }
+
+    return minDate...maxDate
   }
 }
 

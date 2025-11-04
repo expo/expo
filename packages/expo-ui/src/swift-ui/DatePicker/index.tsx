@@ -15,6 +15,16 @@ export type DateTimePickerProps = {
    */
   initialDate?: string | null;
   /**
+   * The minimum date that can be selected.
+   * Dates before this date will be disabled in the picker.
+   */
+  minimumDate?: string | null;
+  /**
+   * The maximum date that can be selected.
+   * Dates after this date will be disabled in the picker.
+   */
+  maximumDate?: string | null;
+  /**
    * A title displayed on the picker on iOS.
    */
   title?: string;
