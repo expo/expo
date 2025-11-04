@@ -93,7 +93,7 @@ declare module 'react-native' {
     /** @platform web */
     transitionDelay?: string | string[];
     /** @platform web */
-    transitionDuration?: string | string[];
+    transitionDuration?: string | string[] | number;
     /** @platform web */
     transitionProperty?: string | string[];
     /** @platform web */
