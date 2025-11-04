@@ -162,7 +162,7 @@
     "jest-runner-tsd": "^6.0.0",
     "klaw-sync": "^6.0.0",
     "memfs": "^3.2.0",
-    "nock": "14.0.0-beta.7",
+    "nock": "^14.0.10",
     "node-html-parser": "^6.1.5",
     "nullthrows": "^1.1.1",
     "playwright": "^1.53.1",

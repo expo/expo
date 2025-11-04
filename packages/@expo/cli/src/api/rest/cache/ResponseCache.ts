@@ -19,11 +19,20 @@ export interface ResponseCache {
 }
 
 export function getResponseInfo(response: Response) {
+  // Handle multiple values for the same header key (e.g., set-cookie)
+  const headers: Record<string, string> = {};
+  for (const [key, value] of response.headers.entries()) {
+    if (headers[key]) {
+      headers[key] = headers[key] + ',' + value;
+    } else {
+      headers[key] = value;
+    }
+  }
   return {
     url: response.url,
     status: response.status,
     statusText: response.statusText,
-    headers: Object.fromEntries(response.headers.entries()),
+    headers,
   };
 }
 
