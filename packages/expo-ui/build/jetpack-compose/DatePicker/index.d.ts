@@ -8,6 +8,16 @@ export type DateTimePickerProps = {
      */
     initialDate?: string | null;
     /**
+     * The minimum date that can be selected.
+     * Dates before this date will be disabled in the picker.
+     */
+    minimumDate?: string | null;
+    /**
+     * The maximum date that can be selected.
+     * Dates after this date will be disabled in the picker.
+     */
+    maximumDate?: string | null;
+    /**
      * Callback function that is called when a date is selected.
      */
     onDateSelected?: (date: Date) => void;
@@ -47,9 +57,11 @@ export type DateTimePickerProps = {
      */
     modifiers?: ExpoModifier[];
 };
-type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected' | 'initialDate'> & {
+type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected' | 'initialDate' | 'minimumDate' | 'maximumDate'> & {
     variant?: AndroidVariant;
     initialDate?: number | null;
+    minimumDate?: number | null;
+    maximumDate?: number | null;
 } & ViewEvent<'onDateSelected', {
     date: Date;
 }>;

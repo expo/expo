@@ -13,6 +13,16 @@ export type DateTimePickerProps = {
    */
   initialDate?: string | null;
   /**
+   * The minimum date that can be selected.
+   * Dates before this date will be disabled in the picker.
+   */
+  minimumDate?: string | null;
+  /**
+   * The maximum date that can be selected.
+   * Dates after this date will be disabled in the picker.
+   */
+  maximumDate?: string | null;
+  /**
    * Callback function that is called when a date is selected.
    */
   onDateSelected?: (date: Date) => void;
@@ -55,20 +65,22 @@ export type DateTimePickerProps = {
 
 type NativeDatePickerProps = Omit<
   DateTimePickerProps,
-  'variant' | 'onDateSelected' | 'initialDate'
+  'variant' | 'onDateSelected' | 'initialDate' | 'minimumDate' | 'maximumDate'
 > & {
   variant?: AndroidVariant;
   initialDate?: number | null;
+  minimumDate?: number | null;
+  maximumDate?: number | null;
 } & ViewEvent<'onDateSelected', { date: Date }>;
 
 /**
  * @hidden
  */
 export function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
-  const { variant, initialDate, ...rest } = props;
+  const { variant, initialDate, minimumDate, maximumDate, ...rest } = props;
   const { minWidth, minHeight, ...restStyle } = StyleSheet.flatten(rest.style) || {};
 
-  // On Android, the picker’s minWidth and minHeight must be 12dp.
+  // On Android, the picker's minWidth and minHeight must be 12dp.
   // Otherwise, the picker will crash the app.
   const minSize = PixelRatio.getPixelSizeForLayoutSize(12);
 
@@ -78,10 +90,14 @@ export function transformDateTimePickerProps(props: DateTimePickerProps): Native
 
   // Convert ISO string to timestamp for Android
   const initialDateTimestamp = initialDate ? new Date(initialDate).getTime() : null;
+  const minimumDateTimestamp = minimumDate ? new Date(minimumDate).getTime() : null;
+  const maximumDateTimestamp = maximumDate ? new Date(maximumDate).getTime() : null;
 
   return {
     ...rest,
     initialDate: initialDateTimestamp,
+    minimumDate: minimumDateTimestamp,
+    maximumDate: maximumDateTimestamp,
     onDateSelected: ({ nativeEvent: { date } }) => {
       props?.onDateSelected?.(new Date(date));
     },

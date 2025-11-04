@@ -58,6 +58,8 @@ enum class Variant(val value: String) : Enumerable {
 data class DateTimePickerProps(
   val title: MutableState<String> = mutableStateOf(""),
   val initialDate: MutableState<Long?> = mutableStateOf(null),
+  val minimumDate: MutableState<Long?> = mutableStateOf(null),
+  val maximumDate: MutableState<Long?> = mutableStateOf(null),
   val variant: MutableState<Variant> = mutableStateOf(Variant.PICKER),
   val displayedComponents: MutableState<DisplayedComponents> = mutableStateOf(DisplayedComponents.DATE),
   val showVariantToggle: MutableState<Boolean> = mutableStateOf(true),
@@ -93,15 +95,34 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
   val locale = LocalConfiguration.current.locales[0]
   val variant = props.variant.value.toDisplayMode()
   val initialDate = props.initialDate.value
+  val minimumDate = props.minimumDate.value
+  val maximumDate = props.maximumDate.value
 
-  val state = remember(variant, initialDate) {
+  val selectableDates = remember(minimumDate, maximumDate) {
+    createSelectableDates(minimumDate, maximumDate)
+  }
+
+  val yearRange = remember(minimumDate, maximumDate) {
+    val cal = Calendar.getInstance()
+    val minYear = minimumDate?.let {
+      cal.apply { timeInMillis = it }.get(Calendar.YEAR)
+    } ?: DatePickerDefaults.YearRange.first
+
+    val maxYear = maximumDate?.let {
+      cal.apply { timeInMillis = it }.get(Calendar.YEAR)
+    } ?: DatePickerDefaults.YearRange.last
+
+    minYear..maxYear
+  }
+
+  val state = remember(variant, initialDate, minimumDate, maximumDate) {
     DatePickerState(
       initialDisplayMode = variant,
       locale = locale,
       initialSelectedDateMillis = initialDate ?: Date().time,
       initialDisplayedMonthMillis = initialDate ?: Date().time,
-      yearRange = DatePickerDefaults.YearRange,
-      selectableDates = DatePickerDefaults.AllDates
+      yearRange = yearRange,
+      selectableDates = selectableDates
     )
   }
 
@@ -121,6 +142,58 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
         headlineContentColor = colorToComposeColor(props.color.value)
       )
     )
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+private fun createSelectableDates(minimumDate: Long?, maximumDate: Long?): androidx.compose.material3.SelectableDates {
+  if (minimumDate != null && maximumDate != null && minimumDate > maximumDate) {
+    android.util.Log.w(
+      "ExpoDatePicker",
+      "minimumDate ($minimumDate) is greater than maximumDate ($maximumDate). Using maximumDate as both bounds."
+    )
+  }
+
+  return object : androidx.compose.material3.SelectableDates {
+    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+      // If min > max, only allow the max date
+      if (minimumDate != null && maximumDate != null && minimumDate > maximumDate) {
+        return utcTimeMillis == maximumDate
+      }
+
+      if (minimumDate != null && utcTimeMillis < minimumDate) {
+        return false
+      }
+
+      if (maximumDate != null && utcTimeMillis > maximumDate) {
+        return false
+      }
+
+      return true
+    }
+
+    override fun isSelectableYear(year: Int): Boolean {
+      val cal = Calendar.getInstance()
+
+      if (minimumDate != null && maximumDate != null && minimumDate > maximumDate) {
+        cal.timeInMillis = maximumDate
+        return year == cal.get(Calendar.YEAR)
+      }
+
+      if (minimumDate != null) {
+        cal.timeInMillis = minimumDate
+        val minYear = cal.get(Calendar.YEAR)
+        if (year < minYear) return false
+      }
+
+      if (maximumDate != null) {
+        cal.timeInMillis = maximumDate
+        val maxYear = cal.get(Calendar.YEAR)
+        if (year > maxYear) return false
+      }
+
+      return true
+    }
   }
 }
 
