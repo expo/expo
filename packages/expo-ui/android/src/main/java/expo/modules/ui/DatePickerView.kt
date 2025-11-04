@@ -89,14 +89,46 @@ class DateTimePickerView(context: Context, appContext: AppContext) :
   }
 }
 
+/**
+ * Normalizes a timestamp to UTC midnight (00:00:00.000) to ensure
+ * minimum dates are inclusive from the start of the day.
+ */
+private fun normalizeToUtcMidnight(timestamp: Long): Long {
+  val calendar = Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
+  calendar.timeInMillis = timestamp
+  calendar.set(Calendar.HOUR_OF_DAY, 0)
+  calendar.set(Calendar.MINUTE, 0)
+  calendar.set(Calendar.SECOND, 0)
+  calendar.set(Calendar.MILLISECOND, 0)
+  return calendar.timeInMillis
+}
+
+/**
+ * Normalizes a timestamp to end of UTC day (23:59:59.999) to ensure
+ * maximum dates are inclusive through the end of the day.
+ */
+private fun normalizeToUtcEndOfDay(timestamp: Long): Long {
+  val calendar = Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
+  calendar.timeInMillis = timestamp
+  calendar.set(Calendar.HOUR_OF_DAY, 23)
+  calendar.set(Calendar.MINUTE, 59)
+  calendar.set(Calendar.SECOND, 59)
+  calendar.set(Calendar.MILLISECOND, 999)
+  return calendar.timeInMillis
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
   val locale = LocalConfiguration.current.locales[0]
   val variant = props.variant.value.toDisplayMode()
   val initialDate = props.initialDate.value
-  val minimumDate = props.minimumDate.value
-  val maximumDate = props.maximumDate.value
+
+  // Normalize dates to ensure inclusive behavior:
+  // - minimumDate: start of day (00:00:00.000)
+  // - maximumDate: end of day (23:59:59.999)
+  val minimumDate = props.minimumDate.value?.let { normalizeToUtcMidnight(it) }
+  val maximumDate = props.maximumDate.value?.let { normalizeToUtcEndOfDay(it) }
 
   val selectableDates = remember(minimumDate, maximumDate) {
     createSelectableDates(minimumDate, maximumDate)
