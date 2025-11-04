@@ -185,9 +185,6 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
-      - name: 🤖 Gradle prebuild for Android project (workaround to fix build error)
-        run: ./gradlew preBuild
-        working-directory: apps/bare-expo/android
       - name: 🤖 Build Android project
         run: ./scripts/start-android-e2e-test.ts --build
         working-directory: apps/bare-expo
