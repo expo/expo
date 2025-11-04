@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   code: {
     fontFamily: Fonts.mono,
-    fontWeight: Platform.select({ ios: 500, android: 700, web: 500 }),
+    fontWeight: Platform.select({ android: 700 }) ?? 500,
     fontSize: 12,
   },
 });
