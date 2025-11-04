@@ -168,8 +168,13 @@ struct DevServersView: View {
 }
 
 struct DevServerRow: View {
+  @EnvironmentObject var viewModel: DevLauncherViewModel
   let server: DevServer
   let onTap: () -> Void
+
+  private var isLoading: Bool {
+    viewModel.loadingServerUrl == server.url
+  }
 
   var body: some View {
     Button {
@@ -185,9 +190,17 @@ struct DevServerRow: View {
           .foregroundColor(.primary)
 
         Spacer()
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
+
+        if isLoading {
+          ProgressView()
+            #if os(tvOS)
+            .scaleEffect(1.5)
+            #endif
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
