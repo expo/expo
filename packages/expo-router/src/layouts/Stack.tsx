@@ -1,5 +1,5 @@
 import Stack from './StackClient';
-import { StackScreen, StackHeader } from './stack-utils/elements';
+import { StackScreen, StackHeader } from './stack-utils';
 
 Stack.Screen = StackScreen;
 Stack.Header = StackHeader;
