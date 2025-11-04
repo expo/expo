@@ -106,8 +106,8 @@ export default function DatePickerScreen() {
             <DateTimePicker
               title="Meeting Date"
               initialDate={meetingDate?.toISOString() ?? undefined}
-              minimumDate={oneWeekFromNow.toISOString()}
-              maximumDate={oneWeekAgo.toISOString()}
+              minimumDate={oneWeekAgo.toISOString()}
+              maximumDate={oneWeekFromNow.toISOString()}
               onDateSelected={setMeetingDate}
               variant="compact"
             />
