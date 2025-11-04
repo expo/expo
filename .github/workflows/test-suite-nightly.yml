@@ -3,7 +3,7 @@ name: Test Suite on React Native nightly build
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: '0 10 * * SAT' # 10:00 AM UTC time every Saturday
+    - cron: "0 10 * * SAT" # 10:00 AM UTC time every Saturday
   push:
     branches: [main]
     paths:
@@ -48,7 +48,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-tools: 'true'
+          yarn-tools: "true"
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
@@ -78,7 +78,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
-          channel: '#expo-ios'
+          channel: "#expo-ios"
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly (iOS)
@@ -121,7 +121,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
+          yarn-workspace: "true"
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
@@ -144,7 +144,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
-          channel: '#expo-ios'
+          channel: "#expo-ios"
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly (iOS)
@@ -153,7 +153,7 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
-      GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
+      GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx6g -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
@@ -170,16 +170,16 @@ jobs:
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          gradle: 'true'
-          yarn-tools: 'true'
+          gradle: "true"
+          yarn-tools: "true"
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
@@ -201,7 +201,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
-          channel: '#expo-android'
+          channel: "#expo-android"
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly (Android)
@@ -234,7 +234,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
+          yarn-workspace: "true"
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
@@ -262,7 +262,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
-          channel: '#expo-android'
+          channel: "#expo-android"
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly (Android)
