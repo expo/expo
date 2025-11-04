@@ -3,7 +3,14 @@ jsEngine: graaljs
 ---
 # Run once to approve the first time deep linking prompt on iOS
 # This runs before all tests (only on iOS), as some tests fail because the prompt is not confirmed
-- openLink: bareexpo://test-suite/run
+# The tapOn is optional because the file is executed multiple times in CI, if it fails
+- openLink: bareexpo://apis
 - tapOn:
     text: 'Open'
-    optional: false
+    optional: true
+# for good measure
+- stopApp: dev.expo.Payments
+- openLink: bareexpo://apis
+- tapOn:
+    text: 'Open'
+    optional: true
