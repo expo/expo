@@ -49,44 +49,60 @@ jobs:
     after: [build_ios]
     steps:
       - run: |
-          BUILD_STATUS="${{ after.build_ios.status }}"
           COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.commit_message }}"
           BRANCH="${{ github.ref_name }}"
           WF_ID="${{ workflow.id }}"
+          ACTOR="${{ github.triggering_actor }}"
+          COMMIT_DISPLAY="${COMMIT_MESSAGE:-$COMMIT_SHA}"
 
-          echo "Build Status: $BUILD_STATUS"
           echo "Branch: $BRANCH"
-          echo "Commit: $COMMIT_SHA"
+          echo "Commit Display: $COMMIT_DISPLAY"
           echo "WF_ID: $WF_ID"
+          echo "Actor: $ACTOR"
 
-          curl -X POST "$SLACK_WEBHOOK_IOS" \
-            -H 'Content-Type: application/json' \
-            -d "{
-              \"text\": \"🚨 Expo Go (iOS) build failed\",
-              \"blocks\": [
+          # Build JSON payload with proper escaping using jq
+          PAYLOAD=$(jq -n \
+            --arg text "🚨 Expo Go (iOS) build failed" \
+            --arg wf_id "$WF_ID" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg commit_display "$COMMIT_DISPLAY" \
+            --arg actor "$ACTOR" \
+            '{
+              text: $text,
+              blocks: [
                 {
-                  \"type\": \"section\",
-                  \"text\": {
-                    \"type\": \"mrkdwn\",
-                    \"text\": \"*Expo Go (iOS) build failed*\"
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: "*Expo Go (iOS) build failed*"
                   }
                 },
                 {
-                  \"type\": \"section\",
-                  \"fields\": [
+                  type: "section",
+                  fields: [
                     {
-                      \"type\": \"mrkdwn\",
-                      \"text\": \"*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/unversioned-expo-go/workflows/$WF_ID|$WF_ID>\"
+                      type: "mrkdwn",
+                      text: ("*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/unversioned-expo-go/workflows/" + $wf_id + "|" + $wf_id + ">")
                     },
                     {
-                      \"type\": \"mrkdwn\",
-                      \"text\": \"*Branch:*\n<https://github.com/expo/expo/tree/$BRANCH|$BRANCH>\"
+                      type: "mrkdwn",
+                      text: ("*Branch:*\n<https://github.com/expo/expo/tree/" + $branch + "|" + $branch + ">")
                     },
                     {
-                      \"type\": \"mrkdwn\",
-                      \"text\": \"*Commit:*\n<https://github.com/expo/expo/commit/$COMMIT_SHA|$COMMIT_SHA>\"
+                      type: "mrkdwn",
+                      text: ("*Commit:*\n<https://github.com/expo/expo/commit/" + $commit_sha + "|" + $commit_display + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Triggered by:*\n" + $actor)
                     }
                   ]
                 }
               ]
-            }"
+            }')
+
+          curl -X POST "$SLACK_WEBHOOK_IOS" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"
