@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix React Native dev menu not showing up in 0.83.x ([#40819](https://github.com/expo/expo/pull/40819) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 - change debugger connection "warning" to a "tip" ([#39942](https://github.com/expo/expo/pull/39942) by [@vonovak](https://github.com/vonovak))
