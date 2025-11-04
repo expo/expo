@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 import nock from 'nock';
+import * as semver from 'semver';
 import { FormData } from 'undici';
 
 import type { FetchLike } from '../../client.types';
@@ -56,7 +57,14 @@ it('returns cached response for post request formdata body', async () => {
   const server = jest.fn(() => ({ post: 'formdata-body' }));
 
   nock('http://expo.test')
-    .post('/post', (body) => body.includes('formdata-body'))
+    .post('/post', (body) => {
+      // @ts-expect-error: process.version is not typed
+      const major = semver.coerce(process.version)!.major;
+      if (major >= 24) {
+        return body === '[object FormData]';
+      }
+      return body.includes('formdata-body');
+    })
     .reply(201, server);
 
   function fetchAction() {
@@ -75,11 +83,10 @@ it('returns cached response for post request formdata body', async () => {
   expect(response).toEqual(cachedResponse);
 });
 
-// NOTE(cedric): error-responses aren't properly handled in nock@14.0.0-beta.7, re-enable once fixed
-xit('does not cache failed respose for get request', async () => {
+it('does not cache failed response for get request', async () => {
   const server = jest.fn(() => ({ error: 'not found' }));
 
-  nock('http://expo.test').get('/error/get').reply(404, server);
+  nock('http://expo.test').get('/error/get').times(2).reply(404, server);
 
   function fetchAction() {
     return fetchWithCache('http://expo.test/error/get').then((res) => res.json());
