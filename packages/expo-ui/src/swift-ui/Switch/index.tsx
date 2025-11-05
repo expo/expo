@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent } from 'react-native';
 import type { ColorValue } from 'react-native';
+import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -14,6 +15,11 @@ export type SwitchProps = {
    * Label for the switch.
    */
   label?: string;
+
+  /**
+   * The name of the SFSymbol to be displayed in the label.
+   */
+  systemImage?: SFSymbol;
 
   /**
    * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.

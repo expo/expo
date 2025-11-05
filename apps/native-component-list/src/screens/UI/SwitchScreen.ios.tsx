@@ -15,6 +15,17 @@ export default function SwitchScreen() {
             color="#ff0000"
             label="Never gonna give you up"
             variant="switch"
+            systemImage="heart"
+          />
+        </Host>
+
+        <Host matchContents style={{ marginTop: 12 }}>
+          <Switch
+            value={checked}
+            onValueChange={setChecked}
+            color="#ff0000"
+            label="No system image"
+            variant="switch"
           />
         </Host>
       </Section>
@@ -26,6 +37,7 @@ export default function SwitchScreen() {
             label="Never gonna let you down"
             color="#ff0000"
             variant="checkbox"
+            systemImage="heart"
           />
         </Host>
       </Section>
@@ -36,6 +48,7 @@ export default function SwitchScreen() {
             onValueChange={setChecked}
             label="Never gonna run around and desert you"
             variant="button"
+            systemImage="heart"
           />
         </Host>
       </Section>

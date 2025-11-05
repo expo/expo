@@ -7,6 +7,7 @@ final class SwitchProps: UIBaseViewProps {
   @Field var value: Bool
   @Field var variant: String?
   @Field var label: String?
+  @Field var systemImage: String?
   @Field var color: Color?
   var onValueChange = EventDispatcher()
 }
@@ -20,7 +21,7 @@ struct SwitchView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    Toggle(isOn: $checked, label: { props.label != nil ? Text(props.label ?? "") : nil })
+    toggleView
     .onChange(of: checked, perform: { newValue in
       if props.value == newValue {
         return
@@ -44,6 +45,15 @@ struct SwitchView: ExpoSwiftUI.View {
     .if(props.variant == "checkbox") {
       $0.toggleStyle(IOSCheckboxToggleStyle())
     }
+  }
+  
+  @ViewBuilder
+  private var toggleView: some View {
+      if let systemImage = props.systemImage, !systemImage.isEmpty {
+        Toggle(props.label ?? "", systemImage: systemImage, isOn: $checked)
+      } else {
+        Toggle(props.label ?? "", isOn: $checked)
+      }
   }
 }
 
