@@ -1,14 +1,10 @@
 /** @jest-environment jsdom */
-import type {
-  ParamListBase,
-  TabNavigationState,
-} from '@react-navigation/routers/lib/typescript/src';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import { NativeTabsView } from '../NativeTabsView';
-import type { ExtendedNativeTabOptions, NativeTabsProps, NativeTabsViewProps } from '../types';
+import type { NativeTabOptions, NativeTabsProps, NativeTabsViewProps } from '../types';
 
 describe('Native Bottom Tabs Navigation', () => {
   it('renders tabs correctly for two elements', () => {

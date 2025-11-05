@@ -6,7 +6,6 @@ import type { ImageSourcePropType } from 'react-native';
 
 import { NativeTabsTriggerTabBar } from './NativeTabsTriggerTabBar';
 import type {
-  ExtendedNativeTabOptions,
   NativeTabOptions,
   NativeTabsTriggerTabBarProps,
   NativeTabTriggerProps,
@@ -95,13 +94,21 @@ export const NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
 });
 
 export function convertTabPropsToOptions(
-  { options, hidden, children, role, disablePopToTop, disableScrollToTop }: NativeTabTriggerProps,
+  {
+    hidden,
+    children,
+    role,
+    disablePopToTop,
+    disableScrollToTop,
+    unstable_nativeProps,
+  }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
-  const initialOptions: ExtendedNativeTabOptions = isDynamic
-    ? { ...options }
+  const initialOptions: NativeTabOptions = isDynamic
+    ? {
+        ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
+      }
     : {
-        ...options,
         hidden: !!hidden,
         specialEffects: {
           repeatedTabSelection: {
@@ -109,7 +116,8 @@ export function convertTabPropsToOptions(
             scrollToTop: !disableScrollToTop,
           },
         },
-        role: role ?? options?.role,
+        role,
+        nativeProps: unstable_nativeProps,
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     Badge,
@@ -117,7 +125,7 @@ export function convertTabPropsToOptions(
     Icon,
     NativeTabsTriggerTabBar,
   ]);
-  return allowedChildren.reduce<ExtendedNativeTabOptions>(
+  return allowedChildren.reduce<NativeTabOptions>(
     (acc, child) => {
       if (isChildOfType(child, Badge)) {
         appendBadgeOptions(acc, child.props);
@@ -134,7 +142,7 @@ export function convertTabPropsToOptions(
   );
 }
 
-function appendBadgeOptions(options: ExtendedNativeTabOptions, props: BadgeProps) {
+function appendBadgeOptions(options: NativeTabOptions, props: BadgeProps) {
   if (props.children) {
     options.badgeValue = String(props.children);
     options.selectedBadgeBackgroundColor = props.selectedBackgroundColor;
@@ -146,7 +154,7 @@ function appendBadgeOptions(options: ExtendedNativeTabOptions, props: BadgeProps
   }
 }
 
-function appendLabelOptions(options: ExtendedNativeTabOptions, props: LabelProps) {
+function appendLabelOptions(options: NativeTabOptions, props: LabelProps) {
   if (props.hidden) {
     options.title = '';
   } else {
@@ -157,7 +165,7 @@ function appendLabelOptions(options: ExtendedNativeTabOptions, props: LabelProps
   }
 }
 
-export function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) {
+export function appendIconOptions(options: NativeTabOptions, props: IconProps) {
   if ('src' in props && props.src) {
     const icon = convertIconSrcToIconOption(props);
     options.icon = icon?.icon;
@@ -229,10 +237,7 @@ function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | un
   return undefined;
 }
 
-function appendTabBarOptions(
-  options: ExtendedNativeTabOptions,
-  props: NativeTabsTriggerTabBarProps
-) {
+function appendTabBarOptions(options: NativeTabOptions, props: NativeTabsTriggerTabBarProps) {
   const {
     backgroundColor,
     blurEffect,

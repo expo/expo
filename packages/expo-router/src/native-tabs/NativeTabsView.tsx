@@ -143,8 +143,9 @@ function Screen(props: {
       selectedIcon={convertOptionsIconToRNScreensPropsIcon(selectedIcon)}
       title={title}
       freezeContents={false}
-      tabKey={routeKey}
       systemItem={options.role}
+      {...options.nativeProps}
+      tabKey={routeKey}
       isFocused={isFocused}>
       {contentRenderer()}
     </BottomTabsScreen>

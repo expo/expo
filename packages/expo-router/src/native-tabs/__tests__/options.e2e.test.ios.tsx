@@ -24,20 +24,20 @@ jest.mock('react-native-screens', () => {
 
 const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
 
-it('can pass options via options prop', () => {
-  const indexOptions: NativeTabOptions = {
+it('can pass props via unstable_nativeProps', () => {
+  const indexOptions = {
     title: 'Test Title',
     iconColor: 'blue',
   };
-  const secondOptions: NativeTabOptions = {
+  const secondOptions = {
     title: 'Second Title',
     iconColor: 'red',
   };
   renderRouter({
     _layout: () => (
       <NativeTabs>
-        <NativeTabs.Trigger name="index" options={{ ...indexOptions }} />
-        <NativeTabs.Trigger name="second" options={{ ...secondOptions }} />
+        <NativeTabs.Trigger name="index" unstable_nativeProps={{ ...indexOptions }} />
+        <NativeTabs.Trigger name="second" unstable_nativeProps={{ ...secondOptions }} />
       </NativeTabs>
     ),
     index: () => <View testID="index" />,
@@ -712,16 +712,16 @@ describe('Tab options', () => {
 });
 
 describe('Dynamic options', () => {
-  it('updates options dynamically', () => {
+  it('updates nativeProps dynamically', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+          <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
         </NativeTabs>
       ),
       index: () => (
         <View testID="index">
-          <NativeTabs.Trigger name="index" options={{ title: 'Updated Title' }} />
+          <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Updated Title' }} />
         </View>
       ),
     });
@@ -753,11 +753,11 @@ describe('Dynamic options', () => {
     } as NativeTabOptions);
   });
 
-  it('can use components as children', () => {
+  it('unstable_nativeProps override dynamic options configuration', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+          <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
         </NativeTabs>
       ),
       index: () => (
@@ -784,7 +784,7 @@ describe('Dynamic options', () => {
       freezeContents: false,
     } as NativeTabOptions);
     expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
-      title: 'Updated Title',
+      title: 'Initial Title',
       hidden: false,
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
@@ -798,7 +798,7 @@ describe('Dynamic options', () => {
     } as NativeTabOptions);
   });
 
-  it('can override component children from _layout with options', () => {
+  it('can override component children from _layout with unstable_nativeProps', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
@@ -813,10 +813,10 @@ describe('Dynamic options', () => {
         <View testID="index">
           <NativeTabs.Trigger
             name="index"
-            options={{
+            unstable_nativeProps={{
               title: 'Updated Title',
               badgeValue: '5',
-              icon: { sf: 'homepod.2.fill' },
+              icon: { sfSymbolName: 'homepod.2.fill' },
             }}
           />
         </View>
@@ -929,8 +929,12 @@ describe('Dynamic options', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
-          <NativeTabs.Trigger name="second" options={{ title: 'Second' }} />
+          <NativeTabs.Trigger name="index">
+            <Label>Initial Title</Label>
+          </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="second">
+            <Label>Second</Label>
+          </NativeTabs.Trigger>
         </NativeTabs>
       ),
       index: () => (

@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Change `reset` props to `resetOnFocus` in headless tabs ([#40349](https://github.com/expo/expo/pull/40349) by [@Ubax](https://github.com/Ubax))
+- replace NativeTabs.Trigger `options` with `unstable_nativeProps` ([#40702](https://github.com/expo/expo/pull/40702) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 
