@@ -22,6 +22,7 @@ import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
+import expo.modules.core.utilities.ifNull
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -781,9 +782,4 @@ class ContactsModule : Module() {
 fun <T> Map<String, Any>.safeGet(key: String): T? {
   @Suppress("UNCHECKED_CAST")
   return this[key] as? T
-}
-
-inline fun <T> T?.ifNull(block: () -> Nothing): T {
-  if (this == null) block()
-  return this!!
 }
