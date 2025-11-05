@@ -287,6 +287,25 @@ export async function test({ describe, expect, it, ...t }) {
       expect(outputFile.exists).toBe(true);
     });
 
+    it('calls .text() on a .slice() of file', async () => {
+      const outputFile = new File(testDirectory, 'testcase.txt');
+      const value = 'Hello bug';
+      outputFile.write(value);
+      const file = outputFile;
+
+      let result: any = null;
+      let caughtError: any = null;
+      try {
+        result = file.slice(0, file.size - 1);
+        result = await result.text();
+      } catch (e) {
+        caughtError = e;
+      }
+
+      expect(caughtError).toBeFalsy();
+      expect(result).toBe(value.slice(0, value.length - 1));
+    });
+
     it('Writes a base64 encoded string to a file reference', () => {
       const outputFile = new File(testDirectory, 'file.txt');
       expect(outputFile.exists).toBe(false);
@@ -1273,6 +1292,8 @@ export async function test({ describe, expect, it, ...t }) {
       src.write('abcde');
 
       const formData = new FormData();
+    //   const blob = src.slice(0, 2);
+    //   const bytes = await blob.arrayBuffer();
 
       formData.append('data', src);
 

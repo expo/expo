@@ -1,3 +1,4 @@
+import { Blob as ExpoBlob } from 'expo-blob';
 import ExpoFileSystem from './ExpoFileSystem';
 import type { PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
@@ -39,7 +40,8 @@ export declare class Paths extends PathUtilities {
  * const file = new File(Paths.cache, "subdirName", "file.txt");
  * ```
  */
-export declare class File extends ExpoFileSystem.FileSystemFile implements Blob {
+type TempBlob = Omit<ExpoBlob, 'release' | 'addListener' | 'removeListener' | 'removeAllListeners' | 'eventNames' | 'emit' | 'listenerCount'>;
+export declare class File extends ExpoFileSystem.FileSystemFile implements TempBlob {
     /**
      * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
      *
@@ -65,7 +67,7 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     writableStream(): WritableStream<Uint8Array<ArrayBufferLike>>;
     arrayBuffer(): Promise<ArrayBuffer>;
     stream(): ReadableStream<Uint8Array<ArrayBuffer>>;
-    slice(start?: number, end?: number, contentType?: string): Blob;
+    slice(start?: number, end?: number, contentType?: string): ExpoBlob;
 }
 /**
  * Represents a directory on the filesystem.
@@ -104,4 +106,5 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
     createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
 }
+export {};
 //# sourceMappingURL=FileSystem.d.ts.map

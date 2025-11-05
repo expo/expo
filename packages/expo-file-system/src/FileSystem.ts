@@ -1,3 +1,5 @@
+import { Blob as ExpoBlob } from 'expo-blob';
+
 import ExpoFileSystem from './ExpoFileSystem';
 import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
@@ -68,7 +70,19 @@ export class Paths extends PathUtilities {
  * const file = new File(Paths.cache, "subdirName", "file.txt");
  * ```
  */
-export class File extends ExpoFileSystem.FileSystemFile implements Blob {
+
+type TempBlob = Omit<
+  ExpoBlob,
+  | 'release'
+  | 'addListener'
+  | 'removeListener'
+  | 'removeAllListeners'
+  | 'eventNames'
+  | 'emit'
+  | 'listenerCount'
+>;
+
+export class File extends ExpoFileSystem.FileSystemFile implements TempBlob {
   /**
    * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
    *
@@ -123,8 +137,8 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     return this.readableStream();
   }
 
-  slice(start?: number, end?: number, contentType?: string): Blob {
-    return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
+  slice(start?: number, end?: number, contentType?: string): ExpoBlob {
+    return new ExpoBlob([this.bytesSync().slice(start, end)], { type: contentType });
   }
 }
 
