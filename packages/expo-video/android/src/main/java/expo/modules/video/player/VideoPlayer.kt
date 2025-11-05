@@ -28,6 +28,7 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.video.IntervalUpdateClock
 import expo.modules.video.IntervalUpdateEmitter
 import expo.modules.video.VideoManager
+import expo.modules.video.VideoView
 import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
@@ -55,7 +56,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .forceEnableMediaCodecAsynchronousQueueing()
     .setEnableDecoderFallback(true)
   private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
-  private var currentPlayerView = MutableWeakReference<PlayerView?>(null)
+  private val currentVideoViewRef = MutableWeakReference<VideoView?>(null) { new, old ->
+    sendEvent(PlayerEvent.TargetViewChanged(new, old))
+  }
+  var currentVideoView by currentVideoViewRef
   val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
   val audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(this)
@@ -67,11 +71,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setLoadControl(loadControl)
     .build()
 
-  private val firstFrameEventGenerator = createFirstFrameEventGenerator()
+  internal lateinit var firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
   val intervalUpdateClock = IntervalUpdateClock(this)
 
-  var hasRenderedAFrameOfVideoSource = false
   var playing by IgnoreSameSet(false) { new, old ->
     sendEvent(PlayerEvent.IsPlayingChanged(new, old))
   }
@@ -273,7 +276,6 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
         resetPlaybackInfo()
       }
       subtitles.setSubtitlesEnabled(false)
-      hasRenderedAFrameOfVideoSource = false
       super.onMediaItemTransition(mediaItem, reason)
     }
 
@@ -325,6 +327,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
     // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
     appContext.mainQueue.launch {
+      firstFrameEventGenerator = createFirstFrameEventGenerator()
       subtitles.setSubtitlesEnabled(false)
     }
   }
@@ -337,6 +340,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
     appContext?.mainQueue?.launch {
+      firstFrameEventGenerator.release()
       player.removeListener(playerListener)
       player.release()
     }
@@ -354,16 +358,16 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   /**
    * Used to notify the player that is has been disconnected from the player view by another player.
    */
-  fun hasBeenDisconnectedFromPlayerView() {
-    if (currentPlayerView.get()?.player == this.player) {
+  fun hasBeenDisconnectedFromVideoView() {
+    if (currentVideoView?.playerView?.player == this.player) {
       throw IllegalStateException("The player has been notified of disconnection from the player view, even though it's still connected.")
     }
-    currentPlayerView.set(null)
+    currentVideoView = null
   }
 
-  fun changePlayerView(playerView: PlayerView?) {
-    PlayerView.switchTargetView(player, currentPlayerView.get(), playerView)
-    currentPlayerView.set(playerView)
+  fun changeVideoView(videoView: VideoView?) {
+    PlayerView.switchTargetView(player, currentVideoView?.playerView, videoView?.playerView)
+    currentVideoView = videoView
   }
 
   fun prepare() {
@@ -483,8 +487,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
-    return FirstFrameEventGenerator(player, currentPlayerView) {
-      hasRenderedAFrameOfVideoSource = true
+    return FirstFrameEventGenerator(this, currentVideoViewRef) {
       sendEvent(PlayerEvent.RenderedFirstFrame())
     }
   }
