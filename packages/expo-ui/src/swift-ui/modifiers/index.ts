@@ -3,11 +3,15 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
-import { ColorValue } from 'react-native';
+import { requireNativeModule } from 'expo';
 
 import { animation } from './animation/index';
+import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
+import type { Color } from './types';
+
+const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
  * Creates a modifier with an event listener.
@@ -19,28 +23,6 @@ function createModifierWithEventListener(
 ): ModifierConfig {
   return { $type: type, ...params, eventListener };
 }
-
-type NamedColor =
-  | 'primary'
-  | 'secondary'
-  | 'red'
-  | 'orange'
-  | 'yellow'
-  | 'green'
-  | 'blue'
-  | 'purple'
-  | 'pink'
-  | 'white'
-  | 'gray'
-  | 'black'
-  | 'clear'
-  | 'mint'
-  | 'teal'
-  | 'cyan'
-  | 'indigo'
-  | 'brown';
-
-type Color = string | ColorValue | NamedColor;
 
 // =============================================================================
 // Built-in Modifier Functions
@@ -61,13 +43,6 @@ export const listSectionSpacing = (spacing: 'default' | 'compact' | number) => {
 
   return createModifier('listSectionSpacing', { spacing });
 };
-
-/**
- * Sets the background of a view.
- * @param color - The background color (hex string). For example, `#FF0000`.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)).
- */
-export const background = (color: Color) => createModifier('background', { color });
 
 /**
  * Applies corner radius to a view.
@@ -186,6 +161,20 @@ export const onAppear = (handler: () => void) =>
  */
 export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
+
+/**
+ * Marks a view as refreshable. Adds pull-to-refresh functionality.
+ * @param handler - Async function to call when refresh is triggered.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/refreshable(action:)).
+ */
+export const refreshable = (handler: () => Promise<void>) =>
+  createModifierWithEventListener('refreshable', async (args: { id: string }) => {
+    try {
+      await handler();
+    } finally {
+      await ExpoUI.completeRefresh(args.id);
+    }
+  });
 
 // Note: Complex gesture modifiers like onDragGesture are not available
 // in the modifier system. Use component-level props instead.
@@ -909,3 +898,6 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 
 export * from './animation/index';
 export * from './containerShape';
+export * from './shapes/index';
+export * from './background';
+export type * from './types';

@@ -74,6 +74,7 @@ interface JSFile extends BaseFile {
   readonly reactClientReference?: string;
   readonly expoDomComponentReference?: string;
   readonly hasCjsExports?: boolean;
+  readonly performConstantFolding?: boolean;
 }
 
 interface JSONFile extends BaseFile {
@@ -205,6 +206,7 @@ export function applyImportSupport<TFile extends t.File>(
     importDefault,
     importAll,
     collectLocations,
+    performConstantFolding,
   }: {
     filename: string;
 
@@ -218,6 +220,7 @@ export function applyImportSupport<TFile extends t.File>(
     importDefault: string;
     importAll: string;
     collectLocations?: boolean;
+    performConstantFolding?: boolean;
   }
 ): { ast: TFile; metadata?: any } {
   // Perform the import-export transform (in case it's still needed), then
@@ -243,7 +246,7 @@ export function applyImportSupport<TFile extends t.File>(
     const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
     plugins.push([
       liveBindings ? importExportLiveBindingsPlugin : importExportPlugin,
-      { ...babelPluginOpts },
+      { ...babelPluginOpts, performConstantFolding },
     ]);
   }
 
@@ -367,18 +370,21 @@ async function transformJS(
 
   const unstable_renameRequire = config.unstable_renameRequire;
 
+  // NOTE(@hassankhan): Constant folding can be an expensive/slow operation, so we limit it to
+  // production builds, or files that have specifically seen a change in their exports
+  if (!options.dev || file.performConstantFolding) {
+    ast = performConstantFolding(ast, { filename: file.filename });
+  }
+
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
   if (!optimize) {
     ast = applyImportSupport(ast, {
       filename: file.filename,
+      performConstantFolding: Boolean(file.performConstantFolding),
       options,
       importDefault,
       importAll,
     }).ast;
-  }
-
-  if (!options.dev) {
-    ast = performConstantFolding(ast, { filename: file.filename });
   }
 
   let dependencyMapName: string = '';
@@ -642,6 +648,7 @@ async function transformJSWithBabel(
     reactServerReference: transformResult.metadata?.reactServerReference,
     reactClientReference: transformResult.metadata?.reactClientReference,
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+    performConstantFolding: transformResult.metadata?.performConstantFolding,
   };
 
   return await transformJS(jsFile, context);

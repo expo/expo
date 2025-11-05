@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix launching apps in brownfield ([#40711](https://github.com/expo/expo/pull/40711) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix React Native dev menu not showing up in 0.83.x ([#40819](https://github.com/expo/expo/pull/40819) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

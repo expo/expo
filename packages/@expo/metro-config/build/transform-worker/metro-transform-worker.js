@@ -149,7 +149,7 @@ function applyUseStrictDirective(ast) {
         directives.push(core_1.types.directive(core_1.types.directiveLiteral('use strict')));
     }
 }
-function applyImportSupport(ast, { filename, options, importDefault, importAll, collectLocations, }) {
+function applyImportSupport(ast, { filename, options, importDefault, importAll, collectLocations, performConstantFolding, }) {
     // Perform the import-export transform (in case it's still needed), then
     // fold requires and perform constant folding (if in dev).
     const plugins = [];
@@ -170,7 +170,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
         const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
         plugins.push([
             liveBindings ? transform_plugins_1.importExportLiveBindingsPlugin : transform_plugins_1.importExportPlugin,
-            { ...babelPluginOpts },
+            { ...babelPluginOpts, performConstantFolding },
         ]);
     }
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
@@ -270,17 +270,20 @@ async function transformJS(file, { config, options }) {
     // not exist yet.
     applyUseStrictDirective(ast);
     const unstable_renameRequire = config.unstable_renameRequire;
+    // NOTE(@hassankhan): Constant folding can be an expensive/slow operation, so we limit it to
+    // production builds, or files that have specifically seen a change in their exports
+    if (!options.dev || file.performConstantFolding) {
+        ast = performConstantFolding(ast, { filename: file.filename });
+    }
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
     if (!optimize) {
         ast = applyImportSupport(ast, {
             filename: file.filename,
+            performConstantFolding: Boolean(file.performConstantFolding),
             options,
             importDefault,
             importAll,
         }).ast;
-    }
-    if (!options.dev) {
-        ast = performConstantFolding(ast, { filename: file.filename });
     }
     let dependencyMapName = '';
     let dependencies;
@@ -483,6 +486,7 @@ async function transformJSWithBabel(file, context) {
         reactServerReference: transformResult.metadata?.reactServerReference,
         reactClientReference: transformResult.metadata?.reactClientReference,
         expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+        performConstantFolding: transformResult.metadata?.performConstantFolding,
     };
     return await transformJS(jsFile, context);
 }

@@ -171,30 +171,31 @@ export function findNodeByPropInChildren<T>(
   element: ReactElement,
   propToFind: string
 ): PropsWithChildren<{ [propToFind]: T }> | T | null {
-  if (!element || typeof element !== 'object') {
+  if (!isValidElement<PropsWithChildren>(element)) {
     return null;
   }
 
-  if (isValidElement<PropsWithChildren<{ [propToFind]: T }>>(element)) {
-    return element.props;
+  const props = element.props as PropsWithChildren<{ [propToFind]: T }>;
+  if (props && Object.prototype.hasOwnProperty.call(props, propToFind)) {
+    return props;
   }
 
-  if (isValidElement<PropsWithChildren>(element)) {
-    const children = element.props.children;
+  const { children } = props;
+  if (!children) {
+    return null;
+  }
 
-    if (Array.isArray(children)) {
-      for (const child of Children.toArray(children)) {
-        const allProps = findNodeByPropInChildren<T>(child as ReactElement, propToFind);
-        if (allProps) {
-          return allProps;
-        }
+  if (Array.isArray(children)) {
+    for (const child of Children.toArray(children)) {
+      const found = findNodeByPropInChildren<T>(child as ReactElement, propToFind);
+      if (found) {
+        return found;
       }
-    } else {
-      return findNodeByPropInChildren<T>(children as ReactElement, propToFind);
     }
+    return null;
   }
 
-  return null;
+  return findNodeByPropInChildren<T>(children as ReactElement, propToFind);
 }
 
 export function getCodeBlockDataFromChildren(children?: ReactNode, className?: string) {

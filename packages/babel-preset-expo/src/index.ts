@@ -25,6 +25,7 @@ import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 import { reactServerActionsPlugin } from './server-actions-plugin';
+import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 
 type BabelPresetExpoPlatformOptions = {
@@ -266,6 +267,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (hasModule('expo-router')) {
     extraPlugins.push(expoRouterBabelPlugin);
+
+    // Strip loader() functions from client bundles
+    if (!isServerEnv) {
+      extraPlugins.push(serverDataLoadersPlugin);
+    }
   }
 
   extraPlugins.push(reactClientReferencesPlugin);

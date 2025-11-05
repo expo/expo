@@ -10,7 +10,6 @@ import {
   isDeviceBootedAsync,
   isPackageInstalledAsync,
   launchActivityAsync,
-  openAppIdAsync,
   sanitizeAdbDeviceName,
   openUrlAsync,
 } from '../adb';
@@ -121,19 +120,6 @@ describe(isPackageInstalledAsync, () => {
   it(`returns false when a package is not isntalled`, async () => {
     jest.mocked(getServer().runAsync).mockResolvedValueOnce('');
     expect(await isPackageInstalledAsync(device, 'com.google.android.youtube')).toBe(false);
-  });
-});
-
-describe(openAppIdAsync, () => {
-  it(`asserts that the app does not exist`, async () => {
-    jest
-      .mocked(getServer().runAsync)
-      .mockResolvedValueOnce('Error: Activity not started, unable to resolve Intent');
-    await expect(
-      openAppIdAsync(device, {
-        applicationId: 'dev.bacon.app',
-      })
-    ).rejects.toThrow(CommandError);
   });
 });
 

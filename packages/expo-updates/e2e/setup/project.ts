@@ -234,7 +234,12 @@ async function copyCommonFixturesToProject(
       cwd: path.join(repoRoot, 'patches'),
       absolute: true,
     });
-    await fs.copyFile(patchFile[0], path.join(projectRoot, 'patches', path.basename(patchFile[0])));
+    if (patchFile.length > 0) {
+      await fs.copyFile(
+        patchFile[0],
+        path.join(projectRoot, 'patches', path.basename(patchFile[0]))
+      );
+    }
   }
 
   // Modify specific files for TV

@@ -12,6 +12,7 @@
 - Add environmental variable to enable experimental web modal implementation ([#40231](https://github.com/expo/expo/pull/40231) by [@Ubax](https://github.com/Ubax))
 - Use the new error overlay UI from `@expo/log-box` ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Add split view layout support ([#39563](https://github.com/expo/expo/pull/39563) by [@Ubax](https://github.com/Ubax))
+- Add support for server data loaders in static export mode ([#40130](https://github.com/expo/expo/pull/40130) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
@@ -29,6 +30,7 @@
 - Migrate typed routes logic from `expo-router` to `@expo/router-server` ([#40576](https://github.com/expo/expo/pull/40576) by [@hassankhan](https://github.com/hassankhan))
 - refactor native-tabs to unify navigation logic between platforms ([#40699](https://github.com/expo/expo/pull/40699) by [@Ubax](https://github.com/Ubax))
 - [refactor] remove redundant nesting in native-tabs directory structure ([#40700](https://github.com/expo/expo/pull/40700) by [@Ubax](https://github.com/Ubax))
+- Remove `node/getExpoConstantsManifest.js` ([#40663](https://github.com/expo/expo/pull/40663) by [@hassankhan](https://github.com/hassankhan))
 
 ## 6.0.13 - 2025-10-20
 

@@ -12,6 +12,12 @@ public final class ExpoUIModule: Module {
       }
     }
 
+    // MARK: - Module Functions
+
+    AsyncFunction("completeRefresh") { (id: String) in
+      RefreshableManager.shared.completeRefresh(id: id)
+    }
+
     // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`
 
     View(SecureFieldView.self) {

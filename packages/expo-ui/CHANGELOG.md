@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add `refreshable` modifier. ([#40201](https://github.com/expo/expo/pull/40201) by [@christianwooldridge](https://github.com/christianwooldridge))
 - [iOS] Add RTL support in swiftui. ([#40335](https://github.com/expo/expo/pull/40335) by [@kfirfitousi](https://github.com/kfirfitousi))
 - [Android] Add Carousel component. ([#40325](https://github.com/expo/expo/pull/40325) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Add `scrollDismissesKeyboard` modifier. ([#40201](https://github.com/expo/expo/pull/40201) by [@christianwooldridge](https://github.com/christianwooldridge))
@@ -32,6 +33,7 @@
 - [iOS] Add `getItemAsync` to `ShareLink` ([#40391](https://github.com/expo/expo/pull/40391) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Add Grid component and modifiers `gridCellUnsizedAxes`, `gridCellColumns`, `gridColumnAlignment`, `gridCellAnchor` ([#40485](https://github.com/expo/expo/pull/40485) by [@doombladeoff](https://github.com/doombladeoff))
 - [iOS] Add `labelView` to LabeledContent component ([#40798](https://github.com/expo/expo/pull/40798) by [@focux](https://github.com/focux))
+- [iOS] - Add shape in `background` modifier and fix `foregroundStyle` modifer in `Label` ([#40748](https://github.com/expo/expo/pull/40748) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
