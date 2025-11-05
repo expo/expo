@@ -21,13 +21,7 @@ struct SwitchView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    Toggle(isOn: $checked, label: {
-      if let label = props.label, let systemImage = props.systemImage {
-        Label(label, systemImage: systemImage)
-      } else if let label = props.label {
-        Text(label)
-      }
-    })
+    toggleView
     .onChange(of: checked, perform: { newValue in
       if props.value == newValue {
         return
@@ -51,6 +45,15 @@ struct SwitchView: ExpoSwiftUI.View {
     .if(props.variant == "checkbox") {
       $0.toggleStyle(IOSCheckboxToggleStyle())
     }
+  }
+  
+  @ViewBuilder
+  private var toggleView: some View {
+      if let systemImage = props.systemImage, !systemImage.isEmpty {
+        Toggle(props.label ?? "", systemImage: systemImage, isOn: $checked)
+      } else {
+        Toggle(props.label ?? "", isOn: $checked)
+      }
   }
 }
 

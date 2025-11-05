@@ -18,6 +18,16 @@ export default function SwitchScreen() {
             systemImage="heart"
           />
         </Host>
+
+        <Host matchContents style={{ marginTop: 12 }}>
+          <Switch
+            value={checked}
+            onValueChange={setChecked}
+            color="#ff0000"
+            label="No system image"
+            variant="switch"
+          />
+        </Host>
       </Section>
       <Section title="Checkbox Switch">
         <Host matchContents>
