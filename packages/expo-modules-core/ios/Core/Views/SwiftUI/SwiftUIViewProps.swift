@@ -20,6 +20,12 @@ extension ExpoSwiftUI {
     public internal(set) weak var appContext: AppContext?
 
     /**
+     Shadow node proxy for virtual views to access their own shadow node.
+     This is set by SwiftUIVirtualView during initialization.
+     */
+    public var virtualViewShadowNodeProxy: ShadowNodeProxy?
+
+    /**
      A global event dispatcher that allows views to call `view.dispatchEvent(_:payload)` directly
      */
     public let globalEventDispatcher = EventDispatcher(GLOBAL_EVENT_NAME)

@@ -33,6 +33,12 @@ export type BottomSheetProps = {
      * - `hidden` - Never show the drag indicator
      */
     presentationDragIndicator?: PresentationDragIndicatorVisibility;
+    /**
+     * When set to `true`, automatically adds the children's height as a detent.
+     * This allows the sheet to have a snap point that perfectly fits the content.
+     * @default false
+     */
+    includeChildrenHeightDetent?: boolean;
 } & CommonViewModifierProps;
-export declare function BottomSheet(props: BottomSheetProps): import("react").JSX.Element;
+export declare function BottomSheet(props: BottomSheetProps): any;
 //# sourceMappingURL=index.d.ts.map

@@ -1,78 +1,114 @@
-import { Button, BottomSheet, Host, VStack, HStack, Switch, Text } from '@expo/ui/swift-ui';
-import { fixedSize, frame, padding } from '@expo/ui/swift-ui/modifiers';
+import {
+  Button,
+  BottomSheet,
+  Host,
+  VStack,
+  HStack,
+  Switch,
+  Text,
+  List,
+  Section,
+  Form,
+} from '@expo/ui/swift-ui';
+import { frame } from '@expo/ui/swift-ui/modifiers';
+import { Text as RNText, View, Pressable } from 'react-native';
 import * as React from 'react';
-import { ScrollView, useWindowDimensions, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 export default function BottomSheetScreen() {
-  const [isOpened, setIsOpened] = React.useState<boolean>(false);
-  const [interactiveDismissDisabled, setInteractiveDismissDisabled] =
-    React.useState<boolean>(false);
-  const [hideDragIndicator, setHideDragIndicator] = React.useState<boolean>(false);
+  const [bottomSheetOpen1, setBottomSheetOpen1] = React.useState<boolean>(false);
+  const [bottomSheetOpen2, setBottomSheetOpen2] = React.useState<boolean>(false);
+  console.log('BottomSheetScreen ', bottomSheetOpen1, bottomSheetOpen2);
 
   return (
-    <ScrollView>
-      <Host matchContents>
-        <VStack alignment="leading" modifiers={[padding({ all: 16 })]} spacing={16}>
-          <Button onPress={() => setIsOpened(true)}>Open BottomSheet</Button>
-          <HStack>
-            <Text modifiers={[fixedSize()]}>Disable interactive dismiss</Text>
-            <Switch
-              value={interactiveDismissDisabled}
-              onValueChange={setInteractiveDismissDisabled}
-            />
-          </HStack>
-          <HStack>
-            <Text modifiers={[fixedSize()]}>Hide drag indicator</Text>
-            <Switch value={hideDragIndicator} onValueChange={setHideDragIndicator} />
-          </HStack>
-        </VStack>
-      </Host>
-
-      <Host style={{ position: 'absolute' }} matchContents>
-        <BottomSheet
-          isOpened={isOpened}
-          onIsOpenedChange={setIsOpened}
-          interactiveDismissDisabled={interactiveDismissDisabled}
-          presentationDetents={['medium', 'large', 0.2]}
-          presentationDragIndicator={hideDragIndicator ? 'hidden' : 'automatic'}>
-          <HStack modifiers={[frame({ height: 100 })]}>
-            <Button onPress={() => setIsOpened(false)}>Close BottomSheet</Button>
-          </HStack>
-        </BottomSheet>
-      </Host>
-      <BottomSheetReanimatedExample />
-    </ScrollView>
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Button variant="default" onPress={() => setBottomSheetOpen1(!bottomSheetOpen1)}>
+          Open BottomSheet
+        </Button>
+        <Button variant="default" onPress={() => setBottomSheetOpen2(!bottomSheetOpen2)}>
+          Open BottomSheet
+        </Button>
+      </List>
+      <BottomSheetWithSwiftUIContent
+        isOpened={bottomSheetOpen1}
+        onIsOpenedChange={setBottomSheetOpen1}
+      />
+      {/* <BottomSheetWithReactNativeContent
+        isOpened={bottomSheetOpen2}
+        onIsOpenedChange={setBottomSheetOpen2}
+      /> */}
+    </Host>
   );
 }
 
-function BottomSheetReanimatedExample() {
-  const [isOpened, setIsOpened] = React.useState<boolean>(true);
-  const { width } = useWindowDimensions();
-  const height = useSharedValue(100);
-
-  const handleIncreaseHeight = () => {
-    height.value = height.value > 500 ? 100 : height.value + 100;
-  };
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    height: withTiming(height.value, { duration: 1000 }),
-  }));
-
+const BottomSheetWithSwiftUIContent = (props: {
+  isOpened: boolean;
+  onIsOpenedChange: (isOpened: boolean) => void;
+}) => {
   return (
-    <View>
-      <Host style={{ position: 'absolute', width }}>
-        <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
-          <Animated.View style={[{ padding: 20 }, animatedStyles]}>
-            <Host matchContents>
-              <Button onPress={handleIncreaseHeight}>Increase height</Button>
-            </Host>
-          </Animated.View>
-        </BottomSheet>
-      </Host>
-    </View>
+    <Host style={{ position: 'absolute' }} pointerEvents="none">
+      <BottomSheet
+        includeChildrenHeightDetent
+        isOpened={props.isOpened}
+        onIsOpenedChange={props.onIsOpenedChange}>
+        <HStack
+          alignment="center"
+          spacing={20}
+          modifiers={[frame({ maxWidth: Infinity, maxHeight: Infinity, alignment: 'center' })]}>
+          <Text>Left</Text>
+          <Text>Middle</Text>
+          <Text>Right</Text>
+          {/* <Button
+            variant="default"
+            onPress={() => {
+              console.log('Button onPress');
+            }}>
+            Increase height
+          </Button> */}
+          <Pressable
+            style={{ height: 100, width: 80, backgroundColor: 'red' }}
+            onPress={() => {
+              console.log('Pressable onPress');
+              props.onIsOpenedChange(!props.isOpened);
+            }}>
+            <RNText>Increase height</RNText>
+          </Pressable>
+        </HStack>
+      </BottomSheet>
+    </Host>
   );
-}
+};
+
+const BottomSheetWithReactNativeContent = (props: {
+  isOpened: boolean;
+  onIsOpenedChange: (isOpened: boolean) => void;
+}) => {
+  const [height, setHeight] = React.useState<number>(100);
+  return (
+    <Host style={{ position: 'absolute' }}>
+      <BottomSheet isOpened={props.isOpened} onIsOpenedChange={props.onIsOpenedChange}>
+        <View
+          style={{
+            height: height,
+            width: 400,
+            backgroundColor: 'green',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+          }}>
+          <RNText>Hello</RNText>
+          <Pressable
+            onPress={() => {
+              console.log('Pressable onPress');
+              setHeight(height + 10);
+            }}
+            style={{ height: 100, width: 100, backgroundColor: 'red' }}>
+            <RNText>Tap to increase height</RNText>
+          </Pressable>
+        </View>
+      </BottomSheet>
+    </Host>
+  );
+};
 
 BottomSheetScreen.navigationOptions = {
   title: 'BottomSheet',
