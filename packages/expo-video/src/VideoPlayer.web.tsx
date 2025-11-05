@@ -30,7 +30,7 @@ export function useVideoPlayer(
   }, [JSON.stringify(source)]);
 }
 
-export function getSourceUri(source: VideoSource): string | null {
+export function getSourceUri(source?: VideoSource): string | null {
   if (typeof source === 'string') {
     return source;
   }

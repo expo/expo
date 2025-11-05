@@ -41,6 +41,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   const hasToSetupAudioContext = useRef(false);
   const fullscreenChangeListeners = useRef<null | FullscreenChangeListeners>(null);
   const isWaitingForFirstFrame = useRef(false);
+  const mountedPlayerRef = useRef<null | VideoPlayer>(null);
 
   /**
    * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
@@ -140,7 +141,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     const mediaNode = mediaNodeRef.current;
 
     if (audioContext && zeroGainNode && mediaNode) {
-      props.player.mountAudioNode(audioContext, zeroGainNode, mediaNode);
+      props.player?.mountAudioNode(audioContext, zeroGainNode, mediaNode);
     } else {
       console.warn(
         "Couldn't mount audio node, this might affect the audio playback when using multiple video views with the same player."
@@ -155,7 +156,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     const audioContext = audioContextRef.current;
     const mediaNode = mediaNodeRef.current;
     if (audioContext && mediaNode && videoRef.current) {
-      props.player.unmountAudioNode(videoRef.current, audioContext, mediaNode);
+      props.player?.unmountAudioNode(videoRef.current, audioContext, mediaNode);
     }
   }
 
@@ -229,16 +230,26 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   }
 
   useEffect(() => {
+    videoRef.current && mountedPlayerRef.current?.unmountVideoView(videoRef.current);
+
     if (videoRef.current) {
       props.player?.mountVideoView(videoRef.current);
     }
     setupFullscreenListener();
     attachAudioNodes();
 
+    mountedPlayerRef.current = props.player ?? null;
+
+    if (props.player == null) {
+      videoRef.current?.removeAttribute('src');
+      videoRef.current?.load();
+    }
+
     return () => {
       if (videoRef.current) {
         props.player?.unmountVideoView(videoRef.current);
       }
+      mountedPlayerRef.current = null;
       cleanupFullscreenListener();
       detachAudioNodes();
     };
@@ -271,7 +282,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
       }}
       disablePictureInPicture={!props.allowsPictureInPicture}
       playsInline={props.playsInline}
-      src={getSourceUri(props.player?.src) ?? ''}
+      src={getSourceUri(props.player?.src) ?? undefined}
     />
   );
 });
