@@ -326,7 +326,7 @@ class EnabledUpdatesController(
   // UpdatesMetricsInterface implementations
 
   override val runtimeVersion: String?
-    get() = updatesConfiguration.getRuntimeVersion()
+    get() = updatesConfiguration.runtimeVersionRaw
 
   override val updateUrl: Uri?
     get() = updatesConfiguration.updateUrl
