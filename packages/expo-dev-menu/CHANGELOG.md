@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix broken hotkeys after reload. ([#40829](https://github.com/expo/expo/pull/40829) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 7.0.16 — 2025-11-05
+
+### 🐛 Bug fixes
+
+- [iOS] Fix broken hotkeys after reload. ([#40829](https://github.com/expo/expo/pull/40829) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 7.0.15 — 2025-10-21
 

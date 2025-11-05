@@ -74,15 +74,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (6.0.16):
+  - expo-dev-client (6.0.17):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (6.0.16):
+  - expo-dev-launcher (6.0.17):
     - EXManifests
-    - expo-dev-launcher/Main (= 6.0.16)
+    - expo-dev-launcher/Main (= 6.0.17)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -111,7 +111,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Main (6.0.16):
+  - expo-dev-launcher/Main (6.0.17):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -142,7 +142,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Tests (6.0.16):
+  - expo-dev-launcher/Tests (6.0.17):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -177,7 +177,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Unsafe (6.0.16):
+  - expo-dev-launcher/Unsafe (6.0.17):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -207,9 +207,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu (7.0.15):
-    - expo-dev-menu/Main (= 7.0.15)
-    - expo-dev-menu/ReactNativeCompatibles (= 7.0.15)
+  - expo-dev-menu (7.0.16):
+    - expo-dev-menu/Main (= 7.0.16)
+    - expo-dev-menu/ReactNativeCompatibles (= 7.0.16)
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -232,7 +232,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - expo-dev-menu-interface (2.0.0)
-  - expo-dev-menu/Main (7.0.15):
+  - expo-dev-menu/Main (7.0.16):
     - EXManifests
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -258,7 +258,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (7.0.15):
+  - expo-dev-menu/ReactNativeCompatibles (7.0.16):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -280,7 +280,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/Tests (7.0.15):
+  - expo-dev-menu/Tests (7.0.16):
     - ExpoModulesTestCore
     - hermes-engine
     - Nimble
@@ -306,7 +306,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/UITests (7.0.15):
+  - expo-dev-menu/UITests (7.0.16):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -562,7 +562,7 @@ PODS:
     - ExpoModulesCore
   - ExpoUI (0.2.0-beta.7):
     - ExpoModulesCore
-  - ExpoVideo (3.0.13):
+  - ExpoVideo (3.0.14):
     - ExpoModulesCore
   - ExpoVideoThumbnails (10.0.7):
     - ExpoModulesCore
@@ -3559,9 +3559,9 @@ SPEC CHECKSUMS:
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: 7aab54f0e5f3023122bc95699eaff7c52bacb559
   Expo: 6a34bc084aa55beac2628ed1332def9505a791a1
-  expo-dev-client: 41b64c03ffee842c8abd3f422389cd3c0d14ad7a
-  expo-dev-launcher: 519527f4f66ae85a8f439a98faf0173884fdd688
-  expo-dev-menu: 432c9ad88e9e2673781831602418117f98e20903
+  expo-dev-client: 28ade03ca6998c063472d87013fc556aadd71897
+  expo-dev-launcher: bbc50496c7e69efbfe2d1d11103449baf335493c
+  expo-dev-menu: d5cf92111a1ec5541f68e68295a08d1505bd53af
   expo-dev-menu-interface: 600df12ea01efecdd822daaf13cc0ac091775533
   ExpoAppIntegrity: c47cd19d85e7a55bd8c0f45261780fc90bef7507
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
@@ -3620,7 +3620,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: 9441d46a8efbf9224d1b2e6b18042452ffd0ed79
   ExpoTrackingTransparency: fee2dc0cea16d12aeffde2f388671b029c563ed3
   ExpoUI: 821b058da921ea4aa6172b36d080991ea6fb2fae
-  ExpoVideo: 5ad7a108c7ae30c67005ed5967e578643e79cc95
+  ExpoVideo: 9e7f39ff824ee2c087e60908fea77013e7edeb1c
   ExpoVideoThumbnails: c951ae8c6ed9974dd3ae5f79b2dd1d9b6e8ab266
   ExpoWebBrowser: 35223474c19e261c0661ecc7caa513d054244ab5
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
