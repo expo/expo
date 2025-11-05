@@ -31,6 +31,7 @@ internal final class RefreshableManager {
 
 internal struct RefreshableModifier: ViewModifier, Record {
   var eventDispatcher: EventDispatcher?
+  @State private var currentRefreshId: String?
 
   init() {}
 
@@ -44,7 +45,14 @@ internal struct RefreshableModifier: ViewModifier, Record {
       await withCheckedContinuation { continuation in
         let refreshId = UUID().uuidString
         RefreshableManager.shared.storeContinuation(continuation, for: refreshId)
+        currentRefreshId = refreshId
         eventDispatcher?(["refreshable": ["id": refreshId]])
+      }
+      currentRefreshId = nil
+    }.onDisappear {
+      if let refreshId = currentRefreshId {
+        RefreshableManager.shared.completeRefresh(id: refreshId)
+        currentRefreshId = nil
       }
     }
   }
