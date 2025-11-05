@@ -22,4 +22,4 @@ class LookupKeyNotFoundException : CodedException("Couldn't find lookup key for 
 
 class RemoteImageUriException(uri: String) : CodedException("Only file:// URIs are supported for contact images. Provided URI: '$uri'. Download the image first using File.downloadFileAsync from expo-file-system and provide a local file URI.")
 
-class FailedToFetchContactsException : CodedException("Error while fetching contacts")
+class ContactsCheckFailedException : CodedException("Couldn't check if there are any contacts")

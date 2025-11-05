@@ -204,17 +204,17 @@ class ContactsModule : Module() {
       appContext
         .backgroundCoroutineScope
         .launch {
-          val hasAnyContact = resolver.query(
+          resolver.query(
             ContactsContract.Contacts.CONTENT_URI,
             arrayOf(ContactsContract.Contacts._ID),
             null,
             null,
             null
-          )?.use { cursor ->
-            // Only check first row, then stop (cursor closes automatically with .use)
-            cursor.moveToFirst()
-          } ?: false
-          promise.resolve(hasAnyContact)
+          ).ifNull { throw ContactsCheckFailedException() }
+            .use { cursor ->
+              val hasAnyContacts = cursor.moveToFirst()
+              promise.resolve(hasAnyContacts)
+            }
         }
     }
 
@@ -781,4 +781,9 @@ class ContactsModule : Module() {
 fun <T> Map<String, Any>.safeGet(key: String): T? {
   @Suppress("UNCHECKED_CAST")
   return this[key] as? T
+}
+
+inline fun <T> T?.ifNull(block: () -> Nothing): T {
+  if (this == null) block()
+  return this!!
 }
