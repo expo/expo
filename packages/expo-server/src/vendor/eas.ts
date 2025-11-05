@@ -19,7 +19,7 @@ const STORE = new AsyncLocalStorage();
  */
 export function createRequestHandler<Env = unknown>(
   params: { build?: string },
-  setup?: Partial<RequestHandlerParams>
+  setup?: RequestHandlerParams
 ): RequestHandler<Env> {
   const makeRequestAPISetup = (request: Request, _env: Env, ctx: ExecutionContext) => ({
     origin: request.headers.get('Origin') || 'null',

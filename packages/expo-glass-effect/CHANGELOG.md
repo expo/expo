@@ -10,7 +10,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix `border(Left|Right|Start|End)Radius` ([#40780](https://github.com/expo/expo/pull/40780) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
+
+- Fixed XCode 16.4 compilation ([#40686](https://github.com/expo/expo/pull/40686) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 0.1.4 - 2025-09-17
 

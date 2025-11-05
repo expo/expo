@@ -3,7 +3,6 @@ package expo.modules.calendar.next.extensions
 import android.content.ContentResolver
 import android.database.Cursor
 import android.provider.CalendarContract
-import expo.modules.calendar.BEGIN_DATE_INDEX
 import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.AttendeeRole
 import expo.modules.calendar.next.records.AttendeeStatus
@@ -14,13 +13,15 @@ import expo.modules.calendar.next.records.EventAvailability
 import expo.modules.calendar.next.records.EventRecord
 import expo.modules.calendar.next.records.EventStatus
 import expo.modules.calendar.next.records.AlarmMethod
-import expo.modules.calendar.END_DATE_INDEX
 import expo.modules.calendar.next.records.AlarmRecord
 import expo.modules.calendar.next.records.CalendarAccessLevel
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.records.Source
 import expo.modules.calendar.next.utils.sdf
 import java.util.Calendar
+
+private const val BEGIN_DATE_INDEX: Int = 3
+private const val END_DATE_INDEX: Int = 4
 
 fun Cursor.toCalendarRecord(): CalendarRecord {
   val accessLevel = optInt(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)

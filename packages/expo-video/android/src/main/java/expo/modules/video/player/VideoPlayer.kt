@@ -71,6 +71,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
   val intervalUpdateClock = IntervalUpdateClock(this)
 
+  var hasRenderedAFrameOfVideoSource = false
   var playing by IgnoreSameSet(false) { new, old ->
     sendEvent(PlayerEvent.IsPlayingChanged(new, old))
   }
@@ -272,6 +273,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
         resetPlaybackInfo()
       }
       subtitles.setSubtitlesEnabled(false)
+      hasRenderedAFrameOfVideoSource = false
       super.onMediaItemTransition(mediaItem, reason)
     }
 
@@ -347,6 +349,16 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   override fun deallocate() {
     super.deallocate()
     close()
+  }
+
+  /**
+   * Used to notify the player that is has been disconnected from the player view by another player.
+   */
+  fun hasBeenDisconnectedFromPlayerView() {
+    if (currentPlayerView.get()?.player == this.player) {
+      throw IllegalStateException("The player has been notified of disconnection from the player view, even though it's still connected.")
+    }
+    currentPlayerView.set(null)
   }
 
   fun changePlayerView(playerView: PlayerView?) {
@@ -472,6 +484,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
     return FirstFrameEventGenerator(player, currentPlayerView) {
+      hasRenderedAFrameOfVideoSource = true
       sendEvent(PlayerEvent.RenderedFirstFrame())
     }
   }

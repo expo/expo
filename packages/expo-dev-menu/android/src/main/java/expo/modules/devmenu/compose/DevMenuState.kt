@@ -15,7 +15,8 @@ data class DevMenuState(
 ) {
   data class CustomItem(
     val name: String,
-    val shouldCollapse: Boolean
+    val shouldCollapse: Boolean,
+    internal val fn: () -> Unit
   )
 
   data class AppInfo(

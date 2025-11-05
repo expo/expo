@@ -146,6 +146,10 @@ public final class ImageModule: Module {
       }
     }
 
+    Function("configureCache") { (config: ImageCacheConfig) in
+      ImageModule.configureCache(config: config)
+    }
+
     AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy, headersMap: [String: String]?, promise: Promise) in
       var context = SDWebImageContext()
       let sdCacheType = cachePolicy.toSdCacheType().rawValue
@@ -266,5 +270,17 @@ public final class ImageModule: Module {
     SDImageLoadersManager.shared.addLoader(BlurhashLoader())
     SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
+  }
+
+  static func configureCache(config: ImageCacheConfig) {
+    if let maxMemoryCount = config.maxMemoryCount {
+      SDImageCache.shared.config.maxMemoryCount = maxMemoryCount
+    }
+    if let maxDiskSize = config.maxDiskSize {
+      SDImageCache.shared.config.maxDiskSize = maxDiskSize
+    }
+    if let maxMemoryCost = config.maxMemoryCost {
+      SDImageCache.shared.config.maxMemoryCost = maxMemoryCost
+    }
   }
 }

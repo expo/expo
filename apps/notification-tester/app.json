@@ -35,15 +35,6 @@
           "sounds": ["./assets/pop_sound.wav", "./assets/bells_sound.wav"],
           "enableBackgroundRemoteNotifications": true
         }
-      ],
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
       ]
     ],
     "runtimeVersion": "be975abaed5ef1ab51b8eff6c95f384a8700debe",

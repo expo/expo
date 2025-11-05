@@ -2,24 +2,17 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
-import { ColorValue } from 'react-native';
 import { animation } from './animation/index';
+import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
-type NamedColor = 'primary' | 'secondary' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'white' | 'gray' | 'black' | 'clear' | 'mint' | 'teal' | 'cyan' | 'indigo' | 'brown';
-type Color = string | ColorValue | NamedColor;
+import type { Color } from './types';
 /**
  * Sets the spacing between adjacent sections.
  * @param spacing - The spacing to apply.
  * @platform ios 17.0+
  */
 export declare const listSectionSpacing: (spacing: "default" | "compact" | number) => ModifierConfig;
-/**
- * Sets the background of a view.
- * @param color - The background color (hex string). For example, `#FF0000`.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)).
- */
-export declare const background: (color: Color) => ModifierConfig;
 /**
  * Applies corner radius to a view.
  * @param radius - The corner radius value.
@@ -66,7 +59,7 @@ export declare const frame: (params: {
  * @param params - The padding parameters: `top`, `bottom`, `leading`, `trailing`, `horizontal`, `vertical` and `all`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/padding(_:_:)).
  */
-export declare const padding: (params: {
+export declare const padding: (params?: {
     top?: number;
     bottom?: number;
     leading?: number;
@@ -117,6 +110,12 @@ export declare const onAppear: (handler: () => void) => ModifierConfig;
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ondisappear(perform:)).
  */
 export declare const onDisappear: (handler: () => void) => ModifierConfig;
+/**
+ * Marks a view as refreshable. Adds pull-to-refresh functionality.
+ * @param handler - Async function to call when refresh is triggered.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/refreshable(action:)).
+ */
+export declare const refreshable: (handler: () => Promise<void>) => ModifierConfig;
 /**
  * Sets the opacity of a view.
  * @param value - Opacity value between 0 and 1.
@@ -595,11 +594,63 @@ export declare const font: (params: {
     design?: "default" | "rounded" | "serif" | "monospaced";
 }) => ModifierConfig;
 /**
+ * Asks grid layouts not to offer the view extra size in the specified axes.
+ * @param axes - The dimensions in which the grid shouldn’t offer the view a share of any available space. This prevents a flexible view like a Spacer, Divider, or Color from defining the size of a row or column.
+ * @returns A view that doesn’t ask an enclosing grid for extra size in one or more axes.
+ */
+export declare const gridCellUnsizedAxes: (axes?: "horizontal" | "vertical") => ModifierConfig;
+/**
+ * Tells a view that acts as a cell in a grid to span the specified number of columns.
+ * @param count - The number of columns that the view should consume when placed in a grid row.
+ * @returns A view that occupies the specified number of columns in a grid row.
+ */
+export declare const gridCellColumns: (count?: number) => ModifierConfig;
+/**
+ * Overrides the default horizontal alignment of the grid column that the view appears in.
+ * @param alignment - The HorizontalAlignment guide to use for the grid column that the view appears in.
+ * @returns A view that uses the specified horizontal alignment, and that causes all cells in the same column of a grid to use the same alignment.
+ * @platform iOS 16+
+ */
+export declare const gridColumnAlignment: (alignment?: "leading" | "center" | "trailing") => ModifierConfig;
+/**
+ * Specifies a custom alignment anchor for a view that acts as a grid cell.
+ * @param anchor - The unit point that defines how to align the view within the bounds of its grid cell.
+ * @returns A view that uses the specified anchor point to align its content.
+ * @platform iOS 16+
+ *
+ * @example
+ * ```tsx
+ * // Using a preset anchor
+ * <Rectangle
+ *   modifiers={[
+ *     gridCellAnchor({ type: 'preset', anchor: 'center' }),
+ *   ]}
+ * />
+ *
+ * // Using a custom anchor point
+ * <Rectangle
+ *   modifiers={[
+ *     gridCellAnchor({ type: 'custom', points: { x: 0.3, y: 0.8 } }),
+ *   ]}
+ * />
+ * ```
+ */
+export declare const gridCellAnchor: (anchor: {
+    type: "preset";
+    anchor: "zero" | "leading" | "center" | "trailing" | "topLeading" | "top" | "topTrailing" | "bottomLeading" | "bottom" | "bottomTrailing";
+} | {
+    type: "custom";
+    points: {
+        x: number;
+        y: number;
+    };
+}) => ModifierConfig;
+/**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
  * @hidden
  */
-export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof listRowBackground> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font>;
+export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof listRowBackground> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.
@@ -630,4 +681,7 @@ export declare const isModifier: (value: any) => value is ModifierConfig;
 export declare const filterModifiers: (modifiers: unknown[]) => ModifierConfig[];
 export * from './animation/index';
 export * from './containerShape';
+export * from './shapes/index';
+export * from './background';
+export type * from './types';
 //# sourceMappingURL=index.d.ts.map

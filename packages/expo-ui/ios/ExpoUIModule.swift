@@ -12,6 +12,12 @@ public final class ExpoUIModule: Module {
       }
     }
 
+    // MARK: - Module Functions
+
+    AsyncFunction("completeRefresh") { (id: String) in
+      RefreshableManager.shared.completeRefresh(id: id)
+    }
+
     // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`
 
     View(SecureFieldView.self) {
@@ -39,6 +45,15 @@ public final class ExpoUIModule: Module {
        view.setSelection(start: start, end: end)
       }
     }
+    View(ShareLinkView.self) {
+      AsyncFunction("setItem") { (view: ShareLinkView, url: String?) in
+        guard let url, let validURL = URL(string: url) else {
+          view.rejectContinuation()
+          return
+        }
+        view.resolveContinuation(validURL)
+      }
+    }
 
     // MARK: - Views don't support common view modifiers
 
@@ -51,6 +66,7 @@ public final class ExpoUIModule: Module {
     View(SectionContent.self)
     View(SectionHeader.self)
     View(SectionFooter.self)
+    View(GridRowView.self)
 
     View(HostView.self)
 
@@ -74,7 +90,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(PickerView.self)
     ExpoUIView(ExpoUI.ProgressView.self)
     ExpoUIView(SectionView.self)
-    ExpoUIView(ShareLinkView.self)
     ExpoUIView(SliderView.self)
     ExpoUIView(SpacerView.self)
     ExpoUIView(StepperView.self)
@@ -93,5 +108,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ConcentricRectangleView.self)
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
+    ExpoUIView(GridView.self)
   }
 }

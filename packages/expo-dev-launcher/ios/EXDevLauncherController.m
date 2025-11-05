@@ -56,6 +56,7 @@
 @property (nonatomic, strong) EXDevLauncherReactNativeFactory *reactNativeFactory;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
+@property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
 
 @end
 
@@ -84,6 +85,8 @@
 
     self.dependencyProvider = [RCTAppDependencyProvider new];
     self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
+    self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
+    [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
   }
   return self;
 }
@@ -201,14 +204,10 @@
   self.networkInterceptor = nil;
 
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
-
-  [self _removeInitModuleObserver];
+ 
   // Reset app react host
   [self.delegate destroyReactInstance];
-
-#if RCT_DEV
-  [self _addInitModuleObserver];
-#endif
+ 
   if (_devLauncherViewController != nil) {
     [_devLauncherViewController resetHostingController];
   }
@@ -462,8 +461,6 @@
       UITraitCollection.currentTraitCollection = [self.window.rootViewController.traitCollection copy];
     }
 
-    [self _addInitModuleObserver];
-
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
 
     [self setDevMenuAppBridge];
@@ -513,29 +510,6 @@
 
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
-}
-
-- (void)_addInitModuleObserver {
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitializeModule:) name:RCTDidInitializeModuleNotification object:nil];
-}
-
-- (void)_removeInitModuleObserver {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTDidInitializeModuleNotification object:nil];
-}
-
-- (void)didInitializeModule:(NSNotification *)note {
-  id<RCTBridgeModule> module = note.userInfo[@"module"];
-  if ([module isKindOfClass:[RCTDevMenu class]]) {
-    // RCTDevMenu registers its global keyboard commands at init.
-    // To avoid clashes with keyboard commands registered by expo-dev-client, we unregister some of them
-    // and this needs to happen after the module has been initialized.
-    // RCTDevMenu registers its commands here: https://github.com/facebook/react-native/blob/f3e8ea9c2910b33db17001e98b96720b07dce0b3/React/CoreModules/RCTDevMenu.mm#L130-L135
-    // expo-dev-menu registers its commands here: https://github.com/expo/expo/blob/6da15324ff0b4a9cb24055e9815b8aa11f0ac3af/packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift#L27-L29
-    [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"d"
-                                                     modifierFlags:UIKeyModifierCommand];
-    [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"r"
-                                                    modifierFlags:UIKeyModifierCommand];
-  }
 }
 
 -(NSDictionary *)getBuildInfo
@@ -631,20 +605,20 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = self.appBridge.parentBridge;
+  [manager updateCurrentBridge:self.appBridge.parentBridge];
 
   if (self.manifest != nil) {
-    manager.currentManifest = self.manifest;
-    manager.currentManifestURL = self.manifestURL;
+    [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];
+  } else {
+    [manager updateCurrentManifest:nil manifestURL:nil];
   }
 }
 
 - (void)invalidateDevMenuApp
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = nil;
-  manager.currentManifest = nil;
-  manager.currentManifestURL = nil;
+  [manager updateCurrentBridge:nil];
+  [manager updateCurrentManifest:nil manifestURL:nil];
 }
 
 -(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants

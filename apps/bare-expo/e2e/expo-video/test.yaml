@@ -1,4 +1,5 @@
 appId: dev.expo.Payments
+jsEngine: graaljs
 ---
 # when devving, start from different screen so state is reset
 #- openLink: bareexpo://components

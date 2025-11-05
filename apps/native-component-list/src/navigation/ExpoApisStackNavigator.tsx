@@ -74,6 +74,13 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/AgeRangeScreen'));
+    },
+    name: 'AgeRange',
+    options: { title: 'Age Range' },
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/AppearanceScreen'));
     },
     name: 'Appearance',

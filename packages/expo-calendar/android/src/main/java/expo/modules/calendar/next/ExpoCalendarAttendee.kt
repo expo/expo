@@ -4,10 +4,10 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.provider.CalendarContract
-import expo.modules.calendar.attendeeRelationshipConstantMatchingString
-import expo.modules.calendar.attendeeStatusConstantMatchingString
-import expo.modules.calendar.attendeeTypeConstantMatchingString
-import expo.modules.calendar.findAttendeesByEventIdQueryParameters
+import expo.modules.calendar.domain.attendee.AttendeeRepository
+import expo.modules.calendar.domain.attendee.enums.AttendeeRole
+import expo.modules.calendar.domain.attendee.enums.AttendeeStatus
+import expo.modules.calendar.domain.attendee.enums.AttendeeType
 import expo.modules.calendar.next.exceptions.AttendeeCouldNotBeCreatedException
 import expo.modules.calendar.next.exceptions.AttendeeCouldNotBeDeletedException
 import expo.modules.calendar.next.exceptions.AttendeeNotFoundException
@@ -74,7 +74,8 @@ class ExpoCalendarAttendee(
 
       val contentResolver = reactContext.contentResolver
       val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
-      val cursor = contentResolver.query(uri, findAttendeesByEventIdQueryParameters, null, null, null)
+      val projection = AttendeeRepository.findAttendeesByEventIdQueryParameters
+      val cursor = contentResolver.query(uri, projection, null, null, null)
       requireNotNull(cursor) { "Cursor shouldn't be null" }
       cursor.use {
         if (it.count > 0) {
@@ -108,9 +109,15 @@ class ExpoCalendarAttendee(
 
     eventId?.let { values.put(CalendarContract.Attendees.EVENT_ID, it) }
     attendeeRecord.email?.let { values.put(CalendarContract.Attendees.ATTENDEE_EMAIL, it) }
-    attendeeRecord.role?.let { values.put(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP, attendeeRelationshipConstantMatchingString(it.value)) }
-    attendeeRecord.type?.let { values.put(CalendarContract.Attendees.ATTENDEE_TYPE, attendeeTypeConstantMatchingString(it.value)) }
-    attendeeRecord.status?.let { values.put(CalendarContract.Attendees.ATTENDEE_STATUS, attendeeStatusConstantMatchingString(it.value)) }
+    attendeeRecord.role?.let {
+      values.put(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP, AttendeeRole.fromString(it.value).contentProviderValue)
+    }
+    attendeeRecord.type?.let {
+      values.put(CalendarContract.Attendees.ATTENDEE_TYPE, AttendeeType.fromString(it.value).contentProviderValue)
+    }
+    attendeeRecord.status?.let {
+      values.put(CalendarContract.Attendees.ATTENDEE_STATUS, AttendeeStatus.fromString(it.value).contentProviderValue)
+    }
     attendeeRecord.name?.let { values.put(CalendarContract.Attendees.ATTENDEE_NAME, it) }
 
     return values

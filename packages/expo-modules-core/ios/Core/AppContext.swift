@@ -195,8 +195,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    */
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
     guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
-      // TODO: Define a JS class for SharedRef in the CoreModule and then use it here instead of a raw object (?)
-      return try runtime.createObject()
+      throw JavaScriptClassNotFoundException()
     }
     let prototype = try jsClass.getProperty("prototype").asObject()
     let object = try runtime.createObject(withPrototype: prototype)
@@ -512,6 +511,12 @@ public final class AppContext: NSObject, @unchecked Sendable {
 }
 
 // MARK: - Public exceptions
+
+public class JavaScriptClassNotFoundException: Exception, @unchecked Sendable {
+  public override var reason: String {
+    "Unable to find a JavaScript class in the class registry"
+  }
+}
 
 // Deprecated since v1.0.0
 @available(*, deprecated, renamed: "Exceptions.AppContextLost")

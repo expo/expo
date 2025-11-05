@@ -3,11 +3,15 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
-import { ColorValue } from 'react-native';
+import { requireNativeModule } from 'expo';
 
 import { animation } from './animation/index';
+import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
+import type { Color } from './types';
+
+const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
  * Creates a modifier with an event listener.
@@ -19,28 +23,6 @@ function createModifierWithEventListener(
 ): ModifierConfig {
   return { $type: type, ...params, eventListener };
 }
-
-type NamedColor =
-  | 'primary'
-  | 'secondary'
-  | 'red'
-  | 'orange'
-  | 'yellow'
-  | 'green'
-  | 'blue'
-  | 'purple'
-  | 'pink'
-  | 'white'
-  | 'gray'
-  | 'black'
-  | 'clear'
-  | 'mint'
-  | 'teal'
-  | 'cyan'
-  | 'indigo'
-  | 'brown';
-
-type Color = string | ColorValue | NamedColor;
 
 // =============================================================================
 // Built-in Modifier Functions
@@ -61,13 +43,6 @@ export const listSectionSpacing = (spacing: 'default' | 'compact' | number) => {
 
   return createModifier('listSectionSpacing', { spacing });
 };
-
-/**
- * Sets the background of a view.
- * @param color - The background color (hex string). For example, `#FF0000`.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/background(_:alignment:)).
- */
-export const background = (color: Color) => createModifier('background', { color });
 
 /**
  * Applies corner radius to a view.
@@ -125,7 +100,7 @@ export const frame = (params: {
  * @param params - The padding parameters: `top`, `bottom`, `leading`, `trailing`, `horizontal`, `vertical` and `all`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/padding(_:_:)).
  */
-export const padding = (params: {
+export const padding = (params?: {
   top?: number;
   bottom?: number;
   leading?: number;
@@ -186,6 +161,20 @@ export const onAppear = (handler: () => void) =>
  */
 export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
+
+/**
+ * Marks a view as refreshable. Adds pull-to-refresh functionality.
+ * @param handler - Async function to call when refresh is triggered.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/refreshable(action:)).
+ */
+export const refreshable = (handler: () => Promise<void>) =>
+  createModifierWithEventListener('refreshable', async (args: { id: string }) => {
+    try {
+      await handler();
+    } finally {
+      await ExpoUI.completeRefresh(args.id);
+    }
+  });
 
 // Note: Complex gesture modifiers like onDragGesture are not available
 // in the modifier system. Use component-level props instead.
@@ -727,6 +716,68 @@ export const font = (params: {
   /** Font design for system fonts */
   design?: 'default' | 'rounded' | 'serif' | 'monospaced';
 }) => createModifier('font', params);
+/**
+ * Asks grid layouts not to offer the view extra size in the specified axes.
+ * @param axes - The dimensions in which the grid shouldn’t offer the view a share of any available space. This prevents a flexible view like a Spacer, Divider, or Color from defining the size of a row or column.
+ * @returns A view that doesn’t ask an enclosing grid for extra size in one or more axes.
+ */
+export const gridCellUnsizedAxes = (axes?: 'horizontal' | 'vertical') =>
+  createModifier('gridCellUnsizedAxes', { axes });
+/**
+ * Tells a view that acts as a cell in a grid to span the specified number of columns.
+ * @param count - The number of columns that the view should consume when placed in a grid row.
+ * @returns A view that occupies the specified number of columns in a grid row.
+ */
+export const gridCellColumns = (count?: number) => createModifier('gridCellColumns', { count });
+/**
+ * Overrides the default horizontal alignment of the grid column that the view appears in.
+ * @param alignment - The HorizontalAlignment guide to use for the grid column that the view appears in.
+ * @returns A view that uses the specified horizontal alignment, and that causes all cells in the same column of a grid to use the same alignment.
+ * @platform iOS 16+
+ */
+export const gridColumnAlignment = (alignment?: 'leading' | 'center' | 'trailing') =>
+  createModifier('gridColumnAlignment', { alignment });
+/**
+ * Specifies a custom alignment anchor for a view that acts as a grid cell.
+ * @param anchor - The unit point that defines how to align the view within the bounds of its grid cell.
+ * @returns A view that uses the specified anchor point to align its content.
+ * @platform iOS 16+
+ *
+ * @example
+ * ```tsx
+ * // Using a preset anchor
+ * <Rectangle
+ *   modifiers={[
+ *     gridCellAnchor({ type: 'preset', anchor: 'center' }),
+ *   ]}
+ * />
+ *
+ * // Using a custom anchor point
+ * <Rectangle
+ *   modifiers={[
+ *     gridCellAnchor({ type: 'custom', points: { x: 0.3, y: 0.8 } }),
+ *   ]}
+ * />
+ * ```
+ */
+export const gridCellAnchor = (
+  anchor:
+    | {
+        type: 'preset';
+        anchor:
+          | 'zero'
+          | 'leading'
+          | 'center'
+          | 'trailing'
+          | 'topLeading'
+          | 'top'
+          | 'topTrailing'
+          | 'bottomLeading'
+          | 'bottom'
+          | 'bottomTrailing';
+      }
+    | { type: 'custom'; points: { x: number; y: number } }
+) => createModifier('gridCellAnchor', anchor);
 
 // =============================================================================
 // Type Definitions
@@ -799,7 +850,11 @@ export type BuiltInModifier =
   | ReturnType<typeof badgeProminence>
   | ReturnType<typeof badge>
   | ReturnType<typeof listSectionMargins>
-  | ReturnType<typeof font>;
+  | ReturnType<typeof font>
+  | ReturnType<typeof gridCellUnsizedAxes>
+  | ReturnType<typeof gridCellColumns>
+  | ReturnType<typeof gridColumnAlignment>
+  | ReturnType<typeof gridCellAnchor>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -843,3 +898,6 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 
 export * from './animation/index';
 export * from './containerShape';
+export * from './shapes/index';
+export * from './background';
+export type * from './types';
