@@ -169,7 +169,11 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 - (void)setShadowNodeSize:(float)width height:(float)height
 {
   if (_state) {
-    _state->updateState(ExpoViewState(width,height));
+#if REACT_NATIVE_TARGET_VERSION >= 82
+    _state->updateState(ExpoViewState(width,height), EventQueue::UpdateMode::unstable_Immediate);
+#else
+    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
+#endif
   }
 }
 

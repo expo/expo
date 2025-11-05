@@ -1,184 +1,57 @@
 import {
-  Button as ButtonPrimitive,
+  Button,
   CircularProgress,
+  Form,
   Host,
+  HStack,
   Image,
   Label,
   Text,
+  List,
   VStack,
+  Section,
+  Rectangle,
+  BottomSheet,
 } from '@expo/ui/swift-ui';
-import {
-  background,
-  fixedSize,
-  foregroundStyle,
-  padding,
-  shapes,
-} from '@expo/ui/swift-ui/modifiers';
+import { background, frame } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text as RNText, View } from 'react-native';
+import { requireNativeViewManager } from 'expo-modules-core';
 
-import { Page, Section } from '../../components/Page';
+const RNHostView = requireNativeViewManager('ExpoUI', 'RNHostView');
+
+console.log('RNHostView', RNHostView);
 
 export default function ButtonScreen() {
+  const [isOpened, setIsOpened] = React.useState<boolean>(false);
   return (
-    <Page>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Section title="With Label">
-          <Button style={styles.button}>
-            <Label
-              title="Default Padding"
-              systemImage="gear"
-              modifiers={[
-                foregroundStyle('black'),
-                padding(),
-                background('yellow', shapes.capsule()),
-              ]}
-            />
-          </Button>
-          <Button style={styles.button}>
-            <Label
-              title="No Padding"
-              systemImage="gear"
-              modifiers={[foregroundStyle('black'), padding({ all: 0 }), background('yellow')]}
-            />
-          </Button>
-          <Button style={styles.button}>
-            <Label
-              title="Custom Padding"
-              modifiers={[
-                foregroundStyle('black'),
-                padding({ horizontal: 20, vertical: 8 }),
-                background('yellow'),
-              ]}
-            />
-          </Button>
-        </Section>
-        <Section title="Default">
-          <Button style={styles.button}>Test</Button>
-        </Section>
-        <Section title="System Styles">
-          <Button style={styles.button} variant="default">
-            Default
-          </Button>
-          <Button style={styles.button} variant="glass">
-            Glass button
-          </Button>
-          <Button style={styles.button} variant="glassProminent">
-            Glass Prominent
-          </Button>
-          <Button style={styles.button} variant="bordered">
-            Bordered
-          </Button>
-          <Button style={styles.button} variant="borderless">
-            Borderless
-          </Button>
-          <Button style={styles.button} variant="borderedProminent">
-            Bordered Prominent
-          </Button>
-          <Button style={styles.button} variant="plain">
-            Plain
-          </Button>
-        </Section>
-        <Section title="Control Size">
-          <Button
-            style={styles.button}
-            controlSize="mini"
-            variant="glassProminent"
-            modifiers={[fixedSize()]}>
-            Mini glass prominent
-          </Button>
-          <Button style={styles.button} controlSize="small" variant="bordered">
-            Small bordered
-          </Button>
-          <Button style={styles.button} controlSize="regular" variant="glass">
-            Regular glass
-          </Button>
-          <Button style={styles.button} controlSize="large" variant="glassProminent">
-            Large
-          </Button>
-          <Button style={styles.button} controlSize="large" variant="glass">
-            Large glass
-          </Button>
-          <Button
-            style={styles.button}
-            controlSize="extraLarge"
-            variant="glassProminent"
-            systemImage="square.and.arrow.up"
-            color="orange"
-            modifiers={[fixedSize()]}>
-            Extra Large (iOS 17+)
-          </Button>
-        </Section>
-        <Section title="Disabled">
-          <Button style={styles.button} disabled>
-            Disabled
-          </Button>
-          <Button style={styles.button}>Enabled</Button>
-        </Section>
-        <Section title="Button Roles">
-          <Button style={styles.button} role="default">
-            Default
-          </Button>
-          <Button style={styles.button} role="cancel">
-            Cancel
-          </Button>
-          <Button style={styles.button} role="destructive">
-            Destructive
-          </Button>
-        </Section>
-        <Section title="Button Images">
-          <Button variant="bordered" style={styles.button} systemImage="folder">
-            Folder
-          </Button>
-          <Button style={styles.button} systemImage="tortoise">
-            Tortoise
-          </Button>
-          <Button variant="borderless" style={styles.button} systemImage="trash">
-            Trash
-          </Button>
-          <Button style={styles.button} systemImage="heart">
-            Heart
-          </Button>
-          <Button style={styles.button} systemImage="gear" variant="glass" />
-        </Section>
-        <Section title="Tinted Buttons">
-          <Button style={styles.button} color="#f00f0f">
-            Red
-          </Button>
-        </Section>
-        <Section title="Custom children">
-          <Host style={styles.buttonHost}>
-            <ButtonPrimitive>
-              <VStack spacing={4}>
-                <Image systemName="folder" />
-                <Text>Folder</Text>
-              </VStack>
-            </ButtonPrimitive>
-          </Host>
-          <Host style={styles.buttonHost}>
-            <ButtonPrimitive>
-              <CircularProgress color="blue" />
-            </ButtonPrimitive>
-          </Host>
-        </Section>
-        <Section title="interpolated strings">
-          <Button style={styles.button} color="#FF6347">
-            {/* eslint-disable-next-line */}
-            Hello {'world'}
-          </Button>
-        </Section>
-      </ScrollView>
-    </Page>
-  );
-}
-
-function Button(
-  props: React.ComponentProps<typeof ButtonPrimitive> & { style?: StyleProp<ViewStyle> }
-) {
-  const { style, ...restProps } = props;
-  return (
-    <Host matchContents style={style}>
-      <ButtonPrimitive {...restProps}>{props.children}</ButtonPrimitive>
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={10}>
+        <Rectangle />
+        <RNHostView>
+          <Pressable
+            onPress={() => {
+              console.log('Pressable onPress');
+              setIsOpened(true);
+            }}
+            style={{ flex: 1, backgroundColor: 'red' }}></Pressable>
+        </RNHostView>
+        <BottomSheet
+          isOpened={isOpened}
+          onIsOpenedChange={setIsOpened}
+          presentationDetents={['medium', 'large']}>
+          <RNHostView>
+            <Pressable
+              testID="Hello world"
+              style={{ flex: 1, backgroundColor: 'pink' }}
+              onPress={() => {
+                console.log('Pressable onPress 13');
+              }}>
+              <View style={{ width: 100, height: 100, backgroundColor: 'blue' }} />
+            </Pressable>
+          </RNHostView>
+        </BottomSheet>
+      </VStack>
     </Host>
   );
 }

@@ -5,6 +5,7 @@ import ExpoModulesCore
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
+    View(RNHostView.self) {}
 
     OnDestroy {
       Task { @MainActor in
@@ -63,7 +64,8 @@ public final class ExpoUIModule: Module {
     View(GridRowView.self)
 
     View(HostView.self)
-
+//    View(RNHostView.self)
+    
     // MARK: - Expo UI Views
 
     ExpoUIView(BottomSheetView.self)

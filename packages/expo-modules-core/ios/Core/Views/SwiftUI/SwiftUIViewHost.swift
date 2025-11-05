@@ -58,3 +58,14 @@ extension ExpoSwiftUI {
     }
   }
 }
+
+// SwiftUIHost 
+//   SwiftUI
+
+// SwiftUIHost position and dimension is set by yoga layout system initially. SwiftUI updates the dimension if matchContents is true.
+
+
+// RNHost
+//   RNComponent
+
+// RNHost position and dimension are set by SwiftUI layout system initially. Yoga updates the dimension
