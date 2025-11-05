@@ -23,11 +23,7 @@
 
 #endif
 
-#if REACT_NATIVE_TARGET_VERSION >= 73
-
 #include <ReactCommon/NativeMethodCallInvokerHolder.h>
-
-#endif
 
 #include <memory>
 
