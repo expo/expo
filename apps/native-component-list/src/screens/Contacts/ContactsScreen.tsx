@@ -119,7 +119,6 @@ function ContactsView({ navigation }: Props) {
   const [selectedContact, setSelectedContact] = React.useState<Contacts.ExistingContact | null>(
     null
   );
-  const [hasContacts] = useResolvedValue(Contacts.hasContactsAsync);
 
   const onPressItem = React.useCallback(
     (id: string) => {
@@ -231,13 +230,6 @@ function ContactsView({ navigation }: Props) {
                   Check if contacts exist (hasContactsAsync)
                 </Text>
               </TouchableOpacity>
-              {hasContacts !== null && (
-                <Text style={styles.infoText}>
-                  {hasContacts
-                    ? '✓ Contacts are available on this device'
-                    : 'No contacts found on this device'}
-                </Text>
-              )}
             </View>
           </>
         )}
