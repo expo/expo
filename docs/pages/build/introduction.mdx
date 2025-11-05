@@ -1,60 +1,637 @@
----
-title: EAS Build
-sidebar_title: Introduction
-hideTOC: true
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+import React, { useState, useRef, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  SafeAreaView,
+  Modal,
+  Animated,
+  Dimensions,
+  Share,
+  Image,
+} from "react-native";
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+/*
+TẶNG SAO PRO - React Native demo for Snack/Expo
+Features:
+- Owner: Trần Bảo Long (MASTER key: LONG_ADMIN_2025)
+- Admin code: ADMIN100K or simulated payment 100k
+- Initial users list provided
+- Star color thresholds and rainbow
+- Progress bar, 7-day bar chart
+- Milestone celebration effect (10,30,70,100,500,1000)
+- Share button (text share)
+- Avatar frames unlocked by milestones; user can change frame
+*/
 
-import { BoxLink } from '~/ui/components/BoxLink';
+const OWNER_MASTER_KEY = "LONG_ADMIN_2025";
+const ADMIN_CODE = "ADMIN100K";
+const MILESTONES = [10, 30, 70, 100, 500, 1000];
 
-**EAS Build** is a hosted service for building app binaries for your Expo and React Native projects.
+const DEFAULT_REWARDS = [
+  { id: "r10", name: "2 cây kẹo", cost: 10, emoji: "🍬" },
+  { id: "r30", name: "Bánh chuối", cost: 30, emoji: "🍌" },
+  { id: "r70", name: "Trà sữa", cost: 70, emoji: "🧋" },
+  { id: "r100", name: "Mì cay 10k", cost: 100, emoji: "🍜" },
+];
 
-It makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using ad hoc and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+const INITIAL_USERS = [
+  { id: "u_owner", name: "Trần Bảo Long", stars: 250, role: "owner", history: [10, 20, 30, 40, 30, 60, 60], celebrated: [], frame: "gold" },
+  { id: "u1", name: "Lê Ngọc Trầm", stars: 12, role: "player", history: [1, 2, 3, 1, 1, 2, 2], celebrated: [], frame: "default" },
+  { id: "u2", name: "Thái Lý Thụy", stars: 5, role: "player", history: [0, 1, 0, 1, 2, 0, 1], celebrated: [], frame: "default" },
+  { id: "u3", name: "Huỳnh Ngọc Tiến", stars: 35, role: "player", history: [5, 5, 4, 6, 5, 5, 5], celebrated: [], frame: "pink" },
+  { id: "u4", name: "Lê Tấm Lâm", stars: 72, role: "player", history: [10, 0, 10, 20, 10, 10, 12], celebrated: [], frame: "lightblue" },
+  { id: "u5", name: "Lê Minh Trọng", stars: 90, role: "player", history: [5, 10, 10, 10, 10, 20, 25], celebrated: [], frame: "purple" },
+  { id: "u6", name: "Nguyễn Phú Sang", stars: 8, role: "player", history: [0, 1, 2, 0, 2, 1, 2], celebrated: [], frame: "default" },
+  { id: "u7", name: "Lê Nguyễn Phước Tường", stars: 3, role: "player", history: [0, 0, 0, 1, 1, 1, 0], celebrated: [], frame: "default" },
+  { id: "u8", name: "Trần Công Cẩn", stars: 500, role: "player", history: [50, 50, 50, 50, 50, 50, 50], celebrated: [], frame: "green" },
+  { id: "u9", name: "Bạch Trung Kiên", stars: 15, role: "player", history: [2, 2, 3, 3, 2, 1, 2], celebrated: [], frame: "gold" },
+  { id: "u10", name: "Võ Tấn Đạt", stars: 1050, role: "player", history: [100, 100, 150, 200, 200, 200, 200], celebrated: [], frame: "rainbow" },
+];
 
-It's designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+export default function App() {
+  const [users, setUsers] = useState(INITIAL_USERS);
+  const [rewards, setRewards] = useState(DEFAULT_REWARDS);
 
-### Get started
+  // UI state
+  const [view, setView] = useState("home"); // home / profile / admin
+  const [query, setQuery] = useState("");
+  const [nameInput, setNameInput] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [sessionAs, setSessionAs] = useState(null); // acting user
+  const [ownerKeyInput, setOwnerKeyInput] = useState("");
+  const [adminKeyInput, setAdminKeyInput] = useState("");
 
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
+  // Celebration modal state
+  const [celebrationVisible, setCelebrationVisible] = useState(false);
+  const [celebrationData, setCelebrationData] = useState({ name: "", milestone: 0, emoji: "🌟" });
+  const starAnim = useRef(new Animated.Value(0)).current;
+  const overlayAnim = useRef(new Animated.Value(0)).current;
 
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
+  // Avatar frames available and unlock thresholds
+  const FRAMES = [
+    { id: "default", name: "Default", unlock: 0, color: "#ccc" },
+    { id: "gold", name: "Gold", unlock: 10, color: "#FFD700" },
+    { id: "pink", name: "Pink", unlock: 30, color: "#F06292" },
+    { id: "lightblue", name: "LightBlue", unlock: 70, color: "#4FC3F7" },
+    { id: "purple", name: "Purple", unlock: 100, color: "#8E24AA" },
+    { id: "green", name: "Green", unlock: 500, color: "#00C853" },
+    { id: "rainbow", name: "Rainbow", unlock: 1000, color: "rainbow" },
+  ];
 
-<BoxLink
-  title="Automate submissions"
-  description="Learn how you can have the service take your successful builds and handle uploading them to app stores for you automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
+  // Helpers
+  const findByName = (n) => users.find((u) => u.name.toLowerCase() === n.trim().toLowerCase());
+  const findById = (id) => users.find((u) => u.id === id);
 
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
+  // color determination
+  const getStarColor = (s) => {
+    if (s >= 1000) return ["#FF3CAC", "#FF8A00", "#FFD700", "#00C853", "#00B0FF", "#7C4DFF", "#E91E63"]; // rainbow array
+    if (s >= 500) return "#00C853";
+    if (s >= 100) return "#8E24AA";
+    if (s >= 70) return "#4FC3F7";
+    if (s >= 30) return "#F06292";
+    if (s >= 10) return "#FFD700";
+    return "#FFD700"; // you asked 0 sao màu vàng too
+  };
 
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, but you can also run it on your own machine, for example, to debug or to comply with any company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
+  // open celebration modal if crossing milestone(s)
+  const checkCelebration = (oldStars, newStars, user) => {
+    // find milestones crossed by this update that are not yet celebrated for this user
+    const newly = MILESTONES.filter((m) => oldStars < m && newStars >= m && !(user.celebrated || []).includes(m));
+    if (newly.length === 0) return;
+    // celebrate the smallest one (first) now
+    const milestone = newly[0];
+    setCelebrationData({ name: user.name, milestone, emoji: "🌟" });
+    // mark celebrated
+    setUsers((old) => old.map((u) => (u.id === user.id ? { ...u, celebrated: [...(u.celebrated || []), milestone] } : u)));
+    showCelebrationModal(user.name, milestone);
+  };
 
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+  // animate and show modal
+  const showCelebrationModal = (name, milestone) => {
+    setCelebrationVisible(true);
+    overlayAnim.setValue(0);
+    starAnim.setValue(0);
+    Animated.sequence([
+      Animated.timing(overlayAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
+      Animated.spring(starAnim, { toValue: 1, friction: 4, useNativeDriver: true }),
+    ]).start();
+  };
+
+  const hideCelebration = () => {
+    Animated.timing(overlayAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
+      setCelebrationVisible(false);
+    });
+  };
+
+  // update stars and history; triggers checkCelebration
+  const updateStars = (userId, delta) => {
+    setUsers((old) =>
+      old.map((u) => {
+        if (u.id !== userId) return u;
+        const oldStars = u.stars;
+        const newStars = Math.max(0, oldStars + delta);
+        const h = [...u.history];
+        h[h.length - 1] = Math.max(0, (h[h.length - 1] || 0) + delta);
+        // schedule check after state update via closure: we'll handle below by returning new state and then check separately
+        return { ...u, stars: newStars, history: h };
+      })
+    );
+    // after state update, run check via timeout to read updated state
+    setTimeout(() => {
+      const u = findById(userId);
+      if (!u) return;
+      const oldStars = u.stars - delta;
+      checkCelebration(oldStars, u.stars, u);
+    }, 50);
+  };
+
+  // promote functions
+  const appointByOwner = (targetName, ownerName) => {
+    const owner = findByName(ownerName);
+    if (!owner || owner.role !== "owner") return Alert.alert("Lỗi", "Chỉ Chủ có quyền bổ nhiệm miễn phí.");
+    const target = findByName(targetName);
+    if (!target) return Alert.alert("Không tìm thấy", "Người được bổ nhiệm không tồn tại.");
+    if (target.role === "admin" || target.role === "owner") return Alert.alert("Info", "Người này đã là Phó/Chủ.");
+    setUsers((old) => old.map((u) => (u.id === target.id ? { ...u, role: "admin" } : u)));
+    Alert.alert("Bổ nhiệm", `${target.name} đã được Chủ ${owner.name} bổ nhiệm làm PHÓ miễn phí.`);
+  };
+
+  const appointByCodeOrPayment = (targetName, code) => {
+    const target = findByName(targetName);
+    if (!target) return Alert.alert("Không tìm thấy", "Người cần nâng cấp không tồn tại.");
+    if (target.role === "admin" || target.role === "owner") return Alert.alert("Info", "Người này đã là Phó/Chủ.");
+    if (code === ADMIN_CODE) {
+      setUsers((old) => old.map((u) => (u.id === target.id ? { ...u, role: "admin" } : u)));
+      return Alert.alert("Nâng cấp", `${target.name} đã trở thành PHÓ bằng mã.`);
+    }
+    Alert.alert("Thanh toán 100.000 VNĐ (Giả lập)", `Xác nhận nạp 100.000 VNĐ cho ${target.name}?`, [
+      { text: "Huỷ" },
+      {
+        text: "Đồng ý",
+        onPress: () => {
+          setUsers((old) => old.map((u) => (u.id === target.id ? { ...u, role: "admin" } : u)));
+          Alert.alert("Hoàn tất", `${target.name} đã trở thành PHÓ (qua thanh toán giả lập).`);
+        },
+      },
+    ]);
+  };
+
+  const setOwnerByKey = (targetName, key) => {
+    if (key !== OWNER_MASTER_KEY) return Alert.alert("Key sai", "Mã chủ không đúng.");
+    const target = findByName(targetName);
+    if (!target) return Alert.alert("Không tìm thấy", "Người này chưa tồn tại.");
+    setUsers((old) =>
+      old.map((u) => {
+        if (u.id === target.id) return { ...u, role: "owner" };
+        if (u.role === "owner") return { ...u, role: "player" };
+        return u;
+      })
+    );
+    Alert.alert("Gán chủ", `${target.name} là Chủ mới.`);
+  };
+
+  const addReward = (name, cost) => {
+    if (!name || !cost) return Alert.alert("Nhắc", "Nhập tên và số sao.");
+    const r = { id: "r" + Date.now(), name, cost: Number(cost), emoji: "🎁" };
+    setRewards((s) => [r, ...s]);
+    Alert.alert("Đã thêm quà", `${name} (${cost} sao).`);
+  };
+
+  // avatar frame change
+  const changeFrame = (userId, frameId) => {
+    const frame = FRAMES.find((f) => f.id === frameId);
+    if (!frame) return;
+    setUsers((old) => old.map((u) => (u.id === userId ? { ...u, frame: frameId } : u)));
+    Alert.alert("Khung ảnh", `Đã đổi khung thành ${frame.name}`);
+  };
+
+  // share function
+  const shareMilestone = async (name, milestone) => {
+    try {
+      const message = `🎉 ${name} vừa đạt ${milestone} sao trên Ứng dụng Tặng Sao! Cùng chúc mừng nhé 🎉`;
+      await Share.share({ message });
+    } catch (e) {
+      Alert.alert("Lỗi", "Không thể chia sẻ lúc này.");
+    }
+  };
+
+  // progress percent helper
+  const progressPercent = (s) => {
+    const sorted = [...rewards].sort((a, b) => a.cost - b.cost);
+    const next = sorted.find((r) => r.cost > s);
+    if (!next) return 100;
+    const prev = sorted.reduce((acc, r) => (r.cost < next.cost && r.cost > acc ? r.cost : acc), 0);
+    const span = next.cost - prev || 1;
+    return Math.round(((s - prev) / span) * 100);
+  };
+
+  const listFiltered = users.filter((u) => u.name.toLowerCase().includes(query.trim().toLowerCase()));
+
+  // celebration modal render
+  const CelebrationModal = () => {
+    const { width, height } = Dimensions.get("window");
+    const scale = starAnim.interpolate({ inputRange: [0, 1], outputRange: [0.2, 1.4] });
+    const rotate = starAnim.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
+    const opacity = overlayAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 0.9] });
+
+    if (!celebrationVisible) return null;
+    const { name, milestone } = celebrationData;
+    const frameEmoji = milestone >= 1000 ? "🌈" : "🌟";
+
+    return (
+      <Modal transparent visible={celebrationVisible} animationType="none">
+        <View style={{ flex: 1 }}>
+          <Animated.View style={[styles.overlay, { opacity }]} />
+          <View style={styles.celebrationCenter}>
+            <Animated.View style={{ transform: [{ scale }, { rotate }] }}>
+              <View style={styles.starCircle}>
+                <Text style={{ fontSize: 56 }}>{frameEmoji}</Text>
+              </View>
+            </Animated.View>
+
+            <Text style={styles.celebrationText}>🎉 Chúc mừng {name} đạt {milestone} sao! 🎉</Text>
+
+            <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
+              <TouchableOpacity style={[styles.btn, { backgroundColor: "#ff8a65" }]} onPress={() => { shareMilestone(name, milestone); }}>
+                <Text style={{ color: "#fff" }}>Chia sẻ</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.btn, { backgroundColor: "#777" }]} onPress={() => hideCelebration()}>
+                <Text style={{ color: "#fff" }}>Đóng</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+  // Subcomponents for profile view: star color preview & chart
+  function StarColorPreview({ value = 0 }) {
+    const get = (s) => {
+      if (s >= 1000) return ["#FF3CAC", "#FF8A00", "#FFD700", "#00C853", "#00B0FF", "#7C4DFF", "#E91E63"];
+      if (s >= 500) return "#00C853";
+      if (s >= 100) return "#8E24AA";
+      if (s >= 70) return "#4FC3F7";
+      if (s >= 30) return "#F06292";
+      if (s >= 10) return "#FFD700";
+      return "#FFD700"; // 0 sao is yellow as requested
+    };
+    const col = get(value);
+    if (Array.isArray(col)) {
+      return (
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {col.map((c, i) => <View key={i} style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: c, marginRight: 4 }} />)}
+        </View>
+      );
+    }
+    return <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: col }} />;
+  }
+
+  function ProgressBar({ percent = 0, color = "#FFD700", rainbow = false }) {
+    if (rainbow) {
+      return (
+        <View style={{ height: 18, width: "100%", borderRadius: 12, backgroundColor: "#eee", overflow: "hidden" }}>
+          <View style={{ height: "100%", width: `${Math.max(0, Math.min(100, percent))}%`, flexDirection: "row" }}>
+            <View style={{ flex: 1, backgroundColor: "#FF3CAC" }} />
+            <View style={{ flex: 1, backgroundColor: "#FF8A00" }} />
+            <View style={{ flex: 1, backgroundColor: "#FFD700" }} />
+            <View style={{ flex: 1, backgroundColor: "#00C853" }} />
+            <View style={{ flex: 1, backgroundColor: "#00B0FF" }} />
+            <View style={{ flex: 1, backgroundColor: "#7C4DFF" }} />
+            <View style={{ flex: 1, backgroundColor: "#E91E63" }} />
+          </View>
+        </View>
+      );
+    }
+    return (
+      <View style={{ height: 18, width: "100%", borderRadius: 12, backgroundColor: "#eee" }}>
+        <View style={{ height: "100%", width: `${Math.max(0, Math.min(100, percent))}%`, backgroundColor: color, borderRadius: 12 }} />
+      </View>
+    );
+  }
+
+  function SimpleBarChart({ values = [0, 0, 0, 0, 0, 0, 0] }) {
+    const max = Math.max(...values, 1);
+    return (
+      <View style={{ flexDirection: "row", alignItems: "flex-end", height: 120, gap: 6 }}>
+        {values.map((v, i) => (
+          <View key={i} style={{ alignItems: "center", width: 28 }}>
+            <View style={{ height: (v / max) * 100 + 10, width: 20, backgroundColor: "#4FC3F7", borderRadius: 4 }} />
+            <Text style={{ fontSize: 10 }}>{v}</Text>
+          </View>
+        ))}
+      </View>
+    );
+  }
+
+  function AggregateChart({ users = [] }) {
+    const days = 7;
+    const sums = Array(days).fill(0);
+    users.forEach((u) => {
+      for (let i = 0; i < days; i++) sums[i] += (u.history && u.history[i]) || 0;
+    });
+    return <SimpleBarChart values={sums} />;
+  }
+
+  // Profile view
+  if (view === "profile" && selectedUserId) {
+    const u = findById(selectedUserId);
+    if (!u) {
+      setView("home");
+      return null;
+    }
+    const color = getStarColor(u.stars);
+    const isRainbow = u.stars >= 1000;
+    const next = rewards.slice().sort((a, b) => a.cost - b.cost).find((r) => r.cost > u.stars);
+
+    return (
+      <SafeAreaView style={styles.safe}>
+        <ScrollView style={styles.container}>
+          <Text style={styles.header}>👤 Hồ sơ: {u.name}</Text>
+          <Text style={styles.small}>Vai trò: {u.role}</Text>
+
+          <View style={styles.card}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+              <AvatarWithFrame frameId={u.frame} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 20, fontWeight: "700" }}>{isRainbow ? "🌈 " : ""}{u.stars} sao</Text>
+                <View style={{ width: "100%", marginTop: 8 }}>
+                  <ProgressBar percent={progressPercent(u.stars)} color={Array.isArray(color) ? "#FFD700" : color} rainbow={Array.isArray(color)} />
+                </View>
+                <View style={{ marginTop: 8, flexDirection: "row", alignItems: "center" }}>
+                  <Text style={{ marginRight: 8 }}>Màu cấp:</Text>
+                  <StarColorPreview value={u.stars} />
+                </View>
+              </View>
+            </View>
+
+            <Text style={{ marginTop: 10 }}>{next ? `Tiến tới: ${next.name} (${next.cost} sao)` : "Bạn đã đạt tất cả phần quà hiện có!"}</Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Lịch sử 7 ngày</Text>
+            <SimpleBarChart values={u.history || [0, 0, 0, 0, 0, 0, 0]} />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Khung ảnh (avatar)</Text>
+            <Text style={{ fontSize: 12, color: "#666" }}>Mở khóa theo sao: 10,30,70,100,500,1000</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 8 }}>
+              {FRAMES.map((f) => {
+                const unlocked = u.stars >= f.unlock;
+                return (
+                  <TouchableOpacity key={f.id} style={[styles.frameBtn, { borderColor: unlocked ? f.color === "rainbow" ? "#000" : f.color : "#ddd" }]} onPress={() => {
+                    if (!unlocked) return Alert.alert("Khóa", `Cần ${f.unlock} sao để mở khung này.`);
+                    changeFrame(u.id, f.id);
+                  }}>
+                    <View style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: f.id === "rainbow" ? undefined : (unlocked ? f.color : "#fff"), justifyContent: "center", alignItems: "center" }}>
+                      <Text>{f.id === "rainbow" ? "🌈" : "🖼️"}</Text>
+                    </View>
+                    <Text style={{ fontSize: 12, marginTop: 4, textAlign: "center" }}>{f.name}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Đổi quà</Text>
+            {rewards.map((r) => (
+              <View key={r.id} style={styles.rewardRow}>
+                <Text style={{ fontSize: 16 }}>{r.emoji} {r.name}</Text>
+                <Text>{r.cost} ⭐</Text>
+                <TouchableOpacity style={styles.smallAction} onPress={() => {
+                  if (u.stars >= r.cost) {
+                    updateStars(u.id, -r.cost);
+                    Alert.alert("Đổi quà", `Đã đổi ${r.name}`);
+                  } else {
+                    Alert.alert("Chưa đủ sao", `Cần thêm ${r.cost - u.stars} sao.`);
+                  }
+                }}>
+                  <Text>Đổi</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Nâng cấp / Bổ nhiệm</Text>
+            <TextInput placeholder="Nhập tên cần nâng cấp / bổ nhiệm" style={styles.input} value={nameInput} onChangeText={setNameInput} />
+            <TextInput placeholder="Mã nâng cấp (ADMIN100K) (nếu có)" style={styles.input} value={adminKeyInput} onChangeText={setAdminKeyInput} />
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <TouchableOpacity style={styles.btn} onPress={() => {
+                if (!nameInput) return Alert.alert("Nhắc", "Nhập tên.");
+                appointByCodeOrPayment(nameInput, adminKeyInput);
+              }}>
+                <Text style={{ color: "#fff" }}>Nâng cấp Phó (100k / mã)</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.btn, { backgroundColor: "#444" }]} onPress={() => {
+                if (!sessionAs) return Alert.alert("Đăng nhập", "Login-as 1 tài khoản Chủ để bổ nhiệm miễn phí.");
+                appointByOwner(u.name, sessionAs);
+              }}>
+                <Text style={{ color: "#fff" }}>Chủ bổ nhiệm Phó miễn phí</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={{ marginTop: 8, fontSize: 12, color: "#666" }}>Để bổ nhiệm miễn phí: Login-as tài khoản Chủ trước.</Text>
+          </View>
+
+          <TouchableOpacity style={[styles.btn, { marginTop: 12 }]} onPress={() => { setSelectedUserId(null); setView("home"); }}>
+            <Text style={{ color: "#fff" }}>Quay lại</Text>
+          </TouchableOpacity>
+        </ScrollView>
+        <CelebrationModal />
+      </SafeAreaView>
+    );
+  }
+
+  // Admin dashboard view
+  if (view === "admin") {
+    const me = sessionAs ? findByName(sessionAs) : null;
+    const isOwner = me && me.role === "owner";
+    const isAdmin = me && (me.role === "admin" || isOwner);
+    return (
+      <SafeAreaView style={styles.safe}>
+        <ScrollView style={styles.container}>
+          <Text style={styles.header}>🛠 BẢNG ĐIỀU KHIỂN</Text>
+          <Text style={styles.small}>Bạn đang hành động: {sessionAs || "Chưa đăng nhập"}</Text>
+          {!isAdmin && <Text style={styles.warning}>Chỉ PHÓ/CHỦ mới thao tác được ở đây.</Text>}
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Danh sách người chơi</Text>
+            {users.map((u) => (
+              <View key={u.id} style={styles.row}>
+                <View>
+                  <Text style={{ fontWeight: "700" }}>{u.name}</Text>
+                  <Text>{u.stars} ⭐ • {u.role}</Text>
+                </View>
+
+                {isAdmin && (
+                  <View style={{ flexDirection: "row" }}>
+                    <TouchableOpacity style={styles.smallBtn} onPress={() => updateStars(u.id, 10)}>+10</TouchableOpacity>
+                    <TouchableOpacity style={styles.smallBtn} onPress={() => updateStars(u.id, -10)}>-10</TouchableOpacity>
+                  </View>
+                )}
+
+                {isOwner && (
+                  <TouchableOpacity style={[styles.smallBtn, { backgroundColor: "#FFD700" }]} onPress={() => appointByOwner(u.name, sessionAs)}>
+                    <Text>⚑ Bổ nhiệm Phó miễn phí</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Thêm phần quà</Text>
+            <AddRewardForm onAdd={addReward} />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Biểu đồ tổng (7 ngày)</Text>
+            <AggregateChart users={users} />
+          </View>
+
+          <TouchableOpacity style={[styles.btn, { backgroundColor: "#444" }]} onPress={() => setView("home")}>
+            <Text style={{ color: "#fff" }}>Quay về Home</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  // Home view
+  return (
+    <SafeAreaView style={styles.safe}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.header}>🌟 ỨNG DỤNG TẶNG SAO PRO</Text>
+        <Text style={styles.small}>Chủ hiện tại: {users.find((u) => u.role === "owner")?.name || "Chưa có"}</Text>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>1) Tạo tài khoản</Text>
+          <TextInput placeholder="Nhập họ tên..." style={styles.input} value={nameInput} onChangeText={setNameInput} />
+          <TouchableOpacity style={styles.btn} onPress={() => createUser(nameInput)}>
+            <Text style={{ color: "#fff" }}>Tạo tài khoản</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>2) Tìm / Mở tài khoản</Text>
+          <TextInput placeholder="Nhập tên để tìm..." style={styles.input} value={query} onChangeText={setQuery} />
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <TouchableOpacity style={styles.btn} onPress={() => openUserByName(query)}>
+              <Text style={{ color: "#fff" }}>Mở tài khoản</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.btn, { backgroundColor: "#6B46C1" }]} onPress={() => {
+              if (!query) return Alert.alert("Nhắc", "Nhập tên để login as.");
+              loginAs(query);
+            }}>
+              <Text style={{ color: "#fff" }}>Login as (tạm)</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={{ marginTop: 10, fontWeight: "700" }}>Kết quả</Text>
+          {listFiltered.map(u => (
+            <TouchableOpacity key={u.id} style={styles.listItem} onPress={() => openUser(u.id)}>
+              <View>
+                <Text style={{ fontWeight: "800" }}>{u.name}</Text>
+                <Text>{u.stars} ⭐ • {u.role}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>3) Gán Chủ mới (bí mật)</Text>
+          <TextInput placeholder="Tên người muốn gán làm Chủ" style={styles.input} value={nameInput} onChangeText={setNameInput} />
+          <TextInput placeholder="Mã chủ (LONG_ADMIN_2025)" style={styles.input} value={ownerKeyInput} onChangeText={setOwnerKeyInput} />
+          <TouchableOpacity style={styles.btn} onPress={() => { if (!nameInput || !ownerKeyInput) return Alert.alert("Nhắc", "Nhập tên & mã chủ"); setOwnerByKey(nameInput, ownerKeyInput); }}>
+            <Text style={{ color: "#fff" }}>Gán Chủ (bí mật)</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>4) Rewards hiện có</Text>
+          {rewards.map(r => (
+            <View key={r.id} style={styles.rewardRow}>
+              <Text style={{ fontSize: 16 }}>{r.emoji} {r.name}</Text>
+              <Text>{r.cost} ⭐</Text>
+            </View>
+          ))}
+        </View>
+
+        <TouchableOpacity style={[styles.btn, { backgroundColor: "#2b6cb0" }]} onPress={() => {
+          if (!sessionAs) return Alert.alert("Đăng nhập", "Hãy Login as một tài khoản (tạm) để vào Bảng Điều Khiển.");
+          const me = findByName(sessionAs);
+          if (!me || (me.role !== "admin" && me.role !== "owner")) return Alert.alert("Quyền", "Cần là Phó/Chủ để truy cập bảng điều khiển.");
+          setView("admin");
+        }}>
+          <Text style={{ color: "#fff" }}>Mở Bảng Điều Khiển (Phó/Chủ)</Text>
+        </TouchableOpacity>
+
+        <View style={{ height: 40 }} />
+
+        <CelebrationModal />
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+/* Small helper components */
+
+function AvatarWithFrame({ frameId = "default" }) {
+  const frame = FRAMES.find((f) => f.id === frameId) || FRAMES[0];
+  const styleFrame = frame.id === "rainbow" ? { borderWidth: 3, borderRadius: 12, padding: 2, borderColor: "#000" } : { borderWidth: 3, borderColor: frame.color, borderRadius: 12, padding: 2 };
+  return (
+    <View style={styleFrame}>
+      <View style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: "#eee", justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontSize: 24 }}>🙂</Text>
+      </View>
+    </View>
+  );
+}
+
+function AddRewardForm({ onAdd }) {
+  const [n, setN] = useState("");
+  const [c, setC] = useState("");
+  return (
+    <View style={{ marginTop: 8 }}>
+      <TextInput placeholder="Tên quà" style={styles.input} value={n} onChangeText={setN} />
+      <TextInput placeholder="Cần bao nhiêu sao?" style={styles.input} value={c} onChangeText={setC} keyboardType="number-pad" />
+      <TouchableOpacity style={styles.btn} onPress={() => { if (!n || !c) return Alert.alert("Nhắc", "Nhập đầy đủ"); onAdd(n, c); setN(""); setC(""); }}>
+        <Text style={{ color: "#fff" }}>Thêm quà</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+/* Styles */
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: "#fff" },
+  container: { padding: 16, backgroundColor: "#fff" },
+  header: { fontSize: 22, fontWeight: "800", marginBottom: 8 },
+  small: { fontSize: 12, color: "#444", marginBottom: 6 },
+  section: { marginTop: 12, paddingVertical: 12, borderTopWidth: 0.5, borderColor: "#eee" },
+  sectionTitle: { fontWeight: "700", marginBottom: 8 },
+  input: { borderWidth: 1, borderColor: "#ddd", padding: 10, borderRadius: 8, marginBottom: 8 },
+  btn: { backgroundColor: "#2f855a", padding: 12, borderRadius: 10, alignItems: "center", marginTop: 8 },
+  listItem: { padding: 12, borderWidth: 1, borderColor: "#eee", borderRadius: 10, marginBottom: 8 },
+  rewardRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 8 },
+  row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 8 },
+  smallBtn: { borderWidth: 1, borderColor: "#ccc", padding: 6, borderRadius: 8, marginLeft: 8, marginRight: 6 },
+  card: { padding: 12, borderWidth: 1, borderColor: "#eee", borderRadius: 10, marginTop: 8, width: "100%" },
+  rewardItem: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+  smallAction: { padding: 8, borderWidth: 1, borderRadius: 8 },
+  warning: { color: "#B02323", marginBottom: 8 },
+  overlay: { position: "absolute", backgroundColor: "#000", top: 0, left: 0, right: 0, bottom: 0 },
+  celebrationCenter: { position: "absolute", top: "30%", left: 0, right: 0, alignItems: "center" },
+  starCircle: { width: 140, height: 140, borderRadius: 70, backgroundColor: "#fff", justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 10 },
+  celebrationText: { marginTop: 16, fontSize: 18, fontWeight: "700", color: "#fff", textAlign: "center" },
+  frameBtn: { width: 80, marginRight: 12, marginBottom: 12, alignItems: "center" },
+  rewardRowSmall: { flexDirection: "row", alignItems: "center", gap: 8 },
+});
