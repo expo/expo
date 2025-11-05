@@ -170,6 +170,7 @@ export function withExtendedResolver(
     isTsconfigPathsEnabled,
     isExporting,
     isReactServerComponentsEnabled,
+    isFunctionalCSSEnabled,
     getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
@@ -177,6 +178,7 @@ export function withExtendedResolver(
     isTsconfigPathsEnabled?: boolean;
     isExporting?: boolean;
     isReactServerComponentsEnabled?: boolean;
+    isFunctionalCSSEnabled?: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
@@ -434,6 +436,25 @@ export function withExtendedResolver(
         return {
           type: 'empty',
         };
+      }
+      return null;
+    },
+
+    function requestFunctionalCSS(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
+      // This resolution is dev-only to prevent bundling the production React packages in development.
+      if (moduleName.includes('react-native-css-metro-override')) {
+        if (isFunctionalCSSEnabled) {
+          return {
+            type: 'empty',
+          };
+        }
+        throw new Error(
+          `Using functional CSS requires enabling the "experiments.functionalCSS" flag in Expo config`
+        );
       }
       return null;
     },
@@ -901,6 +922,7 @@ export async function withMetroMultiPlatformAsync(
     isExporting,
 
     isReactServerComponentsEnabled,
+    isFunctionalCSSEnabled,
     getMetroBundler,
   }: {
     config: ConfigT;
@@ -911,6 +933,7 @@ export async function withMetroMultiPlatformAsync(
     isExporting?: boolean;
 
     isReactServerComponentsEnabled: boolean;
+    isFunctionalCSSEnabled: boolean;
     isNamedRequiresEnabled: boolean;
     getMetroBundler: () => Bundler;
   }
@@ -981,6 +1004,7 @@ export async function withMetroMultiPlatformAsync(
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,
+    isFunctionalCSSEnabled,
     isReactServerComponentsEnabled,
     getMetroBundler,
   });

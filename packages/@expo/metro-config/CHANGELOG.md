@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for functional CSS. ([#40342](https://github.com/expo/expo/pull/40342) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Fix `transformer.asyncRequireModulePath` polluting cache with absolute path in transform output ([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
