@@ -40,6 +40,7 @@ class DevLauncherViewModel: ObservableObject {
   @Published var isAuthenticating = false
   @Published var user: User?
   @Published var selectedAccountId: String?
+  @Published var isLoadingServer: Bool = false
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -98,12 +99,19 @@ class DevLauncherViewModel: ObservableObject {
       return
     }
 
+    isLoadingServer = true
+
     EXDevLauncherController.sharedInstance().loadApp(
       bundleUrl,
-      onSuccess: nil,
+      onSuccess: { [weak self] in
+        DispatchQueue.main.async {
+          self?.isLoadingServer = false
+        }
+      },
       onError: { [weak self] _ in
         let message = "Failed to connect to \(url)"
         DispatchQueue.main.async {
+          self?.isLoadingServer = false
           self?.showErrorAlert(message)
         }
       })
