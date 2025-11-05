@@ -7,13 +7,8 @@ export type LabeledContentProps = {
   /**
    * The label to be displayed in the labeled content.
    */
-  label?: string;
+  label?: string | React.ReactNode;
   children: React.ReactNode;
-
-  /**
-   * Sets a custom view for the label.
-   */
-  labelView?: React.ReactNode;
 } & CommonViewModifierProps;
 
 const LabeledContentNativeView: React.ComponentType<LabeledContentProps> = requireNativeView(
@@ -38,13 +33,17 @@ const LabeledContentContent: React.ComponentType<object> = requireNativeView(
  * @platform tvos 16.0+
  */
 export function LabeledContent(props: LabeledContentProps) {
-  const { modifiers, labelView, children, ...restProps } = props;
+  const { modifiers, label, children, ...restProps } = props;
+
+  const isLabelString = typeof label === 'string';
+
   return (
     <LabeledContentNativeView
       modifiers={modifiers}
+      label={isLabelString ? label : undefined}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      {labelView && <LabeledContentLabel>{labelView}</LabeledContentLabel>}
+      {label && !isLabelString && <LabeledContentLabel>{label}</LabeledContentLabel>}
       <LabeledContentContent>{children}</LabeledContentContent>
     </LabeledContentNativeView>
   );

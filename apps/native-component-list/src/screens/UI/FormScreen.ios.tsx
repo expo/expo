@@ -42,7 +42,7 @@ export default function FormScreen() {
             <Text>Beto</Text>
           </LabeledContent>
           <LabeledContent
-            labelView={
+            label={
               <>
                 <Text>Single Subtitle</Text>
                 <Text>Subtitle</Text>
@@ -51,7 +51,7 @@ export default function FormScreen() {
             <Text>Single Subtitle Value</Text>
           </LabeledContent>
           <LabeledContent
-            labelView={
+            label={
               <>
                 <Text>Many Subtitles</Text>
                 <Text>Subtitle 1</Text>
