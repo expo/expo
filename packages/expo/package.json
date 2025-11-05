@@ -104,7 +104,7 @@
     "expo-module-scripts": "^5.0.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-native": "0.83.0-nightly-20251030-26ad9492b",
+    "react-native": "0.83.0-nightly-20251104-502efe1cc",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {

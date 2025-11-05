@@ -57,7 +57,6 @@ describe('export embed for RSC iOS', () => {
           E2E_ROUTER_JS_ENGINE: 'hermes',
 
           E2E_RSC_ENABLED: '1',
-          EXPO_USE_METRO_REQUIRE: '1',
           TEST_SECRET_VALUE: 'test-secret',
         },
       }

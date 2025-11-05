@@ -35,18 +35,6 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   }
 }
 
-internal struct BackgroundModifier: ViewModifier, Record {
-  @Field var color: Color?
-
-  func body(content: Content) -> some View {
-    if let color = color {
-      content.background(color)
-    } else {
-      content
-    }
-  }
-}
-
 internal struct CornerRadiusModifier: ViewModifier, Record {
   @Field var radius: CGFloat = 0
 
@@ -1291,14 +1279,6 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   }
 }
 
-internal struct ContainerShapeModifier: ViewModifier, Record {
-  @Field var cornerRadius: CGFloat = 0
-
-  func body(content: Content) -> some View {
-    content.containerShape(.rect(cornerRadius: cornerRadius))
-  }
-}
-
 internal enum ButtonStyle: String, Enumerable {
   case automatic
   case bordered
@@ -1467,6 +1447,10 @@ extension ViewModifierRegistry {
 
     register("onDisappear") { params, appContext, eventDispatcher in
       return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("refreshable") { params, appContext, eventDispatcher in
+      return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
     register("hueRotation") { params, appContext, _ in

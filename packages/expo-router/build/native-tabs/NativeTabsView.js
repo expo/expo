@@ -81,7 +81,7 @@ function Screen(props) {
     // We need to await the icon, as VectorIcon will load asynchronously
     const icon = (0, icon_1.useAwaitedScreensIcon)(options.icon);
     const selectedIcon = (0, icon_1.useAwaitedScreensIcon)(options.selectedIcon);
-    return (<react_native_screens_1.BottomTabsScreen {...options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={(0, icon_1.getRNScreensAndroidIconResourceNameFromAwaitedIcon)(icon)} iconResource={(0, icon_1.getRNScreensAndroidIconResourceFromAwaitedIcon)(icon)} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={options.role} isFocused={isFocused}>
+    return (<react_native_screens_1.BottomTabsScreen {...options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={(0, icon_1.getRNScreensAndroidIconResourceNameFromAwaitedIcon)(icon)} iconResource={(0, icon_1.getRNScreensAndroidIconResourceFromAwaitedIcon)(icon)} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(selectedIcon)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>
       {contentRenderer()}
     </react_native_screens_1.BottomTabsScreen>);
 }

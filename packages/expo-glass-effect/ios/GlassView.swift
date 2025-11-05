@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import React
 
 public final class GlassView: ExpoView {
   private var glassEffect: Any?
@@ -15,6 +16,11 @@ public final class GlassView: ExpoView {
   private var bottomRightRadius: CGFloat?
   private var topLeftRadius: CGFloat?
   private var topRightRadius: CGFloat?
+  
+  private var bottomStartRadius: CGFloat?
+  private var bottomEndRadius: CGFloat?
+  private var topStartRadius: CGFloat?
+  private var topEndRadius: CGFloat?
 
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -27,11 +33,30 @@ public final class GlassView: ExpoView {
   public func updateBorderRadius() {
     if #available(iOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
-      let topLeft = UICornerRadius(floatLiteral: topLeftRadius ?? radius ?? 0)
-      let topRight = UICornerRadius(floatLiteral: topRightRadius ?? radius ?? 0)
-      let bottomLeft = UICornerRadius(floatLiteral: bottomLeftRadius ?? radius ?? 0)
-      let bottomRight = UICornerRadius(floatLiteral: bottomRightRadius ?? radius ?? 0)
-      
+      let isRTL = RCTI18nUtil.sharedInstance()?.isRTL() ?? false
+
+      let finalTopLeft: CGFloat
+      let finalTopRight: CGFloat
+      let finalBottomLeft: CGFloat
+      let finalBottomRight: CGFloat
+
+      if isRTL {
+        finalTopLeft = topLeftRadius ?? topEndRadius ?? radius ?? 0
+        finalTopRight = topRightRadius ?? topStartRadius ?? radius ?? 0
+        finalBottomLeft = bottomLeftRadius ?? bottomEndRadius ?? radius ?? 0
+        finalBottomRight = bottomRightRadius ?? bottomStartRadius ?? radius ?? 0
+      } else {
+        finalTopLeft = topLeftRadius ?? topStartRadius ?? radius ?? 0
+        finalTopRight = topRightRadius ?? topEndRadius ?? radius ?? 0
+        finalBottomLeft = bottomLeftRadius ?? bottomStartRadius ?? radius ?? 0
+        finalBottomRight = bottomRightRadius ?? bottomEndRadius ?? radius ?? 0
+      }
+
+      let topLeft = UICornerRadius(floatLiteral: finalTopLeft)
+      let topRight = UICornerRadius(floatLiteral: finalTopRight)
+      let bottomLeft = UICornerRadius(floatLiteral: finalBottomLeft)
+      let bottomRight = UICornerRadius(floatLiteral: finalBottomRight)
+
       glassEffectView.cornerConfiguration = .corners(
         topLeftRadius: topLeft,
         topRightRadius: topRight,
@@ -91,6 +116,34 @@ public final class GlassView: ExpoView {
   public func setBorderTopRightRadius(_ radius: CGFloat?) {
     if radius != topRightRadius {
       topRightRadius = radius
+      updateBorderRadius()
+    }
+  }
+
+  public func setBorderBottomStartRadius(_ radius: CGFloat?) {
+    if radius != bottomStartRadius {
+      bottomStartRadius = radius
+      updateBorderRadius()
+    }
+  }
+
+  public func setBorderBottomEndRadius(_ radius: CGFloat?) {
+    if radius != bottomEndRadius {
+      bottomEndRadius = radius
+      updateBorderRadius()
+    }
+  }
+
+  public func setBorderTopStartRadius(_ radius: CGFloat?) {
+    if radius != topStartRadius {
+      topStartRadius = radius
+      updateBorderRadius()
+    }
+  }
+
+  public func setBorderTopEndRadius(_ radius: CGFloat?) {
+    if radius != topEndRadius {
+      topEndRadius = radius
       updateBorderRadius()
     }
   }
