@@ -28,8 +28,10 @@ import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
 import chalk from 'chalk';
+import type { RouteNode } from 'expo-router/build/Route';
 import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -56,7 +58,7 @@ import {
 } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import {
+import type {
   BundleAssetWithFileHashes,
   ExportAssetDescriptor,
   ExportAssetMap,
@@ -72,6 +74,11 @@ import {
   evalMetroAndWrapFunctions,
   evalMetroNoHandling,
 } from '../getStaticRenderFunctions';
+import {
+  fromRuntimeManifestRoute,
+  fromServerManifestRoute,
+  type ResolvedLoaderRoute,
+} from './resolveLoader';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DataLoaderModuleMiddleware } from '../middleware/DataLoaderModuleMiddleware';
@@ -382,8 +389,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticRenderFunctionAsync(): Promise<{
     serverManifest: RoutesManifest<string>;
     manifest: ExpoRouterRuntimeManifest;
-    renderAsync: (path: string) => Promise<string>;
+    renderAsync: (
+      path: string,
+      route: RouteNode,
+      opts?: GetStaticContentOptions
+    ) => Promise<string>;
+    executeLoaderAsync: (path: string, route: RouteNode) => Promise<any>;
   }> {
+    const { routerRoot } = this.instanceMetroOptions;
+    assert(
+      routerRoot != null,
+      'The server must be started before calling getStaticRenderFunctionAsync.'
+    );
+
+    const appDir = path.join(this.projectRoot, routerRoot);
     const url = this.getDevServerUrlOrAssert();
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
@@ -406,8 +425,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Get routes from Expo Router.
       manifest: await getManifest({ preserveApiRoutes: false, ...exp.extra?.router }),
       // Get route generating function
-      async renderAsync(path: string) {
-        return await getStaticContent(new URL(path, url));
+      renderAsync: async (path, route, opts?) => {
+        const location = new URL(path, url);
+        return await getStaticContent(location, opts);
+      },
+      executeLoaderAsync: async (path, route) => {
+        const location = new URL(path, url);
+
+        const resolvedLoaderRoute = fromRuntimeManifestRoute(location.pathname, route, {
+          serverManifest: inflateManifest(serverManifest),
+          appDir,
+        });
+
+        if (!resolvedLoaderRoute) {
+          return undefined;
+        }
+
+        return await this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
       },
     };
   }
@@ -505,12 +539,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const location = new URL(pathname, this.getDevServerUrlOrAssert());
 
       const useServerDataLoaders = exp.extra?.router?.unstable_useServerDataLoaders;
-      if (useServerDataLoaders) {
-        const data = await this.executeServerDataLoaderAsync(location, route);
-        return await getStaticContent(location, { loader: { data } });
-      } else {
+      if (!useServerDataLoaders) {
         return await getStaticContent(location);
       }
+
+      const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
+      if (!resolvedLoaderRoute) {
+        return await getStaticContent(location);
+      }
+
+      const data = await this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
+      return await getStaticContent(location, { loader: { data } });
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
@@ -1156,7 +1195,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             this.projectRoot,
             appDir,
             async (location: URL, route: RouteInfo<RegExp>) => {
-              return this.executeServerDataLoaderAsync(location, route);
+              const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
+              if (!resolvedLoaderRoute) {
+                return;
+              }
+              return this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
             },
             () => this.getDevServerUrlOrAssert()
           );
@@ -1560,7 +1603,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
    */
   async executeServerDataLoaderAsync(
     location: URL,
-    route: RouteInfo<RegExp>
+    route: ResolvedLoaderRoute
   ): Promise<Record<string, any> | undefined> {
     const { exp } = getConfig(this.projectRoot);
     const { unstable_useServerDataLoaders } = exp.extra?.router;
@@ -1572,12 +1615,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
     }
 
-    // If the route is unmatched, we can ignore it
-    // TODO(@hassankhan): Is this the best way of determining the route is unmatched?
-    if (route.page === '/+not-found') {
-      return;
-    }
-
     const { routerRoot } = this.instanceMetroOptions;
     assert(
       routerRoot != null,
@@ -1586,20 +1623,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     let loaderData: Record<string, any> | undefined;
 
     try {
-      debug('Matched route loader to file: ', route.file);
+      debug(`Matched ${location.pathname} to file: ${route.file}`);
 
-      // TODO(@hassankhan): This should move to a util function
-      const params: Record<string, string | string[]> = {};
-      const match = route.namedRegex.exec(location.pathname);
-      if (match?.groups) {
-        for (const [key, value] of Object.entries(match.groups)) {
-          const namedKey = route.routeKeys[key];
-          params[namedKey] = value;
-        }
-      }
-
-      let modulePath = route.file;
       const appDir = path.join(this.projectRoot, routerRoot);
+      let modulePath = route.file;
       modulePath = path.isAbsolute(modulePath) ? modulePath : path.join(appDir, modulePath);
       modulePath = modulePath.replace(/\.(js|ts)x?$/, '');
 
@@ -1614,7 +1641,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         this.setupLoaderHmr(modulePath);
 
         loaderData = await routeModule.loader({
-          params,
+          params: route.params,
           // NOTE(@hassankhan): The `request` object should only be available when using SSR
           request: null,
         });
