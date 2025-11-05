@@ -5,7 +5,7 @@ import { Page, Section } from '../components/Page';
 
 export default function ColorScreen() {
   // Needed to trigger re-render on color scheme change on Android
-  useColorScheme();
+  const scheme = useColorScheme();
   const colors = Platform.select({
     ios: [
       { label: 'systemBlue', bg: Color.ios.systemBlue, text: '#fff' },
@@ -15,40 +15,23 @@ export default function ColorScreen() {
     ],
     android: [
       {
-        label: 'primary',
-        bg: Color.android.material.primary,
-        text: Color.android.material.onPrimary,
+        label: 'primary attr',
+        bg: Color.android.attr.colorPrimary,
+        text:
+          scheme === 'dark'
+            ? Color.android.attr.system_on_primary_dark
+            : Color.android.attr.system_on_primary_light,
       },
       {
-        label: 'primary - dynamic',
-        bg: Color.android.material.dynamic.primary,
-        text: Color.android.material.dynamic.onPrimary,
-      },
-      {
-        label: 'secondary',
-        bg: Color.android.material.secondary,
-        text: Color.android.material.onSecondary,
-      },
-      {
-        label: 'secondary - dynamic',
-        bg: Color.android.material.dynamic.secondary,
-        text: Color.android.material.dynamic.onSecondary,
-      },
-      { label: 'error', bg: Color.android.material.error, text: Color.android.material.onError },
-      {
-        label: 'error - dynamic',
-        bg: Color.android.material.dynamic.error,
-        text: Color.android.material.dynamic.onError,
-      },
-      {
-        label: 'surface',
-        bg: Color.android.material.surface,
-        text: Color.android.material.onSurface,
-      },
-      {
-        label: 'surface - dynamic',
-        bg: Color.android.material.dynamic.surface,
-        text: Color.android.material.dynamic.onSurface,
+        label: 'primary system',
+        bg:
+          scheme === 'dark'
+            ? Color.android.system_primary_dark
+            : Color.android.system_primary_light,
+        text:
+          scheme === 'dark'
+            ? Color.android.attr.system_on_primary_dark
+            : Color.android.attr.system_on_primary_light,
       },
     ],
     default: [],
@@ -60,7 +43,7 @@ export default function ColorScreen() {
         flex: 1,
         backgroundColor: Platform.select({
           ios: Color.ios.systemBackground,
-          android: Color.android.material.dynamic.surface,
+          android: Color.android.attr.colorBackground,
           default: '#fff',
         }),
       }}>

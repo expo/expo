@@ -13,5 +13,5 @@ NativeModule as NativeModuleType,
 /** @deprecated Move to `SharedObject` with a type-only import instead */
 SharedObject as SharedObjectType, } from 'expo-modules-core/types';
 export { useEvent, useEventListener } from './hooks/useEvent';
-export { Color, ColorType, AndroidAttrColorName, AndroidBaseColorName, IOSColorName, AndroidMaterialColorName, } from './color';
+export { Color, ColorType, AndroidBaseColorName, AndroidBaseColorAttr, IOSColorName, } from './color';
 //# sourceMappingURL=Expo.d.ts.map

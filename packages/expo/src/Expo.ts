@@ -36,8 +36,7 @@ export { useEvent, useEventListener } from './hooks/useEvent';
 export {
   Color,
   ColorType,
-  AndroidAttrColorName,
   AndroidBaseColorName,
+  AndroidBaseColorAttr,
   IOSColorName,
-  AndroidMaterialColorName,
 } from './color';
