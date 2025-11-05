@@ -208,13 +208,23 @@ function getQualifiedRouteComponent(value) {
             if (isLeaf && stateForPath)
                 store.setFocusedState(stateForPath);
         }), [navigation]);
+        const Suspense = ({ children }) => {
+            if (process.env.NODE_ENV !== 'production' || process.env.EXPO_OS !== 'web') {
+                console.log('Using suspense');
+                return (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+            {children}
+          </react_1.default.Suspense>);
+            }
+            console.log('Not using suspense');
+            return children;
+        };
         return (<Route_1.Route node={value} route={route}>
-        <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+        <Suspense>
           <ScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.
         segment={value.route}/>
-        </react_1.default.Suspense>
+        </Suspense>
       </Route_1.Route>);
     }
     if (__DEV__) {
