@@ -49,8 +49,15 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
     {
       name: 'microphonePermission',
       platform: 'ios',
-      description: 'A string to set the `NSMicrophoneUsageDescription` permission message.',
+      description: 'A string to set the `NSMicrophoneUsageDescription` permission message. Setting to `false` will disable the permission.',
       default: '"Allow $(PRODUCT_NAME) to access your microphone"',
+    },
+    {
+      name: 'recordAudioAndroid',
+      platform: 'android',
+      description:
+        'A boolean that determines whether to enable the `RECORD_AUDIO` permission on Android.',
+      default: 'true',
     },
   ]}
 />
