@@ -75,10 +75,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
   },
 
-  'expo-image-picker': {
-    '@expo/config-plugins': 'ignore-dev',
-  },
-
   'babel-preset-expo': {
     '@babel/core': 'types-only',
     '@expo/metro-config/build/babel-transformer': 'types-only',

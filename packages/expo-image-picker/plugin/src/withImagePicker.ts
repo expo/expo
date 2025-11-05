@@ -1,4 +1,3 @@
-import { Colors } from '@expo/config-plugins/build/android';
 import {
   AndroidConfig,
   type ConfigPlugin,
@@ -7,6 +6,8 @@ import {
   withAndroidColors,
   withAndroidColorsNight,
 } from 'expo/config-plugins';
+
+const { Colors } = AndroidConfig;
 
 const pkg = require('expo-image-picker/package.json');
 

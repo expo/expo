@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withAndroidImagePickerPermissions = void 0;
-const android_1 = require("@expo/config-plugins/build/android");
 const config_plugins_1 = require("expo/config-plugins");
+const { Colors } = config_plugins_1.AndroidConfig;
 const pkg = require('expo-image-picker/package.json');
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
@@ -40,7 +40,7 @@ function setImagePickerColors(colors, pickerColors) {
     for (const [key, colorName] of Object.entries(colorMapping)) {
         const colorValue = pickerColors[key];
         if (colorValue) {
-            result = android_1.Colors.assignColorValue(result, { value: colorValue, name: colorName });
+            result = Colors.assignColorValue(result, { value: colorValue, name: colorName });
         }
     }
     return result;
