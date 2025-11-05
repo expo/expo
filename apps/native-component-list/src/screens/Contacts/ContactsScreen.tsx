@@ -271,9 +271,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
   },
-  infoText: {
-    marginTop: 8,
-    fontSize: 14,
-    color: '#333',
-  },
 });
