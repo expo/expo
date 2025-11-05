@@ -381,6 +381,26 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'How to make Expo apps faster | Expo app development best practices',
+    event: 'Expo Tutorials',
+    videoId: 'vFbim_U1Lmc',
+  },
+  {
+    title: 'Learn how to use the new Icon Composer with Expo',
+    event: 'Expo Tutorials',
+    videoId: 'RZ_QMym3adw',
+  },
+  {
+    title: 'Introducing Expo MCP Server',
+    event: 'Expo Tutorials',
+    videoId: 'dp9dpIgDxZQ',
+  },
+  {
+    title: 'How to adopt Liquid Glass in an Expo app',
+    event: 'Expo Tutorials',
+    videoId: 'NMCQOBIwW2M',
+  },
+  {
     title: 'Liquid Glass Tabs with Expo Router v6 | Native Tabs',
     event: 'Expo Tutorials',
     videoId: 'QqNZXdGFl44',
