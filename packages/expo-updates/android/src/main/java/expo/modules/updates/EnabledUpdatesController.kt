@@ -2,6 +2,7 @@ package expo.modules.updates
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -11,6 +12,7 @@ import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
+import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.events.UpdatesEventManager
 import expo.modules.updates.launcher.Launcher.LauncherCallback
@@ -19,6 +21,7 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
+import expo.modules.updates.manifest.EmbeddedUpdate
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.procedures.CheckForUpdateProcedure
 import expo.modules.updates.procedures.FetchUpdateProcedure
@@ -29,6 +32,8 @@ import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
+import expo.modules.updatesinterface.UpdatesControllerRegistry
+import expo.modules.updatesinterface.UpdatesMetricsInterface
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +46,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.lang.ref.WeakReference
+import java.util.UUID
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.time.DurationUnit
@@ -53,7 +59,7 @@ class EnabledUpdatesController(
   private val context: Context,
   private var updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
-) : IUpdatesController {
+) : IUpdatesController, UpdatesMetricsInterface {
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
   private val logger = UpdatesLogger(context.filesDir)
@@ -95,6 +101,7 @@ class EnabledUpdatesController(
       startupFinishedMutex.withLock {
         if (!startupFinishedDeferred.isCompleted) {
           startupFinishedDeferred.complete(Unit)
+          UpdatesControllerRegistry.metricsController = WeakReference(this@EnabledUpdatesController)
         }
       }
     }
@@ -197,11 +204,15 @@ class EnabledUpdatesController(
     stateMachine.queueExecution(procedure)
   }
 
+  private fun getEmbeddedUpdate(): UpdateEntity? {
+    return EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity
+  }
+
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
       launchDuration = launchDuration,
-      embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity,
+      embeddedUpdate = getEmbeddedUpdate(),
       emergencyLaunchException = startupProcedure.emergencyLaunchException,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
@@ -311,6 +322,20 @@ class EnabledUpdatesController(
     val configOverride = UpdatesConfigurationOverride.saveRequestHeaders(context, requestHeaders)
     updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
   }
+
+  // UpdatesMetricsInterface implementations
+
+  override val runtimeVersion: String?
+    get() = updatesConfiguration.getRuntimeVersion()
+
+  override val updateUrl: Uri?
+    get() = updatesConfiguration.updateUrl
+
+  override val launchedUpdateId: UUID?
+    get() = startupProcedure.launchedUpdate?.id
+
+  override val embeddedUpdateId: UUID?
+    get() = getEmbeddedUpdate()?.id
 
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName
