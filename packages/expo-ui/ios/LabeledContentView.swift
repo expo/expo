@@ -30,12 +30,24 @@ internal struct LabeledContentView: ExpoSwiftUI.View {
 
   var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
-      LabeledContent {
-        contentChildren
-      } label: {
-        labeledContentLabel
+      if hasCustomLabel {
+        LabeledContent {
+          contentChildren
+        } label: {
+          customLabelContent
+        }
+      } else {
+        LabeledContent(props.label ?? "") {
+          contentChildren
+        }
       }
     }
+  }
+
+  private var hasCustomLabel: Bool {
+    props.children?
+      .compactMap({ $0.childView as? LabeledContentLabel })
+      .first != nil
   }
 
   @ViewBuilder
@@ -49,14 +61,12 @@ internal struct LabeledContentView: ExpoSwiftUI.View {
   }
 
   @ViewBuilder
-  private var labeledContentLabel: some View {
+  private var customLabelContent: some View {
     if let labelContent = props.children?
       .compactMap({ $0.childView as? LabeledContentLabel })
       .first
     {
       labelContent
-    } else if let label = props.label, !label.isEmpty {
-      Text(label).textCase(nil)
     }
   }
 }
