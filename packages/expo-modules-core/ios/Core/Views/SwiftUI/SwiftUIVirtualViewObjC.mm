@@ -298,6 +298,11 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
   return nullptr;
 }
 
+- (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
+{
+  return _eventEmitter;
+}
+
 - (BOOL)isJSResponder
 {
   // Default implementation always returns `NO`.
