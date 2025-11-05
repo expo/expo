@@ -340,7 +340,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
         }
         promise.resolve(hasAnyContact)
       } catch {
-        promise.reject(FailedToFetchContactsException())
+        promise.reject(ContactsCheckFailedException())
       }
     }
 
