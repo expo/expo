@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -91,6 +92,16 @@ class DevMenuFragment(
     shakeDetector.stop()
   }
 
+  override fun onResume() {
+    super.onResume()
+    updatePictureInPictureState()
+  }
+
+  override fun onPause() {
+    super.onPause()
+    updatePictureInPictureState()
+  }
+
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     val context = requireContext()
     return LinearLayout(context).apply {
@@ -170,6 +181,16 @@ class DevMenuFragment(
 
   private fun toggleDevMenu() {
     viewModel.onAction(DevMenuAction.Toggle)
+  }
+
+  private fun updatePictureInPictureState() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+      viewModel.setInPictureInPictureMode(false)
+      return
+    }
+
+    val isInPiP = activity?.isInPictureInPictureMode ?: false
+    viewModel.setInPictureInPictureMode(isInPiP)
   }
 
   companion object {
