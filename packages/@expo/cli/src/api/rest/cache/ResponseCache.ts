@@ -19,15 +19,8 @@ export interface ResponseCache {
 }
 
 export function getResponseInfo(response: Response) {
-  // Handle multiple values for the same header key (e.g., set-cookie)
-  const headers: Record<string, string> = {};
-  for (const [key, value] of response.headers.entries()) {
-    if (headers[key]) {
-      headers[key] = headers[key] + ',' + value;
-    } else {
-      headers[key] = value;
-    }
-  }
+  const headers = Object.fromEntries(response.headers.entries());
+  delete headers['set-cookie'];
   return {
     url: response.url,
     status: response.status,
@@ -94,7 +87,7 @@ export function getRequestBodyCacheData(body: RequestInit['body']) {
     return body.path;
   }
 
-  if (body.constructor.name === 'FormData') {
+  if (body.toString && body.toString() === '[object FormData]') {
     return new URLSearchParams(body as any).toString();
   }
 
