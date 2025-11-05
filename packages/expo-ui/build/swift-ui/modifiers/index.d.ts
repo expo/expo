@@ -111,6 +111,12 @@ export declare const onAppear: (handler: () => void) => ModifierConfig;
  */
 export declare const onDisappear: (handler: () => void) => ModifierConfig;
 /**
+ * Marks a view as refreshable. Adds pull-to-refresh functionality.
+ * @param handler - Async function to call when refresh is triggered.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/refreshable(action:)).
+ */
+export declare const refreshable: (handler: () => Promise<void>) => ModifierConfig;
+/**
  * Sets the opacity of a view.
  * @param value - Opacity value between 0 and 1.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/opacity(_:)).
