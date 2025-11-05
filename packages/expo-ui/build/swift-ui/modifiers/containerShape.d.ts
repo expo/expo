@@ -1,11 +1,8 @@
-export declare const RoundedRectangularShape: {
-    rect: (cornerRadius?: number) => {
-        cornerRadius: number | undefined;
-    };
-};
+import type { Shape } from './shapes/index';
 /**
  * Sets the container shape for the view.
- * @param shape - A shape configuration from RoundedRectangularShape.rect()
+ * @param shape - A shape configuration from the shapes API
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/containershape(_:)).
  */
-export declare const containerShape: (shape: ReturnType<typeof RoundedRectangularShape.rect>) => import("./createModifier").ModifierConfig;
+export declare const containerShape: (shape: Shape) => import("./createModifier").ModifierConfig;
 //# sourceMappingURL=containerShape.d.ts.map

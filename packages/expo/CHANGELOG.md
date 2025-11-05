@@ -26,6 +26,7 @@
 
 ### 💡 Others
 
+- [Types] Fix `transitionDuration` type missing the `number` option for Reanimated V4 compatibility. ([#40793](https://github.com/expo/expo/pull/40793) by [@DelphineBugner](https://github.com/DelphineBugner))
 - [android] Add getDefaultReactHost to ExpoReactHostFactory ([#40086](https://github.com/expo/expo/pull/40086) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Remove edge-to-edge logic from `ReactActivityDelegateWrapper`. ([#40263](https://github.com/expo/expo/pull/40263) by [@behenate](https://github.com/behenate))
 - [expo/dom] Add `overrideUri` to `DOMProps` to enable pre-bundled DOM Components. ([#40397](https://github.com/expo/expo/pull/40397) by [@krystofwoldrich](https://github.com/krystofwoldrich))

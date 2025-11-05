@@ -126,14 +126,14 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFacto
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions ?? [:],
-        devMenuConfiguration: RCTDevMenuConfiguration.init()
+        devMenuConfiguration: self.devMenuConfiguration
       )
     } else {
       rootView = rootViewFactory.view(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions,
-        devMenuConfiguration: RCTDevMenuConfiguration.init()
+        devMenuConfiguration: self.devMenuConfiguration
       )
     }
 

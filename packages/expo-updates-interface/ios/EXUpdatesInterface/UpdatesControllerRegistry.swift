@@ -6,6 +6,7 @@ import Foundation
 @objcMembers
 public final class UpdatesControllerRegistry: NSObject {
   public weak var controller: UpdatesExternalInterface?
+  public weak var metricsController: UpdatesExternalMetricsInterface?
 
   public static let sharedInstance = UpdatesControllerRegistry()
 }

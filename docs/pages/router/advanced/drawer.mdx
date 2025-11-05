@@ -8,12 +8,12 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 A navigation drawer is a common pattern in mobile apps, it allows users to swipe open a menu from a side of their screen to expose navigation options. This menu is also typically toggleable through a button in the app's header.
 
+## Installation
+
 <Tabs>
 <Tab label="SDK 54 and later">
 
 To use [drawer navigator](https://reactnavigation.org/docs/drawer-based-navigation) you'll need to install some additional dependencies if you do not have them already. On Android and iOS, the drawer navigator requires `react-native-reanimated` and `react-native-worklets` to drive its animations. On web, this is handled by CSS animations.
-
-## Installation
 
 <Terminal
   cmd={[
@@ -21,54 +21,19 @@ To use [drawer navigator](https://reactnavigation.org/docs/drawer-based-navigati
   ]}
 />
 
-## Usage
-
-Now you can use the `Drawer` layout to create a drawer navigator
-
-```tsx app/_layout.tsx
-import { Drawer } from 'expo-router/drawer';
-
-export default function Layout() {
-  return <Drawer />;
-}
-```
-
-To edit the drawer navigation menu labels, titles and screen options specific screens are required as follows:
-
-```tsx app/_layout.tsx
-import { Drawer } from 'expo-router/drawer';
-
-export default function Layout() {
-  return (
-    <Drawer>
-      <Drawer.Screen
-        name="index" // This is the name of the page and must match the url from root
-        options={{
-          drawerLabel: 'Home',
-          title: 'overview',
-        }}
-      />
-      <Drawer.Screen
-        name="user/[id]" // This is the name of the page and must match the url from root
-        options={{
-          drawerLabel: 'User',
-          title: 'overview',
-        }}
-      />
-    </Drawer>
-  );
-}
-```
-
 </Tab>
 <Tab label="SDK 53 and earlier">
-## Installation
+
+To use [drawer navigator](https://reactnavigation.org/docs/drawer-based-navigation) you'll need to install some additional dependencies if you do not have them already. On Android and iOS, the drawer navigator requires `react-native-reanimated` and `react-native-gesture-handler` to drive its animations. On web, this is handled by CSS animations.
 
 <Terminal
   cmd={[
     '$ npx expo install @react-navigation/drawer react-native-reanimated react-native-gesture-handler',
   ]}
 />
+
+</Tab>
+</Tabs>
 
 ## Usage
 
@@ -108,6 +73,3 @@ export default function Layout() {
   );
 }
 ```
-
-</Tab>
-</Tabs>
