@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Remove use of deprecated API `UIApplication.shared.windows`.
+- [iOS] Remove use of deprecated API `UIApplication.shared.windows`. ([#40877](https://github.com/expo/expo/pull/40877) by [@bwallberg](https://github.com/bwallberg))
 
 ## 9.0.7 — 2025-09-11
 
