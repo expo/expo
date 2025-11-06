@@ -32,7 +32,6 @@ import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
-import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesMetricsInterface
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -101,7 +100,6 @@ class EnabledUpdatesController(
       startupFinishedMutex.withLock {
         if (!startupFinishedDeferred.isCompleted) {
           startupFinishedDeferred.complete(Unit)
-          UpdatesControllerRegistry.metricsController = WeakReference(this@EnabledUpdatesController)
         }
       }
     }
