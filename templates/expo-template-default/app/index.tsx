@@ -1,7 +1,7 @@
-import { Image } from 'expo-image';
 import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AnimatedIcon } from '@/components/animated-icon';
 import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -13,7 +13,7 @@ export default function HomeScreen() {
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.heroSection}>
-          <Image style={styles.expoLogo} source={require('@/assets/images/expo-hero-logo.png')} />
+          <AnimatedIcon />
           <ThemedText type="title" style={styles.title}>
             Welcome to&nbsp;Expo
           </ThemedText>
@@ -54,10 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     paddingHorizontal: Spacing.four,
-  },
-  expoLogo: {
-    height: 201,
-    width: 201,
+    gap: Spacing.four,
   },
   title: {
     textAlign: 'center',

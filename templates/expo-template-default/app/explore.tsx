@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
     alignItems: 'center',
     paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.five,
+    paddingVertical: Spacing.six,
   },
   centerText: {
     textAlign: 'center',
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   linkButton: {
     flexDirection: 'row',
-    paddingHorizontal: Spacing.three,
+    paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
     borderRadius: Spacing.five,
     justifyContent: 'center',
@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
   sectionsWrapper: {
     gap: Spacing.five,
     paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
   },
   collapsibleContent: {
     alignItems: 'center',
@@ -174,7 +175,6 @@ const styles = StyleSheet.create({
     aspectRatio: 296 / 171,
     borderRadius: Spacing.three,
     marginTop: Spacing.two,
-    maxWidth: 444,
   },
   imageReact: {
     width: 100,
