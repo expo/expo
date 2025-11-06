@@ -1,7 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import UIKit
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
