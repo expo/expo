@@ -1,60 +1,151 @@
----
-title: EAS Build
-sidebar_title: Introduction
-hideTOC: true
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+export default function App() {
+  const [screen, setScreen] = useState('home');
+  const [score, setScore] = useState(0);
+  const [answered, setAnswered] = useState(0);
 
-import { BoxLink } from '~/ui/components/BoxLink';
+  const lessons = [
+    { title: 'الألوان', examples: { Red: 'أحمر', Blue: 'أزرق', Green: 'أخضر' } },
+    { title: 'الأيام', examples: { Monday: 'الإثنين', Friday: 'الجمعة', Sunday: 'الأحد' } },
+    { title: 'الأرقام', examples: { One: 'واحد', Two: 'اثنان', Three: 'ثلاثة' } },
+  ];
 
-**EAS Build** is a hosted service for building app binaries for your Expo and React Native projects.
+  const quiz = [
+    { q: 'ما معنى كلمة Apple؟', options: ['موز', 'تفاح', 'برتقال'], correct: 'تفاح' },
+    { q: 'ما معنى كلمة Blue؟', options: ['أخضر', 'أزرق', 'أحمر'], correct: 'أزرق' },
+    { q: 'ما معنى كلمة Cat؟', options: ['كلب', 'قطة', 'عصفور'], correct: 'قطة' },
+  ];
 
-It makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using ad hoc and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+  const handleAnswer = (answer, correct) => {
+    setAnswered(answered + 1);
+    if (answer === correct) {
+      setScore(score + 1);
+      Alert.alert('صحيح ✅', 'إجابة صحيحة!');
+    } else {
+      Alert.alert('خطأ ❌', `الإجابة الصحيحة هي: ${correct}`);
+    }
+  };
 
-It's designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+  const restartQuiz = () => {
+    setScore(0);
+    setAnswered(0);
+    setScreen('home');
+  };
 
-### Get started
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>📘 تعلم اللغة الإنجليزية مع نصر</Text>
 
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
+      {screen === 'home' && (
+        <View style={styles.content}>
+          <Text style={styles.subtitle}>اختر ما تريد تعلمه 👇</Text>
 
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
+          <TouchableOpacity style={styles.btn} onPress={() => setScreen('lessons')}>
+            <Text style={styles.btnText}>📖 الدروس</Text>
+          </TouchableOpacity>
 
-<BoxLink
-  title="Automate submissions"
-  description="Learn how you can have the service take your successful builds and handle uploading them to app stores for you automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
+          <TouchableOpacity style={styles.btn} onPress={() => setScreen('quiz')}>
+            <Text style={styles.btnText}>🧠 اختبار سريع</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
+      {screen === 'lessons' && (
+        <ScrollView style={styles.scroll}>
+          <Text style={styles.subtitle}>📖 الدروس الأساسية</Text>
+          {lessons.map((lesson, i) => (
+            <View key={i} style={styles.card}>
+              <Text style={styles.lessonTitle}>📘 {lesson.title}</Text>
+              {Object.entries(lesson.examples).map(([en, ar]) => (
+                <Text key={en} style={styles.example}>
+                  {en} ➜ {ar}
+                </Text>
+              ))}
+            </View>
+          ))}
+          <TouchableOpacity style={styles.backBtn} onPress={() => setScreen('home')}>
+            <Text style={styles.backText}>🔙 رجوع</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      )}
 
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, but you can also run it on your own machine, for example, to debug or to comply with any company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
+      {screen === 'quiz' && (
+        <ScrollView style={styles.scroll}>
+          <Text style={styles.subtitle}>🧠 اختبار سريع</Text>
 
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+          {quiz.map((item, index) => (
+            <View key={index} style={styles.card}>
+              <Text style={styles.question}>{item.q}</Text>
+              {item.options.map((opt) => (
+                <TouchableOpacity
+                  key={opt}
+                  style={styles.option}
+                  onPress={() => handleAnswer(opt, item.correct)}
+                >
+                  <Text style={styles.optionText}>{opt}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ))}
+
+          <Text style={styles.score}>
+            🔢 نتيجتك: {score} من {quiz.length}
+          </Text>
+
+          {answered === quiz.length && (
+            <TouchableOpacity style={styles.btn} onPress={restartQuiz}>
+              <Text style={styles.btnText}>🔁 إعادة الاختبار</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity style={styles.backBtn} onPress={() => setScreen('home')}>
+            <Text style={styles.backText}>🔙 رجوع</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      )}
+    </View>
+  );
+}
+
+// 🎨 التنسيقات
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f1f5f9', paddingTop: 50, paddingHorizontal: 16 },
+  title: { fontSize: 22, fontWeight: 'bold', color: '#007aff', textAlign: 'center', marginBottom: 16 },
+  subtitle: { fontSize: 18, textAlign: 'center', marginBottom: 10, color: '#333' },
+  btn: {
+    backgroundColor: '#007aff',
+    padding: 14,
+    borderRadius: 10,
+    marginVertical: 8,
+  },
+  btnText: { color: '#fff', fontWeight: 'bold', textAlign: 'center', fontSize: 16 },
+  scroll: { flex: 1 },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 14,
+    marginVertical: 8,
+    elevation: 2,
+  },
+  lessonTitle: { fontSize: 18, color: '#007aff', fontWeight: '700', marginBottom: 6 },
+  example: { fontSize: 16, marginVertical: 2 },
+  question: { fontSize: 17, fontWeight: '600', marginBottom: 8 },
+  option: {
+    backgroundColor: '#e8e8e8',
+    padding: 10,
+    borderRadius: 8,
+    marginVertical: 4,
+  },
+  optionText: { fontSize: 16, textAlign: 'center' },
+  score: { textAlign: 'center', fontSize: 18, marginVertical: 12, color: '#007aff' },
+  backBtn: {
+    backgroundColor: '#ccc',
+    padding: 12,
+    borderRadius: 10,
+    marginVertical: 12,
+  },
+  backText: { textAlign: 'center', color: '#000', fontSize: 16 },
+  content: { alignItems: 'center', marginTop: 20 },
+});
