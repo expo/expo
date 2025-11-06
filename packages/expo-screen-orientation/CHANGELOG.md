@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- [iOS] Remove use of deprecated API `UIApplication.shared.windows`.
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
