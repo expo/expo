@@ -26,7 +26,7 @@ const buildStringRef = template.statement(`module.exports = FILE_PATH;`);
 
 const buildStaticObjectRef = template.statement(
   // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
-  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri; } };`
+  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri } };`
 );
 
 export async function transform(

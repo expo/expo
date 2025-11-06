@@ -25,7 +25,7 @@ const buildClientReferenceRequire = core_1.template.statement(`module.exports = 
 const buildStringRef = core_1.template.statement(`module.exports = FILE_PATH;`);
 const buildStaticObjectRef = core_1.template.statement(
 // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
-`module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri; } };`);
+`module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri } };`);
 async function transform({ filename, options, }, assetRegistryPath, assetDataPlugins) {
     options ??= options || {
         platform: '',
