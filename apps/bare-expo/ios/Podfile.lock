@@ -564,7 +564,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (6.0.7):
     - ExpoModulesCore
-  - ExpoUI (0.2.0-beta.3):
+  - ExpoUI (0.2.0-beta.8):
     - ExpoModulesCore
   - ExpoVideo (3.0.11):
     - ExpoModulesCore
@@ -3753,7 +3753,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: ef7b8ac77ac2d496b1bc3f0f7daf5e19c3a9933a
   ExpoSystemUI: 5e7fbe4b716edb9e3a7bc0441e4a3b6b1f9eb1ea
   ExpoTrackingTransparency: 92e731b9b9b09353c3ef48e0fc9f82b89a1957c6
-  ExpoUI: 54732dfe9e601d3515e9d715eddb466d4184577a
+  ExpoUI: b34c7f8cf2d1df8b0a85c3da6283fc0fc3d583de
   ExpoVideo: 7e39a5933892dc640b1b83013f3f9d9d37072151
   ExpoVideoThumbnails: c951ae8c6ed9974dd3ae5f79b2dd1d9b6e8ab266
   ExpoWebBrowser: 4f0dc52a559027cc0fba6920adc19a7604e2733d
@@ -3762,7 +3762,7 @@ SPEC CHECKSUMS:
   EXUpdates: 83e4d666a085b44149f3b21d5bd057ad37b2c3e5
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   FBLazyVector: b733c6ff598607c9c5a2757669306ca5481fa7a1
-  hermes-engine: 2c7c3f3ea699e71a322152fbd4dede6fb6e7fc29
+  hermes-engine: b1e5aac33dadd818b62a43c558e35c596336de5c
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3780,7 +3780,7 @@ SPEC CHECKSUMS:
   React: 0d33ae696cce9f29ef4ef9395b677461f819edff
   React-callinvoker: 98827bd8d13282630bd3ac420d9deab3ef9c4404
   React-Core: c53a32ac2fd877b127d678668eacb32ee5b278a2
-  React-Core-prebuilt: 84652d896dc2f54edacb498d2d99984bf8b86ff4
+  React-Core-prebuilt: 70e42a2d6ebc93c21944b4df1750d306e453adbb
   React-CoreModules: 55744f49f098b26e46de697a828f0a22540246cd
   React-cxxreact: 07d452b1ca44cb6bf003b36d8263a1fa772d2cae
   React-debug: 65a8b0304322f0641d4aa5fcd1d9bdeae3f97327
@@ -3849,7 +3849,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: c55bd3998b0b548d2e81f5aae4758096d4321a7a
   ReactCodegen: c63ed13899d192e3ac78b794f4149e950dc86122
   ReactCommon: 558d37855c8b281c4fdfe8f9ba2d7bc102fb55ff
-  ReactNativeDependencies: 0e21bdd14e5112c3663bdfedc68157a52b80c310
+  ReactNativeDependencies: e5bbb52b99bdc4386c563b1fc2aeaf98e59b18f8
   RNCAsyncStorage: e85a99325df9eb0191a6ee2b2a842644c7eb29f4
   RNCMaskedView: 3c9d7586e2b9bbab573591dcb823918bc4668005
   RNCPicker: 38a9deb903d9a8ae18b598bac727e6c84b3cf0fa
