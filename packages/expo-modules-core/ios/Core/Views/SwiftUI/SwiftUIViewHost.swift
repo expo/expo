@@ -59,6 +59,9 @@ extension ExpoSwiftUI {
   }
 }
 
+// ViewSizeWrapper attaches an observer to the view's bounds and updates the frame modifier of the view host.
+// This allows us to change RN View's dimension using Yoga.
+// .e.g. <View style={{ width: 100, height: 100 }} />
 private struct ViewSizeWrapper: View {
   let viewHost: ExpoSwiftUI.UIViewHost
   @StateObject private var viewSizeModel: ViewSizeModel
