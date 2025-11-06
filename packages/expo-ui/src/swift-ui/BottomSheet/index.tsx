@@ -39,6 +39,11 @@ export type BottomSheetProps = {
    * - `hidden` - Never show the drag indicator
    */
   presentationDragIndicator?: PresentationDragIndicatorVisibility;
+
+  /**
+   * Whether the `BottomSheet` should include the height of the children in the detents.
+   */
+  includeChildrenHeightDetent?: boolean;
 } & CommonViewModifierProps;
 
 type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsOpenedChange'> & {

@@ -30,15 +30,39 @@ extension ExpoSwiftUI {
      */
     let contentView: ContentView
 
+    private let shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
+
     /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, viewDefinition: AnyViewDefinition?, appContext: AppContext) {
-      self.contentView = ContentView(props: props)
       self.props = props
       self.viewDefinition = viewDefinition
       self.appContext = appContext
+
+      // Store shadow node proxy in props so views can access it
+      props.virtualViewShadowNodeProxy = shadowNodeProxy
+
+      // Create content view with props that include the proxy
+      self.contentView = ContentView(props: props)
+
       super.init()
+
+      // Set up shadow node proxy callbacks AFTER super.init() to avoid capturing self before initialization
+      shadowNodeProxy.setViewSize = { [weak self] size in
+        #if RCT_NEW_ARCH_ENABLED
+        self?.setViewSize(size)
+        #endif
+      }
+
+      shadowNodeProxy.setStyleSize = { [weak self] width, height in
+        #if RCT_NEW_ARCH_ENABLED
+        self?.setStyleSize(width, height: height)
+        #endif
+      }
+
+      shadowNodeProxy.objectWillChange.send()
+
       installEventDispatchers()
     }
 
@@ -49,6 +73,10 @@ extension ExpoSwiftUI {
 
     func setViewSize(_ size: CGSize) {
       super.setShadowNodeSize(Float(size.width), height: Float(size.height))
+    }
+
+    override func setStyleSize(_ width: NSNumber?, height: NSNumber?) {
+      super.setStyleSize(width, height: height)
     }
 
     // MARK: - ExpoSwiftUIView implementations
@@ -172,3 +200,4 @@ extension ExpoSwiftUI {
     }
   }
 }
+

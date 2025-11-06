@@ -19,6 +19,8 @@ extension ExpoSwiftUI {
 
     public internal(set) weak var appContext: AppContext?
 
+    public var virtualViewShadowNodeProxy: ShadowNodeProxy?
+
     /**
      A global event dispatcher that allows views to call `view.dispatchEvent(_:payload)` directly
      */
@@ -52,3 +54,4 @@ extension ExpoSwiftUI {
     }
   }
 }
+

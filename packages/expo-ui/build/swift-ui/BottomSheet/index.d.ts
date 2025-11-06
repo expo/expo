@@ -33,6 +33,10 @@ export type BottomSheetProps = {
      * - `hidden` - Never show the drag indicator
      */
     presentationDragIndicator?: PresentationDragIndicatorVisibility;
+    /**
+     * Whether the `BottomSheet` should include the height of the children in the detents.
+     */
+    includeChildrenHeightDetent?: boolean;
 } & CommonViewModifierProps;
 export declare function BottomSheet(props: BottomSheetProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

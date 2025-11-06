@@ -353,7 +353,11 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
 - (void)setShadowNodeSize:(float)width height:(float)height
 {
   if (_state) {
-    _state->updateState(expo::ExpoViewState(width, height));
+#if REACT_NATIVE_TARGET_VERSION >= 82
+    _state->updateState(expo::ExpoViewState(width,height), EventQueue::UpdateMode::unstable_Immediate);
+#else
+    _state->updateState(expo::ExpoViewState(width,height));
+#endif
   }
 }
 
@@ -362,7 +366,11 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
   if (_state) {
     float widthValue = width ? [width floatValue] : std::numeric_limits<float>::quiet_NaN();
     float heightValue = height ? [height floatValue] : std::numeric_limits<float>::quiet_NaN();
+#if REACT_NATIVE_TARGET_VERSION >= 82
+    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), EventQueue::UpdateMode::unstable_Immediate);
+#else
     _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
+#endif
   }
 }
 

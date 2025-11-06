@@ -24,6 +24,13 @@ extension ExpoSwiftUI {
 
     func makeUIView(context: Context) -> UIView {
       context.coordinator.originalAutoresizingMask = view.autoresizingMask
+
+      let touchHandler = RCTTouchHandlerHelper.createAndAttachTouchHandler(for: view)
+      if let touchHandler = touchHandler {
+        view.addGestureRecognizer(touchHandler)
+        context.coordinator.touchHandler = touchHandler
+      }
+
       return view
     }
 
@@ -32,6 +39,11 @@ extension ExpoSwiftUI {
     }
 
     static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
+      if let touchHandler = coordinator.touchHandler {
+        RCTTouchHandlerHelper.detachTouchHandler(touchHandler, from: uiView)
+        coordinator.touchHandler = nil
+      }
+
       // https://github.com/expo/expo/issues/40604
       // UIViewRepresentable attaches autoresizingMask w+h to the hosted UIView
       // This causes issues for RN views when they are recycled.
@@ -45,6 +57,7 @@ extension ExpoSwiftUI {
 
     class Coordinator {
       var originalAutoresizingMask: UIView.AutoresizingMask = []
+      var touchHandler: UIGestureRecognizer?
     }
 
     // MARK: - AnyChild implementations
