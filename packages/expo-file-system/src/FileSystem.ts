@@ -71,18 +71,7 @@ export class Paths extends PathUtilities {
  * ```
  */
 
-type TempBlob = Omit<
-  ExpoBlob,
-  | 'release'
-  | 'addListener'
-  | 'removeListener'
-  | 'removeAllListeners'
-  | 'eventNames'
-  | 'emit'
-  | 'listenerCount'
->;
-
-export class File extends ExpoFileSystem.FileSystemFile implements TempBlob {
+export class File extends ExpoFileSystem.FileSystemFile {
   /**
    * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
    *

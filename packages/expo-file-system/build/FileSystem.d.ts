@@ -40,8 +40,7 @@ export declare class Paths extends PathUtilities {
  * const file = new File(Paths.cache, "subdirName", "file.txt");
  * ```
  */
-type TempBlob = Omit<ExpoBlob, 'release' | 'addListener' | 'removeListener' | 'removeAllListeners' | 'eventNames' | 'emit' | 'listenerCount'>;
-export declare class File extends ExpoFileSystem.FileSystemFile implements TempBlob {
+export declare class File extends ExpoFileSystem.FileSystemFile {
     /**
      * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
      *
@@ -106,5 +105,4 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
     createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
 }
-export {};
 //# sourceMappingURL=FileSystem.d.ts.map
