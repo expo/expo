@@ -298,7 +298,7 @@ export declare class File {
      * On iOS, by default, this method returns a temporary copy of the selected file, ensuring the original remains unchanged. To open the original file in place (without copying), set `copyToCacheDirectory` to `false` in the options.
      *
      * @param options An optional [`FilePickerOptions`](#filepickeroptions) object containing options for the file picker.
-     * @returns A `File` instance or an array of `File` instances if `multiple` option is `true`.
+     * @returns A `File` instance or an array of `File` instances if the `multiple` option is `true`.
      */
     static pickFileAsync(options?: FilePickerOptions): Promise<File | File[]>;
     /**
