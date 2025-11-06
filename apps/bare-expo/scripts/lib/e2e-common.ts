@@ -8,6 +8,7 @@ const MAESTRO_CLI_NO_ANALYTICS = '1';
 export const MAESTRO_ENV_VARS = {
   MAESTRO_DRIVER_STARTUP_TIMEOUT,
   MAESTRO_CLI_NO_ANALYTICS,
+  MAESTRO_USE_GRAALJS: 'true',
 };
 
 export type StartMode = 'BUILD' | 'TEST' | 'BUILD_AND_TEST';
@@ -45,6 +46,7 @@ export async function createMaestroFlowAsync({
   const contents = [
     `\
 appId: ${appId}
+jsEngine: graaljs
 ---
 - clearState
 `,
@@ -182,6 +184,9 @@ const getCustomMaestroFlowsAsync = async (
     ignore,
   });
 
+  if (platform === 'ios') {
+    yamlFiles.unshift('_nested-flows/confirm-app-open.yaml');
+  }
   console.log(`detected maestro files for ${platform}:`, yamlFiles);
   return yamlFiles;
 };

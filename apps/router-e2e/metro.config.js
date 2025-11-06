@@ -1,7 +1,6 @@
 /* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
-const { boolish } = require('getenv');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -54,14 +53,6 @@ config.watchFolders = [
 
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
-
-// Allow experimental import support to be turned on through `EXPO_USE_METRO_REQUIRE=true` for E2E tests
-config.transformer.getTransformOptions = () => ({
-  transform: {
-    experimentalImportSupport: boolish('EXPO_USE_METRO_REQUIRE', false),
-    inlineRequires: false,
-  },
-});
 
 config.resolver.blockList = [
   /\/expo-router\/node_modules\/@react-navigation/,

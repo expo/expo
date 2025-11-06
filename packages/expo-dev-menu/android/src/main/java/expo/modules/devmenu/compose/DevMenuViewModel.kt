@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.facebook.react.ReactHost
 import expo.modules.devmenu.DevMenuDevSettings
 import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.DevMenuManager.getReactHost
 import expo.modules.devmenu.DevMenuPreferencesHandle
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
@@ -17,17 +16,18 @@ class DevMenuViewModel(
   val reactHostHolder: WeakReference<ReactHost>
 ) : ViewModel() {
   private val menuPreferences = DevMenuPreferencesHandle
-  private val devToolsDelegate = run {
-    val reactHost = getReactHost() ?: return@run null
-    val devSupportManager = reactHost.devSupportManager ?: return@run null
+  private val reactHost
+    get() = reactHostHolder.get()
 
+  private val devToolsDelegate = run {
+    val reactHost = reactHost ?: return@run null
+    val devSupportManager = reactHost.devSupportManager ?: return@run null
     DevMenuDevToolsDelegate(devSupportManager.weak())
   }
 
   private val _state = mutableStateOf(
     DevMenuState(
-      devToolsSettings = devSettings,
-      customItems = mapCallbacks(DevMenuManager.registeredCallbacks)
+      devToolsSettings = devSettings
     )
   )
 
@@ -42,9 +42,8 @@ class DevMenuViewModel(
 
   val devSettings: DevToolsSettings
     get() {
-      val reactHost = reactHostHolder.get()
-      if (reactHost != null) {
-        return DevMenuDevSettings.getDevSettings(reactHost)
+      reactHost?.let {
+        return DevMenuDevSettings.getDevSettings(it)
       }
 
       return DevToolsSettings()
@@ -66,8 +65,15 @@ class DevMenuViewModel(
     )
   }
 
-  fun updateCustomItems(callbacks: List<DevMenuManager.Callback>) {
-    _state.value = _state.value.copy(customItems = mapCallbacks(callbacks))
+  fun updateCustomItems(items: List<DevMenuState.CustomItem>) {
+    _state.value = _state.value.copy(customItems = items)
+  }
+
+  fun setInPictureInPictureMode(isInPictureInPictureMode: Boolean) {
+    if (state.isInPictureInPictureMode == isInPictureInPictureMode) {
+      return
+    }
+    _state.value = _state.value.copy(isInPictureInPictureMode = isInPictureInPictureMode)
   }
 
   private fun closeMenu() {
@@ -109,12 +115,12 @@ class DevMenuViewModel(
       DevMenuAction.GoHome -> DevMenuManager.goToHome()
       DevMenuAction.TogglePerformanceMonitor -> devToolsDelegate?.togglePerformanceMonitor()
       DevMenuAction.OpenJSDebugger -> devToolsDelegate?.openJSInspector()
-      DevMenuAction.OpenReactNativeDevMenu -> getReactHost()?.devSupportManager?.showDevOptionsDialog()
+      DevMenuAction.OpenReactNativeDevMenu -> reactHost?.devSupportManager?.showDevOptionsDialog()
       DevMenuAction.ToggleElementInspector -> devToolsDelegate?.toggleElementInspector()
       is DevMenuAction.ToggleFastRefresh -> toggleFastRefresh()
       is DevMenuAction.ToggleFab -> toggleFab()
       DevMenuAction.FinishOnboarding -> finishOnboarding()
-      is DevMenuAction.TriggerCustomCallback -> DevMenuManager.sendEventToDelegateBridge("registeredCallbackFired", action.name)
+      is DevMenuAction.TriggerCustomCallback -> action.item.fn.invoke()
     }
   }
 
@@ -123,10 +129,5 @@ class DevMenuViewModel(
       @Suppress("UNCHECKED_CAST")
       return DevMenuViewModel(reactHostHolder) as T
     }
-  }
-
-  companion object {
-    private fun mapCallbacks(callbacks: List<DevMenuManager.Callback>) =
-      callbacks.map { DevMenuState.CustomItem(name = it.name, shouldCollapse = it.shouldCollapse) }
   }
 }

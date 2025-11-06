@@ -66,7 +66,7 @@ fun DevMenuScreen(
       CustomItemsSection(
         items = customItems,
         onItemClick = { item ->
-          onAction(DevMenuAction.TriggerCustomCallback(item.name, item.shouldCollapse))
+          onAction(DevMenuAction.TriggerCustomCallback(item))
         }
       )
 

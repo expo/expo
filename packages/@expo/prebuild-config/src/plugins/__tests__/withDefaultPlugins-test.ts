@@ -371,7 +371,6 @@ describe('built-in plugins', () => {
         'android/app/src/debug/AndroidManifest.xml',
         'android/app/src/debugOptimized/AndroidManifest.xml',
         'android/app/src/main/AndroidManifest.xml',
-        'android/build/reports/problems/problems-report.html',
         'android/app/src/main/java/com/bacon/todo/MainActivity.kt',
         'android/app/src/main/java/com/bacon/todo/MainApplication.kt',
         'android/app/src/main/res/drawable/ic_launcher_background.xml',

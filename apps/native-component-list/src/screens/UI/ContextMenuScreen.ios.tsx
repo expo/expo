@@ -96,6 +96,7 @@ export default function ContextMenuScreen() {
                 value={switch2Checked}
                 variant="switch"
                 label="Will u marry doggos?"
+                systemImage="heart.slash"
                 onValueChange={setSwitch2Checked}
               />
               <Button role="destructive" systemImage="hand.thumbsdown">

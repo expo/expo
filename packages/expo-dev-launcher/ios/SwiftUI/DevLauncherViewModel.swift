@@ -40,6 +40,7 @@ class DevLauncherViewModel: ObservableObject {
   @Published var isAuthenticating = false
   @Published var user: User?
   @Published var selectedAccountId: String?
+  @Published var isLoadingServer: Bool = false
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -98,12 +99,19 @@ class DevLauncherViewModel: ObservableObject {
       return
     }
 
+    isLoadingServer = true
+
     EXDevLauncherController.sharedInstance().loadApp(
       bundleUrl,
-      onSuccess: nil,
+      onSuccess: { [weak self] in
+        DispatchQueue.main.async {
+          self?.isLoadingServer = false
+        }
+      },
       onError: { [weak self] _ in
         let message = "Failed to connect to \(url)"
         DispatchQueue.main.async {
+          self?.isLoadingServer = false
           self?.showErrorAlert(message)
         }
       })
@@ -125,12 +133,15 @@ class DevLauncherViewModel: ObservableObject {
       // swiftlint:disable number_separator
       let portsToCheck = [8081, 8082, 8_083, 8084, 8085, 19000, 19001, 19002]
       // swiftlint:enable number_separator
-      let baseAddress = "http://localhost"
 
+      let ipsToScan = NetworkUtilities.getIPAddressesToScan()
       await withTaskGroup(of: DevServer?.self) { group in
-        for port in portsToCheck {
-          group.addTask {
-            await self.checkDevServer(url: "\(baseAddress):\(port)")
+        for ip in ipsToScan {
+          for port in portsToCheck {
+            group.addTask {
+              let baseAddress = ip == "localhost" ? "http://localhost" : "http://\(ip)"
+              return await self.checkDevServer(url: "\(baseAddress):\(port)")
+            }
           }
         }
 

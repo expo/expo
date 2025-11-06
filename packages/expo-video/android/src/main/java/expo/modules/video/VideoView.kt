@@ -113,13 +113,18 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
       field?.let {
         VideoManager.onVideoPlayerDetachedFromView(it, this)
       }
-      videoPlayer?.removeListener(this)
+      val oldPlayer = videoPlayer
+      oldPlayer?.removeListener(this)
       newPlayer?.addListener(this)
       field = newPlayer
-      shouldHideSurfaceView = true
+      shouldHideSurfaceView = !(newPlayer?.hasRenderedAFrameOfVideoSource ?: false)
+      applySurfaceViewVisibility()
       attachPlayer()
       newPlayer?.let {
         VideoManager.onVideoPlayerAttachedToView(it, this)
+      }
+      if (oldPlayer != newPlayer) {
+        oldPlayer?.hasBeenDisconnectedFromPlayerView()
       }
     }
 

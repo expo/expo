@@ -2,6 +2,7 @@
 
 import ExpoModulesCore
 import EXUpdatesInterface
+import React
 
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
@@ -77,6 +78,15 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       self.reactNativeFactory?.bridge = nil
       self.reactNativeFactory?.rootViewFactory.bridge = nil
     }
+
+    #if RCT_DEV_MENU
+    // Set core dev menu configuration to disable shortcuts and shake gesture
+    self.reactNativeFactory?.devMenuConfiguration = RCTDevMenuConfiguration(
+      devMenuEnabled: true,
+      shakeGestureEnabled: false,
+      keyboardShortcutsEnabled: false
+    )
+    #endif
 
     let rootView = reactDelegate.reactNativeFactory.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),

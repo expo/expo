@@ -46,3 +46,14 @@ public protocol UpdatesExternalInterface {
 public protocol UpdatesExternalInterfaceDelegate {
   @objc func updatesExternalInterfaceDidRequestRelaunch(_ updatesExternalInterface: UpdatesExternalInterface)
 }
+
+/**
+ * Protocol for use by the expo-app-metrics library
+ */
+@objc(EXUpdatesExternalMetricsInterface)
+public protocol UpdatesExternalMetricsInterface {
+  @objc var runtimeVersion: String? { get }
+  @objc var updateURL: URL? { get }
+  @objc var launchedUpdateId: UUID? { get }
+  @objc var embeddedUpdateId: UUID? { get }
+}

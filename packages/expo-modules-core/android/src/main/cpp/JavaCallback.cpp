@@ -17,8 +17,6 @@
 
 namespace expo {
 
-#if REACT_NATIVE_TARGET_VERSION >= 75
-
 JavaCallback::CallbackContext::CallbackContext(
   jsi::Runtime &rt,
   std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
@@ -29,20 +27,6 @@ JavaCallback::CallbackContext::CallbackContext(
     jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
     resolveHolder(std::move(resolveHolder)),
     rejectHolder(std::move(rejectHolder)) {}
-
-#else
-
-JavaCallback::CallbackContext::CallbackContext(
-  jsi::Runtime &rt,
-  std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
-  std::optional<jsi::Function> resolveHolder,
-  std::optional<jsi::Function> rejectHolder
-) : rt(rt),
-    jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
-    resolveHolder(std::move(resolveHolder)),
-    rejectHolder(std::move(rejectHolder)) {}
-
-#endif
 
 void JavaCallback::CallbackContext::invalidate() {
   resolveHolder.reset();

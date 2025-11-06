@@ -97,7 +97,7 @@ async function loadStaticParamsRecursive(
       const parsedRoute = createParsedRouteName(route.route, params);
       const generatedContextKey = createParsedRouteName(route.contextKey, params);
 
-      return {
+      const generatedRoute = {
         ...route,
         // TODO: Add a new field for this
         contextKey: generatedContextKey,
@@ -106,6 +106,12 @@ async function loadStaticParamsRecursive(
         route: parsedRoute,
         children: dynamicChildren,
       };
+
+      if (route.type === 'route') {
+        generatedRoute.parentContextKey = route.contextKey;
+      }
+
+      return generatedRoute;
     })
   );
 

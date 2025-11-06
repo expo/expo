@@ -168,6 +168,7 @@ struct DevServersView: View {
 }
 
 struct DevServerRow: View {
+  @EnvironmentObject var viewModel: DevLauncherViewModel
   let server: DevServer
   let onTap: () -> Void
 
@@ -185,9 +186,14 @@ struct DevServerRow: View {
           .foregroundColor(.primary)
 
         Spacer()
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
+
+        if viewModel.isLoadingServer {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

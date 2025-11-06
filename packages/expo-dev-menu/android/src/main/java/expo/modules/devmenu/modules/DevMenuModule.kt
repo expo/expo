@@ -1,12 +1,23 @@
 package expo.modules.devmenu.modules
 
-import com.facebook.react.bridge.*
-import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.compose.DevMenuFragment
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.modules.devmenu.compose.DevMenuAction
+import expo.modules.devmenu.compose.DevMenuFragment
+import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.weak
+
+data class DevMenuCallback(
+  @Field
+  val name: String,
+  @Field
+  val shouldCollapse: Boolean = true
+) : Record
 
 class DevMenuModule : Module() {
   val currentActivity
@@ -31,26 +42,25 @@ class DevMenuModule : Module() {
       viewModel.onAction(DevMenuAction.Close)
     }
 
-    AsyncFunction("addDevMenuCallbacks") { callbacks: ReadableArray ->
-      DevMenuManager.registeredCallbacks.clear()
+    AsyncFunction("addDevMenuCallbacks") { callbacks: List<DevMenuCallback> ->
+      val reactContext = appContext.reactContext as? ReactContext
+        ?: throw Exceptions.ReactContextLost()
+      val reactContextHolder = reactContext.weak()
 
-      val size = callbacks.size()
-      for (i in 0 until size) {
-        val callback = callbacks.getMap(i) ?: continue
-        val name = callback.getString("name") ?: continue
-        val shouldCollapse = if (callback.hasKey("shouldCollapse")) {
-          callback.getBoolean("shouldCollapse")
-        } else {
-          true
+      viewModel.updateCustomItems(
+        callbacks.map {
+          DevMenuState.CustomItem(
+            it.name,
+            it.shouldCollapse
+          ) {
+            val eventEmitter = reactContextHolder
+              .get()
+              ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+
+            eventEmitter?.emit("registeredCallbackFired", it.name)
+          }
         }
-        DevMenuManager.registeredCallbacks.add(DevMenuManager.Callback(name, shouldCollapse))
-      }
-
-      DevMenuManager.refreshCustomItems()
-    }
-
-    OnDestroy {
-      DevMenuManager.registeredCallbacks.clear()
+      )
     }
   }
 }

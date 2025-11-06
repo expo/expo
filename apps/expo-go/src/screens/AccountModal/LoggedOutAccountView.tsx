@@ -17,6 +17,8 @@ import { useDispatch, useSelector } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
 import { useAccountName } from '../../utils/AccountNameContext';
 import hasSessionSecret from '../../utils/hasSessionSecret';
+import { isQuest } from '../../utils/isQuest';
+import { openQuestAuthSessionAsync } from '../../utils/questAuthSessionPolyfill';
 
 type Props = {
   refetch: () => Promise<void>;
@@ -88,7 +90,12 @@ export function LoggedOutAccountView({ refetch }: Props) {
       const authSessionURL = `${
         Config.website.origin
       }/${urlPath}?confirm_account=1&app_redirect_uri=${encodeURIComponent(redirectBase)}`;
-      const result = await WebBrowser.openAuthSessionAsync(authSessionURL, redirectBase, {
+
+      // Use a custom auth session opener for Meta Quest devices (see note in `openQuestAuthSessionAsync`)
+      const openAuthSessionAsync = isQuest()
+        ? openQuestAuthSessionAsync
+        : WebBrowser.openAuthSessionAsync;
+      const result = await openAuthSessionAsync(authSessionURL, redirectBase, {
         /** note(brentvatne): We should disable the showInRecents option when
          * https://github.com/expo/expo/issues/8072 is resolved. This workaround
          * prevents the Chrome Custom Tabs activity from closing when the user

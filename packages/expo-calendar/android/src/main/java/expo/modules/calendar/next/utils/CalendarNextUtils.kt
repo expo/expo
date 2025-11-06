@@ -6,7 +6,7 @@ import java.util.Calendar
 import java.util.TimeZone
 import android.content.ContentUris
 import android.provider.CalendarContract
-import expo.modules.calendar.findEventsQueryParameters
+import expo.modules.calendar.domain.event.EventRepository
 import expo.modules.calendar.next.exceptions.EventDateTimeInvalidException
 import java.text.SimpleDateFormat
 import kotlinx.coroutines.Dispatchers
@@ -42,9 +42,10 @@ suspend fun findEvents(contentResolver: ContentResolver, startDate: Any, endDate
     selection += ")"
 
     val sortOrder = "${CalendarContract.Instances.BEGIN} ASC"
+    val projection = EventRepository.findEventsQueryParameters
     val cursor = contentResolver.query(
       uri,
-      findEventsQueryParameters,
+      projection,
       selection,
       null,
       sortOrder

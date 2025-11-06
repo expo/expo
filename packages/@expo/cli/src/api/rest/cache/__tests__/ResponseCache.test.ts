@@ -23,7 +23,7 @@ describe(getResponseInfo, () => {
       url: expect.any(String), // This is empty for Nock responses
       status: 200,
       statusText: 'OK',
-      headers: { 'content-type': 'application/json', 'set-cookie': 'test=123,test2=456' },
+      headers: { 'content-type': 'application/json' },
     });
 
     scope.done();

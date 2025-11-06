@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `shouldDownloadFromNetwork` option to fix iCloud video download ([#40697](https://github.com/expo/expo/pull/40697) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -41,6 +41,26 @@ export default function FormScreen() {
           <LabeledContent label="Name">
             <Text>Beto</Text>
           </LabeledContent>
+          <LabeledContent
+            label={
+              <>
+                <Text>Single Subtitle</Text>
+                <Text>Subtitle</Text>
+              </>
+            }>
+            <Text>Single Subtitle Value</Text>
+          </LabeledContent>
+          <LabeledContent
+            label={
+              <>
+                <Text>Many Subtitles</Text>
+                <Text>Subtitle 1</Text>
+                <Text>Subtitle 2</Text>
+                <Text>Subtitle 3</Text>
+              </>
+            }>
+            <Text>Value</Text>
+          </LabeledContent>
           <LabeledContent label="Labeled Slider ">
             <Slider value={sliderValue} onValueChange={setSliderValue} />
           </LabeledContent>
