@@ -35,8 +35,22 @@ export { useEvent, useEventListener } from './hooks/useEvent';
 
 export {
   Color,
-  ColorType,
-  AndroidBaseColorName,
-  AndroidBaseColorAttr,
-  IOSColorName,
+  // Exporting this types, so that docs can be generated properly
+  type ColorType,
+  type AndroidBaseColor,
+  type AndroidBaseColorSDK1,
+  type AndroidBaseColorSDK14,
+  type AndroidBaseColorSDK31,
+  type AndroidBaseColorSDK34,
+  type AndroidBaseColorSDK35,
+  type AndroidDeprecatedColor,
+  type AndroidBaseColorAttr,
+  type AndroidColorAttrSDK1,
+  type AndroidColorAttrSDK5,
+  type AndroidColorAttrSDK14,
+  type AndroidColorAttrSDK21,
+  type AndroidColorAttrSDK23,
+  type AndroidColorAttrSDK25,
+  type AndroidColorAttrSDK26,
+  type IOSBaseColor,
 } from './color';

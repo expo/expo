@@ -1,14 +1,22 @@
 import { type ColorValue } from 'react-native';
-import type { AndroidBaseColorAttr, AndroidBaseColorName } from './android.types';
-import type { IOSColorName } from './ios.types';
-export { AndroidBaseColorAttr, AndroidBaseColorName, IOSColorName };
-type ColorGroup<PredefinedValues extends string> = {
-    [key in PredefinedValues | (string & {})]: ColorValue;
+import type { AndroidColorAttrSDK1, AndroidColorAttrSDK5, AndroidColorAttrSDK14, AndroidColorAttrSDK21, AndroidColorAttrSDK23, AndroidColorAttrSDK25, AndroidColorAttrSDK26 } from './android.attr.types';
+import type { AndroidBaseColorSDK1, AndroidBaseColorSDK14, AndroidBaseColorSDK31, AndroidBaseColorSDK34, AndroidBaseColorSDK35, AndroidDeprecatedColor } from './android.color.types';
+import type { IOSBaseColor } from './ios.types';
+export * from './android.color.types';
+export * from './android.attr.types';
+export * from './ios.types';
+export type AndroidBaseColor = AndroidBaseColorSDK1 & AndroidBaseColorSDK14 & AndroidBaseColorSDK31 & AndroidBaseColorSDK34 & AndroidBaseColorSDK35 & AndroidDeprecatedColor & {
+    [key: string]: ColorValue;
+};
+export type AndroidBaseColorAttr = AndroidColorAttrSDK1 & AndroidColorAttrSDK5 & AndroidColorAttrSDK14 & AndroidColorAttrSDK21 & AndroidColorAttrSDK23 & AndroidColorAttrSDK25 & AndroidColorAttrSDK26 & {
+    [key: string]: ColorValue;
 };
 export interface ColorType {
-    ios: ColorGroup<IOSColorName>;
-    android: ColorGroup<AndroidBaseColorName> & {
-        attr: ColorGroup<AndroidBaseColorAttr>;
+    ios: IOSBaseColor & {
+        [key: string]: ColorValue;
+    };
+    android: AndroidBaseColor & {
+        attr: AndroidBaseColorAttr;
     };
 }
 export declare const Color: ColorType;

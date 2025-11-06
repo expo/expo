@@ -1,28 +1,63 @@
 import { PlatformColor, type ColorValue } from 'react-native';
 
-import type { AndroidBaseColorAttr, AndroidBaseColorName } from './android.types';
-import type { IOSColorName } from './ios.types';
+import type {
+  AndroidColorAttrSDK1,
+  AndroidColorAttrSDK5,
+  AndroidColorAttrSDK14,
+  AndroidColorAttrSDK21,
+  AndroidColorAttrSDK23,
+  AndroidColorAttrSDK25,
+  AndroidColorAttrSDK26,
+} from './android.attr.types';
+import type {
+  AndroidBaseColorSDK1,
+  AndroidBaseColorSDK14,
+  AndroidBaseColorSDK31,
+  AndroidBaseColorSDK34,
+  AndroidBaseColorSDK35,
+  AndroidDeprecatedColor,
+} from './android.color.types';
+import type { IOSBaseColor } from './ios.types';
 
-export { AndroidBaseColorAttr, AndroidBaseColorName, IOSColorName };
+export * from './android.color.types';
+export * from './android.attr.types';
+export * from './ios.types';
 
-type ColorGroup<PredefinedValues extends string> = {
-  [key in PredefinedValues | (string & {})]: ColorValue;
-};
+export type AndroidBaseColor = AndroidBaseColorSDK1 &
+  AndroidBaseColorSDK14 &
+  AndroidBaseColorSDK31 &
+  AndroidBaseColorSDK34 &
+  AndroidBaseColorSDK35 &
+  AndroidDeprecatedColor & {
+    [key: string]: ColorValue;
+  };
+
+export type AndroidBaseColorAttr = AndroidColorAttrSDK1 &
+  AndroidColorAttrSDK5 &
+  AndroidColorAttrSDK14 &
+  AndroidColorAttrSDK21 &
+  AndroidColorAttrSDK23 &
+  AndroidColorAttrSDK25 &
+  AndroidColorAttrSDK26 & {
+    [key: string]: ColorValue;
+  };
 
 export interface ColorType {
-  ios: ColorGroup<IOSColorName>;
-  android: ColorGroup<AndroidBaseColorName> & {
-    attr: ColorGroup<AndroidBaseColorAttr>;
+  ios: IOSBaseColor & {
+    [key: string]: ColorValue;
+  };
+  android: AndroidBaseColor & {
+    attr: AndroidBaseColorAttr;
   };
 }
 
-const iosColor = new Proxy({} as ColorGroup<IOSColorName>, {
+const iosColor = new Proxy({} as ColorType['ios'], {
   get(_, prop: string) {
     return PlatformColor(prop);
   },
 });
 
-const androidAttrColor = new Proxy({} as ColorGroup<AndroidBaseColorAttr>, {
+const androidAttrColor = new Proxy({} as ColorType['android']['attr'], {
   get(_, prop: string) {
     return PlatformColor('?attr/' + prop);
   },
@@ -52,3 +87,5 @@ export const Color: ColorType = {
     return androidColor;
   },
 };
+
+Color.android.primary_text_dark;
