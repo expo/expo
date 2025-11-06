@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `toString()` to image assets on web for easier asset resolution.
+- Add `toString()` to image assets on web for easier asset resolution. ([#40895](https://github.com/expo/expo/pull/40895) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
