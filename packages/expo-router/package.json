@@ -81,7 +81,7 @@
   "peerDependencies": {
     "@expo/metro-runtime": "^6.1.2",
     "@expo/log-box": "0.0.13-canary-20251023-4c86f95",
-    "@react-navigation/drawer": "^7.5.0",
+    "@react-navigation/drawer": "^7.7.2",
     "@testing-library/react-native": ">= 12.0.0",
     "expo": "*",
     "expo-constants": "^18.0.9",
@@ -120,7 +120,7 @@
     }
   },
   "devDependencies": {
-    "@react-navigation/drawer": "^7.5.0",
+    "@react-navigation/drawer": "^7.7.2",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.2.0",
@@ -134,9 +134,9 @@
     "@expo/schema-utils": "^0.1.7",
     "@radix-ui/react-slot": "1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
-    "@react-navigation/bottom-tabs": "^7.4.0",
-    "@react-navigation/native": "^7.1.8",
-    "@react-navigation/native-stack": "^7.3.16",
+    "@react-navigation/bottom-tabs": "^7.7.3",
+    "@react-navigation/native": "^7.1.19",
+    "@react-navigation/native-stack": "^7.6.2",
     "client-only": "^0.0.1",
     "debug": "^4.3.4",
     "escape-string-regexp": "^4.0.0",

@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SplitView = void 0;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importStar(require("react"));
-const react_native_screens_1 = require("react-native-screens");
+const experimental_1 = require("react-native-screens/experimental");
 const elements_1 = require("./elements");
 const IsWithinLayoutContext_1 = require("../layouts/IsWithinLayoutContext");
 const Navigator_1 = require("../views/Navigator");
@@ -78,13 +78,13 @@ function SplitViewNavigator({ children, ...splitViewHostProps }) {
         return <Navigator_1.Slot />;
     }
     // The key is needed, because number of columns cannot be changed dynamically
-    return (<react_native_screens_1.SplitViewHost key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
+    return (<experimental_1.SplitViewHost key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
       {columnChildren}
-      <react_native_screens_1.SplitViewScreen.Column>
+      <experimental_1.SplitViewScreen.Column>
         <WrappedSlot />
-      </react_native_screens_1.SplitViewScreen.Column>
+      </experimental_1.SplitViewScreen.Column>
       {inspectorChildren}
-    </react_native_screens_1.SplitViewHost>);
+    </experimental_1.SplitViewHost>);
 }
 exports.SplitView = Object.assign(SplitViewNavigator, {
     Column: elements_1.SplitViewColumn,
