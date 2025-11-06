@@ -66,17 +66,17 @@ private struct ReadSizeModifier: ViewModifier {
   }
 }
 
-private struct BottomSheetSizeReader<Content: View>: View {
-  let content: Content
+private struct BottomSheetSizeReader<Children: View>: View {
+  let children: Content
   let onSizeChange: (CGSize) -> Void
   let onChildrenSizeChange: ((CGSize) -> Void)?
 
   init(
-    content: Content,
+    children: Content,
     onSizeChange: @escaping (CGSize) -> Void,
     onChildrenSizeChange: ((CGSize) -> Void)? = nil
   ) {
-    self.content = content
+    self.children = children
     self.onSizeChange = onSizeChange
     self.onChildrenSizeChange = onChildrenSizeChange
   }
@@ -94,7 +94,7 @@ private struct BottomSheetSizeReader<Content: View>: View {
       }
       .allowsHitTesting(false)
 
-      content
+      children
         .modifier(ReadSizeModifier())
         .onPreferenceChange(SizePreferenceKey.self) { size in
           if let size {
@@ -169,7 +169,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
       Rectangle().hidden()
         .sheet(isPresented: $isOpened) {
           BottomSheetSizeReader(
-            content: Children(),
+            children: Children(),
             onSizeChange: handleSheetSizeChange,
             onChildrenSizeChange: handleChildrenSizeChange
           )
