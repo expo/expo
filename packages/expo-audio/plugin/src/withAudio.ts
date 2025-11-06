@@ -4,10 +4,9 @@ const pkg = require('expo-audio/package.json');
 
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 
-const withAudio: ConfigPlugin<{ microphonePermission?: string | false } | void> = (
-  config,
-  { microphonePermission } = {}
-) => {
+const withAudio: ConfigPlugin<
+  { microphonePermission?: string | false; recordAudioAndroid?: boolean } | void
+> = (config, { microphonePermission, recordAudioAndroid = true } = {}) => {
   IOSConfig.Permissions.createPermissionsPlugin({
     NSMicrophoneUsageDescription: MICROPHONE_USAGE,
   })(config, {
@@ -17,7 +16,7 @@ const withAudio: ConfigPlugin<{ microphonePermission?: string | false } | void> 
   return AndroidConfig.Permissions.withPermissions(
     config,
     [
-      microphonePermission !== false && 'android.permission.RECORD_AUDIO',
+      recordAudioAndroid !== false && 'android.permission.RECORD_AUDIO',
       'android.permission.MODIFY_AUDIO_SETTINGS',
     ].filter(Boolean) as string[]
   );
