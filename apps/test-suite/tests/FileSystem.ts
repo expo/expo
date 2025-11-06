@@ -1286,14 +1286,24 @@ export async function test({ describe, expect, it, ...t }) {
       expect(body.data).toEqual('abcde');
     });
 
+    it('Supports sending a sliced file using blob', async () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+      const sliced = src.slice(0, 2, 'text/plain');
+      const response = await fetch('https://httpbingo.org/anything', {
+        method: 'POST',
+        body: sliced,
+      });
+      const body = await response.json();
+      expect(body.data).toEqual('ab');
+    });
+
     // You can also use this docker image: twostoryrobot/simple-file-upload to test e2e blob upload.
     it('Supports sending a file using blob with formdata', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
 
       const formData = new FormData();
-    //   const blob = src.slice(0, 2);
-    //   const bytes = await blob.arrayBuffer();
 
       formData.append('data', src);
 

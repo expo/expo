@@ -138,7 +138,11 @@ export class File extends ExpoFileSystem.FileSystemFile implements TempBlob {
   }
 
   slice(start?: number, end?: number, contentType?: string): ExpoBlob {
-    return new ExpoBlob([this.bytesSync().slice(start, end)], { type: contentType });
+    return new ExpoBlob([new Uint8Array(this.bytesSync())], { type: contentType }).slice(
+      start,
+      end,
+      contentType
+    );
   }
 }
 
