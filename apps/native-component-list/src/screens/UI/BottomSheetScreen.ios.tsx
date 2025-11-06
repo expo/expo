@@ -1,4 +1,13 @@
-import { Button, BottomSheet, Host, HStack, Text, List } from '@expo/ui/swift-ui';
+import {
+  Button,
+  BottomSheet,
+  Host,
+  HStack,
+  Text,
+  List,
+  VStack,
+  Rectangle,
+} from '@expo/ui/swift-ui';
 import { background, frame } from '@expo/ui/swift-ui/modifiers';
 import { Pressable } from 'react-native';
 import * as React from 'react';
@@ -36,18 +45,21 @@ const BottomSheetWithSwiftUIContent = (props: {
   const [height, setHeight] = React.useState<number>(100);
   return (
     <BottomSheet isOpened={props.isOpened} onIsOpenedChange={props.onIsOpenedChange}>
-      <HStack spacing={20} modifiers={[frame({ maxWidth: Infinity, height: Infinity })]}>
-        <Text>Left</Text>
-        <Text>Middle</Text>
-        <Text>Right</Text>
-        <Button
-          variant="default"
-          onPress={() => {
-            setHeight(height + 10);
-          }}>
-          Increase height
-        </Button>
-      </HStack>
+      <VStack>
+        <Rectangle modifiers={[frame({ width: 100, height })]} />
+        <HStack spacing={20} modifiers={[frame({ maxWidth: Infinity, height: Infinity })]}>
+          <Text>Left</Text>
+          <Text>Middle</Text>
+          <Text>Right</Text>
+          <Button
+            variant="default"
+            onPress={() => {
+              setHeight(height + 10);
+            }}>
+            Increase height
+          </Button>
+        </HStack>
+      </VStack>
     </BottomSheet>
   );
 };
