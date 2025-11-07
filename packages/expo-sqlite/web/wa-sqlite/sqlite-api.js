@@ -709,14 +709,21 @@ export function Factory(Module) {
     return function(db, schema) {
       verifyDatabase(db);
       const size = tmpPtr[0];
-      const flags = 0;
-      const ptr = f(db, schema, size, flags);
+      let flags = 0;
+      let ptr = f(db, schema, size, flags);
       if (!ptr) {
-        check(fname, SQLite.SQLITE_ERROR, db);
-        return null;
+        flags = SQLite.SQLITE_SERIALIZE_NOCOPY;
+        ptr = f(db, schema, size, flags);
+        if (!ptr) {
+          check(fname, SQLite.SQLITE_ERROR, db);
+          return null;
+        }
       }
       const bufferSize = Module.getValue(size, '*');
       const buffer = Module.HEAPU8.subarray(ptr, ptr + bufferSize);
+      if (flags === SQLite.SQLITE_SERIALIZE_NOCOPY) {
+        return new Uint8Array(buffer.slice());
+      }
       const result = new Uint8Array(buffer);
       Module._sqlite3_free(ptr);
       return result;
