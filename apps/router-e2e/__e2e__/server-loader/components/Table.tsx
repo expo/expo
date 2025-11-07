@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 16,
     minWidth: 300,
+    maxWidth: 900,
   },
   tableRow: {
     flexDirection: 'row',

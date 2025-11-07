@@ -209,14 +209,12 @@ function getQualifiedRouteComponent(value) {
                 store.setFocusedState(stateForPath);
         }), [navigation]);
         const Suspense = ({ children }) => {
-            if (process.env.NODE_ENV !== 'production' || process.env.EXPO_OS !== 'web') {
-                console.log('Using suspense');
-                return (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+            // if (process.env.NODE_ENV !== 'production' || process.env.EXPO_OS !== 'web') {
+            return (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
             {children}
           </react_1.default.Suspense>);
-            }
-            console.log('Not using suspense');
-            return children;
+            // }
+            // return children;
         };
         return (<Route_1.Route node={value} route={route}>
         <Suspense>

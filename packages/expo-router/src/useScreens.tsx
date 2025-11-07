@@ -278,15 +278,15 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     );
 
     const Suspense = ({ children }: React.PropsWithChildren) => {
-      if (process.env.NODE_ENV !== 'production' || process.env.EXPO_OS !== 'web') {
+      // if (process.env.NODE_ENV !== 'production' || process.env.EXPO_OS !== 'web') {
         return (
           <React.Suspense fallback={<SuspenseFallback route={value} />}>
             {children}
           </React.Suspense>
         );
-      }
+      // }
 
-      return children;
+      // return children;
     };
 
     return (
