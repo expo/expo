@@ -1,9 +1,10 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { Label, Icon, Badge, VectorIcon } from '../../primitives';
 import type { NativeTabsLabelStyle } from '../types';
 
-export interface LabelProps {
+export interface NativeTabsTriggerLabelProps {
   /**
    * The text to display as the label for the tab.
    */
@@ -16,9 +17,7 @@ export interface LabelProps {
   hidden?: boolean;
 }
 
-export function Label(props: LabelProps) {
-  return null;
-}
+export const NativeTabsTriggerLabel: React.FC<NativeTabsTriggerLabelProps> = Label;
 
 export interface SourceIconCombination {
   /**
@@ -140,7 +139,7 @@ export interface CrossPlatformIconCombination {
   drawable?: never;
 }
 
-export type IconProps = { selectedColor?: ColorValue } & (
+export type NativeTabsTriggerIconProps = { selectedColor?: ColorValue } & (
   | NamedIconCombination
   | SourceIconCombination
   | CrossPlatformIconCombination
@@ -152,56 +151,30 @@ export type IconProps = { selectedColor?: ColorValue } & (
  * @platform ios
  * @platform android
  */
-export function Icon(props: IconProps) {
-  return null;
-}
-
-export interface VectorIconProps<NameT extends string> {
-  /**
-   * The family of the vector icon.
-   *
-   * @example
-   * ```tsx
-   * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-   * ```
-   */
-  family: {
-    getImageSource: (
-      name: NameT,
-      size: number,
-      color: ColorValue
-    ) => Promise<ImageSourcePropType | null>;
-  };
-  /**
-   * The name of the vector icon.
-   */
-  name: NameT;
-}
+export const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps> = Icon;
 
 /**
  * Helper component which can be used to load vector icons for `NativeTabs`.
  *
  * @example
  * ```tsx
- * import { NativeTabs, VectorIcon } from 'expo-router';
+ * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
  *
  * export default Layout(){
  *   return (
  *     <NativeTabs>
  *       <NativeTabs.Trigger name="index">
- *         <Icon src={<VectorIcon family={MaterialCommunityIcons} name="home" />} />
+ *         <NativeTabs.Trigger.Icon src={<NativeTabs.Trigger.VectorIcon family={MaterialCommunityIcons} name="home" />} />
  *       </NativeTabs.Trigger>
  *     </NativeTabs>
  *   );
  * }
  * ```
  */
-export function VectorIcon<NameT extends string>(props: VectorIconProps<NameT>) {
-  return null;
-}
+export const NativeTabsTriggerVectorIcon = VectorIcon;
 
-export interface BadgeProps {
+export interface NativeTabsTriggerBadgeProps {
   /**
    * The text to display as the badge for the tab.
    * If not provided, the badge will not be displayed.
@@ -216,6 +189,4 @@ export interface BadgeProps {
   selectedBackgroundColor?: ColorValue;
 }
 
-export function Badge(props: BadgeProps) {
-  return null;
-}
+export const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps> = Badge;

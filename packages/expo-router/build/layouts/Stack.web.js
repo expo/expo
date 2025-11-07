@@ -8,8 +8,8 @@ exports.Stack = void 0;
 // When the `EXPO_UNSTABLE_WEB_MODAL` env variable is truthy.
 const _web_modal_1 = __importDefault(require("./_web-modal"));
 exports.Stack = _web_modal_1.default;
-const elements_1 = require("./stack-utils/elements");
-_web_modal_1.default.Screen = elements_1.StackScreen;
-_web_modal_1.default.Header = elements_1.StackHeader;
+const stack_utils_1 = require("./stack-utils");
+_web_modal_1.default.Screen = stack_utils_1.StackScreen;
+_web_modal_1.default.Header = stack_utils_1.StackHeader;
 exports.default = _web_modal_1.default;
 //# sourceMappingURL=Stack.web.js.map

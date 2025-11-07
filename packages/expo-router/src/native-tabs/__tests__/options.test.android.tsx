@@ -1,15 +1,12 @@
 import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
-import {
-  BottomTabsScreen as _BottomTabsScreen,
-  type BottomTabsScreenProps,
-} from 'react-native-screens';
+import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
-import { Icon, VectorIcon, type IconProps } from '../common/elements';
+import { type NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
@@ -29,7 +26,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon drawable="stairs" />
+            <NativeTabs.Trigger.Icon drawable="stairs" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -49,9 +46,9 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon drawable="first" />
-            <Icon drawable="second" />
-            <Icon drawable="last" />
+            <NativeTabs.Trigger.Icon drawable="first" />
+            <NativeTabs.Trigger.Icon drawable="second" />
+            <NativeTabs.Trigger.Icon drawable="last" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -103,7 +100,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="star" drawable="stairs" />
+            <NativeTabs.Trigger.Icon sf="star" drawable="stairs" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -124,7 +121,10 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ default: 'star', selected: 'star.fill' }} drawable="stairs" />
+            <NativeTabs.Trigger.Icon
+              sf={{ default: 'star', selected: 'star.fill' }}
+              drawable="stairs"
+            />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -167,7 +167,7 @@ describe(appendIconOptions, () => {
       { androidSrc: { selected: 'yyy', default: 'xxx' } },
       { icon: { src: 'xxx' }, selectedIcon: { src: 'yyy' } },
     ],
-  ] as [IconProps, NativeTabOptions][])(
+  ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
     'should append icon props %p to options correctly',
     (props, expected) => {
       const options: NativeTabOptions = {};
@@ -177,9 +177,9 @@ describe(appendIconOptions, () => {
   );
   it('when vector icon is used, promise is set', () => {
     const options: NativeTabOptions = {};
-    const props: IconProps = {
+    const props: NativeTabsTriggerIconProps = {
       src: {
-        default: <VectorIcon family={ICON_FAMILY} name="a" />,
+        default: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
         selected: { uri: 'yyy' },
       },
     };

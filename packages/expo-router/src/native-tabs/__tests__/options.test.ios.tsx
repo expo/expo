@@ -3,11 +3,12 @@ import React from 'react';
 import { Button, View } from 'react-native';
 
 import { HrefPreview } from '../../link/preview/HrefPreview';
+import { Badge, Icon, Label } from '../../primitives';
 import { renderRouter, within } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView as _NativeTabsView } from '../NativeTabsView';
-import { Badge, Icon, Label, VectorIcon, type IconProps } from '../common/elements';
+import { type NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
@@ -70,7 +71,7 @@ it('can pass options via elements', () => {
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index">
-          <Icon sf="homepod.2.fill" />
+          <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
         </NativeTabs.Trigger>
       </NativeTabs>
     ),
@@ -82,6 +83,29 @@ it('can pass options via elements', () => {
   expect(NativeTabsView.mock.calls[0][0].tabs[0].options.icon).toStrictEqual({
     sf: 'homepod.2.fill',
   } as NativeTabOptions);
+});
+
+it('can use universal elements', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index">
+          <Icon sf="homepod.2.fill" />
+          <Label>Home</Label>
+          <Badge>3</Badge>
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(NativeTabsView).toHaveBeenCalledTimes(1);
+  expect(NativeTabsView.mock.calls[0][0].tabs[0].options.icon).toStrictEqual({
+    sf: 'homepod.2.fill',
+  } as NativeTabOptions);
+  expect(NativeTabsView.mock.calls[0][0].tabs[0].options.title).toBe('Home');
+  expect(NativeTabsView.mock.calls[0][0].tabs[0].options.badgeValue).toBe('3');
 });
 
 it('when no options are passed, default ones are used', () => {
@@ -122,7 +146,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <NativeTabs.Trigger.Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -142,7 +166,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon drawable="stairs" />
+            <NativeTabs.Trigger.Icon drawable="stairs" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -161,8 +185,8 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="stairs" />
-            <Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Icon sf="stairs" />
+            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -182,8 +206,8 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ selected: 'stairs' }} />
-            <Icon sf={{ selected: 'homepod.2.fill' }} />
+            <NativeTabs.Trigger.Icon sf={{ selected: 'stairs' }} />
+            <NativeTabs.Trigger.Icon sf={{ selected: 'homepod.2.fill' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -204,9 +228,11 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
-            <Icon sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }} />
-            <Icon sf="0.circle.ar" />
+            <NativeTabs.Trigger.Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <NativeTabs.Trigger.Icon
+              sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }}
+            />
+            <NativeTabs.Trigger.Icon sf="0.circle.ar" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -226,9 +252,11 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
-            <Icon sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }} />
-            <Icon sf={{ selected: '0.circle.ar' }} />
+            <NativeTabs.Trigger.Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <NativeTabs.Trigger.Icon
+              sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }}
+            />
+            <NativeTabs.Trigger.Icon sf={{ selected: '0.circle.ar' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -264,7 +292,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs iconColor={{ selected: 'red' }}>
           <NativeTabs.Trigger name="index">
-            <Icon selectedColor="blue" />
+            <NativeTabs.Trigger.Icon selectedColor="blue" />
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="one" />
         </NativeTabs>
@@ -290,7 +318,7 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge>5</Badge>
+            <NativeTabs.Trigger.Badge>5</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -309,7 +337,7 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge>New</Badge>
+            <NativeTabs.Trigger.Badge>New</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -343,9 +371,9 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge>1</Badge>
-            <Badge>2</Badge>
-            <Badge>3</Badge>
+            <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Badge>2</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -364,7 +392,7 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge />
+            <NativeTabs.Trigger.Badge />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -381,7 +409,7 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge hidden />
+            <NativeTabs.Trigger.Badge hidden />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -400,7 +428,7 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label>Custom Title</Label>
+            <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -436,9 +464,9 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label>First Title</Label>
-            <Label>Second Title</Label>
-            <Label>Last Title</Label>
+            <NativeTabs.Trigger.Label>First Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Label>Second Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Label>Last Title</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -457,7 +485,7 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label />
+            <NativeTabs.Trigger.Label />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -474,7 +502,7 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label hidden />
+            <NativeTabs.Trigger.Label hidden />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -507,7 +535,7 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
           <NativeTabs.Trigger name="index">
-            <Label selectedStyle={{ fontSize: 32, color: 'blue' }} />
+            <NativeTabs.Trigger.Label selectedStyle={{ fontSize: 32, color: 'blue' }} />
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="one" />
         </NativeTabs>
@@ -534,7 +562,7 @@ describe('Tab options', () => {
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disablePopToTop>
-              <Label>Custom Title</Label>
+              <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
@@ -558,10 +586,10 @@ describe('Tab options', () => {
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
-              <Label>Custom Title</Label>
+              <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="one" disablePopToTop={false}>
-              <Label>One</Label>
+              <NativeTabs.Trigger.Label>One</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
@@ -597,7 +625,7 @@ describe('Tab options', () => {
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disableScrollToTop>
-              <Label>Custom Title</Label>
+              <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
@@ -621,10 +649,10 @@ describe('Tab options', () => {
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
-              <Label>Custom Title</Label>
+              <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="one" disableScrollToTop={false}>
-              <Label>One</Label>
+              <NativeTabs.Trigger.Label>One</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
@@ -661,18 +689,18 @@ describe('Dynamic options', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label>Initial Title</Label>
-            <Badge>3</Badge>
-            <Icon sf="0.circle" />
+            <NativeTabs.Trigger.Label>Initial Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Icon sf="0.circle" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
       index: () => (
         <View testID="index">
           <NativeTabs.Trigger name="index">
-            <Label>Updated Title</Label>
-            <Badge>5</Badge>
-            <Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Label>Updated Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge>5</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
           </NativeTabs.Trigger>
         </View>
       ),
@@ -700,7 +728,7 @@ describe('Dynamic options', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label>Initial Title</Label>
+            <NativeTabs.Trigger.Label>Initial Title</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -710,7 +738,7 @@ describe('Dynamic options', () => {
         return (
           <View testID="index">
             <NativeTabs.Trigger name="index">
-              <Label>{label}</Label>
+              <NativeTabs.Trigger.Label>{label}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <Button title="Update" testID="update-button" onPress={() => setValue((v) => v + 1)} />
           </View>
@@ -749,9 +777,9 @@ describe('Dynamic options', () => {
       second: () => (
         <View testID="second">
           <NativeTabs.Trigger name="second">
-            <Label>Updated Title</Label>
-            <Badge>5</Badge>
-            <Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Label>Updated Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge>5</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
           </NativeTabs.Trigger>
         </View>
       ),
@@ -799,11 +827,11 @@ describe(appendIconOptions, () => {
     [
       {
         sf: '0.circle',
-        androidSrc: <VectorIcon family={ICON_FAMILY} name="a" />,
+        androidSrc: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
       },
       { icon: { sf: '0.circle' }, selectedIcon: undefined },
     ],
-  ] as [IconProps, NativeTabOptions][])(
+  ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
     'should append icon props %p to options correctly',
     (props, expected) => {
       const options: NativeTabOptions = {};
@@ -813,9 +841,9 @@ describe(appendIconOptions, () => {
   );
   it('when vector icon is used, promise is set', () => {
     const options: NativeTabOptions = {};
-    const props: IconProps = {
+    const props: NativeTabsTriggerIconProps = {
       src: {
-        default: <VectorIcon family={ICON_FAMILY} name="a" />,
+        default: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
         selected: { uri: 'yyy' },
       },
     };
