@@ -85,4 +85,18 @@ describe(resolveDependencyConfigImplIosAsync, () => {
       '/app/node_modules/react-native-maps/react-native-maps.podspec'
     );
   });
+
+  it('should resolve podspec if the base name is matching the package name case-insensitively', async () => {
+    vol.fromJSON({
+      '/app/node_modules/react-native-maps/react-native-google-maps.podspec': '',
+      '/app/node_modules/react-native-maps/React-Native-Maps.podspec': '',
+    });
+    const result = await resolveDependencyConfigImplIosAsync(
+      { path: '/app/node_modules/react-native-maps', version: '' },
+      undefined
+    );
+    expect(result?.podspecPath).toBe(
+      '/app/node_modules/react-native-maps/React-Native-Maps.podspec'
+    );
+  });
 });
