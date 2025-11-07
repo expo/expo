@@ -17,6 +17,7 @@
 - Add support for server data loaders in static export mode ([#40130](https://github.com/expo/expo/pull/40130) by [@hassankhan](https://github.com/hassankhan))
 - components API for setting header options ([#40600](https://github.com/expo/expo/pull/40600) by [@Ubax](https://github.com/Ubax))
 - [iOS] add sidebar adaptable prop ([#40957](https://github.com/expo/expo/pull/40957) by [@Ubax](https://github.com/Ubax))
+- add Color utility ([#40904](https://github.com/expo/expo/pull/40904) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
