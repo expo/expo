@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix [#40601](https://github.com/expo/expo/pull/40601) assuming case-insensitive path for default derived podspec path in `react-native-config` resolution
-
 ### 💡 Others
+
+## 3.0.21 — 2025-11-07
+
+### 🐛 Bug fixes
+
+- Fix [#40601](https://github.com/expo/expo/pull/40601) assuming case-insensitive path for default derived podspec path in `react-native-config` resolution
 
 ## 3.0.20 — 2025-11-03
 

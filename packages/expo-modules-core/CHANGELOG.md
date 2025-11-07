@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix sizing glitch when React Native components are used as child in Expo UI components ([#40693](https://github.com/expo/expo/pull/40693) by [@nishan](https://github.com/intergalacticspacehighway))
-
 ### 💡 Others
+
+## 3.0.25 — 2025-11-07
+
+### 🐛 Bug fixes
+
+- [iOS] Fix sizing glitch when React Native components are used as child in Expo UI components ([#40693](https://github.com/expo/expo/pull/40693) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 3.0.24 — 2025-11-03
 

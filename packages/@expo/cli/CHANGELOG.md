@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix RSC `[...rsc]+api.ts` template path resolution ([#40760](https://github.com/expo/expo/pull/40760) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 54.0.16 — 2025-11-07
+
+### 🐛 Bug fixes
+
+- Fix RSC `[...rsc]+api.ts` template path resolution ([#40760](https://github.com/expo/expo/pull/40760) by [@kitten](https://github.com/kitten))
 
 ## 54.0.15 — 2025-11-03
 

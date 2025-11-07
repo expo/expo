@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.7 — 2025-11-07
+
+### 🐛 Bug fixes
+
 - Ensure React Fast Refresh is disabled in `jest-expo` and other non-Expo environments ([#40774](https://github.com/expo/expo/pull/40774) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
