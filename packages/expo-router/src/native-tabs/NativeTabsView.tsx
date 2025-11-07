@@ -1,3 +1,4 @@
+import { useTheme } from '@react-navigation/native';
 import React, { useDeferredValue } from 'react';
 import type { ColorValue } from 'react-native';
 import {
@@ -31,6 +32,8 @@ featureFlags.experiment.controlledBottomTabs = false;
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable } = props;
 
+  const colors = useTheme()?.colors;
+
   const deferredFocusedIndex = useDeferredValue(focusedIndex);
   // We need to check if the deferred index is not out of bounds
   // This can happen when the focused index is the last tab, and user removes that tab
@@ -40,8 +43,14 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     deferredFocusedIndex < tabs.length ? deferredFocusedIndex : focusedIndex;
 
   const appearances = tabs.map((tab) => ({
-    standardAppearance: createStandardAppearanceFromOptions(tab.options),
-    scrollEdgeAppearance: createScrollEdgeAppearanceFromOptions(tab.options),
+    standardAppearance: createStandardAppearanceFromOptions({
+      ...tab.options,
+      backgroundColor: tab.options.backgroundColor ?? colors?.card,
+    }),
+    scrollEdgeAppearance: createScrollEdgeAppearanceFromOptions({
+      ...tab.options,
+      backgroundColor: tab.options.backgroundColor ?? colors?.card,
+    }),
   }));
 
   const options = tabs.map((tab) => tab.options);
@@ -81,7 +90,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight}
       tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle}
       tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor}
-      tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor}
+      tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor ?? colors?.card}
       tabBarItemRippleColor={props.rippleColor}
       tabBarItemLabelVisibilityMode={props.labelVisibilityMode}
       tabBarItemIconColorActive={

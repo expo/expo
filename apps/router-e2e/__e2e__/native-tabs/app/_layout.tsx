@@ -14,7 +14,6 @@ if (process.env.EXPO_OS !== 'web') {
 export default function Layout() {
   const [activeTabs, setActiveTabs] = useState<string[]>([]);
   const theme = usePlatformTheme();
-  console.log('Rendered with theme:', theme);
   return (
     <ThemeProvider value={theme}>
       <ActiveTabsContext.Provider value={{ activeTabs, setActiveTabs }}>
