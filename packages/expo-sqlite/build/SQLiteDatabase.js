@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import ExpoSQLite from './ExpoSQLite';
 import { flattenOpenOptions } from './NativeDatabase';
+import { registerDatabaseForDevToolsAsync, unregisterDatabaseForDevToolsAsync, } from './SQLiteDevToolsClient';
 import { SQLiteSession } from './SQLiteSession';
 import { SQLiteStatement, } from './SQLiteStatement';
 import { createDatabasePath } from './pathUtils';
@@ -26,6 +27,9 @@ export class SQLiteDatabase {
      * Close the database.
      */
     closeAsync() {
+        if (this.options.useNewConnection !== true) {
+            unregisterDatabaseForDevToolsAsync(this);
+        }
         return this.nativeDatabase.closeAsync();
     }
     /**
@@ -179,6 +183,9 @@ export class SQLiteDatabase {
      * Close the database.
      */
     closeSync() {
+        if (this.options.useNewConnection !== true) {
+            unregisterDatabaseForDevToolsAsync(this);
+        }
         return this.nativeDatabase.closeSync();
     }
     /**
@@ -396,7 +403,11 @@ export async function openDatabaseAsync(databaseName, options, directory) {
     await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, flattenOpenOptions(openOptions));
     await nativeDatabase.initAsync();
-    return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+    const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+    if (options?.useNewConnection !== true) {
+        registerDatabaseForDevToolsAsync(database);
+    }
+    return database;
 }
 /**
  * Open a database.
@@ -413,7 +424,11 @@ export function openDatabaseSync(databaseName, options, directory) {
     ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, flattenOpenOptions(openOptions));
     nativeDatabase.initSync();
-    return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+    const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+    if (options?.useNewConnection !== true) {
+        registerDatabaseForDevToolsAsync(database);
+    }
+    return database;
 }
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
