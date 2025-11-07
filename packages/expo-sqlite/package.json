@@ -24,6 +24,7 @@
   },
   "scripts": {
     "build": "expo-module build",
+    "bundle:webui": "pushd dev-plugin-webui && bun run build && popd && rm -rf dev-plugin-dist && mv dev-plugin-webui/dist dev-plugin-dist",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

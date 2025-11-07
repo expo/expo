@@ -33,7 +33,9 @@ type SourceFileImportRef = {
   isTypeOnly?: boolean;
 };
 
-const IGNORED_PACKAGES: string[] = [];
+const IGNORED_PACKAGES: string[] = [
+  'sqlite-inspector-webui', // This is prebuilt devtools plugin webui. It's not a user depended package.
+];
 
 const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | void> = {
   'expo-dev-menu': {

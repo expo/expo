@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added SQLite inspector devtools plugin. ([#40872](https://github.com/expo/expo/pull/40872) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Throwing error when `ExpoSQLite.defaultDatabaseDirectory` returns undefined. ([#40680](https://github.com/expo/expo/pull/40680) by [@kudo](https://github.com/kudo))

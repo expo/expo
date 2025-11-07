@@ -1,0 +1,69 @@
+{
+  "name": "sqlite-inspector-webui",
+  "main": "expo-router/entry",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "bun install && npx expo export -p web --output-dir dist",
+    "start": "expo start --web",
+    "lint": "expo lint",
+    "test": "jest",
+    "test:watch": "jest --watchAll"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "@tailwindcss/postcss": "^4.1.16",
+    "autoprefixer": "^10.4.21",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "expo": "~54.0.21",
+    "expo-linking": "~8.0.8",
+    "expo-router": "~6.0.14",
+    "expo-sqlite": "~16.0.8",
+    "lucide-react": "^0.548.0",
+    "next-themes": "^0.4.6",
+    "postcss": "^8.5.6",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-web": "~0.21.0",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.16",
+    "tailwindcss-animate": "^1.0.7",
+    "tw-animate-css": "^1.4.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "~29.7.0",
+    "@testing-library/react-native": "^13.2.0",
+    "@types/bun": "^1.3.1",
+    "@types/jest": "29.5.14",
+    "@types/react": "~19.1.0",
+    "eslint": "^9.25.0",
+    "eslint-config-expo": "~10.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "expo-atlas": "^0.4.0",
+    "jest": "~29.7.0",
+    "jest-expo": "~54.0.13",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.2"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "bracketSameLine": true,
+    "trailingComma": "es5"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "private": true,
+  "patchedDependencies": {
+    "@expo/devtools@0.1.7": "patches/@expo%2Fdevtools@0.1.7.patch"
+  }
+}
