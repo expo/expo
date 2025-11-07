@@ -10,10 +10,15 @@ import { listFilesSorted } from '../utils';
 
 /** Find first *.podspec file in target directory */
 const findPodspecFile = async (targetPath: string): Promise<string | null> => {
-  const podspecFiles = await listFilesSorted(targetPath, (basename) =>
-    basename.endsWith('.podspec')
+  const podspecFiles = await listFilesSorted(targetPath, (basename) => {
+    return basename.endsWith('.podspec');
+  });
+  // NOTE(@kitten): Compare case-insensitively against basename of derived name
+  const mainBasename = path.basename(targetPath).toLowerCase();
+  const mainPodspecFile = podspecFiles.find(
+    (podspecFile) => path.basename(podspecFile, '.podspec').toLowerCase() === mainBasename
   );
-  return podspecFiles.length > 0 ? podspecFiles[0] : null;
+  return mainPodspecFile ?? (podspecFiles.length > 0 ? podspecFiles[0] : null);
 };
 
 export async function resolveDependencyConfigImplIosAsync(
