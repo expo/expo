@@ -4,14 +4,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type RNHostProps = {
-  /**
-   * When true, the host view will update its size in the React Native view tree to match the content's layout from React Native.
-   * Can be only set once on mount.
-   * @default false
-   */
-  matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
-
-  children: React.ReactNode;
+  children: React.ReactElement;
 } & CommonViewModifierProps;
 
 const RNHostNativeView: React.ComponentType<
@@ -25,20 +18,12 @@ const RNHostNativeView: React.ComponentType<
  * This also listens to child RN view's bounds and sets frame modifier on it, so its sizing can be controlled by Yoga.
  */
 export function RNHost(props: RNHostProps) {
-  const { matchContents, modifiers, ...restProps } = props;
-  const matchContentsVertical =
-    typeof matchContents === 'object' ? matchContents.vertical : matchContents;
-  const matchContentsHorizontal =
-    typeof matchContents === 'object' ? matchContents.horizontal : matchContents;
+  const { modifiers, ...restProps } = props;
 
   return (
     <RNHostNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      matchContentsVertical={matchContentsVertical}
-      matchContentsHorizontal={matchContentsHorizontal}
-      // matchContents do not work dynamically, so we remount the component when the matchContents changes
-      key={`matchContentsVertical=${matchContentsVertical}-matchContentsHorizontal=${matchContentsHorizontal}`}
       {...restProps}
     />
   );

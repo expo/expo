@@ -1,15 +1,6 @@
 import { type CommonViewModifierProps } from '../types';
 export type RNHostProps = {
-    /**
-     * When true, the host view will update its size in the React Native view tree to match the content's layout from React Native.
-     * Can be only set once on mount.
-     * @default false
-     */
-    matchContents?: boolean | {
-        vertical?: boolean;
-        horizontal?: boolean;
-    };
-    children: React.ReactNode;
+    children: React.ReactElement;
 } & CommonViewModifierProps;
 /**
  * A hosting component for React Native views in SwiftUI.

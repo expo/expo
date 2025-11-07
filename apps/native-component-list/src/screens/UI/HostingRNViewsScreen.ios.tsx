@@ -1,5 +1,5 @@
 import { Host, Text as SwiftUIText, VStack, HStack, List, Section } from '@expo/ui/swift-ui';
-import { frame, padding } from '@expo/ui/swift-ui/modifiers';
+import { background, frame, padding } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { Text as RNText, View, Pressable } from 'react-native';
 import { RNHost } from '@expo/ui/swift-ui';
@@ -14,7 +14,7 @@ export default function HostingRNViewsScreen() {
         <Section title="Mixing RN Components with SwiftUI">
           <VStack spacing={12} modifiers={[padding({ all: 12 })]}>
             <HStack spacing={24}>
-              <RNHost matchContents>
+              <RNHost>
                 <Pressable
                   onPress={() => setCounter((prev) => prev - 1)}
                   style={{
@@ -35,7 +35,7 @@ export default function HostingRNViewsScreen() {
                 </Pressable>
               </RNHost>
               <SwiftUIText modifiers={[frame({ width: 50 })]}>{counter}</SwiftUIText>
-              <RNHost matchContents>
+              <RNHost>
                 <Pressable
                   onPress={() => setCounter((prev) => prev + 1)}
                   style={{
@@ -55,7 +55,7 @@ export default function HostingRNViewsScreen() {
         <Section title="Dynamically increasing size">
           <VStack spacing={12} modifiers={[padding({ all: 12 })]}>
             <HStack spacing={24}>
-              <RNHost matchContents>
+              <RNHost>
                 <Pressable
                   onPress={() => setBoxSize((prev) => prev + 10)}
                   style={{
@@ -78,28 +78,35 @@ export default function HostingRNViewsScreen() {
         <Section title="RN components without explicit size">
           <VStack>
             <HStack spacing={20} modifiers={[padding({ all: 12 })]}>
-              <RNHost matchContents>
+              <RNHost>
                 <View
                   style={{
-                    padding: 20,
-                    backgroundColor: '#9B59B6',
-                    borderRadius: 10,
-                    alignSelf: 'flex-start',
-                  }}
-                />
-                <View
-                  style={{
-                    padding: 20,
-                    backgroundColor: '#9B59B6',
-                    borderRadius: 10,
-                    alignSelf: 'flex-start',
-                  }}
-                />
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 10,
+                  }}>
+                  <View
+                    style={{
+                      padding: 20,
+                      backgroundColor: '#9B59B6',
+                      borderRadius: 10,
+                    }}
+                  />
+                  <View
+                    style={{
+                      padding: 20,
+                      backgroundColor: '#9B59B6',
+                      borderRadius: 10,
+                    }}
+                  />
+                </View>
               </RNHost>
             </HStack>
-            <RNText style={{ textAlign: 'center' }}>
-              RN component boxes separated by SwiftUI HStack
-            </RNText>
+            <RNHost>
+              <RNText style={{ textAlign: 'center' }}>
+                RN component boxes separated by SwiftUI HStack
+              </RNText>
+            </RNHost>
           </VStack>
         </Section>
       </List>

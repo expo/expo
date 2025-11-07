@@ -3,10 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class RNHostProps: UIBaseViewProps {
-  @Field var matchContentsHorizontal: Bool = false
-  @Field var matchContentsVertical: Bool = false
-}
+internal final class RNHostProps: UIBaseViewProps {}
 
 // This component should be used to Host React Native components in SwiftUI components.
 // This sets it's own shadow node size so child RN components properties like flex: 1 work as expected
@@ -20,24 +17,20 @@ internal struct RNHost: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    let content = ChildSizeWrapper(children: props.children ?? [], props: props) {
-      Children()
-    }
-    
-    if #available(iOS 16.0, *) {
-      content.onGeometryChange(for: CGSize.self, of: { proxy in proxy.size }, action: {
-        updateShadowNodeSize($0)
-      })
-    } else {
-      content.overlay {
-        GeometryReader { geometry in
-          Color.clear
-            .hidden()
-            .onAppear {
-              updateShadowNodeSize(geometry.size)
-            }
-            .onChange(of: geometry.size) { updateShadowNodeSize($0) }
-        }
+    ZStack {
+      GeometryReader { sheetGeometry in
+        Color.clear
+          .onAppear {
+            updateShadowNodeSize(sheetGeometry.size)
+          }
+          .onChange(of: sheetGeometry.size) { newSize in
+            updateShadowNodeSize(newSize)
+          }
+      }
+      .allowsHitTesting(false)
+      
+      ChildSizeWrapper(children: props.children ?? [], props: props) {
+        Children()
       }
     }
   }
@@ -57,17 +50,11 @@ private struct ChildSizeWrapper<Content: View>: View {
   }
 
   var body: some View {
-    let shouldMatchContents = props.matchContentsHorizontal || props.matchContentsVertical
-
-    if shouldMatchContents {
-      content()
-        .frame(
-          width: props.matchContentsHorizontal ? childSizeModel.childSize.width : nil,
-          height: props.matchContentsVertical ? childSizeModel.childSize.height : nil
-        )
-    } else {
-      content()
-    }
+    content()
+      .frame(
+        width: childSizeModel.childSize.width,
+        height: childSizeModel.childSize.height
+      )
   }
 }
 
