@@ -1,6 +1,5 @@
 import { type ReactElement, type ReactNode } from 'react';
-import { NativeTabsTriggerTabBar } from './NativeTabsTriggerTabBar';
-import { type NativeTabOptions, type NativeTabTriggerProps } from './types';
+import type { NativeTabOptions, NativeTabTriggerProps } from './types';
 import { type NativeTabsTriggerBadgeProps, type NativeTabsTriggerLabelProps, type NativeTabsTriggerIconProps } from './common/elements';
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -44,7 +43,6 @@ import { type NativeTabsTriggerBadgeProps, type NativeTabsTriggerLabelProps, typ
  */
 declare function NativeTabTriggerImpl(props: NativeTabTriggerProps): null;
 export declare const NativeTabTrigger: typeof NativeTabTriggerImpl & {
-    TabBar: typeof NativeTabsTriggerTabBar;
     Label: import("react").FC<NativeTabsTriggerLabelProps>;
     Icon: import("react").FC<NativeTabsTriggerIconProps>;
     Badge: import("react").FC<NativeTabsTriggerBadgeProps>;
