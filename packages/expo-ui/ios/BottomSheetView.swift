@@ -40,23 +40,10 @@ struct HeightPreferenceKey: PreferenceKey {
   }
 }
 
-struct SizePreferenceKey: PreferenceKey {
-  static var defaultValue: CGSize?
-
-  static func reduce(value: inout CGSize?, nextValue: () -> CGSize?) {
-    guard let nextValue = nextValue() else {
-      return
-    }
-    value = nextValue
-  }
-}
-
-private struct ReadSizeModifier: ViewModifier {
+private struct ReadHeightModifier: ViewModifier {
   private var sizeView: some View {
     GeometryReader { geometry in
-      Color.clear
-        .preference(key: SizePreferenceKey.self, value: geometry.size)
-        .allowsHitTesting(false)
+      Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
     }
   }
 
@@ -65,51 +52,11 @@ private struct ReadSizeModifier: ViewModifier {
   }
 }
 
-private struct BottomSheetSizeReader<Children: View>: View {
-  let children: Children
-  let onSizeChange: (CGSize) -> Void
-  let onChildrenSizeChange: ((CGSize) -> Void)?
-
-  init(
-    children: Children,
-    onSizeChange: @escaping (CGSize) -> Void,
-    onChildrenSizeChange: ((CGSize) -> Void)? = nil
-  ) {
-    self.children = children
-    self.onSizeChange = onSizeChange
-    self.onChildrenSizeChange = onChildrenSizeChange
-  }
-
-  var body: some View {
-    ZStack {
-      GeometryReader { sheetGeometry in
-        Color.clear
-          .onAppear {
-            onSizeChange(sheetGeometry.size)
-          }
-          .onChange(of: sheetGeometry.size) { newSize in
-            onSizeChange(newSize)
-          }
-      }
-      .allowsHitTesting(false)
-
-      children
-        .modifier(ReadSizeModifier())
-        .onPreferenceChange(SizePreferenceKey.self) { size in
-          if let size {
-            if let onChildrenSizeChange {
-              onChildrenSizeChange(size)
-            }
-          }
-        }
-    }
-  }
-}
-
 struct BottomSheetView: ExpoSwiftUI.View {
   @ObservedObject var props: BottomSheetProps
+
   @State private var isOpened: Bool
-  @State private var childrenSize: CGSize = .zero
+  @State var height: CGFloat = 0
 
   init(props: BottomSheetProps) {
     self.props = props
@@ -118,52 +65,62 @@ struct BottomSheetView: ExpoSwiftUI.View {
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func getDetents() -> Set<PresentationDetent> {
+    guard let detentArray = props.presentationDetents, !detentArray.isEmpty else {
+      return [.height(self.height)]
+    }
+
     var result: Set<PresentationDetent> = []
 
-    
-    if let detentArray = props.presentationDetents {
-      for detent in detentArray {
-        if let str = detent as? String {
-          switch str {
-          case "medium":
-            result.insert(.medium)
-          case "large":
-            result.insert(.large)
-          default:
-            break
-          }
-        } else if let value = detent as? Double {
-          result.insert(.fraction(CGFloat(value)))
+    for detent in detentArray {
+      if let str = detent as? String {
+        switch str {
+        case "medium":
+          result.insert(.medium)
+        case "large":
+          result.insert(.large)
+        default:
+          break
         }
+      } else if let value = detent as? Double {
+        result.insert(.fraction(CGFloat(value)))
       }
     }
 
-    // fallback to children height if no detents were added
-    return result.isEmpty ? [.height(childrenSize.height)] : result
-  }
-
-  private func handleSheetSizeChange(_ size: CGSize) {
-    props.virtualViewShadowNodeProxy?.setViewSize?(size)
-  }
-
-  private func handleChildrenSizeChange(_ size: CGSize) {
-    guard childrenSize != size else { return }
-    childrenSize = size
+    return result.isEmpty ? [.height(self.height)] : result
   }
 
   var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
+      // When children contain a UIView (UIViewRepresentable),
+      // SwiftUI will try to expand the UIView size to match the SwiftUI layout.
+      // This breaks the `ReadHeightModifier()` size measurement.
+      // In this case, we must measure the current view directly.
+      let hasHostingChildren = (props.children ?? []).first { ExpoSwiftUI.isHostingView($0) } != nil
 
       Rectangle().hidden()
+        .if(hasHostingChildren) {
+          $0
+            .modifier(ReadHeightModifier())
+            .onPreferenceChange(HeightPreferenceKey.self) { height in
+              if let height {
+                self.height = height
+              }
+            }
+        }
         .sheet(isPresented: $isOpened) {
-          BottomSheetSizeReader(
-            children: Children(),
-            onSizeChange: handleSheetSizeChange,
-            onChildrenSizeChange: handleChildrenSizeChange
-          )
-          .presentationDetents(getDetents())
-          .interactiveDismissDisabled(props.interactiveDismissDisabled)
-          .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
+          Children()
+            .if(!hasHostingChildren) {
+              $0
+                .modifier(ReadHeightModifier())
+                .onPreferenceChange(HeightPreferenceKey.self) { height in
+                  if let height {
+                    self.height = height
+                  }
+                }
+            }
+            .presentationDetents(getDetents())
+            .interactiveDismissDisabled(props.interactiveDismissDisabled)
+            .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
         }
         .onChange(of: isOpened, perform: { newIsOpened in
           if props.isOpened == newIsOpened {
@@ -182,13 +139,9 @@ struct BottomSheetView: ExpoSwiftUI.View {
     } else {
       Rectangle().hidden()
         .sheet(isPresented: $isOpened) {
-          BottomSheetSizeReader(
-            children: Children(),
-            onSizeChange: handleSheetSizeChange,
-            onChildrenSizeChange: handleChildrenSizeChange
-          )
+          Children()
+            .interactiveDismissDisabled(props.interactiveDismissDisabled)
         }
-        .interactiveDismissDisabled(props.interactiveDismissDisabled)
         .onChange(of: isOpened, perform: { newIsOpened in
           if props.isOpened == newIsOpened {
             return
