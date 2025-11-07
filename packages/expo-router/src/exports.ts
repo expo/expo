@@ -52,6 +52,7 @@ export type { SingularOptions } from './useScreens';
 export type * from './types';
 
 export * from './color';
+export { usePlatformTheme } from './color/theme';
 
 export {
   Badge,

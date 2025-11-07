@@ -1,7 +1,8 @@
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { ThemeProvider } from '@react-navigation/native';
+import { usePlatformTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
-import { Appearance, Platform, useColorScheme } from 'react-native';
+import { Appearance, Platform } from 'react-native';
 
 import { MiniPlayer } from '../components/mini-player';
 
@@ -10,10 +11,10 @@ if (process.env.EXPO_OS !== 'web') {
 }
 
 export default function Layout() {
+  const theme = usePlatformTheme();
   const [isPlaying, setIsPlaying] = useState(false);
-  const scheme = useColorScheme();
   return (
-    <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={theme}>
       <NativeTabs>
         <NativeTabs.Trigger name="index">
           <NativeTabs.Trigger.Label>Index label</NativeTabs.Trigger.Label>
