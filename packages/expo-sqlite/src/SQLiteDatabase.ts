@@ -3,6 +3,10 @@ import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';
 import { flattenOpenOptions, NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import {
+  registerDatabaseForDevToolsAsync,
+  unregisterDatabaseForDevToolsAsync,
+} from './SQLiteDevToolsClient';
 import { SQLiteSession } from './SQLiteSession';
 import {
   SQLiteBindParams,
@@ -37,6 +41,9 @@ export class SQLiteDatabase {
    * Close the database.
    */
   public closeAsync(): Promise<void> {
+    if (this.options.useNewConnection !== true) {
+      unregisterDatabaseForDevToolsAsync(this);
+    }
     return this.nativeDatabase.closeAsync();
   }
 
@@ -198,6 +205,9 @@ export class SQLiteDatabase {
    * Close the database.
    */
   public closeSync(): void {
+    if (this.options.useNewConnection !== true) {
+      unregisterDatabaseForDevToolsAsync(this);
+    }
     return this.nativeDatabase.closeSync();
   }
 
@@ -539,7 +549,11 @@ export async function openDatabaseAsync(
     flattenOpenOptions(openOptions)
   );
   await nativeDatabase.initAsync();
-  return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+  const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+  if (options?.useNewConnection !== true) {
+    registerDatabaseForDevToolsAsync(database);
+  }
+  return database;
 }
 
 /**
@@ -564,7 +578,11 @@ export function openDatabaseSync(
     flattenOpenOptions(openOptions)
   );
   nativeDatabase.initSync();
-  return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+  const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+  if (options?.useNewConnection !== true) {
+    registerDatabaseForDevToolsAsync(database);
+  }
+  return database;
 }
 
 /**
