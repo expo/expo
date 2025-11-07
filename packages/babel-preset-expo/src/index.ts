@@ -59,6 +59,9 @@ type BabelPresetExpoPlatformOptions = {
   /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
   'react-compiler'?: false | ReactCompilerOptions;
 
+  /** Only set to `false` to disable `react-refresh/babel` forcefully, defaults to `undefined` */
+  enableReactFastRefresh?: boolean;
+
   /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
   minifyTypeofWindow?: boolean;
 
@@ -283,12 +286,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
   extraPlugins.push(environmentRestrictedImportsPlugin);
 
-  if (isFastRefreshEnabled) {
+  if (
+    platformOptions.enableReactFastRefresh ||
+    (isFastRefreshEnabled && platformOptions.enableReactFastRefresh !== false)
+  ) {
     extraPlugins.push([
       require('react-refresh/babel'),
       {
-        // We perform the env check to enable `isFastRefreshEnabled`.
-        skipEnvCheck: true,
+        // We perform the env check to enable `isFastRefreshEnabled`, unless the plugin is force-enabled
+        skipEnvCheck: platformOptions.enableReactFastRefresh !== true,
       },
     ]);
   }
