@@ -73,7 +73,9 @@ export function getIsDev(caller?: any) {
 export function getIsFastRefreshEnabled(caller?: any) {
   assertExpoBabelCaller(caller);
   if (!caller) return false;
-  return !caller.isServer && !caller.isNodeModule && getIsDev(caller);
+  // NOTE(@kitten): `isHMREnabled` is always true in `@expo/metro-config`.
+  // However, we still use this option to ensure fast refresh is only enabled in supported runtimes (Metro + Expo)
+  return !!caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
 }
 
 export function getIsProd(caller?: any) {

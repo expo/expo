@@ -7,6 +7,7 @@ const ENABLED_CALLER = {
   name: 'metro',
   isDev: false,
   isServer: false,
+  isHMREnabled: true,
 };
 
 describe(getInlineEnvVarsEnabled, () => {
