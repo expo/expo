@@ -7,7 +7,9 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
 - Correct types for getCalendars and getLocales ([#39703](https://github.com/expo/expo/pull/39703) by [@kadikraman](https://github.com/kadikraman))
+- [android] fix: convert BCP-47 locales to Android resource qualifiers ([#40901](https://github.com/expo/expo/pull/40901) by [@kosmydel](https://github.com/kosmydel))
 
 ### 💡 Others
 
