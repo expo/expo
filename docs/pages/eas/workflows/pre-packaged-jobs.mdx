@@ -308,7 +308,7 @@ jobs:
 
 <Collapsible summary="Fingerprint with inline environment variables">
 
-> **Note:** This possible, but generally not recommended. If you depend on inline environment variables, you will need to always make sure to set the right set of environment variables to the right values in every place (build profile, fingerprint job, update job, etc.) for fingerprints to match. Instead, consider using [EAS Environment Variables](/eas/environment-variables/) instead, where you can group sets of variables into environments and reference them in the build profile and workflow jobs.
+> **Note:** If you depend on inline environment variables, you will need to always make sure to set the right set of environment variables to the right values in every place (build profile, fingerprint job, update job, and so on) for fingerprints to match. **We recommend using [EAS Environment Variables](/eas/environment-variables/) instead**, where you can group sets of variables into environments and reference them in the build profile and workflow jobs.
 
 ```yaml .eas/workflows/fingerprint-with-env.yml
 name: Fingerprint with Environment Variables
