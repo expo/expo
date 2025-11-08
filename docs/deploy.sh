@@ -371,6 +371,12 @@ redirects[develop/file-based-routing]=develop/app-navigation
 redirects[develop/dynamic-routes]=develop/app-navigation
 redirects[develop/next-steps]=develop/app-navigation
 
+# After moving server-focused Expo Router docs to /router/server/**
+redirects[router/reference/api-routes]=router/server/api-routes
+redirects[router/reference/middleware]=router/server/middleware
+redirects[router/reference/static-rendering]=router/server/static-rendering
+redirects[router/reference/async-routes]=router/server/async-routes
+
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
