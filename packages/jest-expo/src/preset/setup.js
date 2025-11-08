@@ -131,7 +131,7 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
 jest.mock('expo/src/async-require/messageSocket', () => undefined);
 
 try {
-  jest.mock('expo-file-system', () => ({
+  jest.mock('expo-file-system/legacy', () => ({
     downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
     getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, md5: 'md5', uri: 'uri' })),
     readAsStringAsync: jest.fn(() => Promise.resolve()),
