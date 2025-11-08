@@ -213,7 +213,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   },
   {
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": undefined,
     "projects": [
       {
@@ -487,7 +487,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "debugOnly": false,
     "modules": [],
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": [
       {
         "podName": "ExpoModulesCore",
@@ -737,7 +737,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   },
   {
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": undefined,
     "projects": [
       {
@@ -1011,7 +1011,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "debugOnly": false,
     "modules": [],
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": [
       {
         "podName": "ExpoModulesCore",
@@ -1274,7 +1274,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   },
   {
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": undefined,
     "projects": [
       {
@@ -1566,7 +1566,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "debugOnly": false,
     "modules": [],
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": [
       {
         "podName": "ExpoModulesCore",
@@ -1842,7 +1842,7 @@ exports[`monorepo search ejected 1`] = `
     "duplicates": [],
     "name": "expo-modules-core",
     "path": "monorepo/node_modules/expo-modules-core",
-    "version": "",
+    "version": "0.2.0",
   },
   "expo-permissions": {
     "config": {
@@ -2072,7 +2072,7 @@ exports[`monorepo search managed 1`] = `
     "duplicates": [],
     "name": "expo-modules-core",
     "path": "monorepo/node_modules/expo-modules-core",
-    "version": "",
+    "version": "0.2.0",
   },
   "expo-permissions": {
     "config": {
@@ -2316,7 +2316,7 @@ exports[`monorepo search with-sentry 1`] = `
     "duplicates": [],
     "name": "expo-modules-core",
     "path": "monorepo/node_modules/expo-modules-core",
-    "version": "",
+    "version": "0.2.0",
   },
   "expo-permissions": {
     "config": {
