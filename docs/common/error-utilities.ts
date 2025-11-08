@@ -532,9 +532,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/dynamic-routes/': '/develop/app-navigation/',
   '/develop/next-steps/': '/develop/app-navigation/',
 
-  // After moving server-focused Expo Router docs to /router/server/**
-  '/router/reference/api-routes/': '/router/server/api-routes/',
-  '/router/reference/middleware/': '/router/server/middleware/',
-  '/router/reference/static-rendering/': '/router/server/static-rendering/',
-  '/router/reference/async-routes/': '/router/server/async-routes/',
+  // After moving server-focused Expo Router docs to /router/web/**
+  '/router/reference/api-routes/': '/router/web/api-routes/',
+  '/router/reference/middleware/': '/router/web/middleware/',
+  '/router/reference/static-rendering/': '/router/web/static-rendering/',
+  '/router/reference/async-routes/': '/router/web/async-routes/',
+  '/router/reference/sitemap/': '/router/web/sitemap/',
 };

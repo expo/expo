@@ -269,17 +269,17 @@ export const general = [
       makePage('router/advanced/apple-handoff.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
     ]),
-    makeGroup('Server', [
-      makePage('router/server/api-routes.mdx'),
-      makePage('router/server/middleware.mdx'),
-      makePage('router/server/static-rendering.mdx'),
-      makePage('router/server/async-routes.mdx'),
+    makeGroup('Web', [
+      makePage('router/web/api-routes.mdx'),
+      makePage('router/web/middleware.mdx'),
+      makePage('router/web/static-rendering.mdx'),
+      makePage('router/web/async-routes.mdx'),
+      makePage('router/web/sitemap.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('router/error-handling.mdx'),
       makePage('router/reference/url-parameters.mdx'),
       makePage('router/reference/redirects.mdx'),
-      makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/link-preview.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
