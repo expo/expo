@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix [#40651](https://github.com/expo/expo/pull/40651) causing already read versions to be lost depending on traversal order ([#40912](https://github.com/expo/expo/pull/40912) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 3.0.21 — 2025-11-07
