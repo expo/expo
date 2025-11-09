@@ -79,6 +79,78 @@ You can test the production build locally by running the following command and o
 
 This project can be deployed to almost every hosting service. Note that this is not a single-page application, nor does it contain a custom server API. This means dynamic routes (**app/[id].tsx**) will not arbitrarily work. You may need to build a serverless function to handle dynamic routes.
 
+## Router & Redirects
+
+If you're using expo-router, all the routing happens in index.html, so you need proper redirects configured on your server to handle these router URLs.  Otherwise, you'll see strange behavior like reloading pages resulting in 404s.
+
+### Example configurations
+
+#### AWS CloudFormation
+```
+Resources:
+    CloudFrontDistribution:
+        Type: "AWS::CloudFront::Distribution"
+        Properties:
+            DistributionConfig: 
+                CustomErrorResponses: 
+                  - 
+                    ErrorCode: 403
+                    ResponsePagePath: "/index.html"
+                    ResponseCode: "403"
+                    ErrorCachingMinTTL: 10
+                  - 
+                    ErrorCode: 404
+                    ResponsePagePath: "/index.html"
+                    ResponseCode: "200"
+                    ErrorCachingMinTTL: 10
+                DefaultRootObject: "index.html"
+```
+
+#### nginx
+```
+server {
+    listen 80 default_server;
+    server_name /var/www/example.com;
+
+    root /var/www/example.com;
+    index index.html index.htm;      
+
+    location ~* \.(?:manifest|appcache|html?|xml|json)$ {
+      expires -1;
+      # access_log logs/static.log; # I don't usually include a static log
+    }
+
+    location ~* \.(?:css|js)$ {
+      try_files $uri =404;
+      expires 1y;
+      access_log off;
+      add_header Cache-Control "public";
+    }
+
+    # Any route containing a file extension (e.g. /devicesfile.js)
+    location ~ ^.+\..+$ {
+      try_files $uri =404;
+    }
+
+    # Any route that doesn't have a file extension (e.g. /devices)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+#### Vercel
+```
+{
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
+```
+
 ## Dynamic Routes
 
 The `static` output will generate HTML files for each route. This means dynamic routes (**app/[id].tsx**) will not work out of the box. You can generate known routes ahead of time using the `generateStaticParams` function.
