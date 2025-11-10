@@ -3,7 +3,10 @@ package expo.modules.blur
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Outline
 import android.os.Build
+import android.view.View
+import android.view.ViewOutlineProvider
 import eightbitlab.com.blurview.BlurView
 import expo.modules.blur.enums.BlurMethod
 import expo.modules.blur.enums.TintStyle
@@ -31,9 +34,135 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   private var blurTargetId: Int? = null
   private var blurTarget: ExpoBlurTargetView? = null
 
+  // Border radius properties
+  private var radius: Float? = null
+  private var topLeftRadius: Float? = null
+  private var topRightRadius: Float? = null
+  private var bottomLeftRadius: Float? = null
+  private var bottomRightRadius: Float? = null
+  private var topStartRadius: Float? = null
+  private var topEndRadius: Float? = null
+  private var bottomStartRadius: Float? = null
+  private var bottomEndRadius: Float? = null
+
   private val blurView = BlurView(context).also {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     addView(it)
+  }
+
+  init {
+    clipToOutline = true
+  }
+
+  private fun updateBorderRadius() {
+    val density = resources.displayMetrics.density
+
+    val finalTopLeft: Float
+    val finalTopRight: Float
+    val finalBottomLeft: Float
+    val finalBottomRight: Float
+
+    val isRTL = layoutDirection == View.LAYOUT_DIRECTION_RTL
+
+    if (isRTL) {
+      finalTopLeft = (topLeftRadius ?: topEndRadius ?: radius ?: 0f) * density
+      finalTopRight = (topRightRadius ?: topStartRadius ?: radius ?: 0f) * density
+      finalBottomLeft = (bottomLeftRadius ?: bottomEndRadius ?: radius ?: 0f) * density
+      finalBottomRight = (bottomRightRadius ?: bottomStartRadius ?: radius ?: 0f) * density
+    } else {
+      finalTopLeft = (topLeftRadius ?: topStartRadius ?: radius ?: 0f) * density
+      finalTopRight = (topRightRadius ?: topEndRadius ?: radius ?: 0f) * density
+      finalBottomLeft = (bottomLeftRadius ?: bottomStartRadius ?: radius ?: 0f) * density
+      finalBottomRight = (bottomRightRadius ?: bottomEndRadius ?: radius ?: 0f) * density
+    }
+
+    // Check if all corners have the same radius for optimization
+    val allCornersEqual = finalTopLeft == finalTopRight &&
+            finalTopRight == finalBottomLeft &&
+            finalBottomLeft == finalBottomRight
+
+    if (allCornersEqual && finalTopLeft == 0f) {
+      // No border radius, remove outline provider
+      outlineProvider = ViewOutlineProvider.BACKGROUND
+      clipToOutline = false
+    } else {
+      clipToOutline = true
+      outlineProvider = object : ViewOutlineProvider() {
+        override fun getOutline(view: View, outline: Outline) {
+          if (allCornersEqual) {
+            // Use simple round rect for better performance
+            outline.setRoundRect(0, 0, view.width, view.height, finalTopLeft)
+          } else {
+            // For different corner radii, we need to use a path (API level 30)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+              val path = android.graphics.Path()
+              val radii = floatArrayOf(
+                finalTopLeft, finalTopLeft,
+                finalTopRight, finalTopRight,
+                finalBottomRight, finalBottomRight,
+                finalBottomLeft, finalBottomLeft
+              )
+              path.addRoundRect(
+                0f, 0f, view.width.toFloat(), view.height.toFloat(),
+                radii,
+                android.graphics.Path.Direction.CW
+              )
+              outline.setPath(path)
+            } else {
+              // Fallback to simple round rect with the minimum radius
+              val minRadius = minOf(finalTopLeft, finalTopRight, finalBottomLeft, finalBottomRight)
+              outline.setRoundRect(0, 0, view.width, view.height, minRadius)
+            }
+          }
+        }
+      }
+    }
+    invalidateOutline()
+  }
+
+  fun setBorderRadius(radius: Float?) {
+    this.radius = radius
+    updateBorderRadius()
+  }
+
+  fun setBorderTopLeftRadius(radius: Float?) {
+    this.topLeftRadius = radius
+    updateBorderRadius()
+  }
+
+  fun setBorderTopRightRadius(radius: Float?) {
+    this.topRightRadius = radius
+    updateBorderRadius()
+  }
+
+  fun setBorderBottomLeftRadius(radius: Float?) {
+    this.bottomLeftRadius = radius
+    updateBorderRadius()
+  }
+
+  fun setBorderBottomRightRadius(radius: Float?) {
+    this.bottomRightRadius = radius
+    updateBorderRadius()
+  }
+
+  fun setBorderTopStartRadius(radius: Float?) {
+    this.topStartRadius = radius
+    updateBorderRadius()
+  }
+
+  fun setBorderTopEndRadius(radius: Float?) {
+    this.topEndRadius = radius
+    updateBorderRadius()
+  }
+
+  fun setBorderBottomStartRadius(radius: Float?) {
+    this.bottomStartRadius = radius
+    updateBorderRadius()
+  }
+
+  fun setBorderBottomEndRadius(radius: Float?) {
+    this.bottomEndRadius = radius
+    updateBorderRadius()
   }
 
   fun setBlurTargetId(blurTargetId: Int?) {

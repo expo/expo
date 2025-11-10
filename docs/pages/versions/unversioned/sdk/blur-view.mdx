@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
     margin: 16,
     textAlign: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
     borderRadius: 20,
   },
   background: {
@@ -220,4 +219,15 @@ import { BlurView } from 'expo-blur';
 
 ## Using `borderRadius` with `BlurView`
 
-When using `BlurView` on Android and iOS, the `borderRadius` property is not applied when provided explicitly. To fix this, you can use the `overflow: 'hidden'` style since `BlurView` inherits props from `<View>`. See [Usage](#usage) for an example.
+`BlurView` supports the `borderRadius` style property on both Android and iOS. The blur effect will be clipped to the rounded corners automatically.
+
+### Non-uniform corner radii
+
+Non-uniform corner radii (e.g., `borderTopLeftRadius`, `borderBottomRightRadius`) are supported on:
+
+- **iOS 26.0+** - Uses the native `UICornerRadius` API with full support for all corner properties
+- **Android 11+ (API 30)** - Uses path-based outline clipping for individual corner radii
+- **Older versions** - Fall back to uniform `borderRadius` using the smallest corner radius value
+
+
+See [Usage](#usage) for an example.
