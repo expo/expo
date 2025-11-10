@@ -6,6 +6,12 @@ public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
+    View(RNHost.self) {
+      Prop("matchContents") { (view, matchContents: Bool) in
+        view.matchContents = matchContents
+      }
+    }
+
     OnDestroy {
       Task { @MainActor in
         NamespaceRegistry.shared.removeAll()
