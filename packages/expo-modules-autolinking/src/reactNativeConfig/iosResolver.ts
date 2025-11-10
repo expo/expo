@@ -31,13 +31,7 @@ export async function resolveDependencyConfigImplIosAsync(
     return null;
   }
 
-  const mainPackagePodspec = path.join(
-    resolution.path,
-    path.basename(resolution.path) + '.podspec'
-  );
-  const podspecPath = fs.existsSync(mainPackagePodspec)
-    ? mainPackagePodspec
-    : await findPodspecFile(resolution.path);
+  const podspecPath = await findPodspecFile(resolution.path);
   if (!podspecPath) {
     return null;
   }
@@ -45,8 +39,8 @@ export async function resolveDependencyConfigImplIosAsync(
   if (reactNativeConfig === undefined && expoModuleConfig?.supportsPlatform('apple')) {
     // Check if Expo podspec files contain the React Native podspec file
     const overlappingPodspecPath = expoModuleConfig.applePodspecPaths().find((targetFile) => {
-      const expoPodspecPath = path.join(resolution.path, targetFile);
-      return expoPodspecPath === podspecPath;
+      const expoPodspecPath = path.normalize(path.join(resolution.path, targetFile));
+      return expoPodspecPath === path.normalize(podspecPath);
     });
     // NOTE(@kitten): If we don't have a react-native.config.{js,ts} file and the
     // package is also an Expo module, we only link it as a React Native module

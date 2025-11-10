@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix [#40651](https://github.com/expo/expo/pull/40651) causing already read versions to be lost depending on traversal order ([#40912](https://github.com/expo/expo/pull/40912) by [@kitten](https://github.com/kitten))
+- [Follow-up] Fix [#40601](https://github.com/expo/expo/pull/40601) assuming case-insensitive path for default derived podspec path in `react-native-config` resolution ([#40894](https://github.com/expo/expo/pull/40894) by [@kitten](https://github.com/kitten)) ([#40931](https://github.com/expo/expo/pull/40931) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

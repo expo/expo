@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 
+import { ExpoModuleConfig } from '../../ExpoModuleConfig';
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
 
 jest.mock('fs/promises');
@@ -98,5 +99,22 @@ describe(resolveDependencyConfigImplIosAsync, () => {
     expect(result?.podspecPath).toBe(
       '/app/node_modules/react-native-maps/React-Native-Maps.podspec'
     );
+  });
+
+  it('should not resolve podspec if the file overlaps with Expo Module', async () => {
+    vol.fromJSON({
+      '/app/node_modules/react-native-maps/react-native-maps.podspec': '',
+    });
+    const result = await resolveDependencyConfigImplIosAsync(
+      { path: '/app/node_modules/react-native-maps', version: '' },
+      undefined,
+      new ExpoModuleConfig({
+        platforms: ['ios'],
+        apple: {
+          podspecPath: 'react-native-maps.podspec',
+        },
+      })
+    );
+    expect(result?.podspecPath).toBe(undefined);
   });
 });
