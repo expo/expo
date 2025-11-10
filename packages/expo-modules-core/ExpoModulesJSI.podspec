@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
   s.dependency 'React-Core'
   s.dependency 'ReactCommon'
 
-  s.source_files = ['ios/JSI/**/*.{h,m,mm,swift,cpp}', 'common/JSI/**/*.{h,cpp}']
+  s.source_files = ['ios/JSI/**/*.{h,m,mm,swift,cpp}', 'common/cpp/JSI/**/*.{h,cpp}']
   s.exclude_files = ['ios/JSI/Tests']
   s.private_header_files = ['ios/JSI/**/*+Private.h', 'ios/JSI/**/Swift.h']
 

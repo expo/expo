@@ -1,5 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#include "JSI/JSIUtils.h"
 #include "JSIUtils.h"
 #include "LazyObject.h"
 

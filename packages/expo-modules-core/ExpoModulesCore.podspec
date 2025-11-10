@@ -102,7 +102,7 @@ Pod::Spec.new do |s|
   install_modules_dependencies(s)
 
   s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-  s.exclude_files = ['ios/JSI/', 'ios/Tests/']
+  s.exclude_files = ['ios/JSI', 'ios/Tests', 'common/cpp/JSI']
   s.compiler_flags = compiler_flags
   s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
 
