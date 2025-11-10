@@ -61,7 +61,7 @@
     "react-diff-view": "^3.3.2",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
-    "react-player": "^2.16.1",
+    "react-player": "^3.3.3",
     "react-qr-code": "^2.0.18",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.1",
