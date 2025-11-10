@@ -893,12 +893,12 @@ This job outputs the following properties:
 
 ```json
 {
-  "deploy_json": string, // JSON object containing the deployment details. (Output of `npx eas-cli deploy --json`.)
-  "deploy_url": string, // URL to the deployment. It uses production URL if this was a production deployment, otherwise it uses the first alias URL or the deployment URL.
-  "deploy_first_alias_url": string, // URL of the first alias of the deployment (e.g. `https://account-project--alias.expo.app`).
-  "deploy_deployment_url": string, // Unique URL to the deployment. (e.g. `https://account-project--uniqueid.expo.app`)
+  "deploy_json": string, // JSON object containing the deployment details (output of `npx eas-cli deploy --json`).
+  "deploy_url": string, // URL to the deployment. It uses production URL if this was a production deployment. Otherwise, it uses the first alias URL or the deployment URL.
+  "deploy_first_alias_url": string, // URL of the first alias of the deployment (for example, `https://account-project--alias.expo.app`).
+  "deploy_deployment_url": string, // Unique URL to the deployment (for example, `https://account-project--uniqueid.expo.app`).
   "deploy_identifier": string, // Identifier of the deployment.
-  "deploy_dashboard_url": string, // URL to the deployment dashboard. (e.g. `https://expo.dev/projects/[project]/hosting/deployments`)
+  "deploy_dashboard_url": string, // URL to the deployment dashboard (for example, `https://expo.dev/projects/[project]/hosting/deployments`).
 }
 ```
 
