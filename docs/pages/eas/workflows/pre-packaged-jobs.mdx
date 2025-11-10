@@ -198,6 +198,19 @@ You can pass the following parameters into the `params` list:
 | alias     | string  | Optional. The [alias](/eas/hosting/deployments-and-aliases/#aliases) to deploy to. |
 | prod      | boolean | Optional. Whether to deploy to production.                                         |
 
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                 | Type   | Description                                                                                                                                     |
+| ---------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| deploy_json            | string | JSON object containing the deployment details. (Output of `npx eas-cli deploy --json`.)                                                         |
+| deploy_url             | string | URL to the deployment. It uses production URL if this was a production deployment, otherwise it uses the first alias URL or the deployment URL. |
+| deploy_first_alias_url | string | URL of the first alias of the deployment (e.g. `https://account-project--alias.expo.app`).                                                      |
+| deploy_deployment_url  | string | Unique URL to the deployment. (e.g. `https://account-project--uniqueid.expo.app`)                                                               |
+| deploy_identifier      | string | Identifier of the deployment.                                                                                                                   |
+| deploy_dashboard_url   | string | URL to the deployment dashboard. (e.g. `https://expo.dev/projects/[project]/hosting/deployments`)                                               |
+
 ### Examples
 
 Here are some practical examples of using the deploy job:
