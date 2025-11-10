@@ -328,6 +328,22 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       return try serializeContactPayload(payload: payload, keys: keysToFetch, options: options)
     }
 
+    AsyncFunction("hasContactsAsync") { (promise: Promise) in
+      let keysToFetch = [CNContactIdentifierKey]
+      let fetchRequest = CNContactFetchRequest(keysToFetch: getDescriptors(for: keysToFetch))
+      
+      do {
+        var hasAnyContact = false
+        try contactStore.enumerateContacts(with: fetchRequest) { _, stop in
+          hasAnyContact = true
+          stop.pointee = true
+        }
+        promise.resolve(hasAnyContact)
+      } catch {
+        promise.reject(ContactsCheckFailedException())
+      }
+    }
+
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         ContactsPermissionRequester.self,

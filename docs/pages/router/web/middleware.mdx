@@ -7,9 +7,9 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **important** Server middleware is an experimental feature available in SDK 54 and later, and requires a [deployed server](/router/reference/api-routes/#deployment) for production use.
+> **important** Server middleware is an experimental feature available in SDK 54 and later, and requires a [deployed server](/router/web/api-routes/#deployment) for production use.
 
-Server middleware in Expo Router allows you to run code before requests reach your routes, enabling powerful server-side functionality like authentication and logging for every request. Unlike [API routes](/router/reference/api-routes) that handle specific endpoints, middleware runs for **every** request in your app, so it should run as quickly as possible to avoid slowing down your app's performance. Client-side navigation such as on native, or in a web app when using [`<Link />`](/versions/latest/sdk/router/#link), will not move through the server middleware.
+Server middleware in Expo Router allows you to run code before requests reach your routes, enabling powerful server-side functionality like authentication and logging for every request. Unlike [API routes](/router/web/api-routes) that handle specific endpoints, middleware runs for **every** request in your app, so it should run as quickly as possible to avoid slowing down your app's performance. Client-side navigation such as on native, or in a web app when using [`<Link />`](/versions/latest/sdk/router/#link), will not move through the server middleware.
 
 ## Setup
 
@@ -317,7 +317,7 @@ export default middleware;
 - Middleware runs exclusively on the server and only for HTTP requests. It does not execute during client-side navigation, for example, with [`<Link />`](/versions/latest/sdk/router/#link) or native app screen transitions.
 - The request object passed to middleware is [immutable](#request-immutability) to prevent side effects. You cannot modify headers or consume the request body, ensuring it remains available for route handlers.
 - You can only have one root-level **+middleware.ts** in your app.
-- The same limitations that [apply to API routes](/router/reference/api-routes/#known-limitations) also apply to middleware.
+- The same limitations that [apply to API routes](/router/web/api-routes/#known-limitations) also apply to middleware.
 
 ### Request immutability
 

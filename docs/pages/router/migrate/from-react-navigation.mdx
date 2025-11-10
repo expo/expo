@@ -13,7 +13,7 @@ Both React Navigation and Expo Router are Expo frameworks for routing and naviga
 
 ## Pitch
 
-Along with all the benefits of React Navigation, Expo Router enables automatic deep linking, [type safety](/router/reference/typed-routes), [deferred bundling](/router/reference/async-routes), [static rendering on web](/router/reference/static-rendering), and more.
+Along with all the benefits of React Navigation, Expo Router enables automatic deep linking, [type safety](/router/reference/typed-routes), [deferred bundling](/router/web/async-routes), [static rendering on web](/router/web/static-rendering), and more.
 
 ## Anti-pitch
 
@@ -57,7 +57,7 @@ It's common in React Native apps to `return null` from the root component while 
 
 Historically this pattern exists because React Native will throw errors if you use custom fonts that haven't loaded yet. We changed this upstream in React Native 0.72 (SDK 49) so the default behavior is to swap the default font when the custom font loads. If you'd like to hide individual text elements until a font has finished loading, write a wrapper `<Text>`, which returns null until the font has loaded.
 
-On web, returning `null` from the root will cause [static rendering](/router/reference/static-rendering) to skip all of the children, resulting in no searchable content. This can be tested by using "View Page Source" in Chrome, or by disabling JavaScript and reloading the page.
+On web, returning `null` from the root will cause [static rendering](/router/web/static-rendering) to skip all of the children, resulting in no searchable content. This can be tested by using "View Page Source" in Chrome, or by disabling JavaScript and reloading the page.
 
 ## Migration
 
@@ -376,7 +376,7 @@ Expo Router does not support [`independent`](https://reactnavigation.org/docs/na
 
 #### `documentTitle`
 
-Use the [Head component](/router/reference/static-rendering#meta-tags) to set the webpage title.
+Use the [Head component](/router/web/static-rendering#meta-tags) to set the webpage title.
 
 #### `ref`
 

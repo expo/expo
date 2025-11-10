@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `ContextMenu` item with subtitle buttons ([#40926](https://github.com/expo/expo/pull/40926) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 0.2.0-beta.8 — 2025-11-06

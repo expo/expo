@@ -95,7 +95,7 @@ Install the Netlify CLI by running the following command:
 
 Configure redirects for single-page applications.
 
-> If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
+> If your app uses [static rendering](/router/web/static-rendering), then you can skip this step.
 
 `expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
 
@@ -157,7 +157,7 @@ Create a **vercel.json** file at the root of your app and add the following conf
 }
 ```
 
-If your app uses [static rendering](/router/reference/static-rendering), then you may want to add additional [dynamic route configuration](/router/reference/static-rendering#dynamic-routes).
+If your app uses [static rendering](/router/web/static-rendering), then you may want to add additional [dynamic route configuration](/router/web/static-rendering#dynamic-routes).
 
 </Step>
 

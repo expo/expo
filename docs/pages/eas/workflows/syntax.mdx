@@ -899,6 +899,7 @@ jobs:
     # @info #
     type: fingerprint
     # @end #
+    environment: production # Should match your build profile
 ```
 
 This job outputs the following properties:
@@ -909,6 +910,8 @@ This job outputs the following properties:
   "ios_fingerprint_hash": string,
 }
 ```
+
+> **Note:** For accurate fingerprint matching, ensure the fingerprint job's `environment` matches your build profile. Consider using [EAS environment variables](/eas/environment-variables/) instead of `env` for better consistency across jobs.
 
 #### `get-build`
 
@@ -1025,6 +1028,8 @@ jobs:
       platform: string # optional - android | ios | all, defaults to all
       branch: string # optional
       channel: string # optional - cannot be used with branch
+      private_key_path: string # optional
+      upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
 ```
 
 This job outputs the following properties:
