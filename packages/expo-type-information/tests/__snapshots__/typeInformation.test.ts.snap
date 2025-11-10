@@ -1,0 +1,884 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Same type information 1`] = `
+{
+  "declaredTypeIdentifiers": Set {
+    "TestEnum",
+    "TestRecord",
+    "TestRecord2",
+    "TestClassWithConstructor",
+    "TestBasicClass",
+    "TestEmptyClass",
+  },
+  "enums": [
+    {
+      "cases": [
+        "simpleCase",
+        "multipleCases1",
+        "multipleCases2",
+        "caseWithArgs1",
+        "caseWithArgs2",
+      ],
+      "name": "TestEnum",
+    },
+  ],
+  "functions": [],
+  "moduleClasses": [
+    {
+      "asyncFunctions": [
+        {
+          "arguments": [
+            {
+              "name": "a",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+            {
+              "name": "b",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+          ],
+          "name": "TestSimpleAsyncFunction",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 1,
+          },
+        },
+      ],
+      "classes": [
+        {
+          "asyncMethods": [],
+          "constructor": {
+            "arguments": [
+              {
+                "name": "a",
+                "type": {
+                  "kind": 0,
+                  "type": 2,
+                },
+              },
+            ],
+          },
+          "methods": [],
+          "name": "TestClassWithConstructor",
+          "properties": [],
+        },
+        {
+          "asyncMethods": [
+            {
+              "arguments": [
+                {
+                  "name": "a",
+                  "type": {
+                    "kind": 0,
+                    "type": 2,
+                  },
+                },
+              ],
+              "name": "TestAsyncFunction",
+              "parameters": [],
+              "returnType": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+          ],
+          "constructor": {
+            "arguments": [
+              {
+                "name": "a",
+                "type": {
+                  "kind": 0,
+                  "type": 2,
+                },
+              },
+              {
+                "name": "b",
+                "type": {
+                  "kind": 0,
+                  "type": 1,
+                },
+              },
+              {
+                "name": "c",
+                "type": {
+                  "kind": 2,
+                  "type": {
+                    "name": "Either",
+                    "types": [
+                      {
+                        "kind": 0,
+                        "type": 1,
+                      },
+                      {
+                        "kind": 1,
+                        "type": "TestRecord",
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+          "methods": [
+            {
+              "arguments": [
+                {
+                  "name": "a",
+                  "type": {
+                    "kind": 5,
+                    "type": {
+                      "kind": 5,
+                      "type": {
+                        "kind": 5,
+                        "type": {
+                          "kind": 0,
+                          "type": 2,
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  "name": "b",
+                  "type": {
+                    "kind": 2,
+                    "type": {
+                      "name": "Either",
+                      "types": [
+                        {
+                          "kind": 0,
+                          "type": 1,
+                        },
+                        {
+                          "kind": 6,
+                          "type": {
+                            "key": {
+                              "kind": 0,
+                              "type": 2,
+                            },
+                            "value": {
+                              "kind": 5,
+                              "type": {
+                                "kind": 0,
+                                "type": 2,
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+              "name": "TestComplexFunction",
+              "parameters": [],
+              "returnType": {
+                "kind": 5,
+                "type": {
+                  "kind": 2,
+                  "type": {
+                    "name": "Either",
+                    "types": [
+                      {
+                        "kind": 0,
+                        "type": 2,
+                      },
+                      {
+                        "kind": 6,
+                        "type": {
+                          "key": {
+                            "kind": 2,
+                            "type": {
+                              "name": "Either",
+                              "types": [
+                                {
+                                  "kind": 0,
+                                  "type": 1,
+                                },
+                                {
+                                  "kind": 0,
+                                  "type": 2,
+                                },
+                              ],
+                            },
+                          },
+                          "value": {
+                            "kind": 3,
+                            "type": {
+                              "name": "Set",
+                              "types": [
+                                {
+                                  "kind": 5,
+                                  "type": {
+                                    "kind": 1,
+                                    "type": "TestEnum",
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+          "name": "TestBasicClass",
+          "properties": [
+            {
+              "name": "TestIntProperty",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+            {
+              "name": "TestEitherProperty",
+              "type": {
+                "kind": 2,
+                "type": {
+                  "name": "Either",
+                  "types": [
+                    {
+                      "kind": 0,
+                      "type": 2,
+                    },
+                    {
+                      "kind": 0,
+                      "type": 1,
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              "name": "TestEnumProperty",
+              "type": {
+                "kind": 1,
+                "type": "TestEnum",
+              },
+            },
+            {
+              "name": "TestRecordProperty",
+              "type": {
+                "kind": 1,
+                "type": "TestRecord2",
+              },
+            },
+            {
+              "name": "TestParametrizedProperty",
+              "type": {
+                "kind": 5,
+                "type": {
+                  "kind": 2,
+                  "type": {
+                    "name": "Either",
+                    "types": [
+                      {
+                        "kind": 0,
+                        "type": 2,
+                      },
+                      {
+                        "kind": 6,
+                        "type": {
+                          "key": {
+                            "kind": 2,
+                            "type": {
+                              "name": "Either",
+                              "types": [
+                                {
+                                  "kind": 0,
+                                  "type": 1,
+                                },
+                                {
+                                  "kind": 0,
+                                  "type": 2,
+                                },
+                              ],
+                            },
+                          },
+                          "value": {
+                            "kind": 3,
+                            "type": {
+                              "name": "Set",
+                              "types": [
+                                {
+                                  "kind": 5,
+                                  "type": {
+                                    "kind": 1,
+                                    "type": "TestEnum",
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+        {
+          "asyncMethods": [],
+          "constructor": {
+            "arguments": [
+              {
+                "name": "a",
+                "type": {
+                  "kind": 0,
+                  "type": 2,
+                },
+              },
+            ],
+          },
+          "methods": [],
+          "name": "TestClassWithConstructor",
+          "properties": [],
+        },
+        {
+          "asyncMethods": [],
+          "constructor": null,
+          "methods": [],
+          "name": "TestEmptyClass",
+          "properties": [],
+        },
+      ],
+      "constants": [
+        {
+          "name": "StringConstant",
+          "type": {
+            "kind": 0,
+            "type": 2,
+          },
+        },
+        {
+          "name": "IntConstant",
+          "type": {
+            "kind": 0,
+            "type": 2,
+          },
+        },
+      ],
+      "constructor": null,
+      "events": [],
+      "functions": [
+        {
+          "arguments": [
+            {
+              "name": "a",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+            {
+              "name": "b",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+          ],
+          "name": "SimpleFunction",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 2,
+          },
+        },
+        {
+          "arguments": [
+            {
+              "name": "a",
+              "type": {
+                "kind": 2,
+                "type": {
+                  "name": "Either",
+                  "types": [
+                    {
+                      "kind": 2,
+                      "type": {
+                        "name": "Either",
+                        "types": [
+                          {
+                            "kind": 0,
+                            "type": 2,
+                          },
+                          {
+                            "kind": 0,
+                            "type": 1,
+                          },
+                        ],
+                      },
+                    },
+                    {
+                      "kind": 2,
+                      "type": {
+                        "name": "Either",
+                        "types": [
+                          {
+                            "kind": 0,
+                            "type": 2,
+                          },
+                          {
+                            "kind": 0,
+                            "type": 2,
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          "name": "TestEither",
+          "parameters": [],
+          "returnType": {
+            "kind": 2,
+            "type": {
+              "name": "Either",
+              "types": [
+                {
+                  "kind": 0,
+                  "type": 1,
+                },
+                {
+                  "kind": 2,
+                  "type": {
+                    "name": "Either",
+                    "types": [
+                      {
+                        "kind": 0,
+                        "type": 2,
+                      },
+                      {
+                        "kind": 0,
+                        "type": 2,
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        },
+        {
+          "arguments": [
+            {
+              "name": "a",
+              "type": {
+                "kind": 5,
+                "type": {
+                  "kind": 0,
+                  "type": 2,
+                },
+              },
+            },
+          ],
+          "name": "TestArrays",
+          "parameters": [],
+          "returnType": {
+            "kind": 5,
+            "type": {
+              "kind": 5,
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+          },
+        },
+        {
+          "arguments": [
+            {
+              "name": "a",
+              "type": {
+                "kind": 6,
+                "type": {
+                  "key": {
+                    "kind": 0,
+                    "type": 2,
+                  },
+                  "value": {
+                    "kind": 0,
+                    "type": 1,
+                  },
+                },
+              },
+            },
+            {
+              "name": "b",
+              "type": {
+                "kind": 6,
+                "type": {
+                  "key": {
+                    "kind": 6,
+                    "type": {
+                      "key": {
+                        "kind": 0,
+                        "type": 2,
+                      },
+                      "value": {
+                        "kind": 0,
+                        "type": 1,
+                      },
+                    },
+                  },
+                  "value": {
+                    "kind": 6,
+                    "type": {
+                      "key": {
+                        "kind": 0,
+                        "type": 2,
+                      },
+                      "value": {
+                        "kind": 0,
+                        "type": 1,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+          "name": "TestDictionaries",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 0,
+          },
+        },
+        {
+          "arguments": [
+            {
+              "name": "a",
+              "type": {
+                "kind": 3,
+                "type": {
+                  "name": "Set",
+                  "types": [
+                    {
+                      "kind": 2,
+                      "type": {
+                        "name": "Either",
+                        "types": [
+                          {
+                            "kind": 0,
+                            "type": 2,
+                          },
+                          {
+                            "kind": 0,
+                            "type": 1,
+                          },
+                        ],
+                      },
+                    },
+                    {
+                      "kind": 3,
+                      "type": {
+                        "name": "Map",
+                        "types": [
+                          {
+                            "kind": 3,
+                            "type": {
+                              "name": "Set",
+                              "types": [
+                                {
+                                  "kind": 0,
+                                  "type": 2,
+                                },
+                              ],
+                            },
+                          },
+                          {
+                            "kind": 2,
+                            "type": {
+                              "name": "Either",
+                              "types": [
+                                {
+                                  "kind": 3,
+                                  "type": {
+                                    "name": "Set",
+                                    "types": [
+                                      {
+                                        "kind": 0,
+                                        "type": 2,
+                                      },
+                                    ],
+                                  },
+                                },
+                                {
+                                  "kind": 3,
+                                  "type": {
+                                    "name": "Set",
+                                    "types": [
+                                      {
+                                        "kind": 0,
+                                        "type": 1,
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          "name": "TestParametrizedTypes",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 1,
+          },
+        },
+        {
+          "arguments": [
+            {
+              "name": "a",
+              "type": {
+                "kind": 5,
+                "type": {
+                  "kind": 5,
+                  "type": {
+                    "kind": 5,
+                    "type": {
+                      "kind": 0,
+                      "type": 2,
+                    },
+                  },
+                },
+              },
+            },
+          ],
+          "name": "TestTypeCombinations",
+          "parameters": [],
+          "returnType": {
+            "kind": 5,
+            "type": {
+              "kind": 5,
+              "type": {
+                "kind": 2,
+                "type": {
+                  "name": "Either",
+                  "types": [
+                    {
+                      "kind": 0,
+                      "type": 1,
+                    },
+                    {
+                      "kind": 6,
+                      "type": {
+                        "key": {
+                          "kind": 0,
+                          "type": 2,
+                        },
+                        "value": {
+                          "kind": 0,
+                          "type": 1,
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      ],
+      "name": "TestModule",
+      "properties": [],
+      "props": [],
+      "views": [
+        {
+          "asyncFunctions": [],
+          "classes": [],
+          "constants": [],
+          "constructor": null,
+          "events": [],
+          "functions": [],
+          "name": "TestView",
+          "properties": [],
+          "props": [
+            {
+              "arguments": [],
+              "name": "TestProp",
+            },
+          ],
+          "views": [],
+        },
+        {
+          "asyncFunctions": [],
+          "classes": [],
+          "constants": [],
+          "constructor": null,
+          "events": [
+            "onEvent1",
+            "onEvent2",
+            "onEvent3",
+            "onEvent4",
+          ],
+          "functions": [],
+          "name": "ExpoWebView",
+          "properties": [],
+          "props": [
+            {
+              "arguments": [
+                {
+                  "name": "view",
+                  "type": {
+                    "kind": 1,
+                    "type": "any",
+                  },
+                },
+                {
+                  "name": "testProp",
+                  "type": {
+                    "kind": 1,
+                    "type": "URL",
+                  },
+                },
+              ],
+              "name": "testProp",
+            },
+          ],
+          "views": [],
+        },
+      ],
+    },
+  ],
+  "records": [
+    {
+      "fields": [
+        {
+          "name": "basicString",
+          "type": {
+            "kind": 0,
+            "type": 1,
+          },
+        },
+        {
+          "name": "basicStringInitialized",
+          "type": {
+            "kind": 0,
+            "type": 1,
+          },
+        },
+        {
+          "name": "basicIntInferred",
+          "type": {
+            "kind": 0,
+            "type": 0,
+          },
+        },
+        {
+          "name": "basicDoubleInferred",
+          "type": {
+            "kind": 0,
+            "type": 0,
+          },
+        },
+        {
+          "name": "basicStringInferred",
+          "type": {
+            "kind": 0,
+            "type": 0,
+          },
+        },
+        {
+          "name": "enumInferred",
+          "type": {
+            "kind": 0,
+            "type": 0,
+          },
+        },
+        {
+          "name": "complexEnumInferred",
+          "type": {
+            "kind": 0,
+            "type": 0,
+          },
+        },
+        {
+          "name": "recordInferred",
+          "type": {
+            "kind": 0,
+            "type": 0,
+          },
+        },
+        {
+          "name": "optionalInt",
+          "type": {
+            "kind": 4,
+            "type": {
+              "kind": 0,
+              "type": 2,
+            },
+          },
+        },
+        {
+          "name": "letDoubleBinding",
+          "type": {
+            "kind": 0,
+            "type": 2,
+          },
+        },
+        {
+          "name": "fieldWithoutAnnotation",
+          "type": {
+            "kind": 0,
+            "type": 2,
+          },
+        },
+      ],
+      "name": "TestRecord",
+    },
+    {
+      "fields": [
+        {
+          "name": "field1",
+          "type": {
+            "kind": 0,
+            "type": 2,
+          },
+        },
+        {
+          "name": "field2",
+          "type": {
+            "kind": 0,
+            "type": 1,
+          },
+        },
+      ],
+      "name": "TestRecord2",
+    },
+  ],
+  "usedTypeIdentifiers": Set {
+    "Set",
+    "Map",
+    "any",
+    "URL",
+    "TestEnum",
+    "TestRecord",
+    "TestRecord2",
+  },
+}
+`;

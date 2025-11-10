@@ -1,0 +1,39 @@
+{
+  "name": "expo-type-information",
+  "version": "0.0.1",
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-modules"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "bin": {
+    "expo-type-information": "./bin/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-type-information"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-type-information",
+  "dependencies": {
+    "@types/node": "^22.14.0",
+    "prettier": "^3.0.3",
+    "yaml": "^2.3.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.9.2"
+  }
+}
