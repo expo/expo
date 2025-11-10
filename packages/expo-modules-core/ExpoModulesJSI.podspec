@@ -42,7 +42,6 @@ Pod::Spec.new do |s|
   s.private_header_files = ['ios/JSI/**/*+Private.h', 'ios/JSI/**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'ios/JSI/Tests/**/*.{m,swift}'
   end
 end
