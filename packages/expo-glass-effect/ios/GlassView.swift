@@ -35,7 +35,11 @@ public final class GlassView: ExpoView {
   private func isGlassEffectAvailable() -> Bool {
     #if compiler(>=6.2)
     if #available(iOS 26.0, *) {
-      return NSClassFromString("UIGlassEffect") != nil
+      guard let glassEffectClass = NSClassFromString("UIGlassEffect") as? NSObject.Type else {
+        return false
+      }
+      let respondsToSelector = glassEffectClass.responds(to: Selector(("effectWithStyle:")))
+      return respondsToSelector
     }
     #endif
     return false
