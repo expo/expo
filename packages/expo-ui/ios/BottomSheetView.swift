@@ -30,17 +30,6 @@ final class BottomSheetProps: UIBaseViewProps {
   @Field var includeChildrenHeightDetent: Bool = false
 }
 
-struct HeightPreferenceKey: PreferenceKey {
-  static var defaultValue: CGFloat?
-
-  static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
-    guard let nextValue = nextValue() else {
-      return
-    }
-    value = nextValue
-  }
-}
-
 struct SizePreferenceKey: PreferenceKey {
   static var defaultValue: CGSize?
 
@@ -68,43 +57,27 @@ private struct ReadSizeModifier: ViewModifier {
 
 private struct BottomSheetSizeReader<Children: View>: View {
   let children: Children
-  let onSizeChange: (CGSize) -> Void
   let onChildrenSizeChange: ((CGSize) -> Void)?
 
   init(
     children: Children,
-    onSizeChange: @escaping (CGSize) -> Void,
     onChildrenSizeChange: ((CGSize) -> Void)? = nil
   ) {
     self.children = children
-    self.onSizeChange = onSizeChange
     self.onChildrenSizeChange = onChildrenSizeChange
   }
 
   var body: some View {
-    ZStack {
-      GeometryReader { sheetGeometry in
-        Color.clear
-          .onAppear {
-            onSizeChange(sheetGeometry.size)
-          }
-          .onChange(of: sheetGeometry.size) { newSize in
-            onSizeChange(newSize)
-          }
-      }
-      .allowsHitTesting(false)
-
-      children
-        .modifier(ReadSizeModifier())
-        .onPreferenceChange(SizePreferenceKey.self) { size in
-          if let size {
-            if let onChildrenSizeChange {
-              onChildrenSizeChange(size)
-            }
+    children
+      .modifier(ReadSizeModifier())
+      .onPreferenceChange(SizePreferenceKey.self) { size in
+        if let size {
+          if let onChildrenSizeChange {
+            onChildrenSizeChange(size)
           }
         }
+      }
     }
-  }
 }
 
 struct BottomSheetView: ExpoSwiftUI.View {
@@ -121,7 +94,6 @@ struct BottomSheetView: ExpoSwiftUI.View {
   private func getDetents() -> Set<PresentationDetent> {
     var result: Set<PresentationDetent> = []
 
-    
     if let detentArray = props.presentationDetents {
       for detent in detentArray {
         if let str = detent as? String {
@@ -147,10 +119,6 @@ struct BottomSheetView: ExpoSwiftUI.View {
     return result.isEmpty ? [.height(childrenSize.height)] : result
   }
 
-  private func handleSheetSizeChange(_ size: CGSize) {
-//    props.virtualViewShadowNodeProxy?.setViewSize?(size)
-  }
-
   private func handleChildrenSizeChange(_ size: CGSize) {
     // Only update if size actually changed to avoid unnecessary re-renders
     guard childrenSize != size else { return }
@@ -165,12 +133,10 @@ struct BottomSheetView: ExpoSwiftUI.View {
 
   var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
-
       Rectangle().hidden()
         .sheet(isPresented: $isOpened) {
           BottomSheetSizeReader(
             children: Children(),
-            onSizeChange: handleSheetSizeChange,
             onChildrenSizeChange: handleChildrenSizeChange
           )
           .presentationDetents(getDetents())
@@ -196,7 +162,6 @@ struct BottomSheetView: ExpoSwiftUI.View {
         .sheet(isPresented: $isOpened) {
           BottomSheetSizeReader(
             children: Children(),
-            onSizeChange: handleSheetSizeChange,
             onChildrenSizeChange: handleChildrenSizeChange
           )
         }
