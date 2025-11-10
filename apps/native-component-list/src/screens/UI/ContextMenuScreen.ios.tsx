@@ -6,14 +6,15 @@ import {
   ContextMenu,
   Text,
   Section as SwiftUISection,
+  Image,
+  List,
+  Section,
   Divider,
 } from '@expo/ui/swift-ui';
-import { buttonStyle, fixedSize } from '@expo/ui/swift-ui/modifiers';
+import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
-
-import { Section } from '../../components/Page';
 
 const videoLink =
   'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_2MB.mp4';
@@ -30,10 +31,10 @@ export default function ContextMenuScreen() {
   });
 
   return (
-    <View>
-      <Section title="Context Menu with glass effect button" row>
-        <Host matchContents style={{ margin: 10 }}>
-          <ContextMenu modifiers={[fixedSize(), buttonStyle('glass')]}>
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Section title="Context Menu with glass effect button">
+          <ContextMenu modifiers={[buttonStyle('glass')]}>
             <ContextMenu.Items>
               <Button
                 systemImage="person.crop.circle.badge.xmark"
@@ -51,11 +52,9 @@ export default function ContextMenuScreen() {
               <Text color="accentColor">Show menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
-        </Host>
-      </Section>
-      <Section title="Single-Press Context Menu" row>
-        <Host matchContents style={{ margin: 10 }}>
-          <ContextMenu modifiers={[fixedSize(), buttonStyle('bordered')]}>
+        </Section>
+        <Section title="Single-Press Context Menu">
+          <ContextMenu modifiers={[buttonStyle('bordered')]}>
             <ContextMenu.Items>
               <Button
                 systemImage="person.crop.circle.badge.xmark"
@@ -80,10 +79,8 @@ export default function ContextMenuScreen() {
               <Text color="accentColor">Show Menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
-        </Host>
-      </Section>
-      <Section title="Long-Press Context Menu" row>
-        <Host style={styles.longPressMenu}>
+        </Section>
+        <Section title="Long-Press Context Menu">
           <ContextMenu activationMethod="longPress">
             <ContextMenu.Items>
               <Switch
@@ -132,11 +129,9 @@ export default function ContextMenuScreen() {
               </View>
             </ContextMenu.Preview>
           </ContextMenu>
-        </Host>
-      </Section>
-      <Section title="SwiftUI Section and Divider Components" row>
-        <Host matchContents>
-          <ContextMenu modifiers={[fixedSize(), buttonStyle('glass')]}>
+        </Section>
+        <Section title="SwiftUI Section and Divider Components">
+          <ContextMenu modifiers={[buttonStyle('glass')]}>
             <ContextMenu.Items>
               <Button role="destructive">Delete</Button>
               <Divider />
@@ -150,9 +145,23 @@ export default function ContextMenuScreen() {
               <Text color="accentColor">Show menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
-        </Host>
-      </Section>
-    </View>
+        </Section>
+        <Section title="Menu item with title and subtitle">
+          <ContextMenu modifiers={[buttonStyle('glass')]}>
+            <ContextMenu.Items>
+              <Button role="destructive">
+                <Image systemName="trash" />
+                <Text>Red color item</Text>
+                <Text>Subtitle</Text>
+              </Button>
+            </ContextMenu.Items>
+            <ContextMenu.Trigger>
+              <Text>Show Menu</Text>
+            </ContextMenu.Trigger>
+          </ContextMenu>
+        </Section>
+      </List>
+    </Host>
   );
 }
 
