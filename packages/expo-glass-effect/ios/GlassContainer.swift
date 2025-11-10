@@ -16,9 +16,23 @@ public final class GlassContainer: ExpoView {
     addSubview(containerEffectView)
   }
 
+  // UIGlassEffect initialiser is failing for iOS 26 beta versions for some reason, so we need to check if it's available at runtime
+  // https://github.com/expo/expo/issues/40911
+  private func isGlassContainerEffectAvailable() -> Bool {
+    #if compiler(>=6.2)
+    if #available(iOS 26.0, *) {
+      return NSClassFromString("UIGlassContainerEffect") != nil
+    }
+    #endif
+    return false
+  }
+
   public func setSpacing(_ spacing: CGFloat?) {
     if containerSpacing != spacing {
       containerSpacing = spacing
+      guard isGlassContainerEffectAvailable() else {
+        return
+      }
       if #available(iOS 26.0, *) {
         #if compiler(>=6.2) // Xcode 26
         let effect = UIGlassContainerEffect()
