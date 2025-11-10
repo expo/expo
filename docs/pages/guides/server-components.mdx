@@ -568,7 +568,7 @@ You can deploy your native React Server Components by following the server deplo
 <BoxLink
   title="Deploy native servers to EAS"
   description="Deploy and link versioned servers to your production native apps."
-  href="/router/reference/api-routes#native-deployment"
+  href="/router/web/api-routes#native-deployment"
   Icon={Cloud01Icon}
 />
 
@@ -581,7 +581,7 @@ You can deploy your native React Server Components by following the server deplo
 - DOM components cannot use React Server Functions in production yet.
 - Production deployment is limited and not recommended yet.
 - Server Rendering RSC payloads to HTML is not supported yet. This means static and server output doesn't fully work yet.
-- [`generateStaticParams`](/router/reference/static-rendering/#generatestaticparams) is only partially supported in full React Server Components mode.
+- [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) is only partially supported in full React Server Components mode.
 - HTML `form` integration with Server Functions is not supported yet (this partially works automatically, but data is not encrypted).
 - `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
 - React Server Functions that invoke other Server Functions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.

@@ -204,7 +204,7 @@ You can use the [`expo-server`](/versions/latest/sdk/server/) library to use sev
 
 <Terminal cmd={['$ npx expo install expo-server']} />
 
-Using `expo-server` is not limited to API routes and it can be used in any other server code as well, for example, in [server middleware](/router/reference/middleware/).
+Using `expo-server` is not limited to API routes and it can be used in any other server code as well, for example, in [server middleware](/router/web/middleware/).
 
 ### Error handling
 
@@ -328,7 +328,7 @@ export async function GET(request: Request) {
 
 When structuring and splitting server logic into separate helper functions and files, it may be necessary to modify `Response` headers before a `Response` has been created.
 
-For example, you may need to add metadata in [server middleware](/router/reference/middleware/) to a `Response` before your API route code is running.
+For example, you may need to add metadata in [server middleware](/router/web/middleware/) to a `Response` before your API route code is running.
 
 ```ts app/+middleware.ts
 import { setResponseHeaders } from 'expo-server';
