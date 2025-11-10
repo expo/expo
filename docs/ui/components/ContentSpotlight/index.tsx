@@ -14,6 +14,7 @@ type ContentSpotlightProps = {
   alt?: string;
   src?: string;
   file?: string;
+  videoId?: string;
   caption?: string;
   controls?: any;
   loop?: boolean;
@@ -28,9 +29,10 @@ export function ContentSpotlight({
   alt,
   src,
   file,
+  videoId,
   caption,
   controls = true,
-  loop = false,
+  loop = true,
   className,
   containerClassName,
   playerWidth,
@@ -44,12 +46,13 @@ export function ContentSpotlight({
     typeof playerWidth !== 'undefined' || typeof playerHeight !== 'undefined';
   const getDimensionValue = (value: string | number) =>
     `${value}${typeof value === 'number' ? 'px' : ''}`;
-  const videoUrl = file && (/^https?:\/\/|^\/\//.test(file) ? file : `/static/videos/${file}`);
+  const resolvedFileUrl =
+    file && (/^https?:\/\/|^\/\//.test(file) ? file : `/static/videos/${file}`);
+  const videoUrl = videoId ? `https://www.youtube.com/watch?v=${videoId}` : resolvedFileUrl;
   const playerRef = useRef(null);
   const isInView = useInView(playerRef);
   const isVideo = !!videoUrl;
-  const isYoutubeVideo = typeof videoUrl === 'string' && videoUrl.includes('youtube.com/watch?v=');
-  const shouldAutoplay = isInView && isVideo && (!isYoutubeVideo || autoplayYT);
+  const shouldAutoplay = isInView && isVideo && (!videoId || autoplayYT);
 
   return (
     <figure
