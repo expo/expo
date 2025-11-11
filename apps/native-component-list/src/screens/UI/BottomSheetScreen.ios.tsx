@@ -23,7 +23,8 @@ export default function BottomSheetScreen() {
   const [interactiveDismissDisabled, setInteractiveDismissDisabled] =
     React.useState<boolean>(false);
   const [presentationDragIndicator, setPresentationDragIndicator] =
-    React.useState<PresentationDragIndicatorVisibility>('automatic');
+    React.useState<PresentationDragIndicatorVisibility>('visible');
+  const [bottomSheetOpen3, setBottomSheetOpen3] = React.useState<boolean>(false);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -35,6 +36,11 @@ export default function BottomSheetScreen() {
         </Section>
         <Section title="BottomSheet with React Native content">
           <Button variant="default" onPress={() => setBottomSheetOpen2(!bottomSheetOpen2)}>
+            Open BottomSheet
+          </Button>
+        </Section>
+        <Section title="BottomSheet with React Native content full height">
+          <Button variant="default" onPress={() => setBottomSheetOpen3(!bottomSheetOpen3)}>
             Open BottomSheet
           </Button>
         </Section>
@@ -68,6 +74,13 @@ export default function BottomSheetScreen() {
       <BottomSheetWithReactNativeContent
         isOpened={bottomSheetOpen2}
         onIsOpenedChange={setBottomSheetOpen2}
+        enableDetent={enableDetent}
+        interactiveDismissDisabled={interactiveDismissDisabled}
+        presentationDragIndicator={presentationDragIndicator}
+      />
+      <BottomSheetWithReactNativeContentFullHeight
+        isOpened={bottomSheetOpen3}
+        onIsOpenedChange={setBottomSheetOpen3}
         enableDetent={enableDetent}
         interactiveDismissDisabled={interactiveDismissDisabled}
         presentationDragIndicator={presentationDragIndicator}
@@ -147,6 +160,25 @@ const BottomSheetWithReactNativeContent = (props: {
   );
 };
 
+const BottomSheetWithReactNativeContentFullHeight = (props: {
+  isOpened: boolean;
+  onIsOpenedChange: (isOpened: boolean) => void;
+  enableDetent: boolean;
+  interactiveDismissDisabled: boolean;
+  presentationDragIndicator: PresentationDragIndicatorVisibility;
+}) => {
+  return (
+    <BottomSheet
+      isOpened={props.isOpened}
+      onIsOpenedChange={props.onIsOpenedChange}
+      presentationDetents={['large']}
+      interactiveDismissDisabled={props.interactiveDismissDisabled}>
+      <RNHost>
+        <Pressable style={{ backgroundColor: 'pink', flex: 1 }} />
+      </RNHost>
+    </BottomSheet>
+  );
+};
 BottomSheetScreen.navigationOptions = {
   title: 'BottomSheet',
 };

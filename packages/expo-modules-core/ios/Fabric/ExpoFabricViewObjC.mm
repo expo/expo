@@ -169,7 +169,11 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 - (void)setShadowNodeSize:(float)width height:(float)height
 {
   if (_state) {
+#if REACT_NATIVE_TARGET_VERSION >= 82
     _state->updateState(ExpoViewState(width,height), EventQueue::UpdateMode::unstable_Immediate);
+#else
+    _state->updateState(ExpoViewState(width,height));
+#endif
   }
 }
 
@@ -193,10 +197,6 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   }
 }
 
-- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics {
-  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
-  
-}
 @end
 
 #endif // RCT_NEW_ARCH_ENABLED
