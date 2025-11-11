@@ -9,7 +9,6 @@
 #import <ReactCommon/TurboModuleUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <react/bridging/CallbackWrapper.h>
-#import <ExpoModulesCore/ObjectDeallocator.h>
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -52,18 +51,3 @@ namespace expo
 } // namespace expo
 
 #endif
-
-#import <ExpoModulesCore/EXJavaScriptObject.h>
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
-
-NS_SWIFT_NAME(JSIUtils)
-@interface EXJSIUtils : NSObject
-
-+ (nonnull EXJavaScriptObject *)createNativeModuleObject:(nonnull EXJavaScriptRuntime *)runtime;
-
-+ (void)emitEvent:(nonnull NSString *)eventName
-         toObject:(nonnull EXJavaScriptObject *)object
-    withArguments:(nonnull NSArray<id> *)arguments
-        inRuntime:(nonnull EXJavaScriptRuntime *)runtime;
-
-@end

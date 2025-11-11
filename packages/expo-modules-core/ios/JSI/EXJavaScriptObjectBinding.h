@@ -1,14 +1,14 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef EXJavaScriptObject * _Nonnull (^EXJavaScriptObjectBindingGetter)(void);
 
-NS_SWIFT_NAME(JavaScriptSharedObjectBinding)
-@interface EXJavaScriptSharedObjectBinding : NSObject
+NS_SWIFT_NAME(JavaScriptObjectBinding)
+@interface EXJavaScriptObjectBinding : NSObject
 
 @property (nonatomic, copy) EXJavaScriptObjectBindingGetter getter;
 

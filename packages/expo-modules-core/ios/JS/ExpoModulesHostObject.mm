@@ -1,7 +1,8 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
+
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
-#import <ExpoModulesCore/EXJavaScriptObject.h>
 #import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/Swift.h>
 
