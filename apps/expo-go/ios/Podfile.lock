@@ -114,9 +114,6 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (15.0.7):
     - ExpoModulesCore
-  - ExpoHead (6.0.6):
-    - ExpoModulesCore
-    - RNScreens
   - ExpoImage (3.0.8):
     - ExpoModulesCore
     - libavif/libdav1d
@@ -243,6 +240,9 @@ PODS:
     - ExpoModulesCore
   - ExpoPrint (15.0.7):
     - ExpoModulesCore
+  - ExpoRouter (6.0.6):
+    - ExpoModulesCore
+    - RNScreens
   - ExpoScreenCapture (8.0.8):
     - ExpoModulesCore
   - ExpoScreenOrientation (9.0.7):
@@ -3876,7 +3876,6 @@ DEPENDENCIES:
   - ExpoGL (from `../../../packages/expo-gl`)
   - ExpoGlassEffect (from `../../../packages/expo-glass-effect/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
-  - ExpoHead (from `../../../packages/expo-router/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
@@ -3900,6 +3899,7 @@ DEPENDENCIES:
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
+  - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
@@ -4141,8 +4141,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-glass-effect/ios"
   ExpoHaptics:
     :path: "../../../packages/expo-haptics/ios"
-  ExpoHead:
-    :path: "../../../packages/expo-router/ios"
   ExpoImage:
     :path: "../../../packages/expo-image/ios"
   ExpoImageManipulator:
@@ -4181,6 +4179,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-network/ios"
   ExpoPrint:
     :path: "../../../packages/expo-print/ios"
+  ExpoRouter:
+    :path: "../../../packages/expo-router/ios"
   ExpoScreenCapture:
     :path: "../../../packages/expo-screen-capture/ios"
   ExpoScreenOrientation:
@@ -4451,7 +4451,6 @@ SPEC CHECKSUMS:
   ExpoGL: 39262a8c3d4c36d48a28bc412e3392c25c5391c9
   ExpoGlassEffect: 02d9577dfe05a6b6c9856fd71514120e96792052
   ExpoHaptics: b48d913e7e5f23816c6f130e525c9a6501b160b5
-  ExpoHead: bd3ceefbd93f64ff8298e07711bb67605ffb646c
   ExpoImage: 0fc185a4a4e462fedfe877ae66204a7c541dfee0
   ExpoImageManipulator: dbf5b8fc805b55463811cb3da96ab60c532faae8
   ExpoImagePicker: bd0a5c81d7734548f6908a480609257e85d19ea8
@@ -4471,6 +4470,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   ExpoNetwork: 97073786edfe405aba5d0987a544617ed0671ad1
   ExpoPrint: ad836bb90da10793509651c0ea1f39e120db001e
+  ExpoRouter: 84268c2b41722697cb02cd6c377d588b4f71c9b5
   ExpoScreenCapture: 0c785ab7e1fa38943f04b16060d54ae8f886544a
   ExpoScreenOrientation: 3d7f279ae28b395ba6d313768735cfba40710c49
   ExpoSecureStore: f44dee1354536bdb3d7fab8cc451ee737c41beca
