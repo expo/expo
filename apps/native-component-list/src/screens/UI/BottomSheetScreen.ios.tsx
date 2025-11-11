@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   Button,
   BottomSheet,
@@ -13,7 +14,6 @@ import {
 } from '@expo/ui/swift-ui';
 import { frame } from '@expo/ui/swift-ui/modifiers';
 import { Pressable } from 'react-native';
-import * as React from 'react';
 
 export default function BottomSheetScreen() {
   const [bottomSheetOpen1, setBottomSheetOpen1] = React.useState<boolean>(false);
