@@ -10,6 +10,7 @@ import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 import type { Color } from './types';
+import { labelStyle } from './labelStyle';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -854,7 +855,8 @@ export type BuiltInModifier =
   | ReturnType<typeof gridCellUnsizedAxes>
   | ReturnType<typeof gridCellColumns>
   | ReturnType<typeof gridColumnAlignment>
-  | ReturnType<typeof gridCellAnchor>;
+  | ReturnType<typeof gridCellAnchor>
+  | ReturnType<typeof labelStyle>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -901,3 +903,4 @@ export * from './containerShape';
 export * from './shapes/index';
 export * from './background';
 export type * from './types';
+export * from './labelStyle';

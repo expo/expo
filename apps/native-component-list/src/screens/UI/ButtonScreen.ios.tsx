@@ -11,6 +11,7 @@ import {
   background,
   fixedSize,
   foregroundStyle,
+  labelStyle,
   padding,
   shapes,
 } from '@expo/ui/swift-ui/modifiers';
@@ -32,6 +33,7 @@ export default function ButtonScreen() {
                 foregroundStyle('black'),
                 padding(),
                 background('yellow', shapes.capsule()),
+                labelStyle('iconOnly'),
               ]}
             />
           </Button>

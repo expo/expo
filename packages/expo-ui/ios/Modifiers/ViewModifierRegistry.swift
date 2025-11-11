@@ -1611,5 +1611,9 @@ extension ViewModifierRegistry {
     register("gridCellAnchor") { params, appContext, _ in
       return try GridCellAnchor(from: params, appContext: appContext)
     }
+
+    register("labelStyle") { params, appContext, _ in
+      return try LabelStyleModifier(from: params, appContext: appContext)
+    }
   }
 }
