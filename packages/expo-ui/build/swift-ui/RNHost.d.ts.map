@@ -1,1 +1,1 @@
-{"version":3,"file":"RNHost.d.ts","sourceRoot":"","sources":["../../src/swift-ui/RNHost.tsx"],"names":[],"mappings":"AAGA,UAAU,WAAW;IACnB,aAAa,CAAC,EAAE,OAAO,CAAC;IACxB,QAAQ,EAAE,KAAK,CAAC,YAAY,CAAC;CAC9B;AAED,wBAAgB,MAAM,CAAC,KAAK,EAAE,WAAW,+BAIxC"}
+{"version":3,"file":"RNHost.d.ts","sourceRoot":"","sources":["../../src/swift-ui/RNHost.tsx"],"names":[],"mappings":"AAGA,UAAU,WAAW;IACnB,aAAa,CAAC,EAAE,OAAO,CAAC;IACxB,QAAQ,EAAE,KAAK,CAAC,YAAY,CAAC;CAC9B;AAED,wBAAgB,MAAM,CAAC,KAAK,EAAE,WAAW,+BAMxC"}

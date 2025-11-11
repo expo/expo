@@ -5,8 +5,9 @@ import ExpoModulesCore
 public final class RNHost: ExpoView, ExpoSwiftUI.RNHostProtocol {
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
+    RCTTouchHandlerHelper.createAndAttachTouchHandler(for: self)
   }
-  
+
   public var matchContents: Bool = false
 
   public override func layoutSubviews() {
