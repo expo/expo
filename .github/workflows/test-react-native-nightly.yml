@@ -25,14 +25,14 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: 🔨 Switch to Xcode 26.0
         run: sudo xcode-select --switch /Applications/Xcode_26.0.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
       - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
       - name: 💎 Setup Ruby
@@ -43,7 +43,7 @@ jobs:
         run: gem install cocoapods xcpretty
       - name: ♻️ Restore workspace node modules
         # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: workspace-modules-cache
         with:
           path: |
@@ -121,11 +121,11 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: true
+        uses: actions/checkout@v5
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
       - name: 🔨 Use JDK 17
@@ -135,7 +135,7 @@ jobs:
           java-version: '17'
       - name: ♻️ Restore workspace node modules
         # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: workspace-modules-cache
         with:
           path: |
