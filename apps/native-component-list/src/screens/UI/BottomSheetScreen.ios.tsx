@@ -3,7 +3,6 @@ import {
   BottomSheet,
   Host,
   HStack,
-  Text,
   List,
   VStack,
   Rectangle,

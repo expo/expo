@@ -27,7 +27,6 @@ final class BottomSheetProps: UIBaseViewProps {
   @Field var presentationDragIndicator: PresentationDragIndicatorVisibility = .automatic
   var onIsOpenedChange = EventDispatcher()
   @Field var interactiveDismissDisabled: Bool = false
-  @Field var includeChildrenHeightDetent: Bool = false
 }
 
 struct SizePreferenceKey: PreferenceKey {
@@ -111,10 +110,6 @@ struct BottomSheetView: ExpoSwiftUI.View {
       }
     }
 
-    if props.includeChildrenHeightDetent && childrenSize.height > 0 {
-      result.insert(.height(childrenSize.height))
-    }
-
     // fallback to children height if no detents were added
     return result.isEmpty ? [.height(childrenSize.height)] : result
   }
@@ -123,12 +118,6 @@ struct BottomSheetView: ExpoSwiftUI.View {
     // Only update if size actually changed to avoid unnecessary re-renders
     guard childrenSize != size else { return }
     childrenSize = size
-
-    #if DEBUG
-    if props.includeChildrenHeightDetent {
-      print("BottomSheet children size updated: \(size), will add as detent")
-    }
-    #endif
   }
 
   var body: some View {
