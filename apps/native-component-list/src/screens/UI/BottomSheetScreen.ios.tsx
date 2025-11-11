@@ -9,6 +9,30 @@ export default function BottomSheetScreen() {
   const [interactiveDismissDisabled, setInteractiveDismissDisabled] =
     React.useState<boolean>(false);
   const [hideDragIndicator, setHideDragIndicator] = React.useState<boolean>(false);
+  const [enableBackgroundInteraction, setEnableBackgroundInteraction] =
+    React.useState<boolean>(false);
+  const [limitBackgroundInteraction, setLimitBackgroundInteraction] =
+    React.useState<boolean>(false);
+
+  const presentationBackgroundInteraction = React.useMemo(() => {
+    if (!enableBackgroundInteraction) {
+      return 'automatic';
+    }
+    if (limitBackgroundInteraction) {
+      return {
+        type: 'enabledUpThrough',
+        detent: 0.2,
+      } as const;
+    }
+    return 'enabled';
+  }, [enableBackgroundInteraction, limitBackgroundInteraction]);
+
+  const handleToggleBackgroundInteraction = React.useCallback((value: boolean) => {
+    setEnableBackgroundInteraction(value);
+    if (!value) {
+      setLimitBackgroundInteraction(false);
+    }
+  }, []);
 
   return (
     <ScrollView>
@@ -26,6 +50,20 @@ export default function BottomSheetScreen() {
             <Text modifiers={[fixedSize()]}>Hide drag indicator</Text>
             <Switch value={hideDragIndicator} onValueChange={setHideDragIndicator} />
           </HStack>
+          <HStack>
+            <Text modifiers={[fixedSize()]}>Enable background interaction</Text>
+            <Switch
+              value={enableBackgroundInteraction}
+              onValueChange={handleToggleBackgroundInteraction}
+            />
+          </HStack>
+          <HStack>
+            <Text modifiers={[fixedSize()]}>Limit interaction up to small detent</Text>
+            <Switch
+              value={limitBackgroundInteraction}
+              onValueChange={setLimitBackgroundInteraction}
+            />
+          </HStack>
         </VStack>
       </Host>
 
@@ -35,7 +73,8 @@ export default function BottomSheetScreen() {
           onIsOpenedChange={setIsOpened}
           interactiveDismissDisabled={interactiveDismissDisabled}
           presentationDetents={['medium', 'large', 0.2]}
-          presentationDragIndicator={hideDragIndicator ? 'hidden' : 'automatic'}>
+          presentationDragIndicator={hideDragIndicator ? 'hidden' : 'automatic'}
+          presentationBackgroundInteraction={presentationBackgroundInteraction}>
           <HStack modifiers={[frame({ height: 100 })]}>
             <Button onPress={() => setIsOpened(false)}>Close BottomSheet</Button>
           </HStack>

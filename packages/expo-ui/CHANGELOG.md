@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `presentationBackgroundInteraction` support to `BottomSheet`. ([#00000](https://github.com/expo/expo/pull/00000) by [@chollier](https://github.com/chollier))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `ContextMenu` item with subtitle buttons ([#40926](https://github.com/expo/expo/pull/40926) by [@nishan](https://github.com/intergalacticspacehighway))
