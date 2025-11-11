@@ -1,7 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

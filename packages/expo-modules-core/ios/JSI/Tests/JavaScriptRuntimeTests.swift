@@ -8,13 +8,9 @@ import Testing
 struct JavaScriptRuntimeTests {
   @Test
   func `initializes`() {
-    _ = JavaScriptRuntime()
-  }
-
-  @Test
-  func `has global object`() async throws {
+    // Just check it does not crash
     let runtime = JavaScriptRuntime()
-    try #require(runtime.global())
+    runtime.global()
   }
 
   // TODO: Move tests from ExpoModulesCore/JavaScriptRuntimeSpec and add more
