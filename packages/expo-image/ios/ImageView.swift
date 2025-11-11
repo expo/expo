@@ -179,8 +179,15 @@ public final class ImageView: ExpoView {
 
     onLoadStart([:])
 
+    var uri = source.uri
+    // If there is a valid cacheKey but no URI, provide a dummy URL
+    // so the image loader attempts to resolve the image from cache using the cacheKey.
+    if uri == nil, let cacheKey = source.cacheKey, !cacheKey.isEmpty {
+      uri = URL("")
+    }
+
     pendingOperation = imageManager.loadImage(
-      with: source.uri,
+      with: uri,
       options: loadingOptions,
       context: context,
       progress: imageLoadProgress(_:_:_:),
