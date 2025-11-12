@@ -156,13 +156,11 @@ extension ExpoSwiftUI {
 
     // MARK: - Privates
 
-    override func prepareForRecycle() {
-      // To prevent first responder resign crash, we need to resign first responder before view is recycled
+    override func removeFromSuperview() {
       if let focusableView = contentView as? any ExpoSwiftUI.FocusableView {
         focusableView.forceResignFirstResponder()
       }
-
-      super.prepareForRecycle()
+      super.removeFromSuperview()
     }
 
     /**
