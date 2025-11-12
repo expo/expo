@@ -5,7 +5,7 @@
 #ifdef __cplusplus
 
 #include <ReactCommon/CallInvoker.h>
-#include <ExpoModulesCore/MainThreadInvoker.h>
+#include <ExpoModulesJSI/MainThreadInvoker.h>
 
 #include <jsi/jsi.h>
 

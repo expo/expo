@@ -1,7 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJSIConversions.h>
-#import <ExpoModulesCore/EXRawJavaScriptFunction.h>
+#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesJSI/EXRawJavaScriptFunction.h>
 
 @implementation EXRawJavaScriptFunction {
   /**

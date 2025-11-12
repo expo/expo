@@ -4,8 +4,8 @@
 #import <React/RCTCallInvoker.h>
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
 
 #ifdef __cplusplus
 
@@ -103,25 +103,10 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 #pragma mark - Classes
 
-typedef void (^ClassConstructorBlock)(EXJavaScriptObject *_Nonnull thisValue, NSArray<EXJavaScriptValue *> *_Nonnull arguments);
-
-- (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
-                                constructor:(nonnull ClassConstructorBlock)constructor;
-
 /**
  Creates a new object, using the provided object as the prototype.
  */
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype;
-
-#pragma mark - Shared objects
-
-- (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
-                                            constructor:(nonnull ClassConstructorBlock)constructor;
-
-#pragma mark - Shared refs
-
-- (nonnull EXJavaScriptObject *)createSharedRefClass:(nonnull NSString *)name
-                                         constructor:(nonnull ClassConstructorBlock)constructor;
 
 #pragma mark - Script evaluation
 

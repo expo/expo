@@ -1,11 +1,11 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJSIConversions.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
-#import <ExpoModulesCore/EXRawJavaScriptFunction.h>
-#import <ExpoModulesCore/EXJavaScriptTypedArray.h>
-#import <ExpoModulesCore/TypedArray.h>
+#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXRawJavaScriptFunction.h>
+#import <ExpoModulesJSI/EXJavaScriptTypedArray.h>
+#import <ExpoModulesJSI/TypedArray.h>
 
 @implementation EXJavaScriptValue {
   __weak EXJavaScriptRuntime *_runtime;
