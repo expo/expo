@@ -134,12 +134,7 @@ function appendLabelOptions(options, props) {
     }
 }
 function appendIconOptions(options, props) {
-    if ('src' in props && props.src) {
-        const icon = convertIconSrcToIconOption(props);
-        options.icon = icon?.icon;
-        options.selectedIcon = icon?.selectedIcon;
-    }
-    else if ('sf' in props && process.env.EXPO_OS === 'ios') {
+    if ('sf' in props && props.sf && process.env.EXPO_OS === 'ios') {
         if (typeof props.sf === 'string') {
             options.icon = props.sf
                 ? {
@@ -161,14 +156,14 @@ function appendIconOptions(options, props) {
                 : undefined;
         }
     }
-    else if ('androidSrc' in props && process.env.EXPO_OS === 'android') {
-        const icon = convertIconSrcToIconOption({ src: props.androidSrc });
-        options.icon = icon?.icon;
-        options.selectedIcon = icon?.selectedIcon;
-    }
-    else if ('drawable' in props && process.env.EXPO_OS === 'android') {
+    else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
         options.icon = { drawable: props.drawable };
         options.selectedIcon = undefined;
+    }
+    else if ('src' in props && props.src) {
+        const icon = convertIconSrcToIconOption(props);
+        options.icon = icon?.icon;
+        options.selectedIcon = icon?.selectedIcon;
     }
     if (props.selectedColor) {
         options.selectedIconColor = props.selectedColor;

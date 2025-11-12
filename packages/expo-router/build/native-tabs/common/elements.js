@@ -6,6 +6,14 @@ exports.NativeTabsTriggerLabel = primitives_1.Label;
 /**
  * Renders an icon for the tab.
  *
+ * Accepts various icon sources such as SF Symbols, drawable resources, material icons, or image sources.
+ *
+ * Acceptable props combinations:
+ * - `sf` and `drawable` - `sf` will be used for iOS icon, `drawable` for Android icon
+ * - `sf` and `src` - `sf` will be used for iOS icon, `src` for Android icon
+ * - `src` and `drawable` - `src` will be used for iOS icon, `drawable` for Android icon
+ * - `src` only - `src` will be used for both iOS and Android icons
+ *
  * @platform ios
  * @platform android
  */
