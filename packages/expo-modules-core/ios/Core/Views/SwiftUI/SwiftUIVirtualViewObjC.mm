@@ -289,6 +289,7 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
 
 - (void)prepareForRecycle
 {
+  // Default implementation does nothing.
   _eventEmitter.reset();
 }
 
