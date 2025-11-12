@@ -28,7 +28,10 @@ open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
         rootProject
           .buildscript
           .dependencies
-          .add("classpath", "expo.modules:expo-autolinking-plugin")
+          .apply {
+            add("classpath", "expo.modules:expo-autolinking-plugin")
+            add("classpath", "expo.modules:expo-max-sdk-override-plugin")
+          }
       }
 
       // Includes the `expo-gradle-plugin` subproject.
@@ -36,6 +39,8 @@ open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
         expoGradlePluginsFile.absolutePath
       )
     }
+
+    configureMaxSdkOverridePlugin(settings)
   }
 
   private fun getExpoGradlePluginsFile(settings: Settings): File {
@@ -51,5 +56,17 @@ open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
       expoAutolinkingDir,
       "android/expo-gradle-plugin"
     )
+  }
+
+  private fun configureMaxSdkOverridePlugin(settings: Settings) {
+    settings.gradle.beforeRootProject { rootProject ->
+      val appProject = rootProject.allprojects.find { it.plugins.hasPlugin("com.android.application") }
+
+      rootProject.project(":app") { appProject ->
+        appProject.pluginManager.withPlugin("com.android.application") {
+          appProject.pluginManager.apply("expo-max-sdk-override-plugin")
+        }
+      }
+    }
   }
 }
