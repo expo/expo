@@ -149,7 +149,9 @@ describe(parseSQLQuery, () => {
     expect(parseSQLQuery('INSERT INTO users SELECT * FROM temp').canReturnRows).toBe(false);
 
     // However, if it has RETURNING, it returns rows
-    expect(parseSQLQuery('INSERT INTO users SELECT * FROM temp RETURNING *').canReturnRows).toBe(true);
+    expect(parseSQLQuery('INSERT INTO users SELECT * FROM temp RETURNING *').canReturnRows).toBe(
+      true
+    );
   });
 
   it('should handle semicolons at end', () => {
