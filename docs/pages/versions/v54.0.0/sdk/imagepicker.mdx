@@ -102,14 +102,23 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 ```tsx
 import { useState } from 'react';
-import { Button, Image, View, StyleSheet } from 'react-native';
+import { Alert, Button, Image, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState<string | null>(null);
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
+    // No permissions request is necessary for launching the image library.
+    // Permissions are required for videos on iOS when `allowsEditing` is `true`.
+    // See "Invoke permissions for videos" sub section for more details.
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'Permission to access the media library is required.');
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images', 'videos'],
       allowsEditing: true,
@@ -168,6 +177,12 @@ When you run this example and pick an image, you will see the image that you pic
   "canceled": false
 }
 ```
+
+### Invoke permissions for videos <PlatformTags platforms={['ios']} />
+
+Starting SDK 54, picking videos on iOS while `allowsEditing` is `true` or when [`videoExportPreset`](#videoexportpreset) is set to any other value than `Passthrough`, it won't trigger a permission request by default. However, there will be an increase in time for picker to open for large or freshly recorded videos which haven't been processed internally by iOS.
+
+We recommend requesting media library permissions either using [`requestMediaLibraryPermissionsAsync`](#imagepickerrequestmedialibrarypermissionsasyncwriteonly) or [`useMediaLibraryPermissions`](#usemedialibrarypermissionsoptions) before opening the picker for videos.
 
 ### With AWS S3
 
