@@ -203,16 +203,16 @@ export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
  *
  *   // if required on Android, request recording permissions
  *   useEffect(() => {
-      async function requestPermission() {
-        const { granted } = await requestRecordingPermissionsAsync();
-        if (granted) {
-          console.log("Permission granted");
-        }
-      }
-
-      requestPermission();
-      }, []);
-
+ *     async function requestPermission() {
+ *       const { granted } = await requestRecordingPermissionsAsync();
+ *       if (granted) {
+ *         console.log("Permission granted");
+ *       }
+ *     }
+ *
+ *     requestPermission();
+ *    }, []);
+ *
  *   useAudioSampleListener(player, (sample) => {
  *     // Use sample.channels array for audio visualization
  *     console.log('Audio sample:', sample.channels[0].frames);
