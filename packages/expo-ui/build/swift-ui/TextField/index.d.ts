@@ -22,6 +22,23 @@ import { type CommonViewModifierProps } from '../types';
  */
 export type TextFieldKeyboardType = 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'ascii-capable' | 'numbers-and-punctuation' | 'url' | 'name-phone-pad' | 'decimal-pad' | 'twitter' | 'web-search' | 'ascii-capable-number-pad';
 /**
+ * Determines which label to display in the keyboard's return key. For example, `'done'`.
+ *
+ * Available options:
+ * - continue
+ * - done
+ * - go
+ * - join
+ * - next
+ * - return
+ * - route
+ * - search
+ * - send
+ *
+ * @default done
+ */
+export type TextFieldSubmitLabel = 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send';
+/**
  * Can be used for imperatively setting text and focus on the `TextField` component.
  */
 export type TextFieldRef = {
@@ -91,6 +108,7 @@ export type TextFieldProps = {
      * @default false
      */
     autoFocus?: boolean;
+    submitLabel?: TextFieldSubmitLabel;
 } & CommonViewModifierProps;
 export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText' | 'onSubmit'> & {} & ViewEvent<'onValueChanged', {
     value: string;

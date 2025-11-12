@@ -16,6 +16,18 @@ enum KeyboardType: String, Enumerable {
   case asciiCapableNumberPad = "ascii-capable-number-pad"
 }
 
+enum SubmitLabelType: String, Enumerable {
+  case continueLabel = "continue"
+  case done = "done"
+  case go = "go"
+  case join = "join"
+  case next = "next"
+  case `return` = "return"
+  case route = "route"
+  case search = "search"
+  case send = "send"
+}
+
 final class TextFieldProps: UIBaseViewProps {
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
@@ -25,6 +37,7 @@ final class TextFieldProps: UIBaseViewProps {
   @Field var autocorrection: Bool = true
   @Field var allowNewlines: Bool = true
   @Field var autoFocus: Bool = false
+  @Field var submitLabel: SubmitLabelType = .done
   var onValueChanged = EventDispatcher()
   var onFocusChanged = EventDispatcher()
   var onSelectionChanged = EventDispatcher()
@@ -60,6 +73,32 @@ func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
     return .webSearch
   case .asciiCapableNumberPad:
     return .asciiCapableNumberPad
+  }
+}
+
+func getSubmitLabel(_ submitLabel: SubmitLabelType?) -> SubmitLabel {
+  guard let submitLabel = submitLabel else {
+    return .done
+  }
+  switch submitLabel {
+  case .continueLabel:
+    return .continue
+  case .done:
+    return .done
+  case .go:
+    return .go
+  case .join:
+    return .join
+  case .next:
+    return .next
+  case .return:
+    return .return
+  case .route:
+    return .route
+  case .search:
+    return .search
+  case .send:
+    return .send
   }
 }
 
@@ -155,6 +194,7 @@ struct TextFieldView: ExpoSwiftUI.View {
       .modifier(UIBaseViewModifier(props: props))
       .fixedSize(horizontal: false, vertical: true)
       .keyboardType(getKeyboardType(props.keyboardType))
+      .submitLabel(getSubmitLabel(props.submitLabel))
       .autocorrectionDisabled(!props.autocorrection)
       .focused($isFocused)
       .onSubmit({

@@ -8,6 +8,7 @@ import {
   Section,
   Text,
   HStack,
+  Picker,
 } from '@expo/ui/swift-ui';
 import { listSectionSpacing, scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
@@ -15,6 +16,18 @@ import * as React from 'react';
 export default function TextInputScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
   const secureRef = React.useRef<TextFieldRef>(null);
+  const submitLabelOptions = [
+    'continue',
+    'done',
+    'go',
+    'join',
+    'next',
+    'return',
+    'route',
+    'search',
+    'send',
+  ] as const;
+  const [submitLabelIndex, setSubmitLabelIndex] = React.useState<number>(0);
   const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
 
   return (
@@ -100,6 +113,24 @@ export default function TextInputScreen() {
             allowNewlines
             autocorrection={false}
             defaultValue="hey there"
+          />
+        </Section>
+        <Section title="Submit Label">
+          <Picker
+            label="Submit label"
+            options={[...submitLabelOptions]}
+            selectedIndex={submitLabelIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setSubmitLabelIndex(index);
+            }}
+            variant="menu"
+          />
+          <TextField
+            submitLabel={submitLabelOptions[submitLabelIndex]}
+            defaultValue="hey there"
+            onChangeText={(value) => {
+              console.log('value', value);
+            }}
           />
         </Section>
         <Section title="Secure Text Input">
