@@ -1564,6 +1564,7 @@ jobs:
       profile: string # optional
       embed_bundle_assets: boolean # optional
       message: string # optional
+      repack_version: string # optional
 ```
 
 #### Parameters
@@ -1576,6 +1577,7 @@ You can pass the following parameters into the `params` list:
 | profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
 | embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
 | message             | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                               |
+| repack_version      | string  | Optional. The version of the `@expo/repack-app` to use. Defaults to the latest version.                                                     |
 
 ### Examples
 
