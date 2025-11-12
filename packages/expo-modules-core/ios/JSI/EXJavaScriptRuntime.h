@@ -19,7 +19,6 @@ namespace react = facebook::react;
 
 @class EXJavaScriptValue;
 @class EXJavaScriptObject;
-@class EXJavaScriptSharedObject;
 
 typedef void (^JSRuntimeExecutionBlock)(void);
 

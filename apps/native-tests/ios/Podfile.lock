@@ -370,51 +370,12 @@ PODS:
     - Yoga
   - ExpoModulesJSI (3.0.16):
     - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
     - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-jsinspector
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
+    - ReactCommon
   - ExpoModulesJSI/Tests (3.0.16):
-    - ExpoModulesTestCore
     - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
     - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-jsinspector
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
+    - ReactCommon
   - ExpoModulesTestCore (1.0.0):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
@@ -2591,13 +2552,14 @@ SPEC CHECKSUMS:
   ExpoClipboard: 99109306a2d9ed2fbd16f6b856e6267b2afa8472
   ExpoImage: 0fc185a4a4e462fedfe877ae66204a7c541dfee0
   ExpoMediaLibrary: 648cee3f5dcba13410ec9cc8ac9a426e89a61a31
-  ExpoModulesCore: ce49ce28272906372ddaaea1c680d4422a76e308
+  ExpoModulesCore: 22f2efcefda2486b06a0b9f0dcaab8eccdfaf0b4
+  ExpoModulesJSI: b5e87deda640f9710d08446db5d110e91db64cc9
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
   EXUpdates: 83e4d666a085b44149f3b21d5bd057ad37b2c3e5
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   FBLazyVector: b733c6ff598607c9c5a2757669306ca5481fa7a1
-  hermes-engine: 7eaa8aa5d282250d11f85d144ea5121b5950a34f
+  hermes-engine: 8044e2041f40aac194ae9df22077c2db152c0903
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -2613,7 +2575,7 @@ SPEC CHECKSUMS:
   React: 0d33ae696cce9f29ef4ef9395b677461f819edff
   React-callinvoker: 98827bd8d13282630bd3ac420d9deab3ef9c4404
   React-Core: c53a32ac2fd877b127d678668eacb32ee5b278a2
-  React-Core-prebuilt: 5c88286698138b22f5eaf78bc19f4505bee5163c
+  React-Core-prebuilt: e4e617bce2fc30e0ab54deac54e57927a89db1e0
   React-CoreModules: 55744f49f098b26e46de697a828f0a22540246cd
   React-cxxreact: 07d452b1ca44cb6bf003b36d8263a1fa772d2cae
   React-debug: 65a8b0304322f0641d4aa5fcd1d9bdeae3f97327
@@ -2673,7 +2635,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: c55bd3998b0b548d2e81f5aae4758096d4321a7a
   ReactCodegen: 2da193111b4f0d8761cfb4b4f00914e7d9df9f0f
   ReactCommon: 558d37855c8b281c4fdfe8f9ba2d7bc102fb55ff
-  ReactNativeDependencies: e4a97d35dae6356c298b63c0b0c04c779bd8d125
+  ReactNativeDependencies: f40e1803d335251ce327873058d02828f6b4d552
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
