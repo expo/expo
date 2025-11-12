@@ -156,6 +156,15 @@ extension ExpoSwiftUI {
 
     // MARK: - Privates
 
+    override func prepareForRecycle() {
+      // To prevent first responder resign crash, we need to resign first responder before view is recycled
+      if let focusableView = contentView as? any ExpoSwiftUI.FocusableView {
+        focusableView.forceResignFirstResponder()
+      }
+
+      super.prepareForRecycle()
+    }
+
     /**
      Installs convenient event dispatchers for declared events, so the view can just invoke the block to dispatch the proper event.
      */

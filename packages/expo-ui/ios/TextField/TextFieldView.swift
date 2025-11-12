@@ -90,7 +90,7 @@ func allowMultiLine() -> Bool {
   #endif
 }
 
-struct TextFieldView: ExpoSwiftUI.View {
+struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   @ObservedObject var props: TextFieldProps
   @ObservedObject var textManager: TextFieldManager = TextFieldManager()
   @FocusState private var isFocused: Bool
@@ -109,6 +109,24 @@ struct TextFieldView: ExpoSwiftUI.View {
 
   func blur() {
     textManager.isFocused = false
+  }
+
+  
+  func forceResignFirstResponder() {
+    guard textManager.isFocused else {
+      return
+    }
+    #if os(iOS) || os(tvOS)
+    // When the view is unmounted, the focus on TextInput stays active and it causes a crash, so we blur it using endEditing. Setting `isFocused`` does not work
+    // https://github.com/expo/expo/issues/40354
+    if let windowScene = UIApplication.shared.connectedScenes
+        .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+       let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) {
+        keyWindow.endEditing(true)
+    }
+    #endif
+    textManager.isFocused = false
+    isFocused = false
   }
 
   func setSelection(start: Int, end: Int) {

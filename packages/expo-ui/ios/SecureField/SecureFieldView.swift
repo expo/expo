@@ -11,7 +11,7 @@ final class SecureFieldProps: UIBaseViewProps {
   var onSubmit = EventDispatcher()
 }
 
-struct SecureFieldView: ExpoSwiftUI.View {
+struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   @ObservedObject var props: SecureFieldProps
   @ObservedObject var textManager: TextFieldManager = TextFieldManager()
   @FocusState private var isFocused: Bool
@@ -30,6 +30,21 @@ struct SecureFieldView: ExpoSwiftUI.View {
 
   func blur() {
     textManager.isFocused = false
+  }
+  
+  func forceResignFirstResponder() {
+    guard textManager.isFocused else {
+      return
+    }
+    #if os(iOS) || os(tvOS)
+    // When the view is unmounted, the focus on TextInput stays active and it causes a crash, so we blur it using endEditing. Setting `isFocused`` does not work
+    // https://github.com/expo/expo/issues/40354
+    if let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+      keyWindow.endEditing(true)
+    }
+    #endif
+    textManager.isFocused = false
+    isFocused = false
   }
 
   var body: some View {

@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)unmountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index;
 
+- (void)prepareForRecycle;
+
 @end
 
 NS_ASSUME_NONNULL_END
