@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for `volume` option on iOS and Android.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
