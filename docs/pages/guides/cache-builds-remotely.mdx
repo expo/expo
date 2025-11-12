@@ -6,15 +6,30 @@ description: Accelerate local development by caching and reusing builds from a p
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Build caching is a feature that speeds up `npx expo run:[android|ios]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
 When you run `npx expo run:[android|ios]`, it checks if a build with a matching fingerprint exists, then downloads and launches it rather than compiling it again. Otherwise, the project is compiled as usual and then the resulting binary is uploaded to the remote cache for future runs.
 
 ## Using EAS as a build provider
 
-To use the EAS Build provider plugin, start by installing the `eas-build-cache-provider` package as a dependency:
+To use the EAS Build provider plugin, start by installing the `eas-build-cache-provider` package as a developer dependency:
 
-<Terminal cmd={['$ npx expo install eas-build-cache-provider']} />
+<Tabs>
+
+<Tab label="macOS/Linux">
+
+<Terminal cmd={['$ npx expo install eas-build-cache-provider --dev']} />
+
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal cmd={['$ npx expo install eas-build-cache-provider "--" --dev']} />
+
+</Tab>
+
+</Tabs>
 
 Then, update your **app.json** to include the `buildCacheProvider` property and its provider:
 
@@ -152,7 +167,18 @@ At the root of your project, run `npm run build provider` to start the TypeScrip
 ### Test your provider
 When you run the `npx expo run` command inside your **example** directory, you should see your plugin's console statements in the logs.
 
-<Terminal cmd={['$ cd example', '$ npx expo run:ios']} />
+<Terminal
+  cmd={[
+    '# Navigate to the example directory',
+    '$ cd example',
+    '',
+    '# Run the example on Android',
+    '$ npx expo run:android',
+    '',
+    '# Run the example on iOS',
+    '$ npx expo run:ios',
+  ]}
+/>
 
 That's it! You now have a remote build cache provider to speed up your builds.
 
