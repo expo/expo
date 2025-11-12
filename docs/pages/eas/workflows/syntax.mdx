@@ -476,9 +476,15 @@ jobs:
 
 You can customize the behavior of a workflow &mdash; commands to execute, control flow, environment variables, build profile, app version, and more &mdash; based on the workflow run's context.
 
-### `after` and `needs`
+Use the `${{ expression }}` syntax to access context properties and functions. For example: `${{ github.ref_name }}` or `${{ needs.build_ios.outputs.build_id }}`.
 
-When you specify an upstream job in `after` or `needs`, you can use its outputs in a downstream job. All jobs expose a `status` property. Most pre-packaged jobs also expose some outputs. You can [set outputs in custom jobs using the `set-output` function](#jobsjob_idoutputs).
+### Context properties
+
+The following properties are available in interpolation contexts:
+
+#### `after`
+
+A record of all upstream jobs specified in the current job's `after` list. Each job provides:
 
 ```json
 {
@@ -489,7 +495,36 @@ When you specify an upstream job in `after` or `needs`, you can use its outputs 
 }
 ```
 
-Example usage:
+Example:
+
+```yaml
+jobs:
+  build:
+    type: build
+    params:
+      platform: ios
+  notify:
+    after: [build]
+    steps:
+      - run: echo "Build status: ${{ after.build.status }}"
+```
+
+#### `needs`
+
+A record of all upstream jobs specified in the current job's `needs` list. Each job provides:
+
+```json
+{
+  "status": "success" | "failure" | "skipped",
+  /* @info Every job produces a different set of outputs. See the specific job's documentation for details. */
+  "outputs": {}
+  /* @end */
+}
+```
+
+Most pre-packaged jobs expose specific outputs. You can [set outputs in custom jobs using the `set-output` function](#jobsjob_idoutputs).
+
+Example:
 
 ```yaml
 jobs:
@@ -514,7 +549,51 @@ jobs:
       profile: development
 ```
 
-### `github`
+#### `steps`
+
+A record of all steps in the current job. Each step provides its outputs set using the [`set-output`](#set-output) function.
+
+> **Note:** The `steps` context is only available within a job's steps, not at the workflow level. To expose a step's output to other jobs, use the [`set-output`](#set-output) function and [`outputs` configuration of the job](#jobsjob_idoutputs).
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    outputs:
+      value: ${{ steps.step_1.outputs.value }}
+    steps:
+      - id: step_1
+        run: set-output value "hello"
+      - run: echo ${{ steps.step_1.outputs.value }}
+
+  another_job:
+    needs: [my_job]
+    steps:
+      - run: echo "Value: ${{ needs.my_job.outputs.value }}"
+```
+
+#### `inputs`
+
+A record of inputs provided when manually triggering a workflow with [`workflow_dispatch`](#onworkflow_dispatchinputs). Available when the workflow is triggered via `eas workflow:run` command with input parameters.
+
+Example:
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: string
+        required: true
+
+jobs:
+  greet:
+    steps:
+      - run: echo "Hello, ${{ inputs.name }}!"
+```
+
+#### `github`
 
 To ease the migration from GitHub Actions to EAS Workflows we expose some context fields you may find useful.
 
@@ -551,7 +630,7 @@ type GitHubContext = {
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
-Example usage:
+Example:
 
 ```yaml
 jobs:
@@ -572,15 +651,80 @@ jobs:
   href="https://github.com/expo/eas-build/blob/main/packages/eas-build-job/src/common.ts"
 />
 
-### `success()`, `failure()`
+#### `workflow`
 
-`success()` returns `true` only if no previous job has failed. `failure()` returns `true` if any previous job has failed.
+Information about the current workflow.
 
-### `fromJSON()`, `toJSON()`
+```ts
+type WorkflowContext = {
+  id: string;
+  name: string;
+  filename: string;
+  url: string;
+};
+```
 
-`fromJSON()` is `JSON.parse()`, and `toJSON()` is `JSON.stringify()`. You can use them to consume or produce JSON outputs.
+Example:
 
-Example usage:
+```yaml
+jobs:
+  notify_slack:
+    after: [...]
+    type: slack
+    params:
+      message: |
+        Workflow run completed: ${{ workflow.name }}
+        View details: ${{ workflow.url }}
+```
+
+#### `env`
+
+A record of environment variables available in the current job context.
+
+> **Note:** The `env` context is only available within a job's context, not at the workflow level.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo "API URL: ${{ env.API_URL }}"
+```
+
+### Context functions
+
+The following functions are available in interpolation contexts:
+
+#### `success()`
+
+Returns whether all previous jobs have succeeded.
+
+```yaml
+jobs:
+  notify:
+    if: ${{ success() }}
+    steps:
+      - run: echo "All jobs succeeded"
+```
+
+#### `failure()`
+
+Returns whether any previous job has failed.
+
+```yaml
+jobs:
+  notify:
+    if: ${{ failure() }}
+    steps:
+      - run: echo "A job failed"
+```
+
+#### `fromJSON(value)`
+
+Parses a JSON string. Equivalent to `JSON.parse()`.
+
+Example:
 
 ```yaml
 jobs:
@@ -593,6 +737,89 @@ jobs:
       - run: |
           echo "First update group: ${{ needs.publish_update.outputs.first_update_group_id }}"
           echo "Second update group: ${{ fromJSON(needs.publish_update.outputs.updates_json || '[]')[1].group }}"
+```
+
+#### `toJSON(value)`
+
+Converts a value to a JSON string. Equivalent to `JSON.stringify()`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo '${{ toJSON(github.event) }}'
+```
+
+#### `contains(value, substring)`
+
+Checks whether `value` contains `substring`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    if: ${{ contains(github.ref_name, 'feature') }}
+    steps:
+      - run: echo "Feature branch"
+```
+
+#### `startsWith(value, prefix)`
+
+Checks whether `value` starts with `prefix`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    if: ${{ startsWith(github.ref_name, 'release') }}
+    steps:
+      - run: echo "Release branch"
+```
+
+#### `endsWith(value, suffix)`
+
+Checks whether `value` ends with `suffix`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    if: ${{ endsWith(github.ref_name, '-production') }}
+    steps:
+      - run: echo "Production branch"
+```
+
+#### `hashFiles(...globs)`
+
+Returns a hash of files matching the provided glob patterns. Useful for cache keys.
+
+> **Note:** The `hashFiles` function is only available within a job's steps, not at the workflow level.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo "Dependencies hash: ${{ hashFiles('package-lock.json', 'yarn.lock') }}"
+```
+
+#### `replaceAll(input, stringToReplace, replacementString)`
+
+Replaces all occurrences of `stringToReplace` in `input` with `replacementString`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo "${{ replaceAll(github.ref_name, '/', '-') }}"
 ```
 
 ## Pre-packaged jobs
@@ -672,6 +899,7 @@ jobs:
     # @info #
     type: fingerprint
     # @end #
+    environment: production # Should match your build profile
 ```
 
 This job outputs the following properties:
@@ -682,6 +910,8 @@ This job outputs the following properties:
   "ios_fingerprint_hash": string,
 }
 ```
+
+> **Note:** For accurate fingerprint matching, ensure the fingerprint job's `environment` matches your build profile. Consider using [EAS environment variables](/eas/environment-variables/) instead of `env` for better consistency across jobs.
 
 #### `get-build`
 
@@ -798,6 +1028,8 @@ jobs:
       platform: string # optional - android | ios | all, defaults to all
       branch: string # optional
       channel: string # optional - cannot be used with branch
+      private_key_path: string # optional
+      upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
 ```
 
 This job outputs the following properties:

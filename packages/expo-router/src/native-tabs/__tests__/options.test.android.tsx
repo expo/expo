@@ -6,7 +6,7 @@ import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 import { renderRouter } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
-import { Icon, VectorIcon, type IconProps } from '../common/elements';
+import { type NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
@@ -21,12 +21,12 @@ jest.mock('react-native-screens', () => {
 const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
 
 describe('Icons', () => {
-  it('passes iconResourceName when using Icon.Drawable on Android', () => {
+  it('passes iconResourceName when using Icon drawable on Android', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon drawable="stairs" />
+            <NativeTabs.Trigger.Icon drawable="stairs" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -35,19 +35,20 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      iconResourceName: 'stairs',
-    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
+    if (BottomTabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
+      expect(BottomTabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
+    }
   });
 
-  it('uses last Icon.Drawable value when multiple are provided', () => {
+  it('uses last Icon drawable value when multiple are provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon drawable="first" />
-            <Icon drawable="second" />
-            <Icon drawable="last" />
+            <NativeTabs.Trigger.Icon drawable="first" />
+            <NativeTabs.Trigger.Icon drawable="second" />
+            <NativeTabs.Trigger.Icon drawable="last" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -56,12 +57,13 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      iconResourceName: 'last',
-    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
+    if (BottomTabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
+      expect(BottomTabsScreen.mock.calls[0][0].icon.android.name).toBe('last');
+    }
   });
 
-  it('does not pass iconResourceName when Icon.Drawable is not used', () => {
+  it('does not pass icon when Icon is not used', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
@@ -73,7 +75,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].iconResourceName).toBeUndefined();
+    expect(BottomTabsScreen.mock.calls[0][0].icon).toBeUndefined();
   });
 
   // Currently not needed. Screens does not forbid this, as Icon does not work on Android yet.
@@ -93,12 +95,12 @@ describe('Icons', () => {
   //     ).toThrow('You can only use one type of icon (Icon or Icon.Drawable) for a single tab');
   //   });
 
-  it('does not set icon or selectedIcon when using sf with string on Android', () => {
+  it('does not set selectedIcon when using sf with string on Android', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="star" drawable="stairs" />
+            <NativeTabs.Trigger.Icon sf="star" drawable="stairs" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -107,19 +109,22 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].icon).toBeUndefined();
     expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      iconResourceName: 'stairs',
-    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
+    if (BottomTabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
+      expect(BottomTabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
+    }
   });
 
-  it('does not set icon or selectedIcon when using sf with object on Android', () => {
+  it('does not set selectedIcon when using sf with object on Android', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ default: 'star', selected: 'star.fill' }} drawable="stairs" />
+            <NativeTabs.Trigger.Icon
+              sf={{ default: 'star', selected: 'star.fill' }}
+              drawable="stairs"
+            />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -128,11 +133,11 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].icon).toBeUndefined();
     expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      iconResourceName: 'stairs',
-    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
+    if (BottomTabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
+      expect(BottomTabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
+    }
   });
 });
 
@@ -162,7 +167,7 @@ describe(appendIconOptions, () => {
       { androidSrc: { selected: 'yyy', default: 'xxx' } },
       { icon: { src: 'xxx' }, selectedIcon: { src: 'yyy' } },
     ],
-  ] as [IconProps, NativeTabOptions][])(
+  ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
     'should append icon props %p to options correctly',
     (props, expected) => {
       const options: NativeTabOptions = {};
@@ -172,9 +177,9 @@ describe(appendIconOptions, () => {
   );
   it('when vector icon is used, promise is set', () => {
     const options: NativeTabOptions = {};
-    const props: IconProps = {
+    const props: NativeTabsTriggerIconProps = {
       src: {
-        default: <VectorIcon family={ICON_FAMILY} name="a" />,
+        default: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
         selected: { uri: 'yyy' },
       },
     };

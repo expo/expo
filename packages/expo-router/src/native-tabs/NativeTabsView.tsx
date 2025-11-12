@@ -20,8 +20,7 @@ import {
 } from './types';
 import {
   convertOptionsIconToRNScreensPropsIcon,
-  getRNScreensAndroidIconResourceFromAwaitedIcon,
-  getRNScreensAndroidIconResourceNameFromAwaitedIcon,
+  convertOptionsIconToIOSPropsIcon,
   useAwaitedScreensIcon,
 } from './utils/icon';
 
@@ -137,10 +136,8 @@ function Screen(props: {
       tabBarItemBadgeTextColor={badgeTextColor}
       standardAppearance={standardAppearance}
       scrollEdgeAppearance={scrollEdgeAppearance}
-      iconResourceName={getRNScreensAndroidIconResourceNameFromAwaitedIcon(icon)}
-      iconResource={getRNScreensAndroidIconResourceFromAwaitedIcon(icon)}
       icon={convertOptionsIconToRNScreensPropsIcon(icon)}
-      selectedIcon={convertOptionsIconToRNScreensPropsIcon(selectedIcon)}
+      selectedIcon={convertOptionsIconToIOSPropsIcon(selectedIcon)}
       title={title}
       freezeContents={false}
       systemItem={options.role}

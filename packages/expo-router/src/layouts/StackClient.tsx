@@ -24,11 +24,15 @@ import { createNativeStackNavigator } from '../fork/native-stack/createNativeSta
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import { getInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { SingularOptions, getSingularId } from '../useScreens';
-import { StackHeader, StackScreen, appendScreenStackPropsToOptions } from './stack-utils/elements';
-import { isChildOfType } from './stack-utils/utils';
+import {
+  type StackScreenProps,
+  StackHeader,
+  StackScreen,
+  appendScreenStackPropsToOptions,
+  isChildOfType,
+} from './stack-utils';
 import { Protected, type ProtectedProps } from '../views/Protected';
 import { Screen } from '../views/Screen';
-import type { StackScreenProps } from './stack-utils/types';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 

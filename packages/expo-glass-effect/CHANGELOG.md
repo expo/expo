@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix `border(Left|Right|Start|End)Radius` ([#40780](https://github.com/expo/expo/pull/40780) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fix crash on `UIGlassEffect` initialiser on iOS 26 beta ([#40920](https://github.com/expo/expo/pull/40920) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

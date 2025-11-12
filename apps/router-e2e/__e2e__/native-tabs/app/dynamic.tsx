@@ -1,4 +1,4 @@
-import { Badge, Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 import { Button, Text, TextInput, View } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -26,9 +26,9 @@ export default function Dynamic() {
       }}>
       <NativeTabs.Trigger>
         <NativeTabs.Trigger.TabBar backgroundColor="#fff" disableTransparentOnScrollEdge />
-        <Label>{labelValue}</Label>
-        <Badge>{badgeValue}</Badge>
-        <Icon sf={iconName as SFSymbol} drawable={iconName} />
+        <NativeTabs.Trigger.Label>{labelValue}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Badge>{badgeValue}</NativeTabs.Trigger.Badge>
+        <NativeTabs.Trigger.Icon sf={iconName as SFSymbol} drawable={iconName} />
       </NativeTabs.Trigger>
       <Text style={{ fontSize: 24, fontWeight: 600 }}>Label</Text>
       <TextInput

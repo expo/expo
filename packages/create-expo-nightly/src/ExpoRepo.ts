@@ -38,6 +38,15 @@ export async function setupExpoRepoAsync(
   console.log(`Running \`yarn install\` in ${expoRepoPath}`);
   console.time('Installed dependencies in expo repository');
   await setupDependenciesAsync(expoRepoPath, nightlyVersion);
+
+  // log-box on-demand bundle doesn't work well in out-of-tree setups
+  await fs.promises.rm(
+    path.join(expoRepoPath, 'packages', '@expo', 'log-box', '.bundle-on-demand'),
+    {
+      force: true,
+    }
+  );
+
   try {
     await runAsync('yarn', ['install'], { cwd: expoRepoPath });
   } catch (e) {

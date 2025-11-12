@@ -1,6 +1,10 @@
 import Constants from 'expo-constants';
 import React, { createContext, isValidElement, use, type ReactNode } from 'react';
-import { SplitViewHost, SplitViewScreen, type SplitViewHostProps } from 'react-native-screens';
+import {
+  SplitViewHost,
+  SplitViewScreen,
+  type SplitViewHostProps,
+} from 'react-native-screens/experimental';
 
 import { SplitViewColumn, SplitViewInspector } from './elements';
 import { IsWithinLayoutContext } from '../layouts/IsWithinLayoutContext';

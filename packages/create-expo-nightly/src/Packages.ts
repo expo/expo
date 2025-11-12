@@ -31,6 +31,7 @@ const EXCLUDE_PACKAGES = [
   '@react-native-community/cli-platform-android', // mock modules inside expo-modules-autolinkin
   'react', // canary react inside @expo/cli
   'react-dom', // canary react inside @expo/cli
+  'sqlite-inspector-webui', // prebuilt bundle from expo-sqlite
 ];
 
 export const REACT_NATIVE_TRANSITIVE_DEPENDENCIES = [

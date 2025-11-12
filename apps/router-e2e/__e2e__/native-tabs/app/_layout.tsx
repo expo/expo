@@ -1,6 +1,7 @@
 import MIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { Badge, Icon, Label, NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
+import { VectorIcon } from 'expo-router';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 import { Appearance, Platform, useColorScheme } from 'react-native';
 
@@ -45,12 +46,12 @@ export default function Layout() {
         // indicatorColor="black"
         >
           <NativeTabs.Trigger name="index">
-            <Label
+            <NativeTabs.Trigger.Label
             // selectedStyle={{ color: '#0f0' }}
             >
               My Watch
-            </Label>
-            <Icon
+            </NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Icon
               // selectedColor="deepNavy"
               sf="applewatch.side.right"
               androidSrc={<VectorIcon family={MIcons} name="watch" />}
@@ -58,8 +59,8 @@ export default function Layout() {
           </NativeTabs.Trigger>
           {activeTabs.map((tab, index) => (
             <NativeTabs.Trigger key={tab} name={tab} role={index === 0 ? 'search' : undefined}>
-              <Icon sf="plus" drawable="ic_search" />
-              <Badge
+              <NativeTabs.Trigger.Icon sf="plus" drawable="ic_search" />
+              <NativeTabs.Trigger.Badge
               // selectedBackgroundColor="#ff0"
               />
             </NativeTabs.Trigger>
@@ -77,7 +78,7 @@ export default function Layout() {
             // iconColor="red"
             // indicatorColor="white"
             />
-            <Icon
+            <NativeTabs.Trigger.Icon
               // selectedColor="#f00"
               sf={{
                 default: 'lock.applewatch',
@@ -85,19 +86,21 @@ export default function Layout() {
               }}
               drawable="ic_lock_open"
             />
-            <Label hidden />
-            <Badge>1</Badge>
+            <NativeTabs.Trigger.Label style={{ display: 'none' }} />
+            <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="explore">
             {Platform.OS !== 'web' && (
-              <Icon src={<VectorIcon family={MIcons} name="compass-calibration" />} />
+              <NativeTabs.Trigger.Icon
+                src={<VectorIcon family={MIcons} name="compass-calibration" />}
+              />
             )}
-            <Label>Explore</Label>
+            <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="dynamic">
-            <Icon sf="figure.disc.sports" drawable="ic_menu" />
-            <Badge>9</Badge>
-            <Label>Dynamic</Label>
+            <NativeTabs.Trigger.Icon sf="figure.disc.sports" drawable="ic_menu" />
+            <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
         </NativeTabs>
       </ActiveTabsContext.Provider>

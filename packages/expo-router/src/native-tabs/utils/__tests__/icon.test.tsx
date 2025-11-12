@@ -47,43 +47,63 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
     expect(convertOptionsIconToRNScreensPropsIcon(undefined)).toBeUndefined();
   });
 
-  it('returns sfSymbolName when sf is provided', () => {
+  it('returns ios and android icon objects when sf is provided', () => {
     const result = convertOptionsIconToRNScreensPropsIcon({ sf: 'square.fill' });
-    expect(result).toEqual({ sfSymbolName: 'square.fill' });
+    expect(result).toEqual({
+      ios: { type: 'sfSymbol', name: 'square.fill' },
+      android: undefined,
+    });
   });
 
-  it('returns templateSource when src is provided as an object', () => {
+  it('returns ios and android icon objects when src is provided as an object', () => {
     const src = { uri: 'https://example.com/icon.png' };
     const result = convertOptionsIconToRNScreensPropsIcon({ src });
-    expect(result).toEqual({ templateSource: src });
+    expect(result).toEqual({
+      ios: { type: 'templateSource', templateSource: src },
+      android: { type: 'imageSource', imageSource: src },
+    });
   });
 
-  it('returns templateSource when src is a numeric resource identifier', () => {
+  it('returns ios and android icon objects when src is a numeric resource identifier', () => {
     const src = 123 as any;
     const result = convertOptionsIconToRNScreensPropsIcon({ src });
-    expect(result).toEqual({ templateSource: src });
+    expect(result).toEqual({
+      ios: { type: 'templateSource', templateSource: src },
+      android: { type: 'imageSource', imageSource: src },
+    });
   });
 
   it('returns undefined when sf is falsy (empty string)', () => {
     // @ts-expect-error testing falsy value
-    expect(convertOptionsIconToRNScreensPropsIcon({ sf: '' })).toBeUndefined();
+    expect(convertOptionsIconToRNScreensPropsIcon({ sf: '' })).toEqual({
+      ios: undefined,
+      android: undefined,
+    });
   });
 
   it('returns undefined when src is falsy (null)', () => {
-    expect(convertOptionsIconToRNScreensPropsIcon({ src: null })).toBeUndefined();
+    expect(convertOptionsIconToRNScreensPropsIcon({ src: null })).toEqual({
+      ios: undefined,
+      android: undefined,
+    });
   });
 
   it('prefers sf over src when both are provided', () => {
     const src = { uri: 'https://example.com/icon.png' };
     const sf = 'star.fill';
     const result = convertOptionsIconToRNScreensPropsIcon({ sf, src });
-    expect(result).toEqual({ sfSymbolName: sf });
+    expect(result).toEqual({
+      ios: { type: 'sfSymbol', name: sf },
+      android: expect.objectContaining({}),
+    });
   });
 
-  // Android drawable-only icons are supported via a different prop (iconResourceName)
-  it('returns undefined for drawable-only icon objects', () => {
+  it('returns android drawableResource when drawable is provided', () => {
     const drawableOnly = { drawable: 'ic_launcher' } as const;
-    expect(convertOptionsIconToRNScreensPropsIcon(drawableOnly)).toBeUndefined();
+    expect(convertOptionsIconToRNScreensPropsIcon(drawableOnly)).toEqual({
+      ios: undefined,
+      android: { type: 'drawableResource', name: 'ic_launcher' },
+    });
   });
 });
 

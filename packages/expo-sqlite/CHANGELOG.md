@@ -6,11 +6,14 @@
 
 ### 🎉 New features
 
+- Added SQLite inspector devtools plugin. ([#40872](https://github.com/expo/expo/pull/40872), [#40900](https://github.com/expo/expo/pull/40900) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Throwing error when `ExpoSQLite.defaultDatabaseDirectory` returns undefined. ([#40680](https://github.com/expo/expo/pull/40680) by [@kudo](https://github.com/kudo))
 - Fixed node runtime bundling error on web. ([#40739](https://github.com/expo/expo/pull/40739) by [@kudo](https://github.com/kudo))
 - Fixed Android 16kb page size issue when enabling `useSQLCipher`. ([#40781](https://github.com/expo/expo/pull/40781) by [@ronickg](https://github.com/ronickg))
+- Fixed `serializeAsync` / `serializeSync` errors from memory database on web. ([#40899](https://github.com/expo/expo/pull/40899) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

@@ -10,7 +10,11 @@
 
 ### 🐛 Bug fixes
 
+- Ensure React Fast Refresh is disabled in `jest-expo` and other non-Expo environments ([#40774](https://github.com/expo/expo/pull/40774) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Add `enableReactFastRefresh` option to allow force-disabling `react-refresh` ([#40774](https://github.com/expo/expo/pull/40774) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

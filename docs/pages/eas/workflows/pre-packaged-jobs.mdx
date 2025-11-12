@@ -264,12 +264,15 @@ Calculates a fingerprint of your project.
 
 > **Note:** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
 
+> **Note:** To ensure fingerprints match your builds, use the same `environment` setting as your build profile. For environment variables, we recommend using [EAS environment variables](/eas/environment-variables/) rather than the [`env`](/eas/workflows/syntax/#jobsjob_idenv) field for better consistency.
+
 ### Syntax
 
 ```yaml
 jobs:
   fingerprint:
     type: fingerprint
+    environment: production # Should match your build profile
 ```
 
 #### Outputs
@@ -287,7 +290,7 @@ Here are some practical examples of using the fingerprint job:
 
 <Collapsible summary="Basic fingerprint calculation">
 
-This workflow calculates fingerprints for both Android and iOS builds in the production environment.
+This workflow calculates fingerprints for both Android and iOS builds. The `environment` should match your build profile for accurate fingerprint matching.
 
 ```yaml .eas/workflows/fingerprint-basic.yml
 name: Basic Fingerprint
@@ -296,14 +299,16 @@ jobs:
   fingerprint:
     name: Calculate Fingerprint
     type: fingerprint
+    # @info Match your build profile's environment #
     environment: production
+    # @end #
 ```
 
 </Collapsible>
 
-<Collapsible summary="Fingerprint with environment variables">
+<Collapsible summary="Fingerprint with inline environment variables">
 
-This workflow calculates fingerprints with custom environment variables that can affect the build configuration.
+> **Note:** If you depend on inline environment variables, you will need to always make sure to set the right set of environment variables to the right values in every place (build profile, fingerprint job, update job, and so on) for fingerprints to match. **We recommend using [EAS Environment Variables](/eas/environment-variables/) instead**, where you can group sets of variables into environments and reference them in the build profile and workflow jobs.
 
 ```yaml .eas/workflows/fingerprint-with-env.yml
 name: Fingerprint with Environment Variables
@@ -313,6 +318,8 @@ jobs:
     name: Calculate Fingerprint
     type: fingerprint
     environment: production
+    # Resulting environment will be a union of the "production" environment and the inline environment variables.
+    # `env` variables override environment variables of the same name from the "production" environment.
     env:
       APP_VARIANT: staging
       API_URL: https://api.staging.example.com
@@ -668,19 +675,21 @@ jobs:
       branch: string # optional
       channel: string # optional - cannot be used with branch
       private_key_path: string # optional
+      upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter        | Type   | Description                                                                                                                                                                                                                                                                                                                                                                                |
-| ---------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| message          | string | Optional. Message to use for the update. If not provided, the commit message will be used.                                                                                                                                                                                                                                                                                                 |
-| platform         | string | Optional. Platform to use for the update. Can be `android`, `ios`, or `all`. Defaults to `all`.                                                                                                                                                                                                                                                                                            |
-| branch           | string | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name \|\| 'testing' }}`. Provide _either_ a branch or a channel, not both.                                                                                                                        |
-| channel          | string | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                                                                                                                                                                 |
-| private_key_path | string | Optional. Path to the file containing the PEM-encoded private key corresponding to the certificate in [EAS Update configuration](/eas-update/code-signing/#publish-a-signed-update-for-your-app). You can reference a file type [EAS environment variable](/eas/environment-variables/) with `"$VARIABLE_NAME"` syntax. This is equivalent to passing `--private-key-path` to the EAS CLI. |
+| Parameter                | Type    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| message                  | string  | Optional. Message to use for the update. If not provided, the commit message will be used.                                                                                                                                                                                                                                                                                                                                                                   |
+| platform                 | string  | Optional. Platform to use for the update. Can be `android`, `ios`, or `all`. Defaults to `all`.                                                                                                                                                                                                                                                                                                                                                              |
+| branch                   | string  | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name \|\| 'testing' }}`. Provide _either_ a branch or a channel, not both.                                                                                                                                                                                          |
+| channel                  | string  | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                                                                                                                                                                                                                                   |
+| private_key_path         | string  | Optional. Path to the file containing the PEM-encoded private key corresponding to the certificate in [EAS Update configuration](/eas-update/code-signing/#publish-a-signed-update-for-your-app). You can reference a file type [EAS environment variable](/eas/environment-variables/) with `"$VARIABLE_NAME"` syntax. This is equivalent to passing `--private-key-path` to the EAS CLI.                                                                   |
+| upload_sentry_sourcemaps | boolean | Optional. Whether to upload Sentry sourcemaps. If the value is `true`, the job will upload Sentry source maps and fail if uploading fails. If the value is `false`, the job will not upload sourcemaps to Sentry. If the value is not provided, the job is going to check if `@sentry/react-native` is installed and if it is, try to upload sourcemaps. If that fails, it will only print the error message and continue with the job marked as successful. |
 
 #### Outputs
 
@@ -1570,6 +1579,9 @@ jobs:
   fingerprint:
     id: fingerprint
     type: fingerprint
+    # @info Match your build profile's environment #
+    environment: production
+    # @end #
 
   android_get_build:
     needs: [fingerprint]

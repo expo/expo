@@ -1,7 +1,7 @@
 import { ParamListBase, StackRouter as RNStackRouter, StackNavigationState, type RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React, { ComponentProps } from 'react';
-import { StackScreen } from './stack-utils/elements';
+import { StackScreen } from './stack-utils';
 import { Protected, type ProtectedProps } from '../views/Protected';
 /**
  * We extend NativeStackNavigationOptions with our custom props
@@ -46,7 +46,7 @@ export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
         shadow?: string;
     };
 };
-declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -88,9 +88,10 @@ declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("@react-
         source?: string;
         target?: string;
     }>>(original: import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>) => Partial<import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>>) | undefined;
+    UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -132,6 +133,7 @@ declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("@react-
         source?: string;
         target?: string;
     }>>(original: import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>) => Partial<import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>>) | undefined;
+    UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & {
     id?: undefined;
 }, "children">> & React.RefAttributes<unknown>> & {
@@ -151,12 +153,12 @@ export declare const stackRouterOverride: NonNullable<ComponentProps<typeof RNSt
 declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Element) & {
     Screen: typeof StackScreen;
     Protected: React.FunctionComponent<ProtectedProps>;
-    Header: typeof import("./stack-utils/elements").StackHeaderComponent & {
-        Left: typeof import("./stack-utils/elements").StackHeaderLeft;
-        Right: typeof import("./stack-utils/elements").StackHeaderRight;
-        BackButton: typeof import("./stack-utils/elements").StackHeaderBackButton;
-        Title: typeof import("./stack-utils/elements").StackHeaderTitle;
-        SearchBar: typeof import("./stack-utils/elements").StackHeaderSearchBar;
+    Header: typeof import("./stack-utils").StackHeaderComponent & {
+        Left: typeof import("./stack-utils").StackHeaderLeft;
+        Right: typeof import("./stack-utils").StackHeaderRight;
+        BackButton: typeof import("./stack-utils").StackHeaderBackButton;
+        Title: typeof import("./stack-utils").StackHeaderTitle;
+        SearchBar: typeof import("./stack-utils").StackHeaderSearchBar;
     };
 };
 export default Stack;
