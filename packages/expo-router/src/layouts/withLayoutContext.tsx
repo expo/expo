@@ -54,7 +54,7 @@ export function useFilterScreenChildren(
           if (options.hidden === false) {
             screens.push({
               ...child.props,
-              options: convertTabPropsToOptions(child.props),
+              options,
             });
           } else {
             // - hidden = undefined -> then the route was not specified in navigator
