@@ -157,6 +157,9 @@ extension ExpoSwiftUI {
     // MARK: - Privates
 
     override func removeFromSuperview() {
+      // When the view is unmounted, the focus on TextFieldView stays active and it causes a crash, so we blur it here
+      // React Native is doing something similar here for InputAccessoryView (although it is for old arch)
+      // https://github.com/facebook/react-native/blob/6fbe284082aa603c44df5edba9d86f8519b7dbf0/packages/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewContent.mm#L72
       if let focusableView = contentView as? any ExpoSwiftUI.FocusableView {
         focusableView.forceResignFirstResponder()
       }

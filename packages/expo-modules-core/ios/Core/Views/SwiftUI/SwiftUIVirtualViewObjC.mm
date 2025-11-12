@@ -289,9 +289,6 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
 
 - (void)prepareForRecycle
 {
-  // Default implementation does nothing.
-  // Swift subclasses (SwiftUIVirtualView) override this to handle cleanup
-  // (e.g., TextField/SecureField blurring via FocusableView protocol)
   _eventEmitter.reset();
 }
 
