@@ -9,17 +9,15 @@ import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.runtime.ReactHostImpl
+import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.helpers.getProtectedFieldValue
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
-import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devmenu.api.DevMenuApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.core.component.inject
 
-internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
-  private val controller: DevLauncherControllerInterface by inject()
+internal class DevLauncherDevSupportManagerSwapper {
+  private val controller = DevLauncherController.instance
 
   fun swapDevSupportManagerImpl(reactHost: ReactHost) {
     val currentDevSupportManager = requireNotNull(reactHost.devSupportManager)
@@ -51,29 +49,13 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
     }
   }
 
-  private fun createDevLauncherBridgeDevSupportManager(
-    devManagerClass: Class<*>,
-    currentDevSupportManager: DevSupportManager
-  ): DevLauncherBridgeDevSupportManager {
-    return DevLauncherBridgeDevSupportManager(
-      applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "applicationContext"),
-      reactInstanceDevHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherBridgeDevSupportManager.getDevHelperInternalFieldName()),
-      packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "jsAppBundleName"),
-      enableOnCreate = true,
-      redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "redBoxHandler"),
-      devBundleDownloadListener = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "devBundleDownloadListener"),
-      minNumShakes = 1,
-      customPackagerCommandHandlers = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "customPackagerCommandHandlers")
-    )
-  }
-
   private fun createDevLauncherBridgelessDevSupportManager(
     devManagerClass: Class<*>,
     currentDevSupportManager: DevSupportManager
   ): DevLauncherBridgelessDevSupportManager {
     return DevLauncherBridgelessDevSupportManager(
       applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "applicationContext"),
-      reactInstanceDevHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherBridgeDevSupportManager.getDevHelperInternalFieldName()),
+      reactInstanceDevHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherBridgelessDevSupportManager.getDevHelperInternalFieldName()),
       packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "jsAppBundleName"),
       enableOnCreate = true,
       redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "redBoxHandler"),

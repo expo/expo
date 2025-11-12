@@ -13,10 +13,9 @@ import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
 
 class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
-
   override fun create(
     applicationContext: Context,
-    reactInstanceDevHelper: ReactInstanceDevHelper,
+    reactInstanceManagerHelper: ReactInstanceDevHelper,
     packagerPathForJSBundleName: String?,
     enableOnCreate: Boolean,
     redBoxHandler: RedBoxHandler?,
@@ -27,25 +26,12 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
     devLoadingViewManager: DevLoadingViewManager?,
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
   ): DevSupportManager {
-    return if (!enableOnCreate) {
-      ReleaseDevSupportManager()
-    } else {
-      DevLauncherBridgeDevSupportManager(
-        applicationContext,
-        reactInstanceDevHelper,
-        packagerPathForJSBundleName,
-        enableOnCreate,
-        redBoxHandler,
-        devBundleDownloadListener,
-        minNumShakes,
-        customPackagerCommandHandlers?.toMutableMap()
-      )
-    }
+    throw IllegalStateException("Legacy architecture is not longer supported.")
   }
 
   override fun create(
     applicationContext: Context,
-    reactInstanceDevHelper: ReactInstanceDevHelper,
+    reactInstanceManagerHelper: ReactInstanceDevHelper,
     packagerPathForJSBundleName: String?,
     enableOnCreate: Boolean,
     redBoxHandler: RedBoxHandler?,
@@ -62,7 +48,7 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
     } else {
       DevLauncherBridgelessDevSupportManager(
         applicationContext,
-        reactInstanceDevHelper,
+        reactInstanceManagerHelper,
         packagerPathForJSBundleName,
         enableOnCreate,
         redBoxHandler,

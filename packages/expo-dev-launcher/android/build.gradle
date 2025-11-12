@@ -99,9 +99,6 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
 
-  api project.dependencies.platform("io.insert-koin:koin-bom:3.5.6")
-  api "io.insert-koin:koin-core"
-
   def composeVersion = "1.9.0"
 
   implementation "androidx.compose.foundation:foundation-android:$composeVersion"
