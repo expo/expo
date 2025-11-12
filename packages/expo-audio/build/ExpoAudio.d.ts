@@ -83,11 +83,24 @@ export declare function useAudioPlayerStatus(player: AudioPlayer): AudioStatus;
  *
  * @example
  * ```tsx
- * import { useAudioPlayer, useAudioSampleListener } from 'expo-audio';
+ * import { useEffect } from 'react';
+ * import { useAudioPlayer, useAudioSampleListener, requestRecordingPermissionsAsync } from 'expo-audio';
  *
  * function AudioVisualizerComponent() {
  *   const player = useAudioPlayer(require('./music.mp3'));
  *
+ *   // if required on Android, request recording permissions
+ *   useEffect(() => {
+      async function requestPermission() {
+        const { granted } = await requestRecordingPermissionsAsync();
+        if (granted) {
+          console.log("Permission granted");
+        }
+      }
+
+      requestPermission();
+      }, []);
+
  *   useAudioSampleListener(player, (sample) => {
  *     // Use sample.channels array for audio visualization
  *     console.log('Audio sample:', sample.channels[0].frames);
