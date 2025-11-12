@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added support for `volume` option on iOS and Android.
+- Added support for `volume` option on iOS and Android. ([#40959](https://github.com/expo/expo/pull/40959) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
