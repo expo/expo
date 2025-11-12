@@ -158,7 +158,7 @@ extension ExpoSwiftUI {
 
     override func removeFromSuperview() {
       // When the view is unmounted, the focus on TextFieldView stays active and it causes a crash, so we blur it here
-      // UIView does something similar to resign the first responder so we do the same for our virtual view
+      // UIView does something similar to resign the first responder in removeFromSuperview, so we do the same for our virtual view
       if let focusableView = contentView as? any ExpoSwiftUI.FocusableView {
         focusableView.forceResignFirstResponder()
       }
