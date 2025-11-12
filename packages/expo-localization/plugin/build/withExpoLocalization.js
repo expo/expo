@@ -3,46 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertBcp47ToAndroidLocale = convertBcp47ToAndroidLocale;
+exports.convertLocaleToBcp47 = convertLocaleToBcp47;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 /**
- * Converts BCP-47 locale strings (e.g., "en-US") to Android resource qualifiers (e.g., "en-rUS").
- * This prevents "invalid config" errors during :processDebugResources.
+ * Converts locale strings to BCP-47 format.
  */
-function convertBcp47ToAndroidLocale(locale) {
+function convertLocaleToBcp47(locale) {
     // If already in Android format (contains '-r'), return as-is
     if (locale.includes('-r')) {
         return locale;
     }
-    // Split by hyphen or underscore
-    const parts = locale.split(/[-_]/);
-    // Language code is always the first part (should be lowercase)
-    const language = parts[0].toLowerCase();
-    // Look for a region code in the remaining parts
-    // Region codes are typically 2 uppercase letters (ISO 3166-1 alpha-2)
-    // They appear after the language code or after a script code (which is 4 letters)
-    let region;
-    for (let i = 1; i < parts.length; i++) {
-        const part = parts[i];
-        // Script codes are 4 letters (e.g., "Hans", "Hant"), skip them
-        // Region codes are 2 letters (e.g., "US", "CN", "NO") or sometimes 3 digits
-        if (part.length === 2 && /^[A-Za-z]{2}$/.test(part)) {
-            region = part.toUpperCase();
-            break;
-        }
-        else if (part.length === 3 && /^[0-9]{3}$/.test(part)) {
-            // Numeric region codes (UN M.49)
-            region = part;
-            break;
-        }
-    }
-    // Return formatted Android locale qualifier
-    if (region) {
-        return `${language}-r${region}`;
-    }
-    return language;
+    return `b+${locale.replaceAll('-', '+')}`;
 }
 function withExpoLocalizationIos(config, data) {
     const mergedConfig = { ...config.extra, ...data };
@@ -113,9 +86,8 @@ function withExpoLocalizationAndroid(config, data) {
         });
         config = (0, config_plugins_1.withAppBuildGradle)(config, (config) => {
             if (config.modResults.language === 'groovy') {
-                // Convert BCP-47 locales to Android format (e.g., "en-US" → "en-rUS")
-                const androidLocales = supportedLocales.map((locale) => convertBcp47ToAndroidLocale(locale));
-                config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${androidLocales.map((lang) => `"${lang}"`).join(', ')}]\n    `);
+                const bcp47Locales = supportedLocales.map((locale) => convertLocaleToBcp47(locale));
+                config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${bcp47Locales.map((lang) => `"${lang}"`).join(', ')}]\n    `);
             }
             else {
                 config_plugins_1.WarningAggregator.addWarningAndroid('expo-localization supportedLocales', `Cannot automatically configure app build.gradle if it's not groovy`);
