@@ -1,42 +1,42 @@
 import { requireNativeView } from 'expo';
-import type { ColorValue } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type PickerProps = {
   /**
-   * An array of options to be displayed in the picker.
+   * A label displayed on the picker.
    */
-  options: string[];
+  label?: string | React.ReactNode;
   /**
-   * The index of the currently selected option.
+   * The selected optio `tag` value.
    */
-  selectedIndex: number | null;
-  /**
-   * A label displayed on the picker when in `'menu'` variant inside a form section on iOS.
-   */
-  label?: string;
+  selection?: string;
   /**
    * Callback function that is called when an option is selected.
+   * Gets called with the selected `tag` value.
    */
-  onOptionSelected?: (event: { nativeEvent: { index: number; label: string } }) => void;
+  onSelectionChange?: (event: { nativeEvent: { selection: string } }) => void;
+
   /**
-   * The variant of the picker, which determines its appearance and behavior.
-   * The `'inline'` variant can only be used inside sections or lists. The `'palette'` variant displays differently inside menus.
-   * > **Note**: The `wheel` variant is not available on tvOS.
-   * @default 'segmented'
+   * The content of the picker.
    */
-  variant?: 'wheel' | 'segmented' | 'menu' | 'inline' | 'palette';
-  /**
-   * Picker color. On iOS it only applies to the `'menu'` variant.
-   */
-  color?: ColorValue;
+  children?: React.ReactNode;
 } & CommonViewModifierProps;
 
 const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
   'ExpoUI',
   'PickerView'
+);
+
+export const PickerContentNativeView: React.ComponentType<PickerProps> = requireNativeView(
+  'ExpoUI',
+  'PickerContentView'
+);
+
+const PickerLabelNativeView: React.ComponentType<PickerProps> = requireNativeView(
+  'ExpoUI',
+  'PickerLabelView'
 );
 
 type NativePickerProps = PickerProps;
@@ -47,14 +47,30 @@ function transformPickerProps(props: PickerProps): NativePickerProps {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    variant: props.variant ?? 'segmented',
-    color: props.color,
   };
 }
 
 /**
- * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
+ * Displays a native picker component
  */
 export function Picker(props: PickerProps) {
-  return <PickerNativeView {...transformPickerProps(props)} />;
+  const { label, children, ...restProps } = transformPickerProps(props);
+  if (typeof label === 'string') {
+    return (
+      <PickerNativeView {...restProps} label={label}>
+        {children}
+      </PickerNativeView>
+    );
+  } else {
+    return (
+      <PickerNativeView {...restProps}>
+        <PickerLabelNativeView>{label}</PickerLabelNativeView>
+        {children}
+      </PickerNativeView>
+    );
+  }
+}
+
+export namespace Picker {
+  export const Content = PickerContentNativeView;
 }

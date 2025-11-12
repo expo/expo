@@ -1,41 +1,33 @@
-import type { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type PickerProps = {
     /**
-     * An array of options to be displayed in the picker.
+     * A label displayed on the picker.
      */
-    options: string[];
+    label?: string | React.ReactNode;
     /**
-     * The index of the currently selected option.
+     * The selected optio `tag` value.
      */
-    selectedIndex: number | null;
-    /**
-     * A label displayed on the picker when in `'menu'` variant inside a form section on iOS.
-     */
-    label?: string;
+    selection?: string;
     /**
      * Callback function that is called when an option is selected.
+     * Gets called with the selected `tag` value.
      */
-    onOptionSelected?: (event: {
+    onSelectionChange?: (event: {
         nativeEvent: {
-            index: number;
-            label: string;
+            selection: string;
         };
     }) => void;
     /**
-     * The variant of the picker, which determines its appearance and behavior.
-     * The `'inline'` variant can only be used inside sections or lists. The `'palette'` variant displays differently inside menus.
-     * > **Note**: The `wheel` variant is not available on tvOS.
-     * @default 'segmented'
+     * The content of the picker.
      */
-    variant?: 'wheel' | 'segmented' | 'menu' | 'inline' | 'palette';
-    /**
-     * Picker color. On iOS it only applies to the `'menu'` variant.
-     */
-    color?: ColorValue;
+    children?: React.ReactNode;
 } & CommonViewModifierProps;
+export declare const PickerContentNativeView: React.ComponentType<PickerProps>;
 /**
- * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
+ * Displays a native picker component
  */
 export declare function Picker(props: PickerProps): import("react").JSX.Element;
+export declare namespace Picker {
+    const Content: import("react").ComponentType<PickerProps>;
+}
 //# sourceMappingURL=index.d.ts.map
