@@ -193,6 +193,46 @@ try {
 }
 ```
 
+### Tagged template literals API
+
+For convenience and improved developer experience, expo-sqlite provides a Bun-inspired tagged template literals API through the `db.sql` property. This API automatically escapes parameters to prevent SQL injection attacks, and provides automatic type inference based on the query type.
+
+```ts Tagged template literals API
+interface User {
+  id: number;
+  name: string;
+  age: number;
+}
+
+const db = await SQLite.openDatabaseAsync('mydb.db');
+const sql = db.sql;
+
+const age = 21;
+const users = await sql<User>`SELECT * FROM users WHERE age > ${age}`;
+// Type: User[]
+console.log(users[0].name);
+
+// Mutable queries like INSERT/UPDATE/DELETE return SQLiteRunResult metadata
+const result =
+  (await sql`INSERT INTO users (name, age) VALUES (${'Alice'}, ${30})`) as SQLite.SQLiteRunResult;
+console.log(result.lastInsertRowId, result.changes);
+
+// Get first row only
+const user = await sql<User>`SELECT * FROM users WHERE id = ${1}`.first();
+if (user) {
+  console.log(user.name);
+}
+
+// Iterate over results
+for await (const user of sql<User>`SELECT * FROM users`.each()) {
+  console.log(user.name);
+}
+
+// Synchronous API
+const syncUsers = sql<User>`SELECT * FROM users WHERE age > ${21}`.allSync();
+const syncUser = sql<User>`SELECT * FROM users WHERE id = ${1}`.firstSync();
+```
+
 ### `useSQLiteContext()` hook
 
 ```tsx useSQLiteContext() hook
