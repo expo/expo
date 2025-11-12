@@ -1,6 +1,11 @@
 import { convertLocaleToBcp47 } from '../src/withExpoLocalization';
 
 describe('converts locales to BCP-47 format', () => {
+  it('should convert "-r" cases to BCP-47 format', () => {
+    expect(convertLocaleToBcp47('en-rUS')).toBe('en-rUS');
+    expect(convertLocaleToBcp47('fr-rFR')).toBe('fr-rFR');
+  });
+
   it('should convert simple language codes to BCP-47 format', () => {
     expect(convertLocaleToBcp47('en')).toBe('b+en');
     expect(convertLocaleToBcp47('fr')).toBe('b+fr');
