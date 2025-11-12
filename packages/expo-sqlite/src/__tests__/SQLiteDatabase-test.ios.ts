@@ -42,10 +42,10 @@ describe('Database', () => {
 
   it('execAsync should throw error from an invalid command', async () => {
     db = await openDatabaseAsync(':memory:');
-    let error;
+    let error: any;
     try {
       await db.execAsync('INVALID COMMAMD');
-    } catch (e: unknown) {
+    } catch (e: any) {
       error = e;
     }
     expect(error).toBeDefined();
