@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { Keyframe, Easing } from 'react-native-reanimated';
 
 import classes from './animated-icon.module.css';
-const DURATION = 600;
+const DURATION = 300;
 
 export function AnimatedSplashOverlay() {
   return null;
@@ -15,11 +15,11 @@ const keyframe = new Keyframe({
   },
   60: {
     transform: [{ scale: 1.2 }],
-    easing: Easing.elastic(0.7),
+    easing: Easing.elastic(1.2),
   },
   100: {
     transform: [{ scale: 1 }],
-    easing: Easing.elastic(2),
+    easing: Easing.elastic(1.2),
   },
 });
 
@@ -30,6 +30,7 @@ const logoKeyframe = new Keyframe({
   60: {
     transform: [{ scale: 1.2 }],
     opacity: 0,
+    easing: Easing.elastic(1.2),
   },
   100: {
     transform: [{ scale: 1 }],
@@ -40,10 +41,12 @@ const logoKeyframe = new Keyframe({
 
 const glowKeyframe = new Keyframe({
   0: {
-    transform: [{ rotateZ: '0deg' }, { scale: 0 }],
+    transform: [{ rotateZ: '-180deg' }, { scale: 0.8 }],
+    opacity: 0,
   },
-  0.3: {
+  [DURATION / 1000]: {
     transform: [{ rotateZ: '0deg' }, { scale: 1 }],
+    opacity: 1,
     easing: Easing.elastic(0.7),
   },
   100: {
