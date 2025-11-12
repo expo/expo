@@ -35,6 +35,7 @@
 - [iOS] Fix `ValueOrUndefined` conversion in `Record`. ([#40289](https://github.com/expo/expo/pull/40289) by [@jakex7](https://github.com/jakex7))
 - [iOS] Fix sizing glitch when React Native components are used as child in Expo UI components ([#40693](https://github.com/expo/expo/pull/40693) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Improve RN component layout when hosted in SwiftUI ([#40794](https://github.com/expo/expo/pull/40794) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `TextField` causing crash when reload and unmounting. ([#40960](https://github.com/expo/expo/pull/40960) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
