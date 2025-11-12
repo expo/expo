@@ -116,7 +116,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     guard textManager.isFocused else {
       return
     }
-    // When the view is unmounted, the focus on TextInput stays active and it causes a crash, so we blur it using endEditing. Setting `isFocused`` does not work
+    // When the view is unmounted, the focus on TextInput stays active and it causes a crash, so we blur it using endEditing. Setting `isFocused` does not work
     // https://github.com/expo/expo/issues/40354
     if let windowScene = UIApplication.shared.connectedScenes
         .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
