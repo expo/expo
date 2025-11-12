@@ -28,13 +28,11 @@ export default function PickerScreen() {
             onSelectionChange={({ nativeEvent: { selection } }) => {
               setPickerType(selection as (typeof pickerTypes)[number]);
             }}>
-            <Picker.Content>
-              {pickerTypes.map((type) => (
-                <Text key={type} modifiers={[tag(type)]}>
-                  {type}
-                </Text>
-              ))}
-            </Picker.Content>
+            {pickerTypes.map((type) => (
+              <Text key={type} modifiers={[tag(type)]}>
+                {type}
+              </Text>
+            ))}
           </Picker>
         </Section>
         <Section title={`${pickerType} picker`}>
@@ -44,13 +42,11 @@ export default function PickerScreen() {
             onSelectionChange={({ nativeEvent: { selection } }) => {
               setSelectedTag(selection);
             }}>
-            <Picker.Content>
-              {options.map((option) => (
-                <Text key={option} modifiers={[tag(option)]}>
-                  {option}
-                </Text>
-              ))}
-            </Picker.Content>
+            {options.map((option) => (
+              <Text key={option} modifiers={[tag(option)]}>
+                {option}
+              </Text>
+            ))}
           </Picker>
         </Section>
       </List>

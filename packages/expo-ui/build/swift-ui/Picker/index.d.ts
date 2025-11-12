@@ -27,7 +27,4 @@ export declare const PickerContentNativeView: React.ComponentType<PickerProps>;
  * Displays a native picker component
  */
 export declare function Picker(props: PickerProps): import("react").JSX.Element;
-export declare namespace Picker {
-    const Content: import("react").ComponentType<PickerProps>;
-}
 //# sourceMappingURL=index.d.ts.map

@@ -58,19 +58,15 @@ export function Picker(props: PickerProps) {
   if (typeof label === 'string') {
     return (
       <PickerNativeView {...restProps} label={label}>
-        {children}
+        <PickerContentNativeView>{children}</PickerContentNativeView>
       </PickerNativeView>
     );
   } else {
     return (
       <PickerNativeView {...restProps}>
         <PickerLabelNativeView>{label}</PickerLabelNativeView>
-        {children}
+        <PickerContentNativeView>{children}</PickerContentNativeView>
       </PickerNativeView>
     );
   }
-}
-
-export namespace Picker {
-  export const Content = PickerContentNativeView;
 }
