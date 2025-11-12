@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix loading delayed placeholder ([#40956](https://github.com/expo/expo/pull/40956) by [@kosmydel](https://github.com/kosmydel))
+
 ### 💡 Others
 
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
