@@ -2,8 +2,6 @@ package expo.modules.devlauncher.react
 
 import android.util.Log
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.common.ShakeDetector
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
@@ -15,6 +13,7 @@ import expo.modules.devlauncher.helpers.getProtectedFieldValue
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import expo.modules.devmenu.api.DevMenuApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
@@ -24,6 +23,10 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
 
   fun swapDevSupportManagerImpl(reactHost: ReactHost) {
     val currentDevSupportManager = requireNotNull(reactHost.devSupportManager)
+
+    DevMenuApi.installWebSocketHandlers(currentDevSupportManager)
+    DevMenuApi.uninstallDefaultShakeDetector(currentDevSupportManager)
+
     if (currentDevSupportManager is DevLauncherBridgelessDevSupportManager) {
       // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
       return

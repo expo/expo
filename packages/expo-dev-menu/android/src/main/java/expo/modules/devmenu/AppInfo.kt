@@ -6,9 +6,8 @@ import com.facebook.react.ReactHost
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
-import java.lang.reflect.Field
 import expo.modules.devmenu.compose.DevMenuState
-import expo.modules.manifests.core.ExpoUpdatesManifest
+import java.lang.reflect.Field
 
 object AppInfo {
   data class Native(
@@ -16,13 +15,13 @@ object AppInfo {
     val appVersion: String? = null
   )
 
-  lateinit var native: Native
+  private var _cachedAppInfo: Native? = null
 
-  fun init(application: Application) {
-    native = getNativeAppInfo(application)
-  }
+  fun getNativeAppInfo(application: Application): Native {
+    _cachedAppInfo?.let {
+      return it
+    }
 
-  private fun getNativeAppInfo(application: Application): Native {
     val packageManager = application.packageManager
     val packageName = application.packageName
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
@@ -31,41 +30,24 @@ object AppInfo {
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
 
-    return Native(
+    val native = Native(
       appName = appName,
       appVersion = appVersion
     )
+
+    _cachedAppInfo = native
+
+    return native
   }
 
   @OptIn(UnstableReactNativeAPI::class)
-  fun getAppInfo(reactHost: ReactHost): DevMenuState.AppInfo {
+  fun getAppInfo(application: Application, reactHost: ReactHost): DevMenuState.AppInfo {
+    val native = getNativeAppInfo(application)
     // We want to override the native app name and version with the manifest values if available.
-    var appName = native.appName
-    var appVersion = native.appVersion
+    val appName = native.appName
+    val appVersion = native.appVersion
 
-    var hostUrl = reactHost.currentReactContext?.sourceURL
-    var runtimeVersion = ""
-    val manifest = DevMenuManager.currentManifest
-
-    if (manifest != null) {
-      val manifestName = manifest.getName()
-      if (manifestName != null) {
-        appName = manifestName
-      }
-
-      val manifestVersion = manifest.getVersion()
-      if (manifestVersion != null) {
-        appVersion = manifestVersion
-      }
-
-      if (manifest is ExpoUpdatesManifest) {
-        runtimeVersion = manifest.getRuntimeVersion()
-      }
-    }
-
-    if (DevMenuManager.currentManifestURL != null) {
-      hostUrl = DevMenuManager.currentManifestURL
-    }
+    val hostUrl = reactHost.currentReactContext?.sourceURL
 
     val reactHostDelegateField: Field =
       ReactHostImpl::class.java.getDeclaredField("reactHostDelegate")
@@ -83,7 +65,7 @@ object AppInfo {
     return DevMenuState.AppInfo(
       appVersion = appVersion,
       appName = appName,
-      runtimeVersion = runtimeVersion,
+      runtimeVersion = null,
       hostUrl = hostUrl ?: "Unknown",
       engine = engine
     )

@@ -2,8 +2,8 @@ package expo.modules.devmenu.modules
 
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import expo.modules.devmenu.api.DevMenuApi
 import expo.modules.devmenu.compose.DevMenuAction
-import expo.modules.devmenu.compose.DevMenuFragment
 import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -23,7 +23,7 @@ class DevMenuModule : Module() {
   val currentActivity
     get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
-  private val _viewModel by DevMenuFragment.model { currentActivity }
+  private val _viewModel by DevMenuApi.model { currentActivity }
   val viewModel
     get() = _viewModel ?: throw IllegalStateException("Dev Menu is not initialized")
 

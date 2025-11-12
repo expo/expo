@@ -4,8 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactNativeHost
-import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultReactHostDelegate
@@ -18,10 +16,8 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import expo.modules.devlauncher.react.DevLauncherBridgeDevSupportManager
 import expo.modules.devlauncher.react.DevLauncherBridgelessDevSupportManager
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
-import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import okhttp3.HttpUrl
 
@@ -160,15 +156,6 @@ fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager
   )
   oldDevServerHelper.closePackagerConnection()
   oldDevServerHelper.closeInspectorConnection()
-}
-
-fun findDevMenuPackage(): ReactPackage? {
-  return try {
-    val clazz = Class.forName("expo.modules.devmenu.DevMenuPackage")
-    clazz.newInstance() as? ReactPackage
-  } catch (e: Exception) {
-    null
-  }
 }
 
 private fun parseUrl(url: Uri): Pair<String, String> {
