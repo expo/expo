@@ -233,7 +233,7 @@ When you run this example and pick an image, you will see the image that you pic
 
 ### Invoke permissions for videos <PlatformTags platforms={['ios']} />
 
-Starting SDK 54, picking videos on iOS while `allowsEditing` is `true` or when [`videoExportPreset`](#videoexportpreset) is set to any other value than `Passthrough`, it won't trigger a permission request by default. However, there will be an increase in time for picker to open for large or freshly recorded videos which haven't been processed internally by iOS.
+Starting SDK 54, picking videos on iOS while `allowsEditing` is `true` or when [`videoExportPreset`](#videoexportpreset) is set to any other value than `Passthrough`, it won't trigger a permission request by default. However, there will be an increase in time for picker to open for large or newly recorded videos which haven't been processed internally by iOS.
 
 We recommend requesting media library permissions either using [`requestMediaLibraryPermissionsAsync`](#imagepickerrequestmedialibrarypermissionsasyncwriteonly) or [`useMediaLibraryPermissions`](#usemedialibrarypermissionsoptions) before opening the picker for videos.
 
