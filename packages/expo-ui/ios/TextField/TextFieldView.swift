@@ -113,7 +113,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 
   
   func forceResignFirstResponder() {
-    if (textManager.isFocused) {
+    if textManager.isFocused {
       UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
     
