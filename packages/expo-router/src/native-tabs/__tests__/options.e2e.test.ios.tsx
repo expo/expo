@@ -12,6 +12,7 @@ import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
 import {
   type DrawableIcon,
+  type MaterialIcon,
   type NativeTabsTriggerIconProps,
   type SFSymbolIcon,
   type SrcIcon,
@@ -343,6 +344,12 @@ describe('Icons', () => {
       expectedIcon: { type: 'sfSymbol', name: '0.circle' },
     },
     {
+      sf: '0.circle',
+      src: { uri: 'some-uri' },
+      material: 'ic_some_drawable',
+      expectedIcon: { type: 'sfSymbol', name: '0.circle' },
+    },
+    {
       src: { uri: 'some-uri' },
       expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
     },
@@ -351,18 +358,24 @@ describe('Icons', () => {
       drawable: 'ic_some_drawable',
       expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
     },
+    {
+      src: { uri: 'some-uri' },
+      material: 'ic_some_drawable',
+      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+    },
   ] as (DrawableIcon &
+    MaterialIcon &
     SrcIcon &
     SFSymbolIcon & {
       expectedIcon: BottomTabsScreenProps['icon']['ios'];
     })[])(
     'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
-    ({ sf, src, drawable, expectedIcon }) => {
+    ({ sf, src, drawable, material, expectedIcon }) => {
       renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
-              <NativeTabs.Trigger.Icon sf={sf} src={src} drawable={drawable} />
+              <NativeTabs.Trigger.Icon sf={sf} material={material} src={src} drawable={drawable} />
             </NativeTabs.Trigger>
           </NativeTabs>
         ),

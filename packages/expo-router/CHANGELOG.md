@@ -19,6 +19,7 @@
 - [iOS] add sidebar adaptable prop ([#40957](https://github.com/expo/expo/pull/40957) by [@Ubax](https://github.com/Ubax))
 - add Color utility ([#40904](https://github.com/expo/expo/pull/40904) by [@Ubax](https://github.com/Ubax))
 - wrap NativeTabs style properties with StyleProp ([#41013](https://github.com/expo/expo/pull/41013) by [@Ubax](https://github.com/Ubax))
+- add material prop to native tabs icon ([#40966](https://github.com/expo/expo/pull/40966) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

@@ -1,6 +1,6 @@
-import { screen, act, fireEvent } from '@testing-library/react-native';
+import { screen, act, fireEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Button, PixelRatio, View } from 'react-native';
 import {
   BottomTabsScreen as _BottomTabsScreen,
   type BottomTabsScreenProps,
@@ -9,7 +9,12 @@ import {
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
-import { type DrawableIcon, type SFSymbolIcon, type SrcIcon } from '../common/elements';
+import {
+  type DrawableIcon,
+  type MaterialIcon,
+  type SFSymbolIcon,
+  type SrcIcon,
+} from '../common/elements';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -99,6 +104,13 @@ it('when no options are passed, default ones are used', () => {
 });
 
 describe('Icons', () => {
+  let initialConsoleWarn: typeof console.warn;
+  let consoleWarnMock: jest.Mock;
+  beforeEach(() => {
+    initialConsoleWarn = console.warn;
+    consoleWarnMock = jest.fn();
+    console.warn = consoleWarnMock;
+  });
   it('when using Icon with drawable prop, it is passed as drawable', () => {
     renderRouter({
       _layout: () => (
@@ -116,6 +128,7 @@ describe('Icons', () => {
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       icon: { android: { type: 'drawableResource', name: 'homepod' } },
     } as BottomTabsScreenProps);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it('when using Icon sf on Android, no value is passed', () => {
@@ -134,6 +147,7 @@ describe('Icons', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0].icon).toBeUndefined();
     expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it('uses last Icon drawable value when multiple are provided', () => {
@@ -155,6 +169,7 @@ describe('Icons', () => {
       icon: { android: { type: 'drawableResource', name: 'homepod' } },
       selectedIcon: undefined,
     } as BottomTabsScreenProps);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it('when selectedIconColor is provided, it is passed to screen', () => {
@@ -177,6 +192,7 @@ describe('Icons', () => {
         },
       },
     } as Partial<BottomTabsScreenProps>);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it('when selectedIconColor is provided in container and tab, the tab should use the tab color', () => {
@@ -212,6 +228,7 @@ describe('Icons', () => {
         },
       },
     } as Partial<BottomTabsScreenProps>);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -220,6 +237,10 @@ describe('Icons', () => {
     {
       drawable: '1234',
       src: { uri: 'some-uri' },
+      expectedIcon: { type: 'drawableResource', name: '1234' },
+    },
+    {
+      drawable: '1234',
       expectedIcon: { type: 'drawableResource', name: '1234' },
     },
     {
@@ -258,6 +279,99 @@ describe('Icons', () => {
       expect(screen.getByTestId('index')).toBeVisible();
       expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
       expect(BottomTabsScreen.mock.calls[0][0].icon?.android).toEqual(expectedIcon);
+      expect(consoleWarnMock).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each([
+    { material: '10k' },
+    {
+      material: 'cable',
+      src: { uri: 'some-uri' },
+    },
+    { material: '10k', sf: 'square.fill' },
+    { material: '10k', sf: 'square.fill', src: { uri: 'some-uri' } },
+  ] as (MaterialIcon & SrcIcon & SFSymbolIcon)[])(
+    'For <Icon sf="$sf" src="$src" material="$material">, icon will render a material icon',
+    async ({ sf, src, material }) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon sf={sf} src={src} material={material} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      // Wrapping with waitFor to ensure material vector icon async loading is complete
+      // Otherwise testing library will complain "An update to Screen inside a test was not wrapped in act(...)"
+      // because vector icon loading triggers a state update
+      await waitFor(() => {
+        expect(screen.getByTestId('index')).toBeVisible();
+      });
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+      expect(BottomTabsScreen.mock.calls[0][0].icon?.android).toBeUndefined();
+      expect(BottomTabsScreen.mock.calls[1][0].icon?.android).toEqual({
+        // This is declared in packages/expo-font/mocks/ExpoFontUtils.ts
+        // The PixelRatio.get() is used in @expo/vector-icons to set the scale
+        imageSource: { height: 0, uri: '', width: 0, scale: PixelRatio.get() },
+        type: 'imageSource',
+      });
+      expect(consoleWarnMock).not.toHaveBeenCalled();
+    }
+  );
+
+  it.only.each([
+    { material: '10k', drawable: undefined, expectedIcon: undefined, numberOfRenders: 2 },
+    {
+      material: 'cable',
+      drawable: 'ic_lock',
+      expectedIcon: { type: 'drawableResource', name: 'ic_lock' },
+      numberOfRenders: 1,
+    },
+    {
+      material: undefined,
+      drawable: 'ic_lock',
+      expectedIcon: { type: 'drawableResource', name: 'ic_lock' },
+      numberOfRenders: 1,
+    },
+  ] as (MaterialIcon &
+    DrawableIcon & {
+      expectedIcon: BottomTabsScreenProps['icon']['android'];
+      numberOfRenders: number;
+    })[])(
+    'For <Icon material="$material" drawable="$drawable">, icon will be $expectedIcon during first render and tabs will render $numberOfRenders time(s)',
+    async ({ material, drawable, numberOfRenders, expectedIcon }) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon material={material} drawable={drawable} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      // Wrapping with waitFor to ensure material vector icon async loading is complete
+      // Otherwise testing library will complain "An update to Screen inside a test was not wrapped in act(...)"
+      // because vector icon loading triggers a state update
+      await waitFor(() => {
+        expect(screen.getByTestId('index')).toBeVisible();
+      });
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(numberOfRenders);
+      expect(BottomTabsScreen.mock.calls[0][0].icon?.android).toEqual(expectedIcon);
+      if (numberOfRenders > 1) {
+        expect(BottomTabsScreen.mock.calls[1][0].icon?.android).toEqual({
+          // This is declared in packages/expo-font/mocks/ExpoFontUtils.ts
+          // The PixelRatio.get() is used in @expo/vector-icons to set the scale
+          imageSource: { height: 0, uri: '', width: 0, scale: PixelRatio.get() },
+          type: 'imageSource',
+        });
+      }
+      expect(consoleWarnMock).toHaveBeenCalledTimes(1);
     }
   );
 });

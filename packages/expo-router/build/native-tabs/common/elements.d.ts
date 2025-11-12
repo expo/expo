@@ -1,3 +1,4 @@
+import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { VectorIcon } from '../../primitives';
@@ -77,10 +78,16 @@ export interface DrawableIcon {
      */
     drawable?: string;
 }
+type ExtractIconName<T extends {
+    getImageSource: (name: any, size: number, color: any) => Promise<any>;
+}> = Parameters<T['getImageSource']>[0];
+export interface MaterialIcon {
+    material: ExtractIconName<typeof MaterialIcons>;
+}
 export type BaseNativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
 };
-export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
+export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
 /**
  * Renders an icon for the tab.
  *
@@ -130,4 +137,5 @@ export interface NativeTabsTriggerBadgeProps {
     selectedBackgroundColor?: ColorValue;
 }
 export declare const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps>;
+export {};
 //# sourceMappingURL=elements.d.ts.map

@@ -6,7 +6,6 @@ import { StyleSheet, type ImageSourcePropType } from 'react-native';
 
 import type { NativeTabOptions, NativeTabTriggerProps } from './types';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
-import type { VectorIconProps } from '../primitives';
 import { useSafeLayoutEffect } from '../views/useSafeLayoutEffect';
 import {
   NativeTabsTriggerIcon,
@@ -19,6 +18,8 @@ import {
   type SrcIcon,
 } from './common/elements';
 import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
+import { convertComponentSrcToImageSource } from './utils/icon';
+import { convertMaterialIconNameToImageSource } from './utils/materialIconConverter';
 
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -182,8 +183,22 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
         : undefined;
     }
   } else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
+    if ('material' in props) {
+      console.warn(
+        'Both `material` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+      );
+    }
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
+  } else if ('material' in props && props.material && process.env.EXPO_OS === 'android') {
+    if (process.env.NODE_ENV !== 'production') {
+      if ('drawable' in props) {
+        console.warn(
+          'Both `material` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+        );
+      }
+    }
+    options.icon = convertMaterialIconNameToImageSource(props.material);
   } else if ('src' in props && props.src) {
     const icon = convertIconSrcToIconOption(props);
     options.icon = icon?.icon;
@@ -215,12 +230,7 @@ function convertIconSrcToIconOption(
 function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
   if (src) {
     if (isValidElement(src)) {
-      if (src.type === NativeTabsTriggerVectorIcon) {
-        const props = src.props as VectorIconProps<string>;
-        return { src: props.family.getImageSource(props.name, 24, 'white') };
-      } else {
-        console.warn('Only VectorIcon is supported as a React element in Icon.src');
-      }
+      return convertComponentSrcToImageSource(src);
     } else {
       return { src };
     }
