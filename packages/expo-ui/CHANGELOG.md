@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `submitLabel` props for `TextField`component ([#40975](https://github.com/expo/expo/pull/40975) by [@tmallet](https://github.com/tmallet))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `ContextMenu` item with subtitle buttons ([#40926](https://github.com/expo/expo/pull/40926) by [@nishan](https://github.com/intergalacticspacehighway))
