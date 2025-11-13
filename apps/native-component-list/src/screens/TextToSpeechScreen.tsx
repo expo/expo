@@ -58,6 +58,7 @@ interface State {
   rate: number;
   voiceList?: { name: string; identifier: string }[];
   voice?: string;
+  volume: number;
 }
 
 export default class TextToSpeechScreen extends React.Component<object, State> {
@@ -72,6 +73,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
     useApplicationAudioSession: undefined,
     pitch: 1,
     rate: 0.75,
+    volume: 1.0,
   };
 
   async componentDidMount() {
@@ -144,6 +146,22 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
             disabled={this.state.inProgress}
           />
         </View>
+
+        <Text style={styles.controlText}>Volume: {this.state.volume.toFixed(2)}</Text>
+        <View style={styles.controlRow}>
+          <AmountControlButton
+            onPress={this._increaseVolume}
+            title="Increase"
+            disabled={this.state.inProgress || this.state.volume >= 1.0}
+          />
+
+          <Text>/</Text>
+          <AmountControlButton
+            onPress={this._decreaseVolume}
+            title="Decrease"
+            disabled={this.state.inProgress || this.state.volume <= 0.0}
+          />
+        </View>
         {Platform.OS === 'ios' && (
           <>
             <Text>useApplicationAudioSession</Text>
@@ -183,6 +201,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
       language: this.state.selectedExample.language,
       pitch: this.state.pitch,
       rate: this.state.rate,
+      volume: this.state.volume,
       useApplicationAudioSession: this.state.useApplicationAudioSession,
       onStart: start,
       onDone: complete,
@@ -227,6 +246,13 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
     }));
   };
 
+  _increaseVolume = () => {
+    this.setState((state) => ({
+      ...state,
+      volume: Math.min(1.0, state.volume + 0.1),
+    }));
+  };
+
   _decreasePitch = () => {
     this.setState((state) => ({
       ...state,
@@ -238,6 +264,13 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
     this.setState((state) => ({
       ...state,
       rate: state.rate - 0.1,
+    }));
+  };
+
+  _decreaseVolume = () => {
+    this.setState((state) => ({
+      ...state,
+      volume: Math.max(0.0, state.volume - 0.1),
     }));
   };
 
