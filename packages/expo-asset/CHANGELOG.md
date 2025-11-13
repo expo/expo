@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] fix adding transparent png Image Assets ([#40991](https://github.com/expo/expo/pull/40991) by [@kosmydel](https://github.com/kosmydel))
+
 ### 💡 Others
 
 - validate asset names with `isAndroidAssetNameValid` from `expo/config-plugins` ([#39883](https://github.com/expo/expo/pull/39883) by [@vonovak](https://github.com/vonovak))
