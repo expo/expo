@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Added `submitLabel` props for `TextField`component ([#40975](https://github.com/expo/expo/pull/40975) by [@tmallet](https://github.com/tmallet))
+- [iOS] Added `submitLabel` modifier to change the label of the keyboard submit button ([#40975](https://github.com/expo/expo/pull/40975) by [@tmallet](https://github.com/tmallet))
 
 ### 🐛 Bug fixes
 
