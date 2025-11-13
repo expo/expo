@@ -11,7 +11,7 @@ if new_arch_enabled
 end
 
 Pod::Spec.new do |s|
-  s.name           = 'ExpoHead'
+  s.name           = 'ExpoRouter'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
