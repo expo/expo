@@ -37,6 +37,7 @@
 - Remove `node/getExpoConstantsManifest.js` ([#40663](https://github.com/expo/expo/pull/40663) by [@hassankhan](https://github.com/hassankhan))
 - Upgrade react-native-screens and react-navigation versions ([#40804](https://github.com/expo/expo/pull/40804) by [@Ubax](https://github.com/Ubax))
 - extract common elements to primitives ([#40841](https://github.com/expo/expo/pull/40841) by [@Ubax](https://github.com/Ubax))
+- remove redundant convertTabPropsToOptions call ([#40967](https://github.com/expo/expo/pull/40967) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.13 - 2025-10-20
 
