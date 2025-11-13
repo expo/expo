@@ -17,7 +17,7 @@ import {
   type NativeTabsTriggerBadgeProps,
   type NativeTabsTriggerLabelProps,
   type NativeTabsTriggerIconProps,
-  type SourceIconCombination,
+  type SrcIcon,
 } from './common/elements';
 
 /**
@@ -161,11 +161,7 @@ function appendLabelOptions(options: NativeTabOptions, props: NativeTabsTriggerL
 }
 
 export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
-  if ('src' in props && props.src) {
-    const icon = convertIconSrcToIconOption(props);
-    options.icon = icon?.icon;
-    options.selectedIcon = icon?.selectedIcon;
-  } else if ('sf' in props && process.env.EXPO_OS === 'ios') {
+  if ('sf' in props && props.sf && process.env.EXPO_OS === 'ios') {
     if (typeof props.sf === 'string') {
       options.icon = props.sf
         ? {
@@ -185,13 +181,13 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
           }
         : undefined;
     }
-  } else if ('androidSrc' in props && process.env.EXPO_OS === 'android') {
-    const icon = convertIconSrcToIconOption({ src: props.androidSrc });
-    options.icon = icon?.icon;
-    options.selectedIcon = icon?.selectedIcon;
-  } else if ('drawable' in props && process.env.EXPO_OS === 'android') {
+  } else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
+  } else if ('src' in props && props.src) {
+    const icon = convertIconSrcToIconOption(props);
+    options.icon = icon?.icon;
+    options.selectedIcon = icon?.selectedIcon;
   }
   if (props.selectedColor) {
     options.selectedIconColor = props.selectedColor;
@@ -199,7 +195,7 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
 }
 
 function convertIconSrcToIconOption(
-  icon: SourceIconCombination | undefined
+  icon: SrcIcon | undefined
 ): Pick<NativeTabOptions, 'icon' | 'selectedIcon'> | undefined {
   if (icon && icon.src) {
     const { defaultIcon, selected } =

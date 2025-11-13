@@ -8,15 +8,8 @@ import {
 
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
-import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
-import {
-  type DrawableIcon,
-  type NativeTabsTriggerIconProps,
-  type SFSymbolIcon,
-  type SrcIcon,
-} from '../common/elements';
-import type { NativeTabOptions } from '../types';
+import { type DrawableIcon, type SFSymbolIcon, type SrcIcon } from '../common/elements';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -65,7 +58,7 @@ it('can pass options via elements', () => {
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index">
-          <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
+          <NativeTabs.Trigger.Icon drawable="test" />
         </NativeTabs.Trigger>
       </NativeTabs>
     ),
@@ -75,7 +68,7 @@ it('can pass options via elements', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
   expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-    icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
+    icon: { android: { type: 'drawableResource', name: 'test' } },
     selectedIcon: undefined,
   } as BottomTabsScreenProps);
 });
@@ -106,12 +99,12 @@ it('when no options are passed, default ones are used', () => {
 });
 
 describe('Icons', () => {
-  it('when using Icon with sf prop, it is passed as sfSymbolName', () => {
+  it('when using Icon with drawable prop, it is passed as drawable', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Icon drawable="homepod" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -121,55 +114,16 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
+      icon: { android: { type: 'drawableResource', name: 'homepod' } },
     } as BottomTabsScreenProps);
   });
 
-  it('when using Icon with sf selected prop, it is passed as selected icon sfSymbolName', () => {
+  it('when using Icon sf on Android, no value is passed', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <NativeTabs.Trigger.Icon sf={{ selected: 'homepod.2.fill' }} />
-          </NativeTabs.Trigger>
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-    });
-
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
-    } as BottomTabsScreenProps);
-  });
-
-  it('when using Icon with sf object, values are passed correctly', () => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index">
-            <NativeTabs.Trigger.Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
-          </NativeTabs.Trigger>
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-    });
-
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { type: 'sfSymbol', name: 'star.bubble' },
-      icon: { ios: { type: 'sfSymbol', name: 'stairs' } },
-    } as BottomTabsScreenProps);
-  });
-
-  it('when using Icon drawable on iOS, no value is passed', () => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index">
-            <NativeTabs.Trigger.Icon drawable="stairs" />
+            <NativeTabs.Trigger.Icon sf="stairs" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -182,13 +136,13 @@ describe('Icons', () => {
     expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
   });
 
-  it('uses last Icon sf value when multiple are provided', () => {
+  it('uses last Icon drawable value when multiple are provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <NativeTabs.Trigger.Icon sf="stairs" />
-            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Icon drawable="stairs" />
+            <NativeTabs.Trigger.Icon drawable="homepod" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -198,76 +152,8 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
+      icon: { android: { type: 'drawableResource', name: 'homepod' } },
       selectedIcon: undefined,
-    } as BottomTabsScreenProps);
-  });
-
-  it('uses last Icon sf selected when multiple are provided', () => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index">
-            <NativeTabs.Trigger.Icon sf={{ selected: 'stairs' }} />
-            <NativeTabs.Trigger.Icon sf={{ selected: 'homepod.2.fill' }} />
-          </NativeTabs.Trigger>
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-    });
-
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
-    } as BottomTabsScreenProps);
-  });
-
-  it('uses last Icon sf for each type when multiple are provided', () => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index">
-            <NativeTabs.Trigger.Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
-            <NativeTabs.Trigger.Icon
-              sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }}
-            />
-            <NativeTabs.Trigger.Icon sf="0.circle.ar" />
-          </NativeTabs.Trigger>
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-    });
-
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: undefined,
-      icon: { ios: { type: 'sfSymbol', name: '0.circle.ar' } },
-    } as BottomTabsScreenProps);
-  });
-
-  it('uses last Icon sf for each type when multiple are provided', () => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index">
-            <NativeTabs.Trigger.Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
-            <NativeTabs.Trigger.Icon
-              sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }}
-            />
-            <NativeTabs.Trigger.Icon sf={{ selected: '0.circle.ar' }} />
-          </NativeTabs.Trigger>
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-    });
-
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { type: 'sfSymbol', name: '0.circle.ar' },
-      icon: undefined,
     } as BottomTabsScreenProps);
   });
 
@@ -330,31 +216,31 @@ describe('Icons', () => {
 
   it.each([
     { expectedIcon: undefined },
-    { sf: '0.circle', expectedIcon: { type: 'sfSymbol', name: '0.circle' } },
+    { drawable: 'test', expectedIcon: { type: 'drawableResource', name: 'test' } },
     {
-      sf: '0.circle',
+      drawable: '1234',
       src: { uri: 'some-uri' },
-      expectedIcon: { type: 'sfSymbol', name: '0.circle' },
+      expectedIcon: { type: 'drawableResource', name: '1234' },
     },
     {
       sf: '0.circle',
       src: { uri: 'some-uri' },
       drawable: 'ic_some_drawable',
-      expectedIcon: { type: 'sfSymbol', name: '0.circle' },
+      expectedIcon: { type: 'drawableResource', name: 'ic_some_drawable' },
     },
     {
       src: { uri: 'some-uri' },
-      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
     },
     {
       src: { uri: 'some-uri' },
-      drawable: 'ic_some_drawable',
-      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+      sf: '0.circle',
+      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
     },
   ] as (DrawableIcon &
     SrcIcon &
     SFSymbolIcon & {
-      expectedIcon: BottomTabsScreenProps['icon']['ios'];
+      expectedIcon: BottomTabsScreenProps['icon']['android'];
     })[])(
     'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
     ({ sf, src, drawable, expectedIcon }) => {
@@ -371,7 +257,7 @@ describe('Icons', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-      expect(BottomTabsScreen.mock.calls[0][0].icon?.ios).toEqual(expectedIcon);
+      expect(BottomTabsScreen.mock.calls[0][0].icon?.android).toEqual(expectedIcon);
     }
   );
 });
@@ -817,7 +703,7 @@ describe('Dynamic options', () => {
           <NativeTabs.Trigger name="index">
             <NativeTabs.Trigger.Label>Updated Title</NativeTabs.Trigger.Label>
             <NativeTabs.Trigger.Badge>5</NativeTabs.Trigger.Badge>
-            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Icon drawable="test" />
           </NativeTabs.Trigger>
         </View>
       ),
@@ -842,9 +728,9 @@ describe('Dynamic options', () => {
       isFocused: true,
       badgeValue: '5',
       icon: {
-        ios: {
-          type: 'sfSymbol',
-          name: 'homepod.2.fill',
+        android: {
+          type: 'drawableResource',
+          name: 'test',
         },
       },
       selectedIcon: undefined,
@@ -859,7 +745,7 @@ describe('Dynamic options', () => {
           <NativeTabs.Trigger name="index">
             <NativeTabs.Trigger.Label>Initial Title</NativeTabs.Trigger.Label>
             <NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>
-            <NativeTabs.Trigger.Icon sf="0.circle" />
+            <NativeTabs.Trigger.Icon drawable="test" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -871,7 +757,7 @@ describe('Dynamic options', () => {
               title: 'Updated Title',
               badgeValue: '5',
               icon: {
-                ios: { type: 'sfSymbol', name: 'homepod.2.fill' },
+                android: { type: 'drawableResource', name: '1234' },
               },
             }}
           />
@@ -884,9 +770,9 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       badgeValue: '3',
       icon: {
-        ios: {
-          type: 'sfSymbol',
-          name: '0.circle',
+        android: {
+          type: 'drawableResource',
+          name: 'test',
         },
       },
       hidden: false,
@@ -902,9 +788,9 @@ describe('Dynamic options', () => {
       isFocused: true,
       badgeValue: '5',
       icon: {
-        ios: {
-          type: 'sfSymbol',
-          name: 'homepod.2.fill',
+        android: {
+          type: 'drawableResource',
+          name: '1234',
         },
       },
     } as BottomTabsScreenProps);
@@ -917,7 +803,7 @@ describe('Dynamic options', () => {
           <NativeTabs.Trigger name="index">
             <NativeTabs.Trigger.Label>Initial Title</NativeTabs.Trigger.Label>
             <NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>
-            <NativeTabs.Trigger.Icon sf="0.circle" />
+            <NativeTabs.Trigger.Icon drawable="test" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -926,7 +812,7 @@ describe('Dynamic options', () => {
           <NativeTabs.Trigger name="index">
             <NativeTabs.Trigger.Label>Updated Title</NativeTabs.Trigger.Label>
             <NativeTabs.Trigger.Badge>5</NativeTabs.Trigger.Badge>
-            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Icon drawable="1234" />
           </NativeTabs.Trigger>
         </View>
       ),
@@ -937,9 +823,9 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       badgeValue: '3',
       icon: {
-        ios: {
-          type: 'sfSymbol',
-          name: '0.circle',
+        android: {
+          type: 'drawableResource',
+          name: 'test',
         },
       },
       hidden: false,
@@ -955,9 +841,9 @@ describe('Dynamic options', () => {
       isFocused: true,
       badgeValue: '5',
       icon: {
-        ios: {
-          type: 'sfSymbol',
-          name: 'homepod.2.fill',
+        android: {
+          type: 'drawableResource',
+          name: '1234',
         },
       },
     } as BottomTabsScreenProps);
@@ -1049,61 +935,5 @@ describe('Dynamic options', () => {
       selectedIcon: undefined,
       freezeContents: false,
     } as BottomTabsScreenProps);
-  });
-});
-
-describe(appendIconOptions, () => {
-  const ICON_FAMILY = {
-    getImageSource: (name: 'a' | 'b' | 'c') => Promise.resolve({ uri: name }),
-  };
-  it.each([
-    [{}, {}],
-    [{ sf: '0.circle' }, { icon: { sf: '0.circle' }, selectedIcon: undefined }],
-    [
-      { sf: { default: '0.circle', selected: 'o.circle.fill' } },
-      { icon: { sf: '0.circle' }, selectedIcon: { sf: 'o.circle.fill' } },
-    ],
-    [
-      { sf: { selected: 'o.circle.fill' } },
-      { icon: undefined, selectedIcon: { sf: 'o.circle.fill' } },
-    ],
-    [
-      { src: { uri: 'xxx', scale: 2 } },
-      { icon: { src: { uri: 'xxx', scale: 2 } }, selectedIcon: undefined },
-    ],
-    [
-      { src: { default: 'xxx', selected: 'yyy' } },
-      { icon: { src: 'xxx' }, selectedIcon: { src: 'yyy' } },
-    ],
-    [
-      {
-        sf: '0.circle',
-        src: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
-      },
-      { icon: { sf: '0.circle' }, selectedIcon: undefined },
-    ],
-  ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
-    'should append icon props %p to options correctly',
-    (props, expected) => {
-      const options: NativeTabOptions = {};
-      appendIconOptions(options, props);
-      expect(options).toEqual(expected);
-    }
-  );
-  it('when vector icon is used, promise is set', () => {
-    const options: NativeTabOptions = {};
-    const props: NativeTabsTriggerIconProps = {
-      src: {
-        default: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
-        selected: { uri: 'yyy' },
-      },
-    };
-    appendIconOptions(options, props);
-    expect(options).toEqual({
-      icon: { src: expect.any(Promise) },
-      selectedIcon: {
-        src: { uri: 'yyy' },
-      },
-    });
   });
 });
