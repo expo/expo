@@ -12,11 +12,9 @@ export default function AppTabs() {
     <NativeTabs
       backgroundColor={Platform.select({
         android: colors.background,
-        web: colors.backgroundElement,
       })}
       indicatorColor={Platform.select({
         android: colors.backgroundElement,
-        web: colors.backgroundSelected,
       })}
       labelStyle={{ selected: { color: colors.text } }}>
       <NativeTabs.Trigger name="index">
