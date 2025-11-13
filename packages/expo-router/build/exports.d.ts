@@ -24,5 +24,6 @@ export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 export type * from './types';
 export * from './color';
+export { usePlatformTheme } from './color/theme';
 export { Badge, BadgeProps, Icon, IconProps, Label, LabelProps, VectorIcon, VectorIconProps, } from './primitives';
 //# sourceMappingURL=exports.d.ts.map
