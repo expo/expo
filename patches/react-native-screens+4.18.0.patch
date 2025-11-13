@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.mm b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+index 51f0218..d26065c 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStack.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+@@ -81,6 +81,7 @@ - (UIViewController *)childViewControllerForStatusBarHidden
+ - (void)viewDidLayoutSubviews
+ {
+   [super viewDidLayoutSubviews];
++  self.toolbarHidden = FALSE;
+   if ([self.topViewController isKindOfClass:[RNSScreen class]]) {
+     RNSScreen *screenController = (RNSScreen *)self.topViewController;
+     BOOL isNotDismissingModal = screenController.presentedViewController == nil ||

@@ -1,4 +1,4 @@
-import { Link, usePathname } from 'expo-router';
+import { Link, Stack, usePathname } from 'expo-router';
 import { LinkPreviewNativeZoomTransitionEnabler } from 'expo-router/build/link/preview/native';
 import React, { use } from 'react';
 import {
@@ -24,6 +24,14 @@ const HomeIndex = () => {
       style={{ backgroundColor: '#84DCC6' }}
       contentContainerStyle={{ padding: 16, gap: 16 }}
       contentInsetAdjustmentBehavior="automatic">
+      <Stack.Screen
+        options={{
+          // unstable_headerLeftItems: () => [
+          //   { type: 'button', label: `Time: ${time}`, onPress: () => {} },
+          // ],
+          title: `Link Preview (${time})`,
+        }}
+      />
       <LinkPreviewNativeZoomTransitionEnabler zoomViewNativeTag={tag}>
         <View />
       </LinkPreviewNativeZoomTransitionEnabler>

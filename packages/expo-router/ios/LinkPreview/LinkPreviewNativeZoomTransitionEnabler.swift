@@ -14,11 +14,6 @@ class LinkPreviewNativeZoomTransitionEnabler: ExpoView {
       if #available(iOS 18.0, *) {
         // print controller
         print("controller", controller)
-        print("controller.parentViewController", controller.parent)
-        // set toolbarItems on the view controller
-        controller.navigationController?.isToolbarHidden = false
-        print(controller.navigationController)
-        print(controller.navigationController?.isToolbarHidden)
         let leftButton = UIBarButtonItem(
           image: UIImage(systemName: "arrow.left"), style: .plain, target: self,
           action: nil)
@@ -28,6 +23,18 @@ class LinkPreviewNativeZoomTransitionEnabler: ExpoView {
         let rightButton = UIBarButtonItem(title: "Right", style: .plain, target: self, action: nil)
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         controller.toolbarItems = [leftButton, leftButton1, space, rightButton]
+
+        // This will set navigation bar items. Not sure if we want to override the screens implementation
+        // But this shows that we can do it fairly easily
+        // If we would like to do that though, we should override react navigation's header options
+        let topLeftButton = UIBarButtonItem(
+          image: UIImage(systemName: "arrow.right"), style: .plain, target: self,
+          action: nil)
+        let topLeftButton1 = UIBarButtonItem(
+          image: UIImage(systemName: "arrow.right"), style: .plain, target: self,
+          action: nil)
+        controller.navigationItem.leftBarButtonItems = [topLeftButton, topLeftButton1]
+          controller.navigationItem.title="Tessst"
         return
       }
     } else {

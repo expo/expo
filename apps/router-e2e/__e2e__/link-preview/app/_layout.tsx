@@ -9,7 +9,7 @@ export default function Layout() {
   const v = useState(0);
   return (
     <TagContext value={v}>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: true }}>
         <Stack.Screen name="index" />
         <Stack.Protected guard={isAllowed}>
           <Stack.Screen name="protected" />
