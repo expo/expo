@@ -1,8 +1,8 @@
 import { Host, List, Picker, Section, Text } from '@expo/ui/swift-ui';
-import { font, PickerStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import { font, PickerStyleType, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
-const pickerTypes: PickerStyle[] = [
+const pickerTypes: PickerStyleType[] = [
   'segmented',
   'menu',
   'inline',
@@ -13,7 +13,7 @@ const pickerTypes: PickerStyle[] = [
 export default function PickerScreen() {
   const [selectedTag, setSelectedTag] = React.useState<string | number>('$');
   const options = ['$', '$$', '$$$', '$$$$'];
-  const [pickerType, setPickerType] = React.useState<PickerStyle>('menu');
+  const [pickerType, setPickerType] = React.useState<PickerStyleType>('menu');
 
   return (
     <Host style={{ flex: 1 }}>
