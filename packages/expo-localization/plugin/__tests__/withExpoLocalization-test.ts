@@ -1,11 +1,6 @@
 import { convertBcp47ToResourceQualifier } from '../src/withExpoLocalization';
 
 describe('converts locales to BCP-47 format', () => {
-  it('should convert "-r" cases to BCP-47 format', () => {
-    expect(convertBcp47ToResourceQualifier('en-rUS')).toBe('en-rUS');
-    expect(convertBcp47ToResourceQualifier('fr-rFR')).toBe('fr-rFR');
-  });
-
   it('should convert simple language codes to BCP-47 format', () => {
     expect(convertBcp47ToResourceQualifier('en')).toBe('b+en');
     expect(convertBcp47ToResourceQualifier('fr')).toBe('b+fr');

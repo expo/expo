@@ -24,10 +24,6 @@ type ConfigPluginProps = {
 };
 
 export function convertBcp47ToResourceQualifier(locale: string): string {
-  // If already in Android format (contains '-r'), return as-is
-  if (locale.includes('-r')) {
-    return locale;
-  }
   return `b+${locale.replaceAll('-', '+')}`;
 }
 

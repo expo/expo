@@ -8,10 +8,6 @@ const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 function convertBcp47ToResourceQualifier(locale) {
-    // If already in Android format (contains '-r'), return as-is
-    if (locale.includes('-r')) {
-        return locale;
-    }
     return `b+${locale.replaceAll('-', '+')}`;
 }
 function withExpoLocalizationIos(config, data) {
