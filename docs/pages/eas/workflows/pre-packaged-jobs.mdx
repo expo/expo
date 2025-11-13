@@ -1567,6 +1567,22 @@ jobs:
       repack_version: string # optional
 ```
 
+### Common questions
+
+<Collapsible summary="When to use and when not to use repack?">
+
+Repack job is suitable for the following use cases:
+
+- Reducing CI build times by reusing existing builds
+- Trigging full native builds when required
+- Delivering faster feedback loops to your team
+
+Repack job is not suitable for the following use cases:
+
+- Production builds that require builds to go through complete pipeline for correct symbolication and app signing.
+
+</Collapsible>
+
 #### Parameters
 
 You can pass the following parameters into the `params` list:
