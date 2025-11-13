@@ -1,4 +1,12 @@
-import { DateTimePicker, DateTimePickerProps, Host, Picker, VStack } from '@expo/ui/swift-ui';
+import {
+  DateTimePicker,
+  DateTimePickerProps,
+  Host,
+  Picker,
+  Text as ExpoText,
+  VStack,
+} from '@expo/ui/swift-ui';
+import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 import { ScrollView, Text } from 'react-native';
 
@@ -43,22 +51,30 @@ export default function DatePickerScreen() {
               />
 
               <Picker
-                options={displayOptions}
-                selectedIndex={selectedIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setSelectedIndex(index);
-                }}
-                variant="segmented"
-              />
+                modifiers={[pickerStyle('segmented')]}
+                selection={selectedIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setSelectedIndex(selection as number);
+                }}>
+                {displayOptions.map((option, index) => (
+                  <ExpoText key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </ExpoText>
+                ))}
+              </Picker>
 
               <Picker
-                options={typeOptions}
-                selectedIndex={typeIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setTypeIndex(index);
-                }}
-                variant="segmented"
-              />
+                modifiers={[pickerStyle('segmented')]}
+                selection={typeIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setTypeIndex(selection as number);
+                }}>
+                {typeOptions.map((option, index) => (
+                  <ExpoText key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </ExpoText>
+                ))}
+              </Picker>
             </VStack>
           </Host>
         </Section>

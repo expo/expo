@@ -12,6 +12,7 @@ import {
   ContentUnavailableView,
   LabeledContent,
 } from '@expo/ui/swift-ui';
+import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
 export default function FormScreen() {
@@ -73,26 +74,34 @@ export default function FormScreen() {
           />
           <Picker
             label="Menu picker"
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="menu"
-          />
+            modifiers={[pickerStyle('menu')]}
+            selection={selectedIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setSelectedIndex(selection as number);
+            }}>
+            {options.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
           <Slider value={sliderValue} onValueChange={setSliderValue} />
         </Section>
 
         <Section title="User Profiles">
           <Picker
-            variant="menu"
             label="Profile Image Size"
-            options={profileImageSizes}
-            selectedIndex={selectedProfileImageSizeIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedProfileImageSizeIndex(index);
-            }}
-          />
+            modifiers={[pickerStyle('menu')]}
+            selection={selectedProfileImageSizeIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setSelectedProfileImageSizeIndex(selection as number);
+            }}>
+            {profileImageSizes.map((size, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {size}
+              </Text>
+            ))}
+          </Picker>
           <Button
             onPress={() => {
               alert('Fake cache cleared');
