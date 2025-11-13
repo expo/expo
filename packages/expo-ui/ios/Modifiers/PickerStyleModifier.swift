@@ -49,7 +49,7 @@ internal struct PickerStyleModifier: ViewModifier, Record {
     if let style = style {
       style.apply(to: content)
     } else {
-      content.pickerStyle(.automatic)
+      content
     }
   }
 }

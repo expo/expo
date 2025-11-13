@@ -25,12 +25,7 @@ export type PickerProps = {
   onSelectionChange?: (event: { nativeEvent: { selection: string | number } }) => void;
 
   /**
-   * The content of the picker.
-   * @example
-   * <Picker>
-   *   <Text modifiers={[tag('option1')]}>Option 1</Text>
-   *   <Text modifiers={[tag(0)]}>Option 3</Text>
-   * </Picker>
+   * The content of the picker. You can use `Text` components with `tag` modifiers to display the options.
    */
   children?: React.ReactNode;
 } & CommonViewModifierProps;
@@ -63,6 +58,13 @@ function transformPickerProps(props: PickerProps): NativePickerProps {
 
 /**
  * Displays a native picker component
+ * @example
+ * ```tsx
+ * <Picker modifiers={[pickerStyle('segmented')]}>
+ *   <Text modifiers={[tag('option1')]}>Option 1</Text>
+ *   <Text modifiers={[tag(0)]}>Option 3</Text>
+ * </Picker>
+ * ```
  */
 export function Picker(props: PickerProps) {
   const { label, children, ...restProps } = transformPickerProps(props);
