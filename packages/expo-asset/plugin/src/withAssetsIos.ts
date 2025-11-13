@@ -1,4 +1,4 @@
-import { type ImageOptions, generateImageAsync } from '@expo/image-utils';
+import { generateImageAsync } from '@expo/image-utils';
 import type { ExpoConfig } from 'expo/config';
 import {
   type ConfigPlugin,
@@ -56,19 +56,30 @@ async function addImageAssets(assets: string[], root: string) {
   const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(root);
   for (const asset of assets) {
     const name = path.basename(asset, path.extname(asset));
-    const image = path.basename(asset);
+    const ext = path.extname(asset);
+    const isGif = ext.toLowerCase() === '.gif';
+
+    // As GIFs are not supported by iOS asset catalogs, convert to PNG; for others, use original extension
+    const outputImage = isGif ? `${name}.png` : path.basename(asset);
 
     const assetPath = path.resolve(iosNamedProjectRoot, `${IMAGE_DIR}/${name}.imageset`);
     await fs.mkdir(assetPath, { recursive: true });
 
-    const buffer = await generateImageAsync({ projectRoot: root }, {
-      src: asset,
-    } as unknown as ImageOptions);
-    await fs.writeFile(path.resolve(assetPath, image), buffer.source);
+    if (isGif) {
+      // GIFs need to be converted to PNG since iOS asset catalogs don't support animated GIFs
+      // Use generateImageAsync to handle the conversion properly
+      const buffer = await generateImageAsync({ projectRoot: root }, {
+        src: asset,
+      } as any);
+      await fs.writeFile(path.resolve(assetPath, outputImage), buffer.source);
+    } else {
+      // For PNG and JPG, copy the file directly to preserve all original properties including transparency
+      await fs.copyFile(asset, path.resolve(assetPath, outputImage));
+    }
 
     await writeContentsJsonFileAsync({
       assetPath,
-      image,
+      image: outputImage,
     });
   }
 }
