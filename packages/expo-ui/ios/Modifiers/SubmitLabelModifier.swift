@@ -34,7 +34,7 @@ internal struct SubmitLabelModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if let submitLabel = submitLabel {
+    if let submitLabel {
       content.submitLabel(submitLabel.toSubmitLabel)
     } else {
       content
