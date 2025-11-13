@@ -8,9 +8,36 @@ class LinkPreviewNativeZoomTransitionEnabler: ExpoView {
     super.init(appContext: appContext)
   }
 
+  override func didMoveToWindow() {
+    if let controller = self.findViewController() {
+      // From iOS 18
+      if #available(iOS 18.0, *) {
+        // print controller
+        print("controller", controller)
+        print("controller.parentViewController", controller.parent)
+        // set toolbarItems on the view controller
+        controller.navigationController?.isToolbarHidden = false
+        print(controller.navigationController)
+        print(controller.navigationController?.isToolbarHidden)
+        let leftButton = UIBarButtonItem(
+          image: UIImage(systemName: "arrow.left"), style: .plain, target: self,
+          action: nil)
+        let leftButton1 = UIBarButtonItem(
+          image: UIImage(systemName: "arrow.left"), style: .plain, target: self,
+          action: nil)
+        let rightButton = UIBarButtonItem(title: "Right", style: .plain, target: self, action: nil)
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        controller.toolbarItems = [leftButton, leftButton1, space, rightButton]
+        return
+      }
+    } else {
+      print("⚠️ No navigation controller found")
+    }
+  }
+
   // didMoveToSuperview
   override func didMoveToSuperview() {
-      // Need to run this async. Otherwise the view is not yet mounted (is it safe?)
+    // Need to run this async. Otherwise the view is not yet mounted (is it safe?)
     DispatchQueue.main.async {
       print("After didMoveToSuperview of LinkPreviewNativeZoomTransitionEnabler")
       if self.zoomViewNativeTag > 0, let controller = self.findViewController() {
