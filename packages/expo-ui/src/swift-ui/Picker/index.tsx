@@ -35,7 +35,7 @@ const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
   'PickerView'
 );
 
-export const PickerContentNativeView: React.ComponentType<PickerProps> = requireNativeView(
+const PickerContentNativeView: React.ComponentType<PickerProps> = requireNativeView(
   'ExpoUI',
   'PickerContentView'
 );
