@@ -48,6 +48,8 @@ export type { SingularOptions } from './useScreens';
 
 export type * from './types';
 
+export * from './color';
+
 export {
   Badge,
   BadgeProps,

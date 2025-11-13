@@ -81,6 +81,7 @@ var useNavigation_1 = require("./useNavigation");
 Object.defineProperty(exports, "useNavigation", { enumerable: true, get: function () { return useNavigation_1.useNavigation; } });
 var useFocusEffect_1 = require("./useFocusEffect");
 Object.defineProperty(exports, "useFocusEffect", { enumerable: true, get: function () { return useFocusEffect_1.useFocusEffect; } });
+__exportStar(require("./color"), exports);
 var primitives_1 = require("./primitives");
 Object.defineProperty(exports, "Badge", { enumerable: true, get: function () { return primitives_1.Badge; } });
 Object.defineProperty(exports, "Icon", { enumerable: true, get: function () { return primitives_1.Icon; } });
