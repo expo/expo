@@ -778,6 +778,24 @@ export const gridCellAnchor = (
       }
     | { type: 'custom'; points: { x: number; y: number } }
 ) => createModifier('gridCellAnchor', anchor);
+/**
+ * Specifies the label to display in the keyboard's return key. For example, `'done'`.
+ * @param submitLabel - The label to display in the keyboard's return key.
+ * @returns A view that uses the specified submit label.
+ * @platform iOS 15+
+ *
+ * @example
+ * ```tsx
+ * <TextField
+ *   modifiers={[
+ *     submitLabel('search'),
+ *   ]}
+ * />
+ * ```
+ */
+export const submitLabel = (
+  submitLabel: 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send'
+) => createModifier('submitLabel', { submitLabel });
 
 // =============================================================================
 // Type Definitions

@@ -10,7 +10,11 @@ import {
   HStack,
   Picker,
 } from '@expo/ui/swift-ui';
-import { listSectionSpacing, scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
+import {
+  listSectionSpacing,
+  scrollDismissesKeyboard,
+  submitLabel,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function TextInputScreen() {
@@ -126,7 +130,7 @@ export default function TextInputScreen() {
             variant="menu"
           />
           <TextField
-            submitLabel={submitLabelOptions[submitLabelIndex]}
+            modifiers={[submitLabel(submitLabelOptions[submitLabelIndex])]}
             defaultValue="hey there"
             onChangeText={(value) => {
               console.log('value', value);

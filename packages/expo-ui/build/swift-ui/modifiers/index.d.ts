@@ -646,6 +646,22 @@ export declare const gridCellAnchor: (anchor: {
     };
 }) => ModifierConfig;
 /**
+ * Specifies the label to display in the keyboard's return key. For example, `'done'`.
+ * @param submitLabel - The label to display in the keyboard's return key.
+ * @returns A view that uses the specified submit label.
+ * @platform iOS 15+
+ *
+ * @example
+ * ```tsx
+ * <TextField
+ *   modifiers={[
+ *     submitLabel('search'),
+ *   ]}
+ * />
+ * ```
+ */
+export declare const submitLabel: (submitLabel: "continue" | "done" | "go" | "join" | "next" | "return" | "route" | "search" | "send") => ModifierConfig;
+/**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
  * @hidden
