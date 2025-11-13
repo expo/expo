@@ -1,6 +1,6 @@
 import { createModifier } from './createModifier';
 
-export type PickerStyle =
+export type PickerStyleType =
   | 'automatic'
   | 'inline'
   | 'menu'
@@ -13,4 +13,4 @@ export type PickerStyle =
  * @param style - The style for the picker.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/pickerstyle).
  */
-export const pickerStyle = (style: PickerStyle) => createModifier('pickerStyle', { style });
+export const pickerStyle = (style: PickerStyleType) => createModifier('pickerStyle', { style });

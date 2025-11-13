@@ -67,7 +67,7 @@ internal struct PickerView: ExpoSwiftUI.View {
   }
 
   private func getHashableFromEither(_ either: Either<String, Double>?) -> AnyHashable? {
-    guard let either = either else { return nil }
+    guard let either else { return nil }
     if let stringValue: String = either.get() {
       return stringValue
     } else if let doubleValue: Double = either.get() {

@@ -8,7 +8,7 @@ internal struct TagModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if let tag = tag {
+    if let tag {
       if let stringTag: String = tag.get() {
         content.tag(AnyHashable(stringTag))
       } else if let doubleTag: Double = tag.get() {
