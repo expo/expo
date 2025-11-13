@@ -1,4 +1,4 @@
-import { generateImageAsync } from '@expo/image-utils';
+import { generateImageAsync, ImageOptions } from '@expo/image-utils';
 import type { ExpoConfig } from 'expo/config';
 import {
   type ConfigPlugin,
@@ -70,7 +70,7 @@ async function addImageAssets(assets: string[], root: string) {
       // Use generateImageAsync to handle the conversion properly
       const buffer = await generateImageAsync({ projectRoot: root }, {
         src: asset,
-      } as any);
+      } as unknown as ImageOptions);
       await fs.writeFile(path.resolve(assetPath, outputImage), buffer.source);
     } else {
       // For PNG and JPG, copy the file directly to preserve all original properties including transparency
