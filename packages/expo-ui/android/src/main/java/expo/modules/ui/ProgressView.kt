@@ -4,7 +4,6 @@ package expo.modules.ui
 
 import android.content.Context
 import android.graphics.Color
-import androidx.compose.animation.core.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
