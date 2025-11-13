@@ -2,24 +2,35 @@ import { requireNativeView } from 'expo';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+import { SFSymbol } from 'sf-symbols-typescript';
 
 export type PickerProps = {
+  /**
+   * The name of the system image (SF Symbol).
+   * For example: 'photo', 'heart.fill', 'star.circle'
+   */
+  systemImage?: SFSymbol;
   /**
    * A label displayed on the picker.
    */
   label?: string | React.ReactNode;
   /**
-   * The selected optio `tag` value.
+   * The selected option's `tag` modifier value.
    */
-  selection?: string;
+  selection?: string | number;
   /**
    * Callback function that is called when an option is selected.
    * Gets called with the selected `tag` value.
    */
-  onSelectionChange?: (event: { nativeEvent: { selection: string } }) => void;
+  onSelectionChange?: (event: { nativeEvent: { selection: string | number } }) => void;
 
   /**
    * The content of the picker.
+   * @example
+   * <Picker>
+   *   <Text modifiers={[tag('option1')]}>Option 1</Text>
+   *   <Text modifiers={[tag(0)]}>Option 3</Text>
+   * </Picker>
    */
   children?: React.ReactNode;
 } & CommonViewModifierProps;

@@ -1,7 +1,14 @@
 import { Host, List, Picker, Section, Text } from '@expo/ui/swift-ui';
 import * as React from 'react';
 
-import { font, PickerStyle, pickerStyle, tag, tint } from '@expo/ui/swift-ui/modifiers';
+import {
+  font,
+  foregroundStyle,
+  PickerStyle,
+  pickerStyle,
+  tag,
+  tint,
+} from '@expo/ui/swift-ui/modifiers';
 
 const pickerTypes: PickerStyle[] = [
   'segmented',
@@ -12,9 +19,9 @@ const pickerTypes: PickerStyle[] = [
   'navigationLink',
 ];
 export default function PickerScreen() {
-  const [selectedTag, setSelectedTag] = React.useState<string>('$');
+  const [selectedTag, setSelectedTag] = React.useState<string | number>('$');
   const options = ['$', '$$', '$$$', '$$$$'];
-  const [pickerType, setPickerType] = React.useState<PickerStyle>('segmented');
+  const [pickerType, setPickerType] = React.useState<PickerStyle>('menu');
 
   return (
     <Host style={{ flex: 1 }}>
@@ -38,6 +45,36 @@ export default function PickerScreen() {
         <Section title={`${pickerType} picker`}>
           <Picker
             modifiers={[pickerStyle(pickerType)]}
+            selection={selectedTag}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setSelectedTag(selection);
+            }}>
+            {options.map((option) => (
+              <Text key={option} modifiers={[tag(option)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
+        </Section>
+        <Section title={`${pickerType} picker with label`}>
+          <Picker
+            modifiers={[pickerStyle(pickerType)]}
+            label="Select a tag"
+            selection={selectedTag}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setSelectedTag(selection);
+            }}>
+            {options.map((option) => (
+              <Text key={option} modifiers={[tag(option)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
+        </Section>
+        <Section title={`${pickerType} picker with custom label`}>
+          <Picker
+            modifiers={[pickerStyle(pickerType)]}
+            label={<Text modifiers={[font({ size: 16, weight: 'bold' })]}>Select a tag</Text>}
             selection={selectedTag}
             onSelectionChange={({ nativeEvent: { selection } }) => {
               setSelectedTag(selection);
