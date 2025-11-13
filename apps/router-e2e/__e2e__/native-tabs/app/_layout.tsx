@@ -44,6 +44,7 @@ export default function Layout() {
         // labelVisibilityMode="auto"
         // rippleColor="orange"
         // indicatorColor="black"
+        // sidebarAdaptable
         >
           <NativeTabs.Trigger name="index">
             <NativeTabs.Trigger.Label
@@ -66,18 +67,6 @@ export default function Layout() {
             </NativeTabs.Trigger>
           ))}
           <NativeTabs.Trigger name="faces">
-            <NativeTabs.Trigger.TabBar
-            // labelStyle={{
-            //   fontSize: 32,
-            //   fontWeight: '900',
-            //   color: 'white',
-            // }}
-            // badgeBackgroundColor="white"
-            // backgroundColor="blue"
-            // blurEffect="light"
-            // iconColor="red"
-            // indicatorColor="white"
-            />
             <NativeTabs.Trigger.Icon
               // selectedColor="#f00"
               sf={{

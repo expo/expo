@@ -324,6 +324,12 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @platform iOS
    */
   disableTransparentOnScrollEdge?: boolean;
+  /**
+   * When set to `true`, enables the sidebarAdaptable tab bar style on iPadOS and macOS. This prop has no effect on iPhone.
+   *
+   * @platform iOS 18+
+   */
+  sidebarAdaptable?: boolean;
   // #endregion iOS props
   // #region android props
   /**
