@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "SD Lookup",
+    "slug": "sdlookup",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A66C2"
+    },
+    "platforms": ["android", "ios"],
+    "ios": { "supportsTablet": true },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#0A66C2"
+      }
+    },
+    "web": { "favicon": "./assets/logo.png" }
+  }
+}
