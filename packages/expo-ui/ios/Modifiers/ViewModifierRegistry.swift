@@ -1611,6 +1611,14 @@ extension ViewModifierRegistry {
     register("gridCellAnchor") { params, appContext, _ in
       return try GridCellAnchor(from: params, appContext: appContext)
     }
+
+    register("tag") { params, appContext, _ in
+      return try TagModifier(from: params, appContext: appContext)
+    }
+    
+    register("pickerStyle") { params, appContext, _ in
+      return try PickerStyleModifier(from: params, appContext: appContext)
+    }
       
     register("submitLabel") { params, appContext, _ in
       return try SubmitLabelModifier(from: params, appContext: appContext)

@@ -10,7 +10,7 @@ import {
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
-import { frame } from '@expo/ui/swift-ui/modifiers';
+import { frame, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 import { ScrollPage, Section } from '../../components/Page';
@@ -18,7 +18,7 @@ import { ScrollPage, Section } from '../../components/Page';
 export default function RTLTestScreen() {
   const [isRTL, setIsRTL] = React.useState(true);
   const [switchValue, setSwitchValue] = React.useState(true);
-  const [pickerIndex, setPickerIndex] = React.useState(0);
+  const [pickerSelection, setPickerSelection] = React.useState<string | number>(0);
   const [sliderValue, setSliderValue] = React.useState(0.5);
   const options = ['אפשרות 1', 'אפשרות 2', 'خيار ١', 'خيار ٢'];
 
@@ -79,17 +79,25 @@ export default function RTLTestScreen() {
         <Host matchContents layoutDirection={isRTL ? 'rightToLeft' : 'leftToRight'}>
           <VStack spacing={12}>
             <Picker
-              variant="segmented"
-              options={options}
-              selectedIndex={pickerIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => setPickerIndex(index)}
-            />
+              modifiers={[pickerStyle('segmented')]}
+              selection={pickerSelection}
+              onSelectionChange={({ nativeEvent: { selection } }) => setPickerSelection(selection)}>
+              {options.map((option, index) => (
+                <Text key={index} modifiers={[tag(index)]}>
+                  {option}
+                </Text>
+              ))}
+            </Picker>
             <Picker
-              variant="menu"
-              options={options}
-              selectedIndex={pickerIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => setPickerIndex(index)}
-            />
+              modifiers={[pickerStyle('menu')]}
+              selection={pickerSelection}
+              onSelectionChange={({ nativeEvent: { selection } }) => setPickerSelection(selection)}>
+              {options.map((option, index) => (
+                <Text key={index} modifiers={[tag(index)]}>
+                  {option}
+                </Text>
+              ))}
+            </Picker>
           </VStack>
         </Host>
       </Section>

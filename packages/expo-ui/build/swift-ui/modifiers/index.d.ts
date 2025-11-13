@@ -700,4 +700,6 @@ export * from './containerShape';
 export * from './shapes/index';
 export * from './background';
 export type * from './types';
+export * from './tag';
+export * from './pickerStyle';
 //# sourceMappingURL=index.d.ts.map

@@ -11,7 +11,7 @@ import {
   Section,
   Divider,
 } from '@expo/ui/swift-ui';
-import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
+import { buttonStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
@@ -20,7 +20,7 @@ const videoLink =
   'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_2MB.mp4';
 
 export default function ContextMenuScreen() {
-  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(1);
+  const [selectedIndex, setSelectedIndex] = React.useState<number | undefined>(1);
   const [switchChecked, setSwitchChecked] = React.useState<boolean>(true);
   const [switch2Checked, setSwitch2Checked] = React.useState<boolean>(true);
 
@@ -69,11 +69,17 @@ export default function ContextMenuScreen() {
               </Button>
               <Picker
                 label="Doggos"
-                options={['very', 'veery', 'veeery', 'much']}
-                variant="menu"
-                selectedIndex={selectedIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
-              />
+                modifiers={[pickerStyle('menu')]}
+                selection={selectedIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) =>
+                  setSelectedIndex(selection as number)
+                }>
+                {['very', 'veery', 'veeery', 'much'].map((option, index) => (
+                  <Text key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </Text>
+                ))}
+              </Picker>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
               <Text color="accentColor">Show Menu</Text>

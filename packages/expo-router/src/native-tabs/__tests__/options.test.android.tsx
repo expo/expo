@@ -159,12 +159,12 @@ describe(appendIconOptions, () => {
     [
       {
         sf: '0.circle',
-        androidSrc: { uri: 'xxx' },
+        src: { uri: 'xxx' },
       },
       { icon: { src: { uri: 'xxx' } }, selectedIcon: undefined },
     ],
     [
-      { androidSrc: { selected: 'yyy', default: 'xxx' } },
+      { src: { selected: 'yyy', default: 'xxx' } },
       { icon: { src: 'xxx' }, selectedIcon: { src: 'yyy' } },
     ],
   ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(

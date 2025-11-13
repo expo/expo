@@ -19,8 +19,10 @@ import {
   frame,
   headerProminence,
   padding,
+  pickerStyle,
   refreshable,
   scrollDismissesKeyboard,
+  tag,
 } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
 import type { SFSymbol } from 'expo-symbols';
@@ -29,7 +31,7 @@ import { useLayoutEffect } from 'react';
 
 export default function ListScreen() {
   const [color, setColor] = React.useState<string>('blue');
-  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(0);
+  const [selectedIndex, setSelectedIndex] = React.useState<number>(0);
   const data: { text: string; systemImage: SFSymbol }[] = [
     { text: 'Good Morning', systemImage: 'sun.max.fill' },
     { text: 'Weather', systemImage: 'cloud.sun.fill' },
@@ -56,9 +58,7 @@ export default function ListScreen() {
   const [deleteEnabled, setDeleteEnabled] = React.useState<boolean>(true);
   const [moveEnabled, setMoveEnabled] = React.useState<boolean>(true);
   const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
-  const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<
-    number | null
-  >(0);
+  const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<number>(0);
   const [increasedHeader, setIncreasedHeader] = React.useState(false);
   const [collapsible, setCollapsible] = React.useState<boolean>(false);
   const [customHeaderFooter, setCustomHeaderFooter] = React.useState<{
@@ -172,22 +172,30 @@ export default function ListScreen() {
           />
           <Picker
             label="Scroll dismisses keyboard"
-            options={[...scrollDismissesKeyboardOptions]}
-            selectedIndex={scrollDismissesKeyboardIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setScrollDismissesKeyboardIndex(index);
-            }}
-            variant="menu"
-          />
+            modifiers={[pickerStyle('menu')]}
+            selection={scrollDismissesKeyboardIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setScrollDismissesKeyboardIndex(selection as number);
+            }}>
+            {scrollDismissesKeyboardOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
           <Picker
             label="List style"
-            options={listStyleOptions}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="menu"
-          />
+            modifiers={[pickerStyle('menu')]}
+            selection={selectedIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setSelectedIndex(selection as number);
+            }}>
+            {listStyleOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
         </Section>
         <Section title="Data">
           {data.map((item, index) => (

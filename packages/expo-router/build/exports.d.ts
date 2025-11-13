@@ -23,5 +23,6 @@ export type { ResultState } from './fork/getStateFromPath';
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 export type * from './types';
+export * from './color';
 export { Badge, BadgeProps, Icon, IconProps, Label, LabelProps, VectorIcon, VectorIconProps, } from './primitives';
 //# sourceMappingURL=exports.d.ts.map

@@ -10,7 +10,12 @@ import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
-import { type NativeTabsTriggerIconProps } from '../common/elements';
+import {
+  type DrawableIcon,
+  type NativeTabsTriggerIconProps,
+  type SFSymbolIcon,
+  type SrcIcon,
+} from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
@@ -322,6 +327,53 @@ describe('Icons', () => {
       },
     } as Partial<BottomTabsScreenProps>);
   });
+
+  it.each([
+    { expectedIcon: undefined },
+    { sf: '0.circle', expectedIcon: { type: 'sfSymbol', name: '0.circle' } },
+    {
+      sf: '0.circle',
+      src: { uri: 'some-uri' },
+      expectedIcon: { type: 'sfSymbol', name: '0.circle' },
+    },
+    {
+      sf: '0.circle',
+      src: { uri: 'some-uri' },
+      drawable: 'ic_some_drawable',
+      expectedIcon: { type: 'sfSymbol', name: '0.circle' },
+    },
+    {
+      src: { uri: 'some-uri' },
+      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+    },
+    {
+      src: { uri: 'some-uri' },
+      drawable: 'ic_some_drawable',
+      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+    },
+  ] as (DrawableIcon &
+    SrcIcon &
+    SFSymbolIcon & {
+      expectedIcon: BottomTabsScreenProps['icon']['ios'];
+    })[])(
+    'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
+    ({ sf, src, drawable, expectedIcon }) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon sf={sf} src={src} drawable={drawable} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+      expect(BottomTabsScreen.mock.calls[0][0].icon?.ios).toEqual(expectedIcon);
+    }
+  );
 });
 
 describe('Badge', () => {
@@ -1026,7 +1078,7 @@ describe(appendIconOptions, () => {
     [
       {
         sf: '0.circle',
-        androidSrc: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
+        src: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
       },
       { icon: { sf: '0.circle' }, selectedIcon: undefined },
     ],
