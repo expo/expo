@@ -1,31 +1,28 @@
-import { StyleSheet, Text, type TextProps } from 'react-native';
+import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
 
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { Fonts, ThemeColor } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
-  lightColor?: string;
-  darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
+  themeColor?: ThemeColor;
 };
 
-export function ThemedText({
-  style,
-  lightColor,
-  darkColor,
-  type = 'default',
-  ...rest
-}: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+export function ThemedText({ style, type = 'default', themeColor, ...rest }: ThemedTextProps) {
+  const theme = useTheme();
 
   return (
     <Text
       style={[
-        { color },
-        type === 'default' ? styles.default : undefined,
-        type === 'title' ? styles.title : undefined,
-        type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
-        type === 'subtitle' ? styles.subtitle : undefined,
-        type === 'link' ? styles.link : undefined,
+        { color: theme[themeColor ?? 'text'] },
+        type === 'default' && styles.default,
+        type === 'title' && styles.title,
+        type === 'small' && styles.small,
+        type === 'smallBold' && styles.smallBold,
+        type === 'subtitle' && styles.subtitle,
+        type === 'link' && styles.link,
+        type === 'linkPrimary' && styles.linkPrimary,
+        type === 'code' && styles.code,
         style,
       ]}
       {...rest}
@@ -34,27 +31,43 @@ export function ThemedText({
 }
 
 const styles = StyleSheet.create({
+  small: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: 500,
+  },
+  smallBold: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: 700,
+  },
   default: {
     fontSize: 16,
     lineHeight: 24,
-  },
-  defaultSemiBold: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: '600',
+    fontWeight: 500,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    lineHeight: 32,
+    fontSize: 48,
+    fontWeight: 600,
+    lineHeight: 52,
   },
   subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 32,
+    lineHeight: 44,
+    fontWeight: 600,
   },
   link: {
     lineHeight: 30,
-    fontSize: 16,
-    color: '#0a7ea4',
+    fontSize: 14,
+  },
+  linkPrimary: {
+    lineHeight: 30,
+    fontSize: 14,
+    color: '#3c87f7',
+  },
+  code: {
+    fontFamily: Fonts.mono,
+    fontWeight: Platform.select({ android: 700 }) ?? 500,
+    fontSize: 12,
   },
 });
