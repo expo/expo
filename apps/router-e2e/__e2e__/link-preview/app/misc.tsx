@@ -1,5 +1,10 @@
 import { Link, Stack, usePathname } from 'expo-router';
-import { LinkPreviewNativeZoomTransitionEnabler } from 'expo-router/build/link/preview/native';
+import {
+  LinkPreviewNativeZoomTransitionEnabler,
+  RouterToolbarHost,
+  RouterToolbarItem,
+  NativeLinkPreviewAction,
+} from 'expo-router/build/link/preview/native';
 import React, { use } from 'react';
 import {
   View,
@@ -35,6 +40,16 @@ const HomeIndex = () => {
       <LinkPreviewNativeZoomTransitionEnabler zoomViewNativeTag={tag}>
         <View />
       </LinkPreviewNativeZoomTransitionEnabler>
+      <RouterToolbarHost>
+        <RouterToolbarItem identifier="1" title="A" systemImageName="0.circle" />
+        <RouterToolbarItem identifier="2" title="B" systemImageName="1.circle" />
+        <RouterToolbarItem identifier="3" spacer />
+        <RouterToolbarItem identifier="4" title="C" systemImageName="2.circle" />
+        <NativeLinkPreviewAction title="Menu" icon="3.circle" onSelected={() => {}}>
+          <NativeLinkPreviewAction title="Menu" icon="3.circle" onSelected={() => {}} />
+          <NativeLinkPreviewAction title="Menu" icon="3.circle" onSelected={() => {}} />
+        </NativeLinkPreviewAction>
+      </RouterToolbarHost>
       <View>
         <Text>Misc</Text>
         <Text>Current Path: {pathname}</Text>

@@ -81,6 +81,24 @@ public class LinkPreviewNativeModule: Module {
 
       Events("onSelected")
     }
+
+    View(RouterToolbarHost.self) {
+      // No props yet
+    }
+    View(RouterToolbarItem.self) {
+      Prop("identifier") { (view: RouterToolbarItem, identifier: String) in
+        view.identifier = identifier
+      }
+      Prop("type") { (view: RouterToolbarItem, type: String) in
+        view.type = type
+      }
+      Prop("title") { (view: RouterToolbarItem, title: String?) in
+        view.title = title
+      }
+      Prop("systemImageName") { (view: RouterToolbarItem, systemImageName: String?) in
+        view.systemImageName = systemImageName
+      }
+    }
   }
 }
 

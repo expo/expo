@@ -3,6 +3,7 @@
 import { requireNativeView } from 'expo';
 import type { PropsWithChildren } from 'react';
 import { Platform, StyleSheet, type ViewProps } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 const areNativeViewsAvailable =
   process.env.EXPO_OS === 'ios' && !Platform.isTV && global.RN$Bridgeless === true;
@@ -96,6 +97,45 @@ export function LinkPreviewNativeZoomTransitionEnabler(
       }}
     />
   );
+}
+
+const RouterToolbarHostView: React.ComponentType<ViewProps> | null = areNativeViewsAvailable
+  ? requireNativeView('ExpoRouterNativeLinkPreview', 'RouterToolbarHost')
+  : null;
+export function RouterToolbarHost(props: PropsWithChildren) {
+  if (!RouterToolbarHostView) {
+    return null;
+  }
+  return (
+    <RouterToolbarHostView
+      {...props}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: 1,
+        height: 1,
+        backgroundColor: 'transparent',
+      }}
+    />
+  );
+}
+
+const RouterToolbarItemView: React.ComponentType<
+  ViewProps & { identifier: string; title?: string; systemImageName?: SFSymbol; type?: string }
+> | null = areNativeViewsAvailable
+  ? requireNativeView('ExpoRouterNativeLinkPreview', 'RouterToolbarItem')
+  : null;
+export function RouterToolbarItem(props: {
+  identifier: string;
+  title?: string;
+  systemImageName?: SFSymbol;
+  spacer?: boolean;
+}) {
+  if (!RouterToolbarItemView) {
+    return null;
+  }
+  return <RouterToolbarItemView {...props} type={props.spacer ? 'spacer' : ''} />;
 }
 
 // #region Preview Content View

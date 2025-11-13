@@ -8,40 +8,6 @@ class LinkPreviewNativeZoomTransitionEnabler: ExpoView {
     super.init(appContext: appContext)
   }
 
-  override func didMoveToWindow() {
-    if let controller = self.findViewController() {
-      // From iOS 18
-      if #available(iOS 18.0, *) {
-        // print controller
-        print("controller", controller)
-        let leftButton = UIBarButtonItem(
-          image: UIImage(systemName: "arrow.left"), style: .plain, target: self,
-          action: nil)
-        let leftButton1 = UIBarButtonItem(
-          image: UIImage(systemName: "arrow.left"), style: .plain, target: self,
-          action: nil)
-        let rightButton = UIBarButtonItem(title: "Right", style: .plain, target: self, action: nil)
-        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        controller.toolbarItems = [leftButton, leftButton1, space, rightButton]
-
-        // This will set navigation bar items. Not sure if we want to override the screens implementation
-        // But this shows that we can do it fairly easily
-        // If we would like to do that though, we should override react navigation's header options
-        let topLeftButton = UIBarButtonItem(
-          image: UIImage(systemName: "arrow.right"), style: .plain, target: self,
-          action: nil)
-        let topLeftButton1 = UIBarButtonItem(
-          image: UIImage(systemName: "arrow.right"), style: .plain, target: self,
-          action: nil)
-        controller.navigationItem.leftBarButtonItems = [topLeftButton, topLeftButton1]
-          controller.navigationItem.title="Tessst"
-        return
-      }
-    } else {
-      print("⚠️ No navigation controller found")
-    }
-  }
-
   // didMoveToSuperview
   override func didMoveToSuperview() {
     // Need to run this async. Otherwise the view is not yet mounted (is it safe?)
@@ -51,13 +17,15 @@ class LinkPreviewNativeZoomTransitionEnabler: ExpoView {
         // From iOS 18
         if #available(iOS 18.0, *) {
           // print controller
-          print(controller)
+          print("didMoveToSuperview controller", controller)
           // get screenId from controller
           let screenId = LinkPreviewNativeNavigationObjC.getScreenId(controller.view)
           print("⚠️ Found screenId: \(String(describing: screenId))")
+
+          // TODO: Find a better way to get the view from native tag
+          let view: UIView? = UIApplication.shared.keyWindow?.rootViewController?.view.viewWithTag(
+            self.zoomViewNativeTag)
           controller.preferredTransition = .zoom(options: nil) { context in
-            let view: UIView? = controller.navigationController?.view.viewWithTag(
-              self.zoomViewNativeTag)
             print("View from native tag \(self.zoomViewNativeTag): \(String(describing: view))")
             return view
           }
@@ -73,7 +41,7 @@ class LinkPreviewNativeZoomTransitionEnabler: ExpoView {
   private func findViewController() -> UIViewController? {
     var responder: UIResponder? = self
     while let r = responder {
-      print("\(r)")
+      //      print("\(r)")
       if LinkPreviewNativeNavigationObjC.isRNScreen(r) {
         return r as? UIViewController
       }

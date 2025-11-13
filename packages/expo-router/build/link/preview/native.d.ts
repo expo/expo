@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import { type ViewProps } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 export interface NativeLinkPreviewActionProps {
     title: string;
     icon?: string;
@@ -35,6 +36,13 @@ export declare function NativeLinkPreview(props: NativeLinkPreviewProps): import
 export declare function LinkPreviewNativeZoomTransitionEnabler(props: PropsWithChildren<{
     zoomViewNativeTag: number;
 }>): import("react").JSX.Element | null;
+export declare function RouterToolbarHost(props: PropsWithChildren): import("react").JSX.Element | null;
+export declare function RouterToolbarItem(props: {
+    identifier: string;
+    title?: string;
+    systemImageName?: SFSymbol;
+    spacer?: boolean;
+}): import("react").JSX.Element | null;
 export interface NativeLinkPreviewContentProps extends ViewProps {
     preferredContentSize?: {
         width: number;

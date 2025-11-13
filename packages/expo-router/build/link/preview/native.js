@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeLinkPreviewAction = NativeLinkPreviewAction;
 exports.NativeLinkPreview = NativeLinkPreview;
 exports.LinkPreviewNativeZoomTransitionEnabler = LinkPreviewNativeZoomTransitionEnabler;
+exports.RouterToolbarHost = RouterToolbarHost;
+exports.RouterToolbarItem = RouterToolbarItem;
 exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
 const expo_1 = require("expo");
 const react_native_1 = require("react-native");
@@ -42,6 +44,31 @@ function LinkPreviewNativeZoomTransitionEnabler(props) {
             height: 1,
             backgroundColor: 'transparent',
         }}/>);
+}
+const RouterToolbarHostView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'RouterToolbarHost')
+    : null;
+function RouterToolbarHost(props) {
+    if (!RouterToolbarHostView) {
+        return null;
+    }
+    return (<RouterToolbarHostView {...props} style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: 1,
+            height: 1,
+            backgroundColor: 'transparent',
+        }}/>);
+}
+const RouterToolbarItemView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'RouterToolbarItem')
+    : null;
+function RouterToolbarItem(props) {
+    if (!RouterToolbarItemView) {
+        return null;
+    }
+    return <RouterToolbarItemView {...props} type={props.spacer ? 'spacer' : ''}/>;
 }
 const NativeLinkPreviewContentView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewContentView')
