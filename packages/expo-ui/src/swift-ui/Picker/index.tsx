@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { SFSymbol } from 'sf-symbols-typescript';
 
 export type PickerProps = {
   /**

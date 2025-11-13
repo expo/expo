@@ -1,5 +1,5 @@
+import type { SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
-import { SFSymbol } from 'sf-symbols-typescript';
 export type PickerProps = {
     /**
      * The name of the system image (SF Symbol).
