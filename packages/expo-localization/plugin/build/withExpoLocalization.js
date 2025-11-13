@@ -3,14 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertLocaleToBcp47 = convertLocaleToBcp47;
+exports.convertBcp47ToResourceQualifier = convertBcp47ToResourceQualifier;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-/**
- * Converts locale strings to BCP-47 format.
- */
-function convertLocaleToBcp47(locale) {
+function convertBcp47ToResourceQualifier(locale) {
     // If already in Android format (contains '-r'), return as-is
     if (locale.includes('-r')) {
         return locale;
@@ -86,7 +83,7 @@ function withExpoLocalizationAndroid(config, data) {
         });
         config = (0, config_plugins_1.withAppBuildGradle)(config, (config) => {
             if (config.modResults.language === 'groovy') {
-                const bcp47Locales = supportedLocales.map((locale) => convertLocaleToBcp47(locale));
+                const bcp47Locales = supportedLocales.map((locale) => convertBcp47ToResourceQualifier(locale));
                 config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${bcp47Locales.map((lang) => `"${lang}"`).join(', ')}]\n    `);
             }
             else {

@@ -8,9 +8,6 @@ type ConfigPluginProps = {
         android?: string[];
     };
 };
-/**
- * Converts locale strings to BCP-47 format.
- */
-export declare function convertLocaleToBcp47(locale: string): string;
+export declare function convertBcp47ToResourceQualifier(locale: string): string;
 declare function withExpoLocalization(config: ExpoConfig, data?: ConfigPluginProps): ExpoConfig;
 export default withExpoLocalization;

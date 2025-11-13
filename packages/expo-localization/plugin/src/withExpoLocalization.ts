@@ -23,10 +23,7 @@ type ConfigPluginProps = {
       };
 };
 
-/**
- * Converts locale strings to BCP-47 format.
- */
-export function convertLocaleToBcp47(locale: string): string {
+export function convertBcp47ToResourceQualifier(locale: string): string {
   // If already in Android format (contains '-r'), return as-is
   if (locale.includes('-r')) {
     return locale;
@@ -117,7 +114,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
     });
     config = withAppBuildGradle(config, (config) => {
       if (config.modResults.language === 'groovy') {
-        const bcp47Locales = supportedLocales.map((locale) => convertLocaleToBcp47(locale));
+        const bcp47Locales = supportedLocales.map((locale) => convertBcp47ToResourceQualifier(locale));
         config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
           config.modResults.contents,
           'defaultConfig',
