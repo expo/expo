@@ -62,4 +62,12 @@ export declare function CircularProgress(props: CircularProgressProps): import("
  * Renders a `LinearProgress` component.
  */
 export declare function LinearProgress(props: LinearProgressProps): import("react").JSX.Element;
+/**
+ * Renders a `CircularWavyProgress` component with wavy animation.
+ */
+export declare function CircularWavyProgress(props: CircularProgressProps): import("react").JSX.Element;
+/**
+ * Renders a `LinearWavyProgress` component with wavy animation.
+ */
+export declare function LinearWavyProgress(props: LinearProgressProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
