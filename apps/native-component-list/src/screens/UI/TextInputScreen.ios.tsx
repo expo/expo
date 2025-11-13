@@ -12,8 +12,10 @@ import {
 } from '@expo/ui/swift-ui';
 import {
   listSectionSpacing,
+  pickerStyle,
   scrollDismissesKeyboard,
   submitLabel,
+  tag,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
@@ -31,7 +33,8 @@ export default function TextInputScreen() {
     'search',
     'send',
   ] as const;
-  const [submitLabelIndex, setSubmitLabelIndex] = React.useState<number>(0);
+  const [selectedSubmitLabel, setSelectedSubmitLabel] =
+    React.useState<(typeof submitLabelOptions)[number]>('continue');
   const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
 
   return (
@@ -122,15 +125,18 @@ export default function TextInputScreen() {
         <Section title="Submit Label">
           <Picker
             label="Submit label"
-            options={[...submitLabelOptions]}
-            selectedIndex={submitLabelIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSubmitLabelIndex(index);
-            }}
-            variant="menu"
-          />
+            modifiers={[pickerStyle('menu')]}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setSelectedSubmitLabel(selection as (typeof submitLabelOptions)[number]);
+            }}>
+            {submitLabelOptions.map((option) => (
+              <Text key={option} modifiers={[tag(option)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
           <TextField
-            modifiers={[submitLabel(submitLabelOptions[submitLabelIndex])]}
+            modifiers={[submitLabel(selectedSubmitLabel)]}
             defaultValue="hey there"
             onChangeText={(value) => {
               console.log('value', value);
