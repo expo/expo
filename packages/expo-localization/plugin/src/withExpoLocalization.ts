@@ -114,7 +114,9 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
     });
     config = withAppBuildGradle(config, (config) => {
       if (config.modResults.language === 'groovy') {
-        const bcp47Locales = supportedLocales.map((locale) => convertBcp47ToResourceQualifier(locale));
+        const bcp47Locales = supportedLocales.map((locale) =>
+          convertBcp47ToResourceQualifier(locale)
+        );
         config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
           config.modResults.contents,
           'defaultConfig',
