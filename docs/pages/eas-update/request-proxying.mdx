@@ -14,7 +14,9 @@ EAS Update supports request proxying, which allows you to proxy requests to the 
    - One for the update asset requests (JavaScript bundles, images, and so on).
      - This must forward requests to `assets.eascdn.net`, the EAS Update asset server.
      - This must pass-through all URL contents (path, query parameters, and so on).
-     - This must pass-through all headers.
+     - This must forward all request headers that:
+       - start with `expo-` or `eas-`, or
+       - are exactly `authorization` or `aim`.
    - One for the update manifest requests.
      - This must forward requests to `u.expo.dev`, the EAS Update server.
      - This must pass-through all URL contents (path, query parameters, and so on).
