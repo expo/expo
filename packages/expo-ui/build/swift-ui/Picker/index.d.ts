@@ -24,18 +24,19 @@ export type PickerProps = {
         };
     }) => void;
     /**
-     * The content of the picker.
-     * @example
-     * <Picker>
-     *   <Text modifiers={[tag('option1')]}>Option 1</Text>
-     *   <Text modifiers={[tag(0)]}>Option 3</Text>
-     * </Picker>
+     * The content of the picker. You can use `Text` components with `tag` modifiers to display the options.
      */
     children?: React.ReactNode;
 } & CommonViewModifierProps;
-export declare const PickerContentNativeView: React.ComponentType<PickerProps>;
 /**
  * Displays a native picker component
+ * @example
+ * ```tsx
+ * <Picker modifiers={[pickerStyle('segmented')]}>
+ *   <Text modifiers={[tag('option1')]}>Option 1</Text>
+ *   <Text modifiers={[tag(0)]}>Option 3</Text>
+ * </Picker>
+ * ```
  */
 export declare function Picker(props: PickerProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
