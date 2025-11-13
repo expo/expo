@@ -1,4 +1,5 @@
-import { Picker as ExPicker, Host } from '@expo/ui/swift-ui';
+import { Picker as ExPicker, Host, Text as ExText } from '@expo/ui/swift-ui';
+import { fixedSize, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import { Picker } from '@react-native-picker/picker';
 import * as Speech from 'expo-speech';
 import * as React from 'react';
@@ -148,20 +149,25 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
           <>
             <Text>useApplicationAudioSession</Text>
             <View style={styles.controlRow}>
-              <Host>
+              <Host matchContents>
                 <ExPicker
-                  variant="segmented"
-                  options={audioSessionOptions.map((option) => option.label)}
-                  selectedIndex={audioSessionOptions.findIndex(
+                  modifiers={[pickerStyle('segmented'), fixedSize()]}
+                  selection={audioSessionOptions.findIndex(
                     (option) => option.value === this.state.useApplicationAudioSession
                   )}
-                  onOptionSelected={({ nativeEvent: { index } }) => {
+                  onSelectionChange={({ nativeEvent: { selection } }) => {
+                    const index = typeof selection === 'number' ? selection : 0;
                     const useApplicationAudioSession = audioSessionOptions[index].value;
                     this.setState({
                       useApplicationAudioSession,
                     });
-                  }}
-                />
+                  }}>
+                  {audioSessionOptions.map((option, index) => (
+                    <ExText key={index} modifiers={[tag(index)]}>
+                      {option.label}
+                    </ExText>
+                  ))}
+                </ExPicker>
               </Host>
             </View>
           </>

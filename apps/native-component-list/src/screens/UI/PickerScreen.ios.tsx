@@ -1,14 +1,6 @@
 import { Host, List, Picker, Section, Text } from '@expo/ui/swift-ui';
+import { font, PickerStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-
-import {
-  font,
-  foregroundStyle,
-  PickerStyle,
-  pickerStyle,
-  tag,
-  tint,
-} from '@expo/ui/swift-ui/modifiers';
 
 const pickerTypes: PickerStyle[] = [
   'segmented',

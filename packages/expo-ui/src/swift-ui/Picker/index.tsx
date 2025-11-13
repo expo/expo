@@ -17,7 +17,7 @@ export type PickerProps = {
   /**
    * The selected option's `tag` modifier value.
    */
-  selection?: string | number;
+  selection?: string | number | null;
   /**
    * Callback function that is called when an option is selected.
    * Gets called with the selected `tag` value.
