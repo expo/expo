@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeLinkPreviewAction = NativeLinkPreviewAction;
 exports.NativeLinkPreview = NativeLinkPreview;
 exports.LinkPreviewNativeZoomTransitionEnabler = LinkPreviewNativeZoomTransitionEnabler;
+exports.LinkPreviewNativeZoomTransitionSource = LinkPreviewNativeZoomTransitionSource;
 exports.RouterToolbarHost = RouterToolbarHost;
 exports.RouterToolbarItem = RouterToolbarItem;
 exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
@@ -44,6 +45,15 @@ function LinkPreviewNativeZoomTransitionEnabler(props) {
             height: 1,
             backgroundColor: 'transparent',
         }}/>);
+}
+const LinkPreviewNativeZoomTransitionSourceView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeZoomTransitionSource')
+    : null;
+function LinkPreviewNativeZoomTransitionSource(props) {
+    if (!LinkPreviewNativeZoomTransitionSourceView) {
+        return null;
+    }
+    return (<LinkPreviewNativeZoomTransitionSourceView {...props} style={{ display: 'contents' }} disableForceFlatten/>);
 }
 const RouterToolbarHostView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'RouterToolbarHost')

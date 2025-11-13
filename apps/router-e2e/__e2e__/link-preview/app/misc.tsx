@@ -5,7 +5,7 @@ import {
   RouterToolbarItem,
   NativeLinkPreviewAction,
 } from 'expo-router/build/link/preview/native';
-import React, { use } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -16,13 +16,11 @@ import {
 } from 'react-native';
 
 import { useTimer } from '../utils/useTimer';
-import { TagContext } from '../components/tagContenxt';
 
 const HomeIndex = () => {
   const pathname = usePathname();
   const time = useTimer();
   const { width } = useWindowDimensions();
-  const [tag] = use(TagContext);
 
   return (
     <ScrollView
@@ -37,7 +35,7 @@ const HomeIndex = () => {
           title: `Link Preview (${time})`,
         }}
       />
-      <LinkPreviewNativeZoomTransitionEnabler zoomViewNativeTag={tag}>
+      <LinkPreviewNativeZoomTransitionEnabler zoomTransitionSourceIdentifier="test-id">
         <View />
       </LinkPreviewNativeZoomTransitionEnabler>
       <RouterToolbarHost>

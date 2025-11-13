@@ -1,11 +1,10 @@
 import { Link, usePathname, type Href } from 'expo-router';
-import React, { use, type Ref } from 'react';
+import { LinkPreviewNativeZoomTransitionSource } from 'expo-router/build/link/preview/native';
+import React, { type Ref } from 'react';
 import { Text, Pressable, ScrollView, View } from 'react-native';
-import { TagContext } from '../components/tagContenxt';
 
 const HomeIndex = () => {
   const pathname = usePathname();
-  const [_, setTag] = use(TagContext);
 
   return (
     <ScrollView
@@ -19,14 +18,9 @@ const HomeIndex = () => {
       <CaseLink href="/js-only" text="JS Only" />
       <CaseLink href="/js-only/tabs" text="JS Only Tabs" />
       <CaseLink href="/modals" text="Modals" />
-      <CaseLink
-        ref={(ref) => {
-          console.log(ref?.__nativeTag);
-          setTag(ref?.__nativeTag ?? 0);
-        }}
-        href="/misc"
-        text="Misc"
-      />
+      <LinkPreviewNativeZoomTransitionSource identifier="test-id">
+        <CaseLink href="/misc" text="Misc" />
+      </LinkPreviewNativeZoomTransitionSource>
       <CaseLink href="/menu" text="Menu" />
       <CaseLink href="/nested" text="Nested" />
       <CaseLink href="/performance" text="Performance" />

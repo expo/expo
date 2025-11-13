@@ -74,12 +74,12 @@ export function NativeLinkPreview(props: NativeLinkPreviewProps) {
 // #endregion
 
 const LinkPreviewNativeZoomTransitionEnablerView: React.ComponentType<
-  ViewProps & { zoomViewNativeTag: number }
+  ViewProps & { zoomTransitionSourceIdentifier: string }
 > | null = areNativeViewsAvailable
   ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeZoomTransitionEnabler')
   : null;
 export function LinkPreviewNativeZoomTransitionEnabler(
-  props: PropsWithChildren<{ zoomViewNativeTag: number }>
+  props: PropsWithChildren<{ zoomTransitionSourceIdentifier: string }>
 ) {
   if (!LinkPreviewNativeZoomTransitionEnablerView) {
     return null;
@@ -95,6 +95,27 @@ export function LinkPreviewNativeZoomTransitionEnabler(
         height: 1,
         backgroundColor: 'transparent',
       }}
+    />
+  );
+}
+
+const LinkPreviewNativeZoomTransitionSourceView: React.ComponentType<
+  ViewProps & { identifier: string; disableForceFlatten?: boolean }
+> | null = areNativeViewsAvailable
+  ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeZoomTransitionSource')
+  : null;
+export function LinkPreviewNativeZoomTransitionSource(props: {
+  identifier: string;
+  children: React.ReactNode;
+}) {
+  if (!LinkPreviewNativeZoomTransitionSourceView) {
+    return null;
+  }
+  return (
+    <LinkPreviewNativeZoomTransitionSourceView
+      {...props}
+      style={{ display: 'contents' }}
+      disableForceFlatten
     />
   );
 }

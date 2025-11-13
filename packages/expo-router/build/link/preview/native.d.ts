@@ -34,8 +34,12 @@ export interface NativeLinkPreviewProps extends ViewProps {
 }
 export declare function NativeLinkPreview(props: NativeLinkPreviewProps): import("react").JSX.Element | null;
 export declare function LinkPreviewNativeZoomTransitionEnabler(props: PropsWithChildren<{
-    zoomViewNativeTag: number;
+    zoomTransitionSourceIdentifier: string;
 }>): import("react").JSX.Element | null;
+export declare function LinkPreviewNativeZoomTransitionSource(props: {
+    identifier: string;
+    children: React.ReactNode;
+}): import("react").JSX.Element | null;
 export declare function RouterToolbarHost(props: PropsWithChildren): import("react").JSX.Element | null;
 export declare function RouterToolbarItem(props: {
     identifier: string;
