@@ -12,6 +12,7 @@
 - [iOS] Add `menuActionDismissBehavior` modifier. ([#41087](https://github.com/expo/expo/pull/41087) by [@starsky-nev](https://github.com/starsky-nev))
 - [iOS] Added `submitLabel` modifier to change the label of the keyboard submit button ([#40975](https://github.com/expo/expo/pull/40975) by [@tmallet](https://github.com/tmallet))
 - [iOS] Added `textFieldStyle` modifier to set the style for text field ([#41038](https://github.com/expo/expo/pull/41038) by [@isaiah-hamilton](https://github.com/isaiah-hamilton))
+- [jetpack-compose] Added `CircularWavyProgress` and `LinearWavyProgress` components. ([#40988](https://github.com/expo/expo/pull/40988) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
