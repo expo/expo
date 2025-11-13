@@ -99,10 +99,7 @@ it(`parses asset for dom components export`, async () => {
     "module.exports = {
       uri: "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png",
       width: 1024,
-      height: 1024,
-      toString() {
-        return this.uri;
-      }
+      height: 1024
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
@@ -127,10 +124,7 @@ it(`parses asset as string in client environment for web`, async () => {
     "module.exports = {
       uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
       width: 1024,
-      height: 1024,
-      toString() {
-        return this.uri;
-      }
+      height: 1024
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
@@ -176,10 +170,7 @@ it(`parses asset as string in client environment for web during export`, async (
     "module.exports = {
       uri: "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png",
       width: 1024,
-      height: 1024,
-      toString() {
-        return this.uri;
-      }
+      height: 1024
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
@@ -207,10 +198,7 @@ it(`parses asset as string in react server environment for web`, async () => {
     "module.exports = {
       uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
       width: 1024,
-      height: 1024,
-      toString() {
-        return this.uri;
-      }
+      height: 1024
     };"
   `);
   expect(results.reactClientReference).toBe('file:///root/local/foo.png');
