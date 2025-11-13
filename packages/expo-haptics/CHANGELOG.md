@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- [Android] Fix missing await for performHapticsAsync ([#40987](https://github.com/expo/expo/pull/40987) by [@kamui545](https://github.com/kamui545))
 - [Android] Removed unused `androidx.annotation:annotation` dependency. ([#39759](https://github.com/expo/expo/pull/39759) by [@lukmccall](https://github.com/lukmccall))
 
 ## 15.0.7 — 2025-09-11
