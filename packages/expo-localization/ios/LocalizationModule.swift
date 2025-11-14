@@ -116,6 +116,8 @@ public class LocalizationModule: Module {
       return "islamic-tbla"
     case .islamicUmmAlQura:
       return "islamic-umalqura"
+    case .islamicObservational:
+      return "islamic-rgsa"
     case .japanese:
       return "japanese"
     case .persian:
@@ -124,8 +126,34 @@ public class LocalizationModule: Module {
       return "roc"
     case .iso8601:
       return "iso8601"
+    case .bengali:
+      return "bangla"
+    case .gujarati:
+      return "gujarati"
+    case .gurmukhi:
+      return "gurmukhi"
+    case .kannada:
+      return "kannada"
+    case .malayalam:
+      return "malayalam"
+    case .marathi:
+      return "marathi"
+    case .odia:
+      return "odia"
+    case .tamil:
+      return "tamil"
+    case .telugu:
+      return "telugu"
+    case .dangi:
+      return "dangi"
+    case .vietnamese:
+      return "vietnamese"
+    case .buddhistRevised:
+      return "buddhist-revised"
+    case .vikramSamvat:
+      return "vikram"
     @unknown default:
-      log.error("Unhandled `Calendar.Identifier` value: \(calendar.identifier), returning `iso8601` as fallback. Add the missing case as soon as possible.")
+      log.error("Unhandled `Calendar.Identifier`: \(calendar.identifier). Falling back to iso8601.")
       return "iso8601"
     }
   }
