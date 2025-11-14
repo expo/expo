@@ -181,3 +181,25 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     return self
   }
 }
+
+extension AsyncFunctionDefinition {
+  var requiredArgumentsCount: Int {
+    var trailingOptionalArgumentsCount: Int = 0
+
+    let reversedArgumentTypes = dynamicArgumentTypes.reversed()
+    
+    let reversedArgumentsToIterate: any Sequence<AnyDynamicType> = takesPromise
+      ? reversedArgumentTypes.dropFirst()
+      : reversedArgumentTypes
+    
+    for dynamicArgumentType in reversedArgumentsToIterate {
+      if dynamicArgumentType is DynamicOptionalType {
+        trailingOptionalArgumentsCount += 1
+      } else {
+        break
+      }
+    }
+    
+    return argumentsCount - trailingOptionalArgumentsCount
+  }
+}
