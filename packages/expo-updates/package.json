@@ -63,7 +63,7 @@
     "expo-module-scripts": "^5.0.7",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "memfs": "^3.2.0",
     "picomatch": "^4.0.2",
     "xstate": "^4.37.2"
