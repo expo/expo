@@ -9,27 +9,27 @@ describe(convertLabelStylePropToObject, () => {
     expect(convertLabelStylePropToObject(null)).toEqual({});
   });
 
-  it('returns the same object when it already has default and selected keys', () => {
+  it('returns equal object when it already has default and selected keys', () => {
     const input = {
       default: { color: 'red' },
       selected: { color: 'blue' },
     };
     const result = convertLabelStylePropToObject(input);
-    expect(result).toBe(input);
-    expect(result.default).toBe(input.default);
-    expect(result.selected).toBe(input.selected);
+    expect(result).toStrictEqual(input);
+    expect(result.default).toStrictEqual(input.default);
+    expect(result.selected).toStrictEqual(input.selected);
   });
 
-  it('returns the same object when it has only default key', () => {
+  it('returns strict equal object with selected filed when it has only default key', () => {
     const input = { default: { fontSize: 12 } };
     const result = convertLabelStylePropToObject(input);
-    expect(result).toBe(input);
+    expect(result).toStrictEqual({ default: input.default, selected: undefined });
   });
 
-  it('returns the same object when it has only selected key', () => {
+  it('returns strict equal object with default filed when it has only selected key', () => {
     const input = { selected: { fontWeight: '700' } } as const;
     const result = convertLabelStylePropToObject(input);
-    expect(result).toBe(input);
+    expect(result).toStrictEqual({ default: undefined, selected: input.selected });
   });
 
   it('wraps a plain style object into default when it lacks default/selected', () => {
@@ -43,6 +43,6 @@ describe(convertLabelStylePropToObject, () => {
   it('wraps an array style into default', () => {
     const arrayStyle = [{ color: 'a' }, { margin: 1 }];
     const result = convertLabelStylePropToObject(arrayStyle);
-    expect(result).toEqual({ default: arrayStyle });
+    expect(result).toEqual({ default: { color: 'a', margin: 1 } });
   });
 });
