@@ -159,7 +159,8 @@ NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::O
   for (size_t i = 0; i < size; i++) {
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
-    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker);
+    jsi::Value jsValue = value.getProperty(runtime, name);
+    id v = convertJSIValueToObjCObjectAsDictValue(runtime, std::move(jsValue), jsInvoker);
     if (v) {
       result[k] = v;
     }
@@ -192,6 +193,37 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
     return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
   }
 
+  throw std::runtime_error("Unsupported jsi::jsi::Value kind");
+}
+
+id convertJSIValueToObjCObjectAsDictValue(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
+{
+  if (value.isUndefined()) {
+    return nil;
+  }
+  if (value.isNull()) {
+    return [NSNull null];
+  }
+  if (value.isBool()) {
+    return @(value.getBool());
+  }
+  if (value.isNumber()) {
+    return @(value.getNumber());
+  }
+  if (value.isString()) {
+    return convertJSIStringToNSString(runtime, value.getString(runtime));
+  }
+  if (value.isObject()) {
+    jsi::Object o = value.getObject(runtime);
+    if (o.isArray(runtime)) {
+      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker);
+    }
+    if (o.isFunction(runtime)) {
+      return convertJSIFunctionToCallback(runtime, std::move(o.getFunction(runtime)), jsInvoker);
+    }
+    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
+  }
+  
   throw std::runtime_error("Unsupported jsi::jsi::Value kind");
 }
 
