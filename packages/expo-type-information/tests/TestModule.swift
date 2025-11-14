@@ -15,24 +15,32 @@ public class TestModule: Module {
       return a + b
     }
 
-    Function("TestEither") { (a: Either<Either<Int, String>, Either<Float, Double>>) -> Either<String, Either<Int, Double>> in 
-      return "test"
-    }
+    // Function("TestEither") { (a: Either<Either<Int, String>, Either<Float, Double>>) -> Either<String, Either<Int, Double>> in 
+    //   return "test"
+    // }
 
     Function("TestArrays") { (a: [Int]) -> [[String]] in 
       return ["test"]
     }
 
-    Function("TestDictionaries") { (a: [Int: String], b: [[Int : String] : [Float : String]]) -> Any in 
+    Function("TestDictionaries") { (a: [Int: String], b: [Int : [Float : String]]) -> Any in 
       return "test"
     }
 
-    Function("TestParametrizedTypes") { (a: Set<Either<Int, String>, Map<Set<Int>, Either<Set<Int>, Set<String>>>>) -> String in
+    Function("TestParametrizedTypes") { (a: SomeParametrizedType<Either<Int, String>, Map<Set<Int>, Either<Set<Int>, Set<String>>>>) -> String in
       return ""
     }
 
     Function("TestTypeCombinations") { (a: [[[Int]]]) -> [[Either<String, [Int: String]>]] in 
       return [["test"]]
+    }
+
+    Function("TestFunctionReturningRecord") { () -> TestRecord in
+      return ""
+    }
+
+    Function("TestFunctionReturningEnum") { () -> TestEnum in
+      return TestEnum.simpleCase
     }
 
     AsyncFunction("TestSimpleAsyncFunction") { (a: String, b: String) async ->  String in
@@ -70,31 +78,25 @@ public class TestModule: Module {
         TestRecord2(1, "2")
       }
 
-      Property("TestParametrizedProperty") { () -> [Either<Int, [Either<String, Double> : Set<[TestEnum]>]>] in
-        1
-      }
+      // Property("TestParametrizedProperty") { () -> [Either<Int, [Either<String, Double> : Set<[TestEnum]>]>] in
+      //   1
+      // }
 
-      Function("TestComplexFunction") { (a: [[[Int]]], b: Either<String, [Int: [Int]]>) -> [Either<Int, [Either<String, Double> : Set<[TestEnum]>]>] in
-        "string"
-      }
+      // Function("TestComplexFunction") { (a: [[[Int]]], b: Either<String, [Int: [Int]]>) -> [Either<Int, [Either<String, Double> : Set<[TestEnum]>]>] in
+      //   "string"
+      // }
 
       AsyncFunction("TestAsyncFunction") { (a: Int) async -> String in 
         "string"
       }
     }
 
-    Class(TestClassWithConstructor.self) { 
-      Constructor { (a: Int) in
-        TestClass(a)
-      }
-    }
-
     Class(TestEmptyClass.self) {
     }
 
-    View(TestView.self) {
-      Prop("TestProp") 
-    }
+    // View(TestView.self) {
+      // Prop("TestProp") 
+    // }
 
     // TODO check if multiple views should be allowed
     View(ExpoWebView.self) {

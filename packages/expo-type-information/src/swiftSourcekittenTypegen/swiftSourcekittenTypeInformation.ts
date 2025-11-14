@@ -3,12 +3,14 @@ import fs from 'fs';
 import YAML from 'yaml';
 
 import {
+  Argument,
   BasicType,
   ClassDeclaration,
   ConstantDeclaration,
   ConstructorDeclaration,
   DictionaryType,
   EnumType,
+  Field,
   FileTypeInformation,
   FunctionDeclaration,
   ModuleClassDeclaration,
@@ -500,9 +502,10 @@ function extractDeclarationType(structure: Structure, file: FileType): Type {
 function parseRecordStructure(
   recordStructure: Structure,
   usedTypeIdentifiers: Set<string>,
+  typeParametersCount: Map<string, number>,
   file: FileType
 ): RecordType {
-  const fields: { name: string; type: Type }[] = [];
+  const fields: Field[] = [];
 
   for (const substructure of recordStructure['key.substructure']) {
     if (substructure['key.kind'] === 'source.lang.swift.decl.var.instance') {
@@ -511,7 +514,7 @@ function parseRecordStructure(
         name: substructure['key.name'],
         type,
       });
-      collectTypeIdentifiers(type, usedTypeIdentifiers);
+      collectTypeIdentifiers(type, usedTypeIdentifiers, typeParametersCount);
     }
   }
 
@@ -597,19 +600,27 @@ function parseModuleStructure(
   return mcd;
 }
 
-function collectTypeIdentifiers(type: Type, typeIdentiers: Set<string>) {
+function collectTypeIdentifiers(
+  type: Type,
+  typeIdentiers: Set<string>,
+  typeParametersCount: Map<string, number>
+) {
   switch (type.kind) {
     case TypeKind.ARRAY:
     case TypeKind.OPTIONAL:
-      collectTypeIdentifiers(type.type as Type, typeIdentiers);
+      collectTypeIdentifiers(type.type as Type, typeIdentiers, typeParametersCount);
       break;
     case TypeKind.DICTIONARY:
-      collectTypeIdentifiers((type.type as DictionaryType).key, typeIdentiers);
-      collectTypeIdentifiers((type.type as DictionaryType).value, typeIdentiers);
+      collectTypeIdentifiers((type.type as DictionaryType).key, typeIdentiers, typeParametersCount);
+      collectTypeIdentifiers(
+        (type.type as DictionaryType).value,
+        typeIdentiers,
+        typeParametersCount
+      );
       break;
     case TypeKind.SUM:
       for (const t of (type.type as SumType).types) {
-        collectTypeIdentifiers(t, typeIdentiers);
+        collectTypeIdentifiers(t, typeIdentiers, typeParametersCount);
       }
       break;
     case TypeKind.BASIC:
@@ -619,9 +630,15 @@ function collectTypeIdentifiers(type: Type, typeIdentiers: Set<string>) {
       typeIdentiers.add(type.type as TypeIdentifier);
       break;
     case TypeKind.PARAMETRIZED:
-      typeIdentiers.add((type.type as ParametrizedType).name);
+      const parametrizedType: ParametrizedType = type.type as ParametrizedType;
+      const typename = parametrizedType.name;
+      typeIdentiers.add(typename);
+      typeParametersCount.set(
+        typename,
+        Math.max(typeParametersCount.get(typename) ?? 0, parametrizedType.types.length)
+      );
       for (const t of (type.type as ParametrizedType).types) {
-        collectTypeIdentifiers(t, typeIdentiers);
+        collectTypeIdentifiers(t, typeIdentiers, typeParametersCount);
       }
       break;
   }
@@ -629,13 +646,16 @@ function collectTypeIdentifiers(type: Type, typeIdentiers: Set<string>) {
 
 function collectModuleTypeIdentifiers(
   moduleClassDeclaration: ModuleClassDeclaration,
-  usedTypeIdentifiers: Set<string>,
-  declaredTypeIdentifiers: Set<string>
+  fileTypeInformation: FileTypeInformation
 ) {
   const collect = (type: Type) => {
-    collectTypeIdentifiers(type, usedTypeIdentifiers);
+    collectTypeIdentifiers(
+      type,
+      fileTypeInformation.usedTypeIdentifiers,
+      fileTypeInformation.typeParametersCount
+    );
   };
-  const collectArg = (arg: { name: string; type: Type }) => {
+  const collectArg = (arg: Argument) => {
     collect(arg.type);
   };
   const collectFunction = (functionDeclaration: FunctionDeclaration) => {
@@ -648,12 +668,10 @@ function collectModuleTypeIdentifiers(
   moduleClassDeclaration.constants.forEach(collectArg);
   moduleClassDeclaration.properties.forEach(collectArg);
   moduleClassDeclaration.constructor?.arguments.forEach(collectArg);
-  moduleClassDeclaration.views.forEach((v) =>
-    collectModuleTypeIdentifiers(v, usedTypeIdentifiers, declaredTypeIdentifiers)
-  );
+  moduleClassDeclaration.views.forEach((v) => collectModuleTypeIdentifiers(v, fileTypeInformation));
   moduleClassDeclaration.props.forEach((p) => p.arguments.forEach(collectArg));
   moduleClassDeclaration.classes.forEach((c) => {
-    declaredTypeIdentifiers.add(c.name);
+    fileTypeInformation.declaredTypeIdentifiers.add(c.name);
     c.asyncMethods.forEach(collectFunction);
     c.methods.forEach(collectFunction);
     c.constructor?.arguments.forEach(collectArg);
@@ -675,15 +693,26 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
     enumsStructures
   );
 
-  const enums: EnumType[] = enumsStructures.map(parseEnumStructure);
-
-  const recordTypeIdentifiers: Set<string> = new Set<string>();
-  const recordMap = (rd: Structure) => parseRecordStructure(rd, recordTypeIdentifiers, file);
-  const records = recordsStructures.map(recordMap);
-
+  const typeParametersCount: Map<string, number> = new Map<string, number>();
   const moduleClasses: ModuleClassDeclaration[] = [];
   const moduleTypeIdentifiers: Set<string> = new Set<string>();
   const declaredTypeIdentifiers: Set<string> = new Set<string>();
+  const recordTypeIdentifiers: Set<string> = new Set<string>();
+
+  const enums: EnumType[] = enumsStructures.map(parseEnumStructure);
+  const recordMap = (rd: Structure) =>
+    parseRecordStructure(rd, recordTypeIdentifiers, typeParametersCount, file);
+  const records = recordsStructures.map(recordMap);
+
+  const fileTypeInformation = {
+    moduleClasses,
+    records,
+    enums,
+    functions: [],
+    usedTypeIdentifiers: moduleTypeIdentifiers.union(recordTypeIdentifiers),
+    declaredTypeIdentifiers,
+    typeParametersCount,
+  };
 
   enums.forEach(({ name }) => {
     declaredTypeIdentifiers.add(name);
@@ -698,19 +727,8 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
     }
     const moduleClassDeclaration = parseModuleStructure(structure['key.substructure'], file, name);
     moduleClasses.push(moduleClassDeclaration);
-    collectModuleTypeIdentifiers(
-      moduleClassDeclaration,
-      moduleTypeIdentifiers,
-      declaredTypeIdentifiers
-    );
+    collectModuleTypeIdentifiers(moduleClassDeclaration, fileTypeInformation);
   }
 
-  return {
-    moduleClasses,
-    records,
-    enums,
-    functions: [],
-    usedTypeIdentifiers: moduleTypeIdentifiers.union(recordTypeIdentifiers),
-    declaredTypeIdentifiers,
-  };
+  return fileTypeInformation;
 }
