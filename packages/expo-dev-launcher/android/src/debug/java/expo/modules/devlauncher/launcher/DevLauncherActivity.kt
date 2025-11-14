@@ -4,9 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import expo.modules.devlauncher.compose.BindingView
-import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 
-class DevLauncherActivity : AppCompatActivity(), DevLauncherKoinComponent {
+class DevLauncherActivity : AppCompatActivity() {
   override fun onStart() {
     overridePendingTransition(0, 0)
     super.onStart()
