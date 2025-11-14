@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix inability to override env vars defined in `.env` files
 - Fix `transformer.asyncRequireModulePath` polluting cache with absolute path in transform output ([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
