@@ -35,8 +35,6 @@ expoAutolinking.exclude = [
   'expo-module-template',
   'expo-module-template-local',
   'react-native-reanimated',
-  'expo-dev-menu-interface',
-  'expo-dev-menu',
   'expo-dev-launcher',
   'expo-dev-client',
   'expo-maps',

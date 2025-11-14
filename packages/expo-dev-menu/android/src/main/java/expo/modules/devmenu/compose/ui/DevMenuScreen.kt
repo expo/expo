@@ -86,6 +86,7 @@ fun DevMenuScreen(
 
     SystemSection(
       appInfo.appVersion,
+      appInfo.sdkVersion,
       appInfo.runtimeVersion,
       fullDataProvider = { appInfo.toJson() }
     )
