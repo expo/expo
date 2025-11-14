@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 - Correct types for getCalendars and getLocales ([#39703](https://github.com/expo/expo/pull/39703) by [@kadikraman](https://github.com/kadikraman))
-- Added missing iOS 16+ calendar identifiers (bangla, gujarati, kannada, malayalam,
+- Added missing iOS 16+ calendar identifiers (bangla, gujarati, kannada, malayalam, ([#41017](https://github.com/expo/expo/pull/41017) by [@codebyharry](https://github.com/codebyharry))
   marathi, odia, tamil, telugu, dangi, vietnamese, vikram) to `getCalendars` on iOS,
   ensuring correct BCP47 mapping. ([#39945](https://github.com/expo/expo/issues/39945)) by [@codebyharry](https://github.com/codebyharry)
 
