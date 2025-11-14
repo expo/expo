@@ -1,4 +1,7 @@
 import { getSwiftFileTypeInformation } from './swiftSourcekittenTypegen/swiftSourcekittenTypeInformation';
+import * as os from 'os';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export type ParametrizedType = {
   name: TypeIdentifier;
@@ -184,6 +187,21 @@ export function deserializeTypeInformation({
 export function getFileTypeInformation(absoluteFilePath: string): FileTypeInformation | null {
   if (absoluteFilePath.endsWith('.swift')) {
     return getSwiftFileTypeInformation(absoluteFilePath);
+  }
+  return null;
+}
+
+export function getFileTypeInformationForString(
+  content: string,
+  language: 'swift'
+): FileTypeInformation | null {
+  if (language === 'swift') {
+    const tmp = os.tmpdir();
+    const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
+    fs.writeFileSync(filePath, content, 'utf8');
+    const fileTypeInfo = getFileTypeInformation(filePath);
+    fs.rmSync(filePath);
+    return fileTypeInfo;
   }
   return null;
 }
