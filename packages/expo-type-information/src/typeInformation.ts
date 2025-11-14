@@ -29,7 +29,7 @@ export type SumType = {
 };
 
 // export type FunctionType = {
-//   arguments: { name: string; type: Type }[];
+//   arguments: Argument[];
 //   returnType: Type;
 // };
 
@@ -82,17 +82,17 @@ export type ConstantDeclaration = {
 export type FunctionDeclaration = {
   name: string;
   returnType: Type;
-  arguments: { name: string; type: Type }[];
+  arguments: Argument[];
   parameters: Type[];
 };
 
 export type PropDeclaration = {
   name: string;
-  arguments: { name: string; type: Type }[];
+  arguments: Argument[];
 };
 
 export type ConstructorDeclaration = {
-  arguments: { name: string; type: Type }[];
+  arguments: Argument[];
 };
 
 export type DictionaryType = {
@@ -124,6 +124,7 @@ export type ModuleClassDeclaration = {
 export type FileTypeInformation = {
   usedTypeIdentifiers: Set<string>;
   declaredTypeIdentifiers: Set<string>;
+  typeParametersCount: Map<string, number>;
   functions: FunctionDeclaration[];
   moduleClasses: ModuleClassDeclaration[];
   records: RecordType[];
@@ -133,6 +134,7 @@ export type FileTypeInformation = {
 export type FileTypeInformationSerialized = {
   usedTypeIdentifiersList: string[];
   declaredTypeIdentifiersList: string[];
+  typeParametersCountList: [string, number][];
   functions: FunctionDeclaration[];
   moduleClasses: ModuleClassDeclaration[];
   records: RecordType[];
@@ -142,15 +144,17 @@ export type FileTypeInformationSerialized = {
 export function serializeTypeInformation({
   usedTypeIdentifiers,
   declaredTypeIdentifiers,
+  typeParametersCount,
   functions,
   moduleClasses,
   records,
   enums,
 }: FileTypeInformation): FileTypeInformationSerialized {
   return {
-    usedTypeIdentifiersList: [...usedTypeIdentifiers],
-    declaredTypeIdentifiersList: [...declaredTypeIdentifiers],
+    usedTypeIdentifiersList: [...usedTypeIdentifiers.keys()],
+    declaredTypeIdentifiersList: [...declaredTypeIdentifiers.keys()],
     functions,
+    typeParametersCountList: [...typeParametersCount.entries()],
     moduleClasses,
     records,
     enums,
@@ -160,6 +164,7 @@ export function serializeTypeInformation({
 export function deserializeTypeInformation({
   usedTypeIdentifiersList,
   declaredTypeIdentifiersList,
+  typeParametersCountList,
   functions,
   moduleClasses,
   records,
@@ -168,6 +173,7 @@ export function deserializeTypeInformation({
   return {
     usedTypeIdentifiers: new Set<string>(usedTypeIdentifiersList),
     declaredTypeIdentifiers: new Set<string>(declaredTypeIdentifiersList),
+    typeParametersCount: new Map<string, number>(typeParametersCountList),
     functions,
     moduleClasses,
     records,
