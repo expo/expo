@@ -1,12 +1,12 @@
 import { it, expect } from '@jest/globals';
 import * as fs from 'fs';
 
-import { getFileTypeInformation } from '../src/typeInformation';
+import { generateTSMockForModule } from '../src/mockgen';
+import { getFileTypeInformation, getFileTypeInformationForString } from '../src/typeInformation';
 import {
   getGeneratedModuleTypesFileContent,
   getGeneratedViewTypesFileContent,
 } from '../src/typescriptGeneration';
-import { generateTSMockForModule } from '../src/mockgen';
 
 const swiftFile = fs.realpathSync('./tests/TestModule.swift');
 
@@ -40,6 +40,14 @@ it('Same generated mock file JS', async () => {
   if (fileInfo) {
     expect(generateTSMockForModule(fileInfo.moduleClasses[0], fileInfo, false)).toMatchSnapshot();
   }
+});
+it('Generation from string is the same as generation from file', async () => {
+  const fileInfo = getFileTypeInformation(swiftFile);
+  const fileInfoForString = getFileTypeInformationForString(
+    fs.readFileSync(swiftFile, 'utf8'),
+    'swift'
+  );
+  expect(fileInfo).toEqual(fileInfoForString);
 });
 
 // const swiftTest = `import ExpoModulesCore
