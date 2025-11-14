@@ -110,9 +110,6 @@
         "../../react-native-lab/react-native/packages",
         "./node_modules",
         "../../node_modules"
-      ],
-      "exclude": [
-        "@expo/home"
       ]
     }
   }
