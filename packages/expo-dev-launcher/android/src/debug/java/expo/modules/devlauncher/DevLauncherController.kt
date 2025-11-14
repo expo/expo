@@ -44,7 +44,6 @@ import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivity
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
-import expo.modules.devmenu.DevMenuManager
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 import kotlinx.coroutines.CoroutineScope
@@ -70,12 +69,11 @@ class DevLauncherController private constructor() :
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
   private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
   val internalUpdatesInterface: UpdatesInterface? by optInject()
-  var devMenuManager: DevMenuManager = DevMenuManager
   override var updatesInterface: UpdatesInterface?
     get() = internalUpdatesInterface
     set(value) = run {
       if (value != null) {
-        DependencyInjection.appService.setUpUpdateInterface(value, context)
+        DependencyInjection.appService?.setUpUpdateInterface(value, context)
       }
 
       DevLauncherKoinContext.app.koin.loadModules(
@@ -98,7 +96,6 @@ class DevLauncherController private constructor() :
 
   override var latestLoadedApp: Uri? = null
   override var useDeveloperSupport = true
-  var canLaunchDevMenuOnStart = false
 
   enum class Mode {
     LAUNCHER,
@@ -164,7 +161,9 @@ class DevLauncherController private constructor() :
       manifest = appLoaderFactory.getManifest()
       manifestURL = parsedUrl
 
-      setupDevMenu(url.toString())
+      if (url.toString().contains("disableOnboarding=1") || manifestURL?.toString()?.contains("disableOnboarding=1") == true) {
+        DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
+      }
 
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
@@ -182,7 +181,6 @@ class DevLauncherController private constructor() :
         mode = Mode.LAUNCHER
         manifest = null
         manifestURL = null
-        invalidateDevMenu()
       }
     } catch (e: Exception) {
       synchronized(this) {
@@ -231,8 +229,6 @@ class DevLauncherController private constructor() :
     manifest = null
     manifestURL = null
 
-    invalidateDevMenu()
-
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
@@ -242,8 +238,8 @@ class DevLauncherController private constructor() :
       ?.let { uri ->
         // used by appetize for snack
         if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
-          canLaunchDevMenuOnStart = false
-          this.devMenuManager.setCanLaunchDevMenuOnStart(false)
+          DependencyInjection.devMenuPreferences?.showsAtLaunch = false
+          DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
         }
 
         if (!isDevLauncherUrl(uri)) {
@@ -310,21 +306,6 @@ class DevLauncherController private constructor() :
         clearHost(host, activityToBeInvalidated)
       }
     }
-  }
-
-  private fun setupDevMenu(launchUrl: String) {
-    devMenuManager.setGoToHomeAction {
-      navigateToLauncher()
-    }
-    devMenuManager.currentManifest = manifest
-    devMenuManager.currentManifestURL = manifestURL.toString()
-    devMenuManager.launchUrl = launchUrl
-  }
-
-  private fun invalidateDevMenu() {
-    devMenuManager.currentManifest = null
-    devMenuManager.currentManifestURL = null
-    devMenuManager.launchUrl = null
   }
 
   @UiThread
@@ -450,6 +431,8 @@ class DevLauncherController private constructor() :
       )
 
       val controller = DevLauncherController()
+      DependencyInjection.init(context, controller)
+
       DevLauncherKoinContext.app.koin.declare<DevLauncherControllerInterface>(controller)
 
       if (!sErrorHandlerWasInitialized && context is Application) {

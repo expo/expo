@@ -74,6 +74,7 @@ fun DevMenuBottomSheet(
       customItems = state.customItems,
       shouldShowOnboarding = shouldShowOnboarding.value,
       showFab = state.showFab,
+      hasGoHomeAction = state.hasGoHomeAction,
       onAction = wrappedOnAction
     )
   }

@@ -1,7 +1,8 @@
-package expo.modules.devmenu.compose
+package expo.modules.devmenu
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.hardware.SensorManager
 import android.os.Build
@@ -21,9 +22,9 @@ import androidx.fragment.app.viewModels
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext
-import expo.modules.devmenu.AppInfo
-import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.DevMenuPreferencesHandle
+import expo.modules.devmenu.compose.DevMenuAction
+import expo.modules.devmenu.compose.DevMenuState
+import expo.modules.devmenu.compose.DevMenuViewModel
 import expo.modules.devmenu.compose.newtheme.AppTheme
 import expo.modules.devmenu.compose.ui.DevMenuBottomSheet
 import expo.modules.devmenu.detectors.ShakeDetector
@@ -33,14 +34,23 @@ import expo.modules.devmenu.fab.MovableFloatingActionButton
 import expo.modules.devmenu.helpers.isAcceptingText
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
-import kotlin.reflect.KProperty
+
+typealias GoHomeAction = () -> Unit
+typealias AppInfoProvider = (application: Application, reactHost: ReactHost) -> DevMenuState.AppInfo?
 
 @SuppressLint("ViewConstructor")
 class DevMenuFragment(
-  val reactHostHolder: WeakReference<ReactHost>
+  private val reactHostHolder: WeakReference<ReactHost>,
+  private val preferences: DevMenuPreferences,
+  private val goToHomeAction: GoHomeAction?,
+  private val appInfoProvider: AppInfoProvider
 ) : Fragment() {
   val viewModel by viewModels<DevMenuViewModel> {
-    DevMenuViewModel.Factory(reactHostHolder)
+    DevMenuViewModel.Factory(
+      reactHostHolder,
+      preferences,
+      goToHomeAction
+    )
   }
   private val threeFingerLongPressDetector = ThreeFingerLongPressDetector(::onThreeFingerLongPressDetected)
   private val shakeDetector = ShakeDetector(this::onShakeDetected)
@@ -51,12 +61,7 @@ class DevMenuFragment(
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    if (DevMenuManager.shouldDisableOnboarding()) {
-      DevMenuPreferencesHandle.isOnboardingFinished = true
-    }
-
-    val shouldShowAtLaunch = DevMenuManager.canLaunchDevMenuOnStart &&
-      (DevMenuPreferencesHandle.showsAtLaunch || !DevMenuPreferencesHandle.isOnboardingFinished)
+    val shouldShowAtLaunch = preferences.showsAtLaunch || !preferences.isOnboardingFinished
     if (shouldShowAtLaunch) {
       val onReactContext = object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
@@ -76,9 +81,17 @@ class DevMenuFragment(
   override fun onStart() {
     super.onStart()
 
-    reactHost?.let {
+    reactHost?.let { reactHost ->
+      val appInfo = appInfoProvider.invoke(
+        requireContext().applicationContext as Application,
+        reactHost
+      ) ?: AppInfo.getAppInfo(
+        requireContext().applicationContext as Application,
+        reactHost
+      )
+
       viewModel.updateAppInfo(
-        AppInfo.getAppInfo(it)
+        appInfo
       )
     }
 
@@ -102,7 +115,7 @@ class DevMenuFragment(
     updatePictureInPictureState()
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
     val context = requireContext()
     return LinearLayout(context).apply {
       z = Float.MAX_VALUE
@@ -148,7 +161,7 @@ class DevMenuFragment(
       return true
     }
 
-    if (!DevMenuPreferencesHandle.keyCommandsEnabled) {
+    if (!preferences.keyCommandsEnabled) {
       return false
     }
 
@@ -168,13 +181,13 @@ class DevMenuFragment(
   }
 
   private fun onShakeDetected() {
-    if (DevMenuPreferencesHandle.motionGestureEnabled) {
+    if (preferences.motionGestureEnabled) {
       toggleDevMenu()
     }
   }
 
   private fun onThreeFingerLongPressDetected() {
-    if (DevMenuPreferencesHandle.touchGestureEnabled) {
+    if (preferences.touchGestureEnabled) {
       toggleDevMenu()
     }
   }
@@ -194,25 +207,14 @@ class DevMenuFragment(
   }
 
   companion object {
-    private const val TAG = "ExpoDevMenuFragment"
+    internal const val TAG = "ExpoDevMenuFragment"
 
-    fun fragment(
-      activityProvider: () -> Activity?
-    ) = FragmentDelegate(
-      activityProvider,
-      mapper = { it }
-    )
-
-    fun model(
-      activityProvider: () -> Activity?
-    ) = FragmentDelegate(
-      activityProvider,
-      mapper = { it.viewModel }
-    )
-
-    fun createFragmentHost(
+    internal fun createFragmentHost(
       activity: Activity,
-      reactHostHolder: WeakReference<ReactHost>
+      reactHostHolder: WeakReference<ReactHost>,
+      preferences: DevMenuPreferences,
+      goToHomeAction: GoHomeAction?,
+      appInfoProvider: AppInfoProvider
     ): ViewGroup {
       var fragmentHolder = WeakReference<DevMenuFragment>(null)
       val interceptTouchEventCallback: (event: MotionEvent?) -> Unit = { event ->
@@ -231,21 +233,35 @@ class DevMenuFragment(
         }
       }
 
-      val fragment = addTo(activity, layout, reactHostHolder)
-      @Suppress("AssignedValueIsNeverRead")
+      val fragment = createAndCommit(
+        activity,
+        layout,
+        reactHostHolder,
+        preferences,
+        goToHomeAction,
+        appInfoProvider
+      )
       fragmentHolder = fragment.weak()
 
       return layout
     }
 
-    private fun addTo(
+    internal fun createAndCommit(
       activity: Activity,
       container: ViewGroup,
-      reactHostHolder: WeakReference<ReactHost>
+      reactHostHolder: WeakReference<ReactHost>,
+      preferences: DevMenuPreferences,
+      goToHomeAction: GoHomeAction?,
+      appInfoProvider: AppInfoProvider
     ): DevMenuFragment {
       val fragmentManager = (activity as FragmentActivity).supportFragmentManager
 
-      val fragment = DevMenuFragment(reactHostHolder)
+      val fragment = DevMenuFragment(
+        reactHostHolder,
+        preferences,
+        goToHomeAction,
+        appInfoProvider
+      )
 
       fragmentManager.commit(true) {
         setReorderingAllowed(true)
@@ -255,24 +271,11 @@ class DevMenuFragment(
       return fragment
     }
 
-    private fun findIn(activity: Activity?): DevMenuFragment? {
+    internal fun findIn(activity: Activity?): DevMenuFragment? {
       val activity = activity ?: return null
       return (activity as FragmentActivity).supportFragmentManager.findFragmentByTag(TAG) as DevMenuFragment
     }
 
-    class FragmentDelegate<T>(
-      private val activityProvider: () -> Activity?,
-      private val mapper: (DevMenuFragment) -> T
-    ) {
-      val value: T?
-        get() {
-          val fragment = findIn(activityProvider()) ?: return null
-          return mapper(fragment)
-        }
-
-      operator fun getValue(thisRef: Any?, property: KProperty<*>): T? = value
-    }
-
-    private  data class KeyCommand(val code: Int, val withShift: Boolean = false)
+    private data class KeyCommand(val code: Int, val withShift: Boolean = false)
   }
 }

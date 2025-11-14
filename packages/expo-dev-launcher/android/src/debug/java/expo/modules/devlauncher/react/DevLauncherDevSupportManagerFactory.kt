@@ -3,8 +3,8 @@ package expo.modules.devlauncher.react
 import android.content.Context
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
-import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.ReactInstanceDevHelper
+import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
