@@ -8,6 +8,12 @@ import path from 'node:path';
 
 const debug = require('debug')('expo:env') as typeof console.log;
 
+/**
+ * Snapshot of the original process.env.
+ * Makes HMR of dotenv files possible without making dotenv files override process env vars.
+ */
+export const initialEnv = { ...process.env };
+
 /** Determine if the `.env` files are enabled or not, through `EXPO_NO_DOTENV` */
 export function isEnabled() {
   return !boolish('EXPO_NO_DOTENV', false);

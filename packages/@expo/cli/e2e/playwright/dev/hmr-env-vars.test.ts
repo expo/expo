@@ -40,6 +40,7 @@ test.describe('router-e2e with spaces', () => {
         linkExpoPackagesDev: [
           '@expo/cli',
           '@expo/router-server',
+          '@expo/env',
           'babel-preset-expo',
           '@expo/metro-config',
           'expo-server',
@@ -53,6 +54,7 @@ test.describe('router-e2e with spaces', () => {
       cwd: projectRoot,
       env: {
         EXPO_PUBLIC_VALUE_INLINE: 'inlined',
+        EXPO_PUBLIC_OVERRIDE_ME: 'overridden',
         TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
         NODE_ENV: 'development',
         // Ensure CI is disabled otherwise the file watcher won't run.
@@ -98,6 +100,9 @@ test.describe('router-e2e with spaces', () => {
 
     // Observe that our change has been rendered to the screen
     await expect(page.locator('[data-testid="env-var"]')).toHaveText(nextValue);
+
+    // Ensure that process env var override env var from .env file
+    await expect(page.locator('[data-testid="env-var-override-me"]')).toHaveText('overridden');
 
     expect(pageErrors.all).toEqual([]);
   });

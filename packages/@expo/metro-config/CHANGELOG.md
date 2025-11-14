@@ -14,6 +14,7 @@
 
 - Fix output typings to remove unreachable transitive dependencies from them ([#41676](https://github.com/expo/expo/pull/41676) by [@kitten](https://github.com/kitten))
 - Fix `minifierPath` resolution for cache key generation for strict isolated installations ([#41686](https://github.com/expo/expo/pull/41686) by [@kitten](https://github.com/kitten))
+- Fix inability to override env vars defined in `.env` files ([#41999](https://github.com/expo/expo/pull/41999) by [@jeppester](https://github.com/jeppester))
 
 ### 💡 Others
 
