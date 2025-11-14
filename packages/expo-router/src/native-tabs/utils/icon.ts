@@ -8,7 +8,7 @@ import type {
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { isChildOfType } from '../../utils/children';
-import { NativeTabsTriggerVectorIcon } from '../common/elements';
+import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../common/elements';
 import type { NativeTabOptions, NativeTabsProps } from '../types';
 
 export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconColor']): {
@@ -109,6 +109,8 @@ export function convertComponentSrcToImageSource(src: React.ReactElement) {
   if (isChildOfType(src, NativeTabsTriggerVectorIcon)) {
     const props = src.props;
     return { src: props.family.getImageSource(props.name, 24, 'white') };
+  } else if (isChildOfType(src, NativeTabsTriggerPromiseIcon)) {
+    return { src: src.props.loader() };
   } else {
     console.warn('Only VectorIcon is supported as a React element in Icon.src');
   }

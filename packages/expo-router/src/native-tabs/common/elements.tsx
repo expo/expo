@@ -1,4 +1,4 @@
-import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type { AndroidSymbol } from 'expo-symbols';
 import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -85,14 +85,8 @@ export interface DrawableIcon {
   drawable?: string;
 }
 
-type ExtractIconName<
-  T extends {
-    getImageSource: (name: any, size: number, color: any) => Promise<any>;
-  },
-> = Parameters<T['getImageSource']>[0];
-
 export interface MaterialIcon {
-  material: ExtractIconName<typeof MaterialIcons>;
+  md: AndroidSymbol;
 }
 
 export type BaseNativeTabsTriggerIconProps = { selectedColor?: ColorValue };
@@ -143,6 +137,16 @@ export const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps> = Icon;
  * ```
  */
 export const NativeTabsTriggerVectorIcon = VectorIcon;
+
+export interface NativeTabsTriggerPromiseIconProps {
+  loader: () => Promise<ImageSourcePropType | null>;
+}
+
+export const NativeTabsTriggerPromiseIcon = function NativeTabsTriggerPromiseIcon(
+  props: NativeTabsTriggerPromiseIconProps
+) {
+  return null;
+};
 
 export interface NativeTabsTriggerBadgeProps {
   /**

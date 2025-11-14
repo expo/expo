@@ -1,12 +1,14 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { unstable_getMaterialSymbolSourceAsync } from 'expo-symbols';
 
 import { convertComponentSrcToImageSource } from './icon';
-import { NativeTabsTriggerVectorIcon, type MaterialIcon } from '../common/elements';
+import { NativeTabsTriggerPromiseIcon, type MaterialIcon } from '../common/elements';
 
 export function convertMaterialIconNameToImageSource(
-  name: MaterialIcon['material']
+  name: MaterialIcon['md']
 ): ReturnType<typeof convertComponentSrcToImageSource> {
   return convertComponentSrcToImageSource(
-    <NativeTabsTriggerVectorIcon family={MaterialIcons} name={name} />
+    <NativeTabsTriggerPromiseIcon
+      loader={() => unstable_getMaterialSymbolSourceAsync(name, 24, 'white')}
+    />
   );
 }

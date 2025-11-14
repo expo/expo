@@ -1,6 +1,6 @@
 import { screen, act, fireEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
-import { Button, PixelRatio, View } from 'react-native';
+import { Button, View } from 'react-native';
 import {
   BottomTabsScreen as _BottomTabsScreen,
   type BottomTabsScreenProps,
@@ -284,21 +284,21 @@ describe('Icons', () => {
   );
 
   it.each([
-    { material: '10k' },
+    { md: '10k' },
     {
-      material: 'cable',
+      md: 'cable',
       src: { uri: 'some-uri' },
     },
-    { material: '10k', sf: 'square.fill' },
-    { material: '10k', sf: 'square.fill', src: { uri: 'some-uri' } },
+    { md: '10k', sf: 'square.fill' },
+    { md: '10k', sf: 'square.fill', src: { uri: 'some-uri' } },
   ] as (MaterialIcon & SrcIcon & SFSymbolIcon)[])(
-    'For <Icon sf="$sf" src="$src" material="$material">, icon will render a material icon',
-    async ({ sf, src, material }) => {
+    'For <Icon sf="$sf" src="$src" md="$md">, icon will render a md icon',
+    async ({ sf, src, md }) => {
       renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
-              <NativeTabs.Trigger.Icon sf={sf} src={src} material={material} />
+              <NativeTabs.Trigger.Icon sf={sf} src={src} md={md} />
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
@@ -315,24 +315,23 @@ describe('Icons', () => {
       expect(BottomTabsScreen.mock.calls[0][0].icon?.android).toBeUndefined();
       expect(BottomTabsScreen.mock.calls[1][0].icon?.android).toEqual({
         // This is declared in packages/expo-font/mocks/ExpoFontUtils.ts
-        // The PixelRatio.get() is used in @expo/vector-icons to set the scale
-        imageSource: { height: 0, uri: '', width: 0, scale: PixelRatio.get() },
+        imageSource: { height: 0, uri: '', width: 0, scale: 1 },
         type: 'imageSource',
       });
       expect(consoleWarnMock).not.toHaveBeenCalled();
     }
   );
 
-  it.only.each([
-    { material: '10k', drawable: undefined, expectedIcon: undefined, numberOfRenders: 2 },
+  it.each([
+    { md: '10k', drawable: undefined, expectedIcon: undefined, numberOfRenders: 2 },
     {
-      material: 'cable',
+      md: 'cable',
       drawable: 'ic_lock',
       expectedIcon: { type: 'drawableResource', name: 'ic_lock' },
       numberOfRenders: 1,
     },
     {
-      material: undefined,
+      md: undefined,
       drawable: 'ic_lock',
       expectedIcon: { type: 'drawableResource', name: 'ic_lock' },
       numberOfRenders: 1,
@@ -342,20 +341,20 @@ describe('Icons', () => {
       expectedIcon: BottomTabsScreenProps['icon']['android'];
       numberOfRenders: number;
     })[])(
-    'For <Icon material="$material" drawable="$drawable">, icon will be $expectedIcon during first render and tabs will render $numberOfRenders time(s)',
-    async ({ material, drawable, numberOfRenders, expectedIcon }) => {
+    'For <Icon md="$md" drawable="$drawable">, icon will be $expectedIcon during first render and tabs will render $numberOfRenders time(s)',
+    async ({ md, drawable, numberOfRenders, expectedIcon }) => {
       renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
-              <NativeTabs.Trigger.Icon material={material} drawable={drawable} />
+              <NativeTabs.Trigger.Icon md={md} drawable={drawable} />
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
         index: () => <View testID="index" />,
       });
 
-      // Wrapping with waitFor to ensure material vector icon async loading is complete
+      // Wrapping with waitFor to ensure md vector icon async loading is complete
       // Otherwise testing library will complain "An update to Screen inside a test was not wrapped in act(...)"
       // because vector icon loading triggers a state update
       await waitFor(() => {
@@ -366,8 +365,7 @@ describe('Icons', () => {
       if (numberOfRenders > 1) {
         expect(BottomTabsScreen.mock.calls[1][0].icon?.android).toEqual({
           // This is declared in packages/expo-font/mocks/ExpoFontUtils.ts
-          // The PixelRatio.get() is used in @expo/vector-icons to set the scale
-          imageSource: { height: 0, uri: '', width: 0, scale: PixelRatio.get() },
+          imageSource: { height: 0, uri: '', width: 0, scale: 1 },
           type: 'imageSource',
         });
       }

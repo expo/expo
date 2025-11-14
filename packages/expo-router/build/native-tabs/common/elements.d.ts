@@ -1,4 +1,4 @@
-import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type { AndroidSymbol } from 'expo-symbols';
 import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { VectorIcon } from '../../primitives';
@@ -78,11 +78,8 @@ export interface DrawableIcon {
      */
     drawable?: string;
 }
-type ExtractIconName<T extends {
-    getImageSource: (name: any, size: number, color: any) => Promise<any>;
-}> = Parameters<T['getImageSource']>[0];
 export interface MaterialIcon {
-    material: ExtractIconName<typeof MaterialIcons>;
+    md: AndroidSymbol;
 }
 export type BaseNativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
@@ -123,6 +120,10 @@ export declare const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps>
  * ```
  */
 export declare const NativeTabsTriggerVectorIcon: typeof VectorIcon;
+export interface NativeTabsTriggerPromiseIconProps {
+    loader: () => Promise<ImageSourcePropType | null>;
+}
+export declare const NativeTabsTriggerPromiseIcon: (props: NativeTabsTriggerPromiseIconProps) => null;
 export interface NativeTabsTriggerBadgeProps {
     /**
      * The text to display as the badge for the tab.
@@ -137,5 +138,4 @@ export interface NativeTabsTriggerBadgeProps {
     selectedBackgroundColor?: ColorValue;
 }
 export declare const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps>;
-export {};
 //# sourceMappingURL=elements.d.ts.map

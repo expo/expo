@@ -82,6 +82,9 @@ function convertComponentSrcToImageSource(src) {
         const props = src.props;
         return { src: props.family.getImageSource(props.name, 24, 'white') };
     }
+    else if ((0, children_1.isChildOfType)(src, elements_1.NativeTabsTriggerPromiseIcon)) {
+        return { src: src.props.loader() };
+    }
     else {
         console.warn('Only VectorIcon is supported as a React element in Icon.src');
     }

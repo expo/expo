@@ -183,22 +183,22 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
         : undefined;
     }
   } else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
-    if ('material' in props) {
+    if ('md' in props) {
       console.warn(
-        'Both `material` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+        'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
       );
     }
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
-  } else if ('material' in props && props.material && process.env.EXPO_OS === 'android') {
+  } else if ('md' in props && props.md && process.env.EXPO_OS === 'android') {
     if (process.env.NODE_ENV !== 'production') {
       if ('drawable' in props) {
         console.warn(
-          'Both `material` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+          'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
         );
       }
     }
-    options.icon = convertMaterialIconNameToImageSource(props.material);
+    options.icon = convertMaterialIconNameToImageSource(props.md);
   } else if ('src' in props && props.src) {
     const icon = convertIconSrcToIconOption(props);
     options.icon = icon?.icon;
