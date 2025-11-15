@@ -1,60 +1,279 @@
----
-title: EAS Build
-sidebar_title: Introduction
-hideTOC: true
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+// App.js - Profi Bodenleger App (Einzeldatei für Expo Snack)
+import React, { useState, useEffect } from 'react';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList,
+  ImageBackground, ScrollView, Alert, Switch
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+// ---------- Daten: Bodenarten, Tools, Montage ----------
+const FLOOR_TYPES = [
+  {
+    id: 'parkett', title: 'Parkett',
+    image: 'https://images.unsplash.com/photo-1549187774-b4b9b6a5e3dc?auto=format&fit=crop&w=1200&q=80',
+    defaultCutPercent: 7, unitArea: 1.2, unitLabel: 'Paket ≈1.2 m²',
+    tools: [
+      'Schwingschleifer / Tellerschleifer', 'Schleifpapier', 'Spachtelmasse',
+      'Schlagklotz & Zugeisen', 'Abstandskeile', 'Fachmesser / Stichsäge',
+      'Tischsäge / Cupsäge', 'Gasnagler / Akkuschrauber'
+    ],
+    montage: [
+      'Untergrund schleifen, spachteln und grundieren.',
+      'Hohlstellen prüfen und ggf. Stipper setzen.',
+      'Dehnungsfugen mit Abstandskeilen sichern.',
+      'Reihen verlegen, Kanten sauber zuschneiden.',
+      'Sockelleisten mit Gasnagler/Akkuschrauber montieren.'
+    ]
+  },
+  {
+    id: 'laminat', title: 'Laminat',
+    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+    defaultCutPercent: 5, unitArea: 2.13, unitLabel: 'Paket ≈2.13 m²',
+    tools: ['Handschleifer', 'Spachtel', 'Abstandskeile', 'Zugeisen', 'Laminatschneider', 'Akkuschrauber'],
+    montage: ['Untergrund prüfen, Trittschalldämmung legen.', 'Laminat schwimmend verlegen.', 'Abstand zur Wand einhalten.', 'Sockelleisten montieren.']
+  },
+  {
+    id: 'vinyl', title: 'Vinyl',
+    image: 'https://images.unsplash.com/photo-1618221690124-5f7f4a3b2e45?auto=format&fit=crop&w=1200&q=80',
+    defaultCutPercent: 6, unitArea: 2.0, unitLabel: 'Rolle / Paket (m²)',
+    tools: ['Fachmesser', 'Andrückrolle', 'Lineal', 'Spachtel', 'Akkuschrauber'],
+    montage: ['Untergrund spachteln/grundieren.', 'Kleber nach Hersteller (z.B. Uzin KE 2000 S) auftragen.', 'Planken/Bahnen verlegen, Andrücken.']
+  },
+  {
+    id: 'pvc', title: 'PVC-Fliesen',
+    image: 'https://images.unsplash.com/photo-1519791883285-d6e5b63f9a9d?auto=format&fit=crop&w=1200&q=80',
+    defaultCutPercent: 6, unitArea: 0.36, unitLabel: 'Fliese ≈0.36 m²',
+    tools: ['Fachmesser', 'Andrückrolle', 'Lineal', 'Spachtel', 'Akkuschrauber'],
+    montage: ['Untergrund ausgleichen/grundieren.', 'Fliesen mit passendem Kleber verkleben.', 'Sorgfältig andrücken.']
+  },
+  {
+    id: 'fliesen', title: 'Fliesen',
+    image: 'https://images.unsplash.com/photo-1505691723518-36a3a03d63d5?auto=format&fit=crop&w=1200&q=80',
+    defaultCutPercent: 12, unitArea: 0.25, unitLabel: 'Fliese (m²)',
+    tools: ['Fliesenschneider', 'Zahnkelle', 'Gummihammer', 'Wasserwaage', 'Schwamm'],
+    montage: ['Untergrund ausgleichen.', 'Fliesenkleber mit Zahnkelle auftragen.', 'Fliesen verlegen & fugen.']
+  },
+  {
+    id: 'teppich', title: 'Teppich',
+    image: 'https://images.unsplash.com/photo-1600585153820-1f3b3b3f6cbb?auto=format&fit=crop&w=1200&q=80',
+    defaultCutPercent: 8, unitArea: 1.0, unitLabel: 'Lfm / Bahn',
+    tools: ['Fachmesser / Trapezklingen', 'Hacken-Klingen', 'Teppichklammern', 'Große Andrückrolle (Anwalzen)', 'Anreibhammer'],
+    montage: ['Untergrund spachteln/grundieren.', 'Unterlage + Bahnen verlegen.', 'Bahnen zuschneiden, anwalzen, Nähte mit Anreibhammer reiben.']
+  }
+];
 
-import { BoxLink } from '~/ui/components/BoxLink';
+// ---------- Hilfsfunktionen ----------
+const ceil = (v) => Math.ceil(v);
 
-**EAS Build** is a hosted service for building app binaries for your Expo and React Native projects.
+// ---------- App ----------
+export default function App() {
+  const [selected, setSelected] = useState(0);
+  const [len, setLen] = useState('');
+  const [wid, setWid] = useState('');
+  const [cut, setCut] = useState(String(FLOOR_TYPES[0].defaultCutPercent));
+  const [pricePerUnit, setPricePerUnit] = useState('');
+  const [result, setResult] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [showTools, setShowTools] = useState(true);
+  const [premium, setPremium] = useState(false);
 
-It makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using ad hoc and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+  useEffect(()=> { loadProjects(); }, []);
+  useEffect(()=> { setCut(String(FLOOR_TYPES[selected].defaultCutPercent)); }, [selected]);
 
-It's designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+  const calculate = () => {
+    if (!len || !wid) { Alert.alert('Fehler', 'Bitte Länge und Breite eingeben'); return; }
+    const l = parseFloat(len.replace(',', '.'));
+    const w = parseFloat(wid.replace(',', '.'));
+    const v = parseFloat(cut.replace(',', '.'))/100;
+    if (isNaN(l) || isNaN(w) || isNaN(v)) { Alert.alert('Fehler','Ungültige Eingabe'); return; }
+    const area = l * w * (1 + v);
+    const unitArea = FLOOR_TYPES[selected].unitArea;
+    const units = ceil(area / unitArea);
+    const total = pricePerUnit && !isNaN(parseFloat(pricePerUnit)) ? (units * parseFloat(pricePerUnit)).toFixed(2) + ' €' : null;
+    setResult({ area: area.toFixed(2), units, total });
+  };
 
-### Get started
+  const saveProject = async () => {
+    if (!result) { Alert.alert('Fehler','Erst Berechnen'); return; }
+    const p = {
+      id: Date.now().toString(), floor: FLOOR_TYPES[selected].title,
+      len, wid, cut, pricePerUnit, result, date: new Date().toISOString()
+    };
+    const newList = [p, ...projects].slice(0,50);
+    setProjects(newList);
+    await AsyncStorage.setItem('@bf_projects', JSON.stringify(newList));
+    Alert.alert('Gespeichert', 'Projekt lokal gespeichert');
+  };
 
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
+  const loadProjects = async () => {
+    try {
+      const raw = await AsyncStorage.getItem('@bf_projects');
+      if (raw) setProjects(JSON.parse(raw));
+    } catch(e){ console.log(e); }
+  };
 
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
+  const exportPDF = async () => {
+    if (!result) { Alert.alert('Fehler','Erst Berechnen'); return; }
+    const f = FLOOR_TYPES[selected];
+    const html = `
+      <h1>Angebot — ${f.title}</h1>
+      <p>Raum: ${len}m × ${wid}m</p>
+      <p>Verschnitt: ${cut}%</p>
+      <p>Fläche: ${result.area} m²</p>
+      <p>Einheiten: ${result.units} (${f.unitLabel})</p>
+      <p>Preis: ${result.total ?? '—'}</p>
+      <h3>Werkzeuge</h3><ul>${f.tools.map(t=>`<li>${t}</li>`).join('')}</ul>
+      <h3>Montagehinweise</h3><ol>${f.montage.map(m=>`<li>${m}</li>`).join('')}</ol>
+    `;
+    try {
+      const { uri } = await Print.printToFileAsync({ html });
+      if (uri) {
+        if (!(await Sharing.isAvailableAsync())) {
+          Alert.alert('PDF fertig', `Datei: ${uri}`);
+        } else {
+          await Sharing.shareAsync(uri);
+        }
+      }
+    } catch(e) { Alert.alert('Fehler', 'PDF nicht erstellt'); console.log(e); }
+  };
 
-<BoxLink
-  title="Automate submissions"
-  description="Learn how you can have the service take your successful builds and handle uploading them to app stores for you automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
+  const clearAll = async () => {
+    await AsyncStorage.removeItem('@bf_projects');
+    setProjects([]);
+    Alert.alert('Gelöscht', 'Alle gespeicherten Projekte wurden entfernt');
+  };
 
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
+  // ---------- UI ----------
+  const floor = FLOOR_TYPES[selected];
 
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, but you can also run it on your own machine, for example, to debug or to comply with any company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
+  return (
+    <ScrollView style={styles.page}>
+      <Text style={styles.header}>Profi Bodenleger App</Text>
 
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+      {/* Carousel / Kacheln */}
+      <View style={styles.carousel}>
+        <FlatList
+          data={FLOOR_TYPES}
+          horizontal
+          keyExtractor={i=>i.id}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({item, index}) => (
+            <TouchableOpacity onPress={()=> setSelected(index)} style={[styles.tile, selected===index && styles.tileActive]}>
+              <ImageBackground source={{uri:item.image}} style={styles.tileImg} imageStyle={{borderRadius:10}}>
+                <View style={styles.tileOverlay}>
+                  <Text style={styles.tileTitle}>{item.title}</Text>
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+
+      {/* Rechner Card */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>{floor.title} — Rechner</Text>
+        <TextInput style={styles.input} placeholder="Länge (m)" keyboardType="numeric" value={len} onChangeText={setLen} />
+        <TextInput style={styles.input} placeholder="Breite (m)" keyboardType="numeric" value={wid} onChangeText={setWid} />
+        <TextInput style={styles.input} placeholder="Verschnitt (%)" keyboardType="numeric" value={cut} onChangeText={setCut} />
+        <TextInput style={styles.input} placeholder={`Preis pro Einheit (€) — ${floor.unitLabel}`} keyboardType="numeric" value={pricePerUnit} onChangeText={setPricePerUnit} />
+        <View style={{flexDirection:'row', gap:10, justifyContent:'space-between'}}>
+          <TouchableOpacity onPress={calculate} style={styles.btn}><Text style={styles.btnText}>Berechnen</Text></TouchableOpacity>
+          <TouchableOpacity onPress={saveProject} style={[styles.btn, styles.btnAlt]}><Text style={styles.btnText}>Speichern</Text></TouchableOpacity>
+          <TouchableOpacity onPress={exportPDF} style={[styles.btn, styles.btnAlt2]}><Text style={styles.btnText}>PDF</Text></TouchableOpacity>
+        </View>
+
+        {result && (
+          <View style={styles.result}>
+            <Text style={styles.resultText}>Benötigte Fläche: {result.area} m²</Text>
+            <Text style={styles.resultText}>Einheiten: {result.units} ({floor.unitLabel})</Text>
+            {result.total && <Text style={styles.resultText}>Preis: {result.total}</Text>}
+          </View>
+        )}
+      </View>
+
+      {/* Tools & Montage */}
+      <View style={styles.card}>
+        <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
+          <Text style={styles.cardTitle}>{floor.title} — Werkzeuge & Montage</Text>
+          <View style={{flexDirection:'row', alignItems:'center'}}>
+            <Text style={{marginRight:8}}>Tools</Text>
+            <Switch value={showTools} onValueChange={setShowTools} />
+          </View>
+        </View>
+
+        {showTools && (
+          <>
+            <Text style={styles.sub}>Werkzeugliste</Text>
+            {floor.tools.map((t,i)=>(
+              <View key={i} style={styles.toolRow}>
+                <Text>• {t}</Text>
+              </View>
+            ))}
+
+            <Text style={[styles.sub,{marginTop:8}]}>Montagehinweise</Text>
+            {floor.montage.map((m,i)=>(
+              <View key={i} style={styles.toolRow}>
+                <Text>{i+1}. {m}</Text>
+              </View>
+            ))}
+          </>
+        )}
+      </View>
+
+      {/* Checkliste */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Checkliste (Tipps)</Text>
+        <View style={styles.checkRow}><Text>• Hohlstellen prüfen (Stipper setzen)</Text></View>
+        <View style={styles.checkRow}><Text>• Untergrund schleifen & spachteln</Text></View>
+        <View style={styles.checkRow}><Text>• Grundierung auftragen</Text></View>
+        <View style={styles.checkRow}><Text>• Werkzeuge bereitstellen (Tischsäge, Gasnagler...)</Text></View>
+        <View style={{marginTop:8, flexDirection:'row', gap:8}}>
+          <TouchableOpacity onPress={()=> Alert.alert('Hinweis','Haken setzen beim Einsatz auf der Baustelle')} style={styles.btn}><Text style={styles.btnText}>Anwenden</Text></TouchableOpacity>
+          <TouchableOpacity onPress={clearAll} style={[styles.btn, styles.btnAlt]}><Text style={styles.btnText}>Projekte löschen</Text></TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Gespeicherte Projekte */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Gespeicherte Projekte</Text>
+        {projects.length===0 ? <Text style={{textAlign:'center', padding:8}}>Keine Projekte</Text> :
+          projects.map(p=>(
+            <View key={p.id} style={styles.project}>
+              <Text style={{fontWeight:'600'}}>{p.floor} — {p.result.area} m²</Text>
+              <Text>{new Date(p.date).toLocaleString()}</Text>
+            </View>
+          ))
+        }
+      </View>
+
+      <View style={{height:60}} />
+    </ScrollView>
+  );
+}
+
+// ---------- Styles ----------
+const styles = StyleSheet.create({
+  page: { flex:1, backgroundColor:'#f4f6fb', paddingTop:40, paddingHorizontal:12 },
+  header: { fontSize:24, fontWeight:'700', color:'#1F3A93', marginBottom:12, textAlign:'center' },
+  carousel: { height:140, marginBottom:12 },
+  tile: { width:140, height:120, marginRight:12, borderRadius:10, overflow:'hidden', borderWidth:2, borderColor:'transparent' },
+  tileActive: { borderColor:'#FF9500' },
+  tileImg: { width:'100%', height:'100%', justifyContent:'flex-end' },
+  tileOverlay: { backgroundColor:'rgba(0,0,0,0.25)', padding:6 },
+  tileTitle: { color:'#fff', fontWeight:'700', textAlign:'center' },
+  card: { backgroundColor:'#fff', borderRadius:12, padding:12, marginBottom:12, shadowColor:'#000', shadowOpacity:0.06, shadowRadius:6 },
+  cardTitle: { fontSize:18, fontWeight:'700', marginBottom:8, color:'#333' },
+  input: { borderWidth:1, borderColor:'#e0e0e0', borderRadius:8, padding:10, marginBottom:8, backgroundColor:'#fff' },
+  btn: { backgroundColor:'#1F3A93', paddingVertical:10, paddingHorizontal:12, borderRadius:8, alignItems:'center', minWidth:90 },
+  btnAlt: { backgroundColor:'#4FC1E9' },
+  btnAlt2: { backgroundColor:'#FF9500' },
+  btnText: { color:'#fff', fontWeight:'700' },
+  result: { marginTop:10, padding:10, backgroundColor:'#f0f8ff', borderRadius:8 },
+  resultText: { fontSize:16, color:'#2E7D32', fontWeight:'600', marginBottom:4 },
+  sub: { fontWeight:'700', marginTop:6, marginBottom:6 },
+  toolRow: { paddingVertical:4, borderBottomWidth:0.5, borderColor:'#eee' },
+  checkRow: { paddingVertical:6, borderBottomWidth:0.5, borderColor:'#f0f0f0' },
+  project: { padding:8, borderBottomWidth:0.5, borderColor:'#eee' }
+});
