@@ -355,6 +355,12 @@ export declare const grayscale: (amount: number) => ModifierConfig;
  */
 export declare const buttonStyle: (style: "automatic" | "bordered" | "borderedProminent" | "borderless" | "glass" | "glassProminent" | "plain") => ModifierConfig;
 /**
+ * Sets the text field style for text field views.
+ * @param style - The text field style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textfieldstyle(_:)).
+ */
+export declare const textFieldStyle: (style: "automatic" | "plain" | "roundedBorder") => ModifierConfig;
+/**
  * Controls how the keyboard is dismissed when scrolling.
  * @param mode - The keyboard dismiss mode.
  * @platform ios 16.0+
