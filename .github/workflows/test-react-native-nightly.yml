@@ -8,9 +8,11 @@ on:
     branches: [main]
     paths:
       - .github/workflows/test-react-native-nightly.yml
+      - packages/create-expo-nightly/**
   pull_request:
     paths:
       - .github/workflows/test-react-native-nightly.yml
+      - packages/create-expo-nightly/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
