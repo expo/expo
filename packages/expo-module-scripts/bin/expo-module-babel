@@ -1,7 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import { npx } from './npx';
 
-script_dir="$(dirname "$0")"
+export function expoModuleBuild(args) {
+  npx(['babel', ...args]);
+}
 
-"$script_dir/npx" babel "$@"
+if (import.meta.main)  {
+  expoModuleBuild(process.argv);
+}

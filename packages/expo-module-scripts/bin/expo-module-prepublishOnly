@@ -1,9 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import { npx } from './npx';
+import { setExpoNonInteractive } from './expo-module-utils.js';
 
-script_dir="$(dirname "$0")"
+function expoModulePrepublishOnly() {
+  setExpoNonInteractive();
+  npx(['proofread']);
+}
 
-export EXPO_NONINTERACTIVE=1
-
-"$script_dir/npx" proofread
+if (import.meta.main) {
+  expoModulePrepublishOnly();
+}

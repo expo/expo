@@ -1,13 +1,25 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-# Runs `npx` through Yarn or pnpm if necessary so that the environment variables are set up similarly across
-# Yarn, pnpm and npm.
+import process from 'node:process';
+import child_process from 'node:child_process';
 
-# shellcheck disable=SC2154
-if [[ "$npm_config_user_agent" =~ yarn ]] && [ -x "$(command -v yarn)" ]; then
-  yarn exec -- npx "$@"
-elif [[ "$npm_config_user_agent" =~ pnpm ]] && [ -x "$(command -v pnpm)" ]; then
-  pnpm exec -- npx "$@"
-else
-  npx "$@"
-fi
+function isExecutableAvailable(name) {
+  return child_process.spawnSync(name, ['-v']).status === 0
+}
+
+export function npx(args) {
+  const userAgent = process.env['npm_config_user_agent']
+
+  if (userAgent === 'yarn' && isExecutableAvailable('yarn')) {
+    child_process.spawnSync('yarn', ['exec', '--', 'npx', ...args]);
+  } else if (userAgent === 'pnpm' && isExecutableAvailable('pnpm')) {
+    child_process.spawnSync('pnpm', ['exec', '--', 'npx', ...args]);
+  } else {
+    child_process.spawnSync('npx', args);
+  }
+}
+
+if (import.meta.main) {
+  npx(process.argv);
+}

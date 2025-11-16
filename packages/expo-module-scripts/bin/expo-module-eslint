@@ -1,7 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import process from 'node:process';
 
-script_dir="$(dirname "$0")"
+import { npx } from './npx';
 
-"$script_dir/npx" eslint "$@"
+export function expoModuleEslint(args) {
+  npx(['eslint', ...args]);
+}
+
+if (import.meta.main) {
+  expoModuleEslint(process.argv);
+}

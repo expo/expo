@@ -1,22 +1,31 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import fs from 'node:fs';
 
-script_dir="$(dirname "$0")"
+import { expoModuleBuild } from './expo-module-build';
+import { expoModuleClean } from './expo-module-clean';
+import { expoModuleConfigure } from './expo-module-configure';
+import { getExtraModuleBuildTypes, setExpoNonInteractive } from './expo-module-utils.js';
 
-export EXPO_NONINTERACTIVE=1
+function expoModulePrepare() {
+  setExpoNonInteractive();
 
-echo "Configuring module"
-"$script_dir/expo-module-clean"
-"$script_dir/expo-module-configure"
-"$script_dir/expo-module-build"
+  console.log('Configuring module');
+  expoModuleClean([]);
+  expoModuleConfigure([]);
+  expoModuleBuild([])
 
-extra_module_build_types=("plugin" "cli" "utils" "scripts")
-for i in "${extra_module_build_types[@]}"
-do
-  if [[ -d "$i" ]]; then
-    echo "Configuring $i"
-    "$script_dir/expo-module-clean" "$i"
-    "$script_dir/expo-module-build" "$i"
-  fi
-done
+  for (const buildType of getExtraModuleBuildTypes()) {
+    if (fs.existsSync(buildType)) {
+      console.log(`Configuring ${buildType}`);
+
+      expoModuleClean([buildType]);
+      expoModuleBuild([buildType])
+    }
+  }
+}
+
+if (import.meta.main) {
+  expoModulePrepare();
+}

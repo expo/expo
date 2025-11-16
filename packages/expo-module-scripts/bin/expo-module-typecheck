@@ -1,12 +1,17 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import { isInteractiveSession } from './expo-module-utils.js';
+import { expoModuleTsc } from './expo-module-tsc';
 
-script_dir="$(dirname "$0")"
+function expoModuleTypecheck(args) {
+  if (isInteractiveSession()) {
+    args.push('--watch');
+  }
 
-args=("$@")
-if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
-  args+=("--watch")
-fi
+  expoModuleTsc(['--noEmit', ...args])
+}
 
-"$script_dir/expo-module-tsc" --noEmit "${args[@]}"
+if (import.meta.main) {
+  expoModuleTypecheck(process.argv)
+}

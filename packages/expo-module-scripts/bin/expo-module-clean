@@ -1,16 +1,23 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import process from 'node:process';
+import fs from 'node:fs';
 
-if [[ ! -f package.json ]]; then
-  echo "The current working directory is not a package's root directory"
-  exit 1
-fi
+export function expoModuleClean() {
+  if (!fs.existsSync('./package.json')) {
+    console.log('The current working directory is not a package\'s root directory');
+    process.exit(1)
+  }
 
-directory=$1
-# Support `yarn clean plugin` to delete ./plugin/build/
-if [[ -n $directory ]]; then
-  rm -rf "$directory/build"
-else
-  rm -rf build
-fi
+  const directory = process.argv[1];
+  if (directory.length) {
+    fs.rmSync(`${directory}/build`, { force: true })
+  } else {
+    fs.rmSync('build', { force: true })
+  }
+}
+
+if (import.meta.main) {
+  expoModuleClean(process.argv);
+}

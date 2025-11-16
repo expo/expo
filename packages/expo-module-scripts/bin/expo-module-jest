@@ -1,7 +1,13 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import process from 'node:process';
+import { npx } from './npx';
 
-script_dir="$(dirname "$0")"
+function expoModuleJest(args) {
+  npx(['jest', ...args]);
+}
 
-"$script_dir/npx" jest "$@"
+if (import.meta.main) {
+  expoModuleJest(process.argv);
+}
