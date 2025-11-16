@@ -448,9 +448,8 @@ export const buttonStyle = (
  * @param style - The text field style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textfieldstyle(_:)).
  */
-export const textFieldStyle = (
-  style: 'automatic' | 'plain' | 'roundedBorder'
-) => createModifier('textFieldStyle', { style });
+export const textFieldStyle = (style: 'automatic' | 'plain' | 'roundedBorder') =>
+  createModifier('textFieldStyle', { style });
 
 /**
  * Controls how the keyboard is dismissed when scrolling.
