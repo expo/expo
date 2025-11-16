@@ -444,6 +444,15 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Sets the text field style for text field views.
+ * @param style - The text field style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textfieldstyle(_:)).
+ */
+export const textFieldStyle = (
+  style: 'automatic' | 'plain' | 'roundedBorder'
+) => createModifier('textFieldStyle', { style });
+
+/**
  * Controls how the keyboard is dismissed when scrolling.
  * @param mode - The keyboard dismiss mode.
  * @platform ios 16.0+

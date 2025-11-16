@@ -1332,6 +1332,31 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
   }
 }
 
+internal enum TextFieldStyle: String, Enumerable {
+  case automatic
+  case plain
+  case roundedBorder
+}
+
+internal struct TextFieldStyleModifier: ViewModifier, Record {
+  @Field var style: TextFieldStyle = .automatic
+
+  func body(content: Content) -> some View {
+    switch style {
+    case .plain:
+      content.textFieldStyle(.plain)
+    case .roundedBorder:
+      #if os(iOS)
+      content.textFieldStyle(.roundedBorder)
+      #else
+      content.textFieldStyle(.automatic)
+      #endif
+    default:
+      content.textFieldStyle(.automatic)
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -1523,6 +1548,10 @@ extension ViewModifierRegistry {
 
     register("buttonStyle") { params, appContext, _ in
       return try ButtonStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("textFieldStyle") { params, appContext, _ in
+      return try TextFieldStyleModifier(from: params, appContext: appContext)
     }
 
     register("scrollContentBackground") { params, appContext, _ in
