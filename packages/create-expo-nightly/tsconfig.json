@@ -1,10 +1,9 @@
 {
-  "extends": "@tsconfig/node20/tsconfig.json",
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     "module": "preserve",
     "moduleResolution": "bundler",
     "esModuleInterop": true,
-    "declaration": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
@@ -12,11 +11,9 @@
     "noImplicitThis": true,
     "noImplicitReturns": true,
     "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
 
-    "outDir": "build",
+    "noEmit": true,
     "rootDir": "src"
   },
-  "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["./src"]
 }

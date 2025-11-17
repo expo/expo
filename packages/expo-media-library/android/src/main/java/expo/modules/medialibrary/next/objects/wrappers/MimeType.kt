@@ -24,15 +24,22 @@ value class MimeType(val value: String?) {
   fun isVideo(): Boolean = type == "video"
   fun isAudio(): Boolean = type == "audio"
 
-  fun rootDirectory(): String = when {
+  fun assetRootDirectory(): String = when {
     value == null -> Environment.DIRECTORY_DCIM
     isImage() || isVideo() -> Environment.DIRECTORY_DCIM
     isAudio() -> Environment.DIRECTORY_MUSIC
     else -> Environment.DIRECTORY_DCIM
   }
 
-  fun externalStoragePublicDirectory(): File =
-    Environment.getExternalStoragePublicDirectory(rootDirectory())
+  fun albumRootDirectory(): String = when {
+    value == null -> Environment.DIRECTORY_PICTURES
+    isImage() || isVideo() -> Environment.DIRECTORY_PICTURES
+    isAudio() -> Environment.DIRECTORY_MUSIC
+    else -> Environment.DIRECTORY_PICTURES
+  }
+
+  fun externalStorageAssetDirectory(): File =
+    Environment.getExternalStoragePublicDirectory(assetRootDirectory())
 
   fun mediaCollectionUri(): Uri = when {
     value == null -> EXTERNAL_CONTENT_URI

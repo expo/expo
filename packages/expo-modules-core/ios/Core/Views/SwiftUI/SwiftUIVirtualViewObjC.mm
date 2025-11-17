@@ -8,10 +8,11 @@
  */
 
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
-
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
-#import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
+
+#import <ExpoModulesJSI/EXJSIConversions.h>
+
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewProtocol.h>
 
@@ -357,10 +358,25 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
   }
 }
 
+- (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height
+{
+  if (_state) {
+    float widthValue = width ? [width floatValue] : std::numeric_limits<float>::quiet_NaN();
+    float heightValue = height ? [height floatValue] : std::numeric_limits<float>::quiet_NaN();
+    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
+  }
+}
+
 - (BOOL)supportsPropWithName:(nonnull NSString *)name
 {
   // Implemented in `SwiftUIVirtualView.swift`
   return NO;
+}
+
+- (void)invalidate
+{
+  // Default implementation does nothing.
+  [self prepareForRecycle];
 }
 
 @end

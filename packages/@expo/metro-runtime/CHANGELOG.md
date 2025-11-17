@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Move error overlay UI to `@expo/log-box` package ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 6.1.2 — 2025-09-12
 

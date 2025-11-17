@@ -7,8 +7,10 @@
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
+import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
+import { type RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -21,7 +23,6 @@ import {
   ExpoRouterRuntimeManifest,
   MetroBundlerDevServer,
 } from '../start/server/metro/MetroBundlerDevServer';
-import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
@@ -83,6 +84,7 @@ export async function getFilesToExportFromServerAsync(
   projectRoot: string,
   {
     manifest,
+    serverManifest,
     renderAsync,
     // Servers can handle group routes automatically and therefore
     // don't require the build-time generation of every possible group
@@ -92,11 +94,25 @@ export async function getFilesToExportFromServerAsync(
     files = new Map(),
   }: {
     manifest: ExpoRouterRuntimeManifest;
+    serverManifest: RoutesManifest;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     exportServer?: boolean;
     files?: ExportAssetMap;
   }
 ): Promise<ExportAssetMap> {
+  if (!exportServer && serverManifest) {
+    // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
+    // EAS Hosting to recognize the `headers` and `redirects` configs
+    const subsetServerManifest = {
+      headers: serverManifest.headers,
+      redirects: serverManifest.redirects,
+    };
+    files.set('_expo/.routes.json', {
+      contents: JSON.stringify(subsetServerManifest, null, 2),
+      targetDomain: 'client',
+    });
+  }
+
   await Promise.all(
     getHtmlFiles({ manifest, includeGroupVariations: !exportServer }).map(
       async ({ route, filePath, pathname }) => {
@@ -192,12 +208,13 @@ export async function exportFromServerAsync(
     exp,
   });
 
-  const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({
-      includeSourceMaps,
-    }),
-    devServer.getStaticRenderFunctionAsync(),
-  ]);
+  const [resources, { manifest, serverManifest, renderAsync, executeLoaderAsync }] =
+    await Promise.all([
+      devServer.getStaticResourcesAsync({
+        includeSourceMaps,
+      }),
+      devServer.getStaticRenderFunctionAsync(),
+    ]);
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
@@ -206,9 +223,32 @@ export async function exportFromServerAsync(
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
     manifest,
+    serverManifest,
     exportServer,
     async renderAsync({ pathname, route }) {
-      const template = await renderAsync(pathname);
+      const normalizedPathname =
+        pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
+
+      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
+      let renderOpts;
+
+      if (useServerLoaders) {
+        const loaderData = await executeLoaderAsync(normalizedPathname, route);
+
+        if (loaderData != null) {
+          const loaderPath = getLoaderModulePath(normalizedPathname);
+          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+          files.set(fileSystemPath, {
+            contents: JSON.stringify(loaderData, null, 2),
+            targetDomain: 'client',
+            loaderId: normalizedPathname,
+          });
+
+          renderOpts = { loader: { data: loaderData } };
+        }
+      }
+
+      const template = await renderAsync(normalizedPathname, route, renderOpts);
       let html = await serializeHtmlWithAssets({
         isExporting,
         resources: resources.artifacts,
@@ -461,6 +501,7 @@ export async function exportApiRoutesStandaloneAsync(
     // TODO: Export an HTML entry for each file. This is a temporary solution until we have SSR/SSG for RSC.
     await getFilesToExportFromServerAsync(devServer.projectRoot, {
       manifest: htmlManifest,
+      serverManifest,
       exportServer: true,
       files,
       renderAsync: async ({ pathname, filePath }) => {
@@ -485,7 +526,7 @@ async function exportApiRoutesAsync({
   ...props
 }: Pick<Options, 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
-  manifest: ExpoRouterServerManifestV1;
+  manifest: RoutesManifest<string>;
   platform: string;
   apiRoutesOnly?: boolean;
 }): Promise<ExportAssetMap> {

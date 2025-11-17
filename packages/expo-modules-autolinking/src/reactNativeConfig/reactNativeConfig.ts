@@ -13,6 +13,7 @@ import type {
   RNConfigDependency,
   RNConfigDependencyAndroid,
   RNConfigDependencyIos,
+  RNConfigDependencyWeb,
   RNConfigReactNativeAppProjectConfig,
   RNConfigReactNativeLibraryConfig,
   RNConfigReactNativeProjectConfig,
@@ -28,6 +29,7 @@ import {
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
+import { checkDependencyWebAsync } from './webResolver';
 
 const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
   const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
@@ -47,9 +49,17 @@ export async function resolveReactNativeModule(
 ): Promise<RNConfigDependency | null> {
   if (excludeNames.has(resolution.name)) {
     return null;
+  } else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
+    // Starting from version 0.76, the `react-native` package only defines platforms
+    // when @react-native-community/cli-platform-android/ios is installed.
+    // Therefore, we need to manually filter it out.
+    // NOTE(@kitten): `loadConfigAsync` is skipped too, because react-native's config is too slow
+    return null;
   }
 
-  const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(resolution.path);
+  const libraryConfig = (await loadConfigAsync(
+    resolution.path
+  )) as RNConfigReactNativeLibraryConfig;
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
     ...projectConfig?.dependencies?.[resolution.name],
@@ -58,11 +68,6 @@ export async function resolveReactNativeModule(
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
-    return null;
-  } else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
-    // Starting from version 0.76, the `react-native` package only defines platforms
-    // when @react-native-community/cli-platform-android/ios is installed.
-    // Therefore, we need to manually filter it out.
     return null;
   }
 
@@ -80,7 +85,11 @@ export async function resolveReactNativeModule(
     }
   }
 
-  let platformData: RNConfigDependencyAndroid | RNConfigDependencyIos | null = null;
+  let platformData:
+    | RNConfigDependencyAndroid
+    | RNConfigDependencyIos
+    | RNConfigDependencyWeb
+    | null = null;
   if (platform === 'android') {
     platformData = await resolveDependencyConfigImplAndroidAsync(
       resolution.path,
@@ -91,6 +100,12 @@ export async function resolveReactNativeModule(
     platformData = await resolveDependencyConfigImplIosAsync(
       resolution,
       reactNativeConfig.platforms?.ios,
+      maybeExpoModuleConfig
+    );
+  } else if (platform === 'web') {
+    platformData = await checkDependencyWebAsync(
+      resolution,
+      reactNativeConfig,
       maybeExpoModuleConfig
     );
   }
@@ -120,7 +135,7 @@ export async function createReactNativeConfigAsync({
   autolinkingOptions,
 }: CreateRNConfigParams): Promise<RNConfigResult> {
   const excludeNames = new Set(autolinkingOptions.exclude);
-  const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(appRoot);
+  const projectConfig = (await loadConfigAsync(appRoot)) as RNConfigReactNativeProjectConfig;
 
   // custom native modules should be resolved first so that they can override other modules
   const searchPaths = autolinkingOptions.nativeModulesDir
@@ -186,7 +201,7 @@ export async function resolveAppProjectConfigAsync(
     if (gradle == null || manifest == null) {
       return {};
     }
-    const packageName = await parsePackageNameAsync(androidDir, manifest, gradle);
+    const packageName = await parsePackageNameAsync(manifest, gradle);
 
     return {
       android: {

@@ -42,8 +42,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      * at which playback will begin once the `play()` method is called.
      *
      * Setting `currentTime` to a new value seeks the player to the given time.
-     * Note that frame accurate seeking may incur additional decoding delay which can impact seeking performance.
-     * Consider using the [`seekBy`](#seekbyseconds) function if the time does not have to be set precisely.
+     * Check out the [`seekTolerance`](#seektolerance) property to configure the seeking precision.
      */
     currentTime: number;
     /**
@@ -202,6 +201,23 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      * @platform ios
      */
     readonly isExternalPlaybackActive: boolean;
+    /**
+     * Determines the time that the actual position seeked to may precede or exceed the requested seek position.
+     *
+     * This property affects the precision of setting the [`currentTime`](#currenttime) property and the [`seekBy`](#seekbyseconds) method, and on Android, it also affects the accuracy of the scrubber from the default native controls.
+     *
+     * By default, the player seeks to the exact requested time.
+     *
+     * > If you are trying to optimize for scrubbing (many frequent seeks), also see [`ScrubbingModeOptions`](#scrubbingmodeoptions-1).
+     */
+    seekTolerance: SeekTolerance;
+    /**
+     * Determines whether the scrubbing mode is enabled and what scrubbing optimizations should be enabled.
+     *
+     * > See [`SeekTolerance`](#seektolerance) to set the seeking tolerance, which can also affect the scrubbing performance.
+     *
+     */
+    scrubbingModeOptions: ScrubbingModeOptions;
     /**
      * Initializes a new video player instance with the given source.
      *
@@ -551,5 +567,81 @@ export type AudioTrack = {
      * Label of the audio track in the language of the device.
      */
     label: string;
+};
+/**
+ * Determines the time that the actual position seeked to may precede or exceed the requested seek position.
+ * Larger tolerance will usually result in faster seeking.
+ * This property affects the precision of setting the [`currentTime`](#currenttime) property and the [`seekBy`](#seekbyseconds) method, and on Android, it also affects the accuracy of the scrubber from the default native controls.
+ *
+ * > If you are trying to optimize for scrubbing (many frequent seeks), also see [`ScrubbingModeOptions`](#scrubbingmodeoptions-1).
+ *
+ * @platform android
+ * @platform ios
+ */
+export type SeekTolerance = {
+    /**
+     * The maximum time that the actual position seeked to may precede the requested seek position, in seconds. Must be non-negative.
+     * @default 0
+     */
+    toleranceBefore?: number;
+    /**
+     * The maximum time that the actual position seeked to may exceed the requested seek position, in seconds. Must be non-negative.
+     * @default 0
+     */
+    toleranceAfter?: number;
+};
+/**
+ * Defines scrubbing mode options used by a [`VideoPlayer`](#videoplayer).
+ */
+export type ScrubbingModeOptions = {
+    /**
+     * Whether the codec operating rate should be increased in scrubbing mode.
+     *
+     * You should only enable this when the player is receiving a large number of seeks in a short period of time. For less frequent seeks, fine-tuning the [`SeekTolerance`](#seektolerance-1) may be sufficient.
+     *
+     * On Android, the player may consume more resources in this mode, so it should only be used for short periods of time in response to user interaction (for example, dragging on a progress bar UI element).
+     *
+     * On Android, when `scrubbingModeEnabled` is `true`, the playback is suppressed. You should set this property back to `false` when the user interaction ends to allow the playback to resume.
+     * For best results, on iOS you should pause the playback when scrubbing.
+     *
+     * > For best scrubbing performance, consider also increasing the seeking tolerance using the [`SeekTolerance`](#seektolerance-1) property.
+     *
+     * > Other scrubbing mode options will have no effect when this is `false`.
+     * @default false
+     * @platform android
+     * @platform ios
+     */
+    scrubbingModeEnabled?: boolean;
+    /**
+     * Whether the codec operating rate should be increased in scrubbing mode.
+     *
+     * @platform android
+     * @default true
+     */
+    increaseCodecOperatingRate?: boolean;
+    /**
+     * Sets whether ExoPlayer's dynamic scheduling should be enabled in scrubbing mode.
+     * This can result in available output buffers being handled more quickly when seeking.
+     *
+     * @platform android
+     * @default true
+     */
+    enableDynamicScheduling?: boolean;
+    /**
+     * Sets whether to use `MediaCodec.BUFFER_FLAG_DECODE_ONLY` in scrubbing mode.
+     * When playback is using MediaCodec on API 34+, this flag can speed up seeking by signalling that the decoded output of buffers between the previous keyframe and the target frame is not needed by the player.
+     *
+     * @platform android
+     * @default true
+     */
+    useDecodeOnlyFlag?: boolean;
+    /**
+     * Sets whether to avoid flushing the decoder (where possible) in scrubbing mode.
+     * When `true`, avoids flushing the decoder when a new seek starts decoding from a key-frame in compatible content.
+     *
+     * @platform android
+     * @default true
+     */
+    allowSkippingMediaCodecFlush?: boolean;
 };
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

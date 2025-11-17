@@ -3,6 +3,15 @@
 /ios/Pods
 /android/app/src/androidTest/assets/TestSuite.json
 /e2e/maestro-generated.yaml
+# keep only base screenshots for comparison
+/e2e/**/*.png
+!/e2e/**/*.base.ios.png
+!/e2e/**/*.base.android.png
+!/e2e/**/*.base.png
+!/e2e/image-comparison/test-fixtures/*.png
+# screen inspector is built from source
+/e2e/image-comparison/inspector/bin/
+
 .kotlin/
 dist/
 

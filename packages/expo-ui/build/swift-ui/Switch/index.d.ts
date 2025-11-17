@@ -1,3 +1,5 @@
+import type { ColorValue } from 'react-native';
+import { type SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
 export type SwitchProps = {
     /**
@@ -9,6 +11,10 @@ export type SwitchProps = {
      */
     label?: string;
     /**
+     * The name of the SFSymbol to be displayed in the label.
+     */
+    systemImage?: SFSymbol;
+    /**
      * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
      * @default 'switch'
      */
@@ -18,9 +24,9 @@ export type SwitchProps = {
      */
     onValueChange?: (value: boolean) => void;
     /**
-     * Picker color. On iOS, it only applies to the `menu` variant.
+     * Picker color.
      */
-    color?: string;
+    color?: ColorValue;
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps) & CommonViewModifierProps;
 export type SwitchSwitchVariantProps = {
     variant?: 'switch';

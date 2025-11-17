@@ -1,0 +1,73 @@
+---
+title: npx testflight command
+sidebar_title: npx testflight
+description: A single command that allows you to build, sign, and submit your iOS app to TestFlight.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { CODE } from '~/ui/components/Text';
+
+[`npx testflight`](https://www.npmjs.com/package/testflight) is a CLI tool that walks you through building, signing, and submitting your iOS app to TestFlight.
+
+## Prerequisites
+
+- A React Native iOS project you want to deploy to TestFlight
+- A paid [Apple Developer Account](https://developer.apple.com/account/)
+- An [Expo](https://expo.dev/signup) account
+
+## Run `npx testflight` command
+
+Run the following command inside your project's root directory:
+
+<Terminal cmd={['$ npx testflight']} />
+
+The command workflow is interactive and walks you through the following prompts using the latest EAS CLI version:
+
+- **Initialize or detect a linked EAS project.** If you are running this command in a new project, the CLI will create a new EAS project using the slug from your app config file. If the CLI detects that the project is created on EAS already, it will continue to use the same slug.
+- **Confirm the bundle identifier.** If you are running this command in a new project, you can enter a new identifier, or for subsequent command runs, accept the one the CLI detects. The wizard also asks whether your app uses standard or exempt encryption. When this command is run subsequently, the [`buildNumber`](/tutorial/eas/manage-app-versions/#understanding-developer-facing-and-user-facing-app-versions) automatically increments.
+- **Sign in to Apple Developer.** Provide your Apple ID, complete two-factor authentication, and allow the CLI to create new or reuse existing distribution certificates or provisioning profiles.
+- **Generate credentials.** If EAS does not already manage credentials for the bundle identifier, the CLI creates or updates the distribution certificate and provisioning profile for you.
+- **Create a production build**. It starts an iOS build using the default EAS [`production` profile](/build/eas-json/#production-builds) to create an iOS archive (**.ipa**) file.
+- **Verify App Store Connect access.** The submit step checks for an [App Store Connect API key](https://expo.fyi/creating-asc-api-key) and creates one if needed.
+- **Submits the app to TestFlight.** Uploads the resulting **.ipa** file to App Store Connect and enables TestFlight distribution for your team's internal testing group.
+
+You will receive build and submission status updates throughout the process inside the terminal window. Within the App Store Connect dashboard, you can manage testers and distribution.
+
+> **Note**: Every prompt mirrors the EAS Build and EAS Submit flows, so you can answer the same way you would when running eas build or eas submit separately. This means, during the build and submission process, the EAS dashboard links will be generated and you can use them to view the process. After the submission process is successfully completed, you will get the link to the App Store Connect, which you can use to view your submission to TestFlight.
+
+## Why use `npx testflight`
+
+- Saves developer time without requiring separate build-and-submit steps
+- Handles Apple credentials, provisioning profiles, and App Store Connect API keys through guided prompts with EAS CLI
+- Produces a new build and submits it to TestFlight without running separate commands
+- Works well on shared machines or CI runners where installing global packages is inconvenient
+
+## When to use `npx testflight`
+
+- Ship a TestFlight build quickly from your local machine
+- Trigger one or many builds to TestFlight without configuring a full CI workflow
+- Have internal test groups and want to make the latest changes in your app available as soon as possible
+- Let EAS handle certificates, provisioning profiles, and API keys automatically
+
+## Common question
+
+<Collapsible summary={<>Can I run <CODE>npx testflight</CODE> command in non-interactive mode?</>}>
+
+Yes, when you provide `ascAppId` in the `submit.production` profile in the **eas.json**, the `npx testflight` command will bypass the process of ensuring your app exists on App Store Connect.
+
+```json eas.json
+{
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "your-app-store-connect-app-id"
+      }
+    }
+  }
+}
+```
+
+To learn more about how to find your ascAppId, see [these steps in the Submit to the Apple App Store](/submit/ios/#how-to-find-ascappid).
+
+</Collapsible>

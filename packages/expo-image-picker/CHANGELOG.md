@@ -6,7 +6,12 @@
 
 ### 🎉 New features
 
+- [iOS] Add `shouldDownloadFromNetwork` option to fix iCloud video download ([#40697](https://github.com/expo/expo/pull/40697) by [@kosmydel](https://github.com/kosmydel))
+- [android] support colors configuration ([#40834](https://github.com/expo/expo/pull/40834) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🐛 Bug fixes
+
+- [android] fix `cropToolbarColor` default value ([#40834](https://github.com/expo/expo/pull/40834) by [@kosmydel](https://github.com/kosmydel))
 
 ### 💡 Others
 

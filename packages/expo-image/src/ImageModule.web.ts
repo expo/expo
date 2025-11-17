@@ -1,6 +1,6 @@
 import { NativeModule, registerWebModule } from 'expo-modules-core';
 
-import type { ImageNativeModule, ImageRef, ImageSource } from './Image.types';
+import { ImageCacheConfig, type ImageNativeModule, ImageRef, ImageSource } from './Image.types';
 import ImageRefWeb from './web/ImageRef';
 
 class ImageModule extends NativeModule implements ImageNativeModule {
@@ -34,6 +34,8 @@ class ImageModule extends NativeModule implements ImageNativeModule {
   async clearDiskCache(): Promise<boolean> {
     return false;
   }
+
+  configureCache(_: ImageCacheConfig): void {}
 
   async loadAsync(source: ImageSource): Promise<ImageRef> {
     if (!source.uri) {

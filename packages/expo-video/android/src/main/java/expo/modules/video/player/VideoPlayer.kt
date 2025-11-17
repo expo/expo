@@ -37,6 +37,8 @@ import expo.modules.video.playbackService.ExpoVideoPlaybackService
 import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.ScrubbingModeOptions
+import expo.modules.video.records.SeekTolerance
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.MutableWeakReference
@@ -69,6 +71,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
   val intervalUpdateClock = IntervalUpdateClock(this)
 
+  var hasRenderedAFrameOfVideoSource = false
   var playing by IgnoreSameSet(false) { new, old ->
     sendEvent(PlayerEvent.IsPlayingChanged(new, old))
   }
@@ -179,6 +182,22 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       sendEvent(PlayerEvent.VideoTrackChanged(value, old))
     }
 
+  var seekTolerance: SeekTolerance = SeekTolerance()
+    set(value) {
+      field = value
+      appContext?.mainQueue?.launch {
+        seekTolerance.applyToPlayer(this@VideoPlayer)
+      }
+    }
+
+  var scrubbingModeOptions: ScrubbingModeOptions = ScrubbingModeOptions()
+    set(value) {
+      field = value
+      appContext?.mainQueue?.launch {
+        scrubbingModeOptions.applyToPlayer(this@VideoPlayer)
+      }
+    }
+
   var availableVideoTracks: List<VideoTrack> = emptyList()
     private set
 
@@ -254,6 +273,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
         resetPlaybackInfo()
       }
       subtitles.setSubtitlesEnabled(false)
+      hasRenderedAFrameOfVideoSource = false
       super.onMediaItemTransition(mediaItem, reason)
     }
 
@@ -329,6 +349,16 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   override fun deallocate() {
     super.deallocate()
     close()
+  }
+
+  /**
+   * Used to notify the player that is has been disconnected from the player view by another player.
+   */
+  fun hasBeenDisconnectedFromPlayerView() {
+    if (currentPlayerView.get()?.player == this.player) {
+      throw IllegalStateException("The player has been notified of disconnection from the player view, even though it's still connected.")
+    }
+    currentPlayerView.set(null)
   }
 
   fun changePlayerView(playerView: PlayerView?) {
@@ -454,6 +484,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
     return FirstFrameEventGenerator(player, currentPlayerView) {
+      hasRenderedAFrameOfVideoSource = true
       sendEvent(PlayerEvent.RenderedFirstFrame())
     }
   }

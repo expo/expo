@@ -1,7 +1,8 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import type { NativeTabsLabelStyle } from '../NativeBottomTabs/types';
-export interface LabelProps {
+import { VectorIcon } from '../../primitives';
+import type { NativeTabsLabelStyle } from '../types';
+export interface NativeTabsTriggerLabelProps {
     /**
      * The text to display as the label for the tab.
      */
@@ -13,10 +14,14 @@ export interface LabelProps {
      */
     hidden?: boolean;
 }
-export declare function Label(props: LabelProps): null;
-export interface SourceIconCombination {
+export declare const NativeTabsTriggerLabel: React.FC<NativeTabsTriggerLabelProps>;
+export interface SrcIcon {
     /**
      * The image source to use as an icon.
+     *
+     * When `sf` prop is used it will override this prop on iOS.
+     *
+     * When `drawable` or `material` prop is used it will override this prop on Android.
      *
      * The value can be provided in two ways:
      * - As an image source
@@ -39,10 +44,8 @@ export interface SourceIconCombination {
         default?: ImageSourcePropType | React.ReactElement;
         selected: ImageSourcePropType | React.ReactElement;
     };
-    drawable?: never;
-    sf?: never;
 }
-export interface NamedIconCombination {
+export interface SFSymbolIcon {
     /**
      * The name of the SF Symbol to use as an icon.
      *
@@ -66,61 +69,54 @@ export interface NamedIconCombination {
         default?: SFSymbol;
         selected: SFSymbol;
     };
+}
+export interface DrawableIcon {
     /**
      * The name of the drawable resource to use as an icon.
      * @platform android
      */
     drawable?: string;
-    src?: never;
 }
-export type IconProps = {
+export type BaseNativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
-} & (NamedIconCombination | SourceIconCombination);
+};
+export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
 /**
  * Renders an icon for the tab.
+ *
+ * Accepts various icon sources such as SF Symbols, drawable resources, material icons, or image sources.
+ *
+ * Acceptable props combinations:
+ * - `sf` and `drawable` - `sf` will be used for iOS icon, `drawable` for Android icon
+ * - `sf` and `src` - `sf` will be used for iOS icon, `src` for Android icon
+ * - `src` and `drawable` - `src` will be used for iOS icon, `drawable` for Android icon
+ * - `src` only - `src` will be used for both iOS and Android icons
  *
  * @platform ios
  * @platform android
  */
-export declare function Icon(props: IconProps): null;
-export interface VectorIconProps<NameT extends string> {
-    /**
-     * The family of the vector icon.
-     *
-     * @example
-     * ```tsx
-     * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-     * ```
-     */
-    family: {
-        getImageSource: (name: NameT, size: number, color: ColorValue) => Promise<ImageSourcePropType>;
-    };
-    /**
-     * The name of the vector icon.
-     */
-    name: NameT;
-}
+export declare const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps>;
 /**
  * Helper component which can be used to load vector icons for `NativeTabs`.
  *
  * @example
  * ```tsx
- * import { NativeTabs, VectorIcon } from 'expo-router';
+ * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
  *
  * export default Layout(){
  *   return (
  *     <NativeTabs>
  *       <NativeTabs.Trigger name="index">
- *         <Icon src={<VectorIcon family={MaterialCommunityIcons} name="home" />} />
+ *         <NativeTabs.Trigger.Icon src={<NativeTabs.Trigger.VectorIcon family={MaterialCommunityIcons} name="home" />} />
  *       </NativeTabs.Trigger>
  *     </NativeTabs>
  *   );
  * }
  * ```
  */
-export declare function VectorIcon<NameT extends string>(props: VectorIconProps<NameT>): null;
-export interface BadgeProps {
+export declare const NativeTabsTriggerVectorIcon: typeof VectorIcon;
+export interface NativeTabsTriggerBadgeProps {
     /**
      * The text to display as the badge for the tab.
      * If not provided, the badge will not be displayed.
@@ -133,5 +129,5 @@ export interface BadgeProps {
     hidden?: boolean;
     selectedBackgroundColor?: ColorValue;
 }
-export declare function Badge(props: BadgeProps): null;
+export declare const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps>;
 //# sourceMappingURL=elements.d.ts.map

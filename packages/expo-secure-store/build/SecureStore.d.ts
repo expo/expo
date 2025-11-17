@@ -59,6 +59,7 @@ export type SecureStoreOptions = {
      * Warning: This option is not supported in Expo Go when biometric authentication is available due to a missing NSFaceIDUsageDescription.
      * In release builds or when using continuous native generation, make sure to use the `expo-secure-store` config plugin.
      *
+     * > **Note:** This library requires a real device for testing since emulators/simulators do not require biometric authentication when retrieving secrets, unlike real iOS devices.
      */
     requireAuthentication?: boolean;
     /**
@@ -114,7 +115,7 @@ export declare function getItemAsync(key: string, options?: SecureStoreOptions):
  * Stores a key–value pair.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
- * @param value The value to store. Size limit is 2048 bytes.
+ * @param value The value to store.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
  * @return A promise that rejects if value cannot be stored on the device.
@@ -125,7 +126,7 @@ export declare function setItemAsync(key: string, value: string, options?: Secur
  * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is set to `true` until the user authenticates.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
- * @param value The value to store. Size limit is 2048 bytes.
+ * @param value The value to store.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
  */

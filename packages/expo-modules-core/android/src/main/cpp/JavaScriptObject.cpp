@@ -9,6 +9,7 @@
 #include "ObjectDeallocator.h"
 #include "JavaReferencesCache.h"
 #include "JSIContext.h"
+#include "JavaScriptArrayBuffer.h"
 
 namespace expo {
 void JavaScriptObject::registerNatives() {
@@ -39,6 +40,10 @@ void JavaScriptObject::registerNatives() {
                                     JavaScriptObject::defineNativeDeallocator),
                    makeNativeMethod("setExternalMemoryPressure",
                                     JavaScriptObject::setExternalMemoryPressure),
+                   makeNativeMethod("isArray", JavaScriptObject::isArray),
+                   makeNativeMethod("getArray", JavaScriptObject::getArray),
+                   makeNativeMethod("isArrayBuffer", JavaScriptObject::isArrayBuffer),
+                   makeNativeMethod("getArrayBuffer", JavaScriptObject::getArrayBuffer),
                  });
 }
 
@@ -195,4 +200,46 @@ void JavaScriptObject::setExternalMemoryPressure(int size) {
   auto &jsRuntime = runtimeHolder.getJSRuntime();
   jsObject->setExternalMemoryPressure(jsRuntime, size);
 }
+
+bool JavaScriptObject::isArray() {
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  return jsObject->isArray(jsRuntime);
+}
+
+jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> JavaScriptObject::getArray() {
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto moduleRegistry = runtimeHolder.getJSIContext();
+
+  auto jsArray = jsObject->getArray(jsRuntime);
+  size_t size = jsArray.size(jsRuntime);
+
+  auto result = jni::JArrayClass<JavaScriptValue::javaobject>::newArray(size);
+  for (size_t i = 0; i < size; i++) {
+    auto element = JavaScriptValue::newInstance(
+      moduleRegistry,
+      runtimeHolder,
+      std::make_shared<jsi::Value>(jsArray.getValueAtIndex(jsRuntime, i))
+    );
+
+    result->setElement(i, element.release());
+  }
+  return result;
+}
+
+bool JavaScriptObject::isArrayBuffer() {
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  return jsObject->isArrayBuffer(jsRuntime);
+}
+
+jni::local_ref<JavaScriptArrayBuffer::javaobject> JavaScriptObject::getArrayBuffer() {
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto jsiContext = runtimeHolder.getJSIContext();
+
+  return JavaScriptArrayBuffer::newInstance(
+    jsiContext,
+    runtimeHolder,
+    std::make_shared<jsi::ArrayBuffer>(jsObject->getArrayBuffer(jsRuntime))
+  );
+}
+
 } // namespace expo

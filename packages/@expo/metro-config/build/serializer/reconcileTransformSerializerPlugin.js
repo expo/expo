@@ -40,7 +40,7 @@ exports.sortDependencies = sortDependencies;
 exports.isEnvBoolean = isEnvBoolean;
 exports.reconcileTransformSerializerPlugin = reconcileTransformSerializerPlugin;
 const generator_1 = __importDefault(require("@babel/generator"));
-const JsFileWrapping_1 = __importDefault(require("@expo/metro/metro/ModuleGraph/worker/JsFileWrapping"));
+const JsFileWrapping = __importStar(require("@expo/metro/metro/ModuleGraph/worker/JsFileWrapping"));
 const importLocationsPlugin_1 = require("@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin");
 const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const metro_source_map_1 = require("@expo/metro/metro-source-map");
@@ -209,7 +209,7 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
         value.dependencies =
             //
             sortDependencies(dependencies, value.dependencies);
-        const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, reconcile.importDefault, reconcile.importAll, dependencyMapName, reconcile.globalPrefix, reconcile.unstable_renameRequire === false);
+        const { ast: wrappedAst } = JsFileWrapping.wrapModule(ast, reconcile.importDefault, reconcile.importAll, dependencyMapName, reconcile.globalPrefix, reconcile.unstable_renameRequire === false);
         const reserved = [];
         if (reconcile.unstable_dependencyMapReservedName != null) {
             reserved.push(reconcile.unstable_dependencyMapReservedName);

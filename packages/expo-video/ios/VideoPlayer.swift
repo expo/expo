@@ -11,6 +11,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   lazy var subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(owner: self)
   private var dangerousPropertiesStore = DangerousPropertiesStore()
   lazy var audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(owner: self)
+  lazy var seeker: VideoPlayerSeeker = VideoPlayerSeeker(player: self)
+  private var tracksLoadingTask: Task<(), Never>?
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .doNotMix {
@@ -52,7 +54,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
 
-      ref.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
+      seeker.seek(to: timeToSeek)
     }
   }
 
@@ -184,6 +186,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     VideoManager.shared.unregister(videoPlayer: self)
 
     videoSourceLoader.cancelCurrentTask()
+    tracksLoadingTask?.cancel()
 
     // We have to replace from the main thread because of KVOs (see comment in VideoSourceLoader).
     // Moreover, in this case we have to keep a strong reference to AVPlayer and remove its item
@@ -268,9 +271,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   private func clearCurrentItem() {
-    DispatchQueue.main.async { [ref, videoSourceLoader, dangerousPropertiesStore] in
+    videoSourceLoader.cancelCurrentTask()
+
+    DispatchQueue.main.async { [ref, dangerousPropertiesStore] in
       ref.replaceCurrentItem(with: nil)
-      videoSourceLoader.cancelCurrentTask()
       dangerousPropertiesStore.reset()
       dangerousPropertiesStore.ownerIsReplacing = false
     }
@@ -334,7 +338,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   func onPlayedToEnd(player: AVPlayer) {
     safeEmit(event: "playToEnd")
     if loop {
-      self.ref.seek(to: .zero)
+      seeker.seek(to: .zero)
       self.ref.play()
     }
   }
@@ -353,28 +357,19 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {
-    // This event means that a new player item has been loaded so the subtitle tracks should change
-    let oldTracks = subtitles.availableSubtitleTracks
-    self.subtitles.onNewPlayerItemLoaded(playerItem: playerItem)
-    let payload = SubtitleTracksChangedEventPayload(
-      availableSubtitleTracks: subtitles.availableSubtitleTracks,
-      oldAvailableSubtitleTracks: oldTracks
-    )
-    safeEmit(event: "availableSubtitleTracksChange", payload: payload)
-
-    // Handle audio tracks
-    let oldAudioTracks = audioTracks.availableAudioTracks
-    self.audioTracks.onNewPlayerItemLoaded(playerItem: playerItem)
-    let audioPayload = AudioTracksChangedEventPayload(
-      availableAudioTracks: audioTracks.availableAudioTracks,
-      oldAvailableAudioTracks: oldAudioTracks
-    )
-    safeEmit(event: "availableAudioTracksChange", payload: audioPayload)
-
-    Task {
+    // Loading tracks requires doing some long tasks, this callback can be called from the main thread
+    // Which could cause hangs
+    tracksLoadingTask?.cancel()
+    tracksLoadingTask = Task {
+      let audioPayload = await self.audioTracks.onNewPlayerItemLoaded(playerItem: playerItem)
+      let subtitlesChangePayload = await self.subtitles.onNewPlayerItemLoaded(playerItem: playerItem)
       let videoPlayerItem: VideoPlayerItem? = playerItem as? VideoPlayerItem
-      // Those properties will be already loaded 99.9% of time, so the event delay should be almost 0
+
       availableVideoTracks = await videoPlayerItem?.videoTracks ?? []
+
+      guard !Task.isCancelled else {
+        return
+      }
 
       let videoSourceLoadedPayload = VideoSourceLoadedEventPayload(
         videoSource: videoPlayerItem?.videoSource,
@@ -383,7 +378,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         availableSubtitleTracks: subtitles.availableSubtitleTracks,
         availableAudioTracks: audioTracks.availableAudioTracks
       )
+
       safeEmit(event: "sourceLoad", payload: videoSourceLoadedPayload)
+      safeEmit(event: "availableSubtitleTracksChange", payload: subtitlesChangePayload)
+      safeEmit(event: "availableAudioTracksChange", payload: audioPayload)
     }
   }
 

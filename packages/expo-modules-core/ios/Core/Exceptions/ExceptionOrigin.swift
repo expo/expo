@@ -3,7 +3,7 @@
 /**
  Represents the place in code where the exception was created.
  */
-public struct ExceptionOrigin: CustomStringConvertible {
+public struct ExceptionOrigin: CustomStringConvertible, Sendable {
   /**
    The path to the file in which the exception was created.
    */

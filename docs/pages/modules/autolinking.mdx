@@ -257,7 +257,7 @@ For example, with the `--platform ios` option, it returns an object in **react-n
 
 ## Dependency resolution and conflicts
 
-> **important** This is an experimental feature starting in SDK 54 and above.
+> **important** This is an experimental feature starting in SDK 54 and later.
 
 Autolinking and Node resolution have different goals and the module resolution algorithm in Node and Metro can sometimes come into conflict. If your app contains duplicate installations of a native module that is picked up by autolinking, your JavaScript bundle may contain both versions of the native module, while autolinking and your native app will only contain one version. This might cause runtime crashes and risks incompatibilities.
 

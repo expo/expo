@@ -259,4 +259,35 @@ describe(scanDependenciesInSearchPath, () => {
       }
     `);
   });
+
+  it('supports direct path to node module', async () => {
+    vol.fromNestedJSON(
+      {
+        node_modules: {
+          'react-native-third-party': {
+            'package.json': JSON.stringify({ name: 'react-native-third-party' }),
+          },
+        },
+      },
+      projectRoot
+    );
+
+    const result = await scanDependenciesInSearchPath(
+      path.join(projectRootNodeModules, 'react-native-third-party')
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "react-native-third-party": {
+          "depth": 0,
+          "duplicates": null,
+          "name": "react-native-third-party",
+          "originPath": "/fake/project/node_modules/react-native-third-party",
+          "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 1,
+          "version": "",
+        },
+      }
+    `);
+  });
 });

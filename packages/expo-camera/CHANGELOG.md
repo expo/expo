@@ -6,9 +6,21 @@
 
 ### 🎉 New features
 
+- Allow disabling the barcode scanner functionality via config plugin. ([#40444](https://github.com/expo/expo/pull/40444) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix certain exif keys being dropped because of invalid values. ([#41043](https://github.com/expo/expo/pull/41043) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+- [iOS] Support all valid gps tags from `CGImageProperties` in exif data. ([#40801](https://github.com/expo/expo/pull/40801) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 17.0.8 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- [Android] Fix barcode scanner on devices without access to Google Play Services. ([#39612](https://github.com/expo/expo/pull/39612) by [@behenate](https://github.com/behenate))
 
 ## 17.0.7 — 2025-09-10
 

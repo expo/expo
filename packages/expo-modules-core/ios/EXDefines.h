@@ -91,8 +91,8 @@ typedef struct EXModuleInfo {
 } EXModuleInfo;
 
 typedef void (^EXDirectEventBlock)(NSDictionary *body);
-typedef void (^EXPromiseResolveBlock)(id result);
-typedef void (^EXPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
+typedef void (NS_SWIFT_SENDABLE ^EXPromiseResolveBlock)(id result);
+typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
 
 #pragma mark - Externs
 

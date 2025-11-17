@@ -16,6 +16,7 @@ const debug = require('debug')('expo:metro:hermes');
 function importHermesCommandFromProject(projectRoot) {
     const platformExecutable = getHermesCommandPlatform();
     const reactNativeRoot = path_1.default.dirname((0, resolve_from_1.default)(projectRoot, 'react-native/package.json'));
+    const hermesCompilerRoot = path_1.default.dirname((0, resolve_from_1.default)(reactNativeRoot, 'hermes-compiler/package.json'));
     const hermescPaths = [
         // Override hermesc dir by environment variables
         process_1.default.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
@@ -23,6 +24,8 @@ function importHermesCommandFromProject(projectRoot) {
             : '',
         // Building hermes from source
         `${reactNativeRoot}/ReactAndroid/hermes-engine/build/hermes/bin/hermesc`,
+        // react-native 0.83+ moved hermesc to a separate package
+        `${hermesCompilerRoot}/hermesc/${platformExecutable}`,
         // Prebuilt hermesc in official react-native 0.69+
         `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,
     ];

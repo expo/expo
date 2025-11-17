@@ -19,6 +19,7 @@ import expo.modules.devmenu.compose.utils.copyToClipboard
 @Composable
 fun SystemSection(
   appVersion: String? = null,
+  sdkVersion: String? = null,
   runtimeVersion: String? = null,
   fullDataProvider: () -> String
 ) {
@@ -29,11 +30,15 @@ fun SystemSection(
 
     Divider(thickness = 0.5.dp)
 
-    Info("Version", appVersion ?: "N/A")
+    Info("Version", appVersion.takeIf { !it.isNullOrBlank() } ?: "N/A")
 
     Divider(thickness = 0.5.dp)
 
-    Info("Runtime version", runtimeVersion ?: "N/A")
+    Info("SDK version", sdkVersion.takeIf { !it.isNullOrBlank() } ?: "N/A")
+
+    Divider(thickness = 0.5.dp)
+
+    Info("Runtime version", runtimeVersion.takeIf { !it.isNullOrBlank() } ?: "N/A")
 
     Divider(thickness = 0.5.dp)
 
@@ -55,7 +60,7 @@ private fun CopyButton(fullDataProvider: () -> String) {
   ) {
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
-      modifier = Modifier.Companion
+      modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 12.dp)
     ) {
@@ -77,7 +82,7 @@ private fun CopyButton(fullDataProvider: () -> String) {
 private fun Info(label: String, value: String) {
   Row(
     horizontalArrangement = Arrangement.SpaceBetween,
-    modifier = Modifier.Companion
+    modifier = Modifier
       .fillMaxWidth()
       .padding(vertical = 12.dp)
   ) {

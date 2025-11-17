@@ -93,7 +93,7 @@ final class VersionManager: EXVersionManagerObjC {
       log.error("Unable to register Expo modules, the app context or kernel services is unavailable")
       return
     }
-    appContext.moduleRegistry.register(module: ExpoGoModule(appContext: appContext, manifest: manifest))
+    appContext.moduleRegistry.register(module: ExpoGoModule(appContext: appContext, manifest: manifest), name: nil)
 
     guard let updatesKernelService = kernelServices["EXUpdatesManager"] as? UpdatesBindingDelegate else {
       log.error("Unable to register Expo modules, the app context or kernel services is unavailable")
@@ -105,7 +105,7 @@ final class VersionManager: EXVersionManagerObjC {
       appContext: appContext,
       updatesKernelService: updatesKernelService,
       scopeKey: manifest.scopeKey()
-    ), preventModuleOverriding: true)
+    ), name: nil, preventModuleOverriding: true)
 
     // Override expo-notifications modules
     registerExpoNotificationsModules(appContext)
@@ -121,7 +121,7 @@ final class VersionManager: EXVersionManagerObjC {
       ExpoGoNotificationsServerRegistrationModule(appContext: appContext, scopeKey: manifest.scopeKey())
     ]
     for module in modules {
-      appContext.moduleRegistry.register(module: module, preventModuleOverriding: true)
+      appContext.moduleRegistry.register(module: module, name: nil, preventModuleOverriding: true)
     }
   }
 

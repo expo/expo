@@ -31,19 +31,13 @@ exports[`renders Label 1`] = `
 `;
 
 exports[`renders NativeTabs 1`] = `
-"2:I["src/native-tabs/NativeBottomTabs/NativeBottomTabsNavigator.tsx",[],"NativeTabsNavigatorWithContext",1]
+"2:I["src/native-tabs/NativeBottomTabsNavigator.tsx",[],"NativeTabsNavigatorWithContext",1]
 1:{"name":"","env":"Server","key":null,"owner":null,"props":{}}
 0:D"$1"
 0:["$","$L2",null,{},"$1"]"
 `;
 
 exports[`renders NativeTabs.Trigger 1`] = `
-"1:I["src/native-tabs/NativeBottomTabs/NativeTabTrigger.tsx",[],"NativeTabTrigger",1]
+"1:I["src/native-tabs/NativeTabTrigger.tsx",[],"NativeTabTrigger",1]
 0:["$","$L1",null,{"name":"test"},null]"
-`;
-
-exports[`renders NativeTabsTriggerTabBar 1`] = `
-"1:{"name":"NativeTabsTriggerTabBar","env":"Server","key":null,"owner":null,"props":{}}
-0:D"$1"
-0:null"
 `;

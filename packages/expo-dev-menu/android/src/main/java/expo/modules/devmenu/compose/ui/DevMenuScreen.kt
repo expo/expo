@@ -22,8 +22,10 @@ import expo.modules.devmenu.compose.primitives.Spacer
 fun DevMenuScreen(
   appInfo: DevMenuState.AppInfo,
   devToolsSettings: DevToolsSettings,
+  customItems: List<DevMenuState.CustomItem> = emptyList(),
   shouldShowOnboarding: Boolean = false,
   showFab: Boolean = false,
+  hasGoHomeAction: Boolean = false,
   onAction: DevMenuActionHandler = {}
 ) {
   if (shouldShowOnboarding) {
@@ -51,24 +53,40 @@ fun DevMenuScreen(
         onClick = { onAction(DevMenuAction.Reload) }
       )
 
-      QuickAction(
-        label = "Go home",
-        icon = { MenuIcons.Home(size = 20.dp, tint = NewAppTheme.colors.icon.default) },
-        modifier = Modifier.weight(1f),
-        onClick = { onAction(DevMenuAction.GoHome) }
-      )
+      if (hasGoHomeAction) {
+        QuickAction(
+          label = "Go home",
+          icon = { MenuIcons.Home(size = 20.dp, tint = NewAppTheme.colors.icon.default) },
+          modifier = Modifier.weight(1f),
+          onClick = { onAction(DevMenuAction.GoHome) }
+        )
+      }
     }
 
     Spacer(NewAppTheme.spacing.`5`)
 
+    if (customItems.isNotEmpty()) {
+      CustomItemsSection(
+        items = customItems,
+        onItemClick = { item ->
+          onAction(DevMenuAction.TriggerCustomCallback(item))
+        }
+      )
+
+      Spacer(NewAppTheme.spacing.`5`)
+    }
+
     ToolsSection(onAction, devToolsSettings, showFab)
 
     Box(modifier = Modifier.padding(vertical = NewAppTheme.spacing.`6`)) {
-      Warning("Debugging not working? Try manually reloading first")
+      if (appInfo.engine == "Hermes") {
+        Tip("Debugging not working? Try manually reloading first.")
+      }
     }
 
     SystemSection(
       appInfo.appVersion,
+      appInfo.sdkVersion,
       appInfo.runtimeVersion,
       fullDataProvider = { appInfo.toJson() }
     )

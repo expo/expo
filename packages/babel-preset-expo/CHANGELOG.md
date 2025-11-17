@@ -6,9 +6,45 @@
 
 ### 🎉 New features
 
+- Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
+- Ensure React Fast Refresh is disabled in `jest-expo` and other non-Expo environments ([#40774](https://github.com/expo/expo/pull/40774) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Add `enableReactFastRefresh` option to allow force-disabling `react-refresh` ([#40774](https://github.com/expo/expo/pull/40774) by [@kitten](https://github.com/kitten))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.6 - 2025-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.5 - 2025-10-20
+
+### 💡 Others
+
+- Bump to `@expo/metro@54.1.0` and `metro@0.83.2` ([#39826](https://github.com/expo/expo/pull/39826) by [@kitten](https://github.com/kitten))
+
+## 54.0.4 - 2025-10-09
+
+### 💡 Others
+
+- Update to `babel-plugin-react-compiler@^1.0.0` ([#40281](https://github.com/expo/expo/pull/40281) by [@kitten](https://github.com/kitten))
+
+## 54.0.3 - 2025-09-22
+
+### 💡 Others
+
+- Remove unused module check. ([#39822](https://github.com/expo/expo/pull/39822) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 54.0.2 - 2025-09-18
+
+_This version does not introduce any user-facing changes._
 
 ## 54.0.1 — 2025-09-12
 

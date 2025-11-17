@@ -17,9 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
 
-- (void)viewDidUpdateProps;
+- (void)viewDidUpdateProps NS_SWIFT_UI_ACTOR;
 
 - (void)setShadowNodeSize:(float) width height:(float) height;
+
+- (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height;
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 
@@ -32,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Called for unmounting (detaching) a child component view from `self` component view.
  */
 - (void)unmountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index;
+
+- (void)removeFromSuperview;
 
 @end
 

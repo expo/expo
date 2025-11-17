@@ -1,14 +1,20 @@
 package expo.modules.plugin
 
+import expo.modules.plugin.gradle.addBuildCache
 import expo.modules.plugin.gradle.beforeRootProject
+import expo.modules.plugin.gradle.loadLocalProperties
+import expo.modules.plugin.utils.getPropertiesPrefixedBy
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 import java.io.File
+import java.util.Properties
 
 open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
   override fun apply(settings: Settings) {
     // Adds a property to the settings that indicates that the `expo-autolinking-plugin` is available.
     settings.gradle.extensions.extraProperties.set("expoAutolinkingSettingsPlugin", true)
+
+    settings.addBuildCache()
 
     // Creates an extension that allows users to link expo modules and add additional configuration.
     settings.extensions.create("expoAutolinking", ExpoAutolinkingSettingsExtension::class.java, settings)

@@ -614,11 +614,9 @@ describe('prefetch', () => {
                 path: '/',
               },
             ],
-            stale: true,
           },
         },
       ],
-      stale: true,
     });
   });
 

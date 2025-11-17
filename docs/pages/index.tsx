@@ -1,6 +1,4 @@
 import DocumentationPage from '~/components/DocumentationPage';
-import { AppJSBanner } from '~/ui/components/AppJSBanner';
-import { EASHostingShoutoutBanner } from '~/ui/components/EASHostingShoutoutBanner';
 import { DevicesImageMasks } from '~/ui/components/Home/resources';
 import {
   QuickStart,
@@ -21,8 +19,6 @@ function Home() {
       <div className="h-0">
         <DevicesImageMasks />
       </div>
-      <AppJSBanner />
-      <EASHostingShoutoutBanner />
       <QuickStart />
       <CommandLineTools />
       <DiscoverMore />

@@ -3,14 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.maybeRealpath = exports.fastJoin = void 0;
+exports.loadPackageJson = exports.maybeRealpath = exports.fastJoin = void 0;
 exports.defaultShouldIncludeDependency = defaultShouldIncludeDependency;
-exports.loadPackageJson = loadPackageJson;
 exports.mergeWithDuplicate = mergeWithDuplicate;
 exports.filterMapResolutionResult = filterMapResolutionResult;
 exports.mergeResolutionResults = mergeResolutionResults;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("../utils");
 const NODE_MODULES_PATTERN = `${path_1.default.sep}node_modules${path_1.default.sep}`;
 // The default dependencies we exclude don't contain dependency chains leading to autolinked modules
 function defaultShouldIncludeDependency(dependencyName) {
@@ -18,7 +18,10 @@ function defaultShouldIncludeDependency(dependencyName) {
     if (scopeName === 'babel' ||
         scopeName === 'types' ||
         scopeName === 'eslint' ||
-        scopeName === 'typescript-eslint') {
+        scopeName === 'typescript-eslint' ||
+        scopeName === 'testing-library' ||
+        scopeName === 'aws-crypto' ||
+        scopeName === 'aws-sdk') {
         return false;
     }
     switch (dependencyName) {
@@ -27,11 +30,20 @@ function defaultShouldIncludeDependency(dependencyName) {
         case '@expo/metro-config':
         case '@expo/package-manager':
         case '@expo/prebuild-config':
+        case '@expo/webpack-config':
         case '@expo/env':
         case '@react-native/codegen':
+        case '@react-native/community-cli-plugin':
         case 'eslint':
         case 'eslint-config-expo':
         case 'eslint-plugin-expo':
+        case 'eslint-plugin-import':
+        case 'jest-expo':
+        case 'jest':
+        case 'metro':
+        case 'ts-node':
+        case 'typescript':
+        case 'webpack':
             return false;
         default:
             return true;
@@ -49,14 +61,11 @@ const maybeRealpath = async (target) => {
     }
 };
 exports.maybeRealpath = maybeRealpath;
-async function loadPackageJson(jsonPath) {
+exports.loadPackageJson = (0, utils_1.memoize)(async function loadPackageJson(jsonPath) {
     try {
         const packageJsonText = await fs_1.default.promises.readFile(jsonPath, 'utf8');
         const json = JSON.parse(packageJsonText);
         if (typeof json !== 'object' || json == null) {
-            return null;
-        }
-        else if (typeof json.name !== 'string' || !json.name) {
             return null;
         }
         return json;
@@ -64,7 +73,7 @@ async function loadPackageJson(jsonPath) {
     catch {
         return null;
     }
-}
+});
 function mergeWithDuplicate(a, b) {
     let target;
     let duplicate;
@@ -102,6 +111,9 @@ function mergeWithDuplicate(a, b) {
             originPath: duplicate.originPath,
         });
     }
+    else if (!target.version && duplicate.version) {
+        target.version = duplicate.version;
+    }
     if (duplicate.duplicates?.length) {
         duplicates.push(...duplicate.duplicates.filter((child) => duplicates.every((parent) => parent.path !== child.path)));
     }
@@ -121,11 +133,11 @@ async function filterMapResolutionResult(results, filterMap) {
     }
     return output;
 }
-function mergeResolutionResults(results) {
-    if (results.length === 1) {
+function mergeResolutionResults(results, base) {
+    if (base == null && results.length === 1) {
         return results[0];
     }
-    const output = Object.create(null);
+    const output = base == null ? Object.create(null) : base;
     for (let idx = 0; idx < results.length; idx++) {
         for (const key in results[idx]) {
             const resolution = results[idx][key];

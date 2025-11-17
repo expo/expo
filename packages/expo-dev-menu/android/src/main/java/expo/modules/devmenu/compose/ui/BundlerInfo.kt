@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -33,7 +34,9 @@ fun BundlerInfo(
           bundlerIp,
           style = NewAppTheme.font.md.merge(
             fontWeight = FontWeight.Medium
-          )
+          ),
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis
         )
       }
     },

@@ -1,8 +1,16 @@
-import { Button } from '@expo/ui/jetpack-compose';
+import { Button as JetpackButton, Host, Shape } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
+
+function Button(props: React.ComponentProps<typeof JetpackButton>) {
+  return (
+    <Host>
+      <JetpackButton {...props} />
+    </Host>
+  );
+}
 
 export default function UIScreen() {
   return (
@@ -12,9 +20,6 @@ export default function UIScreen() {
           <Button style={styles.button}>Test</Button>
         </Section>
         <Section title="System Styles">
-          <Button style={styles.button} variant="default">
-            Default
-          </Button>
           <Button style={styles.button} variant="bordered">
             Bordered
           </Button>
@@ -35,20 +40,24 @@ export default function UIScreen() {
           <Button style={styles.button}>Enabled</Button>
         </Section>
         <Section title="Button Images">
-          <Button variant="bordered" style={styles.button} systemImage="filled.AccountBox">
+          <Button variant="bordered" style={styles.button} leadingIcon="filled.AccountBox">
             Folder
           </Button>
-          <Button variant="elevated" style={styles.button} systemImage="filled.Warning">
+          <Button variant="elevated" style={styles.button} leadingIcon="filled.Warning">
             Tortoise
           </Button>
           <Button
             variant="borderless"
             style={styles.button}
-            systemImage="outlined.Delete"
+            leadingIcon="outlined.Delete"
             elementColors={{ contentColor: '#FF6347' }}>
             Trash
           </Button>
-          <Button variant="outlined" style={styles.button} systemImage="outlined.Favorite">
+          <Button
+            variant="outlined"
+            style={styles.button}
+            leadingIcon="outlined.Favorite"
+            trailingIcon="filled.Favorite">
             Heart
           </Button>
         </Section>
@@ -68,6 +77,19 @@ export default function UIScreen() {
           <Button style={styles.button} color="#f00f0f">
             Red
           </Button>
+        </Section>
+        <Section title="interpolated strings">
+          <Button style={styles.button} color="#FF6347">
+            {/* eslint-disable-next-line */}
+            Hello {'world'}
+          </Button>
+        </Section>
+        <Section title="Custom shapes">
+          <Button
+            style={{ aspectRatio: 2, width: 200 }}
+            shape={Shape.PillStar({ innerRadius: 0.5, radius: 1, verticesCount: 20, smoothing: 1 })}
+            leadingIcon="rounded.Check"
+          />
         </Section>
       </ScrollView>
     </Page>

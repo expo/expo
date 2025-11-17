@@ -18,7 +18,7 @@ class Album: SharedObject {
   func getAssets() async throws -> [Asset] {
     let collection = try await requirePHAssetCollection()
     let phAssets = AssetRepository.shared.get(by: collection)
-    return phAssets.map { Asset(id: $0.localIdentifier) }
+    return phAssets.map { Asset(localIdentifier: $0.localIdentifier) }
   }
 
   func title() async throws -> String {
@@ -31,7 +31,7 @@ class Album: SharedObject {
 
   func add(_ asset: Asset) async throws {
     let collection = try await requirePHAssetCollection()
-    guard let phAsset = AssetRepository.shared.get(by: [asset.id]).first else {
+    guard let phAsset = AssetRepository.shared.get(by: [asset.localIdentifier]).first else {
       throw AssetCouldNotBeAddedToAlbumException("phAsset not found")
     }
     try await AssetCollectionRepository.shared.add(assets: [phAsset], to: collection)

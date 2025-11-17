@@ -23,7 +23,7 @@ export function Dropdown({
   ...rest
 }: Props) {
   return (
-    <Root>
+    <Root modal={false}>
       <Trigger asChild>{trigger}</Trigger>
       <Portal className="bg-danger">
         <Content

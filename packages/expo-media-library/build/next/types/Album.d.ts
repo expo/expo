@@ -2,10 +2,9 @@ import { Asset } from './Asset';
 /**
  * Represents a media album (collection of assets) on the device.
  *
- * An `Album` groups together media assets (images, videos, or audio files).
- * Albums typically correspond to folders in the device’s gallery or media store.
- *
+ * An {@link Album} groups together media assets (images, videos, or audio files).
  * To create a new album, use {@link Album.create}.
+ * To fetch an existing album, use {@link Album.get}.
  */
 export declare class Album {
     /**
@@ -15,11 +14,11 @@ export declare class Album {
     constructor(id: string);
     /**
      * Unique identifier of the album.
-     * Can be used to re-instantiate an `Album` later or to query related objects.
+     * Can be used to re-instantiate an {@link Album} later.
      */
     id: string;
     /**
-     * Retrieves all assets contained in this album.
+     * Retrieves all assets contained in the album.
      * @returns A promise resolving to an array of {@link Asset} objects.
      *
      * @example
@@ -31,6 +30,7 @@ export declare class Album {
     getAssets(): Promise<Asset[]>;
     /**
      * Gets the display title (name) of the album.
+     * Note that album titles are not guaranteed to be unique.
      * @returns A promise resolving to the album’s title string.
      *
      * @example
@@ -42,9 +42,10 @@ export declare class Album {
     getTitle(): Promise<string>;
     /**
      * Permanently deletes the album from the device.
-     * Depending on platform and options, this may also delete contained assets.
-     *
+     * On Android, it deletes the album and all its assets.
+     * On iOS, it deletes the album but keeps the assets in the main library.
      * @returns A promise that resolves once the deletion has completed.
+     * @throws An exception if the deletion fails or the album could not be found.
      *
      * @example
      * ```ts
@@ -53,7 +54,7 @@ export declare class Album {
      */
     delete(): Promise<void>;
     /**
-     * Adds a given asset to this album.
+     * Adds an asset to the album.
      * @param asset - The {@link Asset} to add.
      * @returns A promise that resolves once the asset has been added.
      *
@@ -65,12 +66,12 @@ export declare class Album {
      */
     add(asset: Asset): Promise<void>;
     /**
-     * Creates a new album with a given name and optional assets.
-     * If an album with the same name already exists, behavior may depend on the platform.
+     * A static function. Creates a new album with a given name and assets.
+     * On Android, if assets are provided and `moveAssets` is true, the assets will be moved into the new album. If false or not supported, the assets will be copied.
      *
-     * @param title - Name of the new album.
-     * @param assetsOrPaths - Optional list of {@link Asset} objects or file paths to include.
-     * @param deleteOriginalAsset - Whether to copy assets into the album (if supported). Defaults to `false`.
+     * @param name - Name of the new album.
+     * @param assetsRefs - List of {@link Asset} objects or file paths (file:///...) to include.
+     * @param moveAssets - On Android, whether to move assets into the album.
      * @returns A promise resolving to the created {@link Album}.
      *
      * @example
@@ -79,13 +80,33 @@ export declare class Album {
      * console.log(await album.getTitle()); // "My Album"
      * ```
      */
-    static create(title: string, assetsOrPaths?: (Asset | string)[], deleteOriginalAsset?: boolean): Promise<Album>;
+    static create(name: string, assetsRefs: string[] | Asset[], moveAssets: boolean): Promise<Album>;
     /**
-     * Deletes multiple albums at once.
+     * A static function. Deletes multiple albums at once.
      * @param albums - An array of {@link Album} instances to delete.
-     * @param deleteAssets - If `true`, also deletes assets contained in these albums (if supported).
+     * @param deleteAssets - Whether to delete the assets in the albums as well.
      * @returns A promise that resolves once the albums have been deleted.
+     *
+     * @example
+     * ```ts
+     * const album = await Album.create("My Album", [asset]);
+     * await Album.delete([album]);
+     * ```
      */
-    static deleteMany(albums: Album[], deleteAssets?: boolean): Promise<void>;
+    static delete(albums: Album[], deleteAssets: boolean): Promise<void>;
+    /**
+     * A static function. Retrieves an album by its title.
+     * @param title - The title of the album to retrieve.
+     * @return A promise resolving to the {@link Album} if found, or `null` if not found.
+     *
+     * @example
+     * ```ts
+     * const album = await Album.get("Camera");
+     * if (album) {
+     *   console.log(await album.getTitle()); // "Camera"
+     * }
+     * ```
+     */
+    static get(title: string): Promise<Album | null>;
 }
 //# sourceMappingURL=Album.d.ts.map

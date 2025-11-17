@@ -6,9 +6,39 @@
 
 ### 🎉 New features
 
+- [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🐛 Bug fixes
 
+- [Android] Removed call to setShowActionsInCompactView when using custom layout in notification. ([#40557](https://github.com/expo/expo/pull/40557) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Fixed race-condition when creating the notification before the actions has been added. ([#40518](https://github.com/expo/expo/pull/40518) by [@chrfalch](https://github.com/chrfalch))
+- [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Fix issue where after replacing the media source, events are emitted twice. ([#40133](https://github.com/expo/expo/pull/40133) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix issue where if `prepare` fails on android there was no error and the user would receive an empty file. ([#40239](https://github.com/expo/expo/pull/40239) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix incorrect volume read. ([#40258](https://github.com/expo/expo/pull/40258) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix issue where local assets don't resolve correctly in release mode. ([#40642](https://github.com/expo/expo/pull/40642) by [@alanjhughes](https://github.com/alanjhughes))
+- [web] Bring fix from [#38273](https://github.com/expo/expo/pull/38273) to web. ([#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes)
+
 ### 💡 Others
+
+- Removing `Record` from `RecordingPresets` type annotation to improve type safety ([#39391](https://github.com/expo/expo/pull/39391) by [@Shoghy](https://github.com/Shoghy))
+- Separate the conditions to enable and disable microphone permissions. ([#40861](https://github.com/expo/expo/pull/40861) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.13 - 2025-09-18
+
+### 🐛 Bug fixes
+
+- [Android] Fix zero-byte audio recordings after calling `audioRecorder.stop()` ([#39788](https://github.com/expo/expo/pull/39788) by [@hirbod](https://github.com/hirbod))
+
+## 1.0.12 — 2025-09-16
+
+### 🎉 New features
+
+- [Android] Expose MediaRecorder.AudioSource on RecordingOptionsAndroid ([#38271](https://github.com/expo/expo/pull/38271) by [@vipierozan99](https://github.com/vipierozan99))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix setting audio quality for recordings. ([#39705](https://github.com/expo/expo/pull/39705) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.0.11 — 2025-09-11
 
@@ -103,6 +133,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [iOS] Support setting seek tolerences when calling `seekTo` on the player. ([#37669](https://github.com/expo/expo/pull/37669) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Support lock screen controls. ([#37126](https://github.com/expo/expo/pull/37126) by [@alanjhughes](https://github.com/alanjhughes)
 
 ### 🐛 Bug fixes
 

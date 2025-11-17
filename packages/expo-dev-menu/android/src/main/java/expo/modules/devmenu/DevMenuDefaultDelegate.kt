@@ -1,16 +1,12 @@
 package expo.modules.devmenu
 
 import android.os.Bundle
-import expo.interfaces.devmenu.DevMenuDelegateInterface
-import expo.interfaces.devmenu.ReactHostWrapper
+import com.facebook.react.ReactHost
 
-/**
- * Basic [DevMenuDelegateInterface] implementation.
- */
 class DevMenuDefaultDelegate(
-  private val delegateHost: ReactHostWrapper
-) : DevMenuDelegateInterface {
-  override fun appInfo(): Bundle? = null
+  private val delegateHost: ReactHost
+) {
+  fun appInfo(): Bundle? = null
 
-  override fun reactHost(): ReactHostWrapper = delegateHost
+  fun reactHost(): ReactHost = delegateHost
 }

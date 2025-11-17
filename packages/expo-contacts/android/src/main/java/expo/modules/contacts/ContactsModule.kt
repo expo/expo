@@ -22,6 +22,7 @@ import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
+import expo.modules.core.utilities.ifNull
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -198,6 +199,26 @@ class ContactsModule : Module() {
         }
     }
 
+    AsyncFunction("hasContactsAsync") { promise: Promise ->
+      ensureReadPermission()
+
+      appContext
+        .backgroundCoroutineScope
+        .launch {
+          resolver.query(
+            ContactsContract.Contacts.CONTENT_URI,
+            arrayOf(ContactsContract.Contacts._ID),
+            null,
+            null,
+            null
+          ).ifNull { throw ContactsCheckFailedException() }
+            .use { cursor ->
+              val hasAnyContacts = cursor.moveToFirst()
+              promise.resolve(hasAnyContacts)
+            }
+        }
+    }
+
     AsyncFunction("addContactAsync") { data: Map<String, Any>, _: String? ->
       ensurePermissions()
 
@@ -367,7 +388,11 @@ class ContactsModule : Module() {
     if (data.containsKey("image")) {
       val image = data["image"]
       if (image is Map<*, *> && image.containsKey("uri")) {
-        contact.photoUri = image["uri"] as String?
+        val uri = image["uri"] as String?
+        if (uri != null && !uri.startsWith("file://")) {
+          throw RemoteImageUriException(uri)
+        }
+        contact.photoUri = uri
         contact.hasPhoto = true
       }
     }

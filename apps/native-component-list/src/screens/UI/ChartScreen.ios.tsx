@@ -6,19 +6,16 @@ import {
   PointChartStyle,
   PointStyle,
   ChartDataPoint,
+  RuleChartStyle,
   Host,
+  Text as SwiftUIText,
 } from '@expo/ui/swift-ui';
+import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import HeadingText from '../../components/HeadingText';
 import MonoText from '../../components/MonoText';
-
-const lineDashArrays: (number[] | undefined)[] = [undefined, [5, 5], [2, 2]];
-const pointStyles: PointStyle[] = ['circle', 'square', 'diamond'];
-
-const lineStyleOptions = ['Solid', 'Dashed', 'Dotted'];
-const pointStyleOptions = ['Circle', 'Square', 'Diamond'];
 
 const salesData: ChartDataPoint[] = [
   { x: 'Jan', y: 15 },
@@ -46,25 +43,67 @@ const performanceData: ChartDataPoint[] = [
   { x: 'Q4', y: 95 },
 ];
 
+const salesAnnotations: ChartDataPoint[] = [
+  { x: 'Sales Target', y: 30, color: '#10B981' },
+  { x: 'Average', y: 25, color: '#F59E0B' },
+  { x: 'Minimum', y: 15, color: '#EF4444' },
+];
+
+const temperatureAnnotations: ChartDataPoint[] = [
+  { x: 'Hot', y: 25, color: '#EF4444' },
+  { x: 'Average', y: 22, color: '#F59E0B' },
+  { x: 'Cool', y: 18, color: '#3B82F6' },
+];
+
+const performanceAnnotations: ChartDataPoint[] = [
+  { x: 'Excellent', y: 90, color: '#10B981' },
+  { x: 'Target', y: 80, color: '#F59E0B' },
+  { x: 'Minimum', y: 65, color: '#EF4444' },
+];
+
 type DataSet = 'sales' | 'temperature' | 'performance';
 
 const dataSet: DataSet[] = ['sales', 'temperature', 'performance'];
 
-const charts: ChartType[] = ['line', 'point', 'bar', 'area', 'pie'];
+const charts: ChartType[] = ['line', 'point', 'bar', 'area', 'pie', 'rectangle'];
 
-const chartTypeOptions = ['Line', 'Point', 'Bar', 'Area', 'Pie'];
-const dataSetOptions = ['Sales', 'Temperature', 'Performance'];
-const toggleOptions = ['OFF', 'ON'];
-
-const barCornerRadiusOptions = ['Sharp', 'Rounded', 'Very Rounded'];
-const barCornerRadiusValues = [0, 6, 12];
-const barWidthOptions = ['Thin', 'Normal', 'Thick'];
-const barWidthValues = [20, 25, 35];
-
-const pieInnerRadiusOptions = ['Full Pie', 'Small Donut', 'Medium Donut', 'Large Donut'];
-const pieInnerRadiusValues = [0.0, 0.2, 0.4, 0.6];
-const pieAngularInsetOptions = ['None', 'Small', 'Medium', 'Large'];
-const pieAngularInsetValues = [0, 1, 3, 6];
+const chartConfig = {
+  chartTypeOptions: ['Line', 'Point', 'Bar', 'Area', 'Pie', 'Rectangle'],
+  dataSetOptions: ['Sales', 'Temperature', 'Performance'],
+  toggleOptions: ['OFF', 'ON'],
+  lineStyle: {
+    options: ['Solid', 'Dashed', 'Dotted'],
+    dashArrays: [undefined, [5, 5], [2, 2]] as (number[] | undefined)[],
+  },
+  pointStyle: {
+    options: ['Circle', 'Square', 'Diamond'],
+    styles: ['circle', 'square', 'diamond'] as PointStyle[],
+  },
+  ruleLine: {
+    widthOptions: ['1pt', '2pt', '4pt'],
+    widths: [1, 2, 4],
+  },
+  ruleDash: {
+    options: ['Solid', 'Dashed', 'Dotted'],
+    dashArrays: [undefined, [5, 5], [2, 2]] as (number[] | undefined)[],
+  },
+  barCornerRadius: {
+    options: ['Sharp', 'Rounded', 'Very Rounded'],
+    values: [0, 6, 12],
+  },
+  barWidth: {
+    options: ['Thin', 'Normal', 'Thick'],
+    values: [20, 25, 35],
+  },
+  pieInnerRadius: {
+    options: ['Full Pie', 'Small Donut', 'Medium Donut', 'Large Donut'],
+    values: [0.0, 0.2, 0.4, 0.6],
+  },
+  pieAngularInset: {
+    options: ['None', 'Small', 'Medium', 'Large'],
+    values: [0, 1, 3, 6],
+  },
+};
 
 export default function ChartScreen() {
   const [chartTypeIndex, setChartTypeIndex] = useState(0);
@@ -82,6 +121,10 @@ export default function ChartScreen() {
   const [pieInnerRadiusIndex, setPieInnerRadiusIndex] = useState(2);
   const [pieAngularInsetIndex, setPieAngularInsetIndex] = useState(2);
 
+  const [showReferenceLinesIndex, setShowReferenceLinesIndex] = useState(0);
+  const [ruleLineWidthIndex, setRuleLineWidthIndex] = useState(1);
+  const [ruleDashIndex, setRuleDashIndex] = useState(1);
+
   const chartType: ChartType = charts[chartTypeIndex];
   const currentDataSet: DataSet = dataSet[dataSetIndex];
 
@@ -96,6 +139,17 @@ export default function ChartScreen() {
     }
   };
 
+  const getCurrentReferenceLines = () => {
+    switch (currentDataSet) {
+      case 'temperature':
+        return temperatureAnnotations;
+      case 'performance':
+        return performanceAnnotations;
+      default:
+        return salesAnnotations;
+    }
+  };
+
   const getChartColor = () => {
     switch (chartType) {
       case 'line':
@@ -104,6 +158,8 @@ export default function ChartScreen() {
         return '#EC4899';
       case 'area':
         return '#10B981';
+      case 'rectangle':
+        return '#8B5CF6';
       default:
         return '#6366F1';
     }
@@ -111,9 +167,9 @@ export default function ChartScreen() {
 
   const getLineStyle = (): LineChartStyle => {
     return {
-      dashArray: lineDashArrays[lineStyleIndex],
+      dashArray: chartConfig.lineStyle.dashArrays[lineStyleIndex],
       width: 3,
-      pointStyle: pointStyles[pointStyleIndex],
+      pointStyle: chartConfig.pointStyle.styles[pointStyleIndex],
       pointSize: 8,
       color: getChartColor(),
     };
@@ -121,7 +177,7 @@ export default function ChartScreen() {
 
   const getPointStyle = (): PointChartStyle => {
     return {
-      pointStyle: pointStyles[pointStyleIndex],
+      pointStyle: chartConfig.pointStyle.styles[pointStyleIndex],
       pointSize: 8,
     };
   };
@@ -134,15 +190,30 @@ export default function ChartScreen() {
 
   const getBarStyle = () => {
     return {
-      cornerRadius: barCornerRadiusValues[barCornerRadiusIndex],
-      width: barWidthValues[barWidthIndex],
+      cornerRadius: chartConfig.barCornerRadius.values[barCornerRadiusIndex],
+      width: chartConfig.barWidth.values[barWidthIndex],
     };
   };
 
   const getPieStyle = () => {
     return {
-      innerRadius: pieInnerRadiusValues[pieInnerRadiusIndex],
-      angularInset: pieAngularInsetValues[pieAngularInsetIndex],
+      innerRadius: chartConfig.pieInnerRadius.values[pieInnerRadiusIndex],
+      angularInset: chartConfig.pieAngularInset.values[pieAngularInsetIndex],
+    };
+  };
+
+  const getRectangleStyle = () => {
+    return {
+      color: getChartColor(),
+      cornerRadius: chartConfig.barCornerRadius.values[barCornerRadiusIndex],
+    };
+  };
+
+  const getRuleStyle = (): RuleChartStyle => {
+    return {
+      color: '#FF6B6B',
+      lineWidth: chartConfig.ruleLine.widths[ruleLineWidthIndex],
+      dashArray: chartConfig.ruleDash.dashArrays[ruleDashIndex],
     };
   };
 
@@ -161,11 +232,14 @@ export default function ChartScreen() {
             showGrid={gridIndex === 1}
             animate={animateIndex === 1}
             showLegend={legendIndex === 1}
+            referenceLines={showReferenceLinesIndex === 1 ? getCurrentReferenceLines() : []}
             lineStyle={chartType === 'line' ? getLineStyle() : undefined}
             pointStyle={chartType === 'point' ? getPointStyle() : undefined}
             areaStyle={chartType === 'area' ? getAreaStyle() : undefined}
             barStyle={chartType === 'bar' ? getBarStyle() : undefined}
             pieStyle={chartType === 'pie' ? getPieStyle() : undefined}
+            rectangleStyle={chartType === 'rectangle' ? getRectangleStyle() : undefined}
+            ruleStyle={showReferenceLinesIndex === 1 ? getRuleStyle() : undefined}
             style={styles.chart}
           />
         </Host>
@@ -173,33 +247,42 @@ export default function ChartScreen() {
       <View style={styles.settingsContainer}>
         <MonoText textStyle={styles.settings}>
           Type: {chartType} | Data: {dataSet} | Grid: {gridIndex === 1 ? 'ON' : 'OFF'} | Animate:{' '}
-          {animateIndex === 1 ? 'ON' : 'OFF'} | Legend: {legendIndex === 1 ? 'ON' : 'OFF'}
+          {animateIndex === 1 ? 'ON' : 'OFF'} | Legend: {legendIndex === 1 ? 'ON' : 'OFF'} |
+          Reference Lines: {showReferenceLinesIndex === 1 ? 'ON' : 'OFF'}
         </MonoText>
       </View>
       <HeadingText style={styles.controlHeading}>Chart Type</HeadingText>
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={chartTypeOptions}
-            selectedIndex={chartTypeIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setChartTypeIndex(index);
-            }}
-            variant="segmented"
-          />
+            modifiers={[pickerStyle('segmented')]}
+            selection={chartTypeIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setChartTypeIndex(selection as number);
+            }}>
+            {chartConfig.chartTypeOptions.map((option, index) => (
+              <SwiftUIText key={index} modifiers={[tag(index)]}>
+                {option}
+              </SwiftUIText>
+            ))}
+          </Picker>
         </Host>
       </View>
       <HeadingText style={styles.controlHeading}>Data Set</HeadingText>
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={dataSetOptions}
-            selectedIndex={dataSetIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setDataSetIndex(index);
-            }}
-            variant="segmented"
-          />
+            modifiers={[pickerStyle('segmented')]}
+            selection={dataSetIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setDataSetIndex(selection as number);
+            }}>
+            {chartConfig.dataSetOptions.map((option, index) => (
+              <SwiftUIText key={index} modifiers={[tag(index)]}>
+                {option}
+              </SwiftUIText>
+            ))}
+          </Picker>
         </Host>
       </View>
       {(chartType === 'line' || chartType === 'point') && (
@@ -211,60 +294,81 @@ export default function ChartScreen() {
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={lineStyleOptions}
-                selectedIndex={lineStyleIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setLineStyleIndex(index);
-                }}
-                variant="segmented"
-              />
+                modifiers={[pickerStyle('segmented')]}
+                selection={lineStyleIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setLineStyleIndex(selection as number);
+                }}>
+                {chartConfig.lineStyle.options.map((option, index) => (
+                  <SwiftUIText key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </SwiftUIText>
+                ))}
+              </Picker>
             </Host>
           </View>
           <Text style={styles.optionLabel}>Point Style</Text>
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={pointStyleOptions}
-                selectedIndex={pointStyleIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setPointStyleIndex(index);
-                }}
-                variant="segmented"
-              />
+                modifiers={[pickerStyle('segmented')]}
+                selection={pointStyleIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setPointStyleIndex(selection as number);
+                }}>
+                {chartConfig.pointStyle.options.map((option, index) => (
+                  <SwiftUIText key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </SwiftUIText>
+                ))}
+              </Picker>
             </Host>
           </View>
         </>
       )}
-      {chartType === 'bar' && (
+      {(chartType === 'bar' || chartType === 'rectangle') && (
         <>
-          <HeadingText style={styles.controlHeading}>Bar Styling</HeadingText>
-
+          <HeadingText style={styles.controlHeading}>
+            {chartType === 'bar' ? 'Bar Styling' : 'Rectangle Styling'}
+          </HeadingText>
           <Text style={styles.optionLabel}>Corner Radius</Text>
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={barCornerRadiusOptions}
-                selectedIndex={barCornerRadiusIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setBarCornerRadiusIndex(index);
-                }}
-                variant="segmented"
-              />
+                modifiers={[pickerStyle('segmented')]}
+                selection={barCornerRadiusIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setBarCornerRadiusIndex(selection as number);
+                }}>
+                {chartConfig.barCornerRadius.options.map((option, index) => (
+                  <SwiftUIText key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </SwiftUIText>
+                ))}
+              </Picker>
             </Host>
           </View>
-          <Text style={styles.optionLabel}>Bar Width</Text>
-          <View style={styles.pickerContainer}>
-            <Host matchContents>
-              <Picker
-                options={barWidthOptions}
-                selectedIndex={barWidthIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setBarWidthIndex(index);
-                }}
-                variant="segmented"
-              />
-            </Host>
-          </View>
+          {chartType === 'bar' && (
+            <>
+              <Text style={styles.optionLabel}>Bar Width</Text>
+              <View style={styles.pickerContainer}>
+                <Host matchContents>
+                  <Picker
+                    modifiers={[pickerStyle('segmented')]}
+                    selection={barWidthIndex}
+                    onSelectionChange={({ nativeEvent: { selection } }) => {
+                      setBarWidthIndex(selection as number);
+                    }}>
+                    {chartConfig.barWidth.options.map((option, index) => (
+                      <SwiftUIText key={index} modifiers={[tag(index)]}>
+                        {option}
+                      </SwiftUIText>
+                    ))}
+                  </Picker>
+                </Host>
+              </View>
+            </>
+          )}
         </>
       )}
       {chartType === 'pie' && (
@@ -274,26 +378,34 @@ export default function ChartScreen() {
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={pieInnerRadiusOptions}
-                selectedIndex={pieInnerRadiusIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setPieInnerRadiusIndex(index);
-                }}
-                variant="segmented"
-              />
+                modifiers={[pickerStyle('segmented')]}
+                selection={pieInnerRadiusIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setPieInnerRadiusIndex(selection as number);
+                }}>
+                {chartConfig.pieInnerRadius.options.map((option, index) => (
+                  <SwiftUIText key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </SwiftUIText>
+                ))}
+              </Picker>
             </Host>
           </View>
           <Text style={styles.optionLabel}>Angular Inset</Text>
           <View style={styles.pickerContainer}>
             <Host matchContents>
               <Picker
-                options={pieAngularInsetOptions}
-                selectedIndex={pieAngularInsetIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setPieAngularInsetIndex(index);
-                }}
-                variant="segmented"
-              />
+                modifiers={[pickerStyle('segmented')]}
+                selection={pieAngularInsetIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setPieAngularInsetIndex(selection as number);
+                }}>
+                {chartConfig.pieAngularInset.options.map((option, index) => (
+                  <SwiftUIText key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </SwiftUIText>
+                ))}
+              </Picker>
             </Host>
           </View>
         </>
@@ -303,26 +415,34 @@ export default function ChartScreen() {
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={toggleOptions}
-            selectedIndex={gridIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setGridIndex(index);
-            }}
-            variant="segmented"
-          />
+            modifiers={[pickerStyle('segmented')]}
+            selection={gridIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setGridIndex(selection as number);
+            }}>
+            {chartConfig.toggleOptions.map((option, index) => (
+              <SwiftUIText key={index} modifiers={[tag(index)]}>
+                {option}
+              </SwiftUIText>
+            ))}
+          </Picker>
         </Host>
       </View>
       <Text style={styles.optionLabel}>Animate</Text>
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={toggleOptions}
-            selectedIndex={animateIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setAnimateIndex(index);
-            }}
-            variant="segmented"
-          />
+            modifiers={[pickerStyle('segmented')]}
+            selection={animateIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setAnimateIndex(selection as number);
+            }}>
+            {chartConfig.toggleOptions.map((option, index) => (
+              <SwiftUIText key={index} modifiers={[tag(index)]}>
+                {option}
+              </SwiftUIText>
+            ))}
+          </Picker>
         </Host>
       </View>
       <Text style={styles.optionLabel}>Legend</Text>
@@ -330,15 +450,77 @@ export default function ChartScreen() {
       <View style={styles.pickerContainer}>
         <Host matchContents>
           <Picker
-            options={toggleOptions}
-            selectedIndex={legendIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setLegendIndex(index);
-            }}
-            variant="segmented"
-          />
+            modifiers={[pickerStyle('segmented')]}
+            selection={legendIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setLegendIndex(selection as number);
+            }}>
+            {chartConfig.toggleOptions.map((option, index) => (
+              <SwiftUIText key={index} modifiers={[tag(index)]}>
+                {option}
+              </SwiftUIText>
+            ))}
+          </Picker>
         </Host>
       </View>
+      <Text style={styles.optionLabel}>Reference Lines</Text>
+      <Text style={styles.optionDescription}>Add reference lines to charts</Text>
+      <View style={styles.pickerContainer}>
+        <Host matchContents>
+          <Picker
+            modifiers={[pickerStyle('segmented')]}
+            selection={showReferenceLinesIndex}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setShowReferenceLinesIndex(selection as number);
+            }}>
+            {chartConfig.toggleOptions.map((option, index) => (
+              <SwiftUIText key={index} modifiers={[tag(index)]}>
+                {option}
+              </SwiftUIText>
+            ))}
+          </Picker>
+        </Host>
+      </View>
+      {showReferenceLinesIndex === 1 && (
+        <>
+          <Text style={styles.optionLabel}>Rule Line Width</Text>
+          <Text style={styles.optionDescription}>Set the thickness of rule lines</Text>
+          <View style={styles.pickerContainer}>
+            <Host matchContents>
+              <Picker
+                modifiers={[pickerStyle('segmented')]}
+                selection={ruleLineWidthIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setRuleLineWidthIndex(selection as number);
+                }}>
+                {chartConfig.ruleLine.widthOptions.map((option, index) => (
+                  <SwiftUIText key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </SwiftUIText>
+                ))}
+              </Picker>
+            </Host>
+          </View>
+          <Text style={styles.optionLabel}>Rule Line Style</Text>
+          <Text style={styles.optionDescription}>Set the dash pattern for rule lines</Text>
+          <View style={styles.pickerContainer}>
+            <Host matchContents>
+              <Picker
+                modifiers={[pickerStyle('segmented')]}
+                selection={ruleDashIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setRuleDashIndex(selection as number);
+                }}>
+                {chartConfig.ruleDash.options.map((option, index) => (
+                  <SwiftUIText key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </SwiftUIText>
+                ))}
+              </Picker>
+            </Host>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }

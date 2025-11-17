@@ -1,0 +1,59 @@
+---
+title: List
+description: A SwiftUI List component for displaying scrollable lists of items.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A list component for displaying scrollable lists with support for selection, editing, and reordering.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="List component on iOS."
+      src="/static/images/expo-ui/list/ios.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Host, List } from '@expo/ui/swift-ui';
+
+    <Host style={{ flex: 1 }}>
+      <List
+        scrollEnabled={false}
+        editModeEnabled={editModeEnabled}
+        onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
+        moveEnabled={moveEnabled}
+        onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
+        onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
+        listStyle='automatic'
+        deleteEnabled={deleteEnabled}
+        selectEnabled={selectEnabled}>
+        {data.map((item, index) => (
+          <LabelPrimitive key={index} title={item.text} systemImage={item.systemImage} color={color} />
+        ))}
+      </List>
+    </Host>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/list) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/list" apiName="List" />

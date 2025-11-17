@@ -13,6 +13,7 @@ const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
 const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const dependencies_1 = require("../dependencies");
+const webResolver_1 = require("./webResolver");
 const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath) => {
     const generatedDir = path_1.default.resolve(reactNativePath, 'React/FBReactNativeSpec');
     try {
@@ -27,7 +28,14 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
     if (excludeNames.has(resolution.name)) {
         return null;
     }
-    const libraryConfig = await (0, config_1.loadConfigAsync)(resolution.path);
+    else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
+        // Starting from version 0.76, the `react-native` package only defines platforms
+        // when @react-native-community/cli-platform-android/ios is installed.
+        // Therefore, we need to manually filter it out.
+        // NOTE(@kitten): `loadConfigAsync` is skipped too, because react-native's config is too slow
+        return null;
+    }
+    const libraryConfig = (await (0, config_1.loadConfigAsync)(resolution.path));
     const reactNativeConfig = {
         ...libraryConfig?.dependency,
         ...projectConfig?.dependencies?.[resolution.name],
@@ -35,12 +43,6 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
     if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
         // Package defines platforms would be a platform host package.
         // The rnc-cli will skip this package.
-        return null;
-    }
-    else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
-        // Starting from version 0.76, the `react-native` package only defines platforms
-        // when @react-native-community/cli-platform-android/ios is installed.
-        // Therefore, we need to manually filter it out.
         return null;
     }
     let maybeExpoModuleConfig;
@@ -64,6 +66,9 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
     else if (platform === 'ios') {
         platformData = await (0, iosResolver_1.resolveDependencyConfigImplIosAsync)(resolution, reactNativeConfig.platforms?.ios, maybeExpoModuleConfig);
     }
+    else if (platform === 'web') {
+        platformData = await (0, webResolver_1.checkDependencyWebAsync)(resolution, reactNativeConfig, maybeExpoModuleConfig);
+    }
     return (platformData && {
         root: resolution.path,
         name: resolution.name,
@@ -77,7 +82,7 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
  */
 async function createReactNativeConfigAsync({ appRoot, sourceDir, autolinkingOptions, }) {
     const excludeNames = new Set(autolinkingOptions.exclude);
-    const projectConfig = await (0, config_1.loadConfigAsync)(appRoot);
+    const projectConfig = (await (0, config_1.loadConfigAsync)(appRoot));
     // custom native modules should be resolved first so that they can override other modules
     const searchPaths = autolinkingOptions.nativeModulesDir
         ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
@@ -126,7 +131,7 @@ async function resolveAppProjectConfigAsync(projectRoot, platform, sourceDir) {
         if (gradle == null || manifest == null) {
             return {};
         }
-        const packageName = await (0, androidResolver_1.parsePackageNameAsync)(androidDir, manifest, gradle);
+        const packageName = await (0, androidResolver_1.parsePackageNameAsync)(manifest, gradle);
         return {
             android: {
                 packageName: packageName ?? '',

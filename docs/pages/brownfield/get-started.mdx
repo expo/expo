@@ -1,8 +1,7 @@
 ---
-title: Get started
+title: How to add Expo to an existing native (brownfield) app
 sidebar_title: Get started
 description: A guide for adding Expo and React Native to existing native apps and adding a first view component.
-hideTOC: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -141,16 +140,7 @@ includeBuild(expoAutolinking.reactNativeGradlePlugin)
 
 If you're using a custom folder structure, you need to explicitly set your project root in **settings.gradle** for autolinking to work. Modify the following lines:
 
-```diff settings.gradle
-+expoAutolinking {
-+  projectRoot = new File(rootDir, "my-project")
-+}
-
-extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
--  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
-+  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand, file(rootDir), files("yarn.lock"))
-}
-```
+<DiffBlock source="/static/diffs/brownfield/android/settings-gradle-custom-root.diff" />
 
 </Collapsible>
 
@@ -159,21 +149,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
 <Step label="2">
 Then open your top-level **build.gradle** and include this line (as suggested from the [bare minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/build.gradle)):
 
-```diff build.gradle
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:7.3.1")
-+       classpath("com.facebook.react:react-native-gradle-plugin")
-    }
-}
-
-+apply plugin: "expo-root-project"
-+apply plugin: "com.facebook.react.rootproject"
-```
+<DiffBlock source="/static/diffs/brownfield/android/build-gradle.diff" />
 
 This makes sure the React Native Gradle and the Expo plugins are available and applied inside your project.
 
@@ -182,35 +158,15 @@ This makes sure the React Native Gradle and the Expo plugins are available and a
 <Step label="3">
 Add the following lines inside your app's **build.gradle** file (usually **app/build.gradle** &mdash; you can use the [bare minimum template file as reference](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/build.gradle)):
 
-```diff app/build.gradle
-apply plugin: "com.android.application"
-+apply plugin: "com.facebook.react"
+<DiffBlock source="/static/diffs/brownfield/android/app-build-gradle.diff" />
 
-+def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+<Collapsible summary="Using a custom folder structure?">
 
+If you're using a custom folder structure, you need to adjust the `projectRoot` value to point to root of your Expo project in **app/build.gradle**. Modify the following lines:
 
-dependencies {
-    // Other dependencies here
-    // The version of react-native is set by the React Native Gradle Plugin
-+   implementation("com.facebook.react:react-android")
-+   implementation("com.facebook.react:hermes-android")
-}
+<DiffBlock source="/static/diffs/brownfield/android/app-build-gradle-custom-root.diff" />
 
-+react {
-+   entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
-+   reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
-+   hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
-+   codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
-+   enableBundleCompression = false
-+
-+   // Use Expo CLI to bundle the app, this ensures the Metro config works correctly with Expo projects.
-+   cliFile = new File(["node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })"].execute(null, rootDir).text.trim())
-+   bundleCommand = "export:embed"
-+
-+   /* Autolinking */
-+   autolinkLibrariesWithApp()
-+}
-```
+</Collapsible>
 
 </Step>
 
@@ -230,33 +186,14 @@ hermesEnabled=true
 <Step label="1">
 First, make sure you have the `INTERNET` permission in your **AndroidManifest.xml**:
 
-```diff AndroidManifest.xml
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-+   <uses-permission android:name="android.permission.INTERNET" />
-
-    <application
-      android:name=".MainApplication">
-    </application>
-</manifest>
-```
+<DiffBlock source="/static/diffs/brownfield/android/android-manifest-internet-permission.diff" />
 
 </Step>
 
 <Step label="2">
 Now in your **debug** **AndroidManifest.xml**, enable [cleartext traffic](https://developer.android.com/training/articles/security-config#CleartextTrafficPermitted):
 
-```diff
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <application
-+       android:usesCleartextTraffic="true"
-+       tools:targetApi="28"
-    />
-</manifest>
-```
+<DiffBlock source="/static/diffs/brownfield/android/android-manifest-cleartext-traffic.diff" />
 
 This is necessary for your app to communicate with your local [Metro bundler](https://metrobundler.dev/) via HTTP. You can use the **AndroidManifest.xml** files from the bare minimum template as a reference: [main](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml) and [debug](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/debug/AndroidManifest.xml)
 
@@ -270,60 +207,7 @@ Now, you need to add some native code to start the React Native runtime and tell
 
 Start by updating your `Application` class to initialize React Native. You can use **MainApplication.kt** from the [bare minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt) as a reference:
 
-```diff
-// package <your-package-here>
-
-+import android.app.Application
-+import android.content.res.Configuration
-
-+import com.facebook.react.PackageList
-+import com.facebook.react.ReactApplication
-+import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
-+import com.facebook.react.ReactNativeHost
-+import com.facebook.react.ReactPackage
-+import com.facebook.react.ReactHost
-+import com.facebook.react.common.ReleaseLevel
-+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
-+import com.facebook.react.defaults.DefaultReactNativeHost
-
-+import expo.modules.ApplicationLifecycleDispatcher
-+import expo.modules.ReactNativeHostWrapper
-
--class MainApplication : Application() {
-+class MainApplication : Application(), ReactApplication {
-
-+  override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
-+      this,
-+      object : DefaultReactNativeHost(this) {
-+        override fun getPackages(): List<ReactPackage> =
-+            PackageList(this).packages.apply {
-+              // Packages that cannot be autolinked yet can be added manually here, for example:
-+              // add(MyReactNativePackage())
-+            }
-+
-+          override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
-+
-+          override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
-+
-+          override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-+      }
-+  )
-
-+  override val reactHost: ReactHost
-+    get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
-
-  override fun onCreate() {
-    super.onCreate()
-+    loadReactNative(this)
-+    ApplicationLifecycleDispatcher.onApplicationCreate(this)
-  }
-
-  override fun onConfigurationChanged(newConfig: Configuration) {
-    super.onConfigurationChanged(newConfig)
-+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
-  }
-}
-```
+<DiffBlock source="/static/diffs/brownfield/android/main-application.diff" />
 
 #### Creating a `ReactActivity`
 
@@ -368,21 +252,7 @@ class MyReactActivity : ReactActivity() {
 
 Add the new Activity to your **AndroidManifest.xml** file, make sure to set the theme of `MyReactActivity` to `Theme.AppCompat.Light.NoActionBar` (or to any non-ActionBar theme) to avoid your application rendering an `ActionBar` on top of the React Native screen:
 
-```diff
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <application
-      android:name=".MainApplication">
-
-+     <activity
-+       android:name=".MyReactActivity"
-+       android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-+     </activity>
-    </application>
-</manifest>
-```
+<DiffBlock source="/static/diffs/brownfield/android/android-manifest-add-activity.diff" />
 
 Now your activity is ready to run some JavaScript code.
 
@@ -450,7 +320,7 @@ If your project already has a **Podfile**, you'll need to manually merge the Rea
 
 If you're using a custom folder structure, you need to explicitly set your project root in **Podfile** for autolinking to work. Modify the following lines in your **Podfile**:
 
-<DiffBlock source="/static/diffs/brownfiled/podfile-custom-root.diff" />
+<DiffBlock source="/static/diffs/brownfield/ios/podfile-custom-root.diff" />
 
 </Collapsible>
 
@@ -534,7 +404,7 @@ Next time, when you build your app for Release, the React Native code will be bu
 <Step label="3">
 Edit your **Info.plist** file and make sure to add the `UIViewControllerBasedStatusBarAppearance` key with a value of `NO`, this is needed to ensure that the status bar is properly managed by React Native.
 
-<DiffBlock source="/static/diffs/brownfiled/info-plist.diff" />
+<DiffBlock source="/static/diffs/brownfield/ios/info-plist.diff" />
 
 </Step>
 

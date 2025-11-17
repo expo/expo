@@ -1,7 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 #ifdef __cplusplus
 #import <jsi/jsi.h>
@@ -9,6 +9,7 @@
 namespace jsi = facebook::jsi;
 #endif // __cplusplus
 
+NS_SWIFT_SENDABLE
 NS_SWIFT_NAME(RawJavaScriptFunction)
 @interface EXRawJavaScriptFunction : NSObject
 

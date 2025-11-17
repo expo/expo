@@ -6,9 +6,86 @@
 
 ### 🎉 New features
 
+- Added support for cli command extensions in the interactive devtools menu ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Sync flavor dimensions and product flavors from app to expo module ([#40238](https://github.com/expo/expo/pull/40238) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix passing exclude options. ([#40014](https://github.com/expo/expo/pull/40014) by [@jakex7](https://github.com/jakex7))
+- Sort results from file discovery to keep fingerprint stable ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
+- Fix [#40601](https://github.com/expo/expo/pull/40601) assuming case-insensitive path for default derived podspec path in `react-native-config` resolution ([#40894](https://github.com/expo/expo/pull/40894) by [@kitten](https://github.com/kitten)) ([#40931](https://github.com/expo/expo/pull/40931) by [@kitten](https://github.com/kitten))
+- Fix [#40651](https://github.com/expo/expo/pull/40651) causing already read versions to be lost depending on traversal order ([#40912](https://github.com/expo/expo/pull/40912) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
+- [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
+- Refactor test suite and file discovery implementation to drop `glob` ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
+- Improve recursive dependency resolution performance ([#40651](https://github.com/expo/expo/pull/40651) by [@kitten](https://github.com/kitten))
+
+## 3.0.19 - 2025-10-23
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.18 - 2025-10-21
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `library projects cannot set applicationIdSuffix`. ([#40477](https://github.com/expo/expo/pull/40477) by [@lukmccall](https://github.com/lukmccall))
+
+## 3.0.17 - 2025-10-21
+
+### 🐛 Bug fixes
+
+- [iOS] Moved our special build phase script initialization from run_podfile_post_install_hooks -> perform_post_install_actions to fix issue with wrong UUIDs in Pods.pbproj file. ([#40572](https://github.com/expo/expo/pull/40572) by [@chrfalch](https://github.com/chrfalch))
+- fix globMatchFunctorAllAsync to check if globbed path is a file to prevent errors ([#40437](https://github.com/expo/expo/pull/40437) by [@artus9033](https://github.com/artus9033)) ([#40501](https://github.com/expo/expo/pull/40501) by [@kitten](https://github.com/kitten)) ([#40437](https://github.com/expo/expo/pull/40437), [#40501](https://github.com/expo/expo/pull/40501) by [@artus9033](https://github.com/artus9033), [@kitten](https://github.com/kitten))
+
+## 3.0.16 - 2025-10-20
+
+### 🐛 Bug fixes
+
+- Ignore missing `package.json` name property when scanning dependencies ([#40367](https://github.com/expo/expo/pull/40367) by [@kitten](https://github.com/kitten))
+
+## 3.0.15 - 2025-10-09
+
+### 🐛 Bug fixes
+
+- [iOS] Added build phase script for a workaround to autolinking-generated react-native-config output not being used in ReactCodegen script phase due to temp output directory. ([#40219](https://github.com/expo/expo/pull/40219) by [@chrfalch](https://github.com/chrfalch))
+
+### 💡 Others
+
+- Check `react-native` and `react-native-tvos` for duplicates in the verify command explicitly ([#40180](https://github.com/expo/expo/pull/40180) by [@kitten](https://github.com/kitten))
+
+## 3.0.14 - 2025-10-01
+
+### 💡 Others
+
+- Always include autolinking for top-level `devDependencies` and memoize intermediate config loading. ([#39955](https://github.com/expo/expo/pull/39955) by [@kitten](https://github.com/kitten))
+
+## 3.0.13 - 2025-09-22
+
+### 🎉 New features
+
+- Use app root to generate modules provider ([#39728](https://github.com/expo/expo/pull/39728) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.0.12 - 2025-09-18
+
+### 💡 Others
+
+- [iOS] Added support for passing pod targets that should be statically linked and not built as frameworks. ([#39742](https://github.com/expo/expo/pull/39742) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
+
+## 3.0.11 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- Regression: Support search paths and `nativeModulesDir` pointing directly at module folder ([#39669](https://github.com/expo/expo/pull/39669) by [@kitten](https://github.com/kitten))
+- Mark `ios|macos|tvos` as supported when an Expo Module marks `apple` as a supported platform ([#39700](https://github.com/expo/expo/pull/39700) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Allow `expo-atlas` (devtool Expo Module) to be discovered in `devDependencies` ([#39688](https://github.com/expo/expo/pull/39688) by [@kitten](https://github.com/kitten))
+- Allow resolving native modules via a `web` platform heuristic for autolinking module resolution in Expo CLI ([#39701](https://github.com/expo/expo/pull/39701) by [@kitten](https://github.com/kitten))
 
 ## 3.0.10 — 2025-09-10
 

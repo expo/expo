@@ -3,7 +3,7 @@
 import SwiftUI
 
 extension ExpoSwiftUI {
-  public struct AxisSet: OptionSet {
+  public struct AxisSet: OptionSet, Sendable {
     public init(rawValue: Int) {
       self.rawValue = rawValue
     }

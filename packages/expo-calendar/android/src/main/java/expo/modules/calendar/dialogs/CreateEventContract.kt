@@ -7,10 +7,7 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.EXTRA_EVENT_ALL_DAY
 import android.provider.CalendarContract.EXTRA_EVENT_BEGIN_TIME
 import android.provider.CalendarContract.EXTRA_EVENT_END_TIME
-import expo.modules.calendar.EventRecurrenceUtils.createRecurrenceRule
-import expo.modules.calendar.EventRecurrenceUtils.dateFormat
-import expo.modules.calendar.EventRecurrenceUtils.extractRecurrence
-import expo.modules.calendar.availabilityConstantMatchingString
+import expo.modules.calendar.CalendarUtils
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 
 internal class CreateEventContract : AppContextActivityResultContract<CreatedEventOptions, CreateEventIntentResult> {
@@ -34,18 +31,16 @@ internal class CreateEventContract : AppContextActivityResultContract<CreatedEve
           putExtra(CalendarContract.Events.EVENT_TIMEZONE, it)
         }
         input.availability?.let {
-          val value = availabilityConstantMatchingString(it)
-          putExtra(CalendarContract.Events.AVAILABILITY, value)
+          putExtra(CalendarContract.Events.AVAILABILITY, it.contentProviderValue)
         }
         input.recurrenceRule?.let {
-          val rule = createRecurrenceRule(extractRecurrence(it))
-          putExtra(CalendarContract.Events.RRULE, rule)
+          putExtra(CalendarContract.Events.RRULE, it.toRuleString())
         }
         input.startNewActivityTask.takeIf { it }?.let { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
       }
 
   private fun getTimestamp(it: String): Long {
-    val maybeTimestamp = dateFormat.parse(it)?.time
+    val maybeTimestamp = CalendarUtils.sdf.parse(it)?.time
     return maybeTimestamp ?: throw IllegalArgumentException("Invalid date format")
   }
 

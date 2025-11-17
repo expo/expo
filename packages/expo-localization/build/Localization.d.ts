@@ -21,7 +21,7 @@ export * from './Localization.types';
  * }]
  * ```
  */
-export declare const getLocales: () => import("./Localization.types").Locale[];
+export declare const getLocales: () => [import("./Localization.types").Locale, ...import("./Localization.types").Locale[]];
 /**
  * List of user's preferred calendars, returned as an array of objects of type `Calendar`.
  * Guaranteed to contain at least 1 element.
@@ -36,7 +36,7 @@ export declare const getLocales: () => import("./Localization.types").Locale[];
  * }]
  * ```
  */
-export declare const getCalendars: () => import("./Localization.types").Calendar[];
+export declare const getCalendars: () => [import("./Localization.types").Calendar, ...import("./Localization.types").Calendar[]];
 /**
  * A hook providing a list of user's locales, returned as an array of objects of type `Locale`.
  * Guaranteed to contain at least 1 element.
@@ -60,7 +60,7 @@ export declare const getCalendars: () => import("./Localization.types").Calendar
  * }]
  * ```
  */
-export declare function useLocales(): import("./Localization.types").Locale[];
+export declare function useLocales(): [import("./Localization.types").Locale, ...import("./Localization.types").Locale[]];
 /**
  * A hook providing a list of user's preferred calendars, returned as an array of objects of type `Calendar`.
  * Guaranteed to contain at least 1 element.
@@ -76,5 +76,5 @@ export declare function useLocales(): import("./Localization.types").Locale[];
  * }]
  * ```
  */
-export declare function useCalendars(): import("./Localization.types").Calendar[];
+export declare function useCalendars(): [import("./Localization.types").Calendar, ...import("./Localization.types").Calendar[]];
 //# sourceMappingURL=Localization.d.ts.map

@@ -44,6 +44,11 @@ internal class UnableToWriteHandleException(reason: String) :
     "Unable to write to a file handle: '$reason'"
   )
 
+internal class MissingAppContextException :
+  CodedException(
+    "The app context is missing."
+  )
+
 internal class PickerCancelledException :
   CodedException("The file picker was cancelled by the user")
 

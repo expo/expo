@@ -113,3 +113,28 @@ internal final class AccessPickerAlreadyPresentedException: Exception {
     "Contact access picker is already presented"
   }
 }
+
+internal final class RemoteImageUriException: Exception {
+  private let providedUri: String
+
+  init(_ uri: String) {
+    self.providedUri = uri
+    super.init()
+  }
+
+  override var reason: String {
+    "Only file:// URIs are supported for contact images. Provided URI: '\(providedUri)'. Download the image first using File.downloadFileAsync from expo-file-system and provide a local file URI."
+  }
+}
+
+internal final class ContactSerializationException: GenericException<String> {
+  override var reason: String {
+    "Failed to serialize contact data: \(param)"
+  }
+}
+
+internal final class ContactsCheckFailedException: Exception {
+  override var reason: String {
+    "Couldn't check if there are any contacts"
+  }
+}

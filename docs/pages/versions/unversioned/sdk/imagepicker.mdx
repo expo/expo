@@ -37,7 +37,7 @@ On iOS, when an image (usually of a [higher resolution](http://www.openradar.me/
 
 ## Configuration in app config
 
-You can configure `expo-image-picker` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-image-picker` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
 <ConfigPluginExample>
 
@@ -49,6 +49,14 @@ You can configure `expo-image-picker` using its built-in [config plugin](/config
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "colors": {
+            "cropToolbarColor": "#000000",
+          },
+          "dark": {
+            "colors": {
+              "cropToolbarColor": "#000000",
+            }
+          }
         }
       ]
     ]
@@ -77,6 +85,51 @@ You can configure `expo-image-picker` using its built-in [config plugin](/config
       platform: 'ios',
       description: 'A string to set the `NSMicrophoneUsageDescription` permission message.',
       default: '"Allow $(PRODUCT_NAME) to access your microphone"',
+    },
+    {
+      name: 'colors',
+      platform: 'android',
+      description:
+        'An object containing color properties for customizing the image picker crop UI in light mode.',
+      default: 'undefined',
+    },
+    {
+      name: 'colors.cropToolbarColor',
+      platform: 'android',
+      description: 'A hex color string for the crop toolbar background color.',
+      default: '#00000000',
+    },
+    {
+      name: 'colors.cropToolbarIconColor',
+      platform: 'android',
+      description: 'A hex color string for the crop toolbar icon color.',
+      default: '#ffffff',
+    },
+    {
+      name: 'colors.cropToolbarActionTextColor',
+      platform: 'android',
+      description: 'A hex color string for the crop toolbar action text color.',
+      default: '#ffffff',
+    },
+    {
+      name: 'colors.cropBackButtonIconColor',
+      platform: 'android',
+      description: 'A hex color string for the crop toolbar back button icon color.',
+      default: '#ffffff',
+    },
+    {
+      name: 'colors.cropBackgroundColor',
+      platform: 'android',
+      description: 'A hex color string for the crop screen background color.',
+      default: '#ffffff',
+    },
+    {
+      name: 'dark.colors',
+      platform: 'android',
+      description:
+        'An object containing color properties for customizing the image picker crop UI in dark mode.',
+      default:
+        '{ cropToolbarColor: "#00000000", cropToolbarIconColor: "#ffffff", cropToolbarActionTextColor: "#ffffff", cropBackButtonIconColor: "#ffffff", cropBackgroundColor: "#000000"  }',
     },
   ]}
 />

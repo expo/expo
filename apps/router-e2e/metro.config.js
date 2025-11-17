@@ -1,7 +1,6 @@
 /* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
-const { boolish } = require('getenv');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -55,18 +54,19 @@ config.watchFolders = [
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
 
-// Allow experimental import support to be turned on through `EXPO_USE_METRO_REQUIRE=true` for E2E tests
-config.transformer.getTransformOptions = () => ({
-  transform: {
-    experimentalImportSupport: boolish('EXPO_USE_METRO_REQUIRE', false),
-    inlineRequires: false,
-  },
-});
-
 config.resolver.blockList = [
   /\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/@react-navigation\/native-stack\/node_modules\/@react-navigation\//,
   /node_modules\/pretty-format\/node_modules\/react-is/,
 ];
+
+const originalCustomizeFrame = config.symbolicator.customizeFrame;
+config.symbolicator.customizeFrame = (frame) => {
+  const newFrame = originalCustomizeFrame(frame);
+  // This will make frames collapsed the same as in use apps, where expo/packages are in node_modules
+  // and thus collapsed by default.
+  newFrame.collapse ||= new RegExp('expo/packages/.+').test(frame.file);
+  return newFrame;
+};
 
 module.exports = config;

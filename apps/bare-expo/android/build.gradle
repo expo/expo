@@ -23,7 +23,10 @@ allprojects {
   }
 }
 
-subprojects {
+subprojects { project ->
+  if (project.name.startsWith("react-native")) { return; }
+  if (project.projectDir.toString().contains("/node_modules/")) { return; }
+
   plugins.apply("com.diffplug.spotless")
   spotless {
     // note that spotless config is currently duplicated in expo-go too

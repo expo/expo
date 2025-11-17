@@ -1,14 +1,14 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <react/bridging/CallbackWrapper.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptObject.h>
-#import <ExpoModulesCore/EXJavaScriptWeakObject.h>
-#import <ExpoModulesCore/EXJSIConversions.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
-#import <ExpoModulesCore/EXJavaScriptSharedObjectBinding.h>
-#import <ExpoModulesCore/EXStringUtils.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
+#import <ExpoModulesJSI/EXJavaScriptWeakObject.h>
+#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXStringUtils.h>
+#import <ExpoModulesJSI/EXJavaScriptObjectBinding.h>
 
 namespace expo {
 
@@ -30,7 +30,8 @@ jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 #if !TARGET_OS_OSX
   const uint8_t *utf8 = (const uint8_t *)[value UTF8String];
   const size_t length = [value length];
-  if (expo::isAllASCIIAndNotNull(utf8, utf8 + length)) {
+
+  if (utf8 != nullptr && expo::isAllASCIIAndNotNull(utf8, utf8 + length)) {
     return jsi::String::createFromAscii(runtime, (const char *)utf8, length);
   }
   // Using cStringUsingEncoding should be fine as long as we provide the length.
@@ -39,6 +40,12 @@ jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
   // TODO(@jakex7): Remove after update to react-native-macos@0.79.0
   return jsi::String::createFromUtf8(runtime, [value UTF8String]);
 #endif
+}
+
+jsi::String convertNSURLToJSIString(jsi::Runtime &runtime, NSURL *value)
+{
+  NSString *stringValue = [value absoluteString];
+  return convertNSStringToJSIString(runtime, stringValue);
 }
 
 jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
@@ -91,8 +98,8 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   if ([value isKindOfClass:[EXJavaScriptWeakObject class]]) {
     return jsi::Value(runtime, *[[(EXJavaScriptWeakObject *)value lock] get]);
   }
-  if ([value isKindOfClass:[EXJavaScriptSharedObjectBinding class]]) {
-    return jsi::Value(runtime, *[[(EXJavaScriptSharedObjectBinding *)value get] get]);
+  if ([value isKindOfClass:[EXJavaScriptObjectBinding class]]) {
+    return jsi::Value(runtime, *[[(EXJavaScriptObjectBinding *)value get] get]);
   }
   if ([value isKindOfClass:[NSString class]]) {
     return convertNSStringToJSIString(runtime, (NSString *)value);
@@ -107,6 +114,8 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
     return convertNSArrayToJSIArray(runtime, (NSArray *)value);
   } else if ([value isKindOfClass:[NSData class]]) {
     return createUint8Array(runtime, (NSData *)value);
+  } else if ([value isKindOfClass:[NSURL class]]) {
+    return convertNSURLToJSIString(runtime, (NSURL *)value);
   } else if (value == (id)kCFNull) {
     return jsi::Value::null();
   }
@@ -150,7 +159,8 @@ NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::O
   for (size_t i = 0; i < size; i++) {
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
-    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker);
+    jsi::Value jsValue = value.getProperty(runtime, name);
+    id v = convertJSIValueToObjCObjectAsDictValue(runtime, std::move(jsValue), jsInvoker);
     if (v) {
       result[k] = v;
     }
@@ -183,6 +193,37 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
     return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
   }
 
+  throw std::runtime_error("Unsupported jsi::jsi::Value kind");
+}
+
+id convertJSIValueToObjCObjectAsDictValue(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
+{
+  if (value.isUndefined()) {
+    return nil;
+  }
+  if (value.isNull()) {
+    return [NSNull null];
+  }
+  if (value.isBool()) {
+    return @(value.getBool());
+  }
+  if (value.isNumber()) {
+    return @(value.getNumber());
+  }
+  if (value.isString()) {
+    return convertJSIStringToNSString(runtime, value.getString(runtime));
+  }
+  if (value.isObject()) {
+    jsi::Object o = value.getObject(runtime);
+    if (o.isArray(runtime)) {
+      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker);
+    }
+    if (o.isFunction(runtime)) {
+      return convertJSIFunctionToCallback(runtime, std::move(o.getFunction(runtime)), jsInvoker);
+    }
+    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
+  }
+  
   throw std::runtime_error("Unsupported jsi::jsi::Value kind");
 }
 

@@ -40,8 +40,13 @@ class LogRespectingTerminal extends Terminal {
   constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
     super(stream, { ttyPrint: true });
 
-    const sendLog = (format: string, ...args: any[]) => {
-      this.log(format, ...args);
+    const sendLog = (...msg: any[]) => {
+      if (!msg.length) {
+        this.log('');
+      } else {
+        const [format, ...args] = msg;
+        this.log(format, ...args);
+      }
       // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
       this.flush();
     };
@@ -80,11 +85,9 @@ export async function loadMetroConfigAsync(
     process.env.EXPO_USE_METRO_REQUIRE = '1';
   }
 
-  const isReactCanaryEnabled =
-    (exp.experiments?.reactServerComponentRoutes ||
-      serverActionsEnabled ||
-      exp.experiments?.reactCanary) ??
-    false;
+  if (exp.experiments?.reactCanary) {
+    Log.warn(`React 19 is enabled by default. Remove unused experiments.reactCanary flag.`);
+  }
 
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
@@ -132,14 +135,14 @@ export async function loadMetroConfigAsync(
     );
   }
 
-  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
-    Log.warn(`Experimental fast resolver is enabled.`);
-  }
   if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
   }
   if (env.EXPO_UNSTABLE_TREE_SHAKING) {
     Log.warn(`Experimental tree shaking is enabled.`);
+  }
+  if (env.EXPO_UNSTABLE_LOG_BOX) {
+    Log.warn(`Experimental Expo LogBox is enabled.`);
   }
   if (autolinkingModuleResolutionEnabled) {
     Log.warn(`Experimental Expo Autolinking module resolver is enabled.`);
@@ -157,9 +160,7 @@ export async function loadMetroConfigAsync(
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
-    isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
@@ -273,6 +274,7 @@ export async function instantiateMetroAsync(
     return originalTransformFile(
       filePath,
       pruneCustomTransformOptions(
+        projectRoot,
         filePath,
         // Clone the options so we don't mutate the original.
         {
@@ -404,6 +406,7 @@ export async function instantiateMetroAsync(
 
 // TODO: Fork the entire transform function so we can simply regex the file contents for keywords instead.
 function pruneCustomTransformOptions(
+  projectRoot: string,
   filePath: string,
   transformOptions: TransformOptions
 ): TransformOptions {
@@ -420,13 +423,20 @@ function pruneCustomTransformOptions(
     transformOptions.customTransformOptions.dom = 'true';
   }
 
-  if (
-    transformOptions.customTransformOptions?.routerRoot &&
+  const routerRoot = transformOptions.customTransformOptions?.routerRoot;
+  if (typeof routerRoot === 'string') {
+    const isRouterEntry = /\/expo-router\/_ctx/.test(filePath);
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
-    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
-  ) {
-    // Set to the default value.
-    transformOptions.customTransformOptions.routerRoot = 'app';
+    const isRouterModule = /\/expo-router\/build\//.test(filePath);
+    // Any page/router inside the expo-router app folder may access the `routerRoot` option to determine whether it's in the app folder
+    const isRouterRoute =
+      path.isAbsolute(filePath) && filePath.startsWith(path.resolve(projectRoot, routerRoot));
+
+    // In any other file than the above, we enforce that we mustn't use `routerRoot`, and set it to an arbitrary value here (the default)
+    // to ensure that the cache never invalidates when this value is changed
+    if (!isRouterEntry && !isRouterModule && !isRouterRoute) {
+      transformOptions.customTransformOptions!.routerRoot = 'app';
+    }
   }
 
   if (

@@ -1,0 +1,198 @@
+name: 'Slack Notify'
+description: 'Send formatted job notifications to Slack (replacement for 8398a7/action-slack)'
+inputs:
+  webhook:
+    description: 'Slack webhook URL'
+    required: true
+  channel:
+    description: 'Override the default target channel'
+    required: false
+  author_name:
+    description: 'Author name to display in notification'
+    required: false
+    default: 'GitHub Actions'
+  job_name:
+    description: 'Job name to display (defaults to github.job)'
+    required: false
+    default: ${{ github.job }}
+  github_token:
+    description: 'GitHub token for API calls'
+    required: false
+    default: ${{ github.token }}
+  status:
+    description: 'Job status (success, failure, cancelled)'
+    required: false
+    default: ${{ github.job.status }}
+  fields:
+    description: 'Comma-separated list of fields to include (job,message,ref,eventName,author,took). Default: job,message,ref,eventName,author,took'
+    required: false
+    default: 'job,message,ref,eventName,author,took'
+  artifact_url:
+    description: 'Artifact download URL (optional)'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Gather job details
+      id: details
+      uses: actions/github-script@v8
+      env:
+        JOB_NAME: ${{ inputs.job_name }}
+        JOB_STATUS: ${{ inputs.status }}
+        INCLUDE_FIELDS: ${{ inputs.fields }}
+        ARTIFACT_URL: ${{ inputs.artifact_url }}
+        AUTHOR_NAME: ${{ inputs.author_name }}
+      with:
+        github-token: ${{ inputs.github_token }}
+        script: |
+          const { owner, repo } = context.repo;
+          const { sha } = context;
+          const fields = process.env.INCLUDE_FIELDS.split(',').map(f => f.trim());
+
+          function escape(text) {
+            if (!text) return '';
+            return String(text)
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;');
+          }
+
+          // Fetch commit details
+          const commit = await github.rest.repos.getCommit({
+            owner,
+            repo,
+            ref: sha
+          });
+
+          // [fields] message
+          const commitMessage = escape(commit.data.commit.message.split('\n')[0]);
+          const messageField = `<${commit.data.html_url}|${commitMessage}>`;
+
+          // [fields] author
+          const author = commit.data.commit.author;
+          const authorField = `${escape(author.name)} &lt;${escape(author.email)}&gt;`;
+
+          // [fields] ref
+          const refField = escape(context.ref);
+
+          // [fields] eventName
+          const eventNameField = escape(context.eventName);
+
+          // [fields] job / took
+          let jobField = 'Job not found';
+          let tookField = 'N/A';
+
+          if (fields.includes('job') || fields.includes('took')) {
+            const jobs = await github.paginate(
+              github.rest.actions.listJobsForWorkflowRun,
+              {
+                owner,
+                repo,
+                run_id: context.runId
+              }
+            );
+
+            // JOB_NAME doesn't include matrix values, but listJobsForWorkflowRun returns job names with matrix.
+            // e.g., JOB_NAME="android-test-e2e" but job.name="android-test-e2e (36)"
+            // We use startsWith to match the base job name and support matrix jobs.
+            const baseJobName = process.env.JOB_NAME;
+            const currentJob = jobs.find(job =>
+              job.name === baseJobName || job.name.startsWith(`${baseJobName} (`)
+            );
+
+            if (currentJob) {
+              // Use formatted job name (with matrix) for display
+              jobField = `<${currentJob.html_url}|${currentJob.name}>`;
+
+              const startTime = new Date(currentJob.started_at).getTime();
+              const endTime = new Date().getTime();
+              let duration = endTime - startTime;
+
+              const hours = Math.floor(duration / (1000 * 60 * 60));
+              duration -= hours * 1000 * 60 * 60;
+              const minutes = Math.floor(duration / (1000 * 60));
+              duration -= minutes * 1000 * 60;
+              const seconds = Math.floor(duration / 1000);
+
+              let tookParts = [];
+              if (hours > 0) tookParts.push(`${hours} hour`);
+              if (minutes > 0) tookParts.push(`${minutes} min`);
+              if (seconds > 0) tookParts.push(`${seconds} sec`);
+              tookField = tookParts.join(' ') || '0 sec';
+            }
+          }
+
+          // [outputs] color and text based on status
+          const status = process.env.JOB_STATUS.toLowerCase();
+          let color = 'danger';
+          let text = ':no_entry: Failed GitHub Actions\n';
+
+          if (status === 'success') {
+            color = 'good';
+            text = ':white_check_mark: Succeeded GitHub Actions\n';
+          } else if (status === 'cancelled') {
+            color = 'warning';
+            text = ':warning: Cancelled GitHub Actions\n';
+          }
+
+          // [outputs] fields
+          const slackFields = [];
+          if (fields.includes('message')) {
+            slackFields.push({ title: 'message', value: messageField, short: true });
+          }
+          if (fields.includes('author')) {
+            slackFields.push({ title: 'author', value: authorField, short: true });
+          }
+          if (fields.includes('job')) {
+            slackFields.push({ title: 'job', value: jobField, short: true });
+          }
+          if (fields.includes('took')) {
+            slackFields.push({ title: 'took', value: tookField, short: true });
+          }
+          if (fields.includes('ref')) {
+            slackFields.push({ title: 'ref', value: refField, short: true });
+          }
+          if (fields.includes('eventName')) {
+            slackFields.push({ title: 'eventName', value: eventNameField, short: true });
+          }
+
+          const artifactUrl = process.env.ARTIFACT_URL;
+          if (artifactUrl && artifactUrl !== '') {
+            try {
+              const url = new URL(artifactUrl);
+              const trustedDomains = ['github.com'];
+              const isTrusted = trustedDomains.some(domain =>
+                url.hostname === domain || url.hostname.endsWith(`.${domain}`)
+              );
+
+              if (isTrusted) {
+                slackFields.push({
+                  title: 'artifacts',
+                  value: `<${artifactUrl}|download artifacts>`,
+                  short: false
+                });
+              } else {
+                core.warning(`Artifact URL rejected - must be from trusted domain: ${url.hostname}`);
+              }
+            } catch (e) {
+              core.warning(`Invalid artifact URL format: ${artifactUrl}`);
+            }
+          }
+
+          core.setOutput('fields', JSON.stringify(slackFields));
+          core.setOutput('color', color);
+          core.setOutput('text', text);
+          core.setOutput('author_name', escape(process.env.AUTHOR_NAME));
+
+    - name: Send to Slack
+      uses: slackapi/slack-github-action@v2.1.1
+      with:
+        webhook: ${{ inputs.webhook }}
+        webhook-type: incoming-webhook
+        payload: |
+          text: "${{ steps.details.outputs.text }}"
+          attachments:
+            - color: "${{ steps.details.outputs.color }}"
+              author_name: "${{ steps.details.outputs.author_name }}"
+              fields: ${{ steps.details.outputs.fields }}

@@ -1,0 +1,117 @@
+name: iOS Client (Expo Go) - EAS Build
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - apps/eas-expo-go/**
+      - apps/expo-go/ios/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - secrets/**
+      - fastlane/**
+      - Gemfile.lock
+  push:
+    branches: [main, sdk-*]
+    paths:
+      - apps/eas-expo-go/**
+      - apps/expo-go/ios/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - secrets/**
+      - fastlane/**
+      - Gemfile.lock
+  schedule:
+    - cron: '20 5 * * *' # 5:20 AM UTC time every day
+
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
+# note that there are also hooks in the `scripts` directory that run at different moments of the build process such as checking out the react-native submodule
+jobs:
+  build_ios:
+    if: ${{ !(github.event_name == 'pull_request' && github.triggering_actor == 'dependabot[bot]') }}
+    name: iOS Client Build
+    type: build
+    env:
+      EAS_BUILD_PROFILE: unversioned-client
+    params:
+      platform: ios
+      profile: unversioned-client
+
+  # see "Currently only hardcoded strings are supported. Using webhooks stored in env are upcoming but not yet supported."
+  # https://docs.expo.dev/eas/workflows/pre-packaged-jobs/#slack
+  # you can use https://github.com/expo/expo/pull/40224/commits/e5295e8518d07e9b16ad3ed23c46977232b6bb90 when the limitation drops
+  notify_failure:
+    if: ${{ failure() && (github.event_name == 'schedule' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-')) }}
+    name: 🔔 Notify on Slack
+    after: [build_ios]
+    steps:
+      - run: |
+          EVENT_NAME="${{ github.event_name }}"
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.commit_message }}"
+          BRANCH="${{ github.ref_name }}"
+          WF_ID="${{ workflow.id }}"
+          ACTOR="${{ github.triggering_actor }}"
+
+          # Use first line of commit message if available, otherwise use short SHA
+          if [ -z "$COMMIT_MESSAGE" ] || [ "$COMMIT_MESSAGE" = "undefined" ]; then
+            COMMIT_DISPLAY="${COMMIT_SHA:0:7}"
+          else
+            # Extract only the first line of the commit message
+            COMMIT_DISPLAY=$(echo "$COMMIT_MESSAGE" | head -n1)
+          fi
+
+          echo "Event: $EVENT_NAME"
+          echo "Branch: $BRANCH"
+          echo "Commit Display: $COMMIT_DISPLAY"
+          echo "WF_ID: $WF_ID"
+          echo "Actor: $ACTOR"
+
+          # Build JSON payload with proper escaping using jq
+          PAYLOAD=$(jq -n \
+            --arg text "🚨 Expo Go (iOS) build failed" \
+            --arg wf_id "$WF_ID" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg commit_display "$COMMIT_DISPLAY" \
+            --arg actor "$ACTOR" \
+            '{
+              text: $text,
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: "*Expo Go (iOS) build failed*"
+                  }
+                },
+                {
+                  type: "section",
+                  fields: [
+                    {
+                      type: "mrkdwn",
+                      text: ("*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/unversioned-expo-go/workflows/" + $wf_id + "|" + $wf_id + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Branch:*\n<https://github.com/expo/expo/tree/" + $branch + "|" + $branch + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Commit:*\n<https://github.com/expo/expo/commit/" + $commit_sha + "|" + $commit_display + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Triggered by:*\n" + $actor)
+                    }
+                  ]
+                }
+              ]
+            }')
+
+          curl -X POST "$SLACK_WEBHOOK_IOS" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"

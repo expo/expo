@@ -1,63 +1,40 @@
-import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { ExperimentalBlurMethod } from 'expo-blur';
-import React from 'react';
-import { StyleSheet, ScrollView, Text, Platform } from 'react-native';
+import { optionalRequire } from '../../navigation/routeBuilder';
+import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
-import BlurViewWithControls from './BlurViewWithControls';
-
-const blurStyles = [
-  'light',
-  'dark',
-  'default',
-  'extraLight',
-  'regular',
-  'prominent',
-  'systemUltraThinMaterial',
-  'systemThinMaterial',
-  'systemMaterial',
-  'systemThickMaterial',
-  'systemChromeMaterial',
-  'systemUltraThinMaterialLight',
-  'systemThinMaterialLight',
-  'systemMaterialLight',
-  'systemThickMaterialLight',
-  'systemChromeMaterialLight',
-  'systemUltraThinMaterialDark',
-  'systemThinMaterialDark',
-  'systemMaterialDark',
-  'systemThickMaterialDark',
-  'systemChromeMaterialDark',
-] as const;
-const blurMethods: ExperimentalBlurMethod[] = ['none', 'dimezisBlurView'];
+export const BlurScreens = [
+  {
+    name: 'Animated BlurView',
+    route: 'blur/animated',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BlurViewAnimatedScreen'));
+    },
+  },
+  {
+    name: 'BlurView Navbar Screen',
+    route: 'blur/navbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BlurViewScrollScreen'));
+    },
+  },
+  {
+    name: 'BlurView Compat',
+    route: 'blur/compat',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BlurViewCompatScreen'));
+    },
+  },
+];
 
 export default function BlurViewScreen() {
-  const [blurMethod, setBlurMethod] = React.useState<ExperimentalBlurMethod>('none');
-  return (
-    <ScrollView style={styles.container}>
-      {Platform.OS === 'android' && (
-        <>
-          <Text style={styles.text}>Blur method:</Text>
-          <SegmentedControl
-            values={blurMethods}
-            selectedIndex={blurMethods.indexOf(blurMethod)}
-            onChange={(event) => {
-              setBlurMethod(event.nativeEvent.value as ExperimentalBlurMethod);
-            }}
-          />
-        </>
-      )}
-      {blurStyles.map((tint) => (
-        <BlurViewWithControls key={tint} tint={tint} blurMethod={blurMethod} />
-      ))}
-    </ScrollView>
-  );
+  const apis: ListElement[] = BlurScreens.map((screen) => {
+    return {
+      name: screen.name,
+      isAvailable: true,
+      route: `/components/${screen.route}`,
+    };
+  });
+  return <ComponentListScreen apis={apis} sort={false} />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  text: {
-    marginLeft: 10,
-  },
-});

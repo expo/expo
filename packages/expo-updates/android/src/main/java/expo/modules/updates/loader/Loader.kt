@@ -84,7 +84,7 @@ abstract class Loader protected constructor(
 
   protected abstract suspend fun loadAsset(
     assetEntity: AssetEntity,
-    updatesDirectory: File?,
+    updatesDirectory: File,
     configuration: UpdatesConfiguration,
     requestedUpdate: UpdateEntity?,
     embeddedUpdate: UpdateEntity?

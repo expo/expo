@@ -10,6 +10,7 @@ on:
       - apps/test-suite/**
       - packages/**
       - yarn.lock
+      # When adding new paths, also update the paths of the "Get the base commit" step below
   pull_request:
     paths:
       - .github/workflows/test-suite.yml
@@ -27,19 +28,20 @@ concurrency:
 jobs:
   ios-build:
     runs-on: macos-15
+    permissions:
+      # REQUIRED: Allow updating fingerprint in action caches
+      actions: write
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
-        with:
-          submodules: true
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
-      - name: 🔨 Switch to Xcode 16.4
-        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+      - name: 🔨 Switch to Xcode 26.0
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -67,38 +69,49 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
-      - name: 🌳 Display pod environment
-        run: pod env
-        working-directory: apps/bare-expo/ios
-      - name: 🥥 Install pods in apps/bare-expo/ios
-        if: steps.expo-caches.outputs.ios-pods-hit != 'true'
-        run: pod install
-        env:
-          RCT_USE_PREBUILT_RNCORE: 1
-          RCT_USE_RN_DEP: 1
-        working-directory: apps/bare-expo/ios
-      - name: 🏗️ Build iOS project (bare-expo)
-        run: ./scripts/start-ios-e2e-test.ts --build
-        working-directory: apps/bare-expo
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin main:main --depth 100 --no-recurse-submodules
+        if: github.event_name == 'pull_request'
+      - name: 🔎 Get the base commit
+        id: base-commit
+        run: |
+          # Since we limit this workflow only triggered from limited paths, we should use custom base commit
+          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+      - name: 📹 Check fingerprint
+        id: fingerprint
+        uses: expo/actions/fingerprint@main
+        with:
+          working-directory: apps/bare-expo
+          previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
+          fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
+      - name: 🏗️ Build/Repack iOS project (bare-expo)
+        uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 55
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
-      - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
+          RCT_USE_PREBUILT_RNCORE: 1
+          RCT_USE_RN_DEP: 1
         with:
-          name: bare-expo-ios-builds
-          path: apps/bare-expo/ios/build/BareExpo.app
+          platform: ios
+          fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
+          working-directory: apps/bare-expo
+          build-command: |
+            pushd ios
+            pod env
+            pod install
+            popd
+            ./scripts/start-ios-e2e-test.ts --build
+          build-output: apps/bare-expo/ios/build/BareExpo.app
+          artifact-name: bare-expo-ios-builds
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
+          webhook: ${{ secrets.slack_webhook_ios }}
           channel: '#expo-ios'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite e2e (iOS)
 
   ios-test-e2e:
@@ -115,6 +128,8 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
+      - name: 🔨 Switch to Xcode 26.0
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
@@ -122,11 +137,16 @@ jobs:
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
+      - name: 🧹 Cleanup unused simulator runtimes
+        run: |
+          xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
+          xcrun simctl list devices --json
+          xcrun simctl erase all
+          xcrun simctl shutdown all
+          sudo xcodebuild -runFirstLaunch
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
-          brew tap facebook/fb
-          brew install facebook/fb/idb-companion
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
@@ -136,41 +156,66 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: 🧶 Install image comparison server node modules
+        run: yarn install --frozen-lockfile
+        working-directory: apps/bare-expo/e2e/image-comparison
+      - name: Build Screen Inspector
+        run: ./scripts/build.sh
+        working-directory: apps/bare-expo/e2e/image-comparison/inspector
+      - name: 🖼️ Start image comparison server
+        run: |
+          mkdir -p ~/.maestro/tests
+          ./image-comparison/src/server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
+          echo $! > /tmp/image-server.pid
+        working-directory: apps/bare-expo/e2e
       - name: 🧪 Run e2e tests (bare-expo)
         run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
-        timeout-minutes: 30
+        env:
+          MAESTRO_CLI_NO_ANALYTICS: 1
+        timeout-minutes: 40
       - name: 📸 Store testing artifacts
         if: always()
         uses: actions/upload-artifact@v4
+        id: upload-artifacts
         with:
           name: bare-expo-artifacts-ios
           path: |
             ~/.maestro/tests/**/*
             ~/Library/Logs/maestro/**/*
           overwrite: true
+          include-hidden-files: true # .maestro is skipped otherwise
+      - name: 🔗 Artifacts download URL
+        if: always()
+        run: |
+          echo "Artifacts URL: ${{ steps.upload-artifacts.outputs.artifact-url }}"
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
+          webhook: ${{ secrets.slack_webhook_ios }}
           channel: '#expo-ios'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite e2e (iOS)
+          artifact_url: ${{ steps.upload-artifacts.outputs.artifact-url }}
+      - name: 🛑 Stop image comparison server
+        if: always()
+        run: |
+          if [ -f /tmp/image-server.pid ]; then
+            kill $(cat /tmp/image-server.pid) 2>/dev/null || true
+            rm -f /tmp/image-server.pid
+          fi
 
   android-build:
     runs-on: ubuntu-24.04
+    permissions:
+      # REQUIRED: Allow updating fingerprint in action caches
+      actions: write
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
-        with:
-          submodules: true
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
@@ -197,35 +242,52 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: 🧶 Install image comparison server node modules
+        run: yarn install --frozen-lockfile
+        working-directory: apps/bare-expo/e2e/image-comparison
+      - name: 🧪 Test image comparison utilities
+        run: bun test
+        working-directory: apps/bare-expo/e2e/image-comparison
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
-      - name: 🏗️ Gradle prebuild for Android project (workaround to fix build error)
-        run: ./gradlew preBuild
-        working-directory: apps/bare-expo/android
-      - name: 🏗️ Build Android project (bare-expo)
-        run: ./scripts/start-android-e2e-test.ts --build
-        working-directory: apps/bare-expo
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin main:main --depth 100 --no-recurse-submodules
+        if: github.event_name == 'pull_request'
+      - name: 🔎 Get the base commit
+        id: base-commit
+        run: |
+          # Since we limit this workflow only triggered from limited paths, we should use custom base commit
+          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+      - name: 📹 Check fingerprint
+        id: fingerprint
+        uses: expo/actions/fingerprint@main
+        with:
+          working-directory: apps/bare-expo
+          previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
+          fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
+      - name: 🏗️ Build/Repack Android project (bare-expo)
+        uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 35
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
-      - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
         with:
-          name: bare-expo-android-builds
-          path: apps/bare-expo/android/app/build/outputs/apk
+          platform: android
+          fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
+          fingerprint-db-cache-path: .fingerprint.db
+          working-directory: apps/bare-expo
+          build-command: |
+            ./scripts/start-android-e2e-test.ts --build
+          build-output: apps/bare-expo/android/app/build/outputs/apk/release
+          artifact-name: bare-expo-android-builds
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
+          webhook: ${{ secrets.slack_webhook_android }}
           channel: '#expo-android'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite e2e (Android)
 
   android-test-e2e:
@@ -233,7 +295,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        api-level: [34]
+        api-level: [36]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
@@ -247,7 +309,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: bare-expo-android-builds
-          path: apps/bare-expo/android/app/build/outputs/apk
+          path: apps/bare-expo/android/app/build/outputs/apk/release
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -260,31 +322,47 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: 🧶 Install image comparison server node modules
+        run: yarn install --frozen-lockfile
+        working-directory: apps/bare-expo/e2e/image-comparison
       - name: 🧪 Run e2e tests (bare-expo)
         uses: ./.github/actions/use-android-emulator
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: ./scripts/start-android-e2e-test.ts --test
+          script: |
+            # Start image comparison server (needs adb from use-android-emulator)
+            mkdir -p ~/.maestro/tests
+            ./e2e/image-comparison/src/server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
+            echo $! > /tmp/image-server.pid
+            # Run the actual tests
+            ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()
+        id: upload-artifacts
         uses: actions/upload-artifact@v4
         with:
           name: bare-expo-artifacts-android
           path: |
             ~/.maestro/tests/**/*
-            ~/Library/Logs/maestro/**/*
           overwrite: true
+      - name: 🔗 Artifacts download URL
+        if: always()
+        run: |
+          echo "Artifacts URL: ${{ steps.upload-artifacts.outputs.artifact-url }}"
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
+          webhook: ${{ secrets.slack_webhook_android }}
           channel: '#expo-android'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite e2e (Android)
+          artifact_url: ${{ steps.upload-artifacts.outputs.artifact-url }}
+      - name: 🛑 Stop image comparison server
+        if: always()
+        run: |
+          if [ -f /tmp/image-server.pid ]; then
+            kill $(cat /tmp/image-server.pid) 2>/dev/null || true
+            rm -f /tmp/image-server.pid
+          fi

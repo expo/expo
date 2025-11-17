@@ -8,7 +8,7 @@ export default function Page(_: { dom?: import('expo/dom').DOMProps }) {
       <p className="text-lg text-blue-400 font-medium">Welcome to Tailwind</p>
       <p className="text-lg text-blue-400 font-medium">
         {/* @ts-expect-error: ReactNativeWebView  */}
-        DOM: {String(!!(typeof ReactNativeWebView !== 'undefined'))}
+        DOM: {String(!!(typeof $$EXPO_INITIAL_PROPS !== 'undefined'))}
       </p>
     </div>
   );

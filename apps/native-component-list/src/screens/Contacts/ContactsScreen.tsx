@@ -1,6 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Contacts from 'expo-contacts';
+import { Directory, File, Paths } from 'expo-file-system';
 import { Platform } from 'expo-modules-core';
 import React from 'react';
 import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -37,6 +38,33 @@ type Props = {
 
 const CONTACT_PAGE_SIZE = 500;
 
+const handleAddContact = async () => {
+  try {
+    const destination = new Directory(Paths.document, 'avatars');
+    if (!destination.exists) {
+      destination.create();
+    }
+
+    const randomSeed = Math.floor(Math.random() * 1000);
+    const customFileName = new File(destination, `avatar-${randomSeed}.png`);
+    const output = await File.downloadFileAsync(
+      `https://robohash.org/TestUser${randomSeed}.png?size=200x200&set=set1`,
+      customFileName
+    );
+
+    const randomContact = {
+      note: 'Likes expo...',
+      image: {
+        uri: output.uri,
+      },
+    } as Contacts.Contact;
+
+    await ContactUtils.presentNewContactFormAsync({ contact: randomContact });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export default function ContactsScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -46,10 +74,7 @@ export default function ContactsScreen({ navigation }: Props) {
           <HeaderIconButton
             disabled={Platform.select({ web: true, default: false })}
             name="add"
-            onPress={() => {
-              const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
-              ContactUtils.presentNewContactFormAsync({ contact: randomContact });
-            }}
+            onPress={handleAddContact}
           />
         </HeaderContainerRight>
       ),
@@ -133,6 +158,15 @@ function ContactsView({ navigation }: Props) {
     setRefreshing(false);
   };
 
+  const checkContactsAsync = React.useCallback(async () => {
+    try {
+      const hasContactsResult = await Contacts.hasContactsAsync();
+      alert(`Has contacts: ${hasContactsResult}`);
+    } catch (error) {
+      alert(`Error checking contacts: ${error}`);
+    }
+  }, []);
+
   const changeAccess = React.useCallback(async () => {
     await Contacts.presentAccessPickerAsync();
     await loadAsync({}, true);
@@ -189,6 +223,14 @@ function ContactsView({ navigation }: Props) {
             </TouchableOpacity>
 
             {selectedContact && <MonoText>{JSON.stringify(selectedContact, null, 2)}</MonoText>}
+
+            <View style={styles.infoSection}>
+              <TouchableOpacity onPress={checkContactsAsync} style={styles.infoButton}>
+                <Text style={styles.infoButtonText}>
+                  Check if contacts exist (hasContactsAsync)
+                </Text>
+              </TouchableOpacity>
+            </View>
           </>
         )}
       />
@@ -210,5 +252,23 @@ const styles = StyleSheet.create({
   },
   changeAccessButton: {
     margin: 15,
+  },
+  infoSection: {
+    marginTop: 20,
+    marginBottom: 10,
+    padding: 15,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+  },
+  infoButton: {
+    backgroundColor: Colors.tintColor,
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 10,
+  },
+  infoButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: '600',
   },
 });

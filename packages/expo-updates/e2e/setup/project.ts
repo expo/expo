@@ -3,6 +3,7 @@
 import spawnAsync from '@expo/spawn-async';
 import { rmSync, existsSync } from 'fs';
 import fs from 'fs/promises';
+import { glob } from 'glob';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -226,6 +227,21 @@ async function copyCommonFixturesToProject(
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
+  if (!isTV) {
+    // Copy react-native patch
+    await fs.mkdir(path.join(projectRoot, 'patches'));
+    const patchFile = await glob('react-native+*.patch', {
+      cwd: path.join(repoRoot, 'patches'),
+      absolute: true,
+    });
+    if (patchFile.length > 0) {
+      await fs.copyFile(
+        patchFile[0],
+        path.join(projectRoot, 'patches', path.basename(patchFile[0]))
+      );
+    }
+  }
+
   // Modify specific files for TV
   if (isTV) {
     // Add TV environment variable to EAS build config
@@ -397,7 +413,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.81.4-0',
+        'react-native': 'npm:react-native-tvos@0.82.0-0rc5',
         '@react-native-tvos/config-tv': '^0.1.4',
       },
       expo: {

@@ -7,3 +7,6 @@ class PickingInProgressException :
 
 class FailedToReadDocumentException :
   CodedException("Failed to read the selected document.")
+
+class DocumentPickerOptionsEmptyListException :
+  CodedException("The 'type' argument must be a non-empty array.")

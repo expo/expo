@@ -11,13 +11,10 @@ jobs:
   check-if-trusted:
     runs-on: ubuntu-24.04
     steps:
-      - uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: ${{ contains( env.TRUSTED_USERS, github.event.issue.user.login ) }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_expo_support }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          status: ${{ job.status }}
+          webhook: ${{ secrets.slack_webhook_expo_support }}
           channel: '#support'
           text: 'This issue should be triaged ASAP: ${{ github.event.issue.html_url }}'
           author_name: ${{ github.event.issue.user.login }}

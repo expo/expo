@@ -2,11 +2,12 @@
 
 import SwiftUI
 import ExpoModulesCore
+import EXUpdatesInterface
 
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
-public class EnabledAppController: InternalAppControllerInterface, StartupProcedureDelegate {
+public class EnabledAppController: InternalAppControllerInterface, UpdatesExternalMetricsInterface, StartupProcedureDelegate {
   public weak var delegate: AppControllerDelegate?
   public var reloadScreenManager: Reloadable? = ReloadScreenManager()
 
@@ -58,6 +59,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     self.logger.info(message: "AppController sharedInstance created")
     self.eventManager = QueueUpdatesEventManager(logger: logger)
     self.stateMachine = UpdatesStateMachine(logger: self.logger, eventManager: self.eventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+    UpdatesControllerRegistry.sharedInstance.metricsController = self
   }
 
   public func start() {
@@ -157,6 +159,24 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     stateMachine.queueExecution(stateMachineProcedure: procedure)
   }
 
+  // MARK: - UpdatesExternalMetricsInterface
+
+  public var runtimeVersion: String? {
+    return config.runtimeVersion
+  }
+
+  public var updateURL: URL? {
+    return config.updateUrl
+  }
+
+  public var launchedUpdateId: UUID? {
+    return startupProcedure.launchedUpdate()?.updateId
+  }
+
+  public var embeddedUpdateId: UUID? {
+    return getEmbeddedUpdate()?.updateId
+  }
+
   // MARK: - Internal
 
   private func purgeUpdatesLogsOlderThanOneDay() {
@@ -190,7 +210,8 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
       database: self.database,
       config: self.config,
       selectionPolicy: self.selectionPolicy,
-      logger: self.logger
+      logger: self.logger,
+      updatesDirectory: self.updatesDirectoryInternal
     ) {
       return self.startupProcedure.launchedUpdate()
     } successBlock: { checkForUpdateResult in

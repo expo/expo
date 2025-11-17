@@ -49,59 +49,59 @@ final class ValueOrUndefinedSpec: ExpoSpec {
       }
       
       it("converts from undefined to ValueOrUndefinedSpec<Int>") {
-        let wasUndefinded = try runtime
+        let wasUndefined = try runtime
           .eval("expo.modules.ValueOrUndefinedModule.undefined_of_int(undefined)")
           .asBool()
         
-        expect(wasUndefinded).to(beTrue())
+        expect(wasUndefined).to(beTrue())
       }
       
       it("converts from int to ValueOrUndefinedSpec<Int>") {
-        let wasUndefinded = try runtime
+        let wasUndefined = try runtime
           .eval("expo.modules.ValueOrUndefinedModule.undefined_of_int(10)")
           .asBool()
         
-        expect(wasUndefinded).to(beFalse())
+        expect(wasUndefined).to(beFalse())
       }
       
       it("converts from undefined to ValueOrUndefinedSpec<Int?>") {
-        let wasUndefinded = try runtime
+        let wasUndefined = try runtime
           .eval("expo.modules.ValueOrUndefinedModule.undefined_of_optional_int(undefined, null)")
           .asBool()
         
-        expect(wasUndefinded).to(beTrue())
+        expect(wasUndefined).to(beTrue())
       }
       
       it("converts from int to ValueOrUndefinedSpec<Int?>") {
-        let wasUndefinded = try runtime
+        let wasUndefined = try runtime
           .eval("expo.modules.ValueOrUndefinedModule.undefined_of_optional_int(10, 10)")
           .asBool()
         
-        expect(wasUndefinded).to(beFalse())
+        expect(wasUndefined).to(beFalse())
       }
       
       it("converts from null to ValueOrUndefinedSpec<Int?>") {
-        let wasUndefinded = try runtime
+        let wasUndefined = try runtime
           .eval("expo.modules.ValueOrUndefinedModule.undefined_of_optional_int(null, null)")
           .asBool()
         
-        expect(wasUndefinded).to(beFalse())
+        expect(wasUndefined).to(beFalse())
       }
       
       it("converts from array to [ValueOrUndefinedSpec<Int>]") {
-        let wereUndefinded = try runtime
+        let wereUndefined = try runtime
           .eval("expo.modules.ValueOrUndefinedModule.array_of_undefined_of_int([1, undefined, 2, undefined, 3])")
           .asArray().map { try $0!.asBool() }
         
-        expect(wereUndefinded).to(equal([false, true, false, true, false]))
+        expect(wereUndefined).to(equal([false, true, false, true, false]))
       }
       
       it("converts from array to [ValueOrUndefinedSpec<Int?>]") {
-        let wereUndefinded = try runtime
+        let wereUndefined = try runtime
           .eval("expo.modules.ValueOrUndefinedModule.array_of_undefined_of_optional_int([1, undefined, null, 2, undefined, null], [1, null, null, 2, null, null])")
           .asArray().map { try $0!.asBool() }
         
-        expect(wereUndefinded).to(equal([false, true, false, false, true, false]))
+        expect(wereUndefined).to(equal([false, true, false, false, true, false]))
       }
     }
   }
@@ -112,21 +112,21 @@ fileprivate final class UndefinedSpecModule: Module {
     Name("ValueOrUndefinedModule")
     
     Function("undefined_of_int") { (value: ValueOrUndefined<Int>) in
-      return value.isUndefinded
+      return value.isUndefined
     }
     
     Function("undefined_of_optional_int") { (value: ValueOrUndefined<Int?>, expectedValue: Int?) in
       expect(value.optional).to(expectedValue == nil ? beNil() : equal(expectedValue))
-      return value.isUndefinded
+      return value.isUndefined
     }
     
     Function("array_of_undefined_of_int") { (values: [ValueOrUndefined<Int>]) in
-      return values.map { $0.isUndefinded }
+      return values.map { $0.isUndefined }
     }
     
     Function("array_of_undefined_of_optional_int") { (values: [ValueOrUndefined<Int?>], expectedValues: [Int?]) in
       expect(values.map{ $0.optional} ).to(equal(expectedValues))
-      return values.map { $0.isUndefinded }
+      return values.map { $0.isUndefined }
     }
   }
 }

@@ -64,9 +64,9 @@ describe(withSerializerPlugins, () => {
     // Modify the original config, which should also modify the function in the serializer config
     config.serializer.getModulesRunBeforeMainModule = overrideGetMainModules;
 
-    // @ts-expect-error
     await configWithSerializer.serializer.customSerializer(
       'a',
+      // @ts-expect-error
       'b',
       'c',
       configWithSerializer.serializer
@@ -273,15 +273,15 @@ describe('serializes', () => {
       };
 
       // This will fail if the `module` -> `_module` transform doesn't work.
-      expect((await serializer(...(await microBundle({ fs })))).code).toMatchInlineSnapshot(`
-              "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-                let _module = {};
-                let _require = {};
-                let _global = {};
-                let _exports = {};
-              },"/app/index.js",[],"index.js");
-              TEST_RUN_MODULE("/app/index.js");"
-          `);
+      expect(await serializer(...(await microBundle({ fs })))).toMatchInlineSnapshot(`
+        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          let _module = {};
+          let _require = {};
+          let _global = {};
+          let _exports = {};
+        },"/app/index.js",[],"index.js");
+        TEST_RUN_MODULE("/app/index.js");"
+      `);
     });
   });
 
@@ -669,7 +669,7 @@ describe('serializes', () => {
       `,
     };
 
-    expect((await serializer(...(await microBundle({ fs })))).code).toMatchInlineSnapshot(`
+    expect(await serializer(...(await microBundle({ fs })))).toMatchInlineSnapshot(`
       "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
@@ -698,7 +698,6 @@ describe('serializes', () => {
     const str = await serializeTo({
       options: {
         dev: true,
-        hot: true,
         platform: 'ios',
         hermes: false,
         sourceMaps: false,

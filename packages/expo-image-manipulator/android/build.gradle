@@ -13,7 +13,3 @@ android {
     versionName "14.0.7"
   }
 }
-
-dependencies {
-  api "androidx.annotation:annotation:1.0.0"
-}

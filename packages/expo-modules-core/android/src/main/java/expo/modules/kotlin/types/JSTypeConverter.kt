@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.typedarray.RawTypedArrayHolder
 import expo.modules.kotlin.types.folly.FollyDynamicExtensionConverter
@@ -45,6 +46,7 @@ object JSTypeConverter {
       is Map<*, *> -> value.toJSValue(containerProvider)
       is Enum<*> -> value.toJSValue()
       is Record -> value.toJSValue(containerProvider)
+      is FormattedRecord<*> -> IllegalStateException("FormattedRecord should be converted using the experimental converter.")
       is URI -> value.toJSValue()
       is URL -> value.toJSValue()
       is Uri -> value.toJSValue()
@@ -76,6 +78,11 @@ object JSTypeConverter {
       }
       is Enum<*> -> value.toJSValue()
       is Record -> value.toJSValue(containerProvider)
+      is FormattedRecord<*> -> if (useExperimentalConverter) {
+        value.toJSValueExperimental()
+      } else {
+        throw IllegalStateException("FormattedRecord should be converted using the experimental converter.")
+      }
       is URI -> value.toJSValue()
       is URL -> value.toJSValue()
       is Uri -> value.toJSValue()
