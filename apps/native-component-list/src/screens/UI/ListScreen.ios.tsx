@@ -15,9 +15,11 @@ import {
 import {
   background,
   clipShape,
+  deleteDisabled,
   disabled,
   frame,
   headerProminence,
+  moveDisabled,
   padding,
   pickerStyle,
   refreshable,
@@ -57,6 +59,8 @@ export default function ListScreen() {
   const [selectEnabled, setSelectEnabled] = React.useState<boolean>(true);
   const [deleteEnabled, setDeleteEnabled] = React.useState<boolean>(true);
   const [moveEnabled, setMoveEnabled] = React.useState<boolean>(true);
+  const [rowDeleteDisabled, setRowDeleteDisabled] = React.useState<boolean>(true);
+  const [rowMoveDisabled, setRowMoveDisabled] = React.useState<boolean>(true);
   const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
   const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<number>(0);
   const [increasedHeader, setIncreasedHeader] = React.useState(false);
@@ -154,6 +158,18 @@ export default function ListScreen() {
           <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
           <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
           <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
+          <Switch
+            value={rowDeleteDisabled}
+            label="Delete row disabled"
+            onValueChange={setRowDeleteDisabled}
+            modifiers={[deleteDisabled(rowDeleteDisabled)]}
+          />
+          <Switch
+            value={rowMoveDisabled}
+            label="Move row disabled"
+            onValueChange={setRowMoveDisabled}
+            modifiers={[moveDisabled(rowMoveDisabled)]}
+          />
           <Switch
             value={refreshEnabled}
             label="Refreshable enabled"

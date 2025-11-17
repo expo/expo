@@ -371,6 +371,20 @@ export const hidden = (hidden: boolean = true) => createModifier('hidden', { hid
 export const disabled = (disabled: boolean = true) => createModifier('disabled', { disabled });
 
 /**
+ * Disables or enables a moving for a view
+ * @param disabled - Whether the view’s view hierarchy is movable
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/movedisabled(_:)).
+ */
+export const moveDisabled = (disabled: boolean = true) => createModifier('moveDisabled', { disabled });
+
+/**
+ * Disables or enables deletion for a view
+ * @param disabled - Whether the view’s view hierarchy is deletable
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/deletedisabled(_:)).
+ */
+export const deleteDisabled = (disabled: boolean = true) => createModifier('deleteDisabled', { disabled });
+
+/**
  * Sets the z-index (display order) of a view.
  * @param index - The z-index value.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/zindex(_:)).
@@ -830,6 +844,8 @@ export type BuiltInModifier =
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>
+  | ReturnType<typeof moveDisabled>
+  | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof zIndex>
   | ReturnType<typeof blur>
   | ReturnType<typeof brightness>

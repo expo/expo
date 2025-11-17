@@ -281,6 +281,22 @@ internal struct DisabledModifier: ViewModifier, Record {
   }
 }
 
+internal struct MoveDisabledModifier: ViewModifier, Record {
+  @Field var disabled: Bool = true
+
+  func body(content: Content) -> some View {
+    content.moveDisabled(disabled)
+  }
+}
+
+internal struct DeleteDisabledModifier: ViewModifier, Record {
+  @Field var disabled: Bool = true
+
+  func body(content: Content) -> some View {
+    content.deleteDisabled(disabled)
+  }
+}
+
 internal struct ZIndexModifier: ViewModifier, Record {
   @Field var index: Double = 0
 
@@ -1395,6 +1411,14 @@ extension ViewModifierRegistry {
 
     register("disabled") { params, appContext, _ in
       return try DisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("moveDisabled") { params, appContext, _ in
+      return try MoveDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("deleteDisabled") { params, appContext, _ in
+      return try DeleteDisabledModifier(from: params, appContext: appContext)
     }
 
     register("zIndex") { params, appContext, _ in
