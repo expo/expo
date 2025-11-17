@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 export interface RenderToImageOptions {
     /**
      * Font family name.
@@ -13,7 +14,7 @@ export interface RenderToImageOptions {
      * Font color
      * @default 'black'
      */
-    color?: string;
+    color?: ColorValue;
 }
 export interface RenderToImageResult {
     /**
