@@ -140,6 +140,10 @@ class StartupProcedure(
         logger.info("AppController appLoaderTask didLoadAsset: $body", UpdatesErrorCode.None, null, asset.expectedHash)
       }
 
+      override fun onRemoteUpdateProgressChanged(progress: Double) {
+        procedureContext.processStateEvent(UpdatesStateEvent.DownloadProgress(progress))
+      }
+
       override fun onRemoteUpdateFinished(
         status: LoaderTask.RemoteUpdateStatus,
         update: UpdateEntity?,

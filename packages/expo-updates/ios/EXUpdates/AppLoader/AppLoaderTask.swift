@@ -73,6 +73,7 @@ public protocol AppLoaderTaskSwiftDelegate: AnyObject {
   func appLoaderTaskDidStartCheckingForRemoteUpdate(_: AppLoaderTask)
   func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdateWithRemoteCheckResult remoteCheckResult: RemoteCheckResult)
   func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
+  func appLoaderTask(_: AppLoaderTask, didUpdateProgress progress: Double)
 }
 
 @objc(EXUpdatesBackgroundUpdateStatus)
@@ -339,6 +340,14 @@ public final class AppLoaderTask: NSObject {
       launchedUpdate: candidateLauncher?.launchedUpdate,
       completionQueue: loaderTaskQueue
     )
+
+    remoteAppLoader?.assetLoadProgressBlock = { progress in
+      if let swiftDelegate = self.swiftDelegate {
+        self.delegateQueue.async {
+          swiftDelegate.appLoaderTask(self, didUpdateProgress: progress)
+        }
+      }
+    }
 
     if let swiftDelegate = self.swiftDelegate {
       self.delegateQueue.async {
