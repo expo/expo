@@ -49,7 +49,6 @@ import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfigura
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewController
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvider
 import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
-import host.exp.exponent.kernel.DevMenuManager
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
@@ -77,7 +76,6 @@ import org.json.JSONObject
 import versioned.host.exp.exponent.ExponentPackageDelegate
 import versioned.host.exp.exponent.ReactUnthemedRootView
 import java.lang.ref.WeakReference
-import javax.inject.Inject
 
 open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDelegate {
   open fun expoPackages(): List<Package>? {
@@ -108,9 +106,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   lateinit var loadingProgressPopupController: LoadingProgressPopupController
   private var managedAppSplashScreenViewProvider: ManagedAppSplashScreenViewProvider? = null
   var managedAppSplashScreenViewController: ManagedAppSplashScreenViewController? = null
-
-  @Inject
-  lateinit var devMenuManager: DevMenuManager
 
   private val devBundleDownloadProgressListener: DevBundleDownloadProgressListener =
     object : DevBundleDownloadProgressListener {
