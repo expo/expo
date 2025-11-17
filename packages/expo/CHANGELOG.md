@@ -24,6 +24,7 @@
 
 - Fixed DOM Components entry not found from updates on Android. ([#40574](https://github.com/expo/expo/pull/40574) by [@kudo](https://github.com/kudo))
 - Empty HMR update should not reset the error overlay ([#40741](https://github.com/expo/expo/pull/40741) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Fix `ExpoAppDelegate` not extending `UIResponder`. ([#41066](https://github.com/expo/expo/pull/41066) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
