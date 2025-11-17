@@ -1,4 +1,4 @@
-package expo.modules.devmenu.api
+package expo.modules.devmenu.websockets
 
 import androidx.core.net.toUri
 import expo.modules.devmenu.helpers.await

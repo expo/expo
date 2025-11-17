@@ -10,10 +10,9 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.devmenu.DEV_MENU_TAG
-import expo.modules.devmenu.api.DevMenuMetroClient
-import expo.modules.devmenu.compose.DevMenuFragment
+import expo.modules.devmenu.api.DevMenuApi
 import expo.modules.devmenu.compose.DevMenuAction
+import expo.modules.devmenu.websockets.DevMenuMetroClient
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -35,7 +34,7 @@ class DevMenuDevToolsDelegate(
   private val reactContext: ReactContext?
     get() = devSupportManager?.currentReactContext
 
-  private val viewModel by DevMenuFragment.model { currentActivity }
+  private val viewModel by DevMenuApi.model { currentActivity }
 
   val devSettings
     get() = devSupportManager?.devSettings
@@ -98,7 +97,7 @@ class DevMenuDevToolsDelegate(
       try {
         DevMenuMetroClient.openJSInspector(metroHost, context.packageName)
       } catch (e: Exception) {
-        Log.w(DEV_MENU_TAG, "Unable to open js inspector: ${e.message}", e)
+        Log.w("DevMenu", "Unable to open js inspector: ${e.message}", e)
       }
     }
   }

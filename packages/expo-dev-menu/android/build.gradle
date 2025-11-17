@@ -14,6 +14,8 @@ apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 group = 'host.exp.exponent'
 version = '7.0.11'
 
+def hasDevLauncher = findProject(":expo-dev-launcher") != null
+
 expoModule {
   canBePublished false
 }
@@ -30,6 +32,10 @@ android {
     create("debugOptimized") {
       initWith(buildTypes.debug)
       matchingFallbacks += ["release"]
+    }
+
+    buildTypes.each {
+      it.buildConfigField 'boolean', 'AUTO_INITIALIZATION', "${!hasDevLauncher}"
     }
   }
 

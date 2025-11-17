@@ -1619,5 +1619,9 @@ extension ViewModifierRegistry {
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
+      
+    register("submitLabel") { params, appContext, _ in
+      return try SubmitLabelModifier(from: params, appContext: appContext)
+    }
   }
 }

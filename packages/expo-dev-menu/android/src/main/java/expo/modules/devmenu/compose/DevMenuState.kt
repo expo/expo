@@ -1,8 +1,6 @@
 package expo.modules.devmenu.compose
 
-import expo.modules.devmenu.DevMenuPreferencesHandle
 import expo.modules.devmenu.DevToolsSettings
-
 import org.json.JSONObject
 
 data class DevMenuState(
@@ -10,8 +8,9 @@ data class DevMenuState(
   val isOpen: Boolean = false,
   val devToolsSettings: DevToolsSettings = DevToolsSettings(),
   val isOnboardingFinished: Boolean = false,
-  val showFab: Boolean = DevMenuPreferencesHandle.showFab,
+  val showFab: Boolean = false,
   val customItems: List<CustomItem> = emptyList(),
+  val hasGoHomeAction: Boolean = false,
   val isInPictureInPictureMode: Boolean = false
 ) {
   data class CustomItem(
