@@ -194,6 +194,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [Android] Rework compose integration. ([#40653](https://github.com/expo/expo/pull/40653) by [@aleqsio](https://github.com/aleqsio))
 - Added support for expo modules written using TurboModules ([#36996](https://github.com/expo/expo/pull/36996) by [@acoates-ms](https://github.com/acoates-ms))
 - [Android] Add Array converter and handle nullable values. ([#37220](https://github.com/expo/expo/pull/37220) by [@jakex7](https://github.com/jakex7))
 - [Android] Support object arrays in type converters. ([#37276](https://github.com/expo/expo/pull/37276) by [@jakex7](https://github.com/jakex7))

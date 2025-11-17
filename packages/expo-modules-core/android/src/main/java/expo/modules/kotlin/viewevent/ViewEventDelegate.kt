@@ -12,12 +12,19 @@ class ViewEventDelegate<T>(
 ) {
   private val viewHolder = WeakReference(view)
 
-  operator fun getValue(thisRef: View, property: KProperty<*>): ViewEventCallback<T> {
+  fun getValue(property: KProperty<*>): ViewEventCallback<T> {
     val view = viewHolder.get()
       ?: throw IllegalStateException("Can't send the '${property.name}' event from the view that is deallocated")
     return ViewEvent(property.name, view, coalescingKey)
   }
+
+  operator fun getValue(thisRef: View, property: KProperty<*>): ViewEventCallback<T> {
+    return getValue(property)
+  }
 }
+
+@Suppress("NOTHING_TO_INLINE")
+inline operator fun <T> ViewEventDelegate<T>.getValue(thisObj: Any?, property: KProperty<*>): ViewEventCallback<T> = getValue(property)
 
 /**
  * Creates a reference to the js callback.
