@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '8.0.8'
+version = '8.0.9'
 
 android {
   namespace "expo.modules.linking"
   defaultConfig {
     versionCode 1
-    versionName "8.0.8"
+    versionName "8.0.9"
   }
   lintOptions {
     abortOnError false

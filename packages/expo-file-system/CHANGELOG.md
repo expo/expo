@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 19.0.18 — 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
 ## 19.0.17 — 2025-10-09
 
 ### 🐛 Bug fixes
