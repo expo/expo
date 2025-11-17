@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `downloadProgress` for updates fetch on app startup. ([#41069](https://github.com/expo/expo/pull/41069) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fix `downloadProgress` for update fetching on app startup. ([#41069](https://github.com/expo/expo/pull/41069) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
