@@ -21,7 +21,7 @@ export default function Index() {
   }, [navigation]);
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={{ flex: 1 }}
       contentContainerStyle={{
         justifyContent: 'center',
         // alignItems: 'center',

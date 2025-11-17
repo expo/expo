@@ -51,7 +51,9 @@ export default function Layout() {
           <NativeTabs.Trigger
             name="index"
             // disableAutomaticContentInsets
-          >
+            contentStyle={{
+              experimental_backgroundImage: 'linear-gradient(135deg, #fbc2eb, #a6c1ee)',
+            }}>
             <NativeTabs.Trigger.Label
             // selectedStyle={{ color: '#0f0' }}
             >
