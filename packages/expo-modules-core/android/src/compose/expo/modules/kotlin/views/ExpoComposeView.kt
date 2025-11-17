@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
@@ -149,12 +147,12 @@ class ExpoViewComposableScope(val view: ComposeFunctionHolder<*>) {
   }
 }
 
-class ComposeFunctionHolder<P : ComposeProps>(
+class ComposeFunctionHolder<Props : ComposeProps>(
   context: Context,
   appContext: AppContext,
-  private val composableContent: @Composable ExpoViewComposableScope.(props: P) -> Unit,
-  override val props: P
-) : ExpoComposeView<P>(context, appContext) {
+  private val composableContent: @Composable ExpoViewComposableScope.(props: Props) -> Unit,
+  override val props: Props
+) : ExpoComposeView<Props>(context, appContext) {
   val propsMutableState = mutableStateOf(props)
   val scope = ExpoViewComposableScope(this)
 

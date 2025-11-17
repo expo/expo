@@ -30,12 +30,6 @@ import expo.modules.ui.button.Button
 import expo.modules.ui.menu.ContextMenu
 import kotlin.reflect.KProperty
 
-class ExampleDelegate {
-  operator fun getValue(thisRef: Any?, property: KProperty<*>): String {
-    return "Hello from delegate!"
-  }
-}
-
 class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoUI")

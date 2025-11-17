@@ -37,18 +37,22 @@ open class ModuleDefinitionBuilderWithCompose(
   }
 
   @JvmName("ComposeView")
-  inline fun <reified P : ComposeProps> View(name: String, events: ComposeViewFunctionDefinitionBuilder<P>.() -> Unit = {}, noinline viewFunction: @Composable ExpoViewComposableScope.(props: P) -> Unit) {
-    val definitionBuilder = ComposeViewFunctionDefinitionBuilder(name, P::class, viewFunction)
+  inline fun <reified Props : ComposeProps> View(
+    name: String,
+    events: ComposeViewFunctionDefinitionBuilder<Props>.() -> Unit = {},
+    noinline viewFunction: @Composable ExpoViewComposableScope.(props: Props) -> Unit
+  ) {
+    val definitionBuilder = ComposeViewFunctionDefinitionBuilder(name, Props::class, viewFunction)
     events.invoke(definitionBuilder)
     registerViewDefinition(definitionBuilder.build())
   }
 }
 
 @DefinitionMarker
-class ComposeViewFunctionDefinitionBuilder<P : ComposeProps>(
+class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
   val name: String,
-  val propsClass: KClass<P>,
-  val viewFunction: @Composable ExpoViewComposableScope.(props: P) -> Unit
+  val propsClass: KClass<Props>,
+  val viewFunction: @Composable ExpoViewComposableScope.(props: Props) -> Unit
 ) {
   private var callbacksDefinition: CallbacksDefinition? = null
 
@@ -56,7 +60,7 @@ class ComposeViewFunctionDefinitionBuilder<P : ComposeProps>(
     return ViewManagerDefinition(
       name = name,
       viewFactory = { context, appContext ->
-        val instance: P = try {
+        val instance: Props = try {
           propsClass.createInstance()
         } catch (e: Exception) {
           throw IllegalStateException("Could not instantiate props instance of $name compose component.", e)
