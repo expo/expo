@@ -11,7 +11,7 @@ jobs:
   check-if-trusted:
     runs-on: ubuntu-24.04
     steps:
-        uses: ./.github/actions/slack-notify
+      - uses: ./.github/actions/slack-notify
         if: ${{ contains( env.TRUSTED_USERS, github.event.issue.user.login ) }}
         with:
           webhook: ${{ secrets.slack_webhook_expo_support }}
