@@ -27,3 +27,4 @@
 !packages/@expo/config-plugins/src/android/**
 !packages/@expo/config-plugins/src/ios/**
 !packages/expo-module-scripts/bin/**
+!packages/expo-symbols/src/android/**

@@ -1,8 +1,24 @@
-import { SymbolView, SymbolViewProps, SFSymbol, AndroidSymbol } from 'expo-symbols';
+import { Image } from 'expo-image';
+import {
+  SymbolView,
+  SymbolViewProps,
+  SFSymbol,
+  AndroidSymbol,
+  unstable_getMaterialSymbolSourceAsync,
+} from 'expo-symbols';
 import bold from 'expo-symbols/androidWeights/bold';
 import regular from 'expo-symbols/androidWeights/regular';
 import thin from 'expo-symbols/androidWeights/thin';
-import { PlatformColor, Text, View, StyleSheet, ScrollView, Platform } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  PlatformColor,
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  Platform,
+  type ImageSourcePropType,
+} from 'react-native';
 
 import { Symbols, AndroidSymbols } from '../constants';
 
@@ -95,6 +111,16 @@ function SymbolScales({ title, ...props }: RowProps) {
   );
 }
 
+function MaterialImageSourceExample({ name }: { name: AndroidSymbol }) {
+  const [source, setSource] = useState<ImageSourcePropType | null>(null);
+  useEffect(() => {
+    unstable_getMaterialSymbolSourceAsync(name, 24, 'red').then((img) => {
+      setSource(img);
+    });
+  }, []);
+  return <Image source={source} style={{ width: 24, height: 24 }} />;
+}
+
 export default function SymbolImageScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: 10, gap: 10 }}>
@@ -113,6 +139,12 @@ export default function SymbolImageScreen() {
         name={{}}
         fallback={<View style={{ backgroundColor: 'red', width: 20, height: 20 }} />}
       />
+      {process.env.EXPO_OS === 'android' && (
+        <>
+          <Text style={styles.title}>unstable_getMaterialSymbolSourceAsync</Text>
+          <MaterialImageSourceExample name="home_and_garden" />
+        </>
+      )}
       <SymbolRow title="Monochrome (default)" type="monochrome" />
       {Platform.OS === 'ios' && (
         <>
