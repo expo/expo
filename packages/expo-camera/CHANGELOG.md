@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix certain exif keys being dropped because of invalid values. ([#41043](https://github.com/expo/expo/pull/41043) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 - [iOS] Support all valid gps tags from `CGImageProperties` in exif data. ([#40801](https://github.com/expo/expo/pull/40801) by [@alanjhughes](https://github.com/alanjhughes))
