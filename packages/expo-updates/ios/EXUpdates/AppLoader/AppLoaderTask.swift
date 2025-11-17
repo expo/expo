@@ -341,7 +341,10 @@ public final class AppLoaderTask: NSObject {
       completionQueue: loaderTaskQueue
     )
 
-    remoteAppLoader?.assetLoadProgressBlock = { progress in
+    remoteAppLoader?.assetLoadProgressBlock = { [weak self] progress in
+      guard let self else {
+        return
+      }
       if let swiftDelegate = self.swiftDelegate {
         self.delegateQueue.async {
           swiftDelegate.appLoaderTask(self, didUpdateProgress: progress)
