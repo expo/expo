@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated library `stb_image.h` used for image decoding in `texImage2D` expo wraper method. A lot of fixes and performance improvements, see related PR. ([#41000](https://github.com/expo/expo/pull/41000) by [@psnet](https://github.com/psnet))
+
 ## 16.0.8 — 2025-12-05
 
 _This version does not introduce any user-facing changes._
