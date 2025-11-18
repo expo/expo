@@ -550,7 +550,7 @@ async function prettifyCode(text: string, parser: 'babel' | 'typescript' = 'babe
   });
 }
 
-async function prettyPrintTSNodesToString(file: string, elements: ts.Node[]) {
+async function prettyPrintTSNodesToString(file: string, elements: ts.Node[]): Promise<string> {
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
   const resultFile = ts.createSourceFile(
     file,
