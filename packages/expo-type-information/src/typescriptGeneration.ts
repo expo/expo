@@ -1,5 +1,5 @@
 'use strict';
-// import prettier from 'prettier';
+import prettier from 'prettier';
 import ts, { MethodDeclaration } from 'typescript';
 
 import {
@@ -540,15 +540,15 @@ function getViewTypesDeclarationsForModule(
   );
 }
 
-// async function prettifyCode(text: string, parser: 'babel' | 'typescript' = 'babel') {
-//   return await prettier.format(text, {
-//     parser,
-//     tabWidth: 2,
-//     printWidth: 100,
-//     trailingComma: 'none',
-//     singleQuote: true,
-//   });
-// }
+async function prettifyCode(text: string, parser: 'babel' | 'typescript' = 'babel') {
+  return await prettier.format(text, {
+    parser,
+    tabWidth: 2,
+    printWidth: 100,
+    trailingComma: 'none',
+    singleQuote: true,
+  });
+}
 
 async function prettyPrintTSNodesToString(file: string, elements: ts.Node[]) {
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
@@ -565,8 +565,7 @@ async function prettyPrintTSNodesToString(file: string, elements: ts.Node[]) {
     viewTypes,
     resultFile
   );
-  return printedTs;
-  // return await prettifyCode(printedTs, 'typescript');
+  return await prettifyCode(printedTs, 'typescript');
 }
 
 export function basicTypesIdentifiers(): Set<string> {
