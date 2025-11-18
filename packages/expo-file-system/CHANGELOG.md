@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Add downloadFileAsync to SAF.
+- [Android] Add downloadFileAsync to SAF. ([#40487](https://github.com/expo/expo/pull/40487) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
