@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "bin": {
     "expo-type-information": "./bin/cli.js"
@@ -23,7 +23,6 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-type-information",
   "dependencies": {
     "@types/node": "^22.14.0",
     "prettier": "^3.0.3",
