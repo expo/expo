@@ -16,6 +16,7 @@
 - [Android] Fix the `player` prop of the `VideoView` not working when a player is re-assigned after being replaced by a different player earlier. ([#40709](https://github.com/expo/expo/pull/40709) by [@behenate](https://github.com/behenate))
 - [Android] Fix surface view not showing when changing the `player` prop. ([#40817](https://github.com/expo/expo/pull/40817) by [@behenate](https://github.com/behenate))
 - [Android] Emit `onFirstFrameRender` when player is moved to a new `VideoView` and renders a frame. ([#40854](https://github.com/expo/expo/pull/40854) by [@behenate](https://github.com/behenate))
+- [Android] Fix media controls (e.g. bluetooth) not working when `ExpoVideoPlaybackService` is not registered. ([#40728](https://github.com/expo/expo/pull/40728) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
