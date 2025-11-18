@@ -1,0 +1,59 @@
+{
+  "name": "create-expo-miniapp-container",
+  "version": "0.1.0",
+  "bin": "./build/index.js",
+  "main": "build",
+  "description": "Create Expo MiniApp Container - A dynamic mini-app runtime based on Expo",
+  "license": "MIT",
+  "keywords": [
+    "expo",
+    "react-native",
+    "miniapp",
+    "container",
+    "runtime"
+  ],
+  "homepage": "https://github.com/expo/expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/create-expo-miniapp-container"
+  },
+  "author": "Expo Team",
+  "files": [
+    "build",
+    "template"
+  ],
+  "engines": {
+    "node": ">=18.13.0"
+  },
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "prepare": "expo-module clean && yarn run build:prod",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "typecheck": "expo-module typecheck",
+    "test": "expo-module test",
+    "watch": "yarn run build --watch"
+  },
+  "dependencies": {
+    "@expo/config": "~12.0.9",
+    "@expo/json-file": "^10.0.7",
+    "@expo/package-manager": "^1.9.8",
+    "@expo/spawn-async": "^1.7.2",
+    "arg": "^5.0.2",
+    "chalk": "^4.0.0",
+    "debug": "^4.3.4",
+    "glob": "^10.4.2",
+    "ora": "3.4.0",
+    "prompts": "^2.4.2",
+    "tar": "^7.4.3"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/node": "^22.14.0",
+    "@types/prompts": "2.0.14",
+    "@vercel/ncc": "^0.38.3",
+    "expo-module-scripts": "^5.0.7"
+  }
+}

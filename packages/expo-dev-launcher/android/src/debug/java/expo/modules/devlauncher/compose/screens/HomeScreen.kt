@@ -1,15 +1,24 @@
 package expo.modules.devlauncher.compose.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composeunstyled.Button
 import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
 import expo.modules.devlauncher.compose.models.HomeAction
@@ -29,6 +38,38 @@ import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.ui.Section
 import expo.modules.devmenu.compose.ui.Warning
 import kotlin.time.ExperimentalTime
+
+@Composable
+private fun MiniAppContainerWelcomeBanner() {
+  Box(
+    modifier = Modifier
+      .fillMaxWidth()
+      .clip(RoundedCornerShape(12.dp))
+      .background(Color(0xFF6366F1))
+      .padding(20.dp)
+  ) {
+    Column {
+      Text(
+        text = "🚀 MiniApp Container",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.White
+      )
+      Spacer(NewAppTheme.spacing.`2`)
+      Text(
+        text = "Ready to load mini-apps dynamically!",
+        fontSize = 14.sp,
+        color = Color.White.copy(alpha = 0.9f)
+      )
+      Spacer(NewAppTheme.spacing.`1`)
+      Text(
+        text = "Scan QR code or connect to development server",
+        fontSize = 12.sp,
+        color = Color.White.copy(alpha = 0.7f)
+      )
+    }
+  }
+}
 
 @Composable
 private fun CrashReport(
@@ -73,6 +114,10 @@ fun HomeScreen(
       onProfileClick = onProfileClick,
       modifier = Modifier.padding(vertical = NewAppTheme.spacing.`4`)
     )
+
+    // Custom MiniApp Container Welcome Banner
+    MiniAppContainerWelcomeBanner()
+    Spacer(NewAppTheme.spacing.`4`)
 
     val crashReport = state.crashReport
     CrashReport(
