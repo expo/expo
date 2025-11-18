@@ -11,7 +11,7 @@ import ReactAppDependencyProvider
  Keep functions and markers in sync with https://developer.apple.com/documentation/uikit/uiapplicationdelegate
  */
 @objc(EXExpoAppDelegate)
-open class ExpoAppDelegate: NSObject, @preconcurrency ReactNativeFactoryProvider, UIApplicationDelegate {
+open class ExpoAppDelegate: UIResponder, @preconcurrency ReactNativeFactoryProvider, UIApplicationDelegate {
   @objc public var factory: RCTReactNativeFactory?
   private let defaultModuleName = "main"
   private let defaultInitialProps = [AnyHashable: Any]()
