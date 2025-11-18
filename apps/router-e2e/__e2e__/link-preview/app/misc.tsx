@@ -1,5 +1,5 @@
 import { Link, usePathname } from 'expo-router';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Pressable,
+  Image,
 } from 'react-native';
 
 import { useTimer } from '../utils/useTimer';
@@ -14,7 +15,7 @@ import { useTimer } from '../utils/useTimer';
 const HomeIndex = () => {
   const pathname = usePathname();
   const time = useTimer();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
   return (
     <ScrollView
@@ -43,7 +44,7 @@ const HomeIndex = () => {
       <Link href="/one" asChild>
         <Link.Trigger>
           <TouchableOpacity>
-            <Text>Normal link with trigger asChild: /one</Text>
+            <Text>Normal link with trigger asChild: /one with zoom</Text>
           </TouchableOpacity>
         </Link.Trigger>
       </Link>
@@ -64,7 +65,7 @@ const HomeIndex = () => {
         </Link.Trigger>
       </Link>
       <Link href="/one">
-        <Link.Trigger>Link.Preview: /one</Link.Trigger>
+        <Link.Trigger>Link.Preview: /one with zoom</Link.Trigger>
         <Link.Preview />
       </Link>
       <Link href="/one">
@@ -130,7 +131,6 @@ const HomeIndex = () => {
         <Link.Preview />
       </Link>
       <Spacer />
-      {/* @ts-expect-error */}
       <Link href="/404">
         <Link.Trigger>Link.Preview: Unmatched Route</Link.Trigger>
         <Link.Preview />
@@ -139,9 +139,148 @@ const HomeIndex = () => {
         <Link.Trigger>Link.Preview: Sitemap</Link.Trigger>
         <Link.Preview />
       </Link>
+      <Spacer />
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+          gap: 8,
+          width: '100%',
+        }}>
+        <Link href="/zoom-dest" asChild>
+          <Link.Trigger>
+            <Link.AppleZoom>
+              <Pressable style={{ flex: 5, aspectRatio: width / height }}>
+                <Image
+                  source={require('../../../assets/frog.jpg')}
+                  resizeMode="cover"
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </Pressable>
+            </Link.AppleZoom>
+          </Link.Trigger>
+        </Link>
+        <Link href="/zoom-dest" asChild>
+          <Link.Trigger>
+            <Pressable style={{ flex: 3, alignItems: 'center' }}>
+              <Link.AppleZoom>
+                <View style={{ width: '100%', aspectRatio: width / height }}>
+                  <Image
+                    source={require('../../../assets/frog.jpg')}
+                    resizeMode="cover"
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </View>
+              </Link.AppleZoom>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
+                The frog
+              </Text>
+              <Text style={{ textAlign: 'center' }}>Photo by David Clode on Unsplash</Text>
+            </Pressable>
+          </Link.Trigger>
+        </Link>
+        <LinkWithZoomTransitionAlignRect />
+      </View>
+      <Spacer />
+      <Text>Zoom with preview:</Text>
+      <Link href="/zoom-dest" asChild>
+        <Link.Trigger>
+          <Link.AppleZoom>
+            <Pressable style={{ flex: 1, width: '33%', aspectRatio: width / height }}>
+              <Image
+                source={require('../../../assets/frog.jpg')}
+                resizeMode="cover"
+                style={{ width: '100%', height: '100%' }}
+              />
+            </Pressable>
+          </Link.AppleZoom>
+        </Link.Trigger>
+        <Link.Preview />
+      </Link>
     </ScrollView>
   );
 };
+
+function LinkWithZoomTransitionAlignRect() {
+  const { width, height } = useWindowDimensions();
+  const [imageWrapperLayout, setImageWrapperLayout] = useState<
+    { x: number; y: number; width: number; height: number } | undefined
+  >();
+  const [imageOriginalSize, setImageOriginalSize] = useState<
+    { width: number; height: number } | undefined
+  >();
+
+  // We are calculating the alignment of the image in the destination screen
+  // In the destination screen, the image is resized to be fully visible while maintaining aspect ratio
+  // Thus we need to place the image from link in the center of the screen with the correct size
+  const zoomViewAlignmentRect = useMemo(() => {
+    if (!imageWrapperLayout || !imageOriginalSize) {
+      return undefined;
+    }
+
+    const imageAspectRatio = imageOriginalSize.width / imageOriginalSize.height;
+    const containerAspectRatio = imageWrapperLayout.width / imageWrapperLayout.height;
+    const windowAspectRatio = width / height;
+
+    if (imageAspectRatio > windowAspectRatio) {
+      // Image is wider than window - destination width matches window width
+      const destWidth = width;
+      const destHeight = destWidth / containerAspectRatio;
+      const x = 0;
+      const y = (height - destHeight) / 2;
+
+      return {
+        x,
+        y,
+        width: destWidth,
+        height: destHeight,
+      };
+    } else {
+      // Image is taller than window - destination height matches window height
+      const destHeight = height;
+      const destWidth = destHeight * containerAspectRatio;
+      const x = (width - destWidth) / 2;
+      const y = 0;
+
+      return {
+        x,
+        y,
+        width: destWidth,
+        height: destHeight,
+      };
+    }
+  }, [imageWrapperLayout, imageOriginalSize, width, height]);
+  return (
+    <Link href="/zoom-dest-contain" asChild>
+      <Link.Trigger>
+        <Link.AppleZoom alignmentRect={zoomViewAlignmentRect}>
+          <Pressable style={{ flex: 5, alignItems: 'center' }}>
+            <View
+              style={{ width: '100%', aspectRatio: 1 }}
+              onLayout={(e) => {
+                setImageWrapperLayout(e.nativeEvent.layout);
+              }}>
+              <Image
+                source={require('../../../assets/frog.jpg')}
+                resizeMode="cover"
+                onLoad={(e) => {
+                  if (process.env.EXPO_OS === 'ios') {
+                    setImageOriginalSize({
+                      width: e.nativeEvent.source.width,
+                      height: e.nativeEvent.source.height,
+                    });
+                  }
+                }}
+                style={{ width: '100%', height: '100%' }}
+              />
+            </View>
+          </Pressable>
+        </Link.AppleZoom>
+      </Link.Trigger>
+    </Link>
+  );
+}
 
 const Spacer = () => (
   <View

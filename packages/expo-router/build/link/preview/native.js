@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeLinkPreviewAction = NativeLinkPreviewAction;
 exports.NativeLinkPreview = NativeLinkPreview;
 exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
+exports.LinkZoomTransitionEnabler = LinkZoomTransitionEnabler;
+exports.LinkZoomTransitionSource = LinkZoomTransitionSource;
 const expo_1 = require("expo");
 const react_native_1 = require("react-native");
 const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && !react_native_1.Platform.isTV && global.RN$Bridgeless === true;
@@ -41,6 +43,26 @@ function NativeLinkPreviewContent(props) {
         },
     ]);
     return <NativeLinkPreviewContentView {...props} style={style}/>;
+}
+// #endregion
+// #region Zoom transition
+const LinkZoomTransitionEnablerNativeView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
+    : null;
+function LinkZoomTransitionEnabler(props) {
+    if (!LinkZoomTransitionEnablerNativeView) {
+        return null;
+    }
+    return (<LinkZoomTransitionEnablerNativeView {...props} disableForceFlatten style={{ display: 'contents' }}/>);
+}
+const LinkZoomTransitionSourceNativeView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
+    : null;
+function LinkZoomTransitionSource(props) {
+    if (!LinkZoomTransitionSourceNativeView) {
+        return null;
+    }
+    return (<LinkZoomTransitionSourceNativeView {...props} disableForceFlatten style={{ display: 'contents' }}/>);
 }
 // #endregion
 //# sourceMappingURL=native.js.map
