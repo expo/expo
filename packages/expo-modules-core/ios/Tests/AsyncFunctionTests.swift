@@ -38,7 +38,7 @@ struct AsyncFunctionTests {
           continuation.resume(with: Result {
             switch result {
             case .success(let anyValue):
-              return try #require(anyValue as? T, "Oczekiwano typu \(T.self), otrzymano \(type(of: anyValue))")
+              return try #require(anyValue as? T, "Failed casting a value")
             case .failure(let exception):
               throw exception
             }
