@@ -33,6 +33,7 @@ export function SymbolView(props: SymbolViewProps) {
         fontFamily: font.name,
         color: props.tintColor ?? DEFAULT_SYMBOL_COLOR,
         fontSize: props.size ?? 24,
+        lineHeight: props.size ?? 24,
       }}>
       {androidSymbolToString(name)}
     </Text>

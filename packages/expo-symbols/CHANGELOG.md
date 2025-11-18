@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Add lineHeight to ensure symbols occupy correct square space.
+
 ### 💡 Others
 
 ## 1.0.7 — 2025-09-11
