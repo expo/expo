@@ -33,7 +33,7 @@
 ### 新包：expo-dev-miniapp-launcher
 
 ```
-packages/expo-dev-miniapp-launcher/
+expo-miniapp/expo-dev-miniapp-launcher/
 ├── android/
 │   ├── build.gradle
 │   └── src/
@@ -130,7 +130,7 @@ npx create-expo-miniapp-container my-container
 {
   "dependencies": {
     "expo": "~52.0.0",
-    "expo-dev-miniapp-launcher": "file:../../expo/packages/expo-dev-miniapp-launcher",
+    "expo-dev-miniapp-launcher": "file:../../expo/expo-miniapp/expo-dev-miniapp-launcher",
     "react": "18.3.1",
     "react-native": "0.76.5"
   }
@@ -183,7 +183,7 @@ npx expo run:android
 
 ### 修改 UI
 
-1. 编辑 `packages/expo-dev-miniapp-launcher/android/src/debug/ui/MiniAppHomeScreen.kt`
+1. 编辑 `expo-miniapp/expo-dev-miniapp-launcher/android/src/debug/ui/MiniAppHomeScreen.kt`
 2. 重新构建项目
 3. 运行测试项目查看效果
 
@@ -191,7 +191,7 @@ npx expo run:android
 
 ```bash
 # 1. 构建包
-cd packages/expo-dev-miniapp-launcher/android
+cd expo-miniapp/expo-dev-miniapp-launcher/android
 ./gradlew assembleDebug
 
 # 2. 在测试项目中使用
@@ -217,7 +217,7 @@ git pull upstream main
 新增代码：614 行
 删除冲突代码：47 行
 
-packages/expo-dev-miniapp-launcher/
+expo-miniapp/expo-dev-miniapp-launcher/
 ├── Android 模块：3 个文件
 ├── UI 组件：1 个文件 (250+ 行)
 ├── Config 插件：2 个文件
@@ -374,13 +374,13 @@ Expo 模块定义：
 
 ```bash
 # 使用 file: 协议链接本地包
-"expo-dev-miniapp-launcher": "file:../../expo/packages/expo-dev-miniapp-launcher"
+"expo-dev-miniapp-launcher": "file:../../expo/expo-miniapp/expo-dev-miniapp-launcher"
 ```
 
 ### 2. 发布到 npm
 
 ```bash
-cd packages/expo-dev-miniapp-launcher
+cd expo-miniapp/expo-dev-miniapp-launcher
 npm publish
 ```
 
@@ -409,9 +409,9 @@ npm publish
 
 ## 📚 相关文档
 
-- [expo-dev-miniapp-launcher README](./packages/expo-dev-miniapp-launcher/README.md)
-- [create-expo-miniapp-container 使用指南](./packages/create-expo-miniapp-container/README.md)
-- [测试指南](./packages/create-expo-miniapp-container/TESTING.md)
+- [expo-dev-miniapp-launcher README](./expo-miniapp/expo-dev-miniapp-launcher/README.md)
+- [create-expo-miniapp-container 使用指南](./expo-miniapp/create-expo-miniapp-container/README.md)
+- [测试指南](./expo-miniapp/create-expo-miniapp-container/TESTING.md)
 
 ---
 

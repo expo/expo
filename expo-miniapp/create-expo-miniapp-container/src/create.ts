@@ -97,7 +97,7 @@ function createPackageJson(projectPath: string, projectName: string) {
     },
     dependencies: {
       expo: '~52.0.0',
-      'expo-dev-miniapp-launcher': 'file:../../expo/packages/expo-dev-miniapp-launcher',
+      'expo-dev-miniapp-launcher': 'file:../../expo-miniapp/expo-dev-miniapp-launcher',
       'expo-status-bar': '~2.0.0',
       react: '18.3.1',
       'react-native': '0.76.5',
