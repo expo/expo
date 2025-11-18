@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.31.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (53.0.23):
+  - Expo (53.0.24):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -111,14 +111,14 @@ PODS:
     - ExpoModulesCore
   - ExpoHead (5.1.7):
     - ExpoModulesCore
-  - ExpoImage (2.4.0):
+  - ExpoImage (2.4.1):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImage/Tests (2.4.0):
+  - ExpoImage/Tests (2.4.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -3451,7 +3451,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: f4cc4a62ee4f1c8a9cf2bb79d325eac6cb9f5684
   EXNotifications: d0a50a5490845c702f2c605e94533ae5ddf1aadb
-  Expo: 9fd4973ed0baa42f7418917152d86b39ef466104
+  Expo: 04d7345c6abf641f7bd2358674b8027edad0d8b2
   ExpoAppleAuthentication: 7e358fcbcbacb7685cddb0bbeede0acd677e58f6
   ExpoAsset: 7bdbbacf4e6752ae6e3cf70555cee076f6229e6e
   ExpoAudio: 052e187744415b4e04fc5c9bec08a51058983122
@@ -3474,7 +3474,7 @@ SPEC CHECKSUMS:
   ExpoGL: b4324d3a28d01d7664ed450333919ae336701146
   ExpoHaptics: 68c215e070f660e0a29c45dcda4f60eeff08aefb
   ExpoHead: 9f713d18aff5ff3579dbd6e1bd2459435826ffc4
-  ExpoImage: 04ffc79f9a0391573b77efbc549d59c655caa5a8
+  ExpoImage: b5d08ac8a79f798c8306b53165415c15986f9764
   ExpoImageManipulator: 094b748056f2654d5d7813370c910e20ef3d79b4
   ExpoImagePicker: d2fff488a0738343a3cc21e98544ee9feafaa0e6
   ExpoKeepAwake: e8dedc115d9f6f24b153ccd2d1d8efcdfd68a527
