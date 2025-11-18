@@ -42,7 +42,7 @@ export class SQLiteTaggedQuery {
         this.parsedInfo = parseSQLQuery(sql);
     }
     /**
-     * Make the query awaitable - automatically returns rows or metadata based on query type.
+     * Make a query awaitable that automatically returns rows or metadata based on query type.
      * This is called automatically when you await the query.
      *
      * @example
@@ -115,7 +115,7 @@ export class SQLiteTaggedQuery {
     }
     // Synchronous variants
     /**
-     * Execute the query synchronously - returns rows or metadata based on query type.
+     * Execute a query synchronously that returns rows or metadata based on query type.
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      */
     allSync() {

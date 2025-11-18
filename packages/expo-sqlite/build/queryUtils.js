@@ -7,8 +7,7 @@ const QUERY_KEYWORDS = /\b(SELECT|PRAGMA|WITH|EXPLAIN)\b/i;
  * Parse SQL query to determine if it can return rows
  * Uses a priority-based approach for accurate detection
  *
- * A reimplementation of Bun's SQLite query parser.
- * https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/js/internal/sql/sqlite.ts#L53-L207
+ * A reimplementation of [Bun's SQLite query parser](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/js/internal/sql/sqlite.ts#L53-L207).
  *
  * @param query - The SQL query to parse
  * @returns Information about whether the query can return rows

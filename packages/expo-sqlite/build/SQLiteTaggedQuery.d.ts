@@ -1,8 +1,8 @@
 import { SQLiteRunResult } from './NativeStatement';
 import { SQLiteDatabase } from './SQLiteDatabase';
 /**
- * Conditional type that returns T[] when type parameter is explicitly provided,
- * or union type when using default unknown type.
+ * Conditional type that returns `T[]` when type parameter is explicitly provided,
+ * or union type when using the default `unknown` type.
  */
 type SQLiteTaggedQueryResult<T> = [unknown] extends [T] ? unknown[] | SQLiteRunResult : T[];
 /**
@@ -42,7 +42,7 @@ export declare class SQLiteTaggedQuery<T = unknown> implements PromiseLike<SQLit
     private readonly parsedInfo;
     constructor(database: SQLiteDatabase, strings: TemplateStringsArray, values: unknown[]);
     /**
-     * Make the query awaitable - automatically returns rows or metadata based on query type.
+     * Make a query awaitable that automatically returns rows or metadata based on query type.
      * This is called automatically when you await the query.
      *
      * @example
@@ -92,7 +92,7 @@ export declare class SQLiteTaggedQuery<T = unknown> implements PromiseLike<SQLit
      */
     each(): AsyncIterableIterator<T>;
     /**
-     * Execute the query synchronously - returns rows or metadata based on query type.
+     * Execute a query synchronously that returns rows or metadata based on query type.
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      */
     allSync(): SQLiteTaggedQueryResult<T>;
