@@ -59,7 +59,7 @@ function isStackAction(action) {
 const isPreviewAction = (action) => !!action.payload &&
     'params' in action.payload &&
     typeof action.payload.params === 'object' &&
-    !!(0, navigationParams_1.getInternalExpoRouterParams)(action.payload?.params ?? undefined)['__internal__expo_router_is_preview_navigation'];
+    !!(0, navigationParams_1.getInternalExpoRouterParams)(action.payload?.params ?? undefined)[navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME];
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -466,7 +466,7 @@ function disableAnimationInScreenOptions(options, condition) {
 }
 function shouldDisableAnimationBasedOnParams(route) {
     const expoParams = (0, navigationParams_1.getInternalExpoRouterParams)(route.params);
-    return !!expoParams.__internal_expo_router_no_animation;
+    return !!expoParams[navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME];
 }
 exports.default = Stack;
 const StackRouter = (options) => {
