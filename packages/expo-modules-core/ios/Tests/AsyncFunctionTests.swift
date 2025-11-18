@@ -135,7 +135,9 @@ struct AsyncFunctionTests {
     ) async throws {
       let start = Date()
       while Date().timeIntervalSince(start) < timeout {
-        if try await condition() { return }
+        if try await condition() {
+          return
+        }
         try await Task.sleep(nanoseconds: UInt64(pollInterval * 1_000_000_000))
       }
       let result = try await condition()
