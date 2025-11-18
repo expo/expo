@@ -291,42 +291,31 @@ function getSDKPath(): string {
   return cachedSDKPath;
 }
 
-function quote(s: string): string {
-  return `\\"${s}\\"`;
-}
-
 // Read type description with sourcekitten, works only for variables
 function getTypeOfByteOffsetVariable(byteOffset: number, file: FileType): string | null {
-  // TODO fix this function, sourcekitten is broken after switching to this repo and package...
-  return null;
   const request = {
     'key.request': 'source.request.cursorinfo',
-    'key.sourcefile': quote(file.path),
+    'key.sourcefile': file.path,
     'key.offset': byteOffset,
-    'key.compilerargs': [
-      quote(file.path),
-      quote('-target'),
-      quote('arm64-apple-ios7'),
-      quote('-sdk'),
-      quote(getSDKPath()),
-    ],
+    'key.compilerargs': [file.path, '-target', 'arm64-apple-ios7', '-sdk', getSDKPath()],
   };
   const yamlRequest = YAML.stringify(request, {
     defaultStringType: 'QUOTE_DOUBLE',
     lineWidth: 0,
     defaultKeyType: 'PLAIN',
     // needed since behaviour of sourcekitten is not consistent
-  } as any).replace('"source.request.cursorinfo"', 'source.request.cursorinfo');
+  } as any)
+    .replace('"source.request.cursorinfo"', 'source.request.cursorinfo')
+    .replaceAll('"', '\\"');
 
   const command = 'sourcekitten request --yaml "' + yamlRequest + '"';
   try {
     const output = JSON.parse(execSync(command, { stdio: 'pipe' }).toString());
-
     const inferredType = output['key.typename'];
     if (inferredType === '<<error type>>') {
       return null;
     }
-    // return parseXMLAnnotatedDeclarations(JSON.parse(output.toString()));
+    return inferredType;
   } catch (error) {
     console.error('An error occurred while executing the command:', error);
   }
@@ -494,9 +483,8 @@ function extractDeclarationType(structure: Structure, file: FileType): Type {
   if (structure['key.typename']) {
     return mapSwiftTypeToTsType(structure['key.typename'] as string);
   }
-  return mapSwiftTypeToTsType(
-    getTypeOfByteOffsetVariable(structure['key.nameoffset'], file) ?? 'Any'
-  );
+  const inferReturn = getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
+  return mapSwiftTypeToTsType(inferReturn ?? 'Any');
 }
 
 function parseRecordStructure(
