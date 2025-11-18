@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs/promises';
-import { glob } from 'glob';
 import * as path from 'path';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = String(180_000);
 const MAESTRO_CLI_NO_ANALYTICS = '1';
@@ -179,14 +178,15 @@ const getCustomMaestroFlowsAsync = async (
     ignore.push('**/*.android.yaml');
   }
 
-  const yamlFiles = await glob('**/*.yaml', {
-    cwd: e2eDir,
-    ignore,
-  });
+  const yamlFiles: string[] = [];
+  for await (const file of fs.glob('**/*.yaml', { cwd: e2eDir, exclude: ignore })) {
+    yamlFiles.push(file);
+  }
 
   if (platform === 'ios') {
     yamlFiles.unshift('_nested-flows/confirm-app-open.yaml');
   }
+
   console.log(`detected maestro files for ${platform}:`, yamlFiles);
   return yamlFiles;
 };
