@@ -375,14 +375,16 @@ export const disabled = (disabled: boolean = true) => createModifier('disabled',
  * @param disabled - Whether the view’s view hierarchy is movable
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/movedisabled(_:)).
  */
-export const moveDisabled = (disabled: boolean = true) => createModifier('moveDisabled', { disabled });
+export const moveDisabled = (disabled: boolean = true) =>
+  createModifier('moveDisabled', { disabled });
 
 /**
  * Disables or enables deletion for a view
  * @param disabled - Whether the view’s view hierarchy is deletable
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/deletedisabled(_:)).
  */
-export const deleteDisabled = (disabled: boolean = true) => createModifier('deleteDisabled', { disabled });
+export const deleteDisabled = (disabled: boolean = true) =>
+  createModifier('deleteDisabled', { disabled });
 
 /**
  * Sets the z-index (display order) of a view.
