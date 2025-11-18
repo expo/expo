@@ -3,8 +3,8 @@ import { SQLiteDatabase } from './SQLiteDatabase';
 import { parseSQLQuery, type SQLParsedInfo } from './queryUtils';
 
 /**
- * Conditional type that returns T[] when type parameter is explicitly provided,
- * or union type when using default unknown type.
+ * Conditional type that returns `T[]` when type parameter is explicitly provided,
+ * or union type when using the default `unknown` type.
  */
 type SQLiteTaggedQueryResult<T> = [unknown] extends [T] ? unknown[] | SQLiteRunResult : T[];
 
@@ -55,7 +55,7 @@ export class SQLiteTaggedQuery<T = unknown> implements PromiseLike<SQLiteTaggedQ
   }
 
   /**
-   * Make the query awaitable - automatically returns rows or metadata based on query type.
+   * Make a query awaitable that automatically returns rows or metadata based on query type.
    * This is called automatically when you await the query.
    *
    * @example
@@ -134,7 +134,7 @@ export class SQLiteTaggedQuery<T = unknown> implements PromiseLike<SQLiteTaggedQ
   // Synchronous variants
 
   /**
-   * Execute the query synchronously - returns rows or metadata based on query type.
+   * Execute a query synchronously that returns rows or metadata based on query type.
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    */
   allSync(): SQLiteTaggedQueryResult<T> {
