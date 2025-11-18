@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [Android][iOS] Add `seek tolerance` and `scrubbingModeOptions` properties to the player. ([#40203](https://github.com/expo/expo/pull/40203) by [@behenate](https://github.com/behenate))
+- Allow assigning `null` value to the `player` prop of the `VideoView` ([#40860](https://github.com/expo/expo/pull/40860) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
