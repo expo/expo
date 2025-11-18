@@ -28,7 +28,7 @@ internal fun analyzeManifestReport(reportContent: String): Map<String, Permissio
       lastAttributeWasMaxSdk = false
     } else if (currentPermission != null) {
       when {
-        line.startsWith("\tandroid:maxSdkVersion") -> {
+        trimmedLine.startsWith("android:maxSdkVersion") -> {
           lastAttributeWasMaxSdk = true
         }
 

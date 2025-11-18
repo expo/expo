@@ -80,8 +80,9 @@ abstract class FixManifestMaxSdkTask : DefaultTask() {
 
   private fun tryFixManifest(inManifest: File, outManifest: File, brokenPermissions: Map<String, PermissionInfo>) {
     try {
-      val factory = DocumentBuilderFactory.newInstance()
-      factory.isNamespaceAware = true
+      val factory = DocumentBuilderFactory.newInstance().apply {
+        isNamespaceAware = true
+      }
       val builder = factory.newDocumentBuilder()
 
       val doc = builder.parse(inManifest)

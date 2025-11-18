@@ -20,6 +20,13 @@ class ExtractPathFromLineTest {
   }
 
   @Test
+  fun `extracts path from an ADDED line with space`() {
+    val line = "  ADDED from /Users/happy user/project/library/build/intermediates/merged_manifest/debug/AndroidManifest.xml:23:7-77"
+    val path = extractPathFromLine(line)
+    assertThat(path).isEqualTo("/Users/happy user/project/library/build/intermediates/merged_manifest/debug/AndroidManifest.xml")
+  }
+
+  @Test
   fun `returns null if no path is found`() {
     val line = "\tandroid:maxSdkVersion"
     val path = extractPathFromLine(line)
