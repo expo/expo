@@ -39,7 +39,7 @@
   "expo-dev-client": "~6.0.18",
   "expo-device": "~8.0.9",
   "expo-document-picker": "~14.0.7",
-  "expo-file-system": "~19.0.18",
+  "expo-file-system": "~19.0.19",
   "expo-font": "~14.0.9",
   "expo-gl": "~16.0.7",
   "expo-glass-effect": "~0.1.7",

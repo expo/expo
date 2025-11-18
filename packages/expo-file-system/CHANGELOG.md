@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 19.0.19 — 2025-11-18
+
+### 🎉 New features
+
 - [Android] Add contentUri property. ([#40002](https://github.com/expo/expo/pull/40002) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
 - [iOS] Add missing `createFile` and `createDirectory` methods. ([#40314](https://github.com/expo/expo/pull/40314) by [@jakex7](https://github.com/jakex7))
-
-### 💡 Others
 
 ## 19.0.18 — 2025-11-17
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `ExpoAppDelegate` not extending `UIResponder`. ([#41066](https://github.com/expo/expo/pull/41066) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 54.0.25 — 2025-11-18
+
+### 🐛 Bug fixes
+
+- Fix `ExpoAppDelegate` not extending `UIResponder`. ([#41066](https://github.com/expo/expo/pull/41066) by [@tsapeta](https://github.com/tsapeta))
 
 ## 54.0.24 — 2025-11-17
 
