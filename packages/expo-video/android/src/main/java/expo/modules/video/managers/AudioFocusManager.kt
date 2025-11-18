@@ -1,4 +1,4 @@
-package expo.modules.video
+package expo.modules.video.managers
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
+import expo.modules.video.FailedToGetAudioFocusManagerException
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.player.VideoPlayerListener
