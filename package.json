@@ -40,7 +40,7 @@
   "dependencies": {
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
-    "patch-package": "^8.0.0",
+    "patch-package": "^8.0.1",
     "prettier": "^3.4.2",
     "yarn-deduplicate": "^6.0.2"
   },
