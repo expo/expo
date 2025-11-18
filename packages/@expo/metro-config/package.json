@@ -48,7 +48,7 @@
     "dotenv": "~16.4.5",
     "dotenv-expand": "~11.0.6",
     "getenv": "^2.0.0",
-    "glob": "^10.4.2",
+    "glob": "^12.0.0",
     "hermes-parser": "^0.29.1",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "^1.30.1",

@@ -55,7 +55,7 @@
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "getenv": "^2.0.0",
-    "glob": "^10.4.1",
+    "glob": "^12.0.0",
     "resolve-from": "^5.0.0"
   },
   "peerDependencies": {

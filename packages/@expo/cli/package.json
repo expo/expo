@@ -79,7 +79,7 @@
     "expo-server": "^1.0.0",
     "freeport-async": "^2.0.0",
     "getenv": "^2.0.0",
-    "glob": "^10.4.2",
+    "glob": "^12.0.0",
     "lan-network": "^0.1.6",
     "minimatch": "^9.0.0",
     "node-forge": "^1.3.1",
