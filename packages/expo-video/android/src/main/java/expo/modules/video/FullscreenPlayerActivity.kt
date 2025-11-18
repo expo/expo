@@ -77,7 +77,11 @@ class FullscreenPlayerActivity : Activity() {
     requestedOrientation = options.orientation.toActivityOrientation()
 
     videoPlayer = videoView.videoPlayer
-    videoPlayer?.changePlayerView(playerView)
+    videoPlayer?.player?.let {
+      PlayerView.switchTargetView(it, videoView.playerView, playerView)
+      videoPlayer?.hasBeenDisconnectedFromVideoView() // The video player is disconnected. We are only using the ExoPlayer it contained
+    }
+
     VideoManager.registerFullscreenPlayerActivity(hashCode().toString(), this)
     playerView.player?.let {
       val aspectRatio = calculatePiPAspectRatio(it.videoSize, playerView.width, playerView.height, videoView.contentFit)
