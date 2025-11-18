@@ -372,12 +372,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if (strcmp(name, "DevSettings") == 0) {
     return EXDevSettings.class;
   }
-  if (strcmp(name, "DevMenu") == 0) {
-    if (![_params[@"isStandardDevMenuAllowed"] boolValue] || ![_params[@"isDeveloper"] boolValue]) {
-      // non-kernel, or non-development kernel, uses expo menu instead of RCTDevMenu
-      return EXDisabledDevMenu.class;
-    }
-  }
   if (strcmp(name, "RedBox") == 0) {
     if (![_params[@"isDeveloper"] boolValue]) {
       // user-facing (not debugging).
