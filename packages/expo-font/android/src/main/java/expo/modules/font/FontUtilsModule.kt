@@ -35,6 +35,7 @@ open class FontUtilsModule : Module() {
 
       val scalingFactor = context.resources.displayMetrics.density
       val scaledSize = options.size * scalingFactor
+      val lineHeight = options.lineHeight?.let { it * scalingFactor }
       val paint = Paint().apply {
         this.typeface = typeface
         color = options.color
@@ -50,14 +51,17 @@ open class FontUtilsModule : Module() {
       // This gives the maximum height the font might occupy. Could be more than strictly needed but aligns with iOS.
       val height = ceil(fontMetrics.descent - fontMetrics.ascent).toInt()
 
-      val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+      val bitmap = Bitmap.createBitmap(width, lineHeight?.toInt() ?: height, Bitmap.Config.ARGB_8888)
       val canvas = Canvas(bitmap)
 
-      // The `drawText` method's y-parameter is the baseline of the text.
-      // To draw the text starting from the very top of the bitmap,
-      // the baseline should be at -fontMetrics.ascent.
-      // For most characters, text may appear vertically centered, but try with characters like Å or Ç
-      val yBaseline = -fontMetrics.ascent
+      val yBaseline = lineHeight?.let {
+        // When lineHeight is specified, center the text vertically within that height
+        (it - (fontMetrics.descent - fontMetrics.ascent)) / 2f - fontMetrics.ascent
+        // The `drawText` method's y-parameter is the baseline of the text.
+        // To draw the text starting from the very top of the bitmap,
+        // the baseline should be at -fontMetrics.ascent.
+        // For most characters, text may appear vertically centered, but try with characters like Å or Ç
+      } ?: -fontMetrics.ascent
       canvas.drawText(glyphs, 0f, yBaseline, paint)
 
       val output = File(context.cacheDir, "${UUID.randomUUID()}.png")

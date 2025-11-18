@@ -29,6 +29,22 @@ export default function FontScreen() {
     })
   );
 
+  const renderedFontAsImageLineHeight100 = useLoadIcon(() =>
+    Font.renderToImageAsync('ÅBÇD', {
+      fontFamily: 'Inter-BoldItalic',
+      size: 100,
+      lineHeight: 100,
+    })
+  );
+
+  const renderedFontAsImageLineHeight150 = useLoadIcon(() =>
+    Font.renderToImageAsync('ÅBÇD', {
+      fontFamily: 'Inter-BoldItalic',
+      size: 100,
+      lineHeight: 150,
+    })
+  );
+
   return (
     <ScrollView style={{ flex: 1 }}>
       <Page>
@@ -179,6 +195,62 @@ export default function FontScreen() {
                 }}
                 contentFit="cover"
               />
+            </>
+          )}
+          {renderedFontAsImageLineHeight100 && (
+            <>
+              <Text>
+                Inter-BoldItalic rendered to image line-heigth: 100{' '}
+                {round(renderedFontAsImageLineHeight100.width)}x
+                {round(renderedFontAsImageLineHeight100.height)}
+              </Text>
+              <Image
+                source={{ uri: renderedFontAsImageLineHeight100.uri }}
+                style={{
+                  height: renderedFontAsImageLineHeight100.height,
+                  width: renderedFontAsImageLineHeight100.width,
+                  backgroundColor: 'grey',
+                }}
+                contentFit="cover"
+              />
+              <Text>Same as &lt;Text&gt;</Text>
+              <Text
+                style={{
+                  fontFamily: 'Inter-BoldItalic',
+                  fontSize: 100,
+                  lineHeight: 100,
+                  backgroundColor: 'grey',
+                }}>
+                ÅBÇD
+              </Text>
+            </>
+          )}
+          {renderedFontAsImageLineHeight150 && (
+            <>
+              <Text>
+                Inter-BoldItalic rendered to image line-heigth: 150{' '}
+                {round(renderedFontAsImageLineHeight150.width)}x
+                {round(renderedFontAsImageLineHeight150.height)}
+              </Text>
+              <Image
+                source={{ uri: renderedFontAsImageLineHeight150.uri }}
+                style={{
+                  height: renderedFontAsImageLineHeight150.height,
+                  width: renderedFontAsImageLineHeight150.width,
+                  backgroundColor: 'grey',
+                }}
+                contentFit="cover"
+              />
+              <Text>Same as &lt;Text&gt;</Text>
+              <Text
+                style={{
+                  fontFamily: 'Inter-BoldItalic',
+                  fontSize: 100,
+                  lineHeight: 150,
+                  backgroundColor: 'grey',
+                }}>
+                ÅBÇD
+              </Text>
             </>
           )}
         </Section>
