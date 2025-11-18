@@ -27,6 +27,7 @@
 - apply react-navigation background color to NativeTabsView ([#41068](https://github.com/expo/expo/pull/41068) by [@Ubax](https://github.com/Ubax))
 - [iOS] bottom toolbar ([#41106](https://github.com/expo/expo/pull/41106) by [@Ubax](https://github.com/Ubax))
 - [iOS] rename displayInline and displayAsPalette in Link.Menu ([#41317](https://github.com/expo/expo/pull/41317) by [@Ubax](https://github.com/Ubax))
+- [iOS] add zoom transition support ([#41083](https://github.com/expo/expo/pull/41083) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

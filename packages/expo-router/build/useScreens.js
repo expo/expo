@@ -47,6 +47,7 @@ const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
+const ZoomTransitionEnabler_1 = require("./link/ZoomTransitionEnabler");
 const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
@@ -215,6 +216,7 @@ function getQualifiedRouteComponent(value) {
                 store.setFocusedState(stateForPath);
         }), [navigation]);
         return (<Route_1.Route node={value} route={route}>
+        <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
         <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
           <ScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`

@@ -13,6 +13,7 @@ import React, { useEffect } from 'react';
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import { ZoomTransitionEnabler } from './link/ZoomTransitionEnabler';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
@@ -291,6 +292,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     return (
       <Route node={value} route={route}>
+        <ZoomTransitionEnabler route={route} />
         <React.Suspense fallback={<SuspenseFallback route={value} />}>
           <ScreenComponent
             {...props}

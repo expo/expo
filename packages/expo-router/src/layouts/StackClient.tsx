@@ -26,6 +26,8 @@ import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import { SingularOptions, getSingularId } from '../useScreens';
@@ -122,6 +124,19 @@ const isPreviewAction = (action: NavigationAction): action is ExpoNavigationActi
   !!getInternalExpoRouterParams(action.payload?.params ?? undefined)[
     INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME
   ];
+
+const getZoomTransitionIdFromAction = (action: NavigationAction): string | undefined => {
+  const allParams =
+    !!action.payload && 'params' in action.payload && typeof action.payload.params === 'object'
+      ? action.payload.params
+      : undefined;
+  const internalParams = getInternalExpoRouterParams(allParams ?? undefined);
+  const val = internalParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME];
+  if (val && typeof val === 'string') {
+    return val;
+  }
+  return undefined;
+};
 
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
@@ -336,6 +351,23 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 
           if (actionSingularOptions) {
             return filterSingular(result, getId);
+          }
+
+          const zoomTransitionId = getZoomTransitionIdFromAction(action);
+          if (zoomTransitionId) {
+            const lastRoute = result.routes[result.routes.length - 1];
+            const key = lastRoute.key;
+            const modifiedLastRoute: typeof lastRoute = {
+              ...lastRoute,
+              params: {
+                ...lastRoute.params,
+                [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: key,
+              },
+            };
+            return {
+              ...result,
+              routes: [...result.routes.slice(0, -1), modifiedLastRoute],
+            };
           }
 
           return result;

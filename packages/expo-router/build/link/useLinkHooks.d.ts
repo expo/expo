@@ -206,6 +206,23 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      * Prefetches the route when the component is rendered on a focused screen.
      */
     prefetch?: boolean;
+    /**
+     * When set to 'zoom', enables a [zoom transition](https://developer.apple.com/documentation/uikit/enhancing-your-app-with-fluid-transitions?language=objc) when navigating to the link's href.
+     *
+     * @platform ios 18+
+     */
+    unstable_transition?: 'zoom';
+    /**
+     * Defines the rectangle used for the zoom transition's alignment. This rectangle is specified in the zoomed screen's coordinate space.
+     *
+     * @platform ios 18+
+     */
+    unstable_transitionAlignmentRect?: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
     ref?: Ref<Text>;
 }
 export declare function useInteropClassName(props: {
