@@ -97,6 +97,11 @@ function createPackageJson(projectPath: string, projectName: string) {
     },
     dependencies: {
       expo: '~52.0.0',
+      // ⚠️ 重要：这个路径需要根据实际情况调整
+      // 场景 1: 在 expo 仓库根目录创建项目 → 使用 'file:../expo-miniapp/expo-dev-miniapp-launcher'
+      // 场景 2: 使用已发布的 npm 包 → 使用 '~0.1.0'
+      // 场景 3: 其他位置 → 使用绝对路径或相对路径
+      // 详见项目 README.md 中的"路径配置"章节
       'expo-dev-miniapp-launcher': 'file:../../expo-miniapp/expo-dev-miniapp-launcher',
       'expo-status-bar': '~2.0.0',
       react: '18.3.1',

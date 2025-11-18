@@ -172,6 +172,9 @@ npx expo run:android
 
 - [CLI 工具](./create-expo-miniapp-container/README.md)
 - [Launcher](./expo-dev-miniapp-launcher/README.md)
+- [配置指南](./CONFIGURATION_GUIDE.md) ⭐ **必读**
+- [需求检查](./REQUIREMENTS_CHECK.md)
+- [代码审核](./CODE_REVIEW.md)
 - [测试指南](./create-expo-miniapp-container/TESTING.md)
 - [MVP 总结](../MVP_V2_SUMMARY.md)
 

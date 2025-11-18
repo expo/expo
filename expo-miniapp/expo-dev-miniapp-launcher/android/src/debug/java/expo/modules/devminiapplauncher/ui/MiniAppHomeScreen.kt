@@ -25,14 +25,17 @@ fun MiniAppHomeScreen(
 ) {
     val scrollState = rememberScrollState()
     var devServerUrl by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-            .padding(16.dp)
-            .verticalScroll(scrollState)
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+                .padding(16.dp)
+                .verticalScroll(scrollState)
+        ) {
         // Custom Welcome Banner
         MiniAppWelcomeBanner()
 
@@ -45,10 +48,18 @@ fun MiniAppHomeScreen(
             shape = RoundedCornerShape(12.dp)
         ) {
             Button(
-                onClick = onScanQRCode,
+                onClick = {
+                    try {
+                        errorMessage = null
+                        onScanQRCode()
+                    } catch (e: Exception) {
+                        errorMessage = "扫码失败: ${e.message}"
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
+                enabled = !isLoading,
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color(0xFF6366F1)
                 )
@@ -114,18 +125,42 @@ fun MiniAppHomeScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Button(
-                    onClick = { onConnectToServer(devServerUrl) },
+                    onClick = {
+                        try {
+                            errorMessage = null
+                            isLoading = true
+                            // 基本的 URL 验证
+                            if (!devServerUrl.startsWith("http://") && !devServerUrl.startsWith("https://")) {
+                                errorMessage = "URL 必须以 http:// 或 https:// 开头"
+                                isLoading = false
+                                return@Button
+                            }
+                            onConnectToServer(devServerUrl)
+                            isLoading = false
+                        } catch (e: Exception) {
+                            errorMessage = "连接失败: ${e.message}"
+                            isLoading = false
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = devServerUrl.isNotEmpty(),
+                    enabled = devServerUrl.isNotEmpty() && !isLoading,
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color(0xFF10B981)
                     )
                 ) {
-                    Text(
-                        text = "连接",
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = "连接",
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
         }
@@ -197,6 +232,24 @@ fun MiniAppHomeScreen(
                     color = Color(0xFF1E40AF).copy(alpha = 0.8f),
                     lineHeight = 20.sp
                 )
+            }
+        }
+        }
+
+        // Error Snackbar
+        if (errorMessage != null) {
+            Snackbar(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp),
+                action = {
+                    TextButton(onClick = { errorMessage = null }) {
+                        Text("关闭", color = Color.White)
+                    }
+                },
+                backgroundColor = Color(0xFFEF4444)
+            ) {
+                Text(errorMessage ?: "", color = Color.White)
             }
         }
     }
