@@ -128,7 +128,7 @@ function isEitherTypeIdentifier(typeIdentifier: string): boolean {
 
 function mapSwiftTypeToTsType(type?: string): Type {
   if (!type) {
-    return { kind: TypeKind.IDENTIFIER, type: 'any' };
+    return { kind: TypeKind.BASIC, type: BasicType.UNRESOLVED };
   }
   if (isSwiftOptional(type)) {
     return { kind: TypeKind.OPTIONAL, type: mapSwiftTypeToTsType(type.slice(0, -1).trim()) };
@@ -277,7 +277,7 @@ function parseClosureTypes(structureObject: Structure) {
     ?.filter((s) => s['key.kind'] === 'source.lang.swift.decl.var.parameter')
     .map((p) => ({ name: p['key.name'], typename: p['key.typename'] }));
 
-  const returnType = closure?.['key.typename'] ?? 'unknown';
+  const returnType = closure?.['key.typename'];
   return { parameters, returnType };
 }
 
@@ -613,11 +613,14 @@ function collectTypeIdentifiers(
       break;
     case TypeKind.BASIC:
       // typeIdentiers.add('BASIC: ' + (type.type as BasicType).toString());
+      if ((type.type as BasicType) === BasicType.UNRESOLVED) {
+        typeIdentiers.add('UnresolvedType');
+      }
       break;
     case TypeKind.IDENTIFIER:
       typeIdentiers.add(type.type as TypeIdentifier);
       break;
-    case TypeKind.PARAMETRIZED:
+    case TypeKind.PARAMETRIZED: {
       const parametrizedType: ParametrizedType = type.type as ParametrizedType;
       const typename = parametrizedType.name;
       typeIdentiers.add(typename);
@@ -629,6 +632,7 @@ function collectTypeIdentifiers(
         collectTypeIdentifiers(t, typeIdentiers, typeParametersCount);
       }
       break;
+    }
   }
 }
 

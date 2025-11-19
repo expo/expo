@@ -9,6 +9,7 @@ exports[`Same generated mock file 1`] = `
  *  */
 
 
+type UnresolvedType = any;
 type SomeParametrizedType<T0, T1> = any;
 type URL = any;
 
@@ -42,6 +43,7 @@ enum TestEnum {
 
 
 export function SimpleFunction(a: number, b: number): number { return 0; }
+export function TestUntypedFunction(): UnresolvedType /*The type couldn't be resolved automatically.*/ { return; }
 export function TestArrays(a: number[]): string[][] { return []; }
 export function TestDictionaries(a: {
     [key: number]: string;
@@ -93,6 +95,7 @@ var TestEnum;
     TestEnum[TestEnum["caseWithArgs2"] = 4] = "caseWithArgs2";
 })(TestEnum || (TestEnum = {}));
 export function SimpleFunction(a, b) { return 0; }
+export function TestUntypedFunction() { return; }
 export function TestArrays(a) { return []; }
 export function TestDictionaries(a, b) { }
 export function TestParametrizedTypes(a) { return ""; }
@@ -123,6 +126,7 @@ exports[`Same generated module file 1`] = `
 
 import { NativeModule } from 'expo';
 
+type UnresolvedType = any;
 type SomeParametrizedType<T0, T1> = any;
 type URL = any;
 
@@ -156,7 +160,7 @@ export declare class TestClassWithConstructor {
   constructor(a: number);
 }
 export declare class TestBasicClass {
-  TestAsyncFunction(a: number): Promise<string> {}
+  TestAsyncFunction(a: number): Promise<string>;
   readonly TestIntProperty: number;
   readonly TestEitherProperty: number | string;
   readonly TestEnumProperty: TestEnum;
@@ -168,8 +172,10 @@ export declare class TestEmptyClass {}
 export declare class TestModule extends NativeModule {
   readonly StringConstant: number;
   readonly IntConstant: number;
-  SimpleFunction(a: number, b: number): number {}
-  TestArrays(a: number[]): string[][] {}
+  readonly UntypedConstant: UnresolvedType /*The type couldn't be resolved automatically.*/;
+  SimpleFunction(a: number, b: number): number;
+  TestUntypedFunction(): UnresolvedType /*The type couldn't be resolved automatically.*/;
+  TestArrays(a: number[]): string[][];
   TestDictionaries(
     a: {
       [key: number]: string;
@@ -179,19 +185,19 @@ export declare class TestModule extends NativeModule {
         [key: number]: string;
       };
     }
-  ): any {}
+  ): any;
   TestParametrizedTypes(
     a: SomeParametrizedType<number | string, Map<Set<number>, Set<number> | Set<string>>>
-  ): string {}
+  ): string;
   TestTypeCombinations(a: number[][][]): (
     | string
     | {
         [key: number]: string;
       }
-  )[][] {}
-  TestFunctionReturningRecord(): TestRecord {}
-  TestFunctionReturningEnum(): TestEnum {}
-  TestSimpleAsyncFunction(a: string, b: string): Promise<string> {}
+  )[][];
+  TestFunctionReturningRecord(): TestRecord;
+  TestFunctionReturningEnum(): TestEnum;
+  TestSimpleAsyncFunction(a: string, b: string): Promise<string>;
   TestClassWithConstructor: typeof TestClassWithConstructor;
   TestBasicClass: typeof TestBasicClass;
   TestEmptyClass: typeof TestEmptyClass;
@@ -214,6 +220,7 @@ import { SharedObject } from 'expo';
 
 import { ViewProps } from 'react-native';
 
+type UnresolvedType = any;
 type SomeParametrizedType<T0, T1> = any;
 type URL = any;
 
@@ -424,6 +431,13 @@ exports[`Same type information 1`] = `
             "type": 2,
           },
         },
+        {
+          "name": "UntypedConstant",
+          "type": {
+            "kind": 0,
+            "type": 6,
+          },
+        },
       ],
       "constructor": null,
       "events": [],
@@ -450,6 +464,15 @@ exports[`Same type information 1`] = `
           "returnType": {
             "kind": 0,
             "type": 2,
+          },
+        },
+        {
+          "arguments": [],
+          "name": "TestUntypedFunction",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 6,
           },
         },
         {
@@ -714,8 +737,8 @@ exports[`Same type information 1`] = `
                 {
                   "name": "view",
                   "type": {
-                    "kind": 1,
-                    "type": "any",
+                    "kind": 0,
+                    "type": 6,
                   },
                 },
                 {
@@ -848,11 +871,11 @@ exports[`Same type information 1`] = `
   "usedTypeIdentifiers": Set {
     "TestEnum",
     "TestRecord2",
+    "UnresolvedType",
     "SomeParametrizedType",
     "Map",
     "Set",
     "TestRecord",
-    "any",
     "URL",
   },
 }

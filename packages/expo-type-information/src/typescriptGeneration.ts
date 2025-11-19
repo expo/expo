@@ -223,7 +223,7 @@ export function getTsFunction(
       undefined,
       functionDeclaration.arguments.map(getArgumentDeclaration),
       returnTypeNode,
-      ts.factory.createBlock(customReturn ? returnStatement : [])
+      declaration ? undefined : ts.factory.createBlock(customReturn ? returnStatement : [])
     );
   }
   return ts.factory.createFunctionDeclaration(
@@ -233,11 +233,18 @@ export function getTsFunction(
     undefined,
     functionDeclaration.arguments.map(getArgumentDeclaration),
     returnTypeNode,
-    ts.factory.createBlock(customReturn ? returnStatement : [])
+    declaration ? undefined : ts.factory.createBlock(customReturn ? returnStatement : [])
   );
 }
 
 function mapBasicTypeToTsNode(basicType: BasicType): ts.TypeNode {
+  if (basicType === BasicType.UNRESOLVED) {
+    return ts.addSyntheticTrailingComment(
+      ts.factory.createTypeReferenceNode('UnresolvedType'),
+      ts.SyntaxKind.MultiLineCommentTrivia,
+      "The type couldn't be resolved automatically."
+    );
+  }
   return ts.factory.createKeywordTypeNode(
     (() => {
       switch (basicType) {
@@ -309,7 +316,7 @@ export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
         (type.type as ParametrizedType).types.map(mapTypeToTsTypeNode)
       );
   }
-  return mapBasicTypeToTsNode(BasicType.ANY);
+  return mapBasicTypeToTsNode(BasicType.UNRESOLVED);
 }
 
 export function getClassConstructorDeclaration(
