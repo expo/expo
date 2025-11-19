@@ -11,8 +11,14 @@ public class TestModule: Module {
       return 37;
     }
 
+    Constant("UntypedConstant") { () in 98}
+
     Function("SimpleFunction") { (a: Double, b: Int) -> Double in
       return a + b
+    }
+
+    Function("TestUntypedFunction") { () in
+      return "string"
     }
 
     // Function("TestEither") { (a: Either<Either<Int, String>, Either<Float, Double>>) -> Either<String, Either<Int, Double>> in 
