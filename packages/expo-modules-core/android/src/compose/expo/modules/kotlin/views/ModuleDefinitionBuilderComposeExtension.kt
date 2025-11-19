@@ -2,12 +2,15 @@
 
 package expo.modules.kotlin.views
 
+import androidx.compose.runtime.Composable
+import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.modules.InternalModuleDefinitionBuilder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.LazyKType
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.typeOf
 
@@ -31,5 +34,60 @@ open class ModuleDefinitionBuilderWithCompose(
     viewDefinitionBuilder.UseCSSProps()
     body.invoke(viewDefinitionBuilder)
     registerViewDefinition(viewDefinitionBuilder.build())
+  }
+
+  @JvmName("ComposeView")
+  inline fun <reified Props : ComposeProps> View(
+    name: String,
+    events: ComposeViewFunctionDefinitionBuilder<Props>.() -> Unit = {},
+    noinline viewFunction: @Composable ExpoViewComposableScope.(props: Props) -> Unit
+  ) {
+    val definitionBuilder = ComposeViewFunctionDefinitionBuilder(name, Props::class, viewFunction)
+    events.invoke(definitionBuilder)
+    registerViewDefinition(definitionBuilder.build())
+  }
+}
+
+@DefinitionMarker
+class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
+  val name: String,
+  val propsClass: KClass<Props>,
+  val viewFunction: @Composable ExpoViewComposableScope.(props: Props) -> Unit
+) {
+  private var callbacksDefinition: CallbacksDefinition? = null
+
+  fun build(): ViewManagerDefinition {
+    return ViewManagerDefinition(
+      name = name,
+      viewFactory = { context, appContext ->
+        val instance: Props = try {
+          propsClass.createInstance()
+        } catch (e: Exception) {
+          throw IllegalStateException("Could not instantiate props instance of $name compose component.", e)
+        }
+        ComposeFunctionHolder(context, appContext, viewFunction, instance)
+      },
+      callbacksDefinition = callbacksDefinition,
+      viewType = ComposeFunctionHolder::class.java,
+      props = propsClass.memberProperties.associate { prop ->
+        val kType = prop.returnType
+        prop.name to ComposeViewProp(prop.name, AnyType(kType), prop)
+      }
+    )
+  }
+
+  /**
+   * Defines prop names that should be treated as callbacks.
+   */
+  fun Events(vararg callbacks: String) {
+    callbacksDefinition = CallbacksDefinition(callbacks)
+  }
+
+  /**
+   * Defines prop names that should be treated as callbacks.
+   */
+  @JvmName("EventsWithArray")
+  fun Events(callbacks: Array<String>) {
+    callbacksDefinition = CallbacksDefinition(callbacks)
   }
 }

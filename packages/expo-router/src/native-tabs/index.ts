@@ -4,7 +4,6 @@ export type {
   NativeTabTriggerProps,
   NativeTabsLabelStyle,
   NativeTabsActiveStyleType,
-  NativeTabOptions,
   SymbolOrImageSource,
   NativeTabsTabBarItemLabelVisibilityMode,
   NativeTabsBlurEffect,

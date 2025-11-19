@@ -11,7 +11,12 @@ import {
   Section,
   Divider,
 } from '@expo/ui/swift-ui';
-import { buttonStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import {
+  buttonStyle,
+  menuActionDismissBehavior,
+  pickerStyle,
+  tag,
+} from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
@@ -134,6 +139,26 @@ export default function ContextMenuScreen() {
                 <RNText>This is a preview</RNText>
               </View>
             </ContextMenu.Preview>
+          </ContextMenu>
+        </Section>
+        <Section title="Context Menu Dismissal Behavior">
+          <ContextMenu modifiers={[menuActionDismissBehavior('disabled')]}>
+            <ContextMenu.Items>
+              <Button onPress={() => console.log('Pressed3')}>Do not dismiss</Button>
+              <Button
+                onPress={() => console.log('Pressed1')}
+                modifiers={[menuActionDismissBehavior('automatic')]}>
+                Automatically dismiss
+              </Button>
+              <Button
+                onPress={() => console.log('Pressed2')}
+                modifiers={[menuActionDismissBehavior('enabled')]}>
+                Always dismiss
+              </Button>
+            </ContextMenu.Items>
+            <ContextMenu.Trigger>
+              <Text color="accentColor">Show menu</Text>
+            </ContextMenu.Trigger>
           </ContextMenu>
         </Section>
         <Section title="SwiftUI Section and Divider Components">

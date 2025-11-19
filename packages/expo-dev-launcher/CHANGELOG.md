@@ -17,6 +17,7 @@
 - [iOS] Fix React Native dev menu not showing up in 0.83.x ([#40819](https://github.com/expo/expo/pull/40819) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix port scanning on pysical devices. ([#40824](https://github.com/expo/expo/pull/40824) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix RCTDevMenuConfiguration in release builds ([#40870](https://github.com/expo/expo/pull/40870) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix Safe Area being ignored on physical devices ([#41119](https://github.com/expo/expo/pull/41119) by [@betomoedano](https://github.com/betomoedano))
 
 ### 💡 Others
 

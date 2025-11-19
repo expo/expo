@@ -24,7 +24,7 @@ export interface VideoViewProps extends ViewProps {
   /**
    * A video player instance. Use [`useVideoPlayer()`](#usevideoplayersource-setup) hook to create one.
    */
-  player: VideoPlayer;
+  player?: VideoPlayer | null;
 
   /**
    * Determines whether native controls should be displayed or not.

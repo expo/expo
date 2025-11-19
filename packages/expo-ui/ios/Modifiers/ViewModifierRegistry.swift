@@ -474,6 +474,31 @@ internal struct ScrollDismissesKeyboardModifier: ViewModifier, Record {
   }
 }
 
+internal enum MenuActionDismissBehaviorMode: String, Enumerable {
+  case automatic
+  case disabled
+  case enabled
+}
+
+internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
+  @Field var behavior: MenuActionDismissBehaviorMode = .automatic
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.4, macOS 13.3, tvOS 17.0, *) {
+      switch behavior {
+      case .automatic:
+        content.menuActionDismissBehavior(.automatic)
+      case .disabled:
+        content.menuActionDismissBehavior(.disabled)
+      case .enabled:
+        content.menuActionDismissBehavior(.enabled)
+      }
+    } else {
+      content
+    }
+  }
+}
+
 internal struct AccessibilityLabelModifier: ViewModifier, Record {
   @Field var label: String?
 
@@ -1615,6 +1640,10 @@ extension ViewModifierRegistry {
 
     register("scrollDismissesKeyboard") { params, appContext, _ in
       return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
+    }
+
+    register("menuActionDismissBehavior") { params, appContext, _ in
+      return try MenuActionDismissBehaviorModifier(from: params, appContext: appContext)
     }
 
     register("headerProminence") { params, appContext, _ in

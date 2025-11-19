@@ -331,6 +331,31 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - Expo/Tests (54.0.8):
+    - ExpoModulesCore
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTAppDelegate
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactAppDependencyProvider
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - ExpoAgeRange (0.1.0):
     - ExpoModulesCore
   - ExpoAppIntegrity (0.1.7):
@@ -527,6 +552,9 @@ PODS:
     - ExpoModulesCore
   - ExpoPrint (15.0.7):
     - ExpoModulesCore
+  - ExpoRouter (6.0.6):
+    - ExpoModulesCore
+    - RNScreens
   - ExpoScreenCapture (8.0.8):
     - ExpoModulesCore
   - ExpoScreenOrientation (9.0.7):
@@ -3082,6 +3110,7 @@ DEPENDENCIES:
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
+  - Expo/Tests (from `../../../packages/expo`)
   - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
   - ExpoAppIntegrity (from `../../../packages/expo-app-integrity/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
@@ -3133,6 +3162,7 @@ DEPENDENCIES:
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
+  - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
@@ -3445,6 +3475,9 @@ EXTERNAL SOURCES:
   ExpoPrint:
     inhibit_warnings: false
     :path: "../../../packages/expo-print/ios"
+  ExpoRouter:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-router/ios"
   ExpoScreenCapture:
     inhibit_warnings: false
     :path: "../../../packages/expo-screen-capture/ios"
@@ -3705,7 +3738,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
-  Expo: 6a74d387f5fbbf568cfdb71dbf368184a4126ef5
+  Expo: 9d61298dd8bbd625b62dcd082485fe1692084242
   expo-dev-client: b0363ce1f16a248d7c9b67ceaee2dbee058c1e05
   expo-dev-launcher: 35e9018d1b3ccb29565aea2a529a7e35dd7e238e
   expo-dev-menu: ce35b2d8995fb1b0b8e068f5017f20acd47bbad3
@@ -3756,6 +3789,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   ExpoNetwork: 97073786edfe405aba5d0987a544617ed0671ad1
   ExpoPrint: ad836bb90da10793509651c0ea1f39e120db001e
+  ExpoRouter: 84268c2b41722697cb02cd6c377d588b4f71c9b5
   ExpoScreenCapture: 0c785ab7e1fa38943f04b16060d54ae8f886544a
   ExpoScreenOrientation: d762490d3d7857fbaddd61f418744f85f6458db1
   ExpoSecureStore: f44dee1354536bdb3d7fab8cc451ee737c41beca

@@ -41,6 +41,10 @@ You can pass the following parameters into the `params` list:
 | profile   | string | Optional. The build profile to use. Defaults to `production`.                                                 |
 | message   | string | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`. |
 
+#### Environment variables
+
+If you need certain environment variables during the build process, you can include them in your [eas.json](/eas/json/#environment), for your specified build `profile`. They will be pulled from [EAS environment variables](/eas/environment-variables/).
+
 #### Outputs
 
 You can reference the following outputs in subsequent jobs:
@@ -285,8 +289,14 @@ Calculates a fingerprint of your project.
 jobs:
   fingerprint:
     type: fingerprint
-    environment: production # Should match your build profile
+    environment: production | preview | development # optional, defaults to production
+    env: # optional list of environment variables
+      ENV_VAR_NAME: value
 ```
+
+#### Environment variables
+
+You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
 
 #### Outputs
 
@@ -681,6 +691,9 @@ To publish update previews and to send over-the-air updates, you'll need to run 
 jobs:
   publish_update:
     type: update
+    environment: production | preview | development # optional, defaults to production
+    env: # optional list of environment variables
+      ENV_VAR_NAME: value
     runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       message: string # optional
@@ -690,6 +703,10 @@ jobs:
       private_key_path: string # optional
       upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
 ```
+
+#### Environment variables
+
+You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
 
 #### Parameters
 
@@ -1566,6 +1583,22 @@ jobs:
       message: string # optional
       repack_version: string # optional
 ```
+
+### Common questions
+
+<Collapsible summary="When to use and when not to use repack?">
+
+Repack job is suitable for the following use cases:
+
+- Reducing CI build times by reusing existing builds
+- Trigging full native builds when required
+- Delivering faster feedback loops to your team
+
+Repack job is not suitable for the following use cases:
+
+- Production builds that require builds to go through the complete pipeline for correct symbolication and app signing
+
+</Collapsible>
 
 #### Parameters
 

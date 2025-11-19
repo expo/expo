@@ -45,7 +45,7 @@ final class ValueOrUndefinedSpec: ExpoSpec {
       let runtime = try! appContext.runtime
       
       beforeSuite {
-        appContext.moduleRegistry.register(moduleType: UndefinedSpecModule.self)
+        appContext.moduleRegistry.register(moduleType: UndefinedSpecModule.self, name: nil)
       }
       
       it("converts from undefined to ValueOrUndefinedSpec<Int>") {

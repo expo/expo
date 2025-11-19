@@ -71,11 +71,11 @@ The example code below calls `getAccessTokenAsync()` above to get the Oauth 2.0 
 async function sendFCMv1Notification() {
   const key = require(process.env.FCM_SERVER_KEY);
   const firebaseAccessToken = await getAccessTokenAsync(key);
-  const deviceToken = process.env.FCM_DEVICE_TOKEN;
+  const fcmToken = process.env.FCM_DEVICE_TOKEN;
 
   const messageBody = {
     message: {
-      token: deviceToken,
+      token: fcmToken,
       data: {
         channelId: 'default',
         message: 'Testing',

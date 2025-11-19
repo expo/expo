@@ -26,6 +26,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [core] [iOS] Addresses a potential crash where `[NSString UTF8String]` could return `nil` for certain string inputs (non-English), leading to an attempt to dereference a null pointer during `jsi::String` creation. ([#40639](https://github.com/expo/expo/pull/40639) by [@mohammadamin16](https://github.com/mohammadamin16))
 - [iOS] Fix `Either` conversion in `Record` ([#40655](https://github.com/expo/expo/pull/40655) by [@vonovak](https://github.com/vonovak))
 - [RSC] Fix server components asserting from missing native modules. ([#40388](https://github.com/expo/expo/pull/40388) by [@EvanBacon](https://github.com/EvanBacon))
@@ -194,6 +195,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [Android] Rework compose integration. ([#40653](https://github.com/expo/expo/pull/40653) by [@aleqsio](https://github.com/aleqsio))
 - Added support for expo modules written using TurboModules ([#36996](https://github.com/expo/expo/pull/36996) by [@acoates-ms](https://github.com/acoates-ms))
 - [Android] Add Array converter and handle nullable values. ([#37220](https://github.com/expo/expo/pull/37220) by [@jakex7](https://github.com/jakex7))
 - [Android] Support object arrays in type converters. ([#37276](https://github.com/expo/expo/pull/37276) by [@jakex7](https://github.com/jakex7))

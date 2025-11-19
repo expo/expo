@@ -5,135 +5,31 @@ import type { BottomTabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export type NativeScreenProps = Partial<Omit<BottomTabsScreenProps, 'tabKey' | 'isFocused'>>;
 export interface NativeTabOptions extends DefaultRouterOptions {
-    /**
-     * The icon to display in the tab bar.
-     * @platform android
-     * @platform iOS
-     */
     icon?: SymbolOrImageSource;
-    /**
-     * The icon to display when the tab is selected.
-     * @platform iOS
-     */
     selectedIcon?: SymbolOrImageSource;
-    /**
-     * Title of the tab screen, displayed in the tab bar item.
-     *
-     * @platform android
-     * @platform iOS
-     */
     title?: string;
-    /**
-     * Specifies content of tab bar item badge.
-     *
-     * On Android, the value is interpreted in the following order:
-     * - If the string can be parsed to integer, displays the value as a number
-     * - Otherwise if the string is empty, displays "small dot" badge
-     * - Otherwise, displays the value as a text
-     *
-     * On iOS, badge is displayed as regular string.
-     *
-     * @platform android
-     * @platform ios
-     */
     badgeValue?: string;
-    /**
-     * The style of the tab label when the tab is selected.
-     */
     selectedLabelStyle?: NativeTabsLabelStyle;
-    /**
-     * The style of all the tab labels, when the tab is selected
-     */
     labelStyle?: NativeTabsLabelStyle;
-    /**
-     * System-provided tab bar item with predefined icon and title
-     *
-     * Uses Apple's built-in tab bar items (e.g., bookmarks, contacts, downloads) with
-     * standard iOS styling and localized titles. If you override the `title`,
-     * `icon`, or `selectedIcon`, note that this is not officially supported
-     * by Apple and may lead to unexpected results.
-     *
-     * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem|UITabBarItem.SystemItem}
-     * @platform ios
-     */
     role?: NativeTabsTabBarItemRole;
-    /**
-     * The color of the icon when the tab is selected.
-     */
     selectedIconColor?: ColorValue;
-    /**
-     * The color of the badge when the tab is selected.
-     */
     selectedBadgeBackgroundColor?: ColorValue;
-    /**
-     * The color of all the badges when the tab is selected.
-     */
     badgeBackgroundColor?: ColorValue;
-    /**
-     * The color of the badge text.
-     *
-     * @platform android
-     * @platform web
-     */
     badgeTextColor?: ColorValue;
-    /**
-     * The color of the background when the tab is selected.
-     */
     backgroundColor?: ColorValue;
-    /**
-     * The blur effect to apply when the tab is selected.
-     *
-     * @platform iOS
-     */
     blurEffect?: NativeTabsBlurEffect;
-    /**
-     * The color of the shadow when the tab is selected.
-     *
-     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
-     *
-     * @platform iOS
-     */
     shadowColor?: ColorValue;
-    /**
-     * The color of the icon when the tab is selected.
-     *
-     * On iOS 26+ you can change the icon color in the scroll edge state.
-     */
     iconColor?: ColorValue;
-    /**
-     * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
-     *
-     * @platform iOS
-     */
     disableTransparentOnScrollEdge?: boolean;
-    /**
-     * The position adjustment for all the labels when the tab is selected.
-     *
-     * @platform iOS
-     */
     titlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
     };
-    /**
-     * The position adjustment for the label when the tab is selected.
-     *
-     * @platform iOS
-     */
     selectedTitlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
     };
-    /**
-     * The color of the tab indicator.
-     *
-     * @platform android
-     * @platform web
-     */
     indicatorColor?: ColorValue;
-    /**
-     * If true, the tab will be hidden from the tab bar.
-     */
     hidden?: boolean;
     specialEffects?: BottomTabsScreenProps['specialEffects'];
     nativeProps?: NativeScreenProps;
