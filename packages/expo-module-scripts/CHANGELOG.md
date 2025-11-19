@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix Windows compatibility by making `pipefail` conditional on OS type in prepare scripts. ([#40867](https://github.com/expo/expo/issues/40867) by [@Kamkmgamer](https://github.com/Kamkmgamer))
+- Fix Windows compatibility by making `pipefail` conditional on OS type in prepare scripts. ([#40867](https://github.com/expo/expo/issues/40867) by [@Kamkmgamer](https://github.com/Kamkmgamer)) ([#41122](https://github.com/expo/expo/pull/41122) by [@Kamkmgamer](https://github.com/Kamkmgamer))
 
 ### 💡 Others
 
