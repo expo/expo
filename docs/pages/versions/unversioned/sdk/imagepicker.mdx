@@ -163,7 +163,9 @@ export default function ImagePickerExample() {
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library.
-    // Permissions are required for videos on iOS when `allowsEditing` is `true`.
+    // Manually request permissions for videos on iOS when `allowsEditing` is set to `false`
+    // and `videoExportPreset` is `'Passthrough'` (the default), ideally before launching the picker
+    // so the app users aren't surprised by a system dialog after picking a video.
     // See "Invoke permissions for videos" sub section for more details.
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -233,9 +235,9 @@ When you run this example and pick an image, you will see the image that you pic
 
 ### Invoke permissions for videos <PlatformTags platforms={['ios']} />
 
-In SDK 54 and later, picking videos on iOS while `allowsEditing` is `true` or when [`videoExportPreset`](#videoexportpreset) is set to any other value than `Passthrough`, it won't trigger a permission request by default. However, there will be an increase in time for picker to open for large or newly recorded videos which haven't been processed internally by iOS.
+In SDk 54 and later, the default configuration keeps `allowsEditing` set to `false` and [`videoExportPreset`](#videoexportpreset) set to `'Passthrough'`. Those settings return the original asset (including HEIC/AVIF files) instantly because the picker skips compression, but iOS needs media library permission to hand over the original file and shows the dialog immediately after a user selects a video.
 
-We recommend requesting media library permissions either using [`requestMediaLibraryPermissionsAsync`](#imagepickerrequestmedialibrarypermissionsasyncwriteonly) or [`useMediaLibraryPermissions`](#usemedialibrarypermissionsoptions) before opening the picker for videos.
+To avoid showing permissions dialog after selection, **manually request media library permissions before opening the picker** via [`requestMediaLibraryPermissionsAsync`](#imagepickerrequestmedialibrarypermissionsasyncwriteonly) or [`useMediaLibraryPermissions`](#usemedialibrarypermissionsoptions).
 
 ### With AWS S3
 
