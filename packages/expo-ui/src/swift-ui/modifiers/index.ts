@@ -455,6 +455,16 @@ export const scrollDismissesKeyboard = (
 ) => createModifier('scrollDismissesKeyboard', { mode });
 
 /**
+ * Controls the dismissal behavior of menu actions.
+ * @param behavior - The menu action dismiss behavior.
+ * @platform ios 16.4+
+ * @platform tvos 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menuactiondismissbehavior(_:)).
+ */
+export const menuActionDismissBehavior = (behavior: 'automatic' | 'disabled' | 'enabled') =>
+  createModifier('menuActionDismissBehavior', { behavior });
+
+/**
  * Sets accessibility label for the view.
  * @param label - The accessibility label.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilitylabel(_:)).
@@ -839,6 +849,7 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof menuActionDismissBehavior>
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
