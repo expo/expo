@@ -1,7 +1,8 @@
-import { getSwiftFileTypeInformation } from './swiftSourcekittenTypegen/swiftSourcekittenTypeInformation';
-import * as os from 'os';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
+
+import { getSwiftFileTypeInformation } from './swiftSourcekittenTypegen/swiftSourcekittenTypeInformation';
 
 export type ParametrizedType = {
   name: TypeIdentifier;
@@ -66,6 +67,7 @@ export enum BasicType {
   BOOLEAN,
   VOID,
   UNDEFINED,
+  UNRESOLVED,
 }
 
 export type Type = {
