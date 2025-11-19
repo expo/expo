@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update to `glob@^12.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
 ## 0.13.11 - 2025-09-18
 
 _This version does not introduce any user-facing changes._
