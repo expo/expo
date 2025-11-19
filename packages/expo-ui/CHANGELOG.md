@@ -10,6 +10,8 @@
 
 - [iOS] Added `submitLabel` modifier to change the label of the keyboard submit button ([#40975](https://github.com/expo/expo/pull/40975) by [@tmallet](https://github.com/tmallet))
 
+- [iOS] Add `moveDisabled` and `deleteDisabled` modifiers ([#36590](https://github.com/expo/expo/pull/41070) by [@ramonfabrega](https://github.com/ramonfabrega))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `ContextMenu` item with subtitle buttons ([#40926](https://github.com/expo/expo/pull/40926) by [@nishan](https://github.com/intergalacticspacehighway))
