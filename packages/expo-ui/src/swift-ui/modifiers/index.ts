@@ -458,7 +458,7 @@ export const scrollDismissesKeyboard = (
  * Controls the dismissal behavior of menu actions.
  * @param behavior - The menu action dismiss behavior.
  * @platform ios 16.4+
- * @platform tvos 16.4+
+ * @platform tvos 17.0+
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menuactiondismissbehavior(_:)).
  */
 export const menuActionDismissBehavior = (behavior: 'automatic' | 'disabled' | 'enabled') =>

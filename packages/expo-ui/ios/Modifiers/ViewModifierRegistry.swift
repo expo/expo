@@ -484,7 +484,7 @@ internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
   @Field var mode: MenuActionDismissBehaviorMode = .automatic
 
   func body(content: Content) -> some View {
-    if #available(iOS 16.4, macOS 13.3, tvOS 16.4, *) {
+    if #available(iOS 16.4, macOS 13.3, tvOS 17.0, *) {
       switch mode {
       case .automatic:
         content.menuActionDismissBehavior(.automatic)
