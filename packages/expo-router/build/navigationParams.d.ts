@@ -1,3 +1,5 @@
+export declare const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = "__internal_expo_router_no_animation";
+export declare const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = "__internal__expo_router_is_preview_navigation";
 declare const internalExpoRouterParamNames: readonly ["__internal_expo_router_no_animation", "__internal__expo_router_is_preview_navigation"];
 export type InternalExpoRouterParamName = (typeof internalExpoRouterParamNames)[number];
 export type InternalExpoRouterParams = Partial<Record<InternalExpoRouterParamName, unknown>>;
