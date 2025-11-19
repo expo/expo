@@ -10,8 +10,8 @@ private class DevLauncherWrapperView: UIView {
   override func didMoveToWindow() {
     super.didMoveToWindow()
 
-    guard let devLauncherViewController = devLauncherViewController,
-      let window = window,
+    guard let devLauncherViewController,
+      let window,
       let rootViewController = window.rootViewController else {
       return
     }
