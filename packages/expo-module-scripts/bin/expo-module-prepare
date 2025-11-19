@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+# Skip pipefail on Windows bash environments (Git Bash, WSL, Cygwin)
+# to avoid compatibility issues when scripts are invoked by npx/npm
+if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
+  set -eo pipefail
+fi
 
 script_dir="$(dirname "$0")"
 
