@@ -24,6 +24,7 @@ const HomeIndex = () => {
       </View>
       <CaseLink href="/protected" text="Protected" />
       <CaseLink href="/1234" text="1234" />
+      <CaseLink href="/apple-files" text="Apple Files" />
     </ScrollView>
   );
 };

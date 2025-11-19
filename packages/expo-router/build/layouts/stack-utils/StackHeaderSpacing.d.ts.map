@@ -1,0 +1,1 @@
+{"version":3,"file":"StackHeaderSpacing.d.ts","sourceRoot":"","sources":["../../../src/layouts/stack-utils/StackHeaderSpacing.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,4BAA4B,EAAE,MAAM,gCAAgC,CAAC;AAEnF,MAAM,WAAW,uBAAuB;IACtC;;;;OAIG;IACH,KAAK,EAAE,MAAM,CAAC;CACf;AAED,wBAAgB,kBAAkB,CAAC,KAAK,EAAE,uBAAuB,QAEhE;AAED,wBAAgB,4CAA4C,CAC1D,KAAK,EAAE,uBAAuB,GAC7B,4BAA4B,CAK9B"}
