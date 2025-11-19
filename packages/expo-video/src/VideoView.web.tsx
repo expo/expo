@@ -161,9 +161,11 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   }
 
   function maybeSetupAudioContext() {
+    const userHasNotBeenActive = "userActivation" in navigator && !navigator.userActivation.hasBeenActive;
+
     if (
       !hasToSetupAudioContext.current ||
-      !navigator.userActivation.hasBeenActive ||
+      userHasNotBeenActive ||
       !videoRef.current ||
       !props.useAudioNodePlayback
     ) {
