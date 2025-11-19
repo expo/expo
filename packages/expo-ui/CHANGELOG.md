@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [iOS] - Add `menuActionDismissBehavior` modifier ([#41109](https://github.com/expo/expo/pull/41109) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `ContextMenu` item with subtitle buttons ([#40926](https://github.com/expo/expo/pull/40926) by [@nishan](https://github.com/intergalacticspacehighway))
