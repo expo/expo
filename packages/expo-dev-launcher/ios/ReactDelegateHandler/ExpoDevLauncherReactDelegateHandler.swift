@@ -4,6 +4,35 @@ import ExpoModulesCore
 import EXUpdatesInterface
 import React
 
+private class DevLauncherWrapperView: UIView {
+  weak var devLauncherViewController: UIViewController?
+
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+
+    guard let devLauncherViewController = devLauncherViewController,
+      let window = window,
+      let rootViewController = window.rootViewController else {
+      return
+    }
+
+    if devLauncherViewController.parent != rootViewController {
+      rootViewController.addChild(devLauncherViewController)
+      devLauncherViewController.didMove(toParent: rootViewController)
+      devLauncherViewController.view.setNeedsLayout()
+      devLauncherViewController.view.layoutIfNeeded()
+    }
+  }
+
+  override func willMove(toWindow newWindow: UIWindow?) {
+    super.willMove(toWindow: newWindow)
+    if newWindow == nil {
+      devLauncherViewController?.willMove(toParent: nil)
+      devLauncherViewController?.removeFromParent()
+    }
+  }
+}
+
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
   private weak var reactNativeFactory: RCTReactNativeFactory?
@@ -39,7 +68,8 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     rootViewController = viewController
 
     // We need to create a wrapper View because React Native Factory will reassign rootViewController later
-    let wrapperView = UIView()
+    let wrapperView = DevLauncherWrapperView()
+    wrapperView.devLauncherViewController = viewController
     wrapperView.addSubview(viewController.view)
     viewController.view.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
