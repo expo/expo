@@ -1,22 +1,15 @@
----
-title: Publish your web app
-sidebar_title: Deploy web apps
-description: Learn how to deploy your web app using EAS Hosting.
----
+name: Deploy web
 
-import { Terminal } from '~/ui/components/Snippet';
+on:
+  push:
+    branches: ['main']
 
-> **important** **EAS Hosting** is in preview and subject to changes.
-
-If you are building a universal app, you can quickly deploy your web app using [EAS Hosting](/eas/hosting/introduction/). It is a service for deploying web apps built with Expo Router and React.
-
-## Prerequisites
-
-Before you begin, in your project's **app.json** file, ensure that the [`expo.web.output`](/versions/latest/config/app/#output) property is either `static` or `server`.
-
-## Export your web project
-
-To deploy your web app, you need to create a static build of your web project. Export your web project into a **dist** directory by running the following command:
+jobs:
+  deploy_web:
+    name: Deploy web
+    type: deploy
+    params:
+      prod: true
 
 <Terminal cmd={['$ npx expo export --platform web']} />
 
