@@ -1,5 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
+import path from 'path';
 import { vol } from 'memfs';
 
 import * as Log from '../../../../log';
@@ -34,7 +35,9 @@ describe('getAdbExecutablePath', () => {
     vol.fromJSON({ '/Users/user/android/file': '' });
     process.env.ANDROID_HOME = '/Users/user/android';
     const adbPath = new ADBServer().getAdbExecutablePath();
-    expect(adbPath).toEqual('/Users/user/android/platform-tools/adb');
+    expect(adbPath).toEqual(
+      path.join('/Users/user/android', 'platform-tools', process.platform === 'win32' ? 'adb.exe' : 'adb')
+    );
   });
   it('warns if Android SDK is not found', () => {
     process.env.ANDROID_HOME = '/Users/user/android';

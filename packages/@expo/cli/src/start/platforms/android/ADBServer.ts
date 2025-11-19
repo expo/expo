@@ -1,5 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
+import path from 'path';
 
 import { assertSdkRoot } from './AndroidSdk';
 import { Log } from '../../../log';
@@ -24,7 +25,7 @@ export class ADBServer {
     try {
       const sdkRoot = assertSdkRoot();
       if (sdkRoot) {
-        return `${sdkRoot}/platform-tools/adb`;
+        return path.join(sdkRoot, 'platform-tools', process.platform === 'win32' ? 'adb.exe' : 'adb');
       }
     } catch (error: any) {
       Log.warn(error.message);
