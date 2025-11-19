@@ -1,6 +1,12 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Checkbox from 'expo-checkbox';
-import { GlassStyle, GlassView, GlassContainer } from 'expo-glass-effect';
+import {
+  GlassStyle,
+  GlassView,
+  GlassContainer,
+  isLiquidGlassAvailable,
+  isGlassEffectAPIAvailable,
+} from 'expo-glass-effect';
 import React from 'react';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -46,6 +52,12 @@ export default function GlassViewScreen() {
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
       <Text style={styles.title}>Glass Effect View (iOS 26+)</Text>
+      <Text style={styles.subtitle}>
+        Liquid Glass Available: {isLiquidGlassAvailable() ? 'Yes' : 'No'}
+      </Text>
+      <Text style={styles.subtitle}>
+        Glass Effect API Available: {isGlassEffectAPIAvailable() ? 'Yes' : 'No'}
+      </Text>
 
       <View style={styles.backgroundContainer}>
         <Image
@@ -287,5 +299,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 100,
+  },
+  subtitle: {
+    fontSize: 14,
+    lineHeight: 20,
   },
 });
