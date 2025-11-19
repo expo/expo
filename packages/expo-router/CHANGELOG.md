@@ -25,6 +25,7 @@
 - add safe area view to native tabs on Android ([#41295](https://github.com/expo/expo/pull/41295) by [@Ubax](https://github.com/Ubax))
 - [iOS] add bottom accessory support ([#41239](https://github.com/expo/expo/pull/41239) by [@Ubax](https://github.com/Ubax))
 - apply react-navigation background color to NativeTabsView ([#41068](https://github.com/expo/expo/pull/41068) by [@Ubax](https://github.com/Ubax))
+- [iOS] toolbar PoC ([#41106](https://github.com/expo/expo/pull/41106) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

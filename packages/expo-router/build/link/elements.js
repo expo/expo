@@ -38,6 +38,7 @@ exports.LinkMenu = void 0;
 exports.LinkMenuAction = LinkMenuAction;
 exports.LinkPreview = LinkPreview;
 exports.LinkTrigger = LinkTrigger;
+const non_secure_1 = require("nanoid/non-secure");
 const react_1 = __importStar(require("react"));
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
 const HrefPreview_1 = require("./preview/HrefPreview");
@@ -53,11 +54,12 @@ const Slot_1 = require("../ui/Slot");
  * @platform ios
  */
 function LinkMenuAction(props) {
+    const identifier = (0, react_1.useMemo)(() => (0, non_secure_1.nanoid)(), []);
     if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext)) {
         return null;
     }
     const { unstable_keepPresented, onPress, ...rest } = props;
-    return (<native_1.NativeLinkPreviewAction {...rest} onSelected={onPress} keepPresented={unstable_keepPresented}/>);
+    return (<native_1.NativeLinkPreviewAction {...rest} onSelected={onPress} keepPresented={unstable_keepPresented} identifier={identifier}/>);
 }
 /**
  * Groups context menu actions for a link.
@@ -78,11 +80,12 @@ function LinkMenuAction(props) {
  * @platform ios
  */
 const LinkMenu = (props) => {
+    const identifier = (0, react_1.useMemo)(() => (0, non_secure_1.nanoid)(), []);
     if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext)) {
         return null;
     }
     const children = react_1.default.Children.toArray(props.children).filter((child) => (0, react_1.isValidElement)(child) && (child.type === LinkMenuAction || child.type === exports.LinkMenu));
-    return (<native_1.NativeLinkPreviewAction {...props} title={props.title ?? ''} onSelected={() => { }} children={children}/>);
+    return (<native_1.NativeLinkPreviewAction {...props} title={props.title ?? ''} onSelected={() => { }} children={children} identifier={identifier}/>);
 };
 exports.LinkMenu = LinkMenu;
 /**
