@@ -182,7 +182,7 @@ When you run this example and pick an image, you will see the image that you pic
 
 ### Invoke permissions for videos <PlatformTags platforms={['ios']} />
 
-In SDK 54 and later, the default configuration keeps `allowsEditing` set to `false` and [`videoExportPreset`](#videoexportpreset) set to `'Passthrough'`. Those settings return the original asset (including HEIC/AVIF files) instantly because the picker skips compression, but iOS needs media library permission to hand over the original file and shows the dialog immediately after a user selects a video.
+In SDK 54 and later, the default configuration keeps `allowsEditing` set to `false` and [`videoExportPreset`](#videoexportpreset) set to `'Passthrough'`. These settings return the original asset (including HEIC and AVIF files) instantly because the picker skips compression, but iOS requires media library permission to access the original file and displays a permission dialog immediately after the user selects a video.
 
 To avoid showing permissions dialog after selection, **manually request media library permissions before opening the picker** via [`requestMediaLibraryPermissionsAsync`](#imagepickerrequestmedialibrarypermissionsasyncwriteonly) or [`useMediaLibraryPermissions`](#usemedialibrarypermissionsoptions).
 
