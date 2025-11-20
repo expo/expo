@@ -11,6 +11,7 @@ public class AudioModule: Module {
   private var interruptedPlayers = Set<String>()
   private var playerVolumes = [String: Float]()
   private var allowsRecording = false
+  private var allowsBackgroundRecording = false
   private var sessionOptions: AVAudioSession.CategoryOptions = []
 
   public func definition() -> ModuleDefinition {
@@ -67,12 +68,22 @@ public class AudioModule: Module {
       if !shouldPlayInBackground {
         pauseAllPlayers()
       }
+      #if os(iOS)
+      if !allowsBackgroundRecording {
+        pauseAllRecorders()
+      }
+      #endif
     }
 
     OnAppEntersForeground {
       if !shouldPlayInBackground {
         resumeAllPlayers()
       }
+      #if os(iOS)
+      if !allowsBackgroundRecording {
+        resumeAllRecorders()
+      }
+      #endif
     }
 
     // swiftlint:disable:next closure_body_length
@@ -465,6 +476,26 @@ public class AudioModule: Module {
     }
   }
 
+  private func pauseAllRecorders() {
+#if os(iOS)
+    registry.allRecorders.values.forEach { recorder in
+      if recorder.isRecording {
+        recorder.pauseRecording()
+      }
+    }
+#endif
+  }
+
+  private func resumeAllRecorders() {
+#if os(iOS)
+    registry.allRecorders.values.forEach { recorder in
+      if recorder.allowsRecording && !recorder.isRecording {
+        _ = try? recorder.startRecording()
+      }
+    }
+#endif
+  }
+
   private func recordingDirectory() throws -> URL {
     guard let cachesDir = appContext?.fileSystem?.cachesDirectory else {
       throw Exceptions.AppContextLost()
@@ -493,6 +524,7 @@ public class AudioModule: Module {
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
     self.allowsRecording = mode.allowsRecording
+    self.allowsBackgroundRecording = mode.allowsBackgroundRecording
 
     #if os(iOS)
     if !mode.allowsRecording {

@@ -483,6 +483,14 @@ export type AudioMode = {
    * @platform android
    */
   shouldRouteThroughEarpiece: boolean;
+  /**
+   * Whether audio recording should continue when the app moves to the background.
+   *
+   * @default false
+   * @platform ios
+   * @platform android
+   */
+  allowsBackgroundRecording?: boolean;
 };
 
 /**
