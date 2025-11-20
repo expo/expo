@@ -28,6 +28,14 @@ class Asset: SharedObject {
     return phAsset.pixelWidth
   }
 
+  func getShape() async throws -> Shape? {
+    let phAsset = try await requirePHAsset()
+    guard phAsset.pixelWidth > 0 && phAsset.pixelHeight > 0 else {
+      return nil
+    }
+    return Shape(width: phAsset.pixelWidth, height: phAsset.pixelHeight)
+  }
+
   func getDuration() async throws -> Int? {
     let phAsset = try await requirePHAsset()
     return phAsset.duration > 0 ? Int(phAsset.duration * 1000) : nil

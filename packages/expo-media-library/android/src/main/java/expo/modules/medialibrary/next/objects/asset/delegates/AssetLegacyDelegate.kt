@@ -31,6 +31,7 @@ import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
 import expo.modules.medialibrary.next.records.Location
+import expo.modules.medialibrary.next.records.Shape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -107,6 +108,12 @@ class AssetLegacyDelegate(
     val stringAssetUri = contentResolver.queryAssetPath(contentUri)
     BitmapFactory.decodeFile(stringAssetUri, options)
     return extract(options)
+  }
+
+  override suspend fun getShape(): Shape? {
+    val width = getWidth()
+    val height = getHeight()
+    return Shape(width, height).takeIf { width > 0 && height > 0 }
   }
 
   override suspend fun getMediaType(): MediaType =
