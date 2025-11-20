@@ -289,9 +289,6 @@ export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
     case TypeKind.BASIC:
       return mapBasicTypeToTsNode(type.type as BasicType);
     case TypeKind.IDENTIFIER:
-      if (type.type === 'unknown') {
-        return ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
-      }
       return ts.factory.createTypeReferenceNode(type.type as string);
     case TypeKind.SUM:
       return ts.factory.createUnionTypeNode((type.type as SumType).types.map(mapTypeToTsTypeNode));

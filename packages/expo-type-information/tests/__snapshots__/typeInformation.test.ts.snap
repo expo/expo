@@ -9,8 +9,8 @@ exports[`Same generated mock file 1`] = `
  *  */
 
 
-type UnresolvedType = any;
 type SomeParametrizedType<T0, T1> = any;
+type UnresolvedType = any;
 type URL = any;
 
 
@@ -43,7 +43,9 @@ enum TestEnum {
 
 
 export function SimpleFunction(a: number, b: number): number { return 0; }
-export function TestUntypedFunction(): UnresolvedType /*The type couldn't be resolved automatically.*/ { return; }
+export function TestUntypedFunction(): string { return ""; }
+export function TestUntypedFunction2(): TestEnum { return TestEnum.simpleCase; }
+export function TestUntypedFunction3(): TestRecord2 { return { field1: 0, field2: "" }; }
 export function TestArrays(a: number[]): string[][] { return []; }
 export function TestDictionaries(a: {
     [key: number]: string;
@@ -95,7 +97,9 @@ var TestEnum;
     TestEnum[TestEnum["caseWithArgs2"] = 4] = "caseWithArgs2";
 })(TestEnum || (TestEnum = {}));
 export function SimpleFunction(a, b) { return 0; }
-export function TestUntypedFunction() { return; }
+export function TestUntypedFunction() { return ""; }
+export function TestUntypedFunction2() { return TestEnum.simpleCase; }
+export function TestUntypedFunction3() { return { field1: 0, field2: "" }; }
 export function TestArrays(a) { return []; }
 export function TestDictionaries(a, b) { }
 export function TestParametrizedTypes(a) { return ""; }
@@ -126,8 +130,8 @@ exports[`Same generated module file 1`] = `
 
 import { NativeModule } from 'expo';
 
-type UnresolvedType = any;
 type SomeParametrizedType<T0, T1> = any;
+type UnresolvedType = any;
 type URL = any;
 
 type TestRecord = {
@@ -174,7 +178,9 @@ export declare class TestModule extends NativeModule {
   readonly IntConstant: number;
   readonly UntypedConstant: UnresolvedType /*The type couldn't be resolved automatically.*/;
   SimpleFunction(a: number, b: number): number;
-  TestUntypedFunction(): UnresolvedType /*The type couldn't be resolved automatically.*/;
+  TestUntypedFunction(): string;
+  TestUntypedFunction2(): TestEnum;
+  TestUntypedFunction3(): TestRecord2;
   TestArrays(a: number[]): string[][];
   TestDictionaries(
     a: {
@@ -220,8 +226,8 @@ import { SharedObject } from 'expo';
 
 import { ViewProps } from 'react-native';
 
-type UnresolvedType = any;
 type SomeParametrizedType<T0, T1> = any;
+type UnresolvedType = any;
 type URL = any;
 
 type ExpoWebViewProps = {
@@ -240,12 +246,12 @@ export default _default;
 exports[`Same type information 1`] = `
 {
   "declaredTypeIdentifiersList": [
+    "TestBasicClass",
+    "TestClassWithConstructor",
+    "TestEmptyClass",
     "TestEnum",
     "TestRecord",
     "TestRecord2",
-    "TestClassWithConstructor",
-    "TestBasicClass",
-    "TestEmptyClass",
   ],
   "enums": [
     {
@@ -469,6 +475,24 @@ exports[`Same type information 1`] = `
         {
           "arguments": [],
           "name": "TestUntypedFunction",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 6,
+          },
+        },
+        {
+          "arguments": [],
+          "name": "TestUntypedFunction2",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 6,
+          },
+        },
+        {
+          "arguments": [],
+          "name": "TestUntypedFunction3",
           "parameters": [],
           "returnType": {
             "kind": 0,
@@ -865,6 +889,22 @@ exports[`Same type information 1`] = `
   ],
   "typeIdentifierDefinitionList": [
     [
+      "TestEnum",
+      {
+        "definition": {
+          "cases": [
+            "simpleCase",
+            "multipleCases1",
+            "multipleCases2",
+            "caseWithArgs1",
+            "caseWithArgs2",
+          ],
+          "name": "TestEnum",
+        },
+        "kind": 1,
+      },
+    ],
+    [
       "TestRecord",
       {
         "definition": {
@@ -980,28 +1020,8 @@ exports[`Same type information 1`] = `
         "kind": 2,
       },
     ],
-    [
-      "TestEnum",
-      {
-        "definition": {
-          "cases": [
-            "simpleCase",
-            "multipleCases1",
-            "multipleCases2",
-            "caseWithArgs1",
-            "caseWithArgs2",
-          ],
-          "name": "TestEnum",
-        },
-        "kind": 1,
-      },
-    ],
   ],
   "typeParametersCountList": [
-    [
-      "SomeParametrizedType",
-      2,
-    ],
     [
       "Map",
       2,
@@ -1010,16 +1030,20 @@ exports[`Same type information 1`] = `
       "Set",
       1,
     ],
+    [
+      "SomeParametrizedType",
+      2,
+    ],
   ],
   "usedTypeIdentifiersList": [
-    "TestEnum",
-    "TestRecord2",
-    "UnresolvedType",
-    "SomeParametrizedType",
     "Map",
     "Set",
+    "SomeParametrizedType",
+    "TestEnum",
     "TestRecord",
+    "TestRecord2",
     "URL",
+    "UnresolvedType",
   ],
 }
 `;
