@@ -59,7 +59,7 @@
     "@types/node-forge": "^1.0.0",
     "@types/picomatch": "^4.0.0",
     "@vercel/ncc": "^0.38.3",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
     "memfs": "^3.2.0",
