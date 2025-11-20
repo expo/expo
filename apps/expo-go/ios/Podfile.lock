@@ -124,69 +124,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-menu/Tests (7.0.11):
-    - boost
-    - DoubleConversion
-    - ExpoModulesTestCore
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - Nimble
-    - Quick
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-CoreModules
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
-  - expo-dev-menu/UITests (7.0.11):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React
-    - React-Core
-    - React-CoreModules
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactAppDependencyProvider
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
   - ExpoAgeRange (0.1.0):
     - ExpoModulesCore
   - ExpoAppleAuthentication (8.0.7):
@@ -3979,8 +3916,6 @@ DEPENDENCIES:
   - Expo (from `../../../packages/expo`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
-  - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
-  - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
@@ -4761,6 +4696,6 @@ SPEC CHECKSUMS:
   Yoga: b5cdaf686877e00b5489198163ec055e52f4c4f9
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: f78d8dd94198a4b62622067ceee0907a72f0531d
+PODFILE CHECKSUM: 07505737255995812a4d57937f0b6ffc80088e51
 
 COCOAPODS: 1.16.2
