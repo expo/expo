@@ -12,7 +12,7 @@
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+    "test:e2e": "pnpm run prepare && expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch"
   },

@@ -14,11 +14,11 @@
     "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "yarn run clean && yarn run build",
+    "prepare": "pnpm run clean && pnpm run build",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
-    "watch": "yarn run build --watch --preserveWatchOutput"
+    "watch": "pnpm run build --watch --preserveWatchOutput"
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/%40expo/pkcs12#readme",
   "bugs": {
