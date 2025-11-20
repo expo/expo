@@ -11,7 +11,7 @@ import type {
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
-import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
+import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
@@ -190,7 +190,7 @@ export function createStableModuleIdFactory(
 export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
-): InputConfigT {
+): MetroConfig {
   const {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig,
@@ -273,12 +273,7 @@ export function getDefaultConfig(
     console.log();
   }
 
-  const {
-    // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
-    // This prints a giant React logo which is less accessible to users on smaller terminals.
-    reporter,
-    ...metroDefaultValues
-  } = getDefaultMetroConfig.getDefaultValues(projectRoot);
+  const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
   const cacheStore = new FileStore<any>({
     root: path.join(os.tmpdir(), 'metro-cache'),
@@ -289,7 +284,14 @@ export function getDefaultConfig(
   const routerPackageRoot = resolveFrom.silent(projectRoot, 'expo-router');
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
-  const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
+  const metroConfig: MetroConfig = mergeConfig(metroDefaultValues, {
+    reporter: {
+      // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
+      // This prints a giant React logo which is less accessible to users on smaller terminals.
+      update() {
+        /*noop*/
+      },
+    },
     watchFolders,
     resolver: {
       unstable_conditionsByPlatform: {
@@ -387,7 +389,6 @@ export function getDefaultConfig(
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       unstable_renameRequire: false,
-      // @ts-expect-error: not on type.
       _expoRouterPath: routerPackageRoot ? path.relative(serverRoot, routerPackageRoot) : undefined,
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg?.browserslist

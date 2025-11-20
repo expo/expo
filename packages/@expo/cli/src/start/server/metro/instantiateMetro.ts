@@ -7,7 +7,7 @@ import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrS
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { loadConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
+import { InputConfigT, loadConfig, mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import {
   createStableModuleIdFactory,
@@ -115,22 +115,23 @@ export async function loadMetroConfigAsync(
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
-  const hasConfig = await resolveConfig(options.config, projectRoot);
-  let config: ConfigT = {
-    ...(await loadConfig(
-      { cwd: projectRoot, projectRoot, ...options },
-      // If the project does not have a metro.config.js, then we use the default config.
-      hasConfig.isEmpty ? getDefaultConfig(projectRoot) : undefined
-    )),
+  const defaultConfig = getDefaultConfig(projectRoot);
+  const resolvedConfig = await resolveConfig(options.config, projectRoot);
+
+  const overrideConfig: InputConfigT = {
     reporter: {
-      update(event: any) {
-        terminalReporter.update(event);
-        if (reportEvent) {
-          reportEvent(event);
-        }
-      },
+        update(event: any) {
+          terminalReporter.update(event);
+          if (reportEvent) {
+            reportEvent(event);
+          }
+        },
     },
   };
+
+  let config: ConfigT = resolvedConfig.isEmpty
+    ? mergeConfig(defaultConfig, overrideConfig)
+    : await mergeConfig(defaultConfig, resolvedConfig.config, overrideConfig);
 
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 

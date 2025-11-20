@@ -183,10 +183,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log(`- Babel Runtime: ${babelRuntimeVersion}`);
         console.log();
     }
-    const { 
-    // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
-    // This prints a giant React logo which is less accessible to users on smaller terminals.
-    reporter, ...metroDefaultValues } = getDefaultMetroConfig.getDefaultValues(projectRoot);
+    const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
     const cacheStore = new file_store_1.FileStore({
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
@@ -195,6 +192,13 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
     // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
     const metroConfig = mergeConfig(metroDefaultValues, {
+        reporter: {
+            // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
+            // This prints a giant React logo which is less accessible to users on smaller terminals.
+            update() {
+                /*noop*/
+            },
+        },
         watchFolders,
         resolver: {
             unstable_conditionsByPlatform: {
@@ -287,7 +291,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             unstable_renameRequire: false,
-            // @ts-expect-error: not on type.
             _expoRouterPath: routerPackageRoot ? path_1.default.relative(serverRoot, routerPackageRoot) : undefined,
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
             browserslistHash: pkg?.browserslist
