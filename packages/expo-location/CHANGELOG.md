@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add option `androidForegroundServiceIcon` for controlling the icon for the foreground service.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
