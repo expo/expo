@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Add lineHeight to ensure symbols occupy correct square space. ([#41091](https://github.com/expo/expo/pull/41091) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 1.0.7 — 2025-09-11
