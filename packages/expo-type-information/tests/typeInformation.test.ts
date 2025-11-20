@@ -2,7 +2,11 @@ import { it, expect } from '@jest/globals';
 import * as fs from 'fs';
 
 import { generateTSMockForModule } from '../src/mockgen';
-import { getFileTypeInformation, getFileTypeInformationForString } from '../src/typeInformation';
+import {
+  getFileTypeInformation,
+  getFileTypeInformationForString,
+  serializeTypeInformation,
+} from '../src/typeInformation';
 import {
   getGeneratedModuleTypesFileContent,
   getGeneratedViewTypesFileContent,
@@ -11,7 +15,19 @@ import {
 const swiftFile = fs.realpathSync('./tests/TestModule.swift');
 
 it('Same type information', () => {
-  expect(getFileTypeInformation(swiftFile)).toMatchSnapshot();
+  expect(
+    serializeTypeInformation(
+      getFileTypeInformation(swiftFile) ?? {
+        usedTypeIdentifiers: new Set(),
+        declaredTypeIdentifiers: new Set(),
+        functions: [],
+        typeParametersCount: new Map(),
+        moduleClasses: [],
+        records: [],
+        enums: [],
+      }
+    )
+  ).toMatchSnapshot();
 });
 it('Same generated view file', async () => {
   const fileInfo = getFileTypeInformation(swiftFile);
@@ -49,19 +65,3 @@ it('Generation from string is the same as generation from file', async () => {
   );
   expect(fileInfo).toEqual(fileInfoForString);
 });
-
-// const swiftTest = `import ExpoModulesCore
-// import WebKit
-// struct TestRecord2: Record {
-//   @Field
-//   var field1: Int
-//   @Field
-//   var field2: String
-// }
-
-// enum TestEnum {
-//   case simpleCase
-//   case multipleCases1, multipleCases2
-//   case caseWithArgs1(Int, Double, String), caseWithArgs2(Double, String, Either<Int, String>)
-// }
-// `;

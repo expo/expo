@@ -239,14 +239,14 @@ export default _default;
 
 exports[`Same type information 1`] = `
 {
-  "declaredTypeIdentifiers": Set {
+  "declaredTypeIdentifiersList": [
     "TestEnum",
     "TestRecord",
     "TestRecord2",
     "TestClassWithConstructor",
     "TestBasicClass",
     "TestEmptyClass",
-  },
+  ],
   "enums": [
     {
       "cases": [
@@ -863,12 +863,21 @@ exports[`Same type information 1`] = `
       "name": "TestRecord2",
     },
   ],
-  "typeParametersCount": Map {
-    "SomeParametrizedType" => 2,
-    "Map" => 2,
-    "Set" => 1,
-  },
-  "usedTypeIdentifiers": Set {
+  "typeParametersCountList": [
+    [
+      "SomeParametrizedType",
+      2,
+    ],
+    [
+      "Map",
+      2,
+    ],
+    [
+      "Set",
+      1,
+    ],
+  ],
+  "usedTypeIdentifiersList": [
     "TestEnum",
     "TestRecord2",
     "UnresolvedType",
@@ -877,6 +886,6 @@ exports[`Same type information 1`] = `
     "Set",
     "TestRecord",
     "URL",
-  },
+  ],
 }
 `;
