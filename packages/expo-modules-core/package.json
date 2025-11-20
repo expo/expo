@@ -64,6 +64,6 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.2.0",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   }
 }
