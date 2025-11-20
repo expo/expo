@@ -44,8 +44,6 @@ target 'Expo Go' do
     exclude: [
       'expo-module-template',
       'expo-module-template-local',
-      'expo-dev-menu',
-      'expo-dev-menu-interface',
       'expo-dev-launcher',
       'expo-dev-client',
       'expo-maps',

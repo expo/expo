@@ -7,9 +7,7 @@
 #import "EXClientReleaseType.h"
 #import "EXKernelDevKeyCommands.h"
 
-#import "EXDevMenuManager.h"
-
-#import <React/RCTEventDispatcher.h>
+#import "EXDevMenu-Swift.h"
 
 NSString *const kEXLastFatalErrorDateDefaultsKey = @"EXKernelLastFatalErrorDateDefaultsKey";
 
@@ -100,7 +98,7 @@ NSString *const kEXLastFatalErrorDateDefaultsKey = @"EXKernelLastFatalErrorDateD
 - (void)requestToCloseDevMenu
 {
   void (^callback)(id) = ^(id arg){
-    [[EXDevMenuManager sharedInstance] closeWithoutAnimation];
+    [DevMenuManager.shared hideMenu];
   };
   [self dispatchJSEvent:@"requestToCloseDevMenu" body:nil onSuccess:callback onFailure:callback];
 }
@@ -180,7 +178,7 @@ RCT_EXPORT_METHOD(reloadAppAsync)
  */
 RCT_EXPORT_METHOD(closeDevMenuAsync)
 {
-  [[EXDevMenuManager sharedInstance] closeWithoutAnimation];
+  [DevMenuManager.shared hideMenu];
 }
 
 /**
@@ -207,11 +205,17 @@ RCT_REMAP_METHOD(getDevMenuSettingsAsync,
                  getDevMenuSettingsAsync:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  EXDevMenuManager *manager = [EXDevMenuManager sharedInstance];
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  BOOL motionGestureEnabled = [defaults objectForKey:@"EXDevMenuMotionGestureEnabled"]
+    ? [defaults boolForKey:@"EXDevMenuMotionGestureEnabled"]
+    : YES;
+  BOOL touchGestureEnabled = [defaults objectForKey:@"EXDevMenuTouchGestureEnabled"]
+    ? [defaults boolForKey:@"EXDevMenuTouchGestureEnabled"]
+    : YES;
 
   resolve(@{
-    @"motionGestureEnabled": @(manager.interceptMotionGesture),
-    @"touchGestureEnabled": @(manager.interceptTouchGesture),
+    @"motionGestureEnabled": @(motionGestureEnabled),
+    @"touchGestureEnabled": @(touchGestureEnabled),
   });
 }
 
@@ -221,13 +225,13 @@ RCT_REMAP_METHOD(setDevMenuSettingAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  EXDevMenuManager *manager = [EXDevMenuManager sharedInstance];
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
   if ([key isEqualToString:@"motionGestureEnabled"]) {
-    manager.interceptMotionGesture = [value boolValue];
+    [defaults setBool:[value boolValue] forKey:@"EXDevMenuMotionGestureEnabled"];
     return resolve(nil);
   } else if ([key isEqualToString:@"touchGestureEnabled"]) {
-    manager.interceptTouchGesture = [value boolValue];
+    [defaults setBool:[value boolValue] forKey:@"EXDevMenuTouchGestureEnabled"];
     return resolve(nil);
   } else {
     return reject(@"ERR_DEV_MENU_SETTING_NOT_EXISTS", @"Specified dev menu setting doesn't exist.", nil);
