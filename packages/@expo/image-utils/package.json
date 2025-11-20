@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.0.0",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "sharp-cli": "^5.2.0"
   },
   "publishConfig": {

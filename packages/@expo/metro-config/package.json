@@ -68,7 +68,7 @@
     "@jridgewell/trace-mapping": "^0.3.20",
     "@types/babel__core": "^7.20.5",
     "dedent": "^1.5.3",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "sass": "^1.60.0"
   },
   "publishConfig": {

@@ -26,7 +26,7 @@
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
     "npm-run-all2": "^8.0.4",
     "react": "19.2.0",

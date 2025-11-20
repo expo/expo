@@ -35,7 +35,8 @@
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "@types/base64-js": "^1.2.5",
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/apple-authentication/",
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

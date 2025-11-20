@@ -34,10 +34,10 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "devDependencies": {
-    "@expo/package-manager": "^1.9.8",
+    "@expo/package-manager": "workspace:*",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "terminal-link": "^2.1.1",
     "update-check": "^1.5.4"
   }
