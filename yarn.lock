@@ -4927,11 +4927,6 @@
     anymatch "^3.0.0"
     source-map "^0.6.0"
 
-"@types/wrap-ansi@^8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@types/wrap-ansi/-/wrap-ansi-8.0.1.tgz#59dc91b83a2e949971da8617592d9eaaf6592774"
-  integrity sha512-cjwgM6WWy9YakrQ36Pq0vg5XoNblVEaNq+/pHngKl4GyyDIxTeskPoG+tp4LsRk0lHrA4LaLJqlvYridi7mzlw==
-
 "@types/ws@^8.0.0", "@types/ws@^8.5.4":
   version "8.5.4"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.4.tgz#bb10e36116d6e570dd943735f86c933c1587b8a5"
