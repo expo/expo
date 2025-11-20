@@ -46,9 +46,12 @@ suspend fun ContentResolver.queryAssetMediaStoreItem(
   // Attempting to get a duration from an image may result in an exception on older Android versions
   val includeDuration = MediaType.fromContentUri(contentUri) != MediaType.IMAGE
   val projection = AssetMediaStoreProperty.projection(includeDuration)
-  safeQuery(contentUri, projection, null, null)?.use { cursor ->
-    return@withContext if (cursor.moveToFirst()) {
-      cursor.buildAssetMediaStoreItem(includeDuration)
+  val cursor = safeQuery(contentUri, projection, null, null)
+    ?: return@withContext null
+
+  return@withContext cursor.use {
+    if (it.moveToFirst()) {
+      it.buildAssetMediaStoreItem(includeDuration)
     } else {
       null
     }

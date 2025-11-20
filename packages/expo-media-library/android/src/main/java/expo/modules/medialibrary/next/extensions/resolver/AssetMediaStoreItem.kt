@@ -25,7 +25,16 @@ class AssetMediaStoreItemBuilder {
   private var bucketId: String? = null
 
   fun build(): AssetMediaStoreItem {
-    return AssetMediaStoreItem(displayName, height, width, dateTaken, dateModified, duration, data, bucketId)
+    return AssetMediaStoreItem(
+      displayName = displayName,
+      height = height,
+      width = width,
+      dateTaken = dateTaken,
+      dateModified = dateModified,
+      duration = duration,
+      data = data,
+      bucketId = bucketId
+    )
   }
 
   fun Cursor.set(property: AssetMediaStoreProperty) {
