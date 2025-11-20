@@ -95,6 +95,8 @@ const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
   '@react-native/assets-registry/registry': 'ignore-dev',
 };
 
+const REGEXP_REPLACE_SLASHES = /\\/g;
+
 /**
  * Checks whether the package has valid dependency chains for each (external) import.
  *
@@ -229,6 +231,7 @@ async function getSourceFilesAsync(pkg: Package, type: PackageCheckType): Promis
 
   return files
     .filter((filePath) => !filePath.endsWith('.d.ts'))
+    .map((filePath) => toPosixPath(filePath))
     .map((filePath) =>
       filePath.includes('/__tests__/') || filePath.includes('/__mocks__/')
         ? { path: filePath, type: 'test' }
@@ -374,4 +377,11 @@ function createTypescriptCompiler() {
   }
 
   return compiler;
+}
+
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+function toPosixPath(filePath: string): string {
+  return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
 }
