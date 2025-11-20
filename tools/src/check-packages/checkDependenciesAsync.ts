@@ -321,7 +321,7 @@ function createTypescriptImportRef(
   importText: string,
   importTypeOnly = false
 ): SourceFileImportRef {
-  const importValue = importText.replace(/['"]/g, '');
+  const importValue = importText.replace(/['"]/g, '').trim();
 
   if (isBuiltin(importValue)) {
     return { type: 'builtIn', importValue, packageName: importValue, isTypeOnly: importTypeOnly };
