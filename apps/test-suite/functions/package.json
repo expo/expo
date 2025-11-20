@@ -2,9 +2,9 @@
   "name": "functions",
   "scripts": {
     "build": "tsc",
-    "serve": "yarn build && firebase serve --only functions",
-    "shell": "yarn build && firebase functions:shell",
-    "start": "yarn shell",
+    "serve": "pnpm build && firebase serve --only functions",
+    "shell": "pnpm build && firebase functions:shell",
+    "start": "pnpm shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },

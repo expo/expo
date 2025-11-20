@@ -39,7 +39,7 @@
     "directory": "packages/default-storage-backend"
   },
   "scripts": {
-    "prepack": "yarn build",
+    "prepack": "pnpm build",
     "build": "bob build",
     "start": "(cd example && react-native start)",
     "test:lint": "eslint $(git ls-files '*.js' '*.ts' '*.tsx')",

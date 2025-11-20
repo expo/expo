@@ -16,7 +16,7 @@
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "test:e2e-cli": "yarn run prepare && expo-module test --config e2e-cli/jest.config.js"
+    "test:e2e-cli": "pnpm run prepare && expo-module test --config e2e-cli/jest.config.js"
   },
   "keywords": [
     "react-native",

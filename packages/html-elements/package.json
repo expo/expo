@@ -9,7 +9,7 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "yarn test:babel && yarn test:src",
+    "test": "pnpm run test:babel && pnpm run test:src",
     "test:src": "expo-module test",
     "test:babel": "jest --config babel/jest.config.js",
     "prepare": "expo-module prepare",
