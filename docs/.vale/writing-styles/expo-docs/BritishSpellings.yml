@@ -1,6 +1,6 @@
 extends: substitution
 message: "Use American English spelling '%s' instead of British English '%s'."
-level: error
+level: warning
 ignorecase: true
 action:
   name: replace
