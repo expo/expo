@@ -13,6 +13,7 @@ import {
   Field,
   FileTypeInformation,
   FunctionDeclaration,
+  IdentifierKind,
   ModuleClassDeclaration,
   ParametrizedType,
   PropDeclaration,
@@ -20,6 +21,7 @@ import {
   SumType,
   Type,
   TypeIdentifier,
+  TypeIdentifierDefinitionMap,
   TypeKind,
   ViewDeclaration,
 } from '../typeInformation';
@@ -48,6 +50,27 @@ function findRootColonInDictionary(type: string) {
     }
   }
   return colonIndex;
+}
+
+function getTypeIdentifierDefinitionMap(
+  fileTypeInformation: FileTypeInformation
+): Map<
+  string,
+  { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
+> {
+  const typeIdentifierDefinitionMap = new Map<
+    string,
+    { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
+  >([]);
+
+  fileTypeInformation.records.forEach((r) =>
+    typeIdentifierDefinitionMap.set(r.name, { kind: IdentifierKind.RECORD, definition: r })
+  );
+  fileTypeInformation.enums.forEach((e) =>
+    typeIdentifierDefinitionMap.set(e.name, { kind: IdentifierKind.ENUM, definition: e })
+  );
+
+  return typeIdentifierDefinitionMap;
 }
 
 function unwrapSwiftDictionary(type: string) {
@@ -690,6 +713,7 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
   const moduleTypeIdentifiers: Set<string> = new Set<string>();
   const declaredTypeIdentifiers: Set<string> = new Set<string>();
   const recordTypeIdentifiers: Set<string> = new Set<string>();
+  const typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap = new Map();
 
   const enums: EnumType[] = enumsStructures.map(parseEnumStructure);
   const recordMap = (rd: Structure) =>
@@ -704,6 +728,7 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
     usedTypeIdentifiers: moduleTypeIdentifiers.union(recordTypeIdentifiers),
     declaredTypeIdentifiers,
     typeParametersCount,
+    typeIdentifierDefinitionMap,
   };
 
   enums.forEach(({ name }) => {
@@ -721,6 +746,9 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
     moduleClasses.push(moduleClassDeclaration);
     collectModuleTypeIdentifiers(moduleClassDeclaration, fileTypeInformation);
   }
+
+  fileTypeInformation.typeIdentifierDefinitionMap =
+    getTypeIdentifierDefinitionMap(fileTypeInformation);
 
   return fileTypeInformation;
 }
