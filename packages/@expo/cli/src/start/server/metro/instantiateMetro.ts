@@ -7,7 +7,7 @@ import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrS
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { InputConfigT, loadConfig, mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
+import { mergeConfig, resolveConfig, type InputConfigT, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import {
   createStableModuleIdFactory,
@@ -120,12 +120,12 @@ export async function loadMetroConfigAsync(
 
   const overrideConfig: InputConfigT = {
     reporter: {
-        update(event: any) {
-          terminalReporter.update(event);
-          if (reportEvent) {
-            reportEvent(event);
-          }
-        },
+      update(event) {
+        terminalReporter.update(event);
+        if (reportEvent) {
+          reportEvent(event);
+        }
+      },
     },
   };
 
