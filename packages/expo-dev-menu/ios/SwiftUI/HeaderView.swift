@@ -1,20 +1,13 @@
 import SwiftUI
 
-func loadAppIcon(from path: String) -> UIImage? {
-  if let url = URL(string: path), url.isFileURL {
-    return UIImage(contentsOfFile: url.path)
-  }
-  return nil
-}
-
 struct HeaderView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
+  @State private var appIcon: UIImage? = nil
 
   var body: some View {
     HStack(spacing: 12) {
-      if let iconPath = viewModel.appInfo?.appIcon,
-        let image = loadAppIcon(from: iconPath) {
-        Image(uiImage: image)
+      if let icon = appIcon {
+        Image(uiImage: icon)
           .resizable()
           .scaledToFit()
           .frame(width: 38, height: 38)
@@ -43,7 +36,35 @@ struct HeaderView: View {
         }
       }
     }
+    .onChange(of: viewModel.appInfo?.appIcon) { newIconPath in
+      Task {
+        await loadIcon(from: newIconPath)
+      }
+    }
+    .task {
+      await loadIcon(from: viewModel.appInfo?.appIcon)
+    }
     .padding()
+  }
+
+  private func loadIcon(from path: String?) async {
+    guard let path, let url = URL(string: path) else {
+      appIcon = nil
+      return
+    }
+
+    if url.isFileURL {
+      appIcon = UIImage(contentsOfFile: url.path)
+    } else {
+      do {
+        let (data, _) = try await URLSession.shared.data(from: url)
+        if let loadedImage = UIImage(data: data) {
+          appIcon = loadedImage
+        }
+      } catch {
+        appIcon = nil
+      }
+    }
   }
 
   private var versionInfo: some View {

@@ -77,16 +77,31 @@ open class DevMenuManager: NSObject {
       updateAutoLaunchObserver()
 
       if let currentBridge {
-        disableRNDevMenuHoykeys(for: currentBridge)
+        DispatchQueue.main.async {
+          self.disableRNDevMenuHoykeys(for: currentBridge)
+        }
       }
     }
   }
 
-  @objc
-  public private(set) var currentManifest: Manifest?
+  private let manifestSubject = PassthroughSubject<Void, Never>()
+  public var manifestPublisher: AnyPublisher<Void, Never> {
+    manifestSubject.eraseToAnyPublisher()
+  }
 
   @objc
-  public private(set) var currentManifestURL: URL?
+  public private(set) var currentManifest: Manifest? {
+    didSet {
+      manifestSubject.send()
+    }
+  }
+
+  @objc
+  public private(set) var currentManifestURL: URL? {
+    didSet {
+      manifestSubject.send()
+    }
+  }
 
   @objc
   public func setDelegate(_ delegate: DevMenuHostDelegate?) {
@@ -255,8 +270,12 @@ open class DevMenuManager: NSObject {
       return
     }
 
-    let eventDispatcher = bridge.moduleRegistry.module(forName: "EventDispatcher") as? RCTEventDispatcher
-    eventDispatcher?.sendDeviceEvent(withName: eventName, body: data)
+    if let eventDispatcher = bridge.moduleRegistry.module(forName: "EventDispatcher") as? NSObject {
+      let selector = NSSelectorFromString("sendDeviceEventWithName:body:")
+      if eventDispatcher.responds(to: selector) {
+        eventDispatcher.perform(selector, with: eventName, with: data)
+      }
+    }
   }
 
   /**

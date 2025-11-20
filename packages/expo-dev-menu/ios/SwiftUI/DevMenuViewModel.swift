@@ -20,6 +20,7 @@ class DevMenuViewModel: ObservableObject {
     loadData()
     checkOnboardingStatus()
     observeRegisteredCallbacks()
+    observeManifestChanges()
   }
 
   private func loadData() {
@@ -178,5 +179,14 @@ class DevMenuViewModel: ObservableObject {
       .map { $0.map { $0.name } }
       .receive(on: DispatchQueue.main)
       .assign(to: &$registeredCallbacks)
+  }
+
+  private func observeManifestChanges() {
+    devMenuManager.manifestPublisher
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in
+        self?.loadAppInfo()
+      }
+      .store(in: &cancellables)
   }
 }
