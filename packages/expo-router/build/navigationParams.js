@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = void 0;
 exports.appendInternalExpoRouterParams = appendInternalExpoRouterParams;
 exports.getInternalExpoRouterParams = getInternalExpoRouterParams;
+exports.removeParams = removeParams;
 exports.removeInternalExpoRouterParams = removeInternalExpoRouterParams;
 exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
 exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = '__internal__expo_router_is_preview_navigation';
@@ -51,18 +52,24 @@ function getInternalExpoRouterParams(_params) {
     }
     return expoParams;
 }
+function removeParams(params, paramName) {
+    if (!params) {
+        return undefined;
+    }
+    const nestedParams = 'params' in params && typeof params.params === 'object' && params.params
+        ? params.params
+        : undefined;
+    const newNestedParams = nestedParams ? removeParams(nestedParams, paramName) : undefined;
+    const newParams = Object.fromEntries(Object.entries(params).filter(([key]) => !paramName.includes(key) && key !== 'params'));
+    if (Object.keys(newNestedParams ?? {}).length > 0) {
+        return { ...newParams, params: newNestedParams };
+    }
+    return newParams;
+}
 function removeInternalExpoRouterParams(params) {
     if (!params) {
         return undefined;
     }
-    const newNestedParams = 'params' in params && typeof params.params === 'object' && params.params
-        ? Object.fromEntries(Object.entries(params.params).filter(([key]) => !internalExpoRouterParamNames.includes(key)))
-        : {};
-    const newParams = Object.fromEntries(Object.entries(params).filter(([key]) => !internalExpoRouterParamNames.includes(key) &&
-        key !== 'params'));
-    if (Object.keys(newNestedParams).length > 0) {
-        return { ...newParams, params: newNestedParams };
-    }
-    return newParams;
+    return removeParams(params, [...internalExpoRouterParamNames, 'params']);
 }
 //# sourceMappingURL=navigationParams.js.map
