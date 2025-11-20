@@ -1,6 +1,8 @@
 const JsonFile = require('@expo/json-file');
 const path = require('path');
 
+const { toPosixPath } = require('../filePath');
+
 /**
  * Convert typescript paths to jest module mapping.
  *
@@ -46,7 +48,7 @@ function convertTypescriptMatchToJestRegex(match) {
 /** Convert a typescript match rule value to jest regex target */
 function convertTypescriptTargetToJestTarget(target, prefix = '<rootDir>') {
   const segments = target.split('/').map((segment) => (segment.trim() === '*' ? '$1' : segment));
-  return [prefix, ...segments].join('/');
+  return toPosixPath([prefix, ...segments].join('/'));
 }
 
 function mutateJestMappingFromConfig(jestConfig, configFile) {
