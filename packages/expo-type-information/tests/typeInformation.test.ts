@@ -20,8 +20,9 @@ it('Same type information', () => {
       getFileTypeInformation(swiftFile) ?? {
         usedTypeIdentifiers: new Set(),
         declaredTypeIdentifiers: new Set(),
-        functions: [],
         typeParametersCount: new Map(),
+        typeIdentifierDefinitionMap: new Map(),
+        functions: [],
         moduleClasses: [],
         records: [],
         enums: [],

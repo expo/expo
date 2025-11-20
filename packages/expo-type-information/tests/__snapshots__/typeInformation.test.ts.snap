@@ -863,6 +863,140 @@ exports[`Same type information 1`] = `
       "name": "TestRecord2",
     },
   ],
+  "typeIdentifierDefinitionList": [
+    [
+      "TestRecord",
+      {
+        "definition": {
+          "fields": [
+            {
+              "name": "basicString",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+            {
+              "name": "basicStringInitialized",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+            {
+              "name": "basicIntInferred",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+            {
+              "name": "basicDoubleInferred",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+            {
+              "name": "basicStringInferred",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+            {
+              "name": "enumInferred",
+              "type": {
+                "kind": 1,
+                "type": "TestEnum",
+              },
+            },
+            {
+              "name": "complexEnumInferred",
+              "type": {
+                "kind": 1,
+                "type": "TestEnum",
+              },
+            },
+            {
+              "name": "recordInferred",
+              "type": {
+                "kind": 1,
+                "type": "TestRecord2",
+              },
+            },
+            {
+              "name": "optionalInt",
+              "type": {
+                "kind": 4,
+                "type": {
+                  "kind": 0,
+                  "type": 2,
+                },
+              },
+            },
+            {
+              "name": "letDoubleBinding",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+            {
+              "name": "fieldWithoutAnnotation",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+          ],
+          "name": "TestRecord",
+        },
+        "kind": 2,
+      },
+    ],
+    [
+      "TestRecord2",
+      {
+        "definition": {
+          "fields": [
+            {
+              "name": "field1",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+            {
+              "name": "field2",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+          ],
+          "name": "TestRecord2",
+        },
+        "kind": 2,
+      },
+    ],
+    [
+      "TestEnum",
+      {
+        "definition": {
+          "cases": [
+            "simpleCase",
+            "multipleCases1",
+            "multipleCases2",
+            "caseWithArgs1",
+            "caseWithArgs2",
+          ],
+          "name": "TestEnum",
+        },
+        "kind": 1,
+      },
+    ],
+  ],
   "typeParametersCountList": [
     [
       "SomeParametrizedType",

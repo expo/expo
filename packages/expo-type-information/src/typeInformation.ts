@@ -4,6 +4,13 @@ import * as path from 'path';
 
 import { getSwiftFileTypeInformation } from './swiftSourcekittenTypegen/swiftSourcekittenTypeInformation';
 
+export enum IdentifierKind {
+  BASIC,
+  ENUM,
+  RECORD,
+  CLASS,
+}
+
 export type ParametrizedType = {
   name: TypeIdentifier;
   types: Type[];
@@ -126,10 +133,20 @@ export type ModuleClassDeclaration = {
   events: EventDeclaration[];
 };
 
+export type TypeIdentifierDefinitionMap = Map<
+  string,
+  { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
+>;
+export type TypeIdentifierDefinitionList = [
+  string,
+  { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration },
+][];
+
 export type FileTypeInformation = {
   usedTypeIdentifiers: Set<string>;
   declaredTypeIdentifiers: Set<string>;
   typeParametersCount: Map<string, number>;
+  typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap;
   functions: FunctionDeclaration[];
   moduleClasses: ModuleClassDeclaration[];
   records: RecordType[];
@@ -140,6 +157,7 @@ export type FileTypeInformationSerialized = {
   usedTypeIdentifiersList: string[];
   declaredTypeIdentifiersList: string[];
   typeParametersCountList: [string, number][];
+  typeIdentifierDefinitionList: TypeIdentifierDefinitionList;
   functions: FunctionDeclaration[];
   moduleClasses: ModuleClassDeclaration[];
   records: RecordType[];
@@ -150,6 +168,7 @@ export function serializeTypeInformation({
   usedTypeIdentifiers,
   declaredTypeIdentifiers,
   typeParametersCount,
+  typeIdentifierDefinitionMap,
   functions,
   moduleClasses,
   records,
@@ -158,8 +177,9 @@ export function serializeTypeInformation({
   return {
     usedTypeIdentifiersList: [...usedTypeIdentifiers.keys()],
     declaredTypeIdentifiersList: [...declaredTypeIdentifiers.keys()],
-    functions,
     typeParametersCountList: [...typeParametersCount.entries()],
+    typeIdentifierDefinitionList: [...typeIdentifierDefinitionMap.entries()],
+    functions,
     moduleClasses,
     records,
     enums,
@@ -170,6 +190,7 @@ export function deserializeTypeInformation({
   usedTypeIdentifiersList,
   declaredTypeIdentifiersList,
   typeParametersCountList,
+  typeIdentifierDefinitionList,
   functions,
   moduleClasses,
   records,
@@ -179,6 +200,7 @@ export function deserializeTypeInformation({
     usedTypeIdentifiers: new Set<string>(usedTypeIdentifiersList),
     declaredTypeIdentifiers: new Set<string>(declaredTypeIdentifiersList),
     typeParametersCount: new Map<string, number>(typeParametersCountList),
+    typeIdentifierDefinitionMap: new Map(typeIdentifierDefinitionList),
     functions,
     moduleClasses,
     records,
