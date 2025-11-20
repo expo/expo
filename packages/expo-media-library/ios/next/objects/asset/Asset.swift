@@ -98,6 +98,20 @@ class Asset: SharedObject {
     return try await UriExtractor.extract(from: phAsset).absoluteString
   }
 
+  func getInfo() async throws -> AssetInfo {
+    return await AssetInfo(
+      id: id,
+      creationTime: try getCreationTime(),
+      duration: try getDuration(),
+      uri: try getUri(),
+      filename: try getFilename(),
+      height: try getHeight(),
+      width: try getWidth(),
+      mediaType: try getMediaType(),
+      modificationTime: try getModificationTime()
+    )
+  }
+
   func delete() async throws {
     let assetToDelete = try await requirePHAsset()
     try await AssetRepository.shared.delete(by: [assetToDelete])

@@ -6,6 +6,7 @@ import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
+import expo.modules.medialibrary.next.records.AssetInfo
 import expo.modules.medialibrary.next.records.Location
 import expo.modules.medialibrary.next.records.Shape
 
@@ -20,6 +21,7 @@ interface AssetDelegate {
   suspend fun getMediaType(): MediaType
   suspend fun getModificationTime(): Long?
   suspend fun getUri(): Uri
+  suspend fun getInfo(): AssetInfo
   suspend fun getMimeType(): MimeType
   suspend fun getLocation(): Location?
   suspend fun getExif(): Bundle
