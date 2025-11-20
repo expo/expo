@@ -7,26 +7,13 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && patch-package && node ./tools/bin/expotools.js validate-workspace-dependencies",
+    "postinstall": "pnpm --filter @expo/cli prepare && patch-package",
     "install:react-native-lab": "(([ \"$(ls -A react-native-lab/react-native)\" ] && (yarn --cwd react-native-lab/react-native install --frozen-lockfile || true)) || echo \"Skipping installing Node modules in react-native-lab/react-native (directory empty)\")",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },
-  "workspaces": {
-    "packages": [
-      "apps/*",
-      "packages/*",
-      "packages/@expo/*"
-    ]
-  },
   "resolutions": {
     "@expo/metro": "~54.1.0",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "@types/babel__core": "^7.20.5",
-    "@types/babel__generator": "^7.27.0",
-    "@types/babel__template": "^7.4.4",
-    "@types/babel__traverse": "^7.20.7",
     "@react-navigation/bottom-tabs": "7.7.3",
     "@react-navigation/core": "7.13.2",
     "@react-navigation/drawer": "7.7.2",
@@ -35,7 +22,13 @@
     "@react-navigation/native-stack": "7.8.0",
     "@react-navigation/routers": "7.5.1",
     "@react-navigation/stack": "7.6.7",
-    "**/util": "~0.12.4"
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__template": "^7.4.4",
+    "@types/babel__traverse": "^7.20.7",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "util": "~0.12.4"
   },
   "dependencies": {
     "eslint": "^8.57.1",
