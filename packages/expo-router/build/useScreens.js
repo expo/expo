@@ -47,6 +47,7 @@ const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
+const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
@@ -200,6 +201,11 @@ function getQualifiedRouteComponent(value) {
         }
         (0, react_1.useEffect)(() => navigation.addListener('focus', () => {
             const state = navigation.getState();
+            // When navigating to a screen, remove the no animation param to re-enable animations
+            // Otherwise the navigation back would also have no animation
+            if ((0, navigationParams_1.hasParam)(route?.params, navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+                navigation.replaceParams((0, navigationParams_1.removeParams)(route?.params, [navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]));
+            }
             const isLeaf = !('state' in state.routes[state.index]);
             // Because setFocusedState caches the route info, this call will only trigger rerenders
             // if the component itself didn’t rerender and the route info changed.

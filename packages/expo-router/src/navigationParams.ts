@@ -60,6 +60,19 @@ export function getInternalExpoRouterParams(
   return expoParams;
 }
 
+export function hasParam(params: unknown, paramName: string): boolean {
+  if (!!params && typeof params === 'object') {
+    const recordParams = params as Record<string, unknown>;
+    if (recordParams[paramName] !== undefined) {
+      return true;
+    }
+    if (recordParams.params && typeof recordParams.params === 'object') {
+      return hasParam(recordParams.params, paramName);
+    }
+  }
+  return false;
+}
+
 export function removeParams(
   params: Record<string, unknown> | object | undefined,
   paramName: readonly string[]
