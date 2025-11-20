@@ -25,12 +25,12 @@
   ],
   "scripts": {
     "build": "expo-module tsc",
-    "prepare": "yarn run clean && yarn run build",
+    "prepare": "pnpm run clean && pnpm run build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "yarn run build --watch --preserveWatchOutput",
+    "watch": "pnpm run build --watch --preserveWatchOutput",
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "engines": {

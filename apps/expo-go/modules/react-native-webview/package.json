@@ -18,15 +18,15 @@
     "macos": "react-native run-macos --scheme WebviewExample --project-path example/macos",
     "start": "react-native start",
     "windows": "install-windows-test-app --project-directory example/windows && react-native run-windows --root example --arch x64",
-    "ci": "CI=true && yarn lint",
-    "ci:publish": "yarn semantic-release",
-    "lint": "yarn tsc --noEmit && yarn eslint ./src --ext .ts,.tsx,.js,.jsx",
+    "ci": "CI=true && pnpm lint",
+    "ci:publish": "pnpm semantic-release",
+    "lint": "pnpm tsc --noEmit && pnpm eslint ./src --ext .ts,.tsx,.js,.jsx",
     "build": "babel --extensions \".ts,.tsx\" --out-dir lib src",
     "prepare:types": "tsc --noEmit false --emitDeclarationOnly --declaration --rootDir src --outDir lib",
-    "prepare": "yarn prepare:types && yarn build",
+    "prepare": "pnpm prepare:types && pnpm build",
     "appium": "appium",
-    "test:windows": "yarn jest --setupFiles=./jest-setups/jest.setup.js",
-    "add:macos": "yarn add react-native-macos@0.73.17"
+    "test:windows": "pnpm jest --setupFiles=./jest-setups/jest.setup.js",
+    "add:macos": "pnpm add react-native-macos@0.73.17"
   },
   "rn-docs": {
     "title": "Webview",
