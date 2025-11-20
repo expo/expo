@@ -30,10 +30,10 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "yarn run clean && yarn run build:prod",
+    "prepare": "pnpm run clean && pnpm run build:prod",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
-    "watch": "yarn run build --watch",
+    "watch": "pnpm run build --watch",
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {

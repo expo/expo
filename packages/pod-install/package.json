@@ -8,10 +8,10 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build:prod",
+    "prepare": "expo-module clean && pnpm run build:prod",
     "prepublishOnly": "expo-module prepublishOnly",
     "typecheck": "expo-module typecheck",
-    "watch": "yarn run build --watch"
+    "watch": "pnpm run build --watch"
   },
   "bin": "./build/index.js",
   "files": [
