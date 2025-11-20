@@ -112,17 +112,17 @@ Start by creating a **provider** directory for writing the provider plugin in Ty
 ### Create a `provider/src/index.ts` file for your plugin
 
 ```ts provider/src/index.ts
-import { BuildCacheProviderPlugin } from '@expo/config';
+import { type BuildCacheProviderPlugin } from '@expo/config';
 
-const plugin: BuildCacheProviderPlugin {
-  resolveBuildCache: () => {
-    console.log('Searching for remote builds...')
+const plugin: BuildCacheProviderPlugin = {
+  resolveBuildCache: async () => {
+    console.log('Searching for remote builds...');
     return null;
   },
-  uploadBuildCache: () => {
-    console.log('Uploading build to remote...')
+  uploadBuildCache: async () => {
+    console.log('Uploading build to remote...');
     return null;
-  },,
+  },
 };
 
 export default plugin;
