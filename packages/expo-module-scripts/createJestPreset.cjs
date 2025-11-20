@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { resolveWorkspaceRoot } = require('resolve-workspace-root');
 
-export default function (basePreset) {
+module.exports = function createJestPreset(basePreset) {
   // Explicitly catch and log errors since Jest sometimes suppresses error messages
   try {
     return _createJestPreset(basePreset);
@@ -73,7 +73,7 @@ function _createJestPreset(basePreset) {
       ...basePreset.transform,
     },
     // Add the React 19 workaround
-    setupFiles: [...basePreset.setupFiles, require.resolve('./jest-setup-react-19.js')],
+    setupFiles: [...basePreset.setupFiles, require.resolve('./jest-setup-react-19.cjs')],
   };
 }
 

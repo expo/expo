@@ -1,3 +1,4 @@
+/*global crypto*/
 import getRandomValues from './getRandomValues';
 class Crypto {
     getRandomValues(values) {

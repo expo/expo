@@ -1,9 +1,5 @@
-import { createRequire } from 'module';
-
-const require = createRequire(import.meta.url);
-
 /** @type {import('jest').Config} */
-export default {
+module.exports = {
   testEnvironment: 'node',
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
   transform: {

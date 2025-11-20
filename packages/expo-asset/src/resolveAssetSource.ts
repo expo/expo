@@ -10,12 +10,12 @@ export function setCustomSourceTransformer(
   _customSourceTransformer = transformer;
 }
 
-type ResolveAssetSource = {
+interface resolveAssetSource {
   (source: any): ResolvedAssetSource | null;
   setCustomSourceTransformer(
     transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource
   ): ResolvedAssetSource;
-};
+}
 
 /**
  * `source` is either a number (opaque type returned by require('./foo.png'))
@@ -49,6 +49,6 @@ Object.defineProperty(resolveAssetSource, 'setCustomSourceTransformer', {
   },
 });
 
-export default resolveAssetSource as ResolveAssetSource;
+export default resolveAssetSource as resolveAssetSource;
 
 export const { pickScale } = AssetSourceResolver;

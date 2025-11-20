@@ -14,16 +14,14 @@ const fakeManifest = {
 
 let old__DEV__: boolean;
 
-// __DEV__ is usually not assignable, but we need to set it to false for this test
 beforeAll(() => {
   old__DEV__ = __DEV__;
-  // eslint-disable-next-line no-global-assign
+  //@ts-expect-error: __DEV__ is usually not assignable but we need to set it to false for this test
   __DEV__ = false;
 });
 
-// __DEV__ is usually not assignable, but we need to set it to false for this test
 afterAll(() => {
-  // eslint-disable-next-line no-global-assign
+  //@ts-expect-error: __DEV__ is usually not assignable but we need to set it to false for this test
   __DEV__ = old__DEV__;
 });
 

@@ -1,12 +1,8 @@
-import { createRequire } from 'module';
-
-const require = createRequire(import.meta.url);
-
 const { withWatchPlugins } = require('jest-expo/config');
 
-const createJestPreset = require('./createJestPreset');
+const createJestPreset = require('./createJestPreset.cjs');
 
-export default withWatchPlugins({
+module.exports = withWatchPlugins({
   projects: [
     createJestPreset(require('jest-expo/ios/jest-preset')),
     createJestPreset(require('jest-expo/android/jest-preset')),

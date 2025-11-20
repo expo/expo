@@ -1,4 +1,4 @@
-const createJestPreset = require('../createJestPreset');
+const createJestPreset = require('../createJestPreset.cjs');
 
 console.warn(
   'The Jest preset "expo-module-scripts/ios" is deprecated, please convert your tests to universal tests and use "expo-module-scripts" instead'

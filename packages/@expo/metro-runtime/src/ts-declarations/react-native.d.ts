@@ -9,7 +9,6 @@ declare module 'react-native/Libraries/Utilities/DevLoadingView' {
 }
 
 declare module 'react-native/Libraries/Core/ExceptionsManager' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   declare class SyntheticError extends Error {}
   const ExceptionsManager: {
     parseException(e: any, isFatal: boolean): void;
@@ -38,7 +37,6 @@ declare module 'react-native/Libraries/Core/Devtools/getDevServer' {
 }
 
 declare module 'react-native/Libraries/Core/Devtools/openFileInEditor' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function openFileInEditor(file: string, lineNumber: number): void;
   export default getDevServer;
 }

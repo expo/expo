@@ -1,4 +1,5 @@
 import { ConfigPlugin, withProjectBuildGradle } from '@expo/config-plugins';
+import { findGradlePluginCodeBlock } from '@expo/config-plugins/build/android/codeMod';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';

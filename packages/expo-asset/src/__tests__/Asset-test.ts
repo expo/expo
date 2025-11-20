@@ -246,16 +246,15 @@ if (Platform.OS === 'web') {
   });
 }
 
-// the type declaration marks __DEV__ as read-only
 describe('embedding', () => {
   beforeAll(() => {
-    // eslint-disable-next-line no-global-assign
+    // @ts-ignore: the type declaration marks __DEV__ as read-only
     __DEV__ = false;
   });
 
   afterAll(() => {
     jest.dontMock('expo-constants');
-    // eslint-disable-next-line no-global-assign
+    // @ts-ignore: the type declaration marks __DEV__ as read-only
     __DEV__ = true;
   });
 

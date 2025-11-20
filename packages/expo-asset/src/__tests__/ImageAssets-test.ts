@@ -1,3 +1,4 @@
+/* global Image:true */
 import { Platform } from 'expo-modules-core';
 
 import * as ImageAssets from '../ImageAssets';
@@ -25,6 +26,7 @@ describe('getImageInfoAsync', () => {
   let originalImage: any;
 
   beforeAll(() => {
+    // @ts-ignore
     originalImage = global.Image;
     globalThis.Image = jest.fn();
   });

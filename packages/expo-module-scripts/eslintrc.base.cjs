@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   root: true,
   extends: ['universe/native'],
   overrides: [
