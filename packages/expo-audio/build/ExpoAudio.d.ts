@@ -175,7 +175,7 @@ export declare function useAudioRecorderState(recorder: AudioRecorder, interval?
 /**
  * Creates an instance of an `AudioPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayer) hook instead.
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-options) hook instead.
  * > See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
  * @param source The audio source to load.
  * @param options Audio player configuration options.
