@@ -1,0 +1,21 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'packages/@expo/*'
+
+linkWorkspacePackages: deep
+preferWorkspacePackages: true
+
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+  - core-js
+  - esbuild
+  - fmerge
+  - protobufjs
+
+onlyBuiltDependencies:
+  - better-sqlite3
+  - fsevents
+  - sharp
+  - workerd
