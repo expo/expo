@@ -30,8 +30,8 @@
     "@babel/core": "^7.23.7",
     "@types/node": "^22.14.0",
     "@types/node-fetch": "^2.5.12",
-    "eslint-config-universe": "^15.0.3",
-    "expo-module-scripts": "^5.0.7",
+    "eslint-config-universe": "workspace:*",
+    "expo-module-scripts": "workspace:*",
     "typescript": "^5.9.2"
   },
   "dependencies": {

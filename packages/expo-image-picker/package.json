@@ -39,7 +39,7 @@
     "expo-image-loader": "~6.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "@testing-library/user-event": "^14.6.1"
   },
   "peerDependencies": {

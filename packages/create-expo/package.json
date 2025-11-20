@@ -37,9 +37,9 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config": "~12.0.9",
-    "@expo/json-file": "^10.0.7",
-    "@expo/package-manager": "^1.9.8",
+    "@expo/config": "workspace:*",
+    "@expo/json-file": "workspace:*",
+    "@expo/package-manager": "workspace:*",
     "@expo/spawn-async": "^1.7.2",
     "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",
@@ -51,7 +51,7 @@
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "nock": "^14.0.10",

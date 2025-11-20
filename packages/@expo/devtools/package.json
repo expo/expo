@@ -46,7 +46,7 @@
     "chalk": "^4.1.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "ws": "^8.18.0"
   },
   "peerDependencies": {

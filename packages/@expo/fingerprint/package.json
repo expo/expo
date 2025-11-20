@@ -56,7 +56,7 @@
     "semver": "^7.6.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"
   }
