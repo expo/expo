@@ -21,6 +21,14 @@ public class TestModule: Module {
       return "string"
     }
 
+    Function("TestUntypedFunction2") { () in
+      return TestEnum.simpleCase
+    }
+    
+    Function("TestUntypedFunction3") {
+      return TestRecord2(field1: 10, "field2")
+    }
+
     // Function("TestEither") { (a: Either<Either<Int, String>, Either<Float, Double>>) -> Either<String, Either<Int, Double>> in 
     //   return "test"
     // }

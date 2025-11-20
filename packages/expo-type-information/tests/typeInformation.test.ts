@@ -31,35 +31,35 @@ it('Same type information', () => {
   ).toMatchSnapshot();
 });
 it('Same generated view file', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile);
+  const fileInfo = getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(await getGeneratedViewTypesFileContent(swiftFile, fileInfo)).toMatchSnapshot();
   }
 });
 it('Same generated module file', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile);
+  const fileInfo = getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(await getGeneratedModuleTypesFileContent(swiftFile, fileInfo)).toMatchSnapshot();
   }
 });
 it('Same generated mock file', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile);
+  const fileInfo = getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(generateTSMockForModule(fileInfo.moduleClasses[0], fileInfo, true)).toMatchSnapshot();
   }
 });
 it('Same generated mock file JS', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile);
+  const fileInfo = getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(generateTSMockForModule(fileInfo.moduleClasses[0], fileInfo, false)).toMatchSnapshot();
   }
 });
 it('Generation from string is the same as generation from file', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile);
+  const fileInfo = getFileTypeInformation(swiftFile, true);
   const fileInfoForString = getFileTypeInformationForString(
     fs.readFileSync(swiftFile, 'utf8'),
     'swift'

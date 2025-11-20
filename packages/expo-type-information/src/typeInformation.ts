@@ -2,7 +2,10 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { getSwiftFileTypeInformation } from './swiftSourcekittenTypegen/swiftSourcekittenTypeInformation';
+import {
+  getSwiftFileTypeInformation,
+  preprocessSwiftFile,
+} from './swiftSourcekittenTypegen/swiftSourcekittenTypeInformation';
 
 export enum IdentifierKind {
   BASIC,
@@ -175,10 +178,10 @@ export function serializeTypeInformation({
   enums,
 }: FileTypeInformation): FileTypeInformationSerialized {
   return {
-    usedTypeIdentifiersList: [...usedTypeIdentifiers.keys()],
-    declaredTypeIdentifiersList: [...declaredTypeIdentifiers.keys()],
-    typeParametersCountList: [...typeParametersCount.entries()],
-    typeIdentifierDefinitionList: [...typeIdentifierDefinitionMap.entries()],
+    usedTypeIdentifiersList: [...usedTypeIdentifiers.keys()].sort(),
+    declaredTypeIdentifiersList: [...declaredTypeIdentifiers.keys()].sort(),
+    typeParametersCountList: [...typeParametersCount.entries()].sort(),
+    typeIdentifierDefinitionList: [...typeIdentifierDefinitionMap.entries()].sort(),
     functions,
     moduleClasses,
     records,
@@ -208,8 +211,14 @@ export function deserializeTypeInformation({
   };
 }
 
-export function getFileTypeInformation(absoluteFilePath: string): FileTypeInformation | null {
+export function getFileTypeInformation(
+  absoluteFilePath: string,
+  preprocessFile: boolean = false
+): FileTypeInformation | null {
   if (absoluteFilePath.endsWith('.swift')) {
+    if (preprocessFile) {
+      return getFileTypeInformationForString(fs.readFileSync(absoluteFilePath, 'utf-8'), 'swift');
+    }
     return getSwiftFileTypeInformation(absoluteFilePath);
   }
   return null;
@@ -222,7 +231,8 @@ export function getFileTypeInformationForString(
   if (language === 'swift') {
     const tmp = os.tmpdir();
     const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
-    fs.writeFileSync(filePath, content, 'utf8');
+    const preprocessedContent = preprocessSwiftFile(content);
+    fs.writeFileSync(filePath, preprocessedContent, 'utf8');
     const fileTypeInfo = getFileTypeInformation(filePath);
     fs.rmSync(filePath);
     return fileTypeInfo;

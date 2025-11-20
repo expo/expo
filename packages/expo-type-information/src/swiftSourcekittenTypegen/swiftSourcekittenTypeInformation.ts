@@ -289,18 +289,41 @@ function hasSubstructure(structureObject: Structure) {
   return structureObject?.['key.substructure'] && structureObject['key.substructure'].length > 0;
 }
 
-function parseClosureTypes(structureObject: Structure) {
-  const closure = structureObject['key.substructure']?.find(
+function findReturnType(structure: Structure, file: FileType): string | null {
+  if (
+    structure['key.kind'] === 'source.lang.swift.decl.var.local' &&
+    structure['key.name'].startsWith('returnValueDeclaration_')
+  ) {
+    return getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
+  }
+  if (structure['key.substructure']) {
+    for (const substructure of structure['key.substructure']) {
+      const returnType = findReturnType(substructure, file);
+      if (returnType) {
+        return returnType;
+      }
+    }
+  }
+  return null;
+}
+
+function parseClosureTypes(
+  structure: Structure,
+  file: FileType
+): { parameters: { name: string; typename: string }[]; returnType: string | null } {
+  const closure = structure['key.substructure']?.find(
     (s) => s['key.kind'] === 'source.lang.swift.expr.closure'
   );
   if (!closure) {
-    return null;
+    // Try finding the preprocessed return value, if not found we don't know the return type
+    const returnType = findReturnType(structure, file);
+    return { parameters: [], returnType };
   }
   const parameters = closure['key.substructure']
     ?.filter((s) => s['key.kind'] === 'source.lang.swift.decl.var.parameter')
     .map((p) => ({ name: p['key.name'], typename: p['key.typename'] }));
 
-  const returnType = closure?.['key.typename'];
+  const returnType = closure?.['key.typename'] ?? findReturnType(structure, file);
   return { parameters, returnType };
 }
 
@@ -365,9 +388,9 @@ function parseModuleConstructorDeclaration(
   // TODO rethink this maybe split based on what closure is expected
   // Maybe this should be the last substructure
   if (hasSubstructure(definitionParams[1])) {
-    types = parseClosureTypes(definitionParams[1]);
+    types = parseClosureTypes(definitionParams[1], file);
   } else if (hasSubstructure(definitionParams[0])) {
-    types = parseClosureTypes(definitionParams[0]);
+    types = parseClosureTypes(definitionParams[0], file);
   } else {
     // TODO REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
@@ -386,7 +409,7 @@ function parseModuleConstantSubstructure(
   const name = getIdentifierFromOffsetObject(definitionParams[0], file);
   let types = null;
   if (hasSubstructure(definitionParams[1])) {
-    types = parseClosureTypes(definitionParams[1]);
+    types = parseClosureTypes(definitionParams[1], file);
   } else {
     // TODO REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
@@ -394,7 +417,7 @@ function parseModuleConstantSubstructure(
 
   return {
     name,
-    type: mapSwiftTypeToTsType(types?.returnType),
+    type: mapSwiftTypeToTsType(types?.returnType ?? undefined),
   };
 }
 
@@ -442,7 +465,7 @@ function parseModuleFunctionSubstructure(
   const name = getIdentifierFromOffsetObject(definitionParams[0], file);
   let types = null;
   if (hasSubstructure(definitionParams[1])) {
-    types = parseClosureTypes(definitionParams[1]);
+    types = parseClosureTypes(definitionParams[1], file);
   } else {
     // TODO REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
@@ -450,7 +473,7 @@ function parseModuleFunctionSubstructure(
 
   return {
     name,
-    returnType: mapSwiftTypeToTsType(types?.returnType), // any or void ? Probably any
+    returnType: mapSwiftTypeToTsType(types?.returnType ?? undefined), // any or void ? Probably any
     parameters: [], // TODO Module function is not generic. I think so. Check it
     arguments: types?.parameters?.map(mapParameterToType) ?? [],
   };
@@ -463,7 +486,7 @@ function parseModulePropDeclaration(substructure: Structure, file: FileType): Pr
   const name = getIdentifierFromOffsetObject(definitionParams[0], file);
   let types = null;
   if (hasSubstructure(definitionParams[1])) {
-    types = parseClosureTypes(definitionParams[1]);
+    types = parseClosureTypes(definitionParams[1], file);
   } else {
     // TODO REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
@@ -751,4 +774,128 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
     getTypeIdentifierDefinitionMap(fileTypeInformation);
 
   return fileTypeInformation;
+}
+
+// Preprocessing to help sourcekitten functions
+// For now we create a new variable for each return statement,
+// we can find it's type easily with sourcekitten
+function removeComments(fileContent: string): string {
+  let multiLineComment = false;
+  let singleLineComment = false;
+  const newFileContent: string[] = [];
+  let start: number = 0;
+
+  for (let i = 0; i < fileContent.length; i += 1) {
+    const char = fileContent[i];
+    const nextChar = i + 1 < fileContent.length ? fileContent[i + 1] : null;
+    switch (char) {
+      case '/': {
+        if (nextChar === '/' && !multiLineComment) {
+          singleLineComment = true;
+          newFileContent.push(fileContent.substring(start, i));
+        } else if (nextChar === '*' && !singleLineComment) {
+          multiLineComment = true;
+          newFileContent.push(fileContent.substring(start, i));
+        }
+        break;
+      }
+      case '*': {
+        if (nextChar === '/' && multiLineComment) {
+          start = i + 2;
+          i += 1;
+          multiLineComment = false;
+        }
+        break;
+      }
+      case '\n': {
+        if (singleLineComment) {
+          singleLineComment = false;
+          start = i + 1;
+        }
+        break;
+      }
+    }
+  }
+  newFileContent.push(fileContent.substring(start, fileContent.length));
+  return newFileContent.join('');
+}
+
+function returnExpressionEnd(fileContent: string, returnIndex: number): number {
+  let inString = false;
+  let escaped = false;
+  let parenCount = 0;
+  let braceCount = 0;
+  // TODO figure out what also changes the typical end of expression
+
+  let i = returnIndex;
+  while (i < fileContent.length) {
+    const char = fileContent[i];
+    let escapedNow = false;
+    switch (char) {
+      case '(':
+        parenCount += 1;
+        break;
+      case ')':
+        parenCount -= 1;
+        break;
+      case '{':
+        braceCount += 1;
+        break;
+      case '}':
+        if (braceCount === 0) {
+          return i;
+        }
+        braceCount -= 1;
+        break;
+      case '"':
+        if (!escaped) {
+          inString = !inString;
+        }
+        break;
+      case ';':
+        return i;
+      case '\n':
+      case '\r':
+        if (!inString && parenCount === 0 && braceCount === 0) {
+          return i;
+        }
+        break;
+      case '\\':
+        escapedNow = true;
+    }
+    escaped = escapedNow;
+    i += 1;
+  }
+  return i;
+}
+
+export function preprocessSwiftFile(originalFileContent: string): string {
+  const newFileContent: string[] = [];
+  const fileContent = removeComments(originalFileContent);
+  const returnPositions: { start: number; end: number }[] = [];
+  let startPos = 0;
+  while (startPos < fileContent.length) {
+    const returnIndex = fileContent.indexOf('return ', startPos);
+    if (returnIndex < 0 || returnIndex >= fileContent.length) {
+      break;
+    }
+    returnPositions.push({
+      start: returnIndex,
+      end: returnExpressionEnd(fileContent, returnIndex),
+    });
+    startPos = returnIndex + 1;
+  }
+
+  let prevEnd = 0;
+
+  for (const { start, end } of returnPositions) {
+    newFileContent.push(fileContent.substring(prevEnd, start));
+    newFileContent.push(
+      `let returnValueDeclaration_${start}_${end} = ${fileContent.substring(start + 6, end)}\n`
+    );
+    newFileContent.push(`return returnValueDeclaration_${start}_${end}\n`);
+    prevEnd = end;
+  }
+  newFileContent.push(fileContent.substring(prevEnd, fileContent.length));
+  return newFileContent.join('');
 }
