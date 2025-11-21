@@ -1,68 +1,98 @@
 #!/usr/bin/env node
-'use strict';
 
+import { glob } from 'glob';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { commandRunner } from "../util/commandUtils.js";
 import { fileURLToPath } from 'node:url';
 
-export const dirname = path.dirname(fileURLToPath(import.meta.url));
+import { commandRunner } from '../utils/commandUtils.js';
+import { toPosixPath } from '../utils/fileUtils.js';
 
-const generateChecksum = (data) => {
-  return crypto
-    .createHash('md5')
-    .update(data, 'utf8')
-    .digest('hex');
-}
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const OPTIONAL_FILES = [
-  path.join('scripts', 'with-node.sh')
+// an optional template file will be synced only if the target file is present in the file system,
+// and its content contains the string `@generated`.
+const OPTIONAL_TEMPLATE_FILES = [
+  // add a relative file path from `templates/` for each new optional file
+  'eslint.config.js',
+  path.join('scripts', 'with-node.sh'),
 ];
 
-const readDirectory = (sourceDir, onFileRead, nestedDir = '') => {
-  const sourceFiles = fs.readdirSync(path.join(sourceDir, nestedDir));
-  return sourceFiles.map((file) => {
-    const fsPath = path.join(sourceDir, nestedDir, file);
-    const fsMeta = fs.lstatSync(fsPath);
-
-    if (fsMeta.isFile()) {
-      return onFileRead(fsPath, path.join(nestedDir, file));
-    } else if (fsMeta.isDirectory()) {
-      return readDirectory(sourceDir, onFileRead, file);
-    }
-  }).flat();
-}
-
-const run = async () => {
+async function runAsync() {
   await commandRunner(path.join(dirname, 'expo-module-readme'));
 
   const templatesDir = path.join(dirname, '..', 'templates');
-  const templateFiles = readDirectory(templatesDir, (fullPath, relativePath) => {
-    const data = fs.readFileSync(fullPath, { encoding: 'utf8' });
-    return {
-      path: fullPath,
-      relativePath,
-      checksum: generateChecksum(data)
-    }
+  const templateDirents = await glob('**/*', {
+    cwd: templatesDir,
+    withFileTypes: true,
   });
+  const templateFiles = templateDirents
+    .filter((dirent) => dirent.isFile())
+    .map((dirent) => path.relative(templatesDir, path.join(dirent.parentPath, dirent.name)));
 
-  templateFiles.forEach(targetFile => {
-    const sourcePath = path.join(process.cwd(), targetFile.relativePath);
-    if (fs.existsSync(sourcePath)) {
-      const data = fs.readFileSync(path.join(process.cwd(), targetFile.relativePath), { encoding: 'utf8' });
-      if (data.includes('@generated')) {
-        const checksum = generateChecksum(data);
-        if (targetFile.checksum !== checksum) {
-          fs.copyFileSync(targetFile.path, sourcePath);
-        }
+  await Promise.all(
+    templateFiles.map(async (templateFile) => {
+      if (OPTIONAL_TEMPLATE_FILES.includes(toPosixPath(templateFile))) {
+        await syncFileIfPresentAsync(
+          path.join(templatesDir, templateFile),
+          path.join(process.cwd(), templateFile)
+        );
+      } else {
+        await syncFileIfMissingAsync(
+          path.join(templatesDir, templateFile),
+          path.join(process.cwd(), templateFile)
+        );
       }
-    } else {
-      if (!OPTIONAL_FILES.includes(targetFile.relativePath)) {
-        fs.copyFileSync(targetFile.path, sourcePath);
-      }
-    }
-  })
+    })
+  );
 }
 
-run();
+(async () => {
+  try {
+    await runAsync();
+  } catch (error) {
+    console.error(error);
+    process.exit(error.status || error.code || 1);
+  }
+})();
+
+/**
+ * syncs the source file if the target file is missing or the existing file contains `@generated`.
+ */
+async function syncFileIfMissingAsync(sourcePath, targetPath) {
+  const shouldSync = !fs.existsSync(targetPath) || (await hasGeneratedMarkerAsync(targetPath));
+  if (shouldSync) {
+    await syncFileAsync(sourcePath, targetPath);
+  }
+}
+
+/**
+ * syncs the source file if the target file is present in the file system and its content contains `@generated`.
+ */
+async function syncFileIfPresentAsync(sourcePath, targetPath) {
+  const shouldSync = fs.existsSync(targetPath) && (await hasGeneratedMarkerAsync(targetPath));
+  if (shouldSync) {
+    await syncFileAsync(sourcePath, targetPath);
+  }
+}
+
+async function syncFileAsync(sourcePath, targetPath) {
+  // NOTE(kudo): the performance is definitely not as good as rsync, not sure if we should just copy the file anyway.
+  const sourceData = await fs.promises.readFile(sourcePath);
+  const sourceChecksum = crypto.createHash('md5').update(sourceData).digest('hex');
+  let targetChecksum = '';
+  if (fs.existsSync(targetPath)) {
+    const targetData = await fs.promises.readFile(targetPath);
+    targetChecksum = crypto.createHash('md5').update(targetData).digest('hex');
+  }
+
+  if (sourceChecksum !== targetChecksum) {
+    await fs.promises.cp(sourcePath, targetPath, { recursive: true, force: true });
+  }
+}
+
+async function hasGeneratedMarkerAsync(filePath) {
+  const data = await fs.promises.readFile(filePath, 'utf8');
+  return data.includes('@generated');
+}

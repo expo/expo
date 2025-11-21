@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-'use strict';
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { commandRunner, getArgs } from "../util/commandUtils.js";
 
-export const dirname = path.dirname(fileURLToPath(import.meta.url));
+import { commandRunner, getArgs } from '../utils/commandUtils.js';
 
-process.env.EXPO_NONINTERACTIVE = 1;
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-await commandRunner(path.join(dirname, 'expo-module-tsc'), ['--noEmit', ...getArgs()]);
+const args = getArgs({ maybeAddWatchFlag: true });
+
+await commandRunner(path.join(dirname, 'expo-module-tsc'), ['--noEmit', ...args]);

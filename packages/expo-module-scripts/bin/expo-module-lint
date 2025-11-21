@@ -1,20 +1,22 @@
 #!/usr/bin/env node
-'use strict';
 
 import path from 'node:path';
-import { commandRunner, getArgs } from "../util/commandUtils.js";
+import { commandRunner, getArgs } from '../utils/commandUtils.js';
 import { fileURLToPath } from 'node:url';
 
-export const dirname = path.dirname(fileURLToPath(import.meta.url));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const VALID_TARGETS = ["plugin", "cli", "utils", "scripts"];
+const EXTRA_MODULE_BUILD_TARGETS = ['plugin', 'cli', 'utils', 'scripts'];
 
 let args = getArgs();
 
-if (VALID_TARGETS.includes(args[0])) {
-  args = [`${args[0]}/src`, ...args.splice(1)];
+// If the command is used like `yarn lint plugin` then set the target to `plugin/src`
+if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
+  // Push the rest of the arguments minus the `plugin` arg
+  const target = args[0];
+  args = [...args.slice(1), `${target}/src`];
 } else {
-  args = ['src', ...args];
+  args = [...args, 'src'];
 }
 
 await commandRunner(path.join(dirname, 'expo-module-eslint'), args);

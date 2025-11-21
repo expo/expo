@@ -1,26 +1,35 @@
 #!/usr/bin/env node
-'use strict';
 
-import { commandRunner } from "../util/commandUtils.js";
-import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const dirname = path.dirname(fileURLToPath(import.meta.url));
+import { commandRunner } from '../utils/commandUtils.js';
+import { directoryExistsAsync } from '../utils/fileUtils.js';
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 process.env.EXPO_NONINTERACTIVE = 1;
 
-const run = async () => {
-  console.log('expo-module-scripts: Configuring module');
+async function runAsync() {
+  console.log('Configuring module');
   await commandRunner(path.join(dirname, 'expo-module-clean'));
   await commandRunner(path.join(dirname, 'expo-module-configure'));
   await commandRunner(path.join(dirname, 'expo-module-build'));
 
-  if (fs.existsSync(path.join(process.cwd(), 'plugin'))) {
-    console.log('expo-module-scripts: Configuring plugin');
-    await commandRunner(path.join(dirname, 'expo-module-clean'), ['plugin']);
-    await commandRunner(path.join(dirname, 'expo-module-build'), ['plugin']);
+  for (const target of ['plugin', 'cli', 'utils', 'scripts']) {
+    if (await directoryExistsAsync(path.join(process.cwd(), target))) {
+      console.log(`Configuring ${target}`);
+      await commandRunner(path.join(dirname, 'expo-module-clean'), [target]);
+      await commandRunner(path.join(dirname, 'expo-module-build'), [target]);
+    }
   }
 }
 
-run();
+(async () => {
+  try {
+    await runAsync();
+  } catch (error) {
+    console.error(error);
+    process.exit(error.status || error.code || 1);
+  }
+})();

@@ -22,21 +22,27 @@
       "require": "./eslint.config.base.cjs"
     },
     "./jest-preset-*": {
+      "import": "./jest-preset-*.cjs",
       "require": "./jest-preset-*.cjs"
     },
     "./jest-preset-*.js": {
+      "import": "./jest-preset-*.cjs",
       "require": "./jest-preset-*.cjs"
     },
     "./jest-preset": {
+      "import": "./jest-preset.cjs",
       "require": "./jest-preset.cjs"
     },
     "./jest-preset.js": {
+      "import": "./jest-preset.cjs",
       "require": "./jest-preset.cjs"
     },
     "./*/jest-preset": {
+      "import": "./*/jest-preset.cjs",
       "require": "./*/jest-preset.cjs"
     },
     "./*/jest-preset.js": {
+      "import": "./*/jest-preset.cjs",
       "require": "./*/jest-preset.cjs"
     },
     "./tsconfig.*": "./tsconfig.*.json",
@@ -70,6 +76,7 @@
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
     "@expo/npm-proofread": "^1.0.1",
+    "@expo/spawn-async": "^1.7.2",
     "@testing-library/react-native": "^13.2.0",
     "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.2.1",

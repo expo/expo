@@ -1,31 +1,36 @@
 #!/usr/bin/env node
-'use strict';
 
-import { commandRunner, getArgs } from "../util/commandUtils.js";
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const dirname = path.dirname(fileURLToPath(import.meta.url));
+import { commandRunner, getArgs, addWatchFlagIfNeeded } from '../utils/commandUtils.js';
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+
+const EXTRA_MODULE_BUILD_TARGETS = ['plugin', 'cli', 'utils', 'scripts'];
 
 let args = getArgs();
 
-if (args[0] === 'plugin') {
-  const pluginDir = path.join(process.cwd(), 'plugin');
-  const configPath = path.join(pluginDir, 'jest.config.js');
-  if (fs.existsSync(configPath)) {
-    args = ['--rootDir', pluginDir, '--config', configPath, ...args.splice(1)]
+// If the command is used like `yarn test plugin`, set the --rootDir option to the `plugin` directory
+if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
+  const target = args[0];
+  const targetDir = path.join(process.cwd(), target);
+  const restArgs = args.slice(1);
+  args = ['--rootDir', target];
+
+  if (fs.existsSync(path.join(targetDir, 'jest.config.js'))) {
+    args.push('--config', `${target}/jest.config.js`);
   } else {
-    args = ['--rootDir', pluginDir, ...args.splice(1)]
+    const jestConfigPath = require.resolve(`expo-module-scripts/jest-preset-${target}.js`);
+    args.push('--config', jestConfigPath);
   }
+  // Push the rest of the arguments minus the `plugin` arg
+  args.push(...restArgs);
 }
 
-if (
-  process.stdout.isTTY &&
-  !process.env.CI &&
-  !process.env.EXPO_NONINTERACTIVE
-) {
-  args.push('--watch')
-}
+args = addWatchFlagIfNeeded(args);
 
-await commandRunner(path.join(process.cwd(), 'expo-module-jest'), args);
+await commandRunner(path.join(dirname, 'expo-module-jest'), args);

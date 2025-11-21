@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-'use strict';
 
 import { globSync } from 'glob';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const dirname = path.dirname(fileURLToPath(import.meta.url));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function replaceAll(current, replacement, content) {
   const regexp = new RegExp(escapeRegExp('${' + current + '}'), 'g');
@@ -62,9 +61,10 @@ function generateREADME() {
 
   if (isIOS) {
     const podspecs = globSync('{ios/**/,}*.podspec');
-    if (!podspecs[0]) throw new Error(
-      `The Expo module named "${packageName}" contains an "ios" directory but does not define a Podspec, which is required for modules with iOS implementations.`
-    );
+    if (!podspecs[0])
+      throw new Error(
+        `The Expo module named "${packageName}" contains an "ios" directory but does not define a Podspec, which is required for modules with iOS implementations.`
+      );
     const podspecPath = podspecs[0];
     const podName = (() => {
       const parts = podspecPath.split('/');

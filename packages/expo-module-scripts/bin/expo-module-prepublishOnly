@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-'use strict';
 
-import { commandRunner } from "../util/commandUtils.js";
+import { packageManagerExecAsync } from '../utils/commandUtils.js';
 
 process.env.EXPO_NONINTERACTIVE = 1;
 
-await commandRunner('yarn', ['proofread'], true);
+await packageManagerExecAsync(['proofread']);

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-'use strict';
 
-import { commandRunner, getArgs } from "../util/commandUtils.js";
+import { getArgs, packageManagerExecAsync } from '../utils/commandUtils.js';
 
-await commandRunner('yarn', ['jest', ...getArgs()]);
+await packageManagerExecAsync(['jest', ...getArgs()]);

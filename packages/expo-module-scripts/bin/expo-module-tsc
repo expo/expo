@@ -1,16 +1,7 @@
 #!/usr/bin/env node
-'use strict';
 
-import { commandRunner, getArgs } from "../util/commandUtils.js";
+import { getArgs, packageManagerExecAsync } from '../utils/commandUtils.js';
 
 const args = getArgs();
 
-if (
-  process.stdout.isTTY &&
-  !process.env.CI &&
-  !process.env.EXPO_NONINTERACTIVE
-) {
-  args.push('--watch')
-}
-
-await commandRunner('yarn', ['tsc', ...args], true);
+await packageManagerExecAsync(['tsc', ...args]);
