@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, createRef, type PropsWithChildren, useRef, useCallback } from 'react';
+import { useEffect, useState, type PropsWithChildren, useRef, useCallback } from 'react';
 
 import { InlineHelp } from 'ui/components/InlineHelp';
 import { PageHeader } from 'ui/components/PageHeader';
@@ -10,7 +10,9 @@ import { appendSectionToRoute, isRouteActive } from '~/common/routes';
 import { versionToText } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationHead from '~/components/DocumentationHead';
-import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
+import DocumentationNestedScrollLayout, {
+  DocumentationNestedScrollLayoutHandles,
+} from '~/components/DocumentationNestedScrollLayout';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
@@ -52,7 +54,7 @@ export default function DocumentationPage({
   const { version } = usePageApiVersion();
   const router = useRouter();
 
-  const layoutRef = createRef<DocumentationNestedScrollLayout>();
+  const layoutRef = useRef<DocumentationNestedScrollLayoutHandles | null>(null);
   const tableOfContentsRef = useRef<TableOfContentsHandles>(null);
 
   const pathname = router?.pathname ?? '/';
@@ -291,7 +293,7 @@ export default function DocumentationPage({
   return (
     <>
       <DocumentationNestedScrollLayout
-        ref={layoutRef}
+        layoutRef={layoutRef}
         header={headerElement}
         sidebar={sidebarElement}
         sidebarRight={<TableOfContentsWithManager ref={tableOfContentsRef} />}

@@ -19,7 +19,7 @@ import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
 import { isVersionedPath } from '~/common/routes';
 import { prefersReducedMotion } from '~/common/window';
 import { HeadingManagerProps, HeadingsContext } from '~/common/withHeadingManager';
-import { ScrollContainer } from '~/components/ScrollContainer';
+import { type ScrollContainerHandle } from '~/components/ScrollContainer';
 import { CALLOUT } from '~/ui/components/Text';
 
 import { TableOfContentsLink } from './TableOfContentsLink';
@@ -30,8 +30,8 @@ const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
 
 export type TableOfContentsProps = PropsWithChildren<{
   maxNestingDepth?: number;
-  selfRef?: RefObject<ScrollContainer | null>;
-  contentRef?: RefObject<ScrollContainer | null>;
+  selfRef?: RefObject<ScrollContainerHandle | null>;
+  contentRef?: RefObject<ScrollContainerHandle | null>;
 }>;
 
 export type TableOfContentsHandles = {
