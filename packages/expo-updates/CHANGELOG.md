@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix issue where launch is called twice on the same database instance.
+- [Android] Fix issue where launch is called twice on the same database instance. ([#41152](https://github.com/expo/expo/pull/41152) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
