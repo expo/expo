@@ -122,3 +122,42 @@ export function formatSdkVersion(version: string): string {
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+/**
+ * Throttles a function to only execute at most once per specified delay.
+ * Useful for performance optimization of high-frequency events like scroll.
+ *
+ * @param func The function to throttle
+ * @param delay The minimum time in milliseconds between function executions
+ * @returns A throttled version of the function
+ */
+export function throttle<TArgs extends unknown[]>(
+  func: (...args: TArgs) => void,
+  delay: number
+): (...args: TArgs) => void {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let lastExecuted = 0;
+
+  return function throttled(...args: TArgs) {
+    const now = Date.now();
+    const timeSinceLastExecution = now - lastExecuted;
+
+    const execute = () => {
+      lastExecuted = now;
+      func(...args);
+    };
+
+    if (timeSinceLastExecution >= delay) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      execute();
+    } else {
+      timeoutId ??= setTimeout(() => {
+        timeoutId = null;
+        execute();
+      }, delay - timeSinceLastExecution);
+    }
+  };
+}
