@@ -1,5 +1,4 @@
 import {
-  NativeModulesProxy,
   UnavailabilityError,
   requireNativeModule,
   requireNativeViewManager,
@@ -26,10 +25,8 @@ export type WebGLObject = {
 
 declare let global: any;
 
-const ExponentGLObjectManager = requireNativeModule('ExponentGLObjectManager');
-const { ExponentGLViewManager } = NativeModulesProxy;
-
-const NativeView = requireNativeViewManager('ExponentGLView');
+const GLNativeModule = requireNativeModule('ExpoGL');
+const NativeView = requireNativeViewManager('ExpoGL');
 const workletContextManager = createWorkletContextManager();
 
 export function getWorkletContext(contextId: number): ExpoWebGLRenderingContext | undefined {
@@ -59,7 +56,7 @@ export class GLView extends React.Component<GLViewProps> {
    * @return A promise that resolves to WebGL context object. See [WebGL API](#webgl-api) for more details.
    */
   static async createContextAsync(): Promise<ExpoWebGLRenderingContext> {
-    const { exglCtxId } = await ExponentGLObjectManager.createContextAsync();
+    const { exglCtxId } = await GLNativeModule.createContextAsync();
     return getGl(exglCtxId);
   }
 
@@ -71,7 +68,7 @@ export class GLView extends React.Component<GLViewProps> {
   static async destroyContextAsync(exgl?: ExpoWebGLRenderingContext | number): Promise<boolean> {
     const exglCtxId = getContextId(exgl);
     unregisterGLContext(exglCtxId);
-    return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
+    return GLNativeModule.destroyContextAsync(exglCtxId);
   }
 
   /**
@@ -85,7 +82,7 @@ export class GLView extends React.Component<GLViewProps> {
     options: SnapshotOptions = {}
   ): Promise<GLSnapshot> {
     const exglCtxId = getContextId(exgl);
-    return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
+    return GLNativeModule.takeSnapshotAsync(exglCtxId, options);
   }
 
   /**
@@ -154,16 +151,8 @@ export class GLView extends React.Component<GLViewProps> {
   }
 
   // @docsMissing
-  async startARSessionAsync(): Promise<any> {
-    if (!ExponentGLViewManager.startARSessionAsync) {
-      throw new UnavailabilityError('expo-gl', 'startARSessionAsync');
-    }
-    return await ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
-  }
-
-  // @docsMissing
   async createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture> {
-    if (!ExponentGLObjectManager.createCameraTextureAsync) {
+    if (!GLNativeModule.createCameraTextureAsync) {
       throw new UnavailabilityError('expo-gl', 'createCameraTextureAsync');
     }
 
@@ -174,19 +163,16 @@ export class GLView extends React.Component<GLViewProps> {
     }
 
     const cameraTag = findNodeHandle(cameraRefOrHandle);
-    const { exglObjId } = await ExponentGLObjectManager.createCameraTextureAsync(
-      exglCtxId,
-      cameraTag
-    );
+    const { exglObjId } = await GLNativeModule.createCameraTextureAsync(exglCtxId, cameraTag);
     return { id: exglObjId } as WebGLTexture;
   }
 
   // @docsMissing
   async destroyObjectAsync(glObject: WebGLObject): Promise<boolean> {
-    if (!ExponentGLObjectManager.destroyObjectAsync) {
+    if (!GLNativeModule.destroyObjectAsync) {
       throw new UnavailabilityError('expo-gl', 'destroyObjectAsync');
     }
-    return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
+    return await GLNativeModule.destroyObjectAsync(glObject.id);
   }
 
   /**
