@@ -40,9 +40,13 @@ export const ScrollContainer = forwardRef<ScrollContainerHandle, ScrollContainer
 
     return (
       <div
-        className={mergeClasses('size-full overflow-y-auto overflow-x-hidden', className)}
+        className={mergeClasses(
+          'size-full transform-gpu overflow-y-auto overflow-x-hidden',
+          className
+        )}
         ref={scrollRef}
-        onScroll={scrollHandler}>
+        onScroll={scrollHandler}
+        style={{ transform: 'translate3d(0, 0, 0)' }}>
         {children}
       </div>
     );

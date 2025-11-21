@@ -74,19 +74,38 @@ export const TableOfContents = forwardRef<
   useImperativeHandle(ref, () => ({ handleContentScroll }), []);
 
   function handleContentScroll(contentScrollPosition: number) {
+    const showScrollTopValue = contentScrollPosition > 120;
+
+    if (showScrollTopValue !== showScrollTop) {
+      setShowScrollTop(showScrollTopValue);
+    }
+
+    if (slugScrollingTo.current) {
+      return;
+    }
+
+    const viewportMiddle = contentScrollPosition + window.innerHeight / 2;
+    const viewportActiveOffset =
+      contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR;
+
     for (const { ref, slug, level } of headings) {
       if (!ref?.current) {
         continue;
       }
 
-      setShowScrollTop(contentScrollPosition > 120);
+      const headingTop = ref.current.offsetTop;
 
-      const isInView =
-        ref.current.offsetTop >=
-          contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR &&
-        ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2;
+      if (headingTop > viewportMiddle) {
+        break;
+      }
+
+      const isInView = headingTop >= viewportActiveOffset && headingTop <= viewportMiddle;
 
       if (isInView) {
+        if (slug === activeSlug) {
+          return;
+        }
+
         if (level > BASE_HEADING_LEVEL + 1 && isVersioned) {
           const currentIndex = headings.findIndex(h => h.slug === slug);
           for (let i = currentIndex; i >= 0; i--) {
@@ -99,14 +118,10 @@ export const TableOfContents = forwardRef<
             }
           }
         }
-        if (slug !== activeSlug) {
-          if (slug === slugScrollingTo.current) {
-            slugScrollingTo.current = null;
-          }
-          setActiveParentSlug(null);
-          setActiveSlug(slug);
-          updateSelfScroll();
-        }
+
+        setActiveParentSlug(null);
+        setActiveSlug(slug);
+        updateSelfScroll();
         return;
       }
     }

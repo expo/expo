@@ -1,13 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, type PropsWithChildren, useRef, useCallback } from 'react';
+import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
 import { InlineHelp } from 'ui/components/InlineHelp';
 import { PageHeader } from 'ui/components/PageHeader';
 import * as RoutesUtils from '~/common/routes';
 import { appendSectionToRoute, isRouteActive } from '~/common/routes';
-import { versionToText } from '~/common/utilities';
+import { versionToText, throttle } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationHead from '~/components/DocumentationHead';
 import DocumentationNestedScrollLayout, {
@@ -202,13 +202,17 @@ export default function DocumentationPage({
     }
   };
 
-  const handleContentScroll = (contentScrollPosition: number) => {
-    window.requestAnimationFrame(() => {
-      if (tableOfContentsRef.current?.handleContentScroll) {
-        tableOfContentsRef.current.handleContentScroll(contentScrollPosition);
-      }
-    });
-  };
+  const handleContentScroll = useMemo(
+    () =>
+      throttle((contentScrollPosition: number) => {
+        window.requestAnimationFrame(() => {
+          if (tableOfContentsRef.current?.handleContentScroll) {
+            tableOfContentsRef.current.handleContentScroll(contentScrollPosition);
+          }
+        });
+      }, 150),
+    []
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') {

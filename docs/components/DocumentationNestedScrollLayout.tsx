@@ -128,7 +128,7 @@ export default function DocumentationNestedScrollLayout({
           ) : null}
           <div
             className={mergeClasses(
-              'flex h-full max-w-[280px] flex-col overflow-hidden border-r border-r-default transition-[max-width,opacity,width] duration-200 ease-out',
+              'flex h-full max-w-[280px] flex-col overflow-hidden border-r border-r-default transition-[max-width,opacity,width] duration-200 ease-out will-change-[max-width,width,opacity]',
               isSidebarCollapsed
                 ? 'w-0 max-w-0 border-r-0 opacity-0'
                 : 'w-[280px] max-w-[280px] opacity-100'
@@ -156,7 +156,7 @@ export default function DocumentationNestedScrollLayout({
           <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
             <div
               className={mergeClasses(
-                'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out',
+                'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
                 isChatExpanded &&
                   'lg:pr-[360px] lg:pl-8 lg:max-w-[calc(100%-360px)] max-lg-gutters:max-w-screen-xl max-lg-gutters:pl-0 max-lg-gutters:pr-0'
               )}>
