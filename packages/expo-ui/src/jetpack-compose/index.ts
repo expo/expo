@@ -34,6 +34,7 @@ export * from './PullToRefreshBox';
 export * from './RadioButton';
 export * from './Surface';
 export * from './Text';
+export * from './Loading';
 
 export * from './AnimatedVisibility';
 export * from './Box';

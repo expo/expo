@@ -38,5 +38,6 @@ export * from './Box';
 export * from './Row';
 export * from './Column';
 export * from './FlowRow';
+export * from './Loading';
 export { ViewEvent } from '../types';
 //# sourceMappingURL=index.d.ts.map
