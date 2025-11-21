@@ -443,6 +443,7 @@ export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void>
           shouldPlayInBackground: mode.shouldPlayInBackground,
           shouldRouteThroughEarpiece: mode.shouldRouteThroughEarpiece,
           interruptionMode: mode.interruptionModeAndroid,
+          allowsBackgroundRecording: mode.allowsBackgroundRecording,
         };
   return await AudioModule.setAudioModeAsync(audioMode);
 }

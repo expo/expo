@@ -20,9 +20,14 @@ const withAudio = (config, { microphonePermission, recordAudioAndroid = true, en
             return config;
         });
     }
-    return config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
+    const androidPermissions = [
         recordAudioAndroid !== false && 'android.permission.RECORD_AUDIO',
         'android.permission.MODIFY_AUDIO_SETTINGS',
-    ].filter(Boolean));
+    ];
+    if (enableBackgroundRecording) {
+        androidPermissions.push('android.permission.FOREGROUND_SERVICE_MICROPHONE');
+        androidPermissions.push('android.permission.POST_NOTIFICATIONS');
+    }
+    return config_plugins_1.AndroidConfig.Permissions.withPermissions(config, androidPermissions.filter(Boolean));
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withAudio, pkg.name, pkg.version);

@@ -38,12 +38,19 @@ const withAudio: ConfigPlugin<
     });
   }
 
+  const androidPermissions = [
+    recordAudioAndroid !== false && 'android.permission.RECORD_AUDIO',
+    'android.permission.MODIFY_AUDIO_SETTINGS',
+  ];
+
+  if (enableBackgroundRecording) {
+    androidPermissions.push('android.permission.FOREGROUND_SERVICE_MICROPHONE');
+    androidPermissions.push('android.permission.POST_NOTIFICATIONS');
+  }
+
   return AndroidConfig.Permissions.withPermissions(
     config,
-    [
-      recordAudioAndroid !== false && 'android.permission.RECORD_AUDIO',
-      'android.permission.MODIFY_AUDIO_SETTINGS',
-    ].filter(Boolean) as string[]
+    androidPermissions.filter(Boolean) as string[]
   );
 };
 
