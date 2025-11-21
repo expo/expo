@@ -100,3 +100,6 @@ private:
   jni::local_ref<jstring> jniGetString();
 };
 } // namespace expo
+cd BoardScanAI
+expo start
+
