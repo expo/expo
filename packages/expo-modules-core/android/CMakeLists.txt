@@ -14,6 +14,8 @@ file(GLOB sources_android_decorators "${SRC_DIR}/main/cpp/decorators/*.cpp")
 file(GLOB sources_android_worklets "${SRC_DIR}/main/cpp/worklets/*.cpp")
 file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 file(GLOB common_sources_jsi "${COMMON_DIR}/JSI/*.cpp")
+file(GLOB fabric_andorid_sources "${SRC_DIR}/fabric/*.cpp")
+file(GLOB common_fabric_sources "${COMMON_DIR}/fabric/*.cpp")
 
 # shared
 
@@ -27,6 +29,8 @@ add_library(
   ${sources_android_javaclasses}
   ${sources_android_decorators}
   ${sources_android_worklets}
+  ${fabric_andorid_sources}
+  ${common_fabric_sources}
 )
 
 use_expo_common(expo-modules-core)
@@ -35,11 +39,13 @@ target_include_directories(
   expo-modules-core
   PRIVATE
   ${REACT_NATIVE_INTERFACE_INCLUDE_DIRECTORIES}/react
+  ${REACT_NATIVE_INTERFACE_INCLUDE_DIRECTORIES}/react/fabric
   # header only imports from turbomodule, e.g. CallInvokerHolder.h
   "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
+  "${SRC_DIR}/fabric"
   "${COMMON_DIR}"
   "${COMMON_DIR}/JSI"
-  "${SRC_DIR}/fabric"
+  "${COMMON_DIR}/fabric"
 )
 
 if (REACT_NATIVE_WORKLETS_DIR)
@@ -51,12 +57,6 @@ if (REACT_NATIVE_WORKLETS_DIR)
     "${REACT_NATIVE_WORKLETS_DIR}/Common/cpp"
     "${REACT_NATIVE_WORKLETS_DIR}/android/src/main/cpp"
   )
-endif()
-
-if (IS_NEW_ARCHITECTURE_ENABLED)
-  add_subdirectory("${SRC_DIR}/fabric")
-
-  target_link_libraries(expo-modules-core PRIVATE fabric)
 endif()
 
 target_link_libraries(
