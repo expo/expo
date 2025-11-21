@@ -13,6 +13,7 @@ jest.mock(`../../../utils/env`, () => ({
 jest.mock('../../../utils/open');
 jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
+jest.mock('../AsyncCloudflareTunnel');
 jest.mock('../AsyncWsTunnel');
 jest.mock('../DevelopmentSession');
 jest.mock('../../platforms/ios/ApplePlatformManager', () => {
@@ -44,6 +45,7 @@ beforeEach(() => {
   vol.reset();
   jest.mocked(envIsWebcontainer).mockReset();
   delete process.env.EXPO_NO_REDIRECT_PAGE;
+  delete process.env.EXPO_TUNNEL_PROVIDER;
 });
 
 afterAll(() => {
@@ -170,6 +172,25 @@ describe('openPlatformAsync', () => {
     const { url } = await devServer.openPlatformAsync('desktop');
     expect(url).toBe('http://exp.ws-tunnel.dev/');
     expect(openBrowserAsync).toHaveBeenCalledWith('http://exp.ws-tunnel.dev/');
+  });
+
+  it(`can open using cloudflare tunnel when provider is selected`, async () => {
+    process.env.EXPO_TUNNEL_PROVIDER = 'cloudflare';
+
+    const devServer = new MockMetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    await devServer.startAsync({
+      location: {
+        hostType: 'tunnel',
+      },
+    });
+
+    const tunnel = devServer.getTunnel();
+    const { AsyncCloudflareTunnel } = jest.requireMock('../AsyncCloudflareTunnel');
+
+    expect(tunnel).toBeInstanceOf(AsyncCloudflareTunnel);
   });
 
   it(`opens a project in the browser`, async () => {
