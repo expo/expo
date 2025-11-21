@@ -20,6 +20,7 @@
 - Fix issue where local assets don't resolve correctly in release mode. ([#40642](https://github.com/expo/expo/pull/40642) by [@alanjhughes](https://github.com/alanjhughes))
 - [web] Bring fix from [#38273](https://github.com/expo/expo/pull/38273) to web. ([#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes)
 - [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fix recording options not being applied to web correctly.
 
 ### 💡 Others
 
