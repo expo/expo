@@ -175,7 +175,7 @@ class AudioControlsService : MediaSessionService() {
     val notification = buildNotification() ?: return
 
     if (startInForeground) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         startForeground(
           notificationId,
           notification,
