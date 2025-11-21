@@ -7,6 +7,7 @@ exports.appendIconOptions = appendIconOptions;
 exports.isNativeTabTrigger = isNativeTabTrigger;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
+const react_native_1 = require("react-native");
 const utils_1 = require("./utils");
 const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
 const useSafeLayoutEffect_1 = require("../views/useSafeLayoutEffect");
@@ -129,7 +130,7 @@ function appendLabelOptions(options, props) {
     else {
         options.title = props.children;
         if (props.selectedStyle) {
-            options.selectedLabelStyle = props.selectedStyle;
+            options.selectedLabelStyle = react_native_1.StyleSheet.flatten(props.selectedStyle);
         }
     }
 }

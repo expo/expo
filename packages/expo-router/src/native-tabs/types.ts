@@ -1,6 +1,6 @@
 import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
-import type { ColorValue, ImageSourcePropType, TextStyle } from 'react-native';
+import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { BottomTabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -57,30 +57,10 @@ export type SymbolOrImageSource =
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
     };
 
-type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
-
-export interface NativeTabsLabelStyle {
-  /**
-   * The font family of the tab label.
-   */
-  fontFamily?: TextStyle['fontFamily'];
-  /**
-   * The font size of the tab label.
-   */
-  fontSize?: TextStyle['fontSize'];
-  /**
-   * The font weight of the tab label.
-   */
-  fontWeight?: NumericFontWeight | `${NumericFontWeight}`;
-  /**
-   * The font style of the tab label.
-   */
-  fontStyle?: TextStyle['fontStyle'];
-  /**
-   * The color of the tab label.
-   */
-  color?: TextStyle['color'];
-}
+export type NativeTabsLabelStyle = Pick<
+  TextStyle,
+  'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'color'
+>;
 
 export const SUPPORTED_BLUR_EFFECTS = [
   'none',
@@ -112,44 +92,17 @@ export const SUPPORTED_BLUR_EFFECTS = [
  */
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 
-/**
- * @platform android
- * @platform web
- */
-export interface NativeTabsActiveStyleType {
-  /**
-   * @platform android
-   * @platform web
-   */
-  color?: ColorValue;
-  /**
-   * @platform android
-   * @platform web
-   */
-  fontSize?: TextStyle['fontSize'];
-  /**
-   * @platform android
-   */
-  iconColor?: ColorValue;
-  /**
-   * @platform android
-   * @platform web
-   */
-  indicatorColor?: ColorValue;
-}
-
 export interface NativeTabsProps extends PropsWithChildren {
   // #region common props
   /**
    * The style of the every tab label in the tab bar.
    */
   labelStyle?:
-    | NativeTabsLabelStyle
+    | StyleProp<NativeTabsLabelStyle>
     | {
-        default?: NativeTabsLabelStyle;
-        selected?: NativeTabsLabelStyle;
+        default?: StyleProp<NativeTabsLabelStyle>;
+        selected?: StyleProp<NativeTabsLabelStyle>;
       };
-  // disabledLabelStyle?: NativeTabsLabelStyle;
   /**
    * The color of every tab icon in the tab bar.
    */

@@ -1,4 +1,4 @@
-import type { ColorValue, ImageSourcePropType } from 'react-native';
+import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Label, Icon, Badge, VectorIcon } from '../../primitives';
@@ -9,7 +9,7 @@ export interface NativeTabsTriggerLabelProps {
    * The text to display as the label for the tab.
    */
   children?: string;
-  selectedStyle?: NativeTabsLabelStyle;
+  selectedStyle?: StyleProp<NativeTabsLabelStyle>;
   /**
    * If true, the label will be hidden.
    * @default false

@@ -2,7 +2,7 @@
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { isValidElement, type ReactElement, type ReactNode } from 'react';
-import { type ImageSourcePropType } from 'react-native';
+import { StyleSheet, type ImageSourcePropType } from 'react-native';
 
 import type { NativeTabOptions, NativeTabTriggerProps } from './types';
 import { filterAllowedChildrenElements, isChildOfType } from './utils';
@@ -155,7 +155,7 @@ function appendLabelOptions(options: NativeTabOptions, props: NativeTabsTriggerL
   } else {
     options.title = props.children;
     if (props.selectedStyle) {
-      options.selectedLabelStyle = props.selectedStyle;
+      options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle);
     }
   }
 }
