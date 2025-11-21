@@ -94,6 +94,8 @@ class ExpoUIModule : Module() {
 
     View(ProgressView::class)
 
+    View(LoadingView::class)
+
     View(TextInputView::class) {
       Events("onValueChanged")
       Prop("defaultValue", "") { view: TextInputView, text: String ->
