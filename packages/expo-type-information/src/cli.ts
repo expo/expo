@@ -10,8 +10,8 @@ import {
 } from './typescriptGeneration';
 import fs from 'fs';
 
-const usage: string =
-  'yarn expo-type-information [--typinfo, --typegen-module, --typegen-view, --mockgen] <absoluteFilePath>';
+const usage: string = `yarn expo-type-information [--typeinfo, --typegen-module, --typegen-view, --mockgen] <absoluteFilePath>
+    | --typegen-module-t <fileContent>`;
 
 if (!process.argv || process.argv.length < 3) {
   console.log('not enough arguments provided!');
@@ -22,7 +22,7 @@ if (!process.argv || process.argv.length < 3) {
 
   switch (command) {
     case '--typeinfo': {
-      const typeInfo = getFileTypeInformation(fileName);
+      const typeInfo = getFileTypeInformation(fileName, true);
       if (typeInfo) {
         const typeInfoSerialized = serializeTypeInformation(typeInfo);
         console.log(JSON.stringify(typeInfoSerialized, null, 2));
@@ -32,21 +32,21 @@ if (!process.argv || process.argv.length < 3) {
       break;
     }
     case '--typegen-module': {
-      const typeInfo = getFileTypeInformation(fileName);
+      const typeInfo = getFileTypeInformation(fileName, true);
       if (typeInfo) {
         getGeneratedModuleTypesFileContent(fs.realpathSync(fileName), typeInfo).then(console.log);
       }
       break;
     }
     case '--typegen-view': {
-      const typeInfo = getFileTypeInformation(fileName);
+      const typeInfo = getFileTypeInformation(fileName, true);
       if (typeInfo) {
         getGeneratedViewTypesFileContent(fs.realpathSync(fileName), typeInfo).then(console.log);
       }
       break;
     }
     case '--mockgen': {
-      const typeInfo = getFileTypeInformation(fileName);
+      const typeInfo = getFileTypeInformation(fileName, true);
       if (typeInfo) {
         generateMocks([typeInfo], 'typescript');
       }

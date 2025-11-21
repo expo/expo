@@ -5,7 +5,7 @@ import * as path from 'path';
 import {
   getSwiftFileTypeInformation,
   preprocessSwiftFile,
-} from './swiftSourcekittenTypegen/swiftSourcekittenTypeInformation';
+} from './swift/sourcekittenTypeInformation';
 
 export enum IdentifierKind {
   BASIC,
@@ -18,10 +18,6 @@ export type ParametrizedType = {
   name: TypeIdentifier;
   types: Type[];
 };
-
-// export type ProductType = {
-//   types: Type[];
-// };
 
 export type Argument = { name: string; type: Type };
 export type Field = Argument;
@@ -42,28 +38,20 @@ export type SumType = {
   types: Type[];
 };
 
-// export type FunctionType = {
-//   arguments: Argument[];
-//   returnType: Type;
-// };
+export type DictionaryType = {
+  key: Type;
+  value: Type;
+};
 
 export type OptionalType = Type;
 export type ArrayType = Type;
-
 export type TypeIdentifier = string;
-export type AnonymousType =
-  | ParametrizedType
-  | SumType
-  // | FunctionType
-  | OptionalType
-  | DictionaryType
-  | ArrayType;
+export type AnonymousType = ParametrizedType | SumType | OptionalType | DictionaryType | ArrayType;
 
 export enum TypeKind {
   BASIC,
   IDENTIFIER,
   SUM,
-  // FUNCTION,
   PARAMETRIZED,
   OPTIONAL,
   ARRAY,
@@ -110,11 +98,6 @@ export type ConstructorDeclaration = {
   arguments: Argument[];
 };
 
-export type DictionaryType = {
-  key: Type;
-  value: Type;
-};
-
 export type ClassDeclaration = {
   name: string;
   constructor: ConstructorDeclaration | null;
@@ -140,27 +123,28 @@ export type TypeIdentifierDefinitionMap = Map<
   string,
   { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
 >;
+
 export type TypeIdentifierDefinitionList = [
   string,
   { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration },
 ][];
-
-export type FileTypeInformation = {
-  usedTypeIdentifiers: Set<string>;
-  declaredTypeIdentifiers: Set<string>;
-  typeParametersCount: Map<string, number>;
-  typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap;
-  functions: FunctionDeclaration[];
-  moduleClasses: ModuleClassDeclaration[];
-  records: RecordType[];
-  enums: EnumType[];
-};
 
 export type FileTypeInformationSerialized = {
   usedTypeIdentifiersList: string[];
   declaredTypeIdentifiersList: string[];
   typeParametersCountList: [string, number][];
   typeIdentifierDefinitionList: TypeIdentifierDefinitionList;
+  functions: FunctionDeclaration[];
+  moduleClasses: ModuleClassDeclaration[];
+  records: RecordType[];
+  enums: EnumType[];
+};
+
+export type FileTypeInformation = {
+  usedTypeIdentifiers: Set<string>;
+  declaredTypeIdentifiers: Set<string>;
+  typeParametersCount: Map<string, number>;
+  typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap;
   functions: FunctionDeclaration[];
   moduleClasses: ModuleClassDeclaration[];
   records: RecordType[];
