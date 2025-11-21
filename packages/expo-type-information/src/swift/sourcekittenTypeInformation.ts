@@ -27,61 +27,6 @@ import {
 } from '../typeInformation';
 import { FileType, Structure } from '../types';
 
-/*
-The Swift object type can have nested objects as the type of it's values (or maybe even keys).
-[String: [String: Any]]
-
-We can't use regex to find the root colon, so this is the safest way – by counting brackets.
-*/
-function findRootColonInDictionary(type: string) {
-  let colonIndex = -1;
-  let openBracketsCount = 0;
-  for (let i = 0; i < type.length; i++) {
-    if (type[i] === '[') {
-      openBracketsCount++;
-    } else if (type[i] === ']') {
-      openBracketsCount--;
-
-      // TODO check This should be openBracketsCount === 1 right ???
-      // No, because this check is on inner type
-    } else if (type[i] === ':' && openBracketsCount === 0) {
-      colonIndex = i;
-      break;
-    }
-  }
-  return colonIndex;
-}
-
-function getTypeIdentifierDefinitionMap(
-  fileTypeInformation: FileTypeInformation
-): Map<
-  string,
-  { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
-> {
-  const typeIdentifierDefinitionMap = new Map<
-    string,
-    { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
-  >([]);
-
-  fileTypeInformation.records.forEach((r) =>
-    typeIdentifierDefinitionMap.set(r.name, { kind: IdentifierKind.RECORD, definition: r })
-  );
-  fileTypeInformation.enums.forEach((e) =>
-    typeIdentifierDefinitionMap.set(e.name, { kind: IdentifierKind.ENUM, definition: e })
-  );
-
-  return typeIdentifierDefinitionMap;
-}
-
-function unwrapSwiftDictionary(type: string) {
-  const innerType = type.substring(1, type.length - 1);
-  const colonPosition = findRootColonInDictionary(innerType);
-  return {
-    key: innerType.slice(0, colonPosition).trim(),
-    value: innerType.slice(colonPosition + 1).trim(),
-  };
-}
-
 function isSwiftDictionary(type: string): boolean {
   return (
     type.startsWith('[') &&
@@ -90,21 +35,9 @@ function isSwiftDictionary(type: string): boolean {
   );
 }
 
-/*
-We receive types from SourceKitten and `getStructure` like so (examples):
-[AcceptedTypes]?, UIColor?, [String: Any]
-
-We need to parse them first to TS nodes in `mapSwiftTypeToTsType` with the following helper functions.
-*/
-
 function isSwiftArray(type: string) {
   // This can also be an object, but we check that first, so if it's not an object and is wrapped with [] it's an array.
   return type.startsWith('[') && type.endsWith(']');
-}
-
-function unwrapSwiftArray(type: string): Type {
-  const innerType = type.substring(1, type.length - 1);
-  return mapSwiftTypeToTsType(innerType.trim());
 }
 
 function isSwiftOptional(type: string): boolean {
@@ -113,6 +46,37 @@ function isSwiftOptional(type: string): boolean {
 
 function isParametrizedType(type: string): boolean {
   return type.endsWith('>');
+}
+
+function isEitherTypeIdentifier(typeIdentifier: string): boolean {
+  return (
+    typeIdentifier === 'Either' ||
+    typeIdentifier === 'EitherOfThree' ||
+    typeIdentifier === 'EitherOfFour'
+  );
+}
+
+function isEnumStructure(structure: Structure): boolean {
+  return structure['key.kind'] === 'source.lang.swift.decl.enum';
+}
+
+function isRecordStructure(structure: Structure): boolean {
+  return (
+    structure['key.kind'] === 'source.lang.swift.decl.struct' &&
+    structure['key.inheritedtypes'] &&
+    structure['key.inheritedtypes'].find((type) => {
+      return type['key.name'] === 'Record';
+    }) !== undefined
+  );
+}
+
+function isModuleStructure(structure: Structure): boolean {
+  return structure['key.typename'] === 'ModuleDefinition';
+}
+
+function unwrapSwiftArray(type: string): Type {
+  const innerType = type.substring(1, type.length - 1);
+  return mapSwiftTypeToTsType(innerType.trim());
 }
 
 function unwrapParametrizedType(type: string): ParametrizedType {
@@ -141,12 +105,35 @@ function unwrapParametrizedType(type: string): ParametrizedType {
   return { name, types: innerTypes };
 }
 
-function isEitherTypeIdentifier(typeIdentifier: string): boolean {
-  return (
-    typeIdentifier === 'Either' ||
-    typeIdentifier === 'EitherOfThree' ||
-    typeIdentifier === 'EitherOfFour'
-  );
+function unwrapSwiftDictionary(type: string) {
+  const innerType = type.substring(1, type.length - 1);
+  const colonPosition = findRootColonInDictionary(innerType);
+  return {
+    key: innerType.slice(0, colonPosition).trim(),
+    value: innerType.slice(colonPosition + 1).trim(),
+  };
+}
+
+/*
+The Swift object type can have nested objects as the type of it's values (or maybe even keys).
+[String: [String: Any]]
+
+We can't use regex to find the root colon, so this is the safest way – by counting brackets.
+*/
+function findRootColonInDictionary(type: string) {
+  let colonIndex = -1;
+  let openBracketsCount = 0;
+  for (let i = 0; i < type.length; i++) {
+    if (type[i] === '[') {
+      openBracketsCount++;
+    } else if (type[i] === ']') {
+      openBracketsCount--;
+    } else if (type[i] === ':' && openBracketsCount === 0) {
+      colonIndex = i;
+      break;
+    }
+  }
+  return colonIndex;
 }
 
 function mapSwiftTypeToTsType(type?: string): Type {
@@ -231,52 +218,6 @@ function getStructureFromFile(file: FileType) {
   }
 }
 
-function isEnumStructure(structure: Structure): boolean {
-  return structure['key.kind'] === 'source.lang.swift.decl.enum';
-}
-
-function isRecordStructure(structure: Structure): boolean {
-  return (
-    structure['key.kind'] === 'source.lang.swift.decl.struct' &&
-    structure['key.inheritedtypes'] &&
-    structure['key.inheritedtypes'].find((type) => {
-      return type['key.name'] === 'Record';
-    }) !== undefined
-  );
-}
-
-function isModuleStructure(structure: Structure): boolean {
-  return structure['key.typename'] === 'ModuleDefinition';
-}
-
-function parseStructure(
-  structure: Structure,
-  name: string,
-  modulesStructures: { structure: Structure; name: string }[],
-  recordsStructures: Structure[],
-  enumsStructures: Structure[]
-) {
-  const substructure = structure['key.substructure'];
-
-  if (isModuleStructure(structure)) {
-    modulesStructures.push({ structure, name });
-  } else if (isRecordStructure(structure)) {
-    recordsStructures.push(structure);
-  } else if (isEnumStructure(structure)) {
-    enumsStructures.push(structure);
-  } else if (Array.isArray(substructure) && substructure.length > 0) {
-    for (const substructure of structure['key.substructure']) {
-      parseStructure(
-        substructure,
-        structure['key.name'] ?? name,
-        modulesStructures,
-        recordsStructures,
-        enumsStructures
-      );
-    }
-  }
-}
-
 // Read string straight from file – needed since we can't get cursorinfo for modulename
 function getIdentifierFromOffsetObject(offsetObject: Structure, file: FileType) {
   // adding 1 and removing 1 to get rid of quotes
@@ -285,8 +226,8 @@ function getIdentifierFromOffsetObject(offsetObject: Structure, file: FileType) 
     .replaceAll('"', '');
 }
 
-function hasSubstructure(structureObject: Structure) {
-  return structureObject?.['key.substructure'] && structureObject['key.substructure'].length > 0;
+function hasSubstructure(structure: Structure) {
+  return structure?.['key.substructure'] && structure['key.substructure'].length > 0;
 }
 
 function findReturnType(structure: Structure, file: FileType): string | null {
@@ -296,7 +237,7 @@ function findReturnType(structure: Structure, file: FileType): string | null {
   ) {
     return getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
   }
-  if (structure['key.substructure']) {
+  if (hasSubstructure(structure)) {
     for (const substructure of structure['key.substructure']) {
       const returnType = findReturnType(substructure, file);
       if (returnType) {
@@ -305,26 +246,6 @@ function findReturnType(structure: Structure, file: FileType): string | null {
     }
   }
   return null;
-}
-
-function parseClosureTypes(
-  structure: Structure,
-  file: FileType
-): { parameters: { name: string; typename: string }[]; returnType: string | null } {
-  const closure = structure['key.substructure']?.find(
-    (s) => s['key.kind'] === 'source.lang.swift.expr.closure'
-  );
-  if (!closure) {
-    // Try finding the preprocessed return value, if not found we don't know the return type
-    const returnType = findReturnType(structure, file);
-    return { parameters: [], returnType };
-  }
-  const parameters = closure['key.substructure']
-    ?.filter((s) => s['key.kind'] === 'source.lang.swift.decl.var.parameter')
-    .map((p) => ({ name: p['key.name'], typename: p['key.typename'] }));
-
-  const returnType = closure?.['key.typename'] ?? findReturnType(structure, file);
-  return { parameters, returnType };
 }
 
 let cachedSDKPath: string | null = null;
@@ -337,7 +258,17 @@ function getSDKPath(): string {
   return cachedSDKPath;
 }
 
+function extractDeclarationType(structure: Structure, file: FileType): Type {
+  if (structure['key.typename']) {
+    return mapSwiftTypeToTsType(structure['key.typename'] as string);
+  }
+  const inferReturn = getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
+  return mapSwiftTypeToTsType(inferReturn ?? 'Any');
+}
+
 // Read type description with sourcekitten, works only for variables
+// TODO This function is extremely slow and inefficient
+// consider other options
 function getTypeOfByteOffsetVariable(byteOffset: number, file: FileType): string | null {
   const request = {
     'key.request': 'source.request.cursorinfo',
@@ -368,14 +299,33 @@ function getTypeOfByteOffsetVariable(byteOffset: number, file: FileType): string
   return null;
 }
 
-function mapParameterToType(parameter: { name: string; typename: string }): {
-  name: string;
-  type: Type;
-} {
+function mapSourcekittenParameterToType(parameter: { name: string; typename: string }): Argument {
   return {
     name: parameter.name,
     type: mapSwiftTypeToTsType(parameter.typename),
   };
+}
+
+const parseModulePropertySubstructure = parseModuleConstantSubstructure;
+
+function parseClosureTypes(
+  structure: Structure,
+  file: FileType
+): { parameters: { name: string; typename: string }[]; returnType: string | null } {
+  const closure = structure['key.substructure']?.find(
+    (s) => s['key.kind'] === 'source.lang.swift.expr.closure'
+  );
+  if (!closure) {
+    // Try finding the preprocessed return value, if not found we don't know the return type
+    const returnType = findReturnType(structure, file);
+    return { parameters: [], returnType };
+  }
+  const parameters = closure['key.substructure']
+    ?.filter((s) => s['key.kind'] === 'source.lang.swift.decl.var.parameter')
+    .map((p) => ({ name: p['key.name'], typename: p['key.typename'] }));
+
+  const returnType = closure?.['key.typename'] ?? findReturnType(structure, file);
+  return { parameters, returnType };
 }
 
 function parseModuleConstructorDeclaration(
@@ -397,7 +347,7 @@ function parseModuleConstructorDeclaration(
   }
 
   return {
-    arguments: types?.parameters.map(mapParameterToType) ?? [],
+    arguments: types?.parameters.map(mapSourcekittenParameterToType) ?? [],
   };
 }
 
@@ -475,11 +425,9 @@ function parseModuleFunctionSubstructure(
     name,
     returnType: mapSwiftTypeToTsType(types?.returnType ?? undefined), // any or void ? Probably any
     parameters: [], // TODO Module function is not generic. I think so. Check it
-    arguments: types?.parameters?.map(mapParameterToType) ?? [],
+    arguments: types?.parameters?.map(mapSourcekittenParameterToType) ?? [],
   };
 }
-
-const parseModulePropertySubstructure = parseModuleConstantSubstructure;
 
 function parseModulePropDeclaration(substructure: Structure, file: FileType): PropDeclaration {
   const definitionParams = substructure['key.substructure'];
@@ -494,7 +442,7 @@ function parseModulePropDeclaration(substructure: Structure, file: FileType): Pr
 
   return {
     name,
-    arguments: types?.parameters?.map(mapParameterToType) ?? [],
+    arguments: types?.parameters?.map(mapSourcekittenParameterToType) ?? [],
   };
 }
 
@@ -523,14 +471,6 @@ function parseModuleEventDeclaration(structure: Structure, file: FileType, event
   return structure['key.substructure'].forEach((substructure) =>
     events.push(getIdentifierFromOffsetObject(substructure, file))
   );
-}
-
-function extractDeclarationType(structure: Structure, file: FileType): Type {
-  if (structure['key.typename']) {
-    return mapSwiftTypeToTsType(structure['key.typename'] as string);
-  }
-  const inferReturn = getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
-  return mapSwiftTypeToTsType(inferReturn ?? 'Any');
 }
 
 function parseRecordStructure(
@@ -634,6 +574,55 @@ function parseModuleStructure(
   return mcd;
 }
 
+function parseStructure(
+  structure: Structure,
+  name: string,
+  modulesStructures: { structure: Structure; name: string }[],
+  recordsStructures: Structure[],
+  enumsStructures: Structure[]
+) {
+  const substructure = structure['key.substructure'];
+
+  if (isModuleStructure(structure)) {
+    modulesStructures.push({ structure, name });
+  } else if (isRecordStructure(structure)) {
+    recordsStructures.push(structure);
+  } else if (isEnumStructure(structure)) {
+    enumsStructures.push(structure);
+  } else if (Array.isArray(substructure) && substructure.length > 0) {
+    for (const substructure of structure['key.substructure']) {
+      parseStructure(
+        substructure,
+        structure['key.name'] ?? name,
+        modulesStructures,
+        recordsStructures,
+        enumsStructures
+      );
+    }
+  }
+}
+
+function getTypeIdentifierDefinitionMap(
+  fileTypeInformation: FileTypeInformation
+): Map<
+  string,
+  { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
+> {
+  const typeIdentifierDefinitionMap = new Map<
+    string,
+    { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
+  >([]);
+
+  fileTypeInformation.records.forEach((r) =>
+    typeIdentifierDefinitionMap.set(r.name, { kind: IdentifierKind.RECORD, definition: r })
+  );
+  fileTypeInformation.enums.forEach((e) =>
+    typeIdentifierDefinitionMap.set(e.name, { kind: IdentifierKind.ENUM, definition: e })
+  );
+
+  return typeIdentifierDefinitionMap;
+}
+
 function collectTypeIdentifiers(
   type: Type,
   typeIdentiers: Set<string>,
@@ -658,7 +647,6 @@ function collectTypeIdentifiers(
       }
       break;
     case TypeKind.BASIC:
-      // typeIdentiers.add('BASIC: ' + (type.type as BasicType).toString());
       if ((type.type as BasicType) === BasicType.UNRESOLVED) {
         typeIdentiers.add('UnresolvedType');
       }
@@ -737,11 +725,17 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
   const declaredTypeIdentifiers: Set<string> = new Set<string>();
   const recordTypeIdentifiers: Set<string> = new Set<string>();
   const typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap = new Map();
-
   const enums: EnumType[] = enumsStructures.map(parseEnumStructure);
   const recordMap = (rd: Structure) =>
     parseRecordStructure(rd, recordTypeIdentifiers, typeParametersCount, file);
   const records = recordsStructures.map(recordMap);
+
+  enums.forEach(({ name }) => {
+    declaredTypeIdentifiers.add(name);
+  });
+  records.forEach(({ name }) => {
+    declaredTypeIdentifiers.add(name);
+  });
 
   const fileTypeInformation = {
     moduleClasses,
@@ -754,15 +748,8 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
     typeIdentifierDefinitionMap,
   };
 
-  enums.forEach(({ name }) => {
-    declaredTypeIdentifiers.add(name);
-  });
-  records.forEach(({ name }) => {
-    declaredTypeIdentifiers.add(name);
-  });
-
   for (const { structure, name } of modulesStructures) {
-    if (!structure['key.substructure']) {
+    if (!hasSubstructure(structure)) {
       continue;
     }
     const moduleClassDeclaration = parseModuleStructure(structure['key.substructure'], file, name);
