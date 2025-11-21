@@ -129,6 +129,8 @@ class ExpoUIModule : Module() {
       Events("onExpoUISyncFlush")
     }
 
+    View(LoadingView::class)
+
     View(SlotView::class) {
       Events("onSlotEvent")
     }

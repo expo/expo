@@ -394,6 +394,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
     },
   },
+  {
+    name: 'Loading component',
+    route: 'ui/loading',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LoadingScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

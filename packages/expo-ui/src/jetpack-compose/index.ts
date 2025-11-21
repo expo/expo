@@ -58,6 +58,7 @@ export * from './RadioButton';
 export * from './Surface';
 export { type TextProps, Text } from './Text';
 export * from './Tooltip';
+export * from './Loading';
 
 export * from './AnimatedVisibility';
 export * from './Box';
