@@ -348,7 +348,22 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         this.mediaRecorderUptimeOfLastStartResume = 0;
         this.currentTime = 0;
         const stream = await getUserMedia({ audio: true });
-        const mediaRecorder = new window.MediaRecorder(stream, options?.web || RecordingPresets.HIGH_QUALITY.web);
+        const defaults = RecordingPresets.HIGH_QUALITY.web;
+        const mediaRecorderOptions = {};
+        const mimeType = options.mimeType ?? defaults.mimeType;
+        if (mimeType && MediaRecorder.isTypeSupported(mimeType)) {
+            mediaRecorderOptions.mimeType = mimeType;
+        }
+        if (options.bitsPerSecond) {
+            mediaRecorderOptions.bitsPerSecond = options.bitsPerSecond;
+        }
+        else if (options.bitRate) {
+            mediaRecorderOptions.audioBitsPerSecond = options.bitRate;
+        }
+        else {
+            mediaRecorderOptions.bitsPerSecond = defaults.bitsPerSecond;
+        }
+        const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions);
         mediaRecorder.addEventListener('pause', () => {
             this.currentTime = this.getAudioRecorderDurationMillis();
             this.mediaRecorderIsRecording = false;

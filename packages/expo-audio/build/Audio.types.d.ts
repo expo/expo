@@ -302,7 +302,7 @@ export type RecordingOptions = {
      * Recording options for the Web platform.
      * @platform web
      */
-    web?: RecordingOptionsWeb;
+    web: RecordingOptionsWeb;
 };
 /**
  * Recording options for the web.

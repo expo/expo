@@ -11,6 +11,8 @@
 - [Android] Fix issue where after replacing the media source, events are emitted twice. ([#40133](https://github.com/expo/expo/pull/40133) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix issue where if `prepare` fails on android there was no error and the user would receive an empty file. ([#40239](https://github.com/expo/expo/pull/40239) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix incorrect volume read. ([#40258](https://github.com/expo/expo/pull/40258) by [@alanjhughes](https://github.com/alanjhughes))
+- [web] Bring fix from [#38273](https://github.com/expo/expo/pull/38273) to web. ([#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes)
+- [Web] Fix recording options not being applied to web correctly. ([#41154](https://github.com/expo/expo/pull/41154) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
