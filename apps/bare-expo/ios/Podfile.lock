@@ -209,7 +209,6 @@ PODS:
     - Yoga
   - expo-dev-menu (7.0.11):
     - expo-dev-menu/Main (= 7.0.11)
-    - expo-dev-menu/ReactNativeCompatibles (= 7.0.11)
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -248,28 +247,6 @@ PODS:
     - React-ImageManager
     - React-jsi
     - React-jsinspector
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (7.0.11):
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3741,7 +3718,7 @@ SPEC CHECKSUMS:
   Expo: 9d61298dd8bbd625b62dcd082485fe1692084242
   expo-dev-client: b0363ce1f16a248d7c9b67ceaee2dbee058c1e05
   expo-dev-launcher: 35e9018d1b3ccb29565aea2a529a7e35dd7e238e
-  expo-dev-menu: ce35b2d8995fb1b0b8e068f5017f20acd47bbad3
+  expo-dev-menu: 41ccfd1657e6943953d16628fceb3b97703717ed
   expo-dev-menu-interface: 600df12ea01efecdd822daaf13cc0ac091775533
   ExpoAgeRange: 5203a372b2f4ef4e5510acf025373d52de60f8df
   ExpoAppIntegrity: 6efc2990e5b2859bfe3595f3d289a96c12c1dd77
