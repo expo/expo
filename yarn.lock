@@ -3891,7 +3891,7 @@
 
 "@react-navigation/bottom-tabs@7.7.3", "@react-navigation/bottom-tabs@^7.3.10", "@react-navigation/bottom-tabs@^7.7.3":
   version "7.7.3"
-  resolved "https://registry.npmjs.org/@react-navigation/bottom-tabs/-/bottom-tabs-7.7.3.tgz#b5f25f013b531e69e68bc6cb356d6b36953b3805"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.7.3.tgz#b5f25f013b531e69e68bc6cb356d6b36953b3805"
   integrity sha512-aqsutx8auVaPySf8p165Cqj8K2s8e96uXYViU01sEGrBHdOg/pdR7XPiLoqmpsYcRifwZJlZwLAENhzyqdL/DQ==
   dependencies:
     "@react-navigation/elements" "^2.8.1"
@@ -3900,7 +3900,7 @@
 
 "@react-navigation/core@7.13.0", "@react-navigation/core@^7.13.0":
   version "7.13.0"
-  resolved "https://registry.npmjs.org/@react-navigation/core/-/core-7.13.0.tgz#71577637cc32626e208fa994fc13e77394b17932"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-7.13.0.tgz#71577637cc32626e208fa994fc13e77394b17932"
   integrity sha512-Fc/SO23HnlGnkou/z8JQUzwEMvhxuUhr4rdPTIZp/c8q1atq3k632Nfh8fEiGtk+MP1wtIvXdN2a5hBIWpLq3g==
   dependencies:
     "@react-navigation/routers" "^7.5.1"
@@ -3914,7 +3914,7 @@
 
 "@react-navigation/drawer@7.7.2", "@react-navigation/drawer@^7.7.2":
   version "7.7.2"
-  resolved "https://registry.npmjs.org/@react-navigation/drawer/-/drawer-7.7.2.tgz#86f0fcf7065d8754d7532bebd4800a8fa17afde2"
+  resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.7.2.tgz#86f0fcf7065d8754d7532bebd4800a8fa17afde2"
   integrity sha512-393VoJLiQe1wMw6FxP+ajCgJRRI3PuEX+OA1YQG1my1BB2AbrbBld6e5uyvU5eoYykIpkQ5D1mxDmZ5MhF4yPA==
   dependencies:
     "@react-navigation/elements" "^2.8.1"
@@ -3924,7 +3924,7 @@
 
 "@react-navigation/elements@2.8.1", "@react-navigation/elements@^2.8.1":
   version "2.8.1"
-  resolved "https://registry.npmjs.org/@react-navigation/elements/-/elements-2.8.1.tgz#4df96e0219a2ed0be20d5452297835e632aaa6f9"
+  resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.8.1.tgz#4df96e0219a2ed0be20d5452297835e632aaa6f9"
   integrity sha512-MLmuS5kPAeAFFOylw89WGjgEFBqGj/KBK6ZrFrAOqLnTqEzk52/SO1olb5GB00k6ZUCDZKJOp1BrLXslxE6TgQ==
   dependencies:
     color "^4.2.3"
@@ -3933,7 +3933,7 @@
 
 "@react-navigation/native-stack@7.6.2", "@react-navigation/native-stack@^7.6.2":
   version "7.6.2"
-  resolved "https://registry.npmjs.org/@react-navigation/native-stack/-/native-stack-7.6.2.tgz#884efb57d4d8b9be4d743deb71e6ae223b610460"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.6.2.tgz#884efb57d4d8b9be4d743deb71e6ae223b610460"
   integrity sha512-CB6chGNLwJYiyOeyCNUKx33yT7XJSwRZIeKHf4S1vs+Oqu3u9zMnvGUIsesNgbgX0xy16gBqYsrWgr0ZczBTtA==
   dependencies:
     "@react-navigation/elements" "^2.8.1"
@@ -3943,7 +3943,7 @@
 
 "@react-navigation/native@7.1.19", "@react-navigation/native@^7.1.19", "@react-navigation/native@^7.1.6":
   version "7.1.19"
-  resolved "https://registry.npmjs.org/@react-navigation/native/-/native-7.1.19.tgz#f147e412a9f4a5c5eed85b4bde25171d0ce0297b"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.1.19.tgz#f147e412a9f4a5c5eed85b4bde25171d0ce0297b"
   integrity sha512-fM7q8di4Q8sp2WUhiUWOe7bEDRyRhbzsKQOd5N2k+lHeCx3UncsRYuw4Q/KN0EovM3wWKqMMmhy/YWuEO04kgw==
   dependencies:
     "@react-navigation/core" "^7.13.0"
@@ -3961,7 +3961,7 @@
 
 "@react-navigation/stack@7.6.2", "@react-navigation/stack@^7.6.2":
   version "7.6.2"
-  resolved "https://registry.npmjs.org/@react-navigation/stack/-/stack-7.6.2.tgz#cb1d0d380f11ca619954b0b08988a9069de306d2"
+  resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-7.6.2.tgz#cb1d0d380f11ca619954b0b08988a9069de306d2"
   integrity sha512-DVWYYTj5/QXYlFuO8Y232aDcJ4SFABQs9m99BYPs+hepjXzXivva9L4rbmsymFtqEPASx69dzX+nIKzlnxyqpw==
   dependencies:
     "@react-navigation/elements" "^2.8.1"
@@ -9241,7 +9241,7 @@ glob-parent@^6.0.2:
   dependencies:
     is-glob "^4.0.3"
 
-glob@11.0.x, glob@^11.0.0, glob@^11.0.3:
+glob@11.0.x:
   version "11.0.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-11.0.3.tgz#9d8087e6d72ddb3c4707b1d2778f80ea3eaefcd6"
   integrity sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==
@@ -9264,6 +9264,18 @@ glob@^10.2.2, glob@^10.3.10, glob@^10.3.12, glob@^10.4.1, glob@^10.4.2:
     minipass "^7.1.2"
     package-json-from-dist "^1.0.0"
     path-scurry "^1.11.1"
+
+glob@^11.0.0, glob@^11.1.0:
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-11.1.0.tgz#4f826576e4eb99c7dad383793d2f9f08f67e50a6"
+  integrity sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==
+  dependencies:
+    foreground-child "^3.3.1"
+    jackspeak "^4.1.1"
+    minimatch "^10.1.1"
+    minipass "^7.1.2"
+    package-json-from-dist "^1.0.0"
+    path-scurry "^2.0.0"
 
 glob@^5.0.14:
   version "5.0.15"
@@ -12315,10 +12327,10 @@ minimatch@4.2.3:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimatch@^10.0.3:
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-10.0.3.tgz#cf7a0314a16c4d9ab73a7730a0e8e3c3502d47aa"
-  integrity sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw==
+minimatch@^10.0.3, minimatch@^10.1.1:
+  version "10.1.1"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-10.1.1.tgz#e6e61b9b0c1dcab116b5a7d1458e8b6ae9e73a55"
+  integrity sha512-enIvLvRAFZYXJzkCYG5RKmPfrFArdLv+R+lbQ53BmIMLIry74bjKzX6iHAm8WYamJkhSSEabrWN5D97XnKObjQ==
   dependencies:
     "@isaacs/brace-expansion" "^5.0.0"
 
