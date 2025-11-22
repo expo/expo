@@ -208,7 +208,9 @@ function App() {
 
 To troubleshoot or debug issues with background tasks on Android, use the `adb` tool included with the Android SDK to inspect scheduled tasks:
 
-<Terminal cmd={['$ adb shell dumpsys jobscheduler | grep -A 40 -m 1 -E "JOB #.* <package-name>']} />
+<Terminal
+  cmd={['$ adb shell dumpsys jobscheduler | grep -A 40 -m 1 -E "JOB #.* <package-name>"']}
+/>
 
 The output from this command will show you the scheduled tasks for your app, including their status, constraints, and other information. Look for the `JOB` line to find the ID of the job and other details in the output:
 

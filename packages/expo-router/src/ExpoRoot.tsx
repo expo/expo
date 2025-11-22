@@ -19,7 +19,6 @@ import { ServerContext, ServerContextType } from './global-state/serverLocationC
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
-import { ModalContextProvider } from './modal/ModalContext';
 import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
@@ -64,21 +63,25 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
    * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
    * is a HTML document, we need to ensure its inside the <body>
    */
-  const wrapper = ({ children }: PropsWithChildren) => {
-    return (
-      <ParentWrapper>
-        <LinkPreviewContextProvider>
-          <SafeAreaProvider
-            // SSR support
-            initialMetrics={INITIAL_METRICS}>
-            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-            {canOverrideStatusBarBehavior && <AutoStatusBar />}
-            {children}
-          </SafeAreaProvider>
-        </LinkPreviewContextProvider>
-      </ParentWrapper>
-    );
-  };
+  const wrapper = useMemo(
+    () =>
+      ({ children }: PropsWithChildren) => {
+        return (
+          <ParentWrapper>
+            <LinkPreviewContextProvider>
+              <SafeAreaProvider
+                // SSR support
+                initialMetrics={INITIAL_METRICS}>
+                {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+                {canOverrideStatusBarBehavior && <AutoStatusBar />}
+                {children}
+              </SafeAreaProvider>
+            </LinkPreviewContextProvider>
+          </ParentWrapper>
+        );
+      },
+    [ParentWrapper]
+  );
 
   return <ContextNavigator {...props} wrapper={wrapper} />;
 }
@@ -159,13 +162,12 @@ function ContextNavigator({
         initialState={store.state}
         linking={store.linking as LinkingOptions<any>}
         onUnhandledAction={onUnhandledAction}
+        onStateChange={store.onStateChange}
         documentTitle={documentTitle}
         onReady={store.onReady}>
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <ModalContextProvider>
-              <Content />
-            </ModalContextProvider>
+            <Content />
           </WrapperComponent>
         </ServerContext.Provider>
       </UpstreamNavigationContainer>

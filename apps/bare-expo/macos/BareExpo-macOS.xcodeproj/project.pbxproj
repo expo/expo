@@ -10,7 +10,6 @@
 		29363141DC7A80DB22FA5171 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA3B41EA56BB5B268268C8D /* ExpoModulesProvider.swift */; };
 		41623B8AA3C3B314A17BE04C /* libPods-BareExpo-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D34AEDD54AEC68400CFA542E /* libPods-BareExpo-macOS.a */; };
 		514201552437B4B40078DB4F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 514201532437B4B40078DB4F /* Main.storyboard */; };
-		514201582437B4B40078DB4F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 514201572437B4B40078DB4F /* main.m */; };
 		A2022C6326D9C49C1CC23D41 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6E6919923BB3CB3F3071FB08 /* PrivacyInfo.xcprivacy */; };
 		C07765852D65E82B007CC5C3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07765842D65E82B007CC5C3 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
@@ -22,7 +21,6 @@
 		514201492437B4B30078DB4F /* BareExpo-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BareExpo-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		514201542437B4B40078DB4F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		514201562437B4B40078DB4F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		514201572437B4B40078DB4F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		514201592437B4B40078DB4F /* BareExpo-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "BareExpo-macOS.entitlements"; sourceTree = "<group>"; };
 		6E6919923BB3CB3F3071FB08 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = ../PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C07765842D65E82B007CC5C3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -92,7 +90,6 @@
 				C07765842D65E82B007CC5C3 /* AppDelegate.swift */,
 				514201532437B4B40078DB4F /* Main.storyboard */,
 				514201562437B4B40078DB4F /* Info.plist */,
-				514201572437B4B40078DB4F /* main.m */,
 				514201592437B4B40078DB4F /* BareExpo-macOS.entitlements */,
 				6E6919923BB3CB3F3071FB08 /* PrivacyInfo.xcprivacy */,
 				C02466F72E09DA4C00F9B72D /* Supporting */,
@@ -316,7 +313,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C07765852D65E82B007CC5C3 /* AppDelegate.swift in Sources */,
-				514201582437B4B40078DB4F /* main.m in Sources */,
 				29363141DC7A80DB22FA5171 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

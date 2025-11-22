@@ -15,6 +15,7 @@ export type Options = {
     platform?: string;
     redirects?: RedirectConfig[];
     rewrites?: RewriteConfig[];
+    headers?: Record<string, string | string[]>;
     preserveRedirectAndRewrites?: boolean;
     /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
     getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'> & {

@@ -1,12 +1,13 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJSIConversions.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptObject.h>
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
-#import <ExpoModulesCore/EXJavaScriptWeakObject.h>
-#import <ExpoModulesCore/EXJSIUtils.h>
-#import <ExpoModulesCore/JSIUtils.h>
+#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXJavaScriptWeakObject.h>
+#import <ExpoModulesJSI/EXJSIUtils.h>
+#import <ExpoModulesJSI/JSIUtils.h>
+#import <ExpoModulesJSI/ObjectDeallocator.h>
 
 @implementation EXJavaScriptObject {
   /**

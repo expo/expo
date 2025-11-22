@@ -35,6 +35,7 @@ export default class Schemer {
     _validateSchemaAsync(data: any): void;
     _validateAssetsAsync(data: any): Promise<void>;
     _validateImageAsync({ fieldPath, data, meta }: AssetField): Promise<void>;
+    _validateDirectoryAsync({ fieldPath, data, meta }: AssetField): Promise<void>;
     _validateAssetAsync({ fieldPath, data, meta }: AssetField): Promise<void>;
     validateProperty(fieldPath: string, data: any): Promise<void>;
     validateName(name: string): Promise<void>;

@@ -42,15 +42,24 @@ final internal class InvalidCalendarTypeException: GenericException<(String, Str
   }
 }
 
-final internal class MissingParameterException: Exception {
+final internal class MissingParameterException: GenericException<String?> {
   override var reason: String {
-    "`Calendar.getRemindersAsync` needs at least one calendar ID"
+    guard let param else {
+      return "Missing parameter"
+    }
+    return "Missing parameter: \(param)"
   }
 }
 
 final internal class ReminderNotFoundException: GenericException<String> {
   override var reason: String {
     "Reminder with id \(param) could not be found"
+  }
+}
+
+final internal class ReminderNotCreatedException: GenericException<String> {
+  override var reason: String {
+    "Reminder \(param) could not be created"
   }
 }
 
@@ -117,5 +126,23 @@ final internal class MissingRemindersPListValueException: GenericException<Strin
 final internal class EventDialogInProgressException: Exception {
   override var reason: String {
     "Different calendar dialog is already being presented. Await its result before presenting another."
+  }
+}
+
+final internal class CalendarNoLongerExistsException: Exception {
+  override var reason: String {
+    "The specified calendar no longer exists."
+  }
+}
+
+final internal class ItemNoLongerExistsException: Exception {
+  override var reason: String {
+    "The specified calendar item no longer exists."
+  }
+}
+
+final internal class DueDateRequiredException: Exception {
+  override var reason: String {
+    "A repeating reminder must have a due date."
   }
 }

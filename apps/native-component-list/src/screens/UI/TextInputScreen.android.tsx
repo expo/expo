@@ -1,4 +1,4 @@
-import { TextInput, TextInputRef, Button } from '@expo/ui/jetpack-compose';
+import { TextInput, TextInputRef, Button, Host } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 import { Text } from 'react-native';
 
@@ -19,60 +19,68 @@ export default function TextInputScreen() {
         Set text
       </Button>
       <Section title="Text Input">
-        <TextInput
-          ref={textRef}
-          autocorrection={false}
-          defaultValue="hey there"
-          onChangeText={setValue}
-        />
+        <Host>
+          <TextInput
+            ref={textRef}
+            autocorrection={false}
+            defaultValue="hey there"
+            onChangeText={setValue}
+          />
+        </Host>
       </Section>
       <Section title="Multiline Text Input">
-        <TextInput
-          multiline
-          numberOfLines={5}
-          autocorrection={false}
-          defaultValue="hey there"
-          onChangeText={setValue}
-        />
+        <Host>
+          <TextInput
+            multiline
+            numberOfLines={5}
+            autocorrection={false}
+            defaultValue="hey there"
+            onChangeText={setValue}
+          />
+        </Host>
       </Section>
       <Section title="Phone Text Input">
-        <TextInput
-          multiline
-          numberOfLines={5}
-          keyboardType="phone-pad"
-          autocorrection={false}
-          defaultValue="324342324"
-          onChangeText={setValue}
-        />
+        <Host>
+          <TextInput
+            multiline
+            numberOfLines={5}
+            keyboardType="phone-pad"
+            autocorrection={false}
+            defaultValue="324342324"
+            onChangeText={setValue}
+          />
+        </Host>
       </Section>
 
       <Section title="Capitalization">
-        <TextInput
-          multiline
-          numberOfLines={5}
-          autocorrection={false}
-          defaultValue="CHARACTERS"
-          onChangeText={setValue}
-          autoCapitalize="characters"
-        />
+        <Host>
+          <TextInput
+            multiline
+            numberOfLines={5}
+            autocorrection={false}
+            defaultValue="CHARACTERS"
+            onChangeText={setValue}
+            autoCapitalize="characters"
+          />
 
-        <TextInput
-          multiline
-          numberOfLines={5}
-          autocorrection={false}
-          defaultValue="Capitalizing Words"
-          onChangeText={setValue}
-          autoCapitalize="words"
-        />
+          <TextInput
+            multiline
+            numberOfLines={5}
+            autocorrection={false}
+            defaultValue="Capitalizing Words"
+            onChangeText={setValue}
+            autoCapitalize="words"
+          />
 
-        <TextInput
-          multiline
-          numberOfLines={5}
-          autocorrection={false}
-          defaultValue="Capitalizing sentences. This is a test."
-          onChangeText={setValue}
-          autoCapitalize="sentences"
-        />
+          <TextInput
+            multiline
+            numberOfLines={5}
+            autocorrection={false}
+            defaultValue="Capitalizing sentences. This is a test."
+            onChangeText={setValue}
+            autoCapitalize="sentences"
+          />
+        </Host>
       </Section>
     </ScrollPage>
   );

@@ -21,8 +21,27 @@ export type AudioSource = string | number | null | {
  */
 export type AudioPlayerOptions = {
     /**
-     * How often (in milliseconds) to emit playback status updates.
-     * @default 500
+     * How often (in milliseconds) to emit playback status updates. Defaults to 500ms.
+     *
+     * @example
+     * ```tsx
+     * import { useAudioPlayer } from 'expo-audio';
+     *
+     * export default function App() {
+     *   const player = useAudioPlayer(source);
+     *
+     *   // High-frequency updates for smooth progress bars
+     *   const player = useAudioPlayer(source, { updateInterval: 100 });
+     *
+     *   // Standard updates (default behavior)
+     *   const player = useAudioPlayer(source, { updateInterval: 500 });
+     *
+     *   // Low-frequency updates for better performance
+     *   const player = useAudioPlayer(source, { updateInterval: 1000 });
+     * }
+     * ```
+     *
+     * @default 500ms
      *
      * @platform ios
      * @platform android
@@ -65,6 +84,19 @@ export type AudioPlayerOptions = {
      * @default undefined
      */
     crossOrigin?: 'anonymous' | 'use-credentials';
+    /**
+     * If set to `true`, the audio session will not be deactivated when this player pauses or finishes playback.
+     * This prevents interrupting other audio sources (like videos) when the audio ends.
+     *
+     * Useful for sound effects that should not interfere with ongoing video playback or other audio.
+     * The audio session for this player will not be deactivated automatically when the player finishes playback.
+     *
+     * > **Note:** If needed, you can manually deactivate the audio session using `setIsAudioActiveAsync(false)`.
+     *
+     * @platform ios
+     * @default false
+     */
+    keepAudioSessionActive?: boolean;
 };
 /**
  * @deprecated Use `AudioPlayerOptions` instead.
@@ -129,7 +161,10 @@ export type AudioStatus = {
     isLoaded: boolean;
     /** Current playback rate (1.0 = normal speed). */
     playbackRate: number;
-    /** Whether pitch correction is enabled for rate changes. */
+    /**
+     * Whether pitch correction is enabled for rate changes.
+     * @default true
+     */
     shouldCorrectPitch: boolean;
 };
 /**
@@ -270,7 +305,7 @@ export type RecordingOptions = {
      * Recording options for the Web platform.
      * @platform web
      */
-    web?: RecordingOptionsWeb;
+    web: RecordingOptionsWeb;
 };
 /**
  * Recording options for the web.
@@ -362,11 +397,11 @@ export type RecordingOptionsAndroid = {
      */
     sampleRate?: number;
     /**
-     * The desired file format. See the [`AndroidOutputFormat`](#androidoutputformat) enum for all valid values.
+     * The desired file format. See the [`AndroidOutputFormat`](#androidoutputformat) type for all valid values.
      */
     outputFormat: AndroidOutputFormat;
     /**
-     * The desired audio encoder. See the [`AndroidAudioEncoder`](#androidaudioencoder) enum for all valid values.
+     * The desired audio encoder. See the [`AndroidAudioEncoder`](#androidaudioencoder) type for all valid values.
      */
     audioEncoder: AndroidAudioEncoder;
     /**
@@ -377,6 +412,10 @@ export type RecordingOptionsAndroid = {
      * `65536`
      */
     maxFileSize?: number;
+    /**
+     * The desired audio Source. See the [`RecordingSource`](#recordingsource) type for all valid values.
+     */
+    audioSource?: RecordingSource;
 };
 export type AudioMode = {
     /**
@@ -414,6 +453,14 @@ export type AudioMode = {
      * @platform android
      */
     shouldRouteThroughEarpiece: boolean;
+    /**
+     * Whether audio recording should continue when the app moves to the background.
+     *
+     * @default false
+     * @platform ios
+     * @platform android
+     */
+    allowsBackgroundRecording?: boolean;
 };
 /**
  * Audio interruption behavior modes for iOS.
@@ -433,4 +480,27 @@ export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
  * @platform android
  */
 export type InterruptionModeAndroid = 'doNotMix' | 'duckOthers';
+/**
+ * Recording source for android.
+ *
+ * An audio source defines both a default physical source of audio signal, and a recording configuration.
+ *
+ * - `camcorder`: Microphone audio source tuned for video recording, with the same orientation as the camera if available.
+ * - `default`: The default audio source.
+ * - `mic`: Microphone audio source.
+ * - `unprocessed`: Microphone audio source tuned for unprocessed (raw) sound if available, behaves like `default` otherwise.
+ * - `voice_communication`: Microphone audio source tuned for voice communications such as VoIP. It will for instance take advantage of echo cancellation or automatic gain control if available.
+ * - `voice_performance`: Source for capturing audio meant to be processed in real time and played back for live performance (e.g karaoke). The capture path will minimize latency and coupling with playback path.
+ * - `voice_recognition`: Microphone audio source tuned for voice recognition.
+ *
+ * @see https://developer.android.com/reference/android/media/MediaRecorder.AudioSource
+ * @platform android
+ */
+export type RecordingSource = 'camcorder' | 'default' | 'mic' | 'remote_submix' | 'unprocessed' | 'voice_communication' | 'voice_performance' | 'voice_recognition';
+export type AudioMetadata = {
+    title?: string;
+    artist?: string;
+    albumTitle?: string;
+    artworkUrl?: string;
+};
 //# sourceMappingURL=Audio.types.d.ts.map

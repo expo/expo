@@ -8,12 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 
 @Composable
 fun Divider(
   thickness: Dp = Dp.Hairline,
-  color: Color = Theme.colors.border.default
+  color: Color = NewAppTheme.colors.border.default
 ) {
   Canvas(Modifier.fillMaxWidth().height(thickness)) {
     drawLine(

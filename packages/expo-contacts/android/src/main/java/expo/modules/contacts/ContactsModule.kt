@@ -4,9 +4,12 @@ import android.Manifest
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
+import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import expo.modules.contacts.models.BaseModel
@@ -19,6 +22,7 @@ import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
+import expo.modules.core.utilities.ifNull
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -28,6 +32,8 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 import java.util.UUID
+
+const val onContactsChangeEventName = "onContactsChange"
 
 data class ContactPage(
   val data: List<Contact>,
@@ -123,6 +129,9 @@ class QueryArguments(
 class ContactsModule : Module() {
   private var contactPickingPromise: Promise? = null
   private var contactManipulationPromise: Promise? = null
+  private var contactChangeObserver: ContentObserver? = null
+  private var contactsHandlerThread: HandlerThread? = null
+  private var contactsHandler: Handler? = null
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
@@ -132,6 +141,21 @@ class ContactsModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoContacts")
+
+    Events(onContactsChangeEventName)
+
+    OnDestroy {
+      stopObservingContactChanges()
+    }
+
+    OnStartObserving(onContactsChangeEventName) {
+      ensureReadPermission()
+      startObservingContactChanges()
+    }
+
+    OnStopObserving(onContactsChangeEventName) {
+      stopObservingContactChanges()
+    }
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
       if (permissionsManager.isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
@@ -172,6 +196,26 @@ class ContactsModule : Module() {
           }
 
           promise.resolve(contactData.toBundle(options.fields))
+        }
+    }
+
+    AsyncFunction("hasContactsAsync") { promise: Promise ->
+      ensureReadPermission()
+
+      appContext
+        .backgroundCoroutineScope
+        .launch {
+          resolver.query(
+            ContactsContract.Contacts.CONTENT_URI,
+            arrayOf(ContactsContract.Contacts._ID),
+            null,
+            null,
+            null
+          ).ifNull { throw ContactsCheckFailedException() }
+            .use { cursor ->
+              val hasAnyContacts = cursor.moveToFirst()
+              promise.resolve(hasAnyContacts)
+            }
         }
     }
 
@@ -344,7 +388,11 @@ class ContactsModule : Module() {
     if (data.containsKey("image")) {
       val image = data["image"]
       if (image is Map<*, *> && image.containsKey("uri")) {
-        contact.photoUri = image["uri"] as String?
+        val uri = image["uri"] as String?
+        if (uri != null && !uri.startsWith("file://")) {
+          throw RemoteImageUriException(uri)
+        }
+        contact.photoUri = uri
         contact.hasPhoto = true
       }
     }
@@ -680,6 +728,54 @@ class ContactsModule : Module() {
   private fun ensurePermissions() {
     ensureReadPermission()
     ensureWritePermission()
+  }
+
+  private fun startObservingContactChanges() {
+    if (contactChangeObserver != null) {
+      return
+    }
+
+    contactsHandlerThread = HandlerThread("ContactsObserverThread")
+    contactsHandlerThread?.start()
+    contactsHandler = Handler(contactsHandlerThread!!.looper)
+
+    val observer = object : ContentObserver(contactsHandler) {
+      override fun onChange(selfChange: Boolean, uri: Uri?) {
+        super.onChange(selfChange, uri)
+        handleContactChange()
+      }
+    }
+
+    val urisToObserve = listOf(
+      ContactsContract.Contacts.CONTENT_URI,
+      ContactsContract.RawContacts.CONTENT_URI
+    )
+
+    urisToObserve.forEach { uri ->
+      resolver.registerContentObserver(uri, true, observer)
+    }
+
+    contactChangeObserver = observer
+  }
+
+  private fun stopObservingContactChanges() {
+    contactChangeObserver?.let { observer ->
+      resolver.unregisterContentObserver(observer)
+      contactChangeObserver = null
+    }
+
+    contactsHandler = null
+    contactsHandlerThread?.quitSafely()
+    contactsHandlerThread = null
+  }
+
+  private fun handleContactChange() {
+    sendEvent(
+      onContactsChangeEventName,
+      mapOf(
+        "body" to null
+      )
+    )
   }
 }
 

@@ -71,11 +71,11 @@ The example code below calls `getAccessTokenAsync()` above to get the Oauth 2.0 
 async function sendFCMv1Notification() {
   const key = require(process.env.FCM_SERVER_KEY);
   const firebaseAccessToken = await getAccessTokenAsync(key);
-  const deviceToken = process.env.FCM_DEVICE_TOKEN;
+  const fcmToken = process.env.FCM_DEVICE_TOKEN;
 
   const messageBody = {
     message: {
-      token: deviceToken,
+      token: fcmToken,
       data: {
         channelId: 'default',
         message: 'Testing',
@@ -161,7 +161,7 @@ the Expo config needs to be modified in one of two ways:
 
 If you are not using CNG, then you should [add the push notification entitlement in Xcode](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
 
-> **Note**: If you are upgrading an Expo app from a version before SDK 51, you should refer to [this FYI document](https://expo.fyi/apns-entitlement-sdk-51).
+> **Note**: If you are upgrading an Expo app from a version from SDK 51 and earlier, you should refer to [this FYI document](https://expo.fyi/apns-entitlement-sdk-51).
 
 ### Authorization
 

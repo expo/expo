@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '1.0.3'
+version = '1.0.7'
 
 expoModule {
   canBePublished false
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.easclient"
   defaultConfig {
     versionCode 1
-    versionName "1.0.3"
+    versionName "1.0.7"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   testOptions {
@@ -24,8 +24,8 @@ android {
 
 dependencies {
   androidTestImplementation 'org.amshove.kluent:kluent-android:1.68'
-  androidTestImplementation 'androidx.test:runner:1.4.0'
-  androidTestImplementation 'androidx.test:core:1.4.0'
-  androidTestImplementation 'androidx.test:rules:1.4.0'
   androidTestImplementation 'io.mockk:mockk-android:1.12.3'
+  androidTestImplementation 'androidx.test:runner:1.7.0'
+  androidTestImplementation 'androidx.test:core:1.7.0'
+  androidTestImplementation 'androidx.test:rules:1.7.0'
 }

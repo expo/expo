@@ -279,6 +279,18 @@ export interface PluginConfigTypeIos {
      */
     useFrameworks?: 'static' | 'dynamic';
     /**
+     * List of CocoaPods that should be linked statically instead of as frameworks.
+     *
+     * This is only relevant when `use_frameworks!` is enabled. Some pods—
+     * especially React Native prebuilt binaries—can fail due to modular header
+     * issues when built as dynamic frameworks. Declaring them here ensures they
+     * are linked statically, avoiding those compatibility problems.
+     *
+     * This property is consumed by the `use_expo_modules` function in
+     * `expo-modules-autolinking`.
+     */
+    forceStaticLinking?: string[];
+    /**
      * Enable the Network Inspector.
      *
      * @default true
@@ -325,8 +337,9 @@ export interface PluginConfigTypeIos {
     privacyManifestAggregationEnabled?: boolean;
     /**
      * Enables support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+     * Setting this value to `true` will enable building React Native from source and disable the use of precompiled xcframeworks.
      * This feature is available from React Native 0.80 and later when using the new architecture.
-     * From React Native 0.81, this setting will also use a precompiled React Native Core (`React.xcframework`).
+     * From React Native 0.81, this setting will also control the use of a precompiled React Native Core (`React.xcframework`).
      *
      * @default false
      * @see React Expo blog for details: [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.

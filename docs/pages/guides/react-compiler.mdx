@@ -25,10 +25,10 @@ This will generally verify if your app is following the [**rules of React**](htt
 
 Install `babel-plugin-react-compiler` and the React compiler runtime in your project:
 
-<Tabs tabs={['SDK 54 and above', 'SDK 53', 'SDK 52 and below']}>
+<Tabs tabs={['SDK 54 and later', 'SDK 53', 'SDK 52 and earlier']}>
   <Tab>
 
-    Babel is automatically configured in Expo SDK 54 and above.
+    Babel is automatically configured in Expo SDK 54 and later.
 
   </Tab>
   <Tab>
@@ -69,7 +69,7 @@ Additionally, you should use the ESLint plugin to continuously enforce the rules
 
 Run [`npx expo lint`](/guides/using-eslint/#eslint) to ensure ESLint is setup in your app, then install the ESLint plugin for React Compiler:
 
-<Terminal cmd={['$ npx expo install eslint-plugin-react-compiler']} />
+<Terminal cmd={['$ npx expo install eslint-plugin-react-compiler -- -D']} />
 
 </Step>
 
@@ -81,15 +81,13 @@ Update your [ESLint configuration](/guides/using-eslint/) to include the plugin:
 // https://docs.expo.dev/guides/using-eslint/
 const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
+const reactCompiler = require('eslint-plugin-react-compiler');
 
 module.exports = defineConfig([
   expoConfig,
+  reactCompiler.configs.recommended,
   {
     ignores: ['dist/*'],
-    plugins: ['react-compiler'],
-    rules: {
-      'react-compiler/react-compiler': 'error',
-    },
   },
 ]);
 ```
@@ -172,7 +170,7 @@ module.exports = function (api) {
         {
           'react-compiler': {
             // Passed directly to the React Compiler Babel plugin.
-            compilationMode: 'strict',
+            compilationMode: 'all',
             panicThreshold: 'all_errors',
           },
           web: {

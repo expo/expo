@@ -16,5 +16,11 @@ class CameraExceptions {
   class BarcodeScanningFailedException :
     CodedException("Barcode scanning failed")
 
+  class MLKitUnavailableException :
+    CodedException("MLKit is not available on this device. Barcode scanning requires Google Play Services.")
+
+  class GooglePlayServicesUnavailableException :
+    CodedException("Google Play Services is not available on this device. This feature requires Google Play Services.")
+
   class WriteImageException(cause: String?) : CodedException("Writing image has failed: $cause")
 }

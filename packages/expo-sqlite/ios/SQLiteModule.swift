@@ -21,15 +21,15 @@ public final class SQLiteModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
 
-    Constants {
+    Constant("defaultDatabaseDirectory") {
       #if os(tvOS)
-      let defaultDatabaseDirectory =
-        appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
+      return appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
       #else
-      let defaultDatabaseDirectory =
-        appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
+      return appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
       #endif
+    }
 
+    Constant("bundledExtensions") {
       var bundledExtensions: [String: [String: String?]] = [:]
       #if WITH_SQLITE_VEC
       bundledExtensions["sqlite-vec"] = [
@@ -37,11 +37,7 @@ public final class SQLiteModule: Module {
         "entryPoint": "sqlite3_vec_init"
       ]
       #endif
-
-      return [
-        "defaultDatabaseDirectory": defaultDatabaseDirectory,
-        "bundledExtensions": bundledExtensions
-      ]
+      return bundledExtensions
     }
 
     Events("onDatabaseChange")
@@ -72,7 +68,7 @@ public final class SQLiteModule: Module {
     AsyncFunction("importAssetDatabaseAsync") { (databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) in
       let path = try ensureDatabasePathExists(path: databasePath)
       let fileManager = FileManager.default
-      if fileManager.fileExists(atPath: path.standardizedFileURL.path) && !forceOverwrite {
+      if fileManager.fileExists(atPath: path.toFilePath()) && !forceOverwrite {
         return
       }
       guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
@@ -80,7 +76,7 @@ public final class SQLiteModule: Module {
         throw DatabaseNotFoundException(assetDatabasePath)
       }
       try? fileManager.removeItem(atPath: path.absoluteString)
-      try fileManager.copyItem(atPath: assetPath, toPath: path.standardizedFileURL.path)
+      try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
     }.runOnQueue(moduleQueue)
 
     AsyncFunction("ensureDatabasePathExistsAsync") { (databasePath: String) in
@@ -115,7 +111,7 @@ public final class SQLiteModule: Module {
           }
 
           let path = try ensureDatabasePathExists(path: databasePath)
-          if exsqlite3_open(path.standardizedFileURL.path, &db) != SQLITE_OK {
+          if exsqlite3_open(path.toFilePath(), &db) != SQLITE_OK {
             throw DatabaseException()
           }
         }
@@ -318,7 +314,7 @@ public final class SQLiteModule: Module {
     guard let pathUrl = URL(string: path) else {
       throw DatabaseInvalidPathException(path)
     }
-    fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().standardizedFileURL.path)
+    fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().toFilePath())
 
     return pathUrl
   }
@@ -519,7 +515,7 @@ public final class SQLiteModule: Module {
     if databasePath == MEMORY_DB_NAME {
       return
     }
-    let path = try ensureDatabasePathExists(path: databasePath).standardizedFileURL.path
+    let path = try ensureDatabasePathExists(path: databasePath).toFilePath()
 
     if !FileManager.default.fileExists(atPath: path) {
       throw DatabaseNotFoundException(path)

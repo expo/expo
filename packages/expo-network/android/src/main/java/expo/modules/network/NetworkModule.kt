@@ -2,6 +2,7 @@ package expo.modules.network
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.net.NetworkRequest
@@ -9,6 +10,8 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import expo.modules.kotlin.exception.Exceptions
@@ -28,14 +31,15 @@ class NetworkModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val connectivityManager: ConnectivityManager
     get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+  private val DELAY_MS = 250
 
   private val networkCallback = object : ConnectivityManager.NetworkCallback() {
     override fun onAvailable(network: android.net.Network) {
-      emitNetworkState()
+      asyncEmitNetworkState(DELAY_MS)
     }
 
     override fun onLost(network: android.net.Network) {
-      emitNetworkState()
+      asyncEmitNetworkState(DELAY_MS)
     }
   }
 
@@ -87,6 +91,19 @@ class NetworkModule : Module() {
   private fun emitNetworkState() {
     val networkState = fetchNetworkState()
     sendEvent(NETWORK_STATE_EVENT_NAME, networkState)
+  }
+
+  /**
+   * Emits the network state with a delay to prevent a race condition.
+   * This delay ensures we read the actual current network state rather than stale information.
+   */
+  private fun asyncEmitNetworkState(delay: Int) {
+    Handler(Looper.getMainLooper()).postDelayed({
+      try {
+        emitNetworkState()
+      } catch (e: SecurityException) {
+      }
+    }, delay.toLong())
   }
 
   private fun fetchNetworkState(): Bundle {

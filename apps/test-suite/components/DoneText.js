@@ -3,9 +3,10 @@ import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 
 import Colors from '../constants/Colors';
 
-export default function DoneText({ done, numFailed, results }) {
+export default function DoneText({ done, numFailed, results, selectionQuery }) {
   return (
     <View testID="test_suite_results" style={styles.container}>
+      <Text style={styles.doneMessage}>{selectionQuery}</Text>
       {!done && (
         <View style={styles.messageContainer}>
           <ActivityIndicator />

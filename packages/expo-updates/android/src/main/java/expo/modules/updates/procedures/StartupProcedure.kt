@@ -80,7 +80,7 @@ class StartupProcedure(
     object : LoaderTask.LoaderTaskCallback {
       override fun onFailure(e: Exception) {
         logger.error("UpdatesController loaderTask onFailure", e, UpdatesErrorCode.None)
-        launcher = NoDatabaseLauncher(context, logger, e)
+        launcher = NoDatabaseLauncher(context, logger, e, procedureScope)
         emergencyLaunchException = e
         notifyController()
       }

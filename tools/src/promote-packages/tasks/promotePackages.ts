@@ -49,7 +49,13 @@ export const promotePackages = new Task<TaskArgs>(
         }
 
         // If the local version had any tags assigned, we can drop the old ones.
-        if (options.drop && state.distTags && !state.distTags.includes(options.tag)) {
+        // If assigning `sdk-` tag, don't drop any other tags. This one is additive.
+        if (
+          options.drop &&
+          state.distTags &&
+          !state.distTags.includes(options.tag) &&
+          !options.tag.startsWith('sdk-')
+        ) {
           for (const distTag of state.distTags) {
             batch.log('    ', `Dropping ${yellow(distTag)} tag (${cyan(currentVersion)})...`);
 

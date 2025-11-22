@@ -102,11 +102,14 @@ export function addNotificationResponseReceivedListener(
 }
 
 /**
+ *
  * Gets the notification response received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
  *
  * - `null` - if no notification response has been received yet
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
+ *
+ * @deprecated Use `getLastNotificationResponse` instead.
  */
 export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
   return getLastNotificationResponse();
@@ -136,6 +139,7 @@ export function getLastNotificationResponse(): NotificationResponse | null {
  * If a component is using the [`useLastNotificationResponse`](#uselastnotificationresponse) hook,
  * this call will also clear the value returned by the hook.
  *
+ * @deprecated Use `clearLastNotificationResponse` instead.
  * @return A promise that resolves if the native call was successful.
  */
 export async function clearLastNotificationResponseAsync(): Promise<void> {

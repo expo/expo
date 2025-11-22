@@ -50,7 +50,7 @@ For the cases when the user interacts with the notification (for example, by pre
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, also `useLastNotificationResponse` return value would change.
 
-> **info** When the app is not running or killed and is started by tapping on a notification, the `NotificationResponseReceivedListener` should be registered early (module top-level) to be triggered on iOS. For action buttons that bring the app to the foreground, we recommend to capture the response using `useLastNotificationResponse` or `getLastNotificationResponseAsync` after the app starts.
+> **info** When the app is not running or killed and is started by tapping on a notification, the `NotificationResponseReceivedListener` should be registered early (module top-level) to be triggered on iOS. For action buttons that bring the app to the foreground, we recommend to capture the response using `useLastNotificationResponse` or `getLastNotificationResponse` after the app starts.
 
 ## Push Notification types
 

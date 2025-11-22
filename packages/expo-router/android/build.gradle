@@ -1,0 +1,22 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.router'
+version = '6.0.6'
+
+android {
+  namespace "expo.modules.router"
+  defaultConfig {
+    versionCode 1
+    versionName "6.0.6"
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  implementation 'com.google.android.material:material:1.13.0'
+}

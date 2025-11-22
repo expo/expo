@@ -53,7 +53,7 @@ data class ModuleMock<TestInterfaceType : Any, ModuleType : Module>(
         eventEmitter.emit(eventName as String, eventBody as? Bundle)
       }
 
-      val holder = ModuleHolder(moduleSpy)
+      val holder = ModuleHolder(moduleSpy, null)
       val moduleControllerImpl = ModuleControllerImpl(holder)
 
       val invocationHandler = ModuleMockInvocationHandler(

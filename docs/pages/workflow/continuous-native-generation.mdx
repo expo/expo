@@ -5,7 +5,7 @@ sidebar_title: Continuous Native Generation
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import { Terminal } from '~/ui/components/Snippet';
+import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 
 A single native project on its own is complicated to maintain, scale, and update. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies.
 
@@ -44,12 +44,17 @@ If your project does not contain **android** and **ios** directories, EAS Build 
 
 For a project that has **android** and **ios** directories, EAS Build will not run Prebuild to avoid overwriting any changes you've made to the native directories.
 
-If you troubleshoot your app by [compiling it locally](/guides/local-app-development/#local-app-compilation) (running `npx expo prebuild`, or `npx expo run:android` or `npx expo run:ios`), you can still use Prebuild with EAS Build to generate fresh native directories during the build process. In this scenario, add the **android** and **ios** directories to **.gitignore** or [**.easignore**](/build-reference/easignore/) files:
+If you troubleshoot your app by [compiling it locally](/guides/local-app-development/#local-app-compilation) (running `npx expo prebuild`, or `npx expo run:android` or `npx expo run:ios`), you can still use Prebuild with EAS Build to generate fresh native directories during the build process. The **android** and **ios** directories are automatically added to **.gitignore** when you create a new project, but if you need to add them manually, you can add them to **.gitignore** or [**.easignore**](/build-reference/easignore/) files:
 
-```diff .gitignore
-+ /android
-+ /ios
-```
+<DiffBlock
+  raw={`diff --git a/.gitignore b/.gitignore
+--- a/.gitignore
++++ b/.gitignore
+@@ -0,0 +1,2 @@
++/android
++/ios
+`}
+/>
 
 ### Usage with Expo CLI run commands
 

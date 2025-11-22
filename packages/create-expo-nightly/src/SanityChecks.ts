@@ -1,7 +1,4 @@
-import { createRequire } from 'node:module';
-
-const require = createRequire(import.meta.url);
-const { which } = require('zx') as typeof import('zx');
+import { which } from 'zx';
 
 /**
  * Check whether the current environment has the required tools available.

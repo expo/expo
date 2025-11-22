@@ -80,8 +80,6 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     () => triggerElement ?? <LinkTrigger>{children}</LinkTrigger>,
     [triggerElement, children]
   );
-  const highlightBorderRadius =
-    rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
 
   const preview = React.useMemo(
     () => (shouldLinkExternally(String(rest.href)) || !previewElement ? null : previewElement),
@@ -135,7 +133,8 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
           router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
       }}
-      style={{ borderRadius: highlightBorderRadius }}>
+      style={{ display: 'contents' }}
+      disableForceFlatten>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
         <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
         {preview}

@@ -12,12 +12,10 @@ import React, {
 } from 'react';
 
 import { useContextKey } from '../Route';
-import {
-  isNativeTabTrigger,
-  convertTabPropsToOptions,
-} from '../native-tabs/NativeBottomTabs/NativeTabTrigger';
+import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
+import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
 
@@ -56,7 +54,7 @@ export function useFilterScreenChildren(
           if (options.hidden === false) {
             screens.push({
               ...child.props,
-              options: convertTabPropsToOptions(child.props),
+              options,
             });
           } else {
             // - hidden = undefined -> then the route was not specified in navigator
@@ -69,13 +67,10 @@ export function useFilterScreenChildren(
       }
 
       if (isProtectedReactElement(child)) {
-        if (child.props.guard) {
-          Children.forEach(child.props.children, (protectedChild) => flattenChild(protectedChild));
-        } else {
-          Children.forEach(child.props.children, (protectedChild) => {
-            flattenChild(protectedChild, true);
-          });
-        }
+        const excludeChildren = exclude || !child.props.guard;
+        Children.forEach(child.props.children, (protectedChild) => {
+          flattenChild(protectedChild, excludeChildren);
+        });
         return;
       }
 
@@ -173,7 +168,11 @@ export function withLayoutContext<
         return null;
       }
 
-      return <Nav {...props} id={contextKey} ref={ref} children={sorted} />;
+      return (
+        <IsWithinLayoutContext value>
+          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+        </IsWithinLayoutContext>
+      );
     }),
     {
       Screen,

@@ -24,8 +24,9 @@ export const VideoView = forwardRef((props, ref) => {
     const videoRef = useRef(null);
     const mediaNodeRef = useRef(null);
     const hasToSetupAudioContext = useRef(false);
-    const fullscreenChangeListener = useRef(null);
+    const fullscreenChangeListeners = useRef(null);
     const isWaitingForFirstFrame = useRef(false);
+    const mountedPlayerRef = useRef(null);
     /**
      * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
      * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
@@ -45,10 +46,25 @@ export const VideoView = forwardRef((props, ref) => {
     }, [props.useAudioNodePlayback]);
     useImperativeHandle(ref, () => ({
         enterFullscreen: async () => {
-            if (!props.allowsFullscreen) {
+            if (!props.allowsFullscreen || !videoRef.current) {
                 return;
             }
-            await videoRef.current?.requestFullscreen();
+            // Cast the video to any to avoid ts errors. Methods such as webkitRequestFullscreen,
+            // webkitEnterFullScreen, msRequestFullscreen are not typed even though they exist.
+            const video = videoRef.current;
+            if (video.requestFullscreen) {
+                await video.requestFullscreen();
+            }
+            else if (video.webkitRequestFullscreen) {
+                // @ts-ignore webkitRequestFullscreen can exist on Apple devices
+                await video.webkitRequestFullscreen();
+            }
+            else if (video.webkitEnterFullScreen) {
+                await video.webkitEnterFullScreen();
+            }
+            else if (video.msRequestFullscreen) {
+                await video.msRequestFullscreen();
+            }
         },
         exitFullscreen: async () => {
             await document.exitFullscreen();
@@ -69,6 +85,7 @@ export const VideoView = forwardRef((props, ref) => {
                 }
             }
         },
+        nativeRef: videoRef,
     }));
     useEffect(() => {
         const onEnter = () => {
@@ -107,7 +124,7 @@ export const VideoView = forwardRef((props, ref) => {
         const zeroGainNode = zeroGainNodeRef.current;
         const mediaNode = mediaNodeRef.current;
         if (audioContext && zeroGainNode && mediaNode) {
-            props.player.mountAudioNode(audioContext, zeroGainNode, mediaNode);
+            props.player?.mountAudioNode(audioContext, zeroGainNode, mediaNode);
         }
         else {
             console.warn("Couldn't mount audio node, this might affect the audio playback when using multiple video views with the same player.");
@@ -120,12 +137,15 @@ export const VideoView = forwardRef((props, ref) => {
         const audioContext = audioContextRef.current;
         const mediaNode = mediaNodeRef.current;
         if (audioContext && mediaNode && videoRef.current) {
-            props.player.unmountAudioNode(videoRef.current, audioContext, mediaNode);
+            props.player?.unmountAudioNode(videoRef.current, audioContext, mediaNode);
         }
     }
     function maybeSetupAudioContext() {
+        // Not all browsers support the UserActivation API, so check it exists before we access it.
+        // If the API doesn't exist then we'll continue as if the user has been active.
+        const userHasNotBeenActive = 'userActivation' in navigator && !navigator.userActivation.hasBeenActive;
         if (!hasToSetupAudioContext.current ||
-            !navigator.userActivation.hasBeenActive ||
+            userHasNotBeenActive ||
             !videoRef.current ||
             !props.useAudioNodePlayback) {
             return;
@@ -149,25 +169,51 @@ export const VideoView = forwardRef((props, ref) => {
         }
     }
     function setupFullscreenListener() {
-        fullscreenChangeListener.current = fullscreenListener;
-        videoRef.current?.addEventListener('fullscreenchange', fullscreenChangeListener.current);
+        cleanupFullscreenListener();
+        const video = videoRef.current;
+        if (!video)
+            return;
+        const fullscreenListeners = {
+            default: fullscreenListener,
+            safariEnter: () => props.onFullscreenEnter?.(),
+            safariExit: () => props.onFullscreenExit?.(),
+            msListener: fullscreenListener,
+        };
+        fullscreenChangeListeners.current = fullscreenListeners;
+        // Standard Fullscreen API
+        video.addEventListener('fullscreenchange', fullscreenListeners.default);
+        // Safari (webkit)
+        video.addEventListener('webkitbeginfullscreen', fullscreenListeners.safariEnter);
+        video.addEventListener('webkitendfullscreen', fullscreenListeners.safariExit);
+        // IE11 (ms)
+        document.addEventListener('MSFullscreenChange', fullscreenListeners.msListener);
     }
     function cleanupFullscreenListener() {
-        if (fullscreenChangeListener.current) {
-            videoRef.current?.removeEventListener('fullscreenchange', fullscreenChangeListener.current);
-            fullscreenChangeListener.current = null;
-        }
+        const video = videoRef.current;
+        if (!video || !fullscreenChangeListeners.current)
+            return;
+        video.removeEventListener('fullscreenchange', fullscreenChangeListeners.current.default);
+        video.removeEventListener('webkitbeginfullscreen', fullscreenChangeListeners.current?.safariEnter);
+        video.removeEventListener('webkitendfullscreen', fullscreenChangeListeners.current.safariExit);
+        document.removeEventListener('MSFullscreenChange', fullscreenChangeListeners.current.msListener);
     }
     useEffect(() => {
+        videoRef.current && mountedPlayerRef.current?.unmountVideoView(videoRef.current);
         if (videoRef.current) {
             props.player?.mountVideoView(videoRef.current);
         }
         setupFullscreenListener();
         attachAudioNodes();
+        mountedPlayerRef.current = props.player ?? null;
+        if (props.player == null) {
+            videoRef.current?.removeAttribute('src');
+            videoRef.current?.load();
+        }
         return () => {
             if (videoRef.current) {
                 props.player?.unmountVideoView(videoRef.current);
             }
+            mountedPlayerRef.current = null;
             cleanupFullscreenListener();
             detachAudioNodes();
         };
@@ -189,7 +235,7 @@ export const VideoView = forwardRef((props, ref) => {
                 hasToSetupAudioContext.current = props.useAudioNodePlayback ?? false;
                 maybeSetupAudioContext();
             }
-        }} disablePictureInPicture={!props.allowsPictureInPicture} playsInline={props.playsInline} src={getSourceUri(props.player?.src) ?? ''}/>);
+        }} disablePictureInPicture={!props.allowsPictureInPicture} playsInline={props.playsInline} src={getSourceUri(props.player?.src) ?? undefined}/>);
 });
 export default VideoView;
 //# sourceMappingURL=VideoView.web.js.map

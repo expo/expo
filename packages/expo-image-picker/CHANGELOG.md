@@ -6,9 +6,38 @@
 
 ### 🎉 New features
 
+- [iOS] Add `shouldDownloadFromNetwork` option to fix iCloud video download ([#40697](https://github.com/expo/expo/pull/40697) by [@kosmydel](https://github.com/kosmydel))
+- [android] support colors configuration ([#40834](https://github.com/expo/expo/pull/40834) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🐛 Bug fixes
 
+- [android] fix `cropToolbarColor` default value ([#40834](https://github.com/expo/expo/pull/40834) by [@kosmydel](https://github.com/kosmydel))
+
 ### 💡 Others
+
+## 17.0.8 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.7 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- [ios] Avoid transcoding for .avif and .tiff like it works for .heic. This keeps the asset in its original container/codec (e.g. TIFF instead of JPEG) and is required for the new fast-path. Apps that relied on .automatic re-encoded output can pass preferredAssetRepresentationMode: '.automatic' to restore the old behaviour.([#39398](https://github.com/expo/expo/pull/39398) by [@chocky335](https://github.com/chocky335))
+
+## 17.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.5 — 2025-08-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fix wrong dimensions reported for portrait images ([#39230](https://github.com/expo/expo/pull/39230) by [@hirbod](https://github.com/hirbod))
+
+## 17.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
 
 ## 17.0.3 — 2025-08-25
 

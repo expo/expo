@@ -63,6 +63,19 @@ describe(mergeWithDuplicate, () => {
     });
   });
 
+  it('copies version from duplicate with identical path to returned resolution', () => {
+    const a = { ...BASE_RESOLUTION, version: '', path: 'a' };
+    const b = { ...BASE_RESOLUTION, version: '1.0.0', path: 'a' };
+    expect(mergeWithDuplicate({ ...b }, { ...a })).toMatchObject({
+      path: 'a',
+      version: '1.0.0',
+    });
+    expect(mergeWithDuplicate({ ...a }, { ...b })).toMatchObject({
+      path: 'a',
+      version: '1.0.0',
+    });
+  });
+
   it('merges duplicates', () => {
     const a = {
       ...BASE_RESOLUTION,

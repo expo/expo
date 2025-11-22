@@ -72,7 +72,8 @@ internal class VideoSourceLoader {
       return LoadingResult(value: nil, isCancelled: false)
     }
 
-    let playerItem = try await VideoPlayerItem(videoSource: videoSource)
+    let safeUrl = try await url.toUrlWithPermissions()
+    let playerItem = try await VideoPlayerItem(videoSource: videoSource, urlOverride: safeUrl)
 
     if Task.isCancelled {
       print("The loading task has been cancelled")

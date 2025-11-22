@@ -6,8 +6,8 @@ import Foundation
  A `URLSession` interceptor which passes network events to its delegate
  */
 @objc(EXRequestInterceptorProtocol)
-public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDelegate {
-  private static var requestIdProvider = RequestIdProvider()
+public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDelegate, @unchecked Sendable {
+  nonisolated(unsafe) private static var requestIdProvider = RequestIdProvider()
   private static let sessionDelegate
     = URLSessionSessionDelegateProxy(dispatchQueue: ExpoRequestCdpInterceptor.shared.dispatchQueue)
   private static let urlSession = URLSession(
@@ -218,7 +218,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
  The delegate to dispatch network request events
  */
 @objc(EXRequestInterceptorProtocolDelegate)
-protocol ExpoRequestInterceptorProtocolDelegate {
+protocol ExpoRequestInterceptorProtocolDelegate: Sendable {
   @objc
   func willSendRequest(requestId: String, task: URLSessionTask, request: URLRequest, redirectResponse: HTTPURLResponse?)
 

@@ -1,0 +1,13 @@
+diff --git a/app/build.gradle b/app/build.gradle
+index 6b3b074..a35aba1 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -50,7 +50,7 @@ dependencies {
+     debugImplementation libs.androidx.ui.test.manifest
+ }
+
+-def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
++def projectRoot = new File(rootDir.getAbsoluteFile(), 'my-project').getAbsolutePath()
+ react {
+     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
+     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()

@@ -11,15 +11,12 @@ public class DevMenuInternalModule: Module {
     Name("ExpoDevMenuInternal")
 
     // MARK: JavaScript API
-    Constants {
+    Constant("doesDeviceSupportKeyCommands") {
       #if targetEnvironment(simulator)
-      let doesDeviceSupportKeyCommands = true
+      return true
       #else
-      let doesDeviceSupportKeyCommands = false
+      return false
       #endif
-      return [
-        "doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands
-      ]
     }
 
     AsyncFunction("reload", DevMenuManager.shared.reload)
@@ -39,7 +36,7 @@ public class DevMenuInternalModule: Module {
     }
 
     AsyncFunction("setOnboardingFinished") { (finished: Bool) in
-      DevMenuPreferences.isOnboardingFinished = finished
+      DevMenuManager.shared.setOnboardingFinished(finished)
     }
 
     AsyncFunction("openDevMenuFromReactNative") {

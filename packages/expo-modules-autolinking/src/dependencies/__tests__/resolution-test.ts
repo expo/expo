@@ -9,6 +9,7 @@ function mockedNodeModule(
   options?: {
     pkgVersion?: string;
     pkgDependencies?: Record<string, string>;
+    pkgDevDependencies?: Record<string, string>;
     pkgExtra?: Record<string, unknown>;
   }
 ): NestedDirectoryJSON {
@@ -17,6 +18,7 @@ function mockedNodeModule(
       name,
       version: options?.pkgVersion ?? '0.0.1',
       dependencies: options?.pkgDependencies ?? {},
+      devDependencies: options?.pkgDevDependencies ?? {},
       ...options?.pkgExtra,
     }),
   };
@@ -211,6 +213,39 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
+  it('discovers dependencies on nameless package.json', async () => {
+    vol.fromNestedJSON(
+      {
+        'package.json': JSON.stringify({
+          // Missing name
+          dependencies: { 'react-native-third-party': '*' },
+        }),
+        node_modules: {
+          'react-native-third-party': {
+            'package.json': '{}', // Missing name
+          },
+        },
+      },
+      projectRoot
+    );
+
+    const result = await scanDependenciesRecursively(projectRoot);
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "react-native-third-party": {
+          "depth": 0,
+          "duplicates": null,
+          "name": "react-native-third-party",
+          "originPath": "/fake/project/node_modules/react-native-third-party",
+          "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
+          "version": "",
+        },
+      }
+    `);
+  });
+
   it('ignores transitive, hoisted dependencies without dependents', async () => {
     vol.fromNestedJSON(
       {
@@ -332,7 +367,7 @@ describe(scanDependenciesRecursively, () => {
               "name": "react-native-dependency",
               "originPath": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
               "path": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
-              "version": "",
+              "version": "0.0.1",
             },
           ],
           "name": "react-native-dependency",

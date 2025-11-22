@@ -57,7 +57,6 @@ abstract class ExpoApplication : Application() {
     Exponent.initialize(this, this)
 
     NativeModuleDepsProvider.instance.add(Kernel::class.java, KernelProvider.instance)
-    NativeModuleDepsProvider.instance.add(DevMenuManager::class.java, DevMenuManager())
     NativeModuleDepsProvider.instance.inject(ExpoApplication::class.java, this)
 
     BranchManager.initialize(this)

@@ -3,16 +3,56 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import androidx.core.content.edit
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableMap
-import expo.interfaces.devmenu.DevMenuPreferencesInterface
+import expo.modules.devmenu.helpers.preferences
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
 
-object DevMenuPreferencesHandle : DevMenuPreferencesInterface {
-  private lateinit var sharedPreferences: SharedPreferences
+interface DevMenuPreferences {
+  /**
+   * Adds a listener that will be called whenever any preference changes.
+   */
+  fun addOnChangeListener(listener: () -> Unit)
+
+  /**
+   * Removes a previously added listener.
+   */
+  fun removeOnChangeListener(listener: () -> Unit)
+
+  /**
+   * Whether to enable shake gesture.
+   */
+  var motionGestureEnabled: Boolean
+
+  /**
+   * Whether to enable three-finger long press gesture.
+   */
+  var touchGestureEnabled: Boolean
+
+  /**
+   * Whether to enable key commands.
+   */
+  var keyCommandsEnabled: Boolean
+
+  /**
+   * Whether to automatically show the dev menu once its delegate is set and the bridge is loaded.
+   */
+  var showsAtLaunch: Boolean
+
+  /**
+   * Returns `true` only if the user finished onboarding, `false` otherwise.
+   */
+  var isOnboardingFinished: Boolean
+
+  /**
+   * Whether to show a floating action button that pulls up the DevMenu at launch.
+   */
+  var showFab: Boolean
+}
+
+class DevMenuDefaultPreferences(
+  application: Application
+) : DevMenuPreferences {
+  private val sharedPreferences = application.getSharedPreferences(DEV_SETTINGS_PREFERENCES, MODE_PRIVATE)
 
   private val listeners = mutableListOf<() -> Unit>()
 
@@ -21,100 +61,34 @@ object DevMenuPreferencesHandle : DevMenuPreferencesInterface {
     listeners.forEach { it() }
   }
 
-  fun init(application: Application) {
-    sharedPreferences = application.getSharedPreferences(DEV_SETTINGS_PREFERENCES, MODE_PRIVATE)
+  init {
     sharedPreferences.registerOnSharedPreferenceChangeListener(mainListener)
   }
 
-  fun addOnChangeListener(listener: () -> Unit) {
+  override fun addOnChangeListener(listener: () -> Unit) {
     listeners.add(listener)
   }
 
-  fun removeOnChangeListener(listener: () -> Unit) {
+  override fun removeOnChangeListener(listener: () -> Unit) {
     listeners.remove(listener)
   }
 
-  /**
-   * Whether to enable shake gesture.
-   */
   override var motionGestureEnabled: Boolean
-    get() = sharedPreferences.getBoolean("motionGestureEnabled", true)
-    set(value) = saveBoolean("motionGestureEnabled", value)
+    by preferences(sharedPreferences, true)
 
-  /**
-   * Whether to enable three-finger long press gesture.
-   */
   override var touchGestureEnabled: Boolean
-    get() = sharedPreferences.getBoolean("touchGestureEnabled", true)
-    set(value) = saveBoolean("touchGestureEnabled", value)
+    by preferences(sharedPreferences, true)
 
-  /**
-   * Whether to enable key commands.
-   */
   override var keyCommandsEnabled: Boolean
-    get() = sharedPreferences.getBoolean("keyCommandsEnabled", true)
-    set(value) = saveBoolean("keyCommandsEnabled", value)
+    by preferences(sharedPreferences, true)
 
-  /**
-   * Whether to automatically show the dev menu once its delegate is set and the bridge is loaded.
-   */
   override var showsAtLaunch: Boolean
-    get() = sharedPreferences.getBoolean("showsAtLaunch", false)
-    set(value) = saveBoolean("showsAtLaunch", value)
+    by preferences(sharedPreferences, false)
 
-  /**
-   * Returns `true` only if the user finished onboarding, `false` otherwise.
-   */
   override var isOnboardingFinished: Boolean
-    get() = sharedPreferences.getBoolean("isOnboardingFinished", false)
-    set(value) = saveBoolean("isOnboardingFinished", value)
+    by preferences(sharedPreferences, false)
 
-  /**
-   * Whether to show a floating action button that pulls up the DevMenu at launch.
-   */
+  // TODO: @behenate, on VR this value should be true by default
   override var showFab: Boolean
-    // TODO: @behenate, on VR this value should be true by default
-    get() = sharedPreferences.getBoolean("showFab", false)
-    set(value) = saveBoolean("showFab", value)
-
-  private fun saveBoolean(key: String, value: Boolean) {
-    sharedPreferences
-      .edit(commit = true) {
-        putBoolean(key, value)
-      }
-  }
-
-  fun serialize(): WritableMap =
-    Arguments
-      .createMap()
-      .apply {
-        putBoolean("motionGestureEnabled", motionGestureEnabled)
-        putBoolean("touchGestureEnabled", touchGestureEnabled)
-        putBoolean("keyCommandsEnabled", keyCommandsEnabled)
-        putBoolean("showsAtLaunch", showsAtLaunch)
-        putBoolean("isOnboardingFinished", isOnboardingFinished)
-        putBoolean("showFab", showFab)
-      }
-
-  fun setPreferences(settings: ReadableMap) {
-    if (settings.hasKey("motionGestureEnabled")) {
-      motionGestureEnabled = settings.getBoolean("motionGestureEnabled")
-    }
-
-    if (settings.hasKey("keyCommandsEnabled")) {
-      keyCommandsEnabled = settings.getBoolean("keyCommandsEnabled")
-    }
-
-    if (settings.hasKey("showsAtLaunch")) {
-      showsAtLaunch = settings.getBoolean("showsAtLaunch")
-    }
-
-    if (settings.hasKey("touchGestureEnabled")) {
-      touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
-    }
-
-    if (settings.hasKey("showFab")) {
-      showFab = settings.getBoolean("showFab")
-    }
-  }
+    by preferences(sharedPreferences, false)
 }

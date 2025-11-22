@@ -1,0 +1,18 @@
+diff --git a/settings.gradle b/settings.gradle
+index f07559f..4ad6b79 100644
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -42,8 +42,12 @@ dependencyResolutionManagement {
+     }
+ }
+
++expoAutolinking {
++  projectRoot = new File(rootDir, "my-project")
++}
++
+ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+-  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
++  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand, file(rootDir), files("yarn.lock"))
+ }
+ expoAutolinking.useExpoModules()
+ expoAutolinking.useExpoVersionCatalog()

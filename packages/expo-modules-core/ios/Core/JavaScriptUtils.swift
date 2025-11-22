@@ -109,7 +109,7 @@ internal func concat(
 
 // MARK: - Exceptions
 
-internal class InvalidArgsNumberException: GenericException<(received: Int, expected: Int, required: Int)> {
+internal final class InvalidArgsNumberException: GenericException<(received: Int, expected: Int, required: Int)>, @unchecked Sendable {
   override var reason: String {
     if param.required < param.expected {
       return "Received \(param.received) arguments, but \(param.expected) was expected and at least \(param.required) is required"
@@ -119,7 +119,7 @@ internal class InvalidArgsNumberException: GenericException<(received: Int, expe
   }
 }
 
-internal class ArgumentCastException: GenericException<(index: Int, type: AnyDynamicType)> {
+internal final class ArgumentCastException: GenericException<(index: Int, type: AnyDynamicType)>, @unchecked Sendable {
   override var reason: String {
     "The \(formatOrdinalNumber(param.index + 1)) argument cannot be cast to type \(param.type.description)"
   }
@@ -132,7 +132,7 @@ internal class ArgumentCastException: GenericException<(index: Int, type: AnyDyn
   }
 }
 
-private class ModuleUnavailableException: GenericException<String> {
+private final class ModuleUnavailableException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     "Module '\(param)' is no longer available"
   }

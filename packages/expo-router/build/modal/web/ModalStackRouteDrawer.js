@@ -9,7 +9,7 @@ const react_1 = __importDefault(require("react"));
 const vaul_1 = require("vaul");
 const modalStyles_1 = __importDefault(require("./modalStyles"));
 const utils_1 = require("./utils");
-function ModalStackRouteDrawer({ routeKey, options, renderScreen, onDismiss, themeColors, }) {
+function ModalStackRouteDrawer({ routeKey, options, dismissible, renderScreen, onDismiss, themeColors, }) {
     const [open, setOpen] = react_1.default.useState(true);
     // Determine sheet vs. modal with an SSR-safe hook. The first render (during
     // hydration) always assumes mobile/sheet to match the server markup; an
@@ -136,7 +136,7 @@ function ModalStackRouteDrawer({ routeKey, options, renderScreen, onDismiss, the
             fadeFromIndex,
         }
         : {};
-    return (<vaul_1.Drawer.Root key={`${routeKey}-${isSheet ? 'sheet' : 'modal'}`} open={open} dismissible={options.gestureEnabled ?? true} onAnimationEnd={handleOpenChange} shouldScaleBackground autoFocus onOpenChange={setOpen} {...sheetProps}>
+    return (<vaul_1.Drawer.Root key={`${routeKey}-${isSheet ? 'sheet' : 'modal'}`} open={open} dismissible={dismissible ?? options.gestureEnabled ?? true} onAnimationEnd={handleOpenChange} shouldScaleBackground autoFocus onOpenChange={setOpen} {...sheetProps}>
       <vaul_1.Drawer.Portal>
         <vaul_1.Drawer.Overlay className={modalStyles_1.default.overlay} style={options.webModalStyle?.overlayBackground
             ? {

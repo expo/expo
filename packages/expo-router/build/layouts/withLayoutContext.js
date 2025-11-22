@@ -37,8 +37,9 @@ exports.useFilterScreenChildren = useFilterScreenChildren;
 exports.withLayoutContext = withLayoutContext;
 const react_1 = __importStar(require("react"));
 const Route_1 = require("../Route");
-const NativeTabTrigger_1 = require("../native-tabs/NativeBottomTabs/NativeTabTrigger");
+const NativeTabTrigger_1 = require("../native-tabs/NativeTabTrigger");
 const useScreens_1 = require("../useScreens");
+const IsWithinLayoutContext_1 = require("./IsWithinLayoutContext");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
 function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = {}) {
@@ -65,7 +66,7 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                     if (options.hidden === false) {
                         screens.push({
                             ...child.props,
-                            options: (0, NativeTabTrigger_1.convertTabPropsToOptions)(child.props),
+                            options,
                         });
                     }
                     else {
@@ -78,14 +79,10 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                 return;
             }
             if ((0, Protected_1.isProtectedReactElement)(child)) {
-                if (child.props.guard) {
-                    react_1.Children.forEach(child.props.children, (protectedChild) => flattenChild(protectedChild));
-                }
-                else {
-                    react_1.Children.forEach(child.props.children, (protectedChild) => {
-                        flattenChild(protectedChild, true);
-                    });
-                }
+                const excludeChildren = exclude || !child.props.guard;
+                react_1.Children.forEach(child.props.children, (protectedChild) => {
+                    flattenChild(protectedChild, excludeChildren);
+                });
                 return;
             }
             if (isCustomNavigator) {
@@ -157,7 +154,9 @@ function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
         if (!sorted.length) {
             return null;
         }
-        return <Nav {...props} id={contextKey} ref={ref} children={sorted}/>;
+        return (<IsWithinLayoutContext_1.IsWithinLayoutContext value>
+          <Nav {...props} id={contextKey} ref={ref} children={sorted}/>
+        </IsWithinLayoutContext_1.IsWithinLayoutContext>);
     }), {
         Screen: Screen_1.Screen,
         Protected: Protected_1.Protected,

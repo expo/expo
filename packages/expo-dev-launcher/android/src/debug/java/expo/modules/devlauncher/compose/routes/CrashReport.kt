@@ -2,7 +2,7 @@ package expo.modules.devlauncher.compose.routes
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import expo.modules.devlauncher.compose.DefaultScreenContainer
+import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
 import expo.modules.devlauncher.compose.models.CrashReportModel
 import expo.modules.devlauncher.compose.screens.CrashReportScreen
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance

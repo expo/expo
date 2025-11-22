@@ -1,4 +1,4 @@
-import './sweet/setUpErrorManager.fx';
+import './sweet/setUpJsLogger.fx';
 import './polyfill';
 export type * from './ts-declarations/global';
 export { EventEmitter, type EventSubscription } from './EventEmitter';

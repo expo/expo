@@ -18,6 +18,10 @@ defaults:
     node: 22.14.0
     yarn: 1.22.22
 
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
 jobs:
   cli:
     runs_on: linux-medium
@@ -28,6 +32,6 @@ jobs:
       - uses: eas/install_node_modules
       - name: Run CLI tests
         id: cli
-        working_directory: ../../packages/expo-updates      
+        working_directory: ../../packages/expo-updates
         run: |
           yarn test:e2e-cli --ci --runInBand

@@ -248,11 +248,9 @@ import { router } from 'expo-router';
 
 function useNotificationObserver() {
   useEffect(() => {
-    let isMounted = true;
-
     function redirect(notification: Notifications.Notification) {
       const url = notification.request.content.data?.url;
-      if (url) {
+      if (typeof url === 'string') {
         /* @info Push the URL. You may want to verify the format before navigating. */
         router.push(url);
         /* @end */
@@ -260,13 +258,10 @@ function useNotificationObserver() {
     }
 
     /* @info Handle the initial push notification. */
-    Notifications.getLastNotificationResponseAsync() /* @end */
-      .then(response => {
-        if (!isMounted || !response?.notification) {
-          return;
-        }
-        redirect(response?.notification);
-      });
+    const response = Notifications.getLastNotificationResponse();
+    if (response?.notification) {
+      redirect(response.notification);
+    }
 
     /* @info Listen for runtime notifications. */
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
@@ -275,7 +270,6 @@ function useNotificationObserver() {
     });
 
     return () => {
-      isMounted = false;
       subscription.remove();
     };
   }, []);
@@ -319,7 +313,7 @@ export default function App() {
           }
 
           // Handle URL from expo push notifications
-          const response = await Notifications.getLastNotificationResponseAsync();
+          const response = Notifications.getLastNotificationResponse();
 
           return response?.notification.request.content.data.url;
         },
@@ -649,7 +643,7 @@ We encourage you to always ensure appropriate channels with informative names ar
 
 ### Custom notification icon and colors&ensp;<PlatformTags platforms={['android']} />
 
-You can configure the [`notification.icon`](../config/app/#notification) and [`notification.color`](../config/app/#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#configurable-properties). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
+You can configure the `icon` and `color` keys for notification in the project by using the [`expo-notifications` config plugin](#configurable-properties) with [Expo Prebuild](/workflow/prebuild). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles)
 (the icon must be all white with a transparent background) or else it may not be displayed as intended.

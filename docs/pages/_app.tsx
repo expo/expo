@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@expo/styleguide';
+import { KapaProvider } from '@kapaai/react-sdk';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
 import { MotionConfig } from 'framer-motion';
@@ -20,6 +21,7 @@ import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
 import 'tippy.js/dist/tippy.css';
 
 const isDev = process.env.NODE_ENV === 'development';
+const KAPA_INTEGRATION_ID = '2063233f-1e70-45e8-b1b5-a872c9887afc';
 
 export const regularFont = Inter({
   display: 'swap',
@@ -86,7 +88,9 @@ export default function App({ Component, pageProps }: AppProps) {
               <CodeBlockSettingsProvider>
                 <MDXProvider components={rootMarkdownComponents}>
                   <Tooltip.Provider>
-                    <Component {...pageProps} />
+                    <KapaProvider integrationId={KAPA_INTEGRATION_ID} callbacks={{}}>
+                      <Component {...pageProps} />
+                    </KapaProvider>
                   </Tooltip.Provider>
                 </MDXProvider>
               </CodeBlockSettingsProvider>

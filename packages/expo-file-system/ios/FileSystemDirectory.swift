@@ -6,24 +6,28 @@ internal final class FileSystemDirectory: FileSystemPath {
     super.init(url: url, isDirectory: true)
   }
 
-  func validateType() throws {
-    try validatePermission(.read)
-    var isDirectory: ObjCBool = false
-    if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-      if !isDirectory.boolValue {
-        throw InvalidTypeDirectoryException()
+  override func validateType() throws {
+    try withCorrectTypeAndScopedAccess(permission: .read) {
+      var isDirectory: ObjCBool = false
+      if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+        if !isDirectory.boolValue {
+          throw InvalidTypeDirectoryException()
+        }
       }
     }
   }
 
   func create(_ options: CreateOptions) throws {
-    try validatePermission(.write)
-    try validateType()
-    try validateCanCreate(options)
-    do {
-      try FileManager.default.createDirectory(at: url, withIntermediateDirectories: options.intermediates, attributes: nil)
-    } catch {
-      throw UnableToCreateException(error.localizedDescription)
+    try withCorrectTypeAndScopedAccess(permission: .write) {
+      guard try needsCreation(options) else {
+        return
+      }
+      try validateCanCreate(options)
+      do {
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: options.intermediates, attributes: nil)
+      } catch {
+        throw UnableToCreateException(error.localizedDescription)
+      }
     }
   }
 
@@ -58,14 +62,15 @@ internal final class FileSystemDirectory: FileSystemPath {
 
   // Internal only function
   func listAsRecords() throws -> [[String: Any]] {
-    try validatePermission(.read)
+    try withCorrectTypeAndScopedAccess(permission: .read) {
     var contents: [[String: Any]] = []
 
     let items = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
       for item in items {
         contents.append(["isDirectory": item.hasDirectoryPath, "uri": item.absoluteString])
       }
-    return contents
+      return contents
+    }
   }
 
   func validatePath() throws {
@@ -75,26 +80,33 @@ internal final class FileSystemDirectory: FileSystemPath {
   }
 
   func info() throws -> DirectoryInfo {
-    try validateType()
-    try validatePermission(.read)
+    try withCorrectTypeAndScopedAccess(permission: .read) {
+      if !exists {
+        let result = DirectoryInfo()
+        result.exists = false
+        result.uri = url.absoluteString
+        return result
+      }
+      switch url.scheme {
+      case "file":
+        let result = DirectoryInfo()
+        result.exists = true
+        result.uri = url.absoluteString
+        result.size = try size
+        result.files = (try? FileManager.default.contentsOfDirectory(atPath: url.path)) ?? []
+        result.modificationTime = try modificationTime
+        result.creationTime = try creationTime
+        return result
+      default:
+        throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
+      }
+    }
+  }
+
+  func needsCreation(_ options: CreateOptions) throws -> Bool {
     if !exists {
-      let result = DirectoryInfo()
-      result.exists = false
-      result.uri = url.absoluteString
-      return result
+      return true
     }
-    switch url.scheme {
-    case "file":
-      let result = DirectoryInfo()
-      result.exists = true
-      result.uri = url.absoluteString
-      result.size = try size
-      result.files = (try? FileManager.default.contentsOfDirectory(atPath: url.path)) ?? []
-      result.modificationTime = try modificationTime
-      result.creationTime = try creationTime
-      return result
-    default:
-      throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
-    }
+    return !options.idempotent
   }
 }

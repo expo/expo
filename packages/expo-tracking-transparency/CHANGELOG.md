@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+- Updated library descriptions to focus on tracking functionality and removed outdated iOS version references. ([#39652](https://github.com/expo/expo/pull/39652) by [@reichhartd](https://github.com/reichhartd))
+
+## 6.0.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.3 — 2025-08-25
 
 _This version does not introduce any user-facing changes._

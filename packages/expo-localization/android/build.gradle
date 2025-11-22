@@ -4,16 +4,16 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '17.0.3'
+version = '17.0.7'
 
 android {
   namespace "expo.modules.localization"
   defaultConfig {
     versionCode 22
-    versionName "17.0.3"
+    versionName "17.0.7"
   }
 }
 
 dependencies {
-  implementation "androidx.core:core-ktx:1.6.0"
+  implementation "androidx.core:core-ktx:1.17.0"
 }

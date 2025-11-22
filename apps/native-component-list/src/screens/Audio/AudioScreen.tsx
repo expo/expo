@@ -1,5 +1,5 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 
 export const AudioScreens = [
   {
@@ -26,6 +26,15 @@ export const AudioScreens = [
       return optionalRequire(() => require('./expo-audio/CreateAudioPlayerScreen'));
     },
   },
+
+  {
+    name: 'Expo Audio Lock Screen Controls',
+    route: 'audio/expo-audio-controls',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./expo-audio/AudioControlsScreen'));
+    },
+  },
   {
     name: 'Expo AV Player',
     route: 'audio/expo-av',
@@ -45,12 +54,6 @@ export const AudioScreens = [
 ];
 
 export default function AudioScreen() {
-  const apis: ListElement[] = AudioScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/apis/${screen.route}`,
-    };
-  });
+  const apis = apiScreensToListElements(AudioScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

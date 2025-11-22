@@ -56,6 +56,7 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
                 isDeprecated && 'line-through opacity-80'
               )}>
               {displayTitle}
+              {isDeprecated && <span className="sr-only">Deprecated section</span>}
             </TitleElement>
           </Link>
         </Tooltip.Trigger>

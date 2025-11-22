@@ -68,22 +68,6 @@ For more information, see the [`uri-scheme` library](https://www.npmjs.com/packa
 
 <Step label="3">
 
-## Add additional optional configuration
-
-For certain types of errors, you can obtain more helpful error messages when using `expo-dev-client`. To turn this on, import `expo-dev-client` in the project's **index** file. Make sure that the import statement is executed early, before your application's JS code is imported (place the import above `import App from './App'`).
-
-```js
-import 'expo-dev-client';
-/* @hide ... */ /* @end */
-import App from './App';
-```
-
-For more information, see [Error handling](/develop/development-builds/use-development-builds/#add-error-handling).
-
-</Step>
-
-<Step label="4">
-
 ## Build and install the app
 
 Create a debug build of your app using the tools of your choice. For example, you can do this [locally with Expo CLI](/guides/local-app-development/) or [in the cloud with EAS Build](/develop/development-builds/create-a-build/).

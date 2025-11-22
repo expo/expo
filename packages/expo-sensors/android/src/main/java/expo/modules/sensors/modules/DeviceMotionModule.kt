@@ -58,7 +58,9 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
 
     Events("deviceMotionDidUpdate")
 
-    Constants("Gravity" to SensorManager.GRAVITY_EARTH)
+    Constant("Gravity") {
+      SensorManager.GRAVITY_EARTH
+    }
 
     OnCreate {
       uiManager = appContext.legacyModule()!!

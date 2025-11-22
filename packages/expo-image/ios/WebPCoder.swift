@@ -10,7 +10,7 @@ internal let imageCoderOptionUseAppleWebpCodec = SDImageCoderOption(rawValue: "u
  based on the passed `imageCoderOptionUseAppleWebpCodec` option.
  */
 internal final class WebPCoder: NSObject, SDAnimatedImageCoder {
-  static let shared = WebPCoder()
+  nonisolated(unsafe) static let shared = WebPCoder()
 
   private var useAppleWebpCodec: Bool = true
   private var instantiatedCoder: SDAnimatedImageCoder?

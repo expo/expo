@@ -1,0 +1,335 @@
+---
+title: Building SwiftUI apps with Expo UI
+sidebar_title: Expo UI and SwiftUI
+description: Learn how to use Expo UI to integrate SwiftUI into your Expo apps.
+platforms: ['ios', 'macos', 'tvos']
+hasVideoLink: true
+---
+
+import { DocsLogo } from '@expo/styleguide';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+> **info** Available in **SDK 54 and later**.
+
+Expo UI brings SwiftUI to React Native. You can use modern SwiftUI primitives to build your apps.
+
+This guide covers the basics of using Expo UI to integrate SwiftUI into your Expo apps.
+
+<VideoBoxLink
+  videoId="2wXYLWz3YEQ"
+  title="Expo UI iOS Liquid Glass Tutorial"
+  description="Learn how to build real SwiftUI views in your React Native app with the new Expo UI."
+/>
+
+## Features
+
+- **SwiftUI primitives**: Expo UI is not another UI library. It brings SwiftUI primitives to Expo.
+- **1-to-1 mapping**: The components in Expo UI have a 1-to-1 mapping to SwiftUI views. You can easily explore available views in the SwiftUI ecosystem, such as [Explore SwiftUI](https://exploreswiftui.com/) or the [Libraried app](https://apps.apple.com/us/app/libraried-ui-components/id1642862540), and find the corresponding Expo UI component.
+- **Full-app support**: Expo UI is designed to be used throughout the entire app. You can write your app entirely in Expo UI, while maintaining flexibility at the same time. The integration works at the component level. You can also mix [React Native components](https://reactnative.dev/docs/components-and-apis), [Expo UI components](/versions/latest/sdk/ui/), [DOM components](/guides/dom-components/), or custom 2D components using [`react-native-skia`](https://shopify.github.io/react-native-skia/).
+
+## Installation
+
+You'll need to install the `@expo/ui` package in your Expo project. Run the following command to install it:
+
+<Terminal cmd={['$ npx expo install @expo/ui']} />
+
+## Usage
+
+Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`Host`](/versions/latest/sdk/ui/#host) component. The [`Host`](/versions/latest/sdk/ui/#host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
+
+### Basic usage with `Host`
+
+<Tabs>
+  <Tab label="Code">
+    ```tsx SwiftUI loading view
+    import { CircularProgress, Host } from '@expo/ui/swift-ui';
+    import { View, Text } from 'react-native';
+
+    export default function LoadingView() {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Host matchContents>
+            <CircularProgress />
+          </Host>
+          <Text>Loading...</Text>
+        </View>
+      );
+    }
+    ```
+
+  </Tab>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Loading view"
+      src="/static/images/expo-ui/swift-ui-guide/loading.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+</Tabs>
+
+### Using `HStack` and `VStack`
+
+You can also use the `HStack` and `VStack` components to build the entire layout in SwiftUI.
+
+<Tabs>
+  <Tab label="Code">
+    ```tsx SwiftUI loading with HStack and VStack
+    import { CircularProgress, Host, HStack, LinearProgress, VStack } from '@expo/ui/swift-ui';
+
+    export default function LoadingView() {
+      return (
+        <Host style={{ flex: 1, margin: 32 }}>
+          <VStack spacing={32}>
+            <HStack spacing={32}>
+              <CircularProgress />
+              <CircularProgress color="orange" />
+            </HStack>
+            <LinearProgress progress={0.5} />
+            <LinearProgress color="orange" progress={0.7} />
+          </VStack>
+        </Host>
+      );
+    }
+    ```
+
+  </Tab>
+
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="HStack and VStack"
+      src="/static/images/expo-ui/swift-ui-guide/hstack-vstack.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+</Tabs>
+
+### Modifiers
+
+[SwiftUI modifier](<https://developer.apple.com/documentation/swiftui/view/modifier(_:)>) is a powerful way to customize the appearance and behavior of SwiftUI components. Expo UI also provides modifiers for SwiftUI components. You can import modifiers from `@expo/ui/swift-ui/modifiers` and pass them as an array to the `modifiers` prop. In the following example, the [`expo-mesh-gradient`](/versions/latest/sdk/mesh-gradient/) and `glassEffect` modifier are combined to create Liquid Glass text.
+
+<Tabs>
+  <Tab label="Code">
+    > **Note**: `glassEffect` modifier requires Xcode 26+ and iOS 26+.
+
+    ```tsx SwiftUI modifiers
+    import { Host, Text } from '@expo/ui/swift-ui';
+    import { glassEffect, padding } from '@expo/ui/swift-ui/modifiers';
+    import { MeshGradientView } from 'expo-mesh-gradient';
+    import { View } from 'react-native';
+
+    export default function Page() {
+      return (
+        <View style={{ flex: 1 }}>
+          <MeshGradientView
+            style={{ flex: 1 }}
+            columns={3}
+            rows={3}
+            colors={['red', 'purple', 'indigo', 'orange', 'white', 'blue', 'yellow', 'green', 'cyan']}
+            points={[
+              [0.0, 0.0],
+              [0.5, 0.0],
+              [1.0, 0.0],
+              [0.0, 0.5],
+              [0.5, 0.5],
+              [1.0, 0.5],
+              [0.0, 1.0],
+              [0.5, 1.0],
+              [1.0, 1.0],
+            ]}
+          />
+          <Host style={{ position: 'absolute', top: 0, right: 0, left: 0, bottom: 0 }}>
+            <Text
+              size={32}
+              modifiers={[
+                padding({
+                  all: 16,
+                }),
+                glassEffect({
+                  glass: {
+                    variant: 'clear',
+                  },
+                }),
+              ]}>
+              Glass effect text
+            </Text>
+          </Host>
+        </View>
+      );
+    }
+    ```
+
+  </Tab>
+
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Liquid Glass effect"
+      src="/static/images/expo-ui/swift-ui-guide/glass-effect.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+</Tabs>
+
+### iOS Settings app example
+
+Combining the Expo UI components and modifiers, you can build a UI like iOS Settings app.
+
+<Tabs>
+  <Tab label="Code">
+    ```tsx SwiftUI Form example to build iOS Settings app
+    import {
+      Button,
+      Form,
+      Host,
+      HStack,
+      Image,
+      Section,
+      Spacer,
+      Switch,
+      Text,
+    } from '@expo/ui/swift-ui';
+    import { background, clipShape, frame } from '@expo/ui/swift-ui/modifiers';
+    import { Link } from 'expo-router';
+    import { useState } from 'react';
+
+    export default function SettingsView() {
+      const [isAirplaneMode, setIsAirplaneMode] = useState(true);
+
+      return (
+        <Host style={{ flex: 1 }}>
+          <Form>
+            <Section>
+              <HStack spacing={8}>
+                <Image
+                  systemName="airplane"
+                  color="white"
+                  size={18}
+                  modifiers={[
+                    frame({ width: 28, height: 28 }),
+                    background('#ffa500'),
+                    clipShape('roundedRectangle'),
+                  ]}
+                />
+                <Text>Airplane Mode</Text>
+                <Spacer />
+                <Switch value={isAirplaneMode} onValueChange={setIsAirplaneMode} />
+              </HStack>
+
+              <Link href="/wifi" asChild>
+                <Button>
+                  <HStack spacing={8}>
+                    <Image
+                      systemName="wifi"
+                      color="white"
+                      size={18}
+                      modifiers={[
+                        frame({ width: 28, height: 28 }),
+                        background('#007aff'),
+                        clipShape('roundedRectangle'),
+                      ]}
+                    />
+                    <Text color="primary">Wi-Fi</Text>
+                    <Spacer />
+                    <Image systemName="chevron.right" size={14} color="secondary" />
+                  </HStack>
+                </Button>
+              </Link>
+            </Section>
+          </Form>
+        </Host>
+      );
+    }
+    ```
+
+  </Tab>
+
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Form example to build iOS Settings app"
+      src="/static/images/expo-ui/swift-ui-guide/form.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+</Tabs>
+
+## Common questions
+
+<Collapsible summary="Can I use flexbox or other styles in SwiftUI components?">
+
+Flexbox styles can be applied to the `Host` component itself. Once you're inside the SwiftUI context, however, [`Yoga`](https://www.yogalayout.dev/) is not available &mdash; layouts should be defined using `<HStack>` and `<VStack>` instead.
+
+</Collapsible>
+
+<Collapsible summary={<>What's the <CODE>Host</CODE> component?</>}>
+
+`Host` is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
+
+</Collapsible>
+
+<Collapsible summary={<>How is Expo UI different from libraries like <CODE>react-native-paper</CODE> or <CODE>react-native-elements</CODE>?</>}>
+
+Expo UI is not "yet another" UI library and not an opinionated design kit. Instead, it's a primitives library. It exposes native SwiftUI and Jetpack Compose components directly to JavaScript, rather than re-implementing or simulating UI in JavaScript.
+
+</Collapsible>
+
+<Collapsible summary={<>Can I use <CODE>@expo/ui/swift-ui</CODE> on Android or web?</>}>
+
+The first milestone for Expo UI is achieving a 1-to-1 mapping from SwiftUI to Expo UI. Universal support will come in the next stage of the roadmap. Our priority is to establish strong SwiftUI support first, and then expand to Jetpack Compose on Android and DOM support on the Web.
+
+</Collapsible>
+
+<Collapsible summary="Can I use React Native components inside SwiftUI components?">
+
+Yes, you can place React Native components as JSX children of Expo UI components. Expo UI automatically creates a [`UIViewRepresentable`](https://developer.apple.com/documentation/swiftui/uiviewrepresentable) wrapper for you.
+However, keep in mind that the SwiftUI layout system works differently from UIKit and has some limitations. According to Apple's documentation:
+
+> **Warning** SwiftUI fully controls the layout of the UIKit view's [`center`](https://developer.apple.com/documentation/UIKit/UIView/center), [`bounds`](https://developer.apple.com/documentation/UIKit/UIView/bounds), [`frame`](https://developer.apple.com/documentation/UIKit/UIView/frame), and [`transform`](https://developer.apple.com/documentation/UIKit/UIView/transform) properties. Don't directly set these layout-related properties on the view managed by a [`UIViewRepresentable`](https://developer.apple.com/documentation/swiftui/uiviewrepresentable) instance from your own code because that conflicts with SwiftUI and results in undefined behavior.
+
+Also note that once you render React Native components, you're leaving the SwiftUI context. If you want to add Expo UI components again, you'll need to reintroduce a `Host` wrapper.
+
+We recommend keeping SwiftUI layouts self-contained. Interop is possible, but it works best when boundaries are clearly defined.
+
+</Collapsible>
+
+<Collapsible summary="I'm a SwiftUI developer. Why should I learn Expo UI?">
+
+Because React's promise of _"learn once, write anywhere"_, it now extends to SwiftUI and Jetpack Compose. With Expo UI, you can apply your SwiftUI knowledge to build apps that run in the React Native ecosystem, extend to the Web through [DOM components](/guides/dom-components/), and even integrate [2D](https://shopify.github.io/react-native-skia/) and [3D](https://github.com/wcandillon/react-native-webgpu) rendering. The system is flexible enough that different parts of your app can use different approaches &mdash; giving you seamless integration at the component level.
+
+</Collapsible>
+
+## Additional resources
+
+<BoxLink
+  title="Expo UI reference"
+  Icon={DocsLogo}
+  description="For information on API components, methods, and more, see the Expo UI reference."
+  href="/versions/latest/sdk/ui/"
+/>
+
+<BoxLink
+  title="Expo UI example"
+  description="Our latest Expo UI examples"
+  Icon={GithubIcon}
+  href="https://github.com/expo/expo/tree/main/apps/native-component-list/src/screens/UI"
+/>
+
+<BoxLink
+  title="Hot Chocolate app example"
+  description="An example app replicating the YVR Hot Chocolate Fest app with Expo UI"
+  Icon={GithubIcon}
+  href="https://github.com/expo/hot-chocolate"
+/>
+
+<BoxLink
+  title="Expo UI example replicate to TV"
+  description="TVOS support to Expo UI"
+  Icon={GithubIcon}
+  href="https://github.com/douglowder/ExpoUITV"
+/>

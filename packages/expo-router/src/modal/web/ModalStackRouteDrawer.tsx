@@ -10,6 +10,7 @@ import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 function ModalStackRouteDrawer({
   routeKey,
   options,
+  dismissible,
   renderScreen,
   onDismiss,
   themeColors,
@@ -19,6 +20,7 @@ function ModalStackRouteDrawer({
   renderScreen: () => React.ReactNode;
   onDismiss: () => void;
   themeColors: { card: string; background: string };
+  dismissible?: boolean;
 }) {
   const [open, setOpen] = React.useState(true);
   // Determine sheet vs. modal with an SSR-safe hook. The first render (during
@@ -178,7 +180,7 @@ function ModalStackRouteDrawer({
     <Drawer.Root
       key={`${routeKey}-${isSheet ? 'sheet' : 'modal'}`}
       open={open}
-      dismissible={options.gestureEnabled ?? true}
+      dismissible={dismissible ?? options.gestureEnabled ?? true}
       onAnimationEnd={handleOpenChange}
       shouldScaleBackground
       autoFocus

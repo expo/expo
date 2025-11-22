@@ -45,7 +45,7 @@ struct Event: Record {
   @Field
   var title: String
   @Field
-  var location: String?
+  var location: String
   @Field
   var creationDate: Either<String, Double>?
   @Field
@@ -109,6 +109,8 @@ struct Reminder: Record {
   @Field
   var recurrenceRule: RecurrenceRule?
   @Field
+  var allDay: Bool?
+  @Field
   var startDate: Either<String, Double>?
   @Field
   var dueDate: Either<String, Double>?
@@ -146,5 +148,6 @@ struct DialogEditResponse: Record {
   @Field
   var action: ResponseAction = .canceled
   @Field
+  // swiftlint:disable:next redundant_optional_initialization
   var id: String? = nil
 }

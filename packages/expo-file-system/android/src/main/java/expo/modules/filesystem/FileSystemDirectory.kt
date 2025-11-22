@@ -53,10 +53,13 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   fun create(options: CreateOptions = CreateOptions()) {
     validateType()
     validatePermission(Permission.WRITE)
-    validateCanCreate(options)
+    if (!needsCreation(options)) {
+      return
+    }
     if (uri.isContentUri) {
       throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
     }
+    validateCanCreate(options)
     if (options.overwrite && file.exists()) {
       file.delete()
     }
@@ -100,5 +103,9 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   fun asString(): String {
     val uriString = file.uri.toString()
     return if (uriString.endsWith("/")) uriString else "$uriString/"
+  }
+
+  fun needsCreation(options: CreateOptions): Boolean {
+    return !file.exists() || !options.idempotent
   }
 }

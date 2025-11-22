@@ -4,17 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.composeunstyled.Icon
-import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.models.Account
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
@@ -61,11 +57,9 @@ fun AccountSelector(
           },
           rightComponent = {
             if (account.isSelected) {
-              Icon(
-                painterResource(R.drawable.check_circle),
-                contentDescription = "Checked",
-                tint = Color(0xFF34C759),
-                modifier = Modifier.size(20.dp)
+              LauncherIcons.CheckCircle(
+                size = 20.dp,
+                tint = Color(0xFF34C759)
               )
             }
           },

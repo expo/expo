@@ -17,6 +17,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.Direction
+import expo.modules.kotlin.views.ComposableScope
 import java.util.EnumSet
 
 enum class ProgressVariant(val value: String) : Enumerable {
@@ -38,11 +39,11 @@ data class ProgressProps(
 ) : ComposeProps
 
 class ProgressView(context: Context, appContext: AppContext) :
-  ExpoComposeView<ProgressProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<ProgressProps>(context, appContext) {
   override val props = ProgressProps()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val (variant) = props.variant
     val (progress) = props.progress
     val (color) = props.color

@@ -1,0 +1,69 @@
+package expo.modules.medialibrary.next.objects.asset
+
+import android.net.Uri
+import android.os.Bundle
+import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.medialibrary.next.objects.asset.delegates.AssetDelegate
+import expo.modules.medialibrary.next.objects.wrappers.RelativePath
+import expo.modules.medialibrary.next.objects.wrappers.MediaType
+import expo.modules.medialibrary.next.objects.wrappers.MimeType
+import expo.modules.medialibrary.next.records.AssetInfo
+import expo.modules.medialibrary.next.records.Location
+import expo.modules.medialibrary.next.records.Shape
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+class Asset(val assetDelegate: AssetDelegate) : SharedObject() {
+  val contentUri: Uri get() = assetDelegate.contentUri
+
+  suspend fun getCreationTime(): Long? =
+    assetDelegate.getCreationTime()
+
+  suspend fun getDuration(): Long? =
+    assetDelegate.getDuration()
+
+  suspend fun getFilename(): String =
+    assetDelegate.getFilename()
+
+  suspend fun getHeight(): Int =
+    assetDelegate.getHeight()
+
+  suspend fun getWidth(): Int =
+    assetDelegate.getWidth()
+
+  suspend fun getShape(): Shape? =
+    assetDelegate.getShape()
+
+  suspend fun getMediaType(): MediaType =
+    assetDelegate.getMediaType()
+
+  suspend fun getModificationTime(): Long? =
+    assetDelegate.getModificationTime()
+
+  suspend fun getUri(): Uri =
+    assetDelegate.getUri()
+
+  suspend fun getInfo(): AssetInfo =
+    assetDelegate.getInfo()
+
+  suspend fun getMimeType(): MimeType =
+    assetDelegate.getMimeType()
+
+  suspend fun getLocation(): Location? =
+    assetDelegate.getLocation()
+
+  suspend fun getExif(): Bundle =
+    assetDelegate.getExif()
+
+  suspend fun move(relativePath: RelativePath) = withContext(Dispatchers.IO) {
+    assetDelegate.move(relativePath)
+  }
+
+  suspend fun copy(relativePath: RelativePath): Asset = withContext(Dispatchers.IO) {
+    return@withContext assetDelegate.copy(relativePath)
+  }
+
+  suspend fun delete() = withContext(Dispatchers.IO) {
+    assetDelegate.delete()
+  }
+}

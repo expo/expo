@@ -27,6 +27,9 @@ export function normalizeParams(...params) {
         if (value instanceof Uint8Array) {
             blobParams[key] = value;
         }
+        else if (typeof value === 'boolean') {
+            primitiveParams[key] = value ? 1 : 0;
+        }
         else {
             primitiveParams[key] = value;
         }

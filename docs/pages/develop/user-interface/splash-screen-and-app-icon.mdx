@@ -141,7 +141,7 @@ If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _mana
 
 <Collapsible summary="Troubleshooting: New splash screen not appearing on iOS">
 
-For SDK 51 and below, in iOS development builds, launch screens can sometimes remain cached between builds, making it harder to test new images. Apple recommends clearing the _derived data_ directory before rebuilding, this can be done with Expo CLI by running:
+For SDK versions below 52, in iOS development builds, launch screens can sometimes remain cached between builds, making it harder to test new images. Apple recommends clearing the _derived data_ directory before rebuilding, this can be done with Expo CLI by running:
 
 <Terminal cmd={['$ npx expo run:ios --no-build-cache']} />
 
@@ -202,7 +202,16 @@ You may also want to provide a separate icon for older Android devices that do n
 
 #### iOS
 
+<VideoBoxLink
+  videoId="RZ_QMym3adw"
+  title="Icon Composer"
+  description="Learn how to use the new Icon Composer to create app icons for an Expo project."
+  className="mb-4"
+/>
+
 For iOS, your app's icon should follow the [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons/). You can use the [Icon Composer](https://developer.apple.com/icon-composer/) app to create your app icon. This will output a **.icon** directory that you can add to your project's **assets** directory. You can then provide the path to this directory in your app config. Adding support for dark mode is handled in Icon Composer, so you do not need to provide variants when using this approach.
+
+> **info** **Note:** Providing an Icon Composer **.icon** directory via `ios.icon` is supported **in SDK 54** and later.
 
 ```json app.json
 {

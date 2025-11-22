@@ -21,7 +21,7 @@ private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue
 /**
  Represents a function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
-public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition {
+public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition, @unchecked Sendable {
   typealias ClosureType = (Args) throws -> ReturnType
 
   /**
@@ -63,7 +63,12 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
 
   var takesOwner: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+  func call(
+    by owner: AnyObject?,
+    withArguments args: [Any],
+    appContext: AppContext,
+    callback: @Sendable @escaping (FunctionCallResult) -> ()
+  ) {
     let promise = Promise(appContext: appContext) { value in
       callback(.success(Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: ~ReturnType.self)))
     } rejecter: { exception in
@@ -177,10 +182,24 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
   }
 }
 
-// MARK: - Exceptions
+extension AsyncFunctionDefinition {
+  var requiredArgumentsCount: Int {
+    var trailingOptionalArgumentsCount: Int = 0
 
-internal final class NativeFunctionUnavailableException: GenericException<String> {
-  override var reason: String {
-    return "Native function '\(param)' is no longer available in memory"
+    let reversedArgumentTypes = dynamicArgumentTypes.reversed()
+
+    let reversedArgumentsToIterate: any Sequence<AnyDynamicType> = takesPromise
+      ? reversedArgumentTypes.dropFirst()
+      : reversedArgumentTypes
+
+    for dynamicArgumentType in reversedArgumentsToIterate {
+      if dynamicArgumentType is DynamicOptionalType {
+        trailingOptionalArgumentsCount += 1
+      } else {
+        break
+      }
+    }
+
+    return argumentsCount - trailingOptionalArgumentsCount
   }
 }

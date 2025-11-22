@@ -4,7 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { type PropsWithChildren } from 'react';
+import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
+import React, { PropsWithChildren } from 'react';
+
+import { ServerDataLoaderContext, ServerDataLoaderData } from '../loaders/ServerDataLoaderContext';
 
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
@@ -20,16 +23,16 @@ export function ScrollViewStyleReset() {
   );
 }
 
-export function Html({ children }: PropsWithChildren) {
+export function InnerRoot({
+  children,
+  loadedData,
+}: PropsWithChildren<{ loadedData: ServerDataLoaderData }>) {
+  // NOTE(@hassankhan): This ref seems to be unnecessary, double-check SSR/SSG code paths and remove
+  const ref = React.createRef<ServerContainerRef>();
+
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <ScrollViewStyleReset />
-      </head>
-      <body>{children}</body>
-    </html>
+    <ServerDataLoaderContext value={loadedData}>
+      <ServerContainer ref={ref}>{children}</ServerContainer>
+    </ServerDataLoaderContext>
   );
 }

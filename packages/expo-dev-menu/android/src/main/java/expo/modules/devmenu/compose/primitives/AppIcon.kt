@@ -20,8 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
-
-private val IsRunningInPreview = Build.DEVICE == "layoutlib"
+import expo.modules.devmenu.compose.utils.IsRunningInPreview
 
 @Composable
 fun AppIcon(

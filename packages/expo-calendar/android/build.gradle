@@ -4,19 +4,19 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '15.0.3'
+version = '15.0.7'
 
 android {
   namespace "expo.modules.calendar"
   defaultConfig {
     versionCode 17
-    versionName '15.0.3'
+    versionName '15.0.7'
   }
 }
 
 dependencies {
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.13.5'

@@ -20,6 +20,40 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 
 const MINIFY_JSON = true;
 
+const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
+  'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/bottomsheet': ['jetpack-compose/BottomSheet/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/button': ['jetpack-compose/Button/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/circularprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/circularprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/colorpicker': ['swift-ui/ColorPicker/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/contextmenu': ['swift-ui/ContextMenu/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/contextmenu': ['jetpack-compose/ContextMenu/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/datetimepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/gauge': ['swift-ui/Gauge/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/host': ['swift-ui/Host/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/linearprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/linearprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/list': ['swift-ui/List/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/picker': ['jetpack-compose/Picker/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/slider': ['jetpack-compose/Slider/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/switch': ['swift-ui/Switch/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/section': ['swift-ui/Section/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/form': ['swift-ui/Form/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/divider': ['swift-ui/Divider/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
+};
+
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   expo: ['Expo.ts'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
@@ -39,6 +73,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-brightness': ['Brightness.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
+  'expo-calendar-next': ['next/Calendar.ts', 'expo-calendar'],
   'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
@@ -82,6 +117,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
   'expo-media-library': ['MediaLibrary.ts'],
+  'expo-media-library-next': ['next/index.ts', 'expo-media-library'],
   'expo-mesh-gradient': ['index.ts'],
   'expo-navigation-bar': ['index.ts'],
   'expo-network': ['Network.ts'],
@@ -94,6 +130,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
+  'expo-server': ['index.ts'],
   'expo-sharing': ['Sharing.ts'],
   'expo-sms': ['SMS.ts'],
   'expo-speech': ['Speech/Speech.ts'],
@@ -105,14 +142,16 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-system-ui': ['SystemUI.ts'],
   'expo-task-manager': ['TaskManager.ts'],
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
-  'expo-ui': ['types.ts'],
   'expo-updates': ['index.ts'],
   'expo-video': ['index.ts'],
   'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
   'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
   '@expo/fingerprint': ['index.ts'],
+  'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
+  'expo-glass-effect': ['index.ts'],
+  ...uiPackagesMapping,
 };
 
 const executeCommand = async (
@@ -232,7 +271,11 @@ async function action({ packageName, sdk }: ActionOptions) {
           chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`)
         );
       } else {
-        logger.warn(`🚨 Package '${packageName}' API data generation is not supported yet!`);
+        logger.warn(
+          `🚨 Package '${packageName}' API data generation is not supported yet! Add it to the mapping in ${
+            __filename
+          }.`
+        );
       }
     } else {
       const packagesEntries = Object.entries(PACKAGES_MAPPING).map(([key, value]) =>

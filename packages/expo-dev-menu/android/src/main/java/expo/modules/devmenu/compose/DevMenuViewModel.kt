@@ -2,14 +2,34 @@ package expo.modules.devmenu.compose
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.DevMenuPreferencesHandle
+import androidx.lifecycle.ViewModelProvider
+import com.facebook.react.ReactHost
+import expo.modules.devmenu.DevMenuDevSettings
+import expo.modules.devmenu.DevMenuPreferences
+import expo.modules.devmenu.DevToolsSettings
+import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
+import expo.modules.kotlin.weak
+import java.lang.ref.WeakReference
 
-class DevMenuViewModel : ViewModel() {
-  private val menuPreferences = DevMenuPreferencesHandle
+class DevMenuViewModel(
+  val reactHostHolder: WeakReference<ReactHost>,
+  val menuPreferences: DevMenuPreferences,
+  val goHomeAction: (() -> Unit)? = null
+) : ViewModel() {
+  private val reactHost
+    get() = reactHostHolder.get()
+
+  private val devToolsDelegate = run {
+    val reactHost = reactHost ?: return@run null
+    val devSupportManager = reactHost.devSupportManager ?: return@run null
+    DevMenuDevToolsDelegate(devSupportManager.weak())
+  }
+
   private val _state = mutableStateOf(
     DevMenuState(
-      devToolsSettings = DevMenuManager.getDevSettings()
+      devToolsSettings = devSettings,
+      showFab = menuPreferences.showFab,
+      hasGoHomeAction = goHomeAction != null
     )
   )
 
@@ -21,6 +41,15 @@ class DevMenuViewModel : ViewModel() {
       showFab = menuPreferences.showFab
     )
   }
+
+  val devSettings: DevToolsSettings
+    get() {
+      reactHost?.let {
+        return DevMenuDevSettings.getDevSettings(it)
+      }
+
+      return DevToolsSettings()
+    }
 
   init {
     menuPreferences.addOnChangeListener(listener)
@@ -34,8 +63,19 @@ class DevMenuViewModel : ViewModel() {
   fun updateAppInfo(appInfo: DevMenuState.AppInfo) {
     _state.value = _state.value.copy(
       appInfo = appInfo,
-      isOnboardingFinished = DevMenuManager.getSettings()?.isOnboardingFinished ?: true
+      isOnboardingFinished = menuPreferences.isOnboardingFinished
     )
+  }
+
+  fun updateCustomItems(items: List<DevMenuState.CustomItem>) {
+    _state.value = _state.value.copy(customItems = items)
+  }
+
+  fun setInPictureInPictureMode(isInPictureInPictureMode: Boolean) {
+    if (state.isInPictureInPictureMode == isInPictureInPictureMode) {
+      return
+    }
+    _state.value = _state.value.copy(isInPictureInPictureMode = isInPictureInPictureMode)
   }
 
   private fun closeMenu() {
@@ -46,26 +86,58 @@ class DevMenuViewModel : ViewModel() {
     _state.value = _state.value.copy(
       isOpen = true,
       // Refresh dev tools settings when opening the menu
-      devToolsSettings = DevMenuManager.getDevSettings()
+      devToolsSettings = devSettings
     )
   }
 
-  fun onAction(action: DevMenuAction) = with(DevMenuManager) {
+  private fun toggleMenu() {
+    _state.value = _state.value.copy(isOpen = !state.isOpen)
+  }
+
+  private fun toggleFastRefresh() {
+    devToolsDelegate?.toggleFastRefresh()
+    _state.value = _state.value.copy(devToolsSettings = devSettings)
+  }
+
+  private fun finishOnboarding() {
+    menuPreferences.isOnboardingFinished = true
+    _state.value = _state.value.copy(isOnboardingFinished = true)
+  }
+
+  private fun toggleFab() {
+    menuPreferences.showFab = !menuPreferences.showFab
+  }
+
+  fun onAction(action: DevMenuAction) {
     when (action) {
-      DevMenuAction.Open -> this@DevMenuViewModel.openMenu()
-      DevMenuAction.Close -> this@DevMenuViewModel.closeMenu()
-      DevMenuAction.Reload -> reload()
-      DevMenuAction.GoHome -> goToHome()
-      DevMenuAction.TogglePerformanceMonitor -> togglePerformanceMonitor()
-      DevMenuAction.OpenJSDebugger -> openJSInspector()
-      DevMenuAction.OpenReactNativeDevMenu -> getReactHost()?.devSupportManager?.showDevOptionsDialog()
-      DevMenuAction.ToggleElementInspector -> toggleInspector()
+      DevMenuAction.Open -> openMenu()
+      DevMenuAction.Close -> closeMenu()
+      DevMenuAction.Toggle -> toggleMenu()
+      DevMenuAction.Reload -> devToolsDelegate?.reload()
+      DevMenuAction.GoHome -> goHomeAction?.invoke()
+      DevMenuAction.TogglePerformanceMonitor -> devToolsDelegate?.togglePerformanceMonitor()
+      DevMenuAction.OpenJSDebugger -> devToolsDelegate?.openJSInspector()
+      DevMenuAction.OpenReactNativeDevMenu -> reactHost?.devSupportManager?.showDevOptionsDialog()
+      DevMenuAction.ToggleElementInspector -> devToolsDelegate?.toggleElementInspector()
       is DevMenuAction.ToggleFastRefresh -> toggleFastRefresh()
       is DevMenuAction.ToggleFab -> toggleFab()
-      DevMenuAction.FinishOnboarding -> {
-        DevMenuManager.getSettings()?.isOnboardingFinished = true
-        _state.value = _state.value.copy(isOnboardingFinished = true)
-      }
+      DevMenuAction.FinishOnboarding -> finishOnboarding()
+      is DevMenuAction.TriggerCustomCallback -> action.item.fn.invoke()
+    }
+  }
+
+  class Factory(
+    private val reactHostHolder: WeakReference<ReactHost>,
+    private val menuPreferences: DevMenuPreferences,
+    private val goHomeAction: (() -> Unit)?
+  ) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      @Suppress("UNCHECKED_CAST")
+      return DevMenuViewModel(
+        reactHostHolder,
+        menuPreferences,
+        goHomeAction
+      ) as T
     }
   }
 }

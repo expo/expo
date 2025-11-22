@@ -12,7 +12,7 @@ protocol AnyPropertyDefinition {
   func buildDescriptor(appContext: AppContext) throws -> JavaScriptObject
 }
 
-public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefinition {
+public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefinition, @unchecked Sendable {
   /**
    Name of the property.
    */
@@ -190,7 +190,7 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
 
 // MARK: - Exceptions
 
-internal final class NativePropertyUnavailableException: GenericException<String> {
+internal final class NativePropertyUnavailableException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     return "Native property '\(param)' is no longer available in memory"
   }

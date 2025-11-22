@@ -3,9 +3,17 @@ import {
   CircularProgress,
   Host,
   Image,
+  Label,
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
+import {
+  background,
+  fixedSize,
+  foregroundStyle,
+  padding,
+  shapes,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
@@ -15,6 +23,36 @@ export default function ButtonScreen() {
   return (
     <Page>
       <ScrollView showsVerticalScrollIndicator={false}>
+        <Section title="With Label">
+          <Button style={styles.button}>
+            <Label
+              title="Default Padding"
+              systemImage="gear"
+              modifiers={[
+                foregroundStyle('black'),
+                padding(),
+                background('yellow', shapes.capsule()),
+              ]}
+            />
+          </Button>
+          <Button style={styles.button}>
+            <Label
+              title="No Padding"
+              systemImage="gear"
+              modifiers={[foregroundStyle('black'), padding({ all: 0 }), background('yellow')]}
+            />
+          </Button>
+          <Button style={styles.button}>
+            <Label
+              title="Custom Padding"
+              modifiers={[
+                foregroundStyle('black'),
+                padding({ horizontal: 20, vertical: 8 }),
+                background('yellow'),
+              ]}
+            />
+          </Button>
+        </Section>
         <Section title="Default">
           <Button style={styles.button}>Test</Button>
         </Section>
@@ -39,6 +77,36 @@ export default function ButtonScreen() {
           </Button>
           <Button style={styles.button} variant="plain">
             Plain
+          </Button>
+        </Section>
+        <Section title="Control Size">
+          <Button
+            style={styles.button}
+            controlSize="mini"
+            variant="glassProminent"
+            modifiers={[fixedSize()]}>
+            Mini glass prominent
+          </Button>
+          <Button style={styles.button} controlSize="small" variant="bordered">
+            Small bordered
+          </Button>
+          <Button style={styles.button} controlSize="regular" variant="glass">
+            Regular glass
+          </Button>
+          <Button style={styles.button} controlSize="large" variant="glassProminent">
+            Large
+          </Button>
+          <Button style={styles.button} controlSize="large" variant="glass">
+            Large glass
+          </Button>
+          <Button
+            style={styles.button}
+            controlSize="extraLarge"
+            variant="glassProminent"
+            systemImage="square.and.arrow.up"
+            color="orange"
+            modifiers={[fixedSize()]}>
+            Extra Large (iOS 17+)
           </Button>
         </Section>
         <Section title="Disabled">
@@ -92,6 +160,12 @@ export default function ButtonScreen() {
               <CircularProgress color="blue" />
             </ButtonPrimitive>
           </Host>
+        </Section>
+        <Section title="interpolated strings">
+          <Button style={styles.button} color="#FF6347">
+            {/* eslint-disable-next-line */}
+            Hello {'world'}
+          </Button>
         </Section>
       </ScrollView>
     </Page>

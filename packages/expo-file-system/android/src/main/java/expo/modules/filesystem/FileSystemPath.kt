@@ -62,23 +62,13 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       throw UnableToDeleteException("uri '${file.uri}' does not exist")
     }
     if (file.isDirectory()) {
-      file.listFilesAsUnified().forEach { child ->
-        if (child.isDirectory()) {
-          // Recursively delete subdirectories
-          if (uri.isContentUri) {
-            SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), child.uri).delete()
-          } else {
-            JavaFile(child.uri).delete()
-          }
-        } else {
-          if (!child.delete()) {
-            throw UnableToDeleteException("failed to delete '${child.uri}'")
-          }
-        }
+      if (!file.deleteRecursively()) {
+        throw UnableToDeleteException("failed to delete '${file.uri}'")
       }
-    }
-    if (!file.delete()) {
-      throw UnableToDeleteException("failed to delete '${file.uri}'")
+    } else {
+      if (!file.delete()) {
+        throw UnableToDeleteException("failed to delete '${file.uri}'")
+      }
     }
   }
 
@@ -160,6 +150,20 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       javaFile.copyTo(getMoveOrCopyPath(to))
       javaFile.delete()
       uri = getMoveOrCopyPath(to).toUri()
+    }
+  }
+
+  fun rename(newName: String) {
+    validateType()
+    validatePermission(Permission.WRITE)
+    val newFile = File(javaFile.parent, newName)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      javaFile.toPath().moveTo(newFile.toPath())
+      uri = newFile.toUri()
+    } else {
+      javaFile.copyTo(newFile)
+      javaFile.delete()
+      uri = newFile.toUri()
     }
   }
 

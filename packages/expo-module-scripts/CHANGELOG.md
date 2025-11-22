@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
+- Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Add more tests related files to the `.npmignore` template. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+
+## 5.0.7 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.5 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.4 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
 
 ## 5.0.3 — 2025-08-21
 

@@ -4,18 +4,18 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '6.0.3'
+version = '6.0.7'
 
 android {
   namespace "expo.modules.systemui"
   defaultConfig {
     versionCode 1
-    versionName '6.0.3'
+    versionName '6.0.7'
   }
 }
 
 dependencies {
   implementation 'com.facebook.react:react-android'
-  implementation 'androidx.core:core:1.6.0'
-  implementation 'androidx.appcompat:appcompat:1.2.0'
+  implementation 'androidx.core:core:1.17.0'
+  implementation 'androidx.appcompat:appcompat:1.7.1'
 }

@@ -1,7 +1,7 @@
 import { Platform } from 'expo-modules-core';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
 export const ImageScreens = [
   {
@@ -164,22 +164,32 @@ export const ImageScreens = [
 ];
 
 if (Platform.OS === 'ios') {
-  ImageScreens.push({
-    name: 'Live Text Interaction',
-    route: 'image/live-text-interaction',
-    getComponent() {
-      return optionalRequire(() => require('./ImageLiveTextInteractionScreen'));
+  ImageScreens.push(
+    {
+      name: 'Live Text Interaction',
+      route: 'image/live-text-interaction',
+      getComponent() {
+        return optionalRequire(() => require('./ImageLiveTextInteractionScreen'));
+      },
     },
-  });
+    {
+      name: 'High Dynamic Range',
+      route: 'image/hdr',
+      getComponent() {
+        return optionalRequire(() => require('./ImageHDRScreen'));
+      },
+    },
+    {
+      name: 'Cache eviction',
+      route: 'image/cache-eviction',
+      getComponent() {
+        return optionalRequire(() => require('./ImageCacheEvictionScreen'));
+      },
+    }
+  );
 }
 
 export default function ImageScreen() {
-  const apis: ListElement[] = ImageScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/components/${screen.route}`,
-    };
-  });
+  const apis = componentScreensToListElements(ImageScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

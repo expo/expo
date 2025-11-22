@@ -1,6 +1,6 @@
 import { Link, usePathname } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Text, ScrollView } from 'react-native';
+import { Text, ScrollView, Pressable } from 'react-native';
 
 import { useTimer } from '../utils/useTimer';
 
@@ -10,6 +10,11 @@ const Menus = () => {
 
   const [palette, setPalette] = useState<string>('1');
   const [submenu, setSubmenu] = useState<string>('1');
+  const [isIconVisible, setIsIconVisible] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isDestructive, setIsDestructive] = useState(false);
+  const [keepPresented, setKeepPresented] = useState(false);
+  const [isOnState, setIsOnState] = useState(false);
 
   const timeOptions = useMemo(
     () =>
@@ -29,8 +34,14 @@ const Menus = () => {
     console.log('Submenu:', submenu);
   }, [submenu]);
 
+  const toggleIconVisibility = () => {
+    setIsIconVisible(!isIconVisible);
+  }
+
   return (
-    <ScrollView style={{ backgroundColor: '#fff' }} contentInsetAdjustmentBehavior="automatic">
+    <ScrollView
+      style={{ backgroundColor: '#fff', paddingHorizontal: 16 }}
+      contentInsetAdjustmentBehavior="automatic">
       <Text>Misc</Text>
       <Text>Current Path: {pathname}</Text>
       <Text style={{ marginBottom: 16 }}>Time: {time}</Text>
@@ -181,6 +192,22 @@ const Menus = () => {
           </Link.Menu>
         </Link.Menu>
       </Link>
+      <Link href="/one" style={{ backgroundColor: 'green' }}>
+        <Link.Trigger>
+          <Pressable style={{ backgroundColor: '#7C90A0', height: 150, width: '100%' }}>
+            <Text style={{ color: 'blue' }}>Custom Trigger</Text>
+          </Pressable>
+        </Link.Trigger>
+        <Link.Menu title="Actions" icon="ellipsis">
+          <Link.MenuAction
+            title="Share"
+            icon="square.and.arrow.up"
+            onPress={() => {
+              console.log('Share Pressed');
+            }}
+          />
+        </Link.Menu>
+      </Link>
       <Link href="https://expo.dev">
         <Link.Trigger>Link.Menu no preview: https://expo.dev</Link.Trigger>
         <Link.Menu title="Actions" icon="ellipsis">
@@ -207,6 +234,43 @@ const Menus = () => {
               console.log('Delete Pressed');
             }}
           />
+        </Link.Menu>
+      </Link>
+
+      <Link href="/one">
+        <Link.Trigger>Link.Menu with togglable props</Link.Trigger>
+        <Link.Menu>
+          <Link.MenuAction
+            title="Menu action"
+            icon={isIconVisible ? "0.square" : undefined}
+            disabled={isDisabled ? true : undefined}
+            destructive={isDestructive ? true : undefined}
+            unstable_keepPresented={keepPresented ? true : undefined}
+            isOn={isOnState ? true : undefined}
+            onPress={() => {}}
+          />
+          <Link.Menu title="Submenu">
+            <Link.MenuAction
+              title={`${isIconVisible ? 'Hide' : 'Show'} icon`}
+              onPress={toggleIconVisibility}
+            />
+            <Link.MenuAction
+              title={`${isDisabled ? 'Enable' : 'Disable'} action`}
+              onPress={() => setIsDisabled(!isDisabled)}
+            />
+            <Link.MenuAction
+              title={`${isDestructive ? 'Remove' : 'Make'} destructive`}
+              onPress={() => setIsDestructive(!isDestructive)}
+            />
+            <Link.MenuAction
+              title={`${keepPresented ? 'Disable' : 'Enable'} keepPresented`}
+              onPress={() => setKeepPresented(!keepPresented)}
+            />
+            <Link.MenuAction
+              title={`${isOnState ? 'Turn off' : 'Turn on'} isOn`}
+              onPress={() => setIsOnState(!isOnState)}
+            />
+          </Link.Menu>
         </Link.Menu>
       </Link>
     </ScrollView>

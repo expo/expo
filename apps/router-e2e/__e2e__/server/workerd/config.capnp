@@ -28,6 +28,7 @@ const server :Workerd.Worker = (
     (name = "_expo/functions/api/env-vars+api.js", commonJsModule = embed "_expo/functions/api/env-vars+api.js"),
     (name = "_expo/functions/api/[dynamic]+api.js", commonJsModule = embed "_expo/functions/api/[dynamic]+api.js"),
     (name = "_expo/functions/api/problematic+api.js", commonJsModule = embed "_expo/functions/api/problematic+api.js"),
+    (name = "_expo/functions/api/headers+api.js", commonJsModule = embed "_expo/functions/api/headers+api.js"),
     (name = "_expo/functions/methods+api.js", commonJsModule = embed "_expo/functions/methods+api.js"),
     (name = "_expo/routes.json", text = embed "_expo/routes.json"),
     (name = "blog/[post].html", text = embed "blog/[post].html"),

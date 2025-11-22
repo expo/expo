@@ -92,23 +92,9 @@ export default function HomeApp() {
     });
   };
 
-  const initStateAsync = async () => {
+  const loadFontsAsync = async () => {
     try {
-      dispatch(SettingsActions.loadSettings());
-      dispatch(HistoryActions.loadHistory());
-
-      const storedSession = await LocalStorage.getSessionAsync();
-
-      if (storedSession) {
-        dispatch(SessionActions.setSession(storedSession));
-      }
-
-      const [currentUserQueryResult, persistedCurrentAccount] = await Promise.all([
-        ApolloClient.query<Home_CurrentUserActorQuery, Home_CurrentUserActorQueryVariables>({
-          query: Home_CurrentUserActorDocument,
-          context: { headers: { 'expo-session': storedSession?.sessionSecret } },
-        }),
-        AsyncStorage.getItem('currentAccount'),
+      await Promise.all([
         Font.loadAsync(Ionicons.font),
         Platform.OS === 'android'
           ? Font.loadAsync(MaterialIcons.font)
@@ -133,6 +119,30 @@ export default function HomeApp() {
           'Inter-Thin': require('./assets/Inter/Inter-Thin.otf'),
           'Inter-ThinItalic': require('./assets/Inter/Inter-ThinItalic.otf'),
         }),
+      ]);
+    } finally {
+      return;
+    }
+  };
+
+  const initStateAsync = async () => {
+    try {
+      dispatch(SettingsActions.loadSettings());
+      dispatch(HistoryActions.loadHistory());
+
+      const storedSession = await LocalStorage.getSessionAsync();
+
+      if (storedSession) {
+        dispatch(SessionActions.setSession(storedSession));
+      }
+
+      const [currentUserQueryResult, persistedCurrentAccount] = await Promise.all([
+        ApolloClient.query<Home_CurrentUserActorQuery, Home_CurrentUserActorQueryVariables>({
+          query: Home_CurrentUserActorDocument,
+          context: { headers: { 'expo-session': storedSession?.sessionSecret } },
+        }),
+        AsyncStorage.getItem('currentAccount'),
+        loadFontsAsync(),
       ]);
 
       if (currentUserQueryResult.data && currentUserQueryResult.data.meUserActor) {

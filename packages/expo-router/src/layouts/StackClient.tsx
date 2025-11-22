@@ -17,14 +17,27 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
-import { ComponentProps, useMemo } from 'react';
+import React, { Children, ComponentProps, useMemo } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
-import { getInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
+import {
+  getInternalExpoRouterParams,
+  INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  type InternalExpoRouterParams,
+} from '../navigationParams';
 import { SingularOptions, getSingularId } from '../useScreens';
-import { Protected } from '../views/Protected';
+import {
+  type StackScreenProps,
+  StackHeader,
+  StackScreen,
+  appendScreenStackPropsToOptions,
+  isChildOfType,
+} from './stack-utils';
+import { Protected, type ProtectedProps } from '../views/Protected';
+import { Screen } from '../views/Screen';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
@@ -107,7 +120,7 @@ const isPreviewAction = (action: NavigationAction): action is ExpoNavigationActi
   'params' in action.payload &&
   typeof action.payload.params === 'object' &&
   !!getInternalExpoRouterParams(action.payload?.params ?? undefined)[
-    '__internal__expo_router_is_preview_navigation'
+    INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME
   ];
 
 /**
@@ -186,7 +199,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             const currentRoute = state.routes[state.index];
 
             // If the route matches the current one, then navigate to it
-            if (action.payload.name === currentRoute.name) {
+            if (action.payload.name === currentRoute.name && !isPreviewAction(action)) {
               route = currentRoute;
             } else if (action.payload.pop) {
               route = state.routes.findLast((route) => route.name === action.payload.name);
@@ -490,25 +503,85 @@ function filterSingular<
   };
 }
 
+function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
+  return {
+    ...props,
+    children: Children.toArray(props.children)
+      .map((child, index) => {
+        if (isChildOfType(child, StackScreen)) {
+          const options = appendScreenStackPropsToOptions({}, child.props);
+          const { children, ...rest } = child.props;
+          return <Screen key={child.props.name} {...rest} options={options} />;
+        } else if (isChildOfType(child, Protected)) {
+          return <Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)} />;
+        } else if (isChildOfType(child, StackHeader)) {
+          // Ignore Stack.Header, because it can be used to set header options for Stack
+          // and we use this function to process children of Stack, as well.
+          return null;
+        } else {
+          if (React.isValidElement(child)) {
+            console.warn(`Warning: Unknown child element passed to Stack: ${child.type}`);
+          } else {
+            console.warn(`Warning: Unknown child element passed to Stack: ${child}`);
+          }
+        }
+        return null;
+      })
+      .filter(Boolean),
+  };
+}
+
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();
 
+    const screenOptionsWithCompositionAPIOptions = useMemo<NativeStackScreenOptions>(() => {
+      const stackHeader = Children.toArray(props.children).find((child) =>
+        isChildOfType(child, StackHeader)
+      );
+      if (stackHeader) {
+        const screenStackProps: StackScreenProps = { children: stackHeader };
+        const currentOptions = props.screenOptions;
+        if (currentOptions) {
+          if (typeof currentOptions === 'function') {
+            return (...args) => {
+              const options = currentOptions(...args);
+              return appendScreenStackPropsToOptions(options, screenStackProps);
+            };
+          }
+          return appendScreenStackPropsToOptions(currentOptions, screenStackProps);
+        } else {
+          return appendScreenStackPropsToOptions({}, screenStackProps);
+        }
+      } else {
+        return props.screenOptions;
+      }
+    }, [props.screenOptions, props.children]);
+
     const screenOptions = useMemo(() => {
       const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
 
-      return disableAnimationInScreenOptions(props.screenOptions, condition);
-    }, [props.screenOptions, isStackAnimationDisabled]);
+      return disableAnimationInScreenOptions(screenOptionsWithCompositionAPIOptions, condition);
+    }, [screenOptionsWithCompositionAPIOptions, isStackAnimationDisabled]);
+
+    const rnChildren = useMemo(
+      () => mapProtectedScreen({ guard: true, children: props.children }).children,
+      [props.children]
+    );
 
     return (
-      <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
+      <RNStack
+        {...props}
+        children={rnChildren}
+        screenOptions={screenOptions}
+        UNSTABLE_router={stackRouterOverride}
+      />
     );
   },
   {
-    Screen: RNStack.Screen as (
-      props: ComponentProps<typeof RNStack.Screen> & { singular?: boolean }
-    ) => null,
+    Screen: StackScreen,
     Protected,
+    Header: StackHeader,
   }
 );
 
@@ -543,7 +616,7 @@ function disableAnimationInScreenOptions(
 
 function shouldDisableAnimationBasedOnParams(route: RouteProp<ParamListBase, string>): boolean {
   const expoParams = getInternalExpoRouterParams(route.params);
-  return !!expoParams.__internal_expo_router_no_animation;
+  return !!expoParams[INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME];
 }
 
 export default Stack;

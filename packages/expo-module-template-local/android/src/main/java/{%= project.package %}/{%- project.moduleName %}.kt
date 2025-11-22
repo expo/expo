@@ -14,10 +14,10 @@ class <%- project.moduleName %> : Module() {
     // The module will be accessible from `requireNativeModule('<%- project.name %>')` in JavaScript.
     Name("<%- project.name %>")
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants(
-      "PI" to Math.PI
-    )
+    // Defines constant property on the module.
+    Constant("PI") {
+      Math.PI
+    }
 
     // Defines event names that the module can send to JavaScript.
     Events("onChange")

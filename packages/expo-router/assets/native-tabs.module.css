@@ -73,7 +73,7 @@
 
 .navigationMenuTrigger[data-state="active"] .tabText {
   color: var(--expo-router-tabs-active-text-color, #ffffff);
-  font-size: var(--expo-router-tabs-active-font-size);
+  font-size: var(--expo-router-tabs-active-font-size, var(--expo-router-tabs-font-size, 15px));
 }
 
 .navigationMenuTrigger:not([data-state="active"]) .tabText:hover {

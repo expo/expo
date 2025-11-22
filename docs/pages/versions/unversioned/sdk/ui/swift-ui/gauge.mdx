@@ -1,0 +1,58 @@
+---
+title: Gauge
+description: A SwiftUI Gauge component for displaying progress with visual indicators.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A gauge component for displaying values within a range using visual indicators like circular or linear gauges.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Gauge component on iOS."
+      src="/static/images/expo-ui/gauge/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+
+  <Tab label="Code">
+    ```tsx
+    import { Gauge, Host } from "@expo/ui/swift-ui";
+
+    <Host matchContents>
+      <Gauge
+        max={{ value: 1, label: '1' }}
+        min={{ value: 0, label: '0' }}
+        current={{ value: 0.5 }}
+        color={[
+          PlatformColor('systemRed'),
+          PlatformColor('systemOrange'),
+          PlatformColor('systemYellow'),
+          PlatformColor('systemGreen'),
+        ]}
+        type="circularCapacity"
+      />
+    </Host>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/gauge) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/gauge" apiName="Gauge" />

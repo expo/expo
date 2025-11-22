@@ -23,7 +23,7 @@ import { Step } from '~/ui/components/Step';
 
 ## Configuration in app config
 
-You can configure `expo-sqlite` for advanced configurations using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-sqlite` for advanced configurations using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
 <ConfigPluginExample>
 
@@ -191,6 +191,46 @@ try {
 } finally {
   await statement2.finalizeAsync();
 }
+```
+
+### Tagged template literals API
+
+For convenience and improved developer experience, `expo-sqlite` provides Bun-inspired tagged template literals API through the `db.sql` property. This API automatically escapes parameters to prevent SQL injection attacks and provides automatic type inference based on the query type.
+
+```ts Tagged template literals API
+interface User {
+  id: number;
+  name: string;
+  age: number;
+}
+
+const db = await SQLite.openDatabaseAsync('mydb.db');
+const sql = db.sql;
+
+const age = 21;
+const users = await sql<User>`SELECT * FROM users WHERE age > ${age}`;
+// Type: User[]
+console.log(users[0].name);
+
+// Mutable queries like INSERT/UPDATE/DELETE return SQLiteRunResult metadata
+const result =
+  (await sql`INSERT INTO users (name, age) VALUES (${'Alice'}, ${30})`) as SQLite.SQLiteRunResult;
+console.log(result.lastInsertRowId, result.changes);
+
+// Get first row only
+const user = await sql<User>`SELECT * FROM users WHERE id = ${1}`.first();
+if (user) {
+  console.log(user.name);
+}
+
+// Iterate over results
+for await (const user of sql<User>`SELECT * FROM users`.each()) {
+  console.log(user.name);
+}
+
+// Synchronous API
+const syncUsers = sql<User>`SELECT * FROM users WHERE age > ${21}`.allSync();
+const syncUser = sql<User>`SELECT * FROM users WHERE id = ${1}`.firstSync();
 ```
 
 ### `useSQLiteContext()` hook
@@ -405,11 +445,11 @@ Configure the App Group in app config:
 
 <Step label="2">
 
-Use [`Paths.appleSharedContainers`](filesystem-next/#applesharedcontainers) from the [`expo-file-system`](filesystem-next/) library to retrieve the path to the shared container:
+Use [`Paths.appleSharedContainers`](filesystem/#applesharedcontainers) from the [`expo-file-system`](filesystem/) library to retrieve the path to the shared container:
 
 ```tsx Using Shared Container for SQLite Database on iOS
 import { SQLiteProvider, defaultDatabaseDirectory } from 'expo-sqlite';
-import { Paths } from 'expo-file-system/next';
+import { Paths } from 'expo-file-system';
 import { useMemo } from 'react';
 import { Platform, View } from 'react-native';
 

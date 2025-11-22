@@ -1,0 +1,74 @@
+---
+title: ContextMenu
+description: A SwiftUI ContextMenu component for displaying context menus.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+> **Note:** Also known as **DropdownMenu**.
+
+A context menu component that displays a menu when triggered, commonly used for actions and options.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="ContextMenu component on iOS."
+      src="/static/images/expo-ui/contextMenu/ios.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { ContextMenu, Host } from '@expo/ui/swift-ui';
+
+    <Host style={{ width: 150, height: 50 }}>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button
+            systemImage="person.crop.circle.badge.xmark"
+            onPress={() => console.log('Pressed1')}>
+            Hello
+          </Button>
+          <Button
+            variant="bordered"
+            systemImage="heart"
+            onPress={() => console.log('Pressed2')}>
+            Love it
+          </Button>
+          <Picker
+            label="Doggos"
+            options={['very', 'veery', 'veeery', 'much']}
+            variant="menu"
+            selectedIndex={selectedIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
+          />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Button variant="bordered">
+            Show Menu
+          </Button>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official SwiftUI documentation](<https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:)>) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/contextmenu" apiName="ContextMenu" />

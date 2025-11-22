@@ -8,14 +8,17 @@ export const nonLinkableTypes = [
   'BufferSource',
   'CodedError',
   'ColorValue',
+  'CommonViewModifierProps',
   'ComponentClass',
   'ComponentProps',
   'ComponentType',
+  'ContextMenuContentProps',
   'DependencyList',
   'E',
   'EmitterSubscription',
   'EventName',
   'EventSubscription',
+  'ExpoModifier',
   'FileSystemDirectory',
   'FileSystemFile',
   'ForwardRefExoticComponent',
@@ -26,6 +29,7 @@ export const nonLinkableTypes = [
   'InferEventParameter',
   'K',
   'Listener',
+  'ModifierConfig',
   'ModuleType',
   'NativeBoundaryEventCallback',
   'NativeSyntheticEvent',
@@ -55,6 +59,7 @@ export const nonLinkableTypes = [
   'ScreenListeners',
   'ServiceActionResult',
   'SourceSkipsKeys',
+  'SubmenuProps',
   'StyleProp',
   'T',
   'TaskOptions',
@@ -145,6 +150,8 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Playback: '/versions/latest/sdk/av/#playback',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  PromiseLike:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   PromptMethod: '/versions/latest/sdk/auth-session/#promptmethodoptions',
   PureComponent: 'https://react.dev/reference/react/PureComponent',
   PushTokenListener: '/versions/latest/sdk/notifications/#pushtokenlistenertoken',
@@ -174,6 +181,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
   WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
+  WritableStream: 'https://developer.mozilla.org/en-US/docs/Web/API/WritableStream',
 
   // React Navigation
   DefaultNavigatorOptions:
@@ -190,9 +198,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  '51.0.0': {
-    SharedObject: null,
-  },
   'v52.0.0': {
     EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
     NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
@@ -208,11 +213,22 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     SharedRef: '/versions/v53.0.0/sdk/expo/#sharedref',
     CameraPosition: '/versions/v53.0.0/sdk/maps/#cameraposition-2',
   },
+  'v54.0.0': {
+    EventEmitter: '/versions/v54.0.0/sdk/expo/#eventemittertype',
+    NativeModule: '/versions/v54.0.0/sdk/expo/#nativemoduletype',
+    SharedObject: '/versions/v54.0.0/sdk/expo/#sharedobjecttype',
+    SharedRef: '/versions/v54.0.0/sdk/expo/#sharedreftype',
+    Href: '/versions/v54.0.0/sdk/router/#href-1',
+    BufferOptions: '/versions/v54.0.0/sdk/video/#bufferoptions-1',
+    CameraPosition: '/versions/v54.0.0/sdk/maps/#cameraposition-2',
+  },
   latest: {
-    EventEmitter: '/versions/latest/sdk/expo/#eventemitter',
-    NativeModule: '/versions/latest/sdk/expo/#nativemodule',
-    SharedObject: '/versions/latest/sdk/expo/#sharedobject',
-    SharedRef: '/versions/latest/sdk/expo/#sharedref',
+    EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
+    NativeModule: '/versions/latest/sdk/expo/#nativemoduletype',
+    SharedObject: '/versions/latest/sdk/expo/#sharedobjecttype',
+    SharedRef: '/versions/latest/sdk/expo/#sharedreftype',
+    Href: '/versions/latest/sdk/router/#href-1',
+    BufferOptions: '/versions/latest/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
   },
   unversioned: {
@@ -223,6 +239,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     Href: '/versions/unversioned/sdk/router/#href-1',
     BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/unversioned/sdk/maps/#cameraposition-2',
+    ScrubbingModeOptions: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
+    SeekTolerance: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
   },
 };
 

@@ -51,7 +51,7 @@ const additionalProjectProps = {
 };
 
 describe('ReactNativeDirectoryCheck', () => {
-  it('returns errors as expected', async () => {
+  it('returns errors as expected (from package.json)', async () => {
     jest.mocked(checkLibraries).mockResolvedValueOnce({
       unmaintained: { unmaintained: true, newArchitecture: 'untested' },
       unsupported: { unmaintained: false, newArchitecture: 'unsupported' },
@@ -59,18 +59,66 @@ describe('ReactNativeDirectoryCheck', () => {
     });
 
     const check = new ReactNativeDirectoryCheck();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          unmaintained: '*',
-          unsupported: '*',
-          working: '*',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            unmaintained: '*',
+            unsupported: '*',
+            working: '*',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
+      {
+        resolutions: Promise.reject(new Error()),
+      }
+    );
+
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues).toMatchInlineSnapshot(`
+      [
+        "The following issues were found when validating your dependencies against React Native Directory:",
+        "  Unsupported on New Architecture: unsupported",
+        "  Untested on New Architecture: unmaintained",
+        "  Unmaintained: unmaintained",
+      ]
+    `);
+  });
+
+  it('returns errors as expected (from resolutions)', async () => {
+    jest.mocked(checkLibraries).mockResolvedValueOnce({
+      unmaintained: { unmaintained: true, newArchitecture: 'untested' },
+      unsupported: { unmaintained: false, newArchitecture: 'unsupported' },
+      working: { unmaintained: false, newArchitecture: 'supported' },
     });
+
+    const check = new ReactNativeDirectoryCheck();
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            unmaintained: '*',
+            unsupported: '*',
+            working: '*',
+          },
+        },
+        ...additionalProjectProps,
+      },
+      {
+        resolutions: Promise.resolve(
+          new Map([
+            ['unmaintained', {} as any],
+            ['unsupported', {} as any],
+            ['working', {} as any],
+          ])
+        ),
+      }
+    );
 
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toMatchInlineSnapshot(`
@@ -90,18 +138,23 @@ describe('ReactNativeDirectoryCheck', () => {
     });
 
     const check = new ReactNativeDirectoryCheck();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          unknown: '*', // NOTE: This library isn't in the result above
-          unsupported: '*',
-          working: '*',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            unknown: '*', // NOTE: This library isn't in the result above
+            unsupported: '*',
+            working: '*',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    });
+      {
+        resolutions: Promise.reject(new Error()),
+      }
+    );
 
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toMatchInlineSnapshot(`
@@ -119,17 +172,22 @@ describe('ReactNativeDirectoryCheck', () => {
     });
 
     const check = new ReactNativeDirectoryCheck();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          unknown: '*', // NOTE: This library isn't in the result above
-          working: '*',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            unknown: '*', // NOTE: This library isn't in the result above
+            working: '*',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    });
+      {
+        resolutions: Promise.reject(new Error()),
+      }
+    );
 
     expect(result.isSuccessful).toBeTruthy();
     expect(result.issues).toEqual([]);

@@ -100,7 +100,6 @@ module.exports = {
             argumentsCount: 0,
             key: 'setSystemBrightnessModeAsync',
           },
-          { name: 'useSystemBrightnessAsync', argumentsCount: 0, key: 'useSystemBrightnessAsync' },
         ],
         ExpoCalendar: [
           {
@@ -569,6 +568,7 @@ module.exports = {
           },
         ],
         ExpoRouterNativeLinkPreview: [],
+        ExpoRouter: [],
         ExpoScreenCapture: [
           { name: 'allowScreenCapture', argumentsCount: 0, key: 'allowScreenCapture' },
           {
@@ -982,6 +982,9 @@ module.exports = {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
         },
+        ExpoGlassEffect: {
+          isLiquidGlassAvailable: { type: 'string' },
+        },
         ExpoLivePhoto: { addListener: { type: 'function' }, removeListeners: { type: 'function' } },
         ExpoLocalAuthentication: {
           addListener: { type: 'function' },
@@ -1208,6 +1211,10 @@ module.exports = {
           getDevicePushTokenAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           unregisterForNotificationsAsync: { type: 'function' },
+        },
+        ExpoRouter: {
+          Material3Color: { type: 'function' },
+          Material3DynamicColor: { type: 'function' },
         },
         ExpoRouterNativeLinkPreview: {
           addListener: { type: 'function' },

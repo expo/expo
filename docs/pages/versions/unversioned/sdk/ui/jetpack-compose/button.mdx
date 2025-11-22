@@ -1,0 +1,60 @@
+---
+title: Button
+description: A Jetpack Compose Button component for displaying native buttons.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A button component for displaying native buttons.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Button component on Android."
+      src="/static/images/expo-ui/button/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Button } from '@expo/ui/jetpack-compose';
+
+    <Button
+      variant="default"
+      leadingIcon="filled.Edit"
+      onPress={() => {
+        setEditingProfile(true);
+      }}>
+      Edit profile
+    </Button>
+
+    {/* Button with both leading and trailing icons */}
+    <Button
+      variant="bordered"
+      leadingIcon="filled.Add"
+      trailingIcon="filled.ArrowForward"
+      onPress={() => console.log('Action')}>
+      Add Item
+    </Button>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/button) for more information.
+
+## API
+
+<APISection packageName="expo-ui/jetpack-compose/button" apiName="Button" />

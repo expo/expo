@@ -2,7 +2,10 @@ package expo.modules.filesystem
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.util.Base64
 import android.webkit.URLUtil
+import androidx.annotation.RequiresApi
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.apifeatures.EitherType
@@ -24,15 +27,22 @@ class FileSystemModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
+  @RequiresApi(Build.VERSION_CODES.O)
   @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystem")
 
-    Constants(
-      "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
-      "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",
-      "bundleDirectory" to "asset://"
-    )
+    Constant("documentDirectory") {
+      Uri.fromFile(context.filesDir).toString() + "/"
+    }
+
+    Constant("cacheDirectory") {
+      Uri.fromFile(context.cacheDir).toString() + "/"
+    }
+
+    Constant("bundleDirectory") {
+      "asset://"
+    }
 
     Property("totalDiskSpace") {
       File(context.filesDir.path).totalSpace
@@ -68,7 +78,7 @@ class FileSystemModule : Module() {
         to.javaFile
       }
 
-      if (destination.exists()) {
+      if (options?.idempotent != true && destination.exists()) {
         throw DestinationAlreadyExistsException()
       }
 
@@ -132,10 +142,14 @@ class FileSystemModule : Module() {
         file.create(options ?: CreateOptions())
       }
 
-      Function("write") { file: FileSystemFile, content: Either<String, TypedArray> ->
+      Function("write") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
         if (content.`is`(String::class)) {
           content.get(String::class).let {
-            file.write(it)
+            if (options?.encoding == EncodingType.BASE64) {
+              file.write(Base64.decode(it, Base64.DEFAULT))
+            } else {
+              file.write(it)
+            }
           }
         }
         if (content.`is`(TypedArray::class)) {
@@ -193,8 +207,16 @@ class FileSystemModule : Module() {
         file.move(destination)
       }
 
+      Function("rename") { file: FileSystemFile, newName: String ->
+        file.rename(newName)
+      }
+
       Property("uri") { file ->
         file.asString()
+      }
+
+      Property("contentUri") { file ->
+        file.asContentUri()
       }
 
       Property("md5") { file ->
@@ -284,6 +306,10 @@ class FileSystemModule : Module() {
 
       Function("move") { directory: FileSystemDirectory, destination: FileSystemPath ->
         directory.move(destination)
+      }
+
+      Function("rename") { directory: FileSystemDirectory, newName: String ->
+        directory.rename(newName)
       }
 
       Property("uri") { directory ->

@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
+- [Android] Add support for MaterialSymbol symbols on Android and Web. ([#39516](https://github.com/expo/expo/pull/39516) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
+- [Android] Add lineHeight to ensure symbols occupy correct square space. ([#41091](https://github.com/expo/expo/pull/41091) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
+
+## 1.0.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
 
 ## 1.0.3 — 2025-08-25
 

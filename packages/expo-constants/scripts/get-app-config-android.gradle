@@ -12,7 +12,9 @@ def config = project.hasProperty("react") ? project.react : [];
 def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
 
 afterEvaluate {
-  def projectRoot = file("${rootProject.projectDir}")
+  def expoGradleExtension = gradle.extensions.findByName("expoGradle")
+  def customProjectRoot = expoGradleExtension?.projectRoot
+  def projectRoot = file("${customProjectRoot ?: rootProject.projectDir}")
   def assetsDir = file("$buildDir/generated/assets/expo-constants")
 
   def currentCreateConfigTask = tasks.register('createExpoConfig', Exec) {

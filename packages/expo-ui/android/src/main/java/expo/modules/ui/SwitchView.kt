@@ -17,6 +17,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ComposableScope
 import java.io.Serializable
 
 open class ValueChangeEvent(
@@ -116,12 +117,12 @@ fun ThemedHybridSwitch(
 }
 
 class SwitchView(context: Context, appContext: AppContext) :
-  ExpoComposeView<SwitchProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<SwitchProps>(context, appContext) {
   override val props = SwitchProps()
   private val onValueChange by EventDispatcher<ValueChangeEvent>()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val (checked) = props.value
     val (variant) = props.variant
     val (colors) = props.elementColors
@@ -130,7 +131,7 @@ class SwitchView(context: Context, appContext: AppContext) :
     }
 
     AutoSizingComposable(shadowNodeProxy) {
-      ThemedHybridSwitch(variant, checked, onCheckedChange, colors, modifier.fromExpoModifiers(props.modifiers.value))
+      ThemedHybridSwitch(variant, checked, onCheckedChange, colors, Modifier.fromExpoModifiers(props.modifiers.value))
     }
   }
 }

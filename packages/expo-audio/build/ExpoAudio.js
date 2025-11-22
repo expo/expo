@@ -72,14 +72,14 @@ if (!Platform.isTV || Platform.OS !== 'ios') {
  * ```
  */
 export function useAudioPlayer(source = null, options = {}) {
-    const { updateInterval = 500, downloadFirst = false } = options;
+    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false } = options;
     // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
     // If downloadFirst is false, we resolve the source here.
     // we call .replace() in the useEffect below to replace the source with the downloaded one.
     const initialSource = useMemo(() => {
         return downloadFirst ? null : resolveSource(source);
     }, [JSON.stringify(source), downloadFirst]);
-    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(initialSource, updateInterval), [JSON.stringify(initialSource), updateInterval]);
+    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive), [JSON.stringify(initialSource), updateInterval, keepAudioSessionActive]);
     // Handle async source resolution for downloadFirst
     useEffect(() => {
         if (!downloadFirst || source === null) {
@@ -128,7 +128,7 @@ export function useAudioPlayer(source = null, options = {}) {
  *
  *   return (
  *     <View>
- *       <Text>Playing: {status.isPlaying ? 'Yes' : 'No'}</Text>
+ *       <Text>Playing: {status.playing ? 'Yes' : 'No'}</Text>
  *       <Text>Current Time: {status.currentTime}s</Text>
  *       <Text>Duration: {status.duration}s</Text>
  *     </View>
@@ -153,10 +153,23 @@ export function useAudioPlayerStatus(player) {
  *
  * @example
  * ```tsx
- * import { useAudioPlayer, useAudioSampleListener } from 'expo-audio';
+ * import { useEffect } from 'react';
+ * import { useAudioPlayer, useAudioSampleListener, requestRecordingPermissionsAsync } from 'expo-audio';
  *
  * function AudioVisualizerComponent() {
  *   const player = useAudioPlayer(require('./music.mp3'));
+ *
+ *   // if required on Android, request recording permissions
+ *   useEffect(() => {
+ *     async function requestPermission() {
+ *       const { granted } = await requestRecordingPermissionsAsync();
+ *       if (granted) {
+ *         console.log("Permission granted");
+ *       }
+ *     }
+ *
+ *     requestPermission();
+ *    }, []);
  *
  *   useAudioSampleListener(player, (sample) => {
  *     // Use sample.channels array for audio visualization
@@ -242,7 +255,7 @@ export function useAudioRecorder(options, statusListener) {
  *   return (
  *     <View>
  *       <Text>Recording: {state.isRecording ? 'Yes' : 'No'}</Text>
- *       <Text>Duration: {state.currentTime}s</Text>
+ *       <Text>Duration: {Math.round(state.durationMillis / 1000)}s</Text>
  *       <Text>Can Record: {state.canRecord ? 'Yes' : 'No'}</Text>
  *     </View>
  *   );
@@ -277,15 +290,15 @@ export function useAudioRecorderState(recorder, interval = 500) {
 /**
  * Creates an instance of an `AudioPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayer) hook instead.
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-options) hook instead.
  * > See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
  * @param source The audio source to load.
  * @param options Audio player configuration options.
  */
 export function createAudioPlayer(source = null, options = {}) {
-    const { updateInterval = 500, downloadFirst = false } = options;
+    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false } = options;
     const initialSource = downloadFirst ? null : resolveSource(source);
-    const player = new AudioModule.AudioPlayer(initialSource, updateInterval);
+    const player = new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive);
     if (downloadFirst && source) {
         resolveSourceWithDownload(source)
             .then((resolved) => {
@@ -353,7 +366,7 @@ export async function setIsAudioActiveAsync(active) {
  * // Configure audio for recording
  * await setAudioModeAsync({
  *   allowsRecording: true,
- *   playsInSilentMode: false
+ *   playsInSilentMode: true
  * });
  * ```
  */
@@ -364,6 +377,7 @@ export async function setAudioModeAsync(mode) {
             shouldPlayInBackground: mode.shouldPlayInBackground,
             shouldRouteThroughEarpiece: mode.shouldRouteThroughEarpiece,
             interruptionMode: mode.interruptionModeAndroid,
+            allowsBackgroundRecording: mode.allowsBackgroundRecording,
         };
     return await AudioModule.setAudioModeAsync(audioMode);
 }

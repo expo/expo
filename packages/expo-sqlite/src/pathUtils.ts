@@ -7,7 +7,7 @@ import ExpoSQLite from './ExpoSQLite';
  */
 function resolveDbDirectory(directory: string | undefined): string {
   const resolvedDirectory = directory ?? ExpoSQLite.defaultDatabaseDirectory;
-  if (resolvedDirectory === null) {
+  if (resolvedDirectory == null) {
     throw new Error('Both provided directory and defaultDatabaseDirectory are null.');
   }
   return resolvedDirectory;
@@ -33,4 +33,8 @@ export function createDatabasePath(databaseName: string, directory?: string): st
   }
 
   return `${removeTrailingSlash(resolvedDirectory)}/${removeLeadingSlash(databaseName)}`;
+}
+
+export function basename(path: string): string {
+  return path.substring(path.lastIndexOf('/') + 1);
 }

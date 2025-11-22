@@ -14,13 +14,13 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'host.exp.exponent'
-version = '0.4.3'
+version = '0.4.7'
 
 android {
   namespace "expo.modules.meshgradient"
   defaultConfig {
     versionCode 1
-    versionName "0.4.3"
+    versionName "0.4.7"
   }
   buildFeatures {
     compose true
@@ -31,6 +31,6 @@ android {
 }
 
 dependencies {
-  implementation 'androidx.compose.foundation:foundation-android:1.7.6'
-  implementation 'androidx.compose.ui:ui-android:1.7.6'
+  implementation 'androidx.compose.foundation:foundation-android:1.9.1'
+  implementation 'androidx.compose.ui:ui-android:1.9.1'
 }

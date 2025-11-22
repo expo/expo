@@ -20,6 +20,9 @@ export function isPictureInPictureSupported(): boolean {
 }
 
 export class VideoView extends PureComponent<VideoViewProps> {
+  /**
+   * A reference to the underlying native view. On web it is a reference to the HTMLVideoElement.
+   */
   nativeRef = createRef<any>();
 
   /**
@@ -62,7 +65,7 @@ export class VideoView extends PureComponent<VideoViewProps> {
 
   render(): ReactNode {
     const { player, ...props } = this.props;
-    const playerId = getPlayerId(player);
+    const playerId = player ? getPlayerId(player) : null;
 
     if (props.allowsFullscreen !== undefined) {
       console.warn(

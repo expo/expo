@@ -113,13 +113,20 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
       field?.let {
         VideoManager.onVideoPlayerDetachedFromView(it, this)
       }
-      videoPlayer?.removeListener(this)
+      val oldPlayer = videoPlayer
+      val hasEmittedFirstFrame = newPlayer?.firstFrameEventGenerator?.hasSentFirstFrameForCurrentMediaItem
+        ?: false
+      oldPlayer?.removeListener(this)
       newPlayer?.addListener(this)
       field = newPlayer
-      shouldHideSurfaceView = true
+      shouldHideSurfaceView = !hasEmittedFirstFrame
+      applySurfaceViewVisibility()
       attachPlayer()
       newPlayer?.let {
         VideoManager.onVideoPlayerAttachedToView(it, this)
+      }
+      if (oldPlayer != newPlayer) {
+        oldPlayer?.hasBeenDisconnectedFromVideoView()
       }
     }
 
@@ -214,7 +221,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   }
 
   fun attachPlayer() {
-    videoPlayer?.changePlayerView(playerView)
+    videoPlayer?.changeVideoView(this)
   }
 
   fun exitFullscreen() {
@@ -301,9 +308,11 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   }
 
   override fun onRenderedFirstFrame(player: VideoPlayer) {
-    shouldHideSurfaceView = false
-    applySurfaceViewVisibility()
-    onFirstFrameRender(Unit)
+    if (player.currentVideoView == this) {
+      shouldHideSurfaceView = false
+      applySurfaceViewVisibility()
+      onFirstFrameRender(Unit)
+    }
   }
 
   override fun requestLayout() {

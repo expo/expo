@@ -1,11 +1,32 @@
 import spawnAsync, { SpawnResult } from '@expo/spawn-async';
+import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { learnMore } from '../utils/TerminalLink';
 import { parseInstallCheckOutput } from '../utils/parseInstallCheckOutput';
 
 function isSpawnResult(result: any): result is SpawnResult {
   return 'stderr' in result && 'stdout' in result && 'status' in result;
+}
+
+async function spawnExpoCLI(
+  projectRoot: string,
+  args: string[],
+  options: Omit<spawnAsync.SpawnOptions, 'cwd'>
+) {
+  const expoCliPath = resolveFrom.silent(projectRoot, 'expo/bin/cli');
+  if (expoCliPath) {
+    return await spawnAsync('node', [expoCliPath, ...args], {
+      cwd: projectRoot,
+      ...options,
+    });
+  } else {
+    return await spawnAsync('npx', ['expo', ...args], {
+      cwd: projectRoot,
+      ...options,
+    });
+  }
 }
 
 export class InstalledDependencyVersionCheck implements DoctorCheck {
@@ -15,6 +36,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
 
   async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
+    const advice: string[] = [];
 
     // Expo CLI introduced support for --json output in SDK 54
     // Command: npx expo install --check --json
@@ -36,10 +58,9 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
       let commandResult: SpawnResult;
 
       try {
-        commandResult = await spawnAsync('npx', ['expo', 'install', '--check', '--json'], {
+        commandResult = await spawnExpoCLI(projectRoot, ['install', '--check', '--json'], {
           stdio: 'pipe',
-          cwd: projectRoot,
-          env: { ...process.env, CI: '1' },
+          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error) && error.status === 1) {
@@ -50,21 +71,16 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
         }
       }
 
-      const initialIssuesCount = issues.length;
       parseInstallCheckOutput(commandResult.stdout, issues, projectMajorSdkVersion);
 
-      // If no issues were added from stdout, fall back to stderr
-      if (issues.length === initialIssuesCount && commandResult.stderr.trim()) {
-        issues.push(commandResult.stderr.trim());
-      }
+      // We rely on EXPO_DEBUG=0 to ensure stdout contains only JSON output.
     } else {
       // SDK versions <54 don't support --json output
       // In the future, we should remove this and use the --json output above
       try {
-        await spawnAsync('npx', ['expo', 'install', '--check'], {
+        await spawnExpoCLI(projectRoot, ['install', '--check'], {
           stdio: 'pipe',
-          cwd: projectRoot,
-          env: { ...process.env, CI: '1' },
+          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error)) {
@@ -75,12 +91,19 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
       }
     }
 
+    if (issues.length) {
+      advice.push(`Use 'npx expo install --check' to review and upgrade your dependencies.`);
+      advice.push(
+        `To ignore specific packages, add them to "expo.install.exclude" in package.json. ${learnMore(
+          'https://expo.fyi/dependency-validation'
+        )}`
+      );
+    }
+
     return {
       isSuccessful: issues.length === 0,
       issues,
-      advice: issues.length
-        ? [`Use 'npx expo install --check' to review and upgrade your dependencies.`]
-        : [],
+      advice,
     };
   }
 }
