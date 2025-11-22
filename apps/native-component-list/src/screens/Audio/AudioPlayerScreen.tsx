@@ -33,10 +33,7 @@ export default function AudioScreen(props: any) {
         style={styles.player}
       />
       <HeadingText>Local asset player</HeadingText>
-      <AudioPlayer
-        source={require('../../../../assets/sounds/polonez.mp3')}
-        style={styles.player}
-      />
+      <AudioPlayer source={require('../../../assets/sounds/polonez.mp3')} style={styles.player} />
       <HeadingText>Remote asset with downloadFirst</HeadingText>
       <AudioPlayer
         source={{
