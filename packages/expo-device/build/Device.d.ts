@@ -1,5 +1,5 @@
-import { DeviceType } from './Device.types';
-export { DeviceType };
+import { CameraCutoutInfo, CameraRect, DeviceType } from './Device.types';
+export { CameraCutoutInfo, CameraRect, DeviceType };
 /**
  * `true` if the app is running on a real device and `false` if running in a simulator or emulator.
  * On web, this is always set to `true`.
@@ -273,6 +273,23 @@ export declare function isSideLoadingEnabledAsync(): Promise<boolean>;
  * @platform android
  */
 export declare function getPlatformFeaturesAsync(): Promise<string[]>;
+/**
+ * Gets the camera cutout information.
+ * This is useful for adjusting your UI to avoid overlapping with the camera cutout (notch) on devices that have one.
+ * You can also use this to create interactive UI elements around the cutout, similar to the Dynamic Island on iOS.
+ *
+ * @example
+ * ```js
+ * const info = await Device.getCameraCutoutInfoAsync();
+ * if (info.hasCameraCutout) {
+ *   console.log(info.cameraRects, info.safeInsets);
+ * }
+ * ```
+ * @platform android
+ * @platform ios
+ * @returns A promise that resolves to `CameraCutoutInfo` object containing the camera cutout information.
+ */
+export declare function getCameraCutoutInfoAsync(): Promise<CameraCutoutInfo>;
 /**
  * Tells if the device has a specific system feature.
  * @param feature The platform-specific name of the feature to check for on the device. You can get all available system features with `Device.getSystemFeatureAsync()`.

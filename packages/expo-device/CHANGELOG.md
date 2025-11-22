@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `getCameraCutoutInfoAsync` to get the camera cutout information. ([#41172](https://github.com/expo/expo/pull/41172) by [@athexweb3](https://github.com/athexweb3))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

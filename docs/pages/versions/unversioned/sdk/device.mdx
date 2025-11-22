@@ -38,6 +38,37 @@ export default function App() {
 
 </SnackInline>
 
+<SnackInline label='Get Camera Cutout Info' dependencies={['expo-device']}>
+
+```jsx
+import { Text, View } from 'react-native';
+import * as Device from 'expo-device';
+import { useEffect, useState } from 'react';
+
+export default function App() {
+  const [cutoutInfo, setCutoutInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchCutoutInfo = async () => {
+      const info = await Device.getCameraCutoutInfoAsync();
+      setCutoutInfo(info);
+    };
+    fetchCutoutInfo();
+  }, []);
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Has Cutout: {cutoutInfo?.hasCameraCutout ? 'Yes' : 'No'}</Text>
+      {cutoutInfo?.hasCameraCutout && (
+        <Text>Type: {cutoutInfo.type}</Text>
+      )}
+    </View>
+  );
+}
+```
+
+</SnackInline>
+
 ## API
 
 ```js
