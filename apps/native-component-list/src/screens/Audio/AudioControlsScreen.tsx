@@ -10,8 +10,8 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Player from './Player';
-import Button from '../../../components/Button';
-import HeadingText from '../../../components/HeadingText';
+import Button from '../../components/Button';
+import HeadingText from '../../components/HeadingText';
 
 const artworkUrl1 =
   'https://images.unsplash.com/photo-1549138144-42ff3cdd2bf8?q=80&w=3504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';

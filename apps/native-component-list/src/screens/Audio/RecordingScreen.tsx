@@ -1,33 +1,35 @@
-import { useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
 import AudioModeSelector from './AudioModeSelector';
-import Player from './AudioPlayer';
+import AudioPlayer from './AudioPlayer';
 import Recorder from './Recorder';
-import HeadingText from '../../../components/HeadingText';
+import HeadingText from '../../components/HeadingText';
 
 export default function RecordingScreen() {
-  const [recordingUri, setRecordingUri] = useState<string | undefined>(undefined);
+  const [uri, setUri] = useState<string | undefined>(undefined);
+
+  const onRecordingFinished = (recordingUri: string) => setUri(recordingUri);
+
+  const maybeRenderLastRecording = () => {
+    return uri ? (
+      <>
+        <HeadingText>Last recording</HeadingText>
+        <AudioPlayer key={uri} source={{ uri }} />
+      </>
+    ) : null;
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <HeadingText>Audio mode</HeadingText>
       <AudioModeSelector />
       <HeadingText>Recorder</HeadingText>
-      <Recorder onDone={(recordingUri: string) => setRecordingUri(recordingUri)} />
-      {recordingUri && (
-        <>
-          <HeadingText>Last recording</HeadingText>
-          <Player source={{ uri: recordingUri }} />
-        </>
-      )}
+      <Recorder onDone={onRecordingFinished} />
+      {maybeRenderLastRecording()}
     </ScrollView>
   );
 }
-
-RecordingScreen.navigationOptions = {
-  title: 'Audio Recording',
-};
 
 const styles = StyleSheet.create({
   contentContainer: {
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   player: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#cccccc',
   },
 });

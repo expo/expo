@@ -4,7 +4,7 @@ import { PixelRatio, ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-
 
 import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
-import HeadingText from '../../../components/HeadingText';
+import HeadingText from '../../components/HeadingText';
 
 export default function CreateAudioPlayerScreen(props: any) {
   React.useLayoutEffect(() => {

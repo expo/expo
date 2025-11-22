@@ -9,7 +9,7 @@ import Reanimated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import Colors from '../../../constants/Colors';
+import Colors from '../../constants/Colors';
 
 // TODO: (alan) Moving this import causes `Platform.OS` to be undefined?
 // eslint-disable-next-line import/order

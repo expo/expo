@@ -4,8 +4,8 @@ import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
 import AudioModeSelector from './AudioModeSelector';
 import AudioPlayer from './AudioPlayer';
-import HeadingText from '../../../components/HeadingText';
-import ListButton from '../../../components/ListButton';
+import HeadingText from '../../components/HeadingText';
+import ListButton from '../../components/ListButton';
 
 export default function AudioScreen(props: any) {
   React.useLayoutEffect(() => {

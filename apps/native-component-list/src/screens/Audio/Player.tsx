@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { AVMetadata } from 'expo-av';
+import { AudioMetadata } from 'expo-audio';
 import React from 'react';
 import {
   GestureResponderEvent,
@@ -15,7 +15,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import Colors from '../../../constants/Colors';
+import Colors from '../../constants/Colors';
 
 interface Props {
   header?: React.ReactElement;
@@ -55,7 +55,7 @@ interface Props {
   shouldCorrectPitch: boolean;
   playing: boolean;
   mute: boolean;
-  metadata?: AVMetadata;
+  metadata?: AudioMetadata;
 
   // Error
   errorMessage?: string;
