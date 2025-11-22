@@ -13,9 +13,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
-- **`expo-router`**
-  - Fixed crash in Sitemap due to undefined `window.location`. ([#41175](https://github.com/expo/expo/pull/41175) by [@md_abid_nafi](https://github.com/MohammedAbidNafi))
-
 ## 54.0.0 — 2025-09-10
 
 ### 📚 3rd party library updates
