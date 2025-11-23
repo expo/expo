@@ -67,6 +67,7 @@ public final class ExpoGLModule: Module {
       Prop("msaaSamples") { (view, msaaSamples: Int) in
         view.msaaSamples = msaaSamples
       }
+
       Prop("enableExperimentalWorkletSupport") { (view, enableExperimentalWorkletSupport: Bool) in
         view.enableExperimentalWorkletSupport = enableExperimentalWorkletSupport
       }
