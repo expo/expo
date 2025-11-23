@@ -11,6 +11,25 @@ import * as Warnings from '../utils/warnings';
 
 const debug = Debug('expo:config-plugins:mod-compiler');
 
+export type PrebuildSettings = {
+  /** Current working directory. Should be one level up from the platform directories. */
+  projectRoot: string;
+  /** Should compile modifiers in introspection mode (dry run). */
+  introspect?: boolean;
+  /** Array of platforms to compile */
+  platforms?: ModPlatform[];
+  /**
+   * Throw errors when mods are missing providers.
+   * @default true
+   */
+  assertMissingModProviders?: boolean;
+  /** If provided, the providers will reset the input source from this template instead of the existing project root. */
+  templateProjectRoot?: string;
+
+  /** */
+  ignoreExistingNativeFiles?: boolean;
+};
+
 export function withDefaultBaseMods(
   config: ExportedConfig,
   props: ForwardedBaseModOptions = {}
@@ -60,20 +79,10 @@ export function withIntrospectionBaseMods(
   return config;
 }
 
-/**
- *
- * @param projectRoot
- * @param config
- */
+/** Compile modifiers in a prebuild config. */
 export async function compileModsAsync(
   config: ExportedConfig,
-  props: {
-    projectRoot: string;
-    platforms?: ModPlatform[];
-    introspect?: boolean;
-    assertMissingModProviders?: boolean;
-    ignoreExistingNativeFiles?: boolean;
-  }
+  props: PrebuildSettings
 ): Promise<ExportedConfig> {
   if (props.introspect === true) {
     config = withIntrospectionBaseMods(config);
@@ -117,11 +126,8 @@ const precedences: Record<string, Record<string, number>> = {
     finalized: 1,
   },
 };
-/**
- * A generic plugin compiler.
- *
- * @param config
- */
+
+/** A generic plugin compiler. */
 export async function evalModsAsync(
   config: ExportedConfig,
   {
@@ -129,19 +135,9 @@ export async function evalModsAsync(
     introspect,
     platforms,
     assertMissingModProviders,
+    templateProjectRoot,
     ignoreExistingNativeFiles = false,
-  }: {
-    projectRoot: string;
-    introspect?: boolean;
-    platforms?: ModPlatform[];
-    /**
-     * Throw errors when mods are missing providers.
-     * @default true
-     */
-    assertMissingModProviders?: boolean;
-    /** Ignore any existing native files, only use the generated prebuild results. */
-    ignoreExistingNativeFiles?: boolean;
-  }
+  }: PrebuildSettings
 ): Promise<ExportedConfig> {
   const modRawConfig = getRawClone(config);
   for (const [platformName, platform] of Object.entries(config.mods ?? ({} as ModConfig))) {
@@ -168,6 +164,7 @@ export async function evalModsAsync(
           platform: platformName as ModPlatform,
           modName,
           introspect: !!introspect,
+          templateProjectRoot,
           ignoreExistingNativeFiles,
         };
 
