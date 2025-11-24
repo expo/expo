@@ -42,6 +42,7 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/patch-project#readme",
   "devDependencies": {
+    "@expo/cli": "*",
     "expo-module-scripts": "^5.0.7",
     "memfs": "^3.2.0"
   },
