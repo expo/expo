@@ -14071,10 +14071,10 @@ react-native-screens@4.11.1-nightly-20250611-8b82e081e:
     react-native-is-edge-to-edge "^1.1.7"
     warn-once "^0.1.0"
 
-react-native-screens@4.18.0:
-  version "4.18.0"
-  resolved "https://registry.npmjs.org/react-native-screens/-/react-native-screens-4.18.0.tgz#ba5a951b3f145e3b773d201143c19e1b1c1337ff"
-  integrity sha512-mRTLWL7Uc1p/RFNveEIIrhP22oxHduC2ZnLr/2iHwBeYpGXR0rJZ7Bgc0ktxQSHRjWTPT70qc/7yd4r9960PBQ==
+react-native-screens@4.19.0-nightly-20251123-253b82666:
+  version "4.19.0-nightly-20251123-253b82666"
+  resolved "https://registry.npmjs.org/react-native-screens/-/react-native-screens-4.19.0-nightly-20251123-253b82666.tgz#fee414eb0bbfdf71aeac4da19e6b8b8f5c0cb1bd"
+  integrity sha512-ETD/iZM/HgqSWH1tJhkmppIWXrjJZkbBqBXD4yUuhYe8zWmh7s4tqlPujU4YKeLrmwpbi8kEW+FEoXtFUyVwkw==
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"

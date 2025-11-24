@@ -2883,7 +2883,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - RNScreens (4.18.0):
+  - RNScreens (4.19.0-nightly-20251123-253b82666):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2905,9 +2905,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNScreens/common (= 4.18.0)
+    - RNScreens/common (= 4.19.0-nightly-20251123-253b82666)
     - Yoga
-  - RNScreens/common (4.18.0):
+  - RNScreens/common (4.19.0-nightly-20251123-253b82666):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3789,7 +3789,7 @@ SPEC CHECKSUMS:
   EXUpdates: 83e4d666a085b44149f3b21d5bd057ad37b2c3e5
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   FBLazyVector: b733c6ff598607c9c5a2757669306ca5481fa7a1
-  hermes-engine: 8044e2041f40aac194ae9df22077c2db152c0903
+  hermes-engine: f5fc1f6e7f9d3d3982201f9c9d8f1e25e4f4b59d
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3807,7 +3807,7 @@ SPEC CHECKSUMS:
   React: 0d33ae696cce9f29ef4ef9395b677461f819edff
   React-callinvoker: 98827bd8d13282630bd3ac420d9deab3ef9c4404
   React-Core: c53a32ac2fd877b127d678668eacb32ee5b278a2
-  React-Core-prebuilt: 603b8e4e6d0071a0018e5b4050387202861932b7
+  React-Core-prebuilt: 29668101fca35c588c853a75ce8904a9a3e3a244
   React-CoreModules: 55744f49f098b26e46de697a828f0a22540246cd
   React-cxxreact: 07d452b1ca44cb6bf003b36d8263a1fa772d2cae
   React-debug: 65a8b0304322f0641d4aa5fcd1d9bdeae3f97327
@@ -3876,14 +3876,14 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: c55bd3998b0b548d2e81f5aae4758096d4321a7a
   ReactCodegen: c63ed13899d192e3ac78b794f4149e950dc86122
   ReactCommon: 558d37855c8b281c4fdfe8f9ba2d7bc102fb55ff
-  ReactNativeDependencies: 039f8d33be4110dc8041e9492ae7e65e85b99245
+  ReactNativeDependencies: 6012c41b8b2962e2af6d9cb299c05c1811be9d87
   RNCAsyncStorage: e85a99325df9eb0191a6ee2b2a842644c7eb29f4
   RNCMaskedView: 3c9d7586e2b9bbab573591dcb823918bc4668005
   RNCPicker: 38a9deb903d9a8ae18b598bac727e6c84b3cf0fa
   RNDateTimePicker: 6fdd63f5d1e0f21faf4cc8674957c52958a7efae
   RNGestureHandler: 72efe2ab9d5d1b1d25b96f3ad3d174992f3bad87
   RNReanimated: a8df76e5dd2315dfd8711d7937ec3e0e09800c74
-  RNScreens: 448161bce0b7d670222bf4ac967b0c3449cdcefa
+  RNScreens: a783ad69553533bf2d7f034fa21777150773b486
   RNSVG: 595d31b6cd45e92424c6b623bd93e1e9b6aa8b79
   RNWorklets: c181ebc224265a35743abc490e54a5cf66eb2add
   SDWebImage: f29024626962457f3470184232766516dee8dfea
