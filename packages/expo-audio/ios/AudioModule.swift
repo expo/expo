@@ -408,7 +408,7 @@ public class AudioModule: Module {
 
   private func handleInterruptionEnded(with options: AVAudioSession.InterruptionOptions) {
     do {
-      try AVAudioSession.sharedInstance().setActive(true, options: [.notifyOthersOnDeactivation])
+      try AVAudioSession.sharedInstance().setActive(true)
       if options.contains(.shouldResume) {
         resumeInterruptedPlayers()
       }
@@ -509,7 +509,7 @@ public class AudioModule: Module {
     }
 
     do {
-      try AVAudioSession.sharedInstance().setActive(isActive, options: [.notifyOthersOnDeactivation])
+      try AVAudioSession.sharedInstance().setActive(isActive, options: isActive ? [] : [.notifyOthersOnDeactivation])
       sessionIsActive = isActive
     } catch {
       throw AudioStateException(error.localizedDescription)
@@ -582,7 +582,7 @@ public class AudioModule: Module {
   }
 
   private func activateSession() throws {
-    try AVAudioSession.sharedInstance().setActive(true, options: [.notifyOthersOnDeactivation])
+    try AVAudioSession.sharedInstance().setActive(true)
   }
 
   private func deactivateSession() {
