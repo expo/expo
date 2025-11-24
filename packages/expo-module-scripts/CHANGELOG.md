@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Windows compatibility by making `pipefail` conditional on OS type in prepare scripts. ([#40867](https://github.com/expo/expo/issues/40867) by [@Kamkmgamer](https://github.com/Kamkmgamer)) ([#41122](https://github.com/expo/expo/pull/41122) by [@Kamkmgamer](https://github.com/Kamkmgamer))
+
 ### 💡 Others
 
 - Add more tests related files to the `.npmignore` template. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
