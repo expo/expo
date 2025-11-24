@@ -111,6 +111,12 @@ export function LoggedOutAccountView({ refetch }: Props) {
 
       if (result.type === 'success') {
         const resultURL = url.parse(result.url, true);
+
+        if (Object.keys(resultURL.query).length === 0) {
+          setIsAuthenticating(false);
+          return;
+        }
+
         const encodedSessionSecret = resultURL.query['session_secret'] as string;
         if (!encodedSessionSecret) {
           throw new Error('session_secret is missing in auth redirect query');
