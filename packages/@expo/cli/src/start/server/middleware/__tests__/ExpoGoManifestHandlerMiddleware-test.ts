@@ -1,11 +1,7 @@
 import { GraphQLError } from '@0no-co/graphql.web';
 import { ExpoConfig } from '@expo/config';
-import {
-  isMultipartPartWithName,
-  parseMultipartMixedResponseAsync,
-  MultipartPart,
-} from '@expo/multipart-body-parser';
 import { vol } from 'memfs';
+import { parseMultipart, MultipartPart } from 'multitars';
 import nullthrows from 'nullthrows';
 
 import { AppQuery } from '../../../../api/graphql/queries/AppQuery';
@@ -86,12 +82,15 @@ async function getMultipartPartAsync(
     headers: ServerHeaders;
   }
 ): Promise<MultipartPart | null> {
-  const multipartParts = await parseMultipartMixedResponseAsync(
-    response.headers.get('content-type') as string,
-    Buffer.from(response.body)
-  );
-  const part = multipartParts.find((part) => isMultipartPartWithName(part, partName));
-  return part ?? null;
+  const multipartParts = parseMultipart(new Blob([response.body]).stream(), {
+    contentType: response.headers.get('content-type') as string,
+  });
+  for await (const part of multipartParts) {
+    if (part.name === partName) {
+      return part;
+    }
+  }
+  return null;
 }
 
 beforeEach(() => {
@@ -255,8 +254,8 @@ describe('_getManifestResponseAsync', () => {
       )
     );
 
-    const { body } = nullthrows(await getMultipartPartAsync('manifest', results));
-    expect(JSON.parse(body)).toEqual({
+    const part = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(await part.json()).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       runtimeVersion: '45.0.0',
@@ -301,12 +300,10 @@ describe('_getManifestResponseAsync', () => {
     });
     expect(results.version).toBe('45.0.0');
 
-    const { body, headers: manifestPartHeaders } = nullthrows(
-      await getMultipartPartAsync('manifest', results)
-    );
-    expect(manifestPartHeaders.get('expo-signature')).toBe(undefined);
+    const part = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(part.headers['expo-signature']).toBe(undefined);
 
-    expect(JSON.parse(body)).toEqual({
+    expect(await part.json()).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       runtimeVersion: '45.0.0',
@@ -355,12 +352,10 @@ describe('_getManifestResponseAsync', () => {
     });
     expect(results.version).toBe('45.0.0');
 
-    const { body, headers: manifestPartHeaders } = nullthrows(
-      await getMultipartPartAsync('manifest', results)
-    );
-    expect(manifestPartHeaders.get('expo-signature')).toBe(undefined);
+    const part = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(part.headers['expo-signature']).toBe(undefined);
 
-    expect(JSON.parse(body)).toEqual({
+    expect(await part.json()).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       runtimeVersion: '45.0.0',
@@ -419,10 +414,9 @@ describe('_getManifestResponseAsync', () => {
     });
     expect(results.version).toBe('45.0.0');
 
-    const { body, headers } = nullthrows(await getMultipartPartAsync('manifest', results));
-    expect(headers.get('expo-signature')).toContain('keyid="testkeyid"');
-
-    expect(JSON.parse(body)).toEqual({
+    const part = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(part.headers['expo-signature']).toContain('keyid="testkeyid"');
+    expect(await part.json()).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       runtimeVersion: '45.0.0',
@@ -458,12 +452,10 @@ describe('_getManifestResponseAsync', () => {
     });
     expect(results.version).toBe('45.0.0');
 
-    const { body: manifestPartBody, headers: manifestPartHeaders } = nullthrows(
-      await getMultipartPartAsync('manifest', results)
-    );
-    expect(manifestPartHeaders.get('expo-signature')).toContain('keyid="expo-go"');
+    const part = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(part.headers['expo-signature']).toContain('keyid="expo-go"');
 
-    expect(JSON.parse(manifestPartBody)).toEqual({
+    expect(await part.json()).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       runtimeVersion: '45.0.0',
@@ -484,10 +476,8 @@ describe('_getManifestResponseAsync', () => {
       },
     });
 
-    const { body: certificateChainPartBody } = nullthrows(
-      await getMultipartPartAsync('certificate_chain', results)
-    );
-    expect(certificateChainPartBody).toMatchSnapshot();
+    const certChainPart = nullthrows(await getMultipartPartAsync('certificate_chain', results));
+    expect(await certChainPart.text()).toMatchSnapshot();
   });
 
   it('returns a code signed manifest with developers own key when requested when offline', async () => {
@@ -521,10 +511,10 @@ describe('_getManifestResponseAsync', () => {
     });
     expect(results.version).toBe('45.0.0');
 
-    const { body, headers } = nullthrows(await getMultipartPartAsync('manifest', results));
-    expect(headers.get('expo-signature')).toContain('keyid="testkeyid"');
+    const part = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(part.headers['expo-signature']).toContain('keyid="testkeyid"');
 
-    expect(JSON.parse(body)).toEqual({
+    expect(await part.json()).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       runtimeVersion: '45.0.0',
@@ -574,12 +564,10 @@ describe('_getManifestResponseAsync', () => {
     });
     expect(results.version).toBe('45.0.0');
 
-    const { body: manifestPartBody, headers: manifestPartHeaders } = nullthrows(
-      await getMultipartPartAsync('manifest', results)
-    );
-    expect(manifestPartHeaders.get('expo-signature')).toContain('keyid="expo-go"');
+    const part = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(part.headers['expo-signature']).toContain('keyid="expo-go"');
 
-    expect(JSON.parse(manifestPartBody)).toEqual({
+    expect(await part.json()).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       runtimeVersion: '45.0.0',
@@ -600,10 +588,10 @@ describe('_getManifestResponseAsync', () => {
       },
     });
 
-    const { body: certificateChainPartBody } = nullthrows(
+    const certificateChainPart = nullthrows(
       await getMultipartPartAsync('certificate_chain', results)
     );
-    expect(certificateChainPartBody).toMatchSnapshot();
+    expect(await certificateChainPart.text()).toMatchSnapshot();
   });
 
   it('returns application/json when requested', async () => {
@@ -705,8 +693,8 @@ describe('_getManifestResponseAsync', () => {
       expectSignature: null,
       hostname: 'localhost',
     });
-    const { body } = nullthrows(await getMultipartPartAsync('manifest', results));
-    expect(JSON.parse(body)).toMatchObject({
+    const part = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(await part.json()).toMatchObject({
       runtimeVersion: 'testrtv',
     });
   });

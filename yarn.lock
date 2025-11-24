@@ -1604,15 +1604,6 @@
     metro-transform-plugins "0.83.2"
     metro-transform-worker "0.83.2"
 
-"@expo/multipart-body-parser@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/multipart-body-parser/-/multipart-body-parser-1.0.0.tgz#7227bab9cfe9d4baea925b748a3212e0239ba55d"
-  integrity sha512-ROR8PPuWZ6AcePdlmkzGmbniiScqQbyjFefb7Z8WZZOQkiIR/TdFA0vc0C9gmK1lJJp7IyXbW51XVG7eehyO3Q==
-  dependencies:
-    dicer "^0.3.1"
-    nullthrows "^1.1.1"
-    structured-headers "^0.4.1"
-
 "@expo/mux@^1.0.7":
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/@expo/mux/-/mux-1.0.7.tgz#77a29dcf7bd02edf76cfc74631a64ea6b13b9c58"
@@ -7308,13 +7299,6 @@ devtools-protocol@^0.0.1113120:
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.1113120.tgz#7ab2169517df18dfa3281b5a84a6628c93f97785"
   integrity sha512-jQ+n75ixpBT5aktBmsI/FQx5d26bSuXBd/fe9/bKIIAiKTfFNRT33nOJuBJMZNvxDNA7Wih/QFiIya1K1rdqKQ==
 
-dicer@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/dicer/-/dicer-0.3.1.tgz#abf28921e3475bc5e801e74e0159fd94f927ba97"
-  integrity sha512-ObioMtXnmjYs3aRtpIJt9rgQSPCIhKVkFPip+E9GUDyWl8N435znUxK/JfNwGZJ2wnn5JKQ7Ly3vOK5Q5dylGA==
-  dependencies:
-    streamsearch "^1.1.0"
-
 didyoumean@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/didyoumean/-/didyoumean-1.2.2.tgz#989346ffe9e839b4555ecf5666edea0d3e8ad037"
@@ -12183,6 +12167,11 @@ ms@2.1.3, ms@^2.1.1, ms@^2.1.3:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
+
+multitars@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/multitars/-/multitars-0.2.0.tgz#6cc81d4d49bef85fc35ce733ba55864d480e1700"
+  integrity sha512-2kEnslXW/OgB4RTM7ykyJAla9cEv6mqwYMSB6AqsNv3USiVdRRHLKWK25RnTWJpDnHjDb4b8fiVowynyQ4VWTQ==
 
 mute-stream@0.0.8:
   version "0.0.8"
