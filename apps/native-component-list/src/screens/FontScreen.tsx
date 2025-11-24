@@ -213,7 +213,7 @@ export default function FontScreen() {
                 }}
                 contentFit="cover"
               />
-              <Text>Same as &lt;Text&gt;</Text>
+              <Text>Image above should look the same as &lt;Text&gt;</Text>
               <Text
                 style={{
                   fontFamily: 'Inter-BoldItalic',
