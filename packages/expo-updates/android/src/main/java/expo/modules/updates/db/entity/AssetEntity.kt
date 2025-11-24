@@ -48,6 +48,12 @@ class AssetEntity(@field:ColumnInfo(name = "key") var key: String?, var type: St
   @ColumnInfo(name = "expected_hash")
   var expectedHash: String? = null
 
+  /**
+   * Expected file size in bytes. Used for quick validation before attempting hash checks.
+   */
+  @ColumnInfo(name = "expected_size")
+  var expectedSize: Long? = null
+
   @ColumnInfo(name = "marked_for_deletion")
   var markedForDeletion = false
 
