@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- fix(expo-module-scripts): respect mutual exclusion for eslint config files ([#40078](https://github.com/expo/expo/pull/40078) by [@adam-sajko](https://github.com/adam-sajko))
+
 ### 💡 Others
 
 - Add more tests related files to the `.npmignore` template. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
