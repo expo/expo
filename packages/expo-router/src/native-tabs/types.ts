@@ -331,7 +331,7 @@ export interface NativeTabTriggerProps {
    * properties will override the system icon, but the system-defined title cannot
    * be customized.
    *
-   * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem|UITabBarItem.SystemItem}
+   * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem}
    * @platform ios
    */
   role?: NativeTabsTabBarItemRole;
