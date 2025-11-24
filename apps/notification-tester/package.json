@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.7.3",
-    "@react-navigation/native": "^7.1.19",
+    "@react-navigation/native": "^7.1.21",
     "expo": "~54.0.8",
     "expo-font": "14.0.8",
     "expo-linking": "8.0.8",
