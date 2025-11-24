@@ -80,7 +80,7 @@ runs:
   using: 'composite'
   steps:
     - name: ♻️ Restore workspace node modules
-      if: inputs.yarn-workspace == 'true' && runner.os != 'macOS'
+      if: inputs.yarn-workspace == 'true'
       uses: actions/cache@v4
       id: workspace-modules-cache
       with:
@@ -96,7 +96,7 @@ runs:
         key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
 
     - name: ♻️ Restore /tools node modules and bins
-      if: inputs.yarn-tools == 'true' && runner.os != 'macOS'
+      if: inputs.yarn-tools == 'true'
       uses: actions/cache@v4
       id: tools-modules-cache
       with:
@@ -105,21 +105,21 @@ runs:
         key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
 
     - name: ♻️ Restore /docs node modules
-      if: inputs.yarn-docs == 'true' && runner.os != 'macOS'
+      if: inputs.yarn-docs == 'true'
       uses: actions/cache@v4
       id: docs-modules-cache
       with:
         path: docs/node_modules
         key: ${{ runner.os }}-docs-modules-${{ hashFiles('docs/yarn.lock') }}
     - name: ♻️ Restore Docs Next cache
-      if: inputs.yarn-docs == 'true' && steps.docs-modules-cache.outputs.cache-hit == 'true' && runner.os != 'macOS'
+      if: inputs.yarn-docs == 'true' && steps.docs-modules-cache.outputs.cache-hit == 'true'
       uses: actions/cache@v4
       with:
         path: docs/.next/cache
         key: ${{ runner.os }}-docs-next-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/next.config.js') }}
 
     - name: ♻️ Restore ios/Pods from cache
-      if: inputs.ios-pods == 'true' && runner.os != 'macOS'
+      if: inputs.ios-pods == 'true'
       uses: actions/cache@v4
       id: ios-pods-cache
       with:
@@ -127,7 +127,7 @@ runs:
         key: ${{ runner.os }}-ios-pods-${{ hashFiles('ios/Podfile.lock') }}
 
     - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
-      if: inputs.bare-expo-pods == 'true' && runner.os != 'macOS'
+      if: inputs.bare-expo-pods == 'true'
       uses: actions/cache@v4
       id: bare-expo-pods-cache
       with:
@@ -135,7 +135,7 @@ runs:
         key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
 
     - name: ♻️ Restore apps/bare-expo/macos/Pods from cache
-      if: inputs.bare-expo-macos-pods == 'true' && runner.os != 'macOS'
+      if: inputs.bare-expo-macos-pods == 'true'
       uses: actions/cache@v4
       id: bare-expo-macos-pods-cache
       with:
@@ -143,7 +143,7 @@ runs:
         key: ${{ runner.os }}-bare-expo-macos-pods-${{ hashFiles('apps/bare-expo/macos/Podfile.lock') }}
 
     - name: ♻️ Restore apps/native-tests/ios/Pods from cache
-      if: inputs.native-tests-pods == 'true' && runner.os != 'macOS'
+      if: inputs.native-tests-pods == 'true'
       uses: actions/cache@v4
       id: native-tests-pods-cache
       with:
@@ -181,7 +181,7 @@ runs:
         key: ${{ steps.git-lfs.outputs.sha256 }}
 
     - name: ♻️ Restore hermes-engine AAR cache
-      if: inputs.hermes-engine-aar == 'true' && runner.os != 'macOS'
+      if: inputs.hermes-engine-aar == 'true'
       uses: actions/cache@v4
       with:
         path: android/prebuiltHermes
@@ -220,7 +220,7 @@ runs:
       shell: bash
       run: echo "REACT_NATIVE_DOWNLOADS_DIR=$HOME/.gradle/react-native-downloads" >> $GITHUB_ENV
     - name: ♻️ Restore Gradle downloads cache for React Native libraries
-      if: inputs.react-native-gradle-downloads == 'true' && runner.os != 'macOS'
+      if: inputs.react-native-gradle-downloads == 'true'
       uses: actions/cache@v4
       with:
         path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
