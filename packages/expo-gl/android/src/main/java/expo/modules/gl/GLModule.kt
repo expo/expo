@@ -18,11 +18,11 @@ private class InvalidCameraViewException :
 private class InvalidGLContextException :
   CodedException("GLContext not found for given context id")
 
-class GLObjectManagerModule : Module() {
+class GLModule : Module() {
   private val mGLObjects = SparseArray<GLObject>()
   private val mGLContextMap = SparseArray<GLContext>()
   override fun definition() = ModuleDefinition {
-    Name("ExponentGLObjectManager")
+    Name("ExpoGL")
 
     AsyncFunction("destroyObjectAsync") { exglObjId: Int ->
       val glObject = mGLObjects[exglObjId]
@@ -61,7 +61,7 @@ class GLObjectManagerModule : Module() {
     }
 
     AsyncFunction("createContextAsync") { promise: Promise ->
-      val glContext = GLContext(this@GLObjectManagerModule)
+      val glContext = GLContext(this@GLModule)
       glContext.initialize(null, false) {
         val results = Bundle()
         results.putInt("exglCtxId", glContext.contextId)
@@ -75,6 +75,13 @@ class GLObjectManagerModule : Module() {
 
       glContext.destroy()
       true
+    }
+
+    View(GLView::class) {
+      Events("onSurfaceCreate")
+      Prop("enableExperimentalWorkletSupport") { view: GLView, enableExperimentalWorkletSupport: Boolean? ->
+        view.enableExperimentalWorkletSupport = enableExperimentalWorkletSupport ?: false
+      }
     }
   }
 

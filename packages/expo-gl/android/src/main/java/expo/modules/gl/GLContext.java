@@ -39,7 +39,7 @@ import static expo.modules.gl.cpp.EXGL.*;
 public class GLContext {
   private int mEXGLCtxId = -1;
 
-  private final GLObjectManagerModule mManager;
+  private final GLModule mManager;
   private GLThread mGLThread;
   private EGLDisplay mEGLDisplay;
   private EGLSurface mEGLSurface;
@@ -49,7 +49,7 @@ public class GLContext {
 
   private BlockingQueue<Runnable> mEventQueue = new LinkedBlockingQueue<>();
 
-  public GLContext(GLObjectManagerModule manager) {
+  public GLContext(GLModule manager) {
     super();
     mManager = manager;
   }
