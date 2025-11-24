@@ -9,7 +9,6 @@ exports.getEasBuildSourcesAsync = getEasBuildSourcesAsync;
 exports.getExpoAutolinkingAndroidSourcesAsync = getExpoAutolinkingAndroidSourcesAsync;
 exports.getExpoCNGPatchSourcesAsync = getExpoCNGPatchSourcesAsync;
 exports.getExpoAutolinkingIosSourcesAsync = getExpoAutolinkingIosSourcesAsync;
-exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
 exports.getConfigPluginProps = getConfigPluginProps;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
@@ -18,6 +17,7 @@ const semver_1 = __importDefault(require("semver"));
 const ExpoResolver_1 = require("../ExpoResolver");
 const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
+const Sort_1 = require("../Sort");
 const Path_1 = require("../utils/Path");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, config, loadedModules, options) {
@@ -222,7 +222,7 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
         const reasons = ['expoAutolinkingAndroid'];
         const results = [];
         const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', 'android', '--json'], { cwd: projectRoot });
-        const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
+        const config = (0, Sort_1.sortConfig)(JSON.parse(stdout));
         for (const module of config.modules) {
             for (const project of module.projects) {
                 const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, project.sourceDir));
@@ -291,7 +291,7 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options, expoAutol
         const reasons = ['expoAutolinkingIos'];
         const results = [];
         const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', platform, '--json'], { cwd: projectRoot });
-        const config = JSON.parse(stdout);
+        const config = (0, Sort_1.sortConfig)(JSON.parse(stdout));
         for (const module of config.modules) {
             for (const pod of module.pods) {
                 const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, pod.podspecDir));
@@ -311,16 +311,6 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options, expoAutol
     catch {
         return [];
     }
-}
-/**
- * Sort the expo-modules-autolinking android config to make it stable from hashing.
- */
-function sortExpoAutolinkingAndroidConfig(config) {
-    for (const module of config.modules) {
-        // Sort the projects by project.name
-        module.projects.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-    }
-    return config;
 }
 /**
  * Get the props for a config-plugin
