@@ -277,16 +277,28 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       [navigation]
     );
 
+    const Suspense = ({ children }: React.PropsWithChildren) => {
+      // if (process.env.NODE_ENV !== 'production' || process.env.EXPO_OS !== 'web') {
+        return (
+          <React.Suspense fallback={<SuspenseFallback route={value} />}>
+            {children}
+          </React.Suspense>
+        );
+      // }
+
+      // return children;
+    };
+
     return (
       <Route node={value} route={route}>
-        <React.Suspense fallback={<SuspenseFallback route={value} />}>
+        <Suspense>
           <ScreenComponent
             {...props}
             // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
             // the intention is to make it possible to deduce shared routes.
             segment={value.route}
           />
-        </React.Suspense>
+        </Suspense>
       </Route>
     );
   }
