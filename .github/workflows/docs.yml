@@ -38,6 +38,13 @@ jobs:
           yarn-docs: 'true'
           yarn-tools: 'true'
           yarn-workspace: 'true'
+      - name: 🧶 Install workspace deps on cache miss
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --immutable
+      - name: 🧶 Install tools deps on cache miss
+        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
+        working-directory: tools
+        run: yarn install --immutable
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📝 Regenerate `unversioned` data for Docs
