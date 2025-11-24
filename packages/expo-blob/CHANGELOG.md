@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `Blob` export on web.
+- Fixed `Blob` export on web. ([#41195](https://github.com/expo/expo/pull/41195) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
