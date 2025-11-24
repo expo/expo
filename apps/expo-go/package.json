@@ -36,7 +36,7 @@
     "@react-native-segmented-control/segmented-control": "2.5.7",
     "@react-navigation/bottom-tabs": "^7.7.3",
     "@react-navigation/elements": "^2.8.1",
-    "@react-navigation/native": "^7.1.19",
+    "@react-navigation/native": "^7.1.21",
     "@react-navigation/stack": "^7.6.2",
     "@shopify/react-native-skia": "2.2.12",
     "@stripe/stripe-react-native": "0.50.3",
