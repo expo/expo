@@ -3990,7 +3990,7 @@ DEPENDENCIES:
   - EASClient (from `../../../packages/expo-eas-client/ios`)
   - EASClient/Tests (from `../../../packages/expo-eas-client/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
-  - EXAV (from `../../../packages/expo-av/ios`)
+  - EXAV (from `../../../node_modules/expo-av/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
@@ -4234,7 +4234,7 @@ EXTERNAL SOURCES:
   EXApplication:
     :path: "../../../packages/expo-application/ios"
   EXAV:
-    :path: "../../../packages/expo-av/ios"
+    :path: "../../../node_modules/expo-av/ios"
   EXConstants:
     :path: "../../../packages/expo-constants/ios"
   EXImageLoader:
@@ -4667,7 +4667,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 2853aea4922d43f84b721631947e9b25da43eabd
+  hermes-engine: 53f8aecd4b137eb7013a4a3620db4c2b57f03a3e
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4787,6 +4787,6 @@ SPEC CHECKSUMS:
   Yoga: cec68ad2cff7afc3e8f47ad6a056aa4b084cd1ac
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 087cda4cc0b3ab2ca7928c43c7f9366ae9877008
+PODFILE CHECKSUM: 0b9713db7a4765fdd022d7a668e1e138bf3b17b0
 
 COCOAPODS: 1.16.2
