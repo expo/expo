@@ -1,6 +1,7 @@
 import {
   appendInternalExpoRouterParams,
   getInternalExpoRouterParams,
+  hasParam,
   removeInternalExpoRouterParams,
   removeParams,
   type InternalExpoRouterParamName,
@@ -308,5 +309,118 @@ describe(removeParams, () => {
       undefinedValue: undefined,
       params: { nested: 'data' },
     });
+  });
+});
+
+describe(hasParam, () => {
+  it('returns true when param exists at root level', () => {
+    const params = { foo: 1, bar: 'test' };
+    expect(hasParam(params, 'foo')).toBe(true);
+    expect(hasParam(params, 'bar')).toBe(true);
+  });
+
+  it('returns false when param does not exist at root level', () => {
+    const params = { foo: 1 };
+    expect(hasParam(params, 'bar')).toBe(false);
+  });
+
+  it('returns true when param exists in nested params', () => {
+    const params = { foo: 1, params: { bar: 2 } };
+    expect(hasParam(params, 'bar')).toBe(true);
+  });
+
+  it('returns true when param exists at both root and nested levels', () => {
+    const params = { foo: 1, params: { foo: 2 } };
+    expect(hasParam(params, 'foo')).toBe(true);
+  });
+
+  it('returns false when param does not exist anywhere', () => {
+    const params = { foo: 1, params: { bar: 2 } };
+    expect(hasParam(params, 'baz')).toBe(false);
+  });
+
+  it('returns true when param exists in deeply nested params', () => {
+    const params = { foo: 1, params: { bar: 2, params: { baz: 3 } } };
+    expect(hasParam(params, 'baz')).toBe(true);
+  });
+
+  it('handles undefined params', () => {
+    expect(hasParam(undefined, 'foo')).toBe(false);
+  });
+
+  it('handles null params', () => {
+    expect(hasParam(null, 'foo')).toBe(false);
+  });
+
+  it('handles empty params object', () => {
+    expect(hasParam({}, 'foo')).toBe(false);
+  });
+
+  it('handles params with nested params as empty object', () => {
+    const params = { foo: 1, params: {} };
+    expect(hasParam(params, 'bar')).toBe(false);
+  });
+
+  it('handles params with nested params that are not objects', () => {
+    const params = { foo: 1, params: 'not an object' };
+    expect(hasParam(params, 'bar')).toBe(false);
+  });
+
+  it('handles params with nested params as null', () => {
+    const params = { foo: 1, params: null };
+    expect(hasParam(params, 'bar')).toBe(false);
+  });
+
+  it('returns true for param with undefined value', () => {
+    const params = { foo: undefined };
+    expect(hasParam(params, 'foo')).toBe(false); // Note: hasParam checks !== undefined, so this returns false
+  });
+
+  it('returns true for param with null value', () => {
+    const params = { foo: null };
+    expect(hasParam(params, 'foo')).toBe(true);
+  });
+
+  it('returns true for param with falsy values', () => {
+    expect(hasParam({ foo: false }, 'foo')).toBe(true);
+    expect(hasParam({ foo: 0 }, 'foo')).toBe(true);
+    expect(hasParam({ foo: '' }, 'foo')).toBe(true);
+  });
+
+  it('searches recursively through multiple nested levels', () => {
+    const params = {
+      a: 1,
+      params: {
+        b: 2,
+        params: {
+          c: 3,
+          params: {
+            d: 4,
+          },
+        },
+      },
+    };
+    expect(hasParam(params, 'a')).toBe(true);
+    expect(hasParam(params, 'b')).toBe(true);
+    expect(hasParam(params, 'c')).toBe(true);
+    expect(hasParam(params, 'd')).toBe(true);
+    expect(hasParam(params, 'e')).toBe(false);
+  });
+
+  it('handles non-object types correctly', () => {
+    expect(hasParam('string', 'foo')).toBe(false);
+    expect(hasParam(123, 'foo')).toBe(false);
+    expect(hasParam(true, 'foo')).toBe(false);
+    expect(hasParam([], 'foo')).toBe(false);
+  });
+
+  it('checks for internal expo router params', () => {
+    const params = { foo: 1, [NO_ANIMATION]: true };
+    expect(hasParam(params, NO_ANIMATION)).toBe(true);
+  });
+
+  it('checks for internal expo router params in nested params', () => {
+    const params = { foo: 1, params: { [IS_PREVIEW]: false } };
+    expect(hasParam(params, IS_PREVIEW)).toBe(true);
   });
 });

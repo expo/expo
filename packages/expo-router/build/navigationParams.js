@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = void 0;
 exports.appendInternalExpoRouterParams = appendInternalExpoRouterParams;
 exports.getInternalExpoRouterParams = getInternalExpoRouterParams;
+exports.hasParam = hasParam;
 exports.removeParams = removeParams;
 exports.removeInternalExpoRouterParams = removeInternalExpoRouterParams;
 exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
@@ -51,6 +52,18 @@ function getInternalExpoRouterParams(_params) {
         }
     }
     return expoParams;
+}
+function hasParam(params, paramName) {
+    if (!!params && typeof params === 'object') {
+        const recordParams = params;
+        if (recordParams[paramName] !== undefined) {
+            return true;
+        }
+        if (recordParams.params && typeof recordParams.params === 'object') {
+            return hasParam(recordParams.params, paramName);
+        }
+    }
+    return false;
 }
 function removeParams(params, paramName) {
     if (!params) {
