@@ -1,0 +1,83 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+group = "expo.modules"
+version = "0.1.0"
+
+android {
+  namespace "expo.modules.devminiapplauncher"
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+
+  buildTypes {
+    create("debugOptimized") {
+      initWith(buildTypes.debug)
+      matchingFallbacks += ["release"]
+    }
+
+    buildTypes.each {
+      it.buildConfigField 'String', 'VERSION', "\"${defaultConfig.versionName}\""
+    }
+  }
+
+  sourceSets {
+    debugOptimized {
+      setRoot 'src/debug'
+    }
+  }
+
+  buildFeatures {
+    buildConfig true
+    compose true
+  }
+}
+
+repositories {
+  mavenLocal()
+  maven {
+    url "$rootDir/../node_modules/react-native/android"
+  }
+  maven {
+    url "$rootDir/../node_modules/jsc-android/dist"
+  }
+  google()
+  mavenCentral()
+}
+
+dependencies {
+  implementation project(":expo-dev-menu")
+  implementation project(":expo-manifests")
+
+  implementation 'com.facebook.react:react-android'
+
+  api "androidx.appcompat:appcompat:1.7.1"
+  api "androidx.lifecycle:lifecycle-extensions:2.2.0"
+
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
+  def composeVersion = "1.9.0"
+  implementation "androidx.compose.foundation:foundation-android:$composeVersion"
+  implementation "androidx.compose.ui:ui:$composeVersion"
+  implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+  implementation "androidx.compose.material:material:$composeVersion"
+  implementation "androidx.navigation:navigation-compose:2.9.4"
+
+  // QR Code scanning
+  implementation "com.google.android.gms:play-services-code-scanner:16.1.0"
+  implementation "com.google.mlkit:barcode-scanning:17.3.0"
+
+  implementation("com.composables:core:1.43.1")
+}

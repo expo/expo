@@ -1,0 +1,28 @@
+{
+  "name": "expo-dev-miniapp-launcher",
+  "title": "Expo MiniApp Development Launcher",
+  "version": "0.1.0",
+  "description": "Custom development launcher for Expo MiniApp Container - fully decoupled from expo-dev-launcher",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-dev-miniapp-launcher"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "miniapp",
+    "dev-launcher",
+    "development"
+  ],
+  "author": "MiniApp Container Team",
+  "license": "MIT",
+  "homepage": "https://docs.expo.dev",
+  "dependencies": {
+    "expo-dev-menu": "7.0.11",
+    "expo-manifests": "~1.0.8"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}
