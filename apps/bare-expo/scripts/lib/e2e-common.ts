@@ -178,10 +178,7 @@ const getCustomMaestroFlowsAsync = async (
     ignore.push('**/*.android.yaml');
   }
 
-  const yamlFiles: string[] = [];
-  for await (const file of fs.glob('**/*.yaml', { cwd: e2eDir, exclude: ignore })) {
-    yamlFiles.push(file);
-  }
+  const yamlFiles = await Array.fromAsync(fs.glob('**/*.yaml', { cwd: e2eDir, exclude: ignore }));
 
   if (platform === 'ios') {
     yamlFiles.unshift('_nested-flows/confirm-app-open.yaml');
