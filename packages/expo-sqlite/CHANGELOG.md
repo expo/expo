@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+
 ## 16.0.8 — 2025-09-10
 
 ### 🐛 Bug fixes
