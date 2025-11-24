@@ -2,7 +2,7 @@ import { Asset } from 'expo-asset';
 import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontResource, FontSource, FontDisplay } from './Font.types';
+import { FontDisplay, FontResource, FontSource } from './Font.types';
 
 function uriFromFontSource(asset: FontSource): string | number | null {
   if (typeof asset === 'string') {
@@ -18,24 +18,15 @@ function uriFromFontSource(asset: FontSource): string | number | null {
   return null;
 }
 
-function displayFromFontSource(asset: FontSource): FontDisplay {
-  if (typeof asset === 'object' && 'display' in asset) {
-    return asset.display || FontDisplay.AUTO;
-  }
-
-  return FontDisplay.AUTO;
+function isFontResource(asset: FontSource): asset is FontResource {
+  return typeof asset === 'object' && !(asset instanceof Asset);
 }
 
-function familyFromFontSource(asset: FontSource): string | undefined {
-  return typeof asset === 'object' && 'family' in asset ? asset.family : undefined;
-}
-
-function weightFromFontSource(asset: FontSource): string | number | undefined {
-  return typeof asset === 'object' && 'weight' in asset ? asset.weight : undefined;
-}
-
-function styleFromFontSource(asset: FontSource): 'normal' | 'italic' | undefined {
-  return typeof asset === 'object' && 'style' in asset ? asset.style : undefined;
+function propFromFontResource<K extends keyof FontResource>(
+  asset: FontSource,
+  prop: K
+): FontResource[K] | undefined {
+  return isFontResource(asset) && prop in asset ? asset[prop] : undefined;
 }
 
 export function getAssetForSource(source: FontSource): Asset | FontResource {
@@ -46,10 +37,10 @@ export function getAssetForSource(source: FontSource): Asset | FontResource {
 
   return {
     uri,
-    family: familyFromFontSource(source),
-    weight: weightFromFontSource(source),
-    style: styleFromFontSource(source),
-    display: displayFromFontSource(source),
+    display: propFromFontResource(source, 'display') || FontDisplay.AUTO,
+    family: propFromFontResource(source, 'family'),
+    weight: propFromFontResource(source, 'weight'),
+    style: propFromFontResource(source, 'style'),
   };
 }
 

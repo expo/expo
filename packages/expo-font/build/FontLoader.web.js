@@ -17,20 +17,11 @@ function uriFromFontSource(asset) {
     }
     return null;
 }
-function displayFromFontSource(asset) {
-    if (typeof asset === 'object' && 'display' in asset) {
-        return asset.display || FontDisplay.AUTO;
-    }
-    return FontDisplay.AUTO;
+function isFontResource(asset) {
+    return typeof asset === 'object' && !(asset instanceof Asset);
 }
-function familyFromFontSource(asset) {
-    return typeof asset === 'object' && 'family' in asset ? asset.family : undefined;
-}
-function weightFromFontSource(asset) {
-    return typeof asset === 'object' && 'weight' in asset ? asset.weight : undefined;
-}
-function styleFromFontSource(asset) {
-    return typeof asset === 'object' && 'style' in asset ? asset.style : undefined;
+function propFromFontResource(asset, prop) {
+    return isFontResource(asset) && prop in asset ? asset[prop] : undefined;
 }
 export function getAssetForSource(source) {
     const uri = uriFromFontSource(source);
@@ -39,10 +30,10 @@ export function getAssetForSource(source) {
     }
     return {
         uri,
-        family: familyFromFontSource(source),
-        weight: weightFromFontSource(source),
-        style: styleFromFontSource(source),
-        display: displayFromFontSource(source),
+        display: propFromFontResource(source, 'display') || FontDisplay.AUTO,
+        family: propFromFontResource(source, 'family'),
+        weight: propFromFontResource(source, 'weight'),
+        style: propFromFontResource(source, 'style'),
     };
 }
 function throwInvalidSourceError(source) {

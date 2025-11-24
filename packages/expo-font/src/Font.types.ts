@@ -17,18 +17,18 @@ export type FontResource = {
   /**
    * Overrides the `font-family` property for a font in the browser.
    *
-   * This is useful for loading multiple font variations e.g. weight and styles
+   * This is useful for loading multiple font variations, e.g. weight and styles
    * for a single font family.
    * @platform web
    */
   family?: string;
   /**
-   * Overrides the `font-weight` property for a font in the browser.
+   * Sets the `font-weight` property for a font in the browser.
    * @platform web
    */
   weight?: string | number;
   /**
-   * Overrides the `font-style` property for a font in the browser.
+   * Sets the `font-style` property for a font in the browser.
    * @platform web
    */
   style?: 'normal' | 'italic';

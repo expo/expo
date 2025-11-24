@@ -164,12 +164,12 @@ function getStyleElement() {
     return styleElement;
 }
 export function _createWebFontTemplate(fontFamily, resource) {
-    const src = `src:url(${resource.uri});`;
-    const family = `font-family:'${resource.family ?? fontFamily}';`;
+    const src = `src:url("${resource.uri}");`;
+    const family = `font-family:"${resource.family ?? fontFamily}";`;
     const weight = resource.weight ? `font-weight:${resource.weight};` : '';
     const style = resource.style ? `font-style:${resource.style};` : '';
     const display = `font-display:${resource.display || FontDisplay.AUTO};`;
-    return `@font-face{${src}${family}${weight}${style}${display}}`;
+    return `@font-face{${family}${src}${weight}${style}${display}}`;
 }
 function _createWebStyle(fontFamily, resource) {
     const fontStyle = _createWebFontTemplate(fontFamily, resource);
