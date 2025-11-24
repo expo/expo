@@ -285,7 +285,7 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
   ) -> Bool {
-    let selector = #selector(application(_:continue:restorationHandler:))
+    let selector = NSSelectorFromString("application:continueUserActivity:restorationHandler:")
     let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.continueUserActivity", qos: .userInteractive)
