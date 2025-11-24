@@ -278,6 +278,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - [iOS] Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 - **`expo-sensors`**
   - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+  - [docs] Fixed Subscription typing warnings text visiblity in Gyroscope and Accelerometer examples by [@RobViren](https://github.com/RobViren)
 - **`expo-screen-capture`**
   - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
   - [iOS] Replaced deprecated keyWindow usage. ([#38207](https://github.com/expo/expo/pull/38207) by [@hryhoriiK97](https://github.com/hryhoriiK97))
