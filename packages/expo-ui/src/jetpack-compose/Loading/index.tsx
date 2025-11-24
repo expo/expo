@@ -3,9 +3,9 @@ import { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
 import { ExpoModifier } from '../../types';
 
-export type LoadingVariant = 'default' | 'contained';
+export type LoadingIndicatorVariant = 'default' | 'contained';
 
-export type LoadingProps = {
+export type LoadingIndicatorProps = {
   /**
    * The variant of the loading indicator.
    * - `default`: A standard loading indicator with morphing shapes.
@@ -14,7 +14,7 @@ export type LoadingProps = {
    * @default 'default'
    * @platform android
    */
-  variant?: LoadingVariant;
+  variant?: LoadingIndicatorVariant;
   /**
    * The progress value of the indicator.
    * - If provided: Determinate mode - morphs shapes based on progress value.
@@ -28,13 +28,11 @@ export type LoadingProps = {
    *
    * - Default variant: Color of the morphing shapes
    * - Contained variant: Color of the indicator (defaults to white)
-   *
    */
   color?: ColorValue;
   /**
    * The color of the circular background container.
    * Only applies when `variant` is `contained`.
-   *
    */
   containerColor?: ColorValue;
   /**
@@ -47,17 +45,17 @@ export type LoadingProps = {
   modifiers?: ExpoModifier[];
 };
 
-const NativeLoadingIndicator: React.ComponentType<LoadingProps> = requireNativeView(
+const NativeLoadingIndicatorView: React.ComponentType<LoadingIndicatorProps> = requireNativeView(
   'ExpoUI',
   'LoadingView'
 );
 
 /**
- * Renders a `Loading` component.
+ * Renders a `LoadingIndicator` component.
  */
-export function Loading(props: LoadingProps) {
+export function LoadingIndicator(props: LoadingIndicatorProps) {
   return (
-    <NativeLoadingIndicator
+    <NativeLoadingIndicatorView
       {...props}
       variant={props.variant ?? 'default'}
       // @ts-expect-error: modifiers conversion

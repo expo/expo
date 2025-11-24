@@ -31,7 +31,6 @@ import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.Button
 import expo.modules.ui.button.IconButton
 import expo.modules.ui.menu.ContextMenu
-import kotlin.reflect.KProperty
 
 class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {

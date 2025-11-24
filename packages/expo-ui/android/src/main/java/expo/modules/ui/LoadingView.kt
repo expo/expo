@@ -7,7 +7,6 @@ import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.LoadingIndicatorDefaults
-import androidx.compose.material3.MaterialShapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +16,6 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ExpoComposeView
-import androidx.compose.ui.graphics.Color as ComposeColor
 import android.graphics.Color as AndroidColor
 
 enum class LoadingIndicatorVariant(val value: String) : Enumerable {
@@ -43,47 +41,46 @@ class LoadingView(context: Context, appContext: AppContext) :
     val (progress) = props.progress
     val (color) = props.color
     val (containerColor) = props.containerColor
-    
+
     DynamicTheme {
-        val modifier = Modifier.fromExpoModifiers(props.modifiers.value)
-        when (variant) {
-          LoadingIndicatorVariant.CONTAINED -> {
-            val indicatorColor = color.composeOrNull ?: LoadingIndicatorDefaults.containedIndicatorColor
-            val containerColor = containerColor.composeOrNull ?: LoadingIndicatorDefaults.containedContainerColor
-            
-            if (progress != null) {
-              ContainedLoadingIndicator(
-                progress = { progress },
-                modifier = modifier,
-                indicatorColor = indicatorColor,
-                containerColor = containerColor,
-              )
-            } else {
-              ContainedLoadingIndicator(
-                modifier = modifier,
-                indicatorColor = indicatorColor,
-                containerColor = containerColor,
-              )
-            }
+      val modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+      when (variant) {
+        LoadingIndicatorVariant.CONTAINED -> {
+          val indicatorColor = color.composeOrNull ?: LoadingIndicatorDefaults.containedIndicatorColor
+          val containerColor = containerColor.composeOrNull ?: LoadingIndicatorDefaults.containedContainerColor
+
+          if (progress != null) {
+            ContainedLoadingIndicator(
+              progress = { progress },
+              modifier = modifier,
+              indicatorColor = indicatorColor,
+              containerColor = containerColor
+            )
+          } else {
+            ContainedLoadingIndicator(
+              modifier = modifier,
+              indicatorColor = indicatorColor,
+              containerColor = containerColor
+            )
           }
-          LoadingIndicatorVariant.DEFAULT -> {
-            val indicatorColor = color.composeOrNull ?: LoadingIndicatorDefaults.indicatorColor
-            
-            if (progress != null) {
-              LoadingIndicator(
-                progress = { progress },
-                modifier = modifier,
-                color = indicatorColor,
-              )
-            } else {
-              LoadingIndicator(
-                modifier = modifier,
-                color = indicatorColor,
-              )
-            }
+        }
+        LoadingIndicatorVariant.DEFAULT -> {
+          val indicatorColor = color.composeOrNull ?: LoadingIndicatorDefaults.indicatorColor
+
+          if (progress != null) {
+            LoadingIndicator(
+              progress = { progress },
+              modifier = modifier,
+              color = indicatorColor
+            )
+          } else {
+            LoadingIndicator(
+              modifier = modifier,
+              color = indicatorColor
+            )
           }
         }
       }
     }
   }
-
+}
