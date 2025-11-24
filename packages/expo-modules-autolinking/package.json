@@ -35,8 +35,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
   "devDependencies": {
     "expo-module-scripts": "~5.0.7",
-    "memfs": "^3.2.0",
-    "minimatch": "^9.0.0"
+    "memfs": "^3.2.0"
   },
   "dependencies": {
     "@expo/spawn-async": "^1.7.2",

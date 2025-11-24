@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+- Update to `sucrase@~3.35.1` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
 ## 12.0.10 — 2025-10-01
 
 _This version does not introduce any user-facing changes._
