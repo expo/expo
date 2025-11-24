@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `Blob` export on web.
+
 ### 💡 Others
 
 ## 0.1.6 — 2025-09-11
