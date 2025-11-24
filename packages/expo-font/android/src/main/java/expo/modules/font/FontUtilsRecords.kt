@@ -12,5 +12,8 @@ data class RenderToImageOptions(
   val size: Float = 24f,
 
   @Field
+  val lineHeight: Float? = null,
+
+  @Field
   val color: Int = Color.BLACK
 ) : Record
