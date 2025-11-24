@@ -48,7 +48,7 @@ function convertTypescriptMatchToJestRegex(match) {
 /** Convert a typescript match rule value to jest regex target */
 function convertTypescriptTargetToJestTarget(target, prefix = '<rootDir>') {
   const segments = target.split('/').map((segment) => (segment.trim() === '*' ? '$1' : segment));
-  return toPosixPath([prefix, ...segments].join('/'));
+  return toPosixPath([prefix, ...segments].join(path.sep));
 }
 
 function mutateJestMappingFromConfig(jestConfig, configFile) {
