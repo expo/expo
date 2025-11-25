@@ -1,6 +1,6 @@
 const { withWatchPlugins } = require('jest-expo/config');
 
-const createJestPreset = require('./createJestPreset');
+const createJestPreset = require('./createJestPreset.cjs');
 
 module.exports = withWatchPlugins({
   projects: [

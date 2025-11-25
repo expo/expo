@@ -5,6 +5,8 @@ export type InternalExpoRouterParamName = (typeof internalExpoRouterParamNames)[
 export type InternalExpoRouterParams = Partial<Record<InternalExpoRouterParamName, unknown>>;
 export declare function appendInternalExpoRouterParams(params: Record<string, unknown> | object | undefined, expoParams: InternalExpoRouterParams): Record<string, unknown> | undefined;
 export declare function getInternalExpoRouterParams(_params: Record<string, unknown> | object | undefined): InternalExpoRouterParams;
+export declare function hasParam(params: unknown, paramName: string): boolean;
+export declare function removeParams(params: Record<string, unknown> | object | undefined, paramName: readonly string[]): Record<string, unknown> | object | undefined;
 export declare function removeInternalExpoRouterParams(params: Record<string, unknown> | object): Record<string, unknown> | object;
 export declare function removeInternalExpoRouterParams(params: Record<string, unknown> | object | undefined): Record<string, unknown> | object | undefined;
 export {};

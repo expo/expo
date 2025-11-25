@@ -3,7 +3,7 @@
   "main": "expo-router/entry",
   "version": "0.0.1",
   "scripts": {
-    "build": "bun install && npx expo export -p web --output-dir dist",
+    "build": "bun install && ./node_modules/.bin/expo export -p web --output-dir dist",
     "start": "expo start --web",
     "lint": "expo lint",
     "test": "jest",

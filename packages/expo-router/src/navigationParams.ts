@@ -60,6 +60,40 @@ export function getInternalExpoRouterParams(
   return expoParams;
 }
 
+export function hasParam(params: unknown, paramName: string): boolean {
+  if (!!params && typeof params === 'object') {
+    const recordParams = params as Record<string, unknown>;
+    if (recordParams[paramName] !== undefined) {
+      return true;
+    }
+    if (recordParams.params && typeof recordParams.params === 'object') {
+      return hasParam(recordParams.params, paramName);
+    }
+  }
+  return false;
+}
+
+export function removeParams(
+  params: Record<string, unknown> | object | undefined,
+  paramName: readonly string[]
+): Record<string, unknown> | object | undefined {
+  if (!params) {
+    return undefined;
+  }
+  const nestedParams =
+    'params' in params && typeof params.params === 'object' && params.params
+      ? (params.params as Record<string, unknown>)
+      : undefined;
+  const newNestedParams = nestedParams ? removeParams(nestedParams, paramName) : undefined;
+  const newParams = Object.fromEntries(
+    Object.entries(params).filter(([key]) => !paramName.includes(key) && key !== 'params')
+  );
+  if (Object.keys(newNestedParams ?? {}).length > 0) {
+    return { ...newParams, params: newNestedParams };
+  }
+  return newParams;
+}
+
 export function removeInternalExpoRouterParams(
   params: Record<string, unknown> | object
 ): Record<string, unknown> | object;
@@ -72,23 +106,5 @@ export function removeInternalExpoRouterParams(
   if (!params) {
     return undefined;
   }
-  const newNestedParams =
-    'params' in params && typeof params.params === 'object' && params.params
-      ? Object.fromEntries(
-          Object.entries(params.params).filter(
-            ([key]) => !internalExpoRouterParamNames.includes(key as InternalExpoRouterParamName)
-          )
-        )
-      : {};
-  const newParams = Object.fromEntries(
-    Object.entries(params).filter(
-      ([key]) =>
-        !internalExpoRouterParamNames.includes(key as InternalExpoRouterParamName) &&
-        key !== 'params'
-    )
-  );
-  if (Object.keys(newNestedParams).length > 0) {
-    return { ...newParams, params: newNestedParams };
-  }
-  return newParams;
+  return removeParams(params, [...internalExpoRouterParamNames, 'params']);
 }

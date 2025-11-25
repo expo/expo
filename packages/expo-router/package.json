@@ -68,7 +68,7 @@
   },
   "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
-    "build": "bash -c 'if [ -z \"$1\" ]; then expo-module build -p tsconfig.json; else expo-module build \"$1\"; fi' --",
+    "build": "node ./scripts/build.js",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
