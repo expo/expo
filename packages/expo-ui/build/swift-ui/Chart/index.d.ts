@@ -193,7 +193,7 @@ export type ChartProps = {
  * @platform ios 16.0+
  * @platform tvos 16.0+
  */
-export declare function Chart({ style, data, modifiers, ...props }: ChartProps & {
+export declare function Chart({ style, data, modifiers, referenceLines, ...props }: ChartProps & {
     style?: StyleProp<ViewStyle>;
 }): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
