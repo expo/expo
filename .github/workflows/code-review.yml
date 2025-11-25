@@ -52,5 +52,6 @@ jobs:
 
       - name: 🔬 Reviewing a pull request
         run: expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
+        working-directory: .
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
