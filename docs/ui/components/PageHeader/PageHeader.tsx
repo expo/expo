@@ -84,7 +84,7 @@ export function PageHeader({
           <div className="flex flex-wrap items-center">
             {renderAskAIButton()}
             {renderAskAIButton() && (sourceCodeUrl || packageName) && (
-              <div className="max-sm:hidden bg-secondary mx-2 h-5 w-px" />
+              <div className="max-sm:hidden bg-secondary mx-1 h-5 w-px" />
             )}
             <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
           </div>
