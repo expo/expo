@@ -231,7 +231,6 @@ cd expo/packages/expo-constants
 - Then, open **.ts** file in your code editor/IDE where you want to make changes/updates.
 - Start the TypeScript build compilation in watch mode using `yarn build` in the terminal window.
 - Make the update. For example, we want to update the TypeDoc description of [`expoConfig` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
-
   - Inside the **src/** directory, open **Constants.types.ts** file.
   - Search for `expoConfig` property. It has a current description as shown below:
 
@@ -318,7 +317,7 @@ This will make sure that the ExpoBot on GitHub will not complain about updating 
 
 ##### Use the correct package name
 
-Some of the packages have documentation spread over multiple pages. For example, `expo-av` package has a separate base interface, and some of the information is separated into `Audio` and `Video` components. For such packages, always make sure to check the [name of the package](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts#L24) for `et` command.
+Some of the packages have documentation spread over multiple pages. For example, `expo-sensors` package has a separate overview page in Expo Sensors reference, and rest of the information is separated into components such as, `Accelerometer`, `Gyroscope`, `Magnetometer`, and more. For such packages, always make sure to check the [name of the package](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts#L24) for `et` command.
 
 ### Sync app config with the schema
 
