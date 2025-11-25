@@ -46,6 +46,7 @@ runs:
         arch: x86_64
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
+        disk-size: 4G
         # gpu hw acceleration is not available on GitHub-hosted runners
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
@@ -72,6 +73,7 @@ runs:
         arch: x86_64
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
+        disk-size: 4G
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Wait for emulator to fully ready
@@ -97,6 +99,7 @@ runs:
         arch: x86_64
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
+        disk-size: 4G
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Wait for emulator to fully ready
