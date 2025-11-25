@@ -1,7 +1,7 @@
 import { DateTimePicker, DateTimePickerProps, Picker, Column } from '@expo/ui/jetpack-compose';
 import { Host } from '@expo/ui/swift-ui';
 import * as React from 'react';
-import { Platform, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
 
@@ -41,7 +41,6 @@ export default function DatePickerScreen() {
                   }
                   initialDate={selectedDate.toISOString()}
                   variant={displayOptions[selectedIndex] as DateTimePickerProps['variant']}
-                  style={{ height: Platform.select({ android: 520, ios: undefined }) }}
                   showVariantToggle
                   is24Hour
                 />
@@ -53,7 +52,6 @@ export default function DatePickerScreen() {
                     setSelectedIndex(index);
                   }}
                   variant="segmented"
-                  style={{ height: 30 }}
                 />
 
                 <Picker
@@ -63,7 +61,6 @@ export default function DatePickerScreen() {
                     setTypeIndex(index);
                   }}
                   variant="segmented"
-                  style={{ height: 30 }}
                 />
               </Column>
             </Host>

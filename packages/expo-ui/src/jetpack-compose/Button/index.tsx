@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
@@ -48,10 +47,6 @@ export type ButtonProps = {
    * The button variant.
    */
   variant?: ButtonVariant;
-  /**
-   * Additional styles to apply to the button.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The text to display inside the button.
    */
@@ -108,7 +103,7 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
   return {
     ...restProps,
     text: getTextFromChildren(children) ?? '',
-    children,
+    children: getTextFromChildren(children) !== undefined ? undefined : children,
     leadingIcon: finalLeadingIcon,
     shape: parseJSXShape(shape),
     trailingIcon,
@@ -129,11 +124,5 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
  * Displays a native button component.
  */
 export function Button(props: ButtonProps) {
-  // Min height from https://m3.material.io/components/buttons/specs, minWidth
-  return (
-    <ButtonNativeView
-      {...transformButtonProps(props)}
-      style={StyleSheet.compose({ minWidth: 80, minHeight: 40 }, props.style)}
-    />
-  );
+  return <ButtonNativeView {...transformButtonProps(props)} />;
 }
