@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Add missing `createFile` and `createDirectory` methods. ([#40314](https://github.com/expo/expo/pull/40314) by [@jakex7](https://github.com/jakex7))
+- fix `slice` on `File` ([#40863](https://github.com/expo/expo/pull/40863) by [@kosmydel](https://github.com/kosmydel))
 
 ### 💡 Others
 

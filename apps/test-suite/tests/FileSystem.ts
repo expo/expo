@@ -287,6 +287,25 @@ export async function test({ describe, expect, it, ...t }) {
       expect(outputFile.exists).toBe(true);
     });
 
+    it('calls .text() on a .slice() of file', async () => {
+      const outputFile = new File(testDirectory, 'testcase.txt');
+      const value = 'Hello bug';
+      outputFile.write(value);
+      const file = outputFile;
+
+      let result: any = null;
+      let caughtError: any = null;
+      try {
+        result = file.slice(0, file.size - 1);
+        result = await result.text();
+      } catch (e) {
+        caughtError = e;
+      }
+
+      expect(caughtError).toBeFalsy();
+      expect(result).toBe(value.slice(0, value.length - 1));
+    });
+
     it('Writes a base64 encoded string to a file reference', () => {
       const outputFile = new File(testDirectory, 'file.txt');
       expect(outputFile.exists).toBe(false);
@@ -1265,6 +1284,18 @@ export async function test({ describe, expect, it, ...t }) {
       });
       const body = await response.json();
       expect(body.data).toEqual('abcde');
+    });
+
+    it('Supports sending a sliced file using blob', async () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+      const sliced = src.slice(0, 2, 'text/plain');
+      const response = await fetch('https://httpbingo.org/anything', {
+        method: 'POST',
+        body: sliced,
+      });
+      const body = await response.json();
+      expect(body.data).toEqual('ab');
     });
 
     // You can also use this docker image: twostoryrobot/simple-file-upload to test e2e blob upload.
