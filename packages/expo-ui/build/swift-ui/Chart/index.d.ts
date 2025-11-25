@@ -20,9 +20,9 @@ export type PointStyle = 'circle' | 'square' | 'diamond';
  */
 export type ChartDataPoint = {
     /**
-     * X-axis value (label).
+     * X-axis value (can be a label string or numeric value).
      */
-    x: string;
+    x: string | number;
     /**
      * Y-axis value (numeric).
      */
