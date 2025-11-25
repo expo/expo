@@ -13,8 +13,9 @@ import expo.modules.contacts.next.records.fields.EmailRecord
 import expo.modules.contacts.next.records.fields.ExtraNameRecord
 import expo.modules.contacts.next.records.fields.PhoneRecord
 import expo.modules.contacts.next.records.fields.PostalAddressRecord
-import expo.modules.contacts.next.records.fields.RelationshipRecord
+import expo.modules.contacts.next.records.fields.RelationRecord
 import expo.modules.contacts.next.records.fields.UrlAddressRecord
+import expo.modules.contacts.next.services.ImageByteArrayConverter
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -27,7 +28,10 @@ class ContactsNextModule : Module() {
     get() = appContext.reactContext
       ?: throw Exceptions.ReactContextLost()
 
-  private val contactMapper = ContactRecordDomainMapper()
+  private val contactMapper by lazy {
+    ContactRecordDomainMapper(ImageByteArrayConverter(context.contentResolver))
+  }
+
   private val contactIntentDelegate = ContactIntentDelegate()
 
   private val contactRepository by lazy {
@@ -175,6 +179,22 @@ class ContactsNextModule : Module() {
         self.note.set(newNote)
       }
 
+      AsyncFunction("getImage") Coroutine { self: Contact ->
+        self.imageUri.get()
+      }
+
+      AsyncFunction("setImage") Coroutine { self: Contact, imageUri: String? ->
+        self.image.set(imageUri)
+      }
+
+      AsyncFunction("getThumbnail") Coroutine { self: Contact ->
+        self.thumbnail.get()
+      }
+
+      AsyncFunction("getIsFavourite") Coroutine { self: Contact ->
+        self.isFavourite.get()
+      }
+
       AsyncFunction("getEmails") Coroutine { self: Contact ->
         self.emails.getAll()
       }
@@ -259,15 +279,15 @@ class ContactsNextModule : Module() {
         self.relations.getAll()
       }
 
-      AsyncFunction("addRelation") Coroutine { self: Contact, relationRecord: RelationshipRecord.New ->
+      AsyncFunction("addRelation") Coroutine { self: Contact, relationRecord: RelationRecord.New ->
         self.relations.add(relationRecord)
       }
 
-      AsyncFunction("updateRelation") Coroutine { self: Contact, relationRecord: RelationshipRecord.Existing ->
+      AsyncFunction("updateRelation") Coroutine { self: Contact, relationRecord: RelationRecord.Existing ->
         self.relations.update(relationRecord)
       }
 
-      AsyncFunction("deleteRelation") Coroutine { self: Contact, relationRecord: RelationshipRecord.Existing ->
+      AsyncFunction("deleteRelation") Coroutine { self: Contact, relationRecord: RelationRecord.Existing ->
         self.relations.delete(relationRecord)
       }
 

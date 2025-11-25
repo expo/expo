@@ -2,7 +2,7 @@ package expo.modules.contacts.next.domain.model.organization.operations
 
 import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.Organization
-import expo.modules.contacts.next.domain.model.Patchable
+import expo.modules.contacts.next.domain.model.Updatable
 import expo.modules.contacts.next.domain.model.organization.OrganizationModel
 import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.kotlin.types.ValueOrUndefined
@@ -13,7 +13,7 @@ class PatchOrganization(
   department: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   jobTitle: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   phoneticName: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
-) : Patchable, OrganizationModel(
+) : Updatable.Data, OrganizationModel(
   company = company.optional,
   department = department.optional,
   jobTitle = jobTitle.optional,

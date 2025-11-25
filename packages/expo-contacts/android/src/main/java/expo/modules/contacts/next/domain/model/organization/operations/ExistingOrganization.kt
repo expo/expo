@@ -11,4 +11,4 @@ class ExistingOrganization(
   department: String?,
   jobTitle: String?,
   phoneticName: String?
-) : OrganizationModel(company, department, jobTitle, phoneticName), Updatable, Extractable
+) : OrganizationModel(company, department, jobTitle, phoneticName), Updatable.Data, Extractable.Data

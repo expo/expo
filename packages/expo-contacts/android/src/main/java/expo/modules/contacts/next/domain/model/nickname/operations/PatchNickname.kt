@@ -2,7 +2,7 @@ package expo.modules.contacts.next.domain.model.nickname.operations
 
 import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.Nickname
-import expo.modules.contacts.next.domain.model.Patchable
+import expo.modules.contacts.next.domain.model.Updatable
 import expo.modules.contacts.next.domain.model.nickname.NicknameLabel
 import expo.modules.contacts.next.domain.model.nickname.NicknameModel
 import expo.modules.contacts.next.domain.wrappers.DataId
@@ -12,7 +12,7 @@ class PatchNickname(
   override val dataId: DataId,
   name: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   label: ValueOrUndefined<NicknameLabel> = ValueOrUndefined.Undefined()
-) : NicknameModel(name.optional, label.optional ?: NicknameLabel.Unknown), Patchable {
+) : NicknameModel(name.optional, label.optional ?: NicknameLabel.Unknown), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!name.isUndefined) {
       put(Nickname.NAME, name.optional)

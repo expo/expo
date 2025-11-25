@@ -8,7 +8,7 @@ import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.website.operations.ExistingWebsite
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object WebsiteField : ExtractableField<ExistingWebsite>, ClearableField {
+object WebsiteField : ExtractableField.Data<ExistingWebsite>, ClearableField {
   override val projection = arrayOf(Website._ID, Website.URL, Website.TYPE, Website.LABEL)
 
   override val mimeType = Website.CONTENT_ITEM_TYPE

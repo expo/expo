@@ -7,7 +7,7 @@ import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.structuredpostal.operations.ExistingStructuredPostal
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object StructuredPostalField : ExtractableField<ExistingStructuredPostal>, ClearableField {
+object StructuredPostalField : ExtractableField.Data<ExistingStructuredPostal>, ClearableField {
   override val mimeType = StructuredPostal.CONTENT_ITEM_TYPE
 
   override val projection = arrayOf(

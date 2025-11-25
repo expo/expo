@@ -10,4 +10,4 @@ class ExistingEmail(
   override val dataId: DataId,
   address: String?,
   label: EmailLabel
-) : EmailModel(address, label), Updatable, Extractable
+) : EmailModel(address, label), Updatable.Data, Extractable.Data

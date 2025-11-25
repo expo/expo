@@ -10,4 +10,4 @@ class ExistingPhone(
   override val dataId: DataId,
   number: String?,
   label: PhoneLabel
-) : PhoneModel(number, label), Updatable, Extractable
+) : PhoneModel(number, label), Updatable.Data, Extractable.Data

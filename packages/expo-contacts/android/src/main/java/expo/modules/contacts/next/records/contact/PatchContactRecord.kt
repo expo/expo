@@ -5,7 +5,7 @@ import expo.modules.contacts.next.records.fields.EmailRecord
 import expo.modules.contacts.next.records.fields.ExtraNameRecord
 import expo.modules.contacts.next.records.fields.PhoneRecord
 import expo.modules.contacts.next.records.fields.PostalAddressRecord
-import expo.modules.contacts.next.records.fields.RelationshipRecord
+import expo.modules.contacts.next.records.fields.RelationRecord
 import expo.modules.contacts.next.records.fields.UrlAddressRecord
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
@@ -32,7 +32,7 @@ data class PatchContactRecord(
   @Field val phones: ValueOrUndefined<List<Either<PhoneRecord.Patch, PhoneRecord.New>>?> = ValueOrUndefined.Undefined(),
   @Field val dates: ValueOrUndefined<List<Either<DateRecord.Patch, DateRecord.New>>?> = ValueOrUndefined.Undefined(),
   @Field val postalAddresses: ValueOrUndefined<List<Either<PostalAddressRecord.Patch, PostalAddressRecord.New>>?> = ValueOrUndefined.Undefined(),
-  @Field val relationships: ValueOrUndefined<List<Either<RelationshipRecord.Patch, RelationshipRecord.New>>?> = ValueOrUndefined.Undefined(),
+  @Field val relationships: ValueOrUndefined<List<Either<RelationRecord.Patch, RelationRecord.New>>?> = ValueOrUndefined.Undefined(),
   @Field val urlAddresses: ValueOrUndefined<List<Either<UrlAddressRecord.Patch, UrlAddressRecord.New>>?> = ValueOrUndefined.Undefined(),
   @Field val extraNames: ValueOrUndefined<List<Either<ExtraNameRecord.Patch, ExtraNameRecord.New>>?> = ValueOrUndefined.Undefined()
 ) : Record

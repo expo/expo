@@ -5,10 +5,10 @@ import android.content.ContentResolver
 import android.database.Cursor
 import android.provider.ContactsContract
 import expo.modules.contacts.next.ContactIdNotFoundException
+import expo.modules.contacts.next.ContactNotFoundException
 import expo.modules.contacts.next.domain.model.Appendable
 import expo.modules.contacts.next.domain.model.Extractable
 import expo.modules.contacts.next.domain.model.ExtractableField
-import expo.modules.contacts.next.domain.model.Patchable
 import expo.modules.contacts.next.domain.model.Updatable
 import expo.modules.contacts.next.domain.model.contact.ContactPatch
 import expo.modules.contacts.next.domain.model.contact.ExistingContact
@@ -53,21 +53,15 @@ class ContactRepository(val contentResolver: ContentResolver) {
     return@withContext rowsDeleted > 0
   }
 
-  suspend fun appendFieldEntry(appendable: Appendable): DataId = withContext(Dispatchers.IO) {
+  suspend fun append(appendable: Appendable): DataId = withContext(Dispatchers.IO) {
     val operation = appendable.toAppendOperation()
     val result = contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, operation)
     val id = result.extractId()
     return@withContext DataId(id)
   }
 
-  suspend fun updateFieldEntry(updatable: Updatable): Boolean = withContext(Dispatchers.IO) {
+  suspend fun update(updatable: Updatable): Boolean = withContext(Dispatchers.IO) {
     val operation = updatable.toUpdateOperation()
-    contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, operation)
-    return@withContext true
-  }
-
-  suspend fun patchFieldEntry(patchable: Patchable): Boolean = withContext(Dispatchers.IO) {
-    val operation = patchable.toPatchOperation()
     contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, operation)
     return@withContext true
   }
@@ -96,7 +90,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
   suspend fun getById(
     extractableFields: Set<ExtractableField<*>>,
     contactId: ContactId
-  ): ExistingContact = withContext(Dispatchers.IO) {
+  ): ExistingContact? = withContext(Dispatchers.IO) {
     val queryBuilder = QueryBuilder(extractableFields)
     contentResolver.safeQuery(
       uri = ContactsContract.Data.CONTENT_URI,
@@ -105,14 +99,19 @@ class ContactRepository(val contentResolver: ContentResolver) {
       selectionArgs = queryBuilder.buildMimeTypeAndContactIdSelectionArgs(contactId)
     ).use { cursor ->
       ensureActive()
-      QueryAggregator.aggregateOne(cursor, extractableFields, contactId)
+      if (cursor.count == 0) {
+        throw ContactNotFoundException()
+      }
+      QueryAggregator.aggregate(cursor, extractableFields)[0]
     }
   }
 
   suspend fun getAll(
     extractableFields: Set<ExtractableField<*>>
   ): Collection<ExistingContact> = withContext(Dispatchers.IO) {
-    val queryBuilder = QueryBuilder(extractableFields)
+    val queryBuilder = QueryBuilder(
+      extractableFields.filterIsInstance<ExtractableField.Data<*>>().toSet()
+    )
     contentResolver.safeQuery(
       uri = ContactsContract.Data.CONTENT_URI,
       projection = queryBuilder.buildProjection(),
@@ -124,8 +123,8 @@ class ContactRepository(val contentResolver: ContentResolver) {
     }
   }
 
-  suspend fun <T : Extractable> getField(
-    extractableField: ExtractableField<T>,
+  suspend fun <T : Extractable.Data> getFieldFromData(
+    extractableField: ExtractableField.Data<T>,
     contactId: ContactId
   ): List<T> = withContext(Dispatchers.IO) {
     contentResolver.safeQuery(
@@ -136,6 +135,21 @@ class ContactRepository(val contentResolver: ContentResolver) {
     ).use { cursor ->
       ensureActive()
       QueryAggregator.aggregateOneField(cursor, extractableField)
+    }
+  }
+
+  suspend fun <T : Extractable> getFieldFromContacts(
+    extractableField: ExtractableField.Contacts<T>,
+    contactId: ContactId
+  ): T? = withContext(Dispatchers.IO) {
+    contentResolver.safeQuery(
+      uri = ContactsContract.Contacts.CONTENT_URI,
+      projection = extractableField.projection,
+      selection = "${ContactId.COLUMN_IN_CONTACTS_TABLE} = ?",
+      selectionArgs = arrayOf(contactId.value)
+    ).use { cursor ->
+      ensureActive()
+      QueryAggregator.aggregateOneFieldFromContacts(cursor, extractableField)
     }
   }
 

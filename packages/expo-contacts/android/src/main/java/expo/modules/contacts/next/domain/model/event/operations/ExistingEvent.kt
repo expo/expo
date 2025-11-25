@@ -11,4 +11,4 @@ class ExistingEvent(
   override val dataId: DataId,
   startDate: ContactDate?,
   label: EventLabel
-) : EventModel(startDate, label), Updatable, Extractable
+) : EventModel(startDate, label), Updatable.Data, Extractable.Data

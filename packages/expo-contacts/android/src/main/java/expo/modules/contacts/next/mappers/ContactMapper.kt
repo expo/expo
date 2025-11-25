@@ -1,5 +1,6 @@
 package expo.modules.contacts.next.mappers
 
+import androidx.core.net.toUri
 import expo.modules.contacts.next.domain.model.contact.ExistingContact
 import expo.modules.contacts.next.domain.model.note.operations.AppendableNote
 import expo.modules.contacts.next.domain.model.note.operations.NewNote
@@ -7,6 +8,7 @@ import expo.modules.contacts.next.domain.model.note.operations.PatchNote
 import expo.modules.contacts.next.domain.model.organization.operations.AppendableOrganization
 import expo.modules.contacts.next.domain.model.organization.operations.NewOrganization
 import expo.modules.contacts.next.domain.model.organization.operations.PatchOrganization
+import expo.modules.contacts.next.domain.model.photo.operations.NewPhoto
 import expo.modules.contacts.next.domain.model.structuredname.operations.AppendableStructuredName
 import expo.modules.contacts.next.domain.model.structuredname.operations.NewStructuredName
 import expo.modules.contacts.next.domain.model.structuredname.operations.PatchStructuredName
@@ -22,12 +24,12 @@ import expo.modules.contacts.next.mappers.model.WebsiteMapper
 import expo.modules.contacts.next.records.contact.CreateContactRecord
 import expo.modules.contacts.next.records.contact.GetContactDetailsRecord
 import expo.modules.contacts.next.records.contact.PatchContactRecord
+import expo.modules.contacts.next.services.ImageByteArrayConverter
 
 object ContactMapper {
-
   fun toRecord(existingContact: ExistingContact) =
     GetContactDetailsRecord(
-      contactId = existingContact.contactId.value,
+      id = existingContact.contactId.value,
       givenName = existingContact.structuredName?.givenName,
       middleName = existingContact.structuredName?.middleName,
       familyName = existingContact.structuredName?.familyName,
@@ -39,11 +41,12 @@ object ContactMapper {
       company = existingContact.organization?.company,
       department = existingContact.organization?.department,
       jobTitle = existingContact.organization?.jobTitle,
+      image = existingContact.photoUri?.value,
       emails = existingContact.emails.map(EmailMapper::toRecord),
       dates = existingContact.events.map(EventMapper::toRecord),
       phones = existingContact.phones.map(PhoneMapper::toRecord),
       addresses = existingContact.structuredPostals.map(StructuredPostalMapper::toRecord),
-      relationships = existingContact.relations.map(RelationMapper::toRecord),
+      relations = existingContact.relations.map(RelationMapper::toRecord),
       urlAddresses = existingContact.websites.map(WebsiteMapper::toRecord),
       extraNames = existingContact.nicknames.map(NicknameMapper::toRecord)
     )
@@ -127,5 +130,13 @@ object ContactMapper {
   fun toNewNote(record: CreateContactRecord) =
     NewNote(
       note = record.note
+    )
+
+  fun toNewPhoto(record: CreateContactRecord, imageByteArrayConverter: ImageByteArrayConverter) =
+
+    NewPhoto(
+      photo = record.image?.let {
+        imageByteArrayConverter.toByteArray(it.toUri())
+      }
     )
 }

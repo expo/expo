@@ -1,14 +1,18 @@
 package expo.modules.contacts.next.mappers
 
-import android.content.ContentValues
 import expo.modules.contacts.next.domain.model.*
 import expo.modules.contacts.next.domain.model.contact.*
 import expo.modules.contacts.next.domain.model.email.EmailField
 import expo.modules.contacts.next.domain.model.email.operations.ExistingEmail
 import expo.modules.contacts.next.domain.model.event.EventField
 import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
+import expo.modules.contacts.next.domain.model.headers.DisplayNameField
+import expo.modules.contacts.next.domain.model.headers.PhotoThumbnailUriField
+import expo.modules.contacts.next.domain.model.headers.PhotoUriField
+import expo.modules.contacts.next.domain.model.headers.isfavourite.StarredField
 import expo.modules.contacts.next.domain.model.nickname.NicknameField
 import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
+import expo.modules.contacts.next.domain.model.note.NoteField
 import expo.modules.contacts.next.domain.model.organization.OrganizationField
 import expo.modules.contacts.next.domain.model.phone.PhoneField
 import expo.modules.contacts.next.domain.model.phone.operations.ExistingPhone
@@ -22,6 +26,7 @@ import expo.modules.contacts.next.domain.model.website.operations.ExistingWebsit
 import expo.modules.contacts.next.domain.wrappers.*
 import expo.modules.contacts.next.mappers.ContactMapper.toNewNote
 import expo.modules.contacts.next.mappers.ContactMapper.toNewOrganization
+import expo.modules.contacts.next.mappers.ContactMapper.toNewPhoto
 import expo.modules.contacts.next.mappers.ContactMapper.toNewStructuredName
 import expo.modules.contacts.next.mappers.model.EmailMapper
 import expo.modules.contacts.next.mappers.model.EventMapper
@@ -33,9 +38,10 @@ import expo.modules.contacts.next.mappers.model.WebsiteMapper
 import expo.modules.contacts.next.records.*
 import expo.modules.contacts.next.records.contact.*
 import expo.modules.contacts.next.records.fields.*
+import expo.modules.contacts.next.services.ImageByteArrayConverter
 import expo.modules.kotlin.apifeatures.EitherType
 
-class ContactRecordDomainMapper {
+class ContactRecordDomainMapper(val imageByteArrayConverter: ImageByteArrayConverter){
   fun toRecord(existingContact: ExistingContact): GetContactDetailsRecord =
     ContactMapper.toRecord(existingContact)
 
@@ -46,7 +52,7 @@ class ContactRecordDomainMapper {
       is DateRecord.New -> EventMapper.toAppendable(record, rawContactId)
       is ExtraNameRecord.New -> NicknameMapper.toAppendable(record, rawContactId)
       is PostalAddressRecord.New -> StructuredPostalMapper.toAppendable(record, rawContactId)
-      is RelationshipRecord.New -> RelationMapper.toAppendable(record, rawContactId)
+      is RelationRecord.New -> RelationMapper.toAppendable(record, rawContactId)
       is UrlAddressRecord.New -> WebsiteMapper.toAppendable(record, rawContactId)
       else -> throw IllegalArgumentException("Unsupported 'NewRecord' type: ${record::class.simpleName}")
     }
@@ -59,20 +65,20 @@ class ContactRecordDomainMapper {
       is DateRecord.Existing -> EventMapper.toExisting(record)
       is ExtraNameRecord.Existing -> NicknameMapper.toExisting(record)
       is PostalAddressRecord.Existing -> StructuredPostalMapper.toExisting(record)
-      is RelationshipRecord.Existing -> RelationMapper.toExisting(record)
+      is RelationRecord.Existing -> RelationMapper.toExisting(record)
       is UrlAddressRecord.Existing -> WebsiteMapper.toExisting(record)
       else -> throw IllegalArgumentException("Unsupported 'ExistingRecord' type: ${record::class.simpleName}")
     }
   }
 
-  fun toPatchable(record: PatchRecord): Patchable {
+  fun toPatchable(record: PatchRecord): Updatable {
     return when (record) {
       is EmailRecord.Patch -> EmailMapper.toPatch(record)
       is PhoneRecord.Patch -> PhoneMapper.toPatch(record)
       is DateRecord.Patch -> EventMapper.toPatch(record)
       is ExtraNameRecord.Patch -> NicknameMapper.toPatch(record)
       is PostalAddressRecord.Patch -> StructuredPostalMapper.toPatch(record)
-      is RelationshipRecord.Patch -> RelationMapper.toPatch(record)
+      is RelationRecord.Patch -> RelationMapper.toPatch(record)
       is UrlAddressRecord.Patch -> WebsiteMapper.toPatch(record)
       else -> throw IllegalArgumentException("Unsupported 'PatchRecord' type: ${record::class.simpleName}")
     }
@@ -88,18 +94,24 @@ class ContactRecordDomainMapper {
       ContactField.PHONETIC_GIVEN_NAME,
       ContactField.PHONETIC_MIDDLE_NAME,
       ContactField.PHONETIC_FAMILY_NAME
-      -> StructuredNameField
+        -> StructuredNameField
       ContactField.COMPANY,
       ContactField.DEPARTMENT,
-      ContactField.JOB_TITLE
-      -> OrganizationField
+      ContactField.JOB_TITLE,
+      ContactField.PHONETIC_COMPANY_NAME
+        -> OrganizationField
       ContactField.EMAILS -> EmailField
       ContactField.PHONES -> PhoneField
       ContactField.ADDRESSES -> StructuredPostalField
       ContactField.DATES -> EventField
-      ContactField.RELATIONSHIPS -> RelationField
+      ContactField.RELATIONS -> RelationField
       ContactField.URL_ADDRESSES -> WebsiteField
       ContactField.EXTRA_NAMES -> NicknameField
+      ContactField.IS_FAVOURITE -> StarredField
+      ContactField.NOTE -> NoteField
+      ContactField.IMAGE -> PhotoUriField
+      ContactField.THUMBNAIL -> PhotoThumbnailUriField
+      ContactField.FULL_NAME -> DisplayNameField
     }
   }
 
@@ -121,15 +133,17 @@ class ContactRecordDomainMapper {
     val modelsToInsert = buildList {
       add(toNewStructuredName(record))
       add(toNewOrganization(record))
+      add(toNewNote(record))
+      add(toNewPhoto(record, imageByteArrayConverter))
       record.emails?.let { addAll(it.map(EmailMapper::toNew)) }
       record.phones?.let { addAll(it.map(PhoneMapper::toNew)) }
       record.dates?.let { addAll(it.map(EventMapper::toNew)) }
       record.extraNames?.let { addAll(it.map(NicknameMapper::toNew)) }
       record.addresses?.let { addAll(it.map(StructuredPostalMapper::toNew)) }
-      record.relationships?.let { addAll(it.map(RelationMapper::toNew)) }
+      record.relations?.let { addAll(it.map(RelationMapper::toNew)) }
       record.urlAddresses?.let { addAll(it.map(WebsiteMapper::toNew)) }
     }
-    return NewContact(modelsToInsert)
+    return NewContact(record.isFavourite, modelsToInsert)
   }
 
   @OptIn(EitherType::class)
@@ -143,14 +157,14 @@ class ContactRecordDomainMapper {
   ) = with(ContactPatchBuilder(contactId, rawContactId, this)) {
     if (record.isChangingStructuredName()) {
       if (structuredNameDataId != null) {
-        withPatchable(ContactMapper.toPatchStructuredName(record, structuredNameDataId))
+        withUpdatable(ContactMapper.toPatchStructuredName(record, structuredNameDataId))
       } else {
         withAppendable(ContactMapper.toAppendableStructuredName(record, rawContactId))
       }
     }
     if (record.isChangingOrganization()) {
       if (organizationDataId != null) {
-        withPatchable(ContactMapper.toPatchOrganization(record, organizationDataId))
+        withUpdatable(ContactMapper.toPatchOrganization(record, organizationDataId))
       } else {
         withAppendable(ContactMapper.toAppendableOrganization(record, rawContactId))
       }
@@ -158,7 +172,7 @@ class ContactRecordDomainMapper {
 
     if (!record.note.isUndefined) {
       if (noteDataId != null) {
-        withPatchable(ContactMapper.toPatchNote(record, noteDataId))
+        withUpdatable(ContactMapper.toPatchNote(record, noteDataId))
       } else {
         withAppendable(ContactMapper.toAppendableNote(record, rawContactId))
       }
@@ -211,7 +225,7 @@ class ContactRecordDomainMapper {
       addAll(it)
     }
 
-    createContactRecord.relationships?.map { relationRecord ->
+    createContactRecord.relations?.map { relationRecord ->
       RelationMapper.toNew(relationRecord).contentValues
     }?.let {
       addAll(it)

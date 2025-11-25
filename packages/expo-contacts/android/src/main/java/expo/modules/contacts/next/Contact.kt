@@ -2,6 +2,7 @@ package expo.modules.contacts.next
 
 import android.net.Uri
 import android.provider.ContactsContract
+import androidx.core.net.toUri
 import expo.modules.contacts.next.mappers.ContactRecordDomainMapper
 import expo.modules.contacts.next.domain.model.event.EventField
 import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
@@ -15,13 +16,28 @@ import expo.modules.contacts.next.domain.model.structuredpostal.StructuredPostal
 import expo.modules.contacts.next.domain.model.website.operations.ExistingWebsite
 import expo.modules.contacts.next.domain.model.website.WebsiteField
 import expo.modules.contacts.next.domain.ContactRepository
+import expo.modules.contacts.next.domain.model.Appendable
+import expo.modules.contacts.next.domain.model.Extractable
+import expo.modules.contacts.next.domain.model.ExtractableField
+import expo.modules.contacts.next.domain.model.Updatable
 import expo.modules.contacts.next.domain.model.email.operations.ExistingEmail
+import expo.modules.contacts.next.domain.model.headers.DisplayNameField
+import expo.modules.contacts.next.domain.model.headers.PhotoThumbnailUriField
+import expo.modules.contacts.next.domain.model.headers.PhotoUriField
+import expo.modules.contacts.next.domain.model.headers.isfavourite.PatchIsFavourite
+import expo.modules.contacts.next.domain.model.headers.isfavourite.Starred
+import expo.modules.contacts.next.domain.model.headers.isfavourite.StarredField
 import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
 import expo.modules.contacts.next.domain.model.note.NoteField
 import expo.modules.contacts.next.domain.model.organization.OrganizationField
+import expo.modules.contacts.next.domain.model.photo.PhotoField
+import expo.modules.contacts.next.domain.model.photo.operations.AppendablePhoto
+import expo.modules.contacts.next.domain.model.photo.operations.ExistingPhoto
 import expo.modules.contacts.next.domain.model.structuredname.StructuredNameField
 import expo.modules.contacts.next.domain.model.structuredpostal.operations.ExistingStructuredPostal
 import expo.modules.contacts.next.domain.wrappers.ContactId
+import expo.modules.contacts.next.domain.wrappers.DataId
+import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.intents.ContactIntentDelegate
 import expo.modules.contacts.next.records.contact.PatchContactRecord
 import expo.modules.contacts.next.records.contact.CreateContactRecord
@@ -30,15 +46,19 @@ import expo.modules.contacts.next.records.fields.ContactField
 import expo.modules.contacts.next.records.fields.DateRecord
 import expo.modules.contacts.next.records.fields.EmailRecord
 import expo.modules.contacts.next.records.fields.PhoneRecord
-import expo.modules.contacts.next.records.fields.RelationshipRecord
+import expo.modules.contacts.next.records.fields.RelationRecord
 import expo.modules.contacts.next.records.fields.ExtraNameRecord
 import expo.modules.contacts.next.records.fields.PostalAddressRecord
 import expo.modules.contacts.next.records.fields.UrlAddressRecord
-import expo.modules.contacts.next.services.ListPropertyManager
-import expo.modules.contacts.next.services.PropertyManager
-import expo.modules.contacts.next.services.property.NoteProperty
-import expo.modules.contacts.next.services.property.OrganizationProperty
-import expo.modules.contacts.next.services.property.StructuredNameProperty
+import expo.modules.contacts.next.services.ImageByteArrayConverter
+import expo.modules.contacts.next.services.properties.ListDataProperty
+import expo.modules.contacts.next.services.properties.SingleDataProperty
+import expo.modules.contacts.next.services.properties.MutableHeaderProperty
+import expo.modules.contacts.next.services.properties.ReadOnlyHeaderProperty
+import expo.modules.contacts.next.services.property.NoteMapper
+import expo.modules.contacts.next.services.property.OrganizationPropertyMapper
+import expo.modules.contacts.next.services.property.PropertyMapper
+import expo.modules.contacts.next.services.property.StructuredNamePropertyMapper
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -57,7 +77,7 @@ class Contact(
     val existingContact = repository.getById(
       setOf(StructuredNameField, OrganizationField),
       contactId
-    )
+    ) ?: throw ContactNotFoundException()
     val rawContactId = repository.getRawContactId(contactId)
       ?: throw RawContactIdNotFoundException()
     val contactPatch = mapper.toPatchContact(
@@ -75,8 +95,9 @@ class Contact(
     val extractableFields = fields
       ?.map { mapper.toExtractableField(it) }
       ?.toSet()
-      ?: setOf(StructuredNameField, OrganizationField, EmailField, PhoneField, StructuredPostalField, EventField, RelationField, WebsiteField, NicknameField)
+      ?: ExtractableField.getAll()
     val existingContact = repository.getById(extractableFields, contactId)
+      ?: throw ContactNotFoundException()
     return mapper.toRecord(existingContact)
   }
 
@@ -89,140 +110,101 @@ class Contact(
     return@withContext ContactsContract.Contacts.getLookupUri(contactId.value.toLong(), lookupKey)
   }
 
-  val givenName = PropertyManager(
-    field = StructuredNameField,
-    fieldPropertyAccessor = StructuredNameProperty.GivenName,
-    repository = repository,
-    contactId = contactId
+  private fun <TDomain: Extractable.Data, TDto> singleDataProperty(
+    field: ExtractableField.Data<TDomain>,
+    mapper: PropertyMapper<TDomain, TDto>,
+  ) = SingleDataProperty(contactId, field, mapper, repository)
+
+  val givenName = singleDataProperty(StructuredNameField, StructuredNamePropertyMapper.GivenName)
+  val familyName = singleDataProperty(StructuredNameField, StructuredNamePropertyMapper.FamilyName)
+  val middleName = singleDataProperty(StructuredNameField, StructuredNamePropertyMapper.MiddleName)
+  val prefix = singleDataProperty(StructuredNameField, StructuredNamePropertyMapper.Prefix)
+  val suffix = singleDataProperty(StructuredNameField, StructuredNamePropertyMapper.Suffix)
+  val phoneticGivenName = singleDataProperty(StructuredNameField,StructuredNamePropertyMapper.PhoneticGivenName)
+  val phoneticFamilyName = singleDataProperty(StructuredNameField, StructuredNamePropertyMapper.PhoneticFamilyName)
+  val phoneticMiddleName = singleDataProperty(StructuredNameField, StructuredNamePropertyMapper.PhoneticMiddleName)
+  val company = singleDataProperty(OrganizationField, OrganizationPropertyMapper.Company)
+  val department = singleDataProperty(OrganizationField, OrganizationPropertyMapper.Department)
+  val jobTitle = singleDataProperty(OrganizationField, OrganizationPropertyMapper.JobTitle)
+  val phoneticCompanyName = singleDataProperty(OrganizationField, OrganizationPropertyMapper.PhoneticName)
+  val note = singleDataProperty(NoteField, NoteMapper)
+  val fullName = ReadOnlyHeaderProperty(contactId, repository, DisplayNameField, mapToDto = {v -> v.value})
+  val thumbnail = ReadOnlyHeaderProperty(contactId, repository, PhotoThumbnailUriField) { v -> v.value }
+
+  val imageUri = ReadOnlyHeaderProperty(contactId, repository, PhotoUriField) { v -> v.value }
+
+  val image = singleDataProperty(PhotoField,  object: PropertyMapper<ExistingPhoto, String> {
+    override fun toUpdatable(dataId: DataId, newValue: String?): Updatable.Data {
+      val converter = ImageByteArrayConverter(appContext?.reactContext?.contentResolver ?: throw ContentResolverNotObtainedException())
+      val byteArray = newValue?.let {
+        converter.toByteArray(it.toUri())
+      }
+      return ExistingPhoto(dataId, byteArray)
+    }
+
+    override fun toAppendable(newValue: String?, rawContactId: RawContactId): Appendable {
+      val converter = ImageByteArrayConverter(appContext?.reactContext?.contentResolver ?: throw ContentResolverNotObtainedException())
+      val byteArray = newValue?.let {
+        converter.toByteArray(it.toUri())
+      }
+      return AppendablePhoto(rawContactId, byteArray)
+    }
+
+    override fun toDto(model: ExistingPhoto): String? {
+      return ""
+    }
+  })
+
+  val isFavourite = MutableHeaderProperty(
+    contactId, repository,
+    field = StarredField,
+    mapToDto = { value: Starred -> value.value == 1 },
+    mapToUpdatable = { boolean: Boolean -> PatchIsFavourite(contactId) }
   )
 
-  val familyName = PropertyManager(
-    field = StructuredNameField,
-    fieldPropertyAccessor = StructuredNameProperty.FamilyName,
-    repository = repository,
-    contactId = contactId
-  )
-
-  val middleName = PropertyManager(
-    field = StructuredNameField,
-    fieldPropertyAccessor = StructuredNameProperty.MiddleName,
-    repository = repository,
-    contactId = contactId
-  )
-
-  val prefix = PropertyManager(
-    field = StructuredNameField,
-    fieldPropertyAccessor = StructuredNameProperty.Prefix,
-    repository = repository,
-    contactId = contactId
-  )
-
-  val suffix = PropertyManager(
-    field = StructuredNameField,
-    fieldPropertyAccessor = StructuredNameProperty.Suffix,
-    repository = repository,
-    contactId = contactId
-  )
-
-  val phoneticGivenName = PropertyManager(
-    field = StructuredNameField,
-    fieldPropertyAccessor = StructuredNameProperty.PhoneticGivenName,
-    repository = repository,
-    contactId = contactId
-  )
-
-  val phoneticFamilyName = PropertyManager(
-    field = StructuredNameField,
-    fieldPropertyAccessor = StructuredNameProperty.PhoneticFamilyName,
-    repository = repository,
-    contactId = contactId
-  )
-
-  val phoneticMiddleName = PropertyManager(
-    contactId = contactId,
-    field = StructuredNameField,
-    fieldPropertyAccessor = StructuredNameProperty.PhoneticMiddleName,
-    repository = repository
-  )
-
-  val company = PropertyManager(
-    contactId = contactId,
-    field = OrganizationField,
-    fieldPropertyAccessor = OrganizationProperty.Company,
-    repository = repository
-  )
-
-  val department = PropertyManager(
-    contactId = contactId,
-    field = OrganizationField,
-    fieldPropertyAccessor = OrganizationProperty.Department,
-    repository = repository
-  )
-
-  val jobTitle = PropertyManager(
-    contactId = contactId,
-    field = OrganizationField,
-    fieldPropertyAccessor = OrganizationProperty.JobTitle,
-    repository = repository
-  )
-
-  val phoneticCompanyName = PropertyManager(
-    contactId = contactId,
-    field = OrganizationField,
-    fieldPropertyAccessor = OrganizationProperty.PhoneticName,
-    repository = repository
-  )
-
-  val note = PropertyManager(
-    contactId = contactId,
-    field = NoteField,
-    fieldPropertyAccessor = NoteProperty.Note,
-    repository = repository
-  )
-
-  val emails = ListPropertyManager<ExistingEmail, EmailRecord.New, EmailRecord.Existing>(
+  val emails = ListDataProperty<ExistingEmail, EmailRecord.New, EmailRecord.Existing>(
     EmailField,
     contactId,
     repository,
     mapper
   )
 
-  val phones = ListPropertyManager<ExistingPhone, PhoneRecord.New, PhoneRecord.Existing>(
+  val phones = ListDataProperty<ExistingPhone, PhoneRecord.New, PhoneRecord.Existing>(
     PhoneField,
     contactId,
     repository,
     mapper
   )
 
-  val addresses = ListPropertyManager<ExistingStructuredPostal, PostalAddressRecord.New, PostalAddressRecord.Existing>(
+  val addresses = ListDataProperty<ExistingStructuredPostal, PostalAddressRecord.New, PostalAddressRecord.Existing>(
     StructuredPostalField,
     contactId,
     repository,
     mapper
   )
 
-  val dates = ListPropertyManager<ExistingEvent, DateRecord.New, DateRecord.Existing>(
+  val dates = ListDataProperty<ExistingEvent, DateRecord.New, DateRecord.Existing>(
     EventField,
     contactId,
     repository,
     mapper
   )
 
-  val urlAddresses = ListPropertyManager<ExistingWebsite, UrlAddressRecord.New, UrlAddressRecord.Existing>(
+  val urlAddresses = ListDataProperty<ExistingWebsite, UrlAddressRecord.New, UrlAddressRecord.Existing>(
     WebsiteField,
     contactId,
     repository,
     mapper
   )
 
-  val relations = ListPropertyManager<ExistingRelation, RelationshipRecord.New, RelationshipRecord.Existing>(
+  val relations = ListDataProperty<ExistingRelation, RelationRecord.New, RelationRecord.Existing>(
     RelationField,
     contactId,
     repository,
     mapper
   )
 
-  val extraNames = ListPropertyManager<ExistingNickname, ExtraNameRecord.New, ExtraNameRecord.Existing>(
+  val extraNames = ListDataProperty<ExistingNickname, ExtraNameRecord.New, ExtraNameRecord.Existing>(
     NicknameField,
     contactId,
     repository,

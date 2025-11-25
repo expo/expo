@@ -10,4 +10,4 @@ class ExistingRelation(
   override val dataId: DataId,
   name: String?,
   label: RelationLabel
-) : RelationModel(name, label), Updatable, Extractable
+) : RelationModel(name, label), Updatable.Data, Extractable.Data

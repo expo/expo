@@ -37,7 +37,6 @@ export async function test(t) {
       contacts.push(newContact);
       t.expect(newContact).toBeDefined();
       t.expect(newContact.id).toBeDefined();
-
       const fetchedDetails = await newContact.getDetails([
         ContactField.GIVEN_NAME,
         ContactField.FAMILY_NAME,
@@ -214,6 +213,7 @@ export async function test(t) {
       });
     });
   });
+
   t.describe('.getAll()', () => {
     t.it('.getAll() should fetch all contacts', async () => {
       const allContacts = await Contact.getAll();
@@ -470,7 +470,6 @@ export async function test(t) {
       const response = await fetch(url);
       const src = new File(Paths.cache, 'file.pdf');
       src.write(await response.bytes());
-
       await contact.setImage(src.uri);
       const retrievedImage = await contact.getImage();
       const retrievedThumbnail = await contact.getThumbnail();

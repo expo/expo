@@ -2,7 +2,7 @@ package expo.modules.contacts.next.domain.model.structuredname.operations
 
 import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
-import expo.modules.contacts.next.domain.model.Patchable
+import expo.modules.contacts.next.domain.model.Updatable
 import expo.modules.contacts.next.domain.model.structuredname.StructuredNameModel
 import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.kotlin.types.ValueOrUndefined
@@ -26,8 +26,7 @@ class PatchStructuredName(
   phoneticGivenName = phoneticGivenName.optional,
   phoneticMiddleName = phoneticMiddleName.optional,
   phoneticFamilyName = phoneticFamilyName.optional
-),
-  Patchable {
+), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!givenName.isUndefined) {
       put(StructuredName.GIVEN_NAME, givenName.optional)

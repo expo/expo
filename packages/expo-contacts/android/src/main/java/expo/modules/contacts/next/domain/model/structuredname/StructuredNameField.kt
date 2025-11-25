@@ -8,7 +8,7 @@ import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.structuredname.operations.ExistingStructuredName
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object StructuredNameField : ExtractableField<ExistingStructuredName>, ClearableField {
+object StructuredNameField : ExtractableField.Data<ExistingStructuredName>, ClearableField {
   override val mimeType = StructuredName.CONTENT_ITEM_TYPE
 
   override val projection = arrayOf(

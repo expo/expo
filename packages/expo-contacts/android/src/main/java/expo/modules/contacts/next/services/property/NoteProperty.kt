@@ -7,13 +7,13 @@ import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.kotlin.types.ValueOrUndefined
 
-sealed class NoteProperty {
-  object Note : PropertyAccessor<ExistingNote, String> {
-    override fun extractFrom(model: ExistingNote) = model.note
-    override fun toFieldPatchable(dataId: DataId, newValue: String?) =
-      PatchNote(dataId, note = ValueOrUndefined.Value(newValue))
+object NoteMapper: PropertyMapper<ExistingNote, String>{
+  override fun toDto(model: ExistingNote) = model.note
 
-    override fun toFieldAppendable(newValue: String?, rawContactId: RawContactId) =
-      AppendableNote(rawContactId = rawContactId, note = newValue)
-  }
+  override fun toUpdatable(dataId: DataId, newValue: String?) =
+    PatchNote(dataId, note = ValueOrUndefined.Value(newValue))
+
+  override fun toAppendable(newValue: String?, rawContactId: RawContactId) =
+    AppendableNote(rawContactId = rawContactId, note = newValue)
 }
+

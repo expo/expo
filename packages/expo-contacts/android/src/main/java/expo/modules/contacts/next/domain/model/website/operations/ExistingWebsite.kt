@@ -10,4 +10,4 @@ class ExistingWebsite(
   override val dataId: DataId,
   url: String?,
   label: WebsiteLabel
-) : WebsiteModel(url, label), Extractable, Updatable
+) : WebsiteModel(url, label), Extractable.Data, Updatable.Data

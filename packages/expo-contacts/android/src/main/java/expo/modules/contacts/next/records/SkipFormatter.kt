@@ -10,6 +10,7 @@ class SkipFormatter(private val fields: Set<ContactField>?) {
     if (fields == null) {
       return@formatter
     }
+    property(GetContactDetailsRecord::fullName).skip { !fields.contains(ContactField.FULL_NAME) }
     property(GetContactDetailsRecord::givenName).skip { !fields.contains(ContactField.GIVEN_NAME) }
     property(GetContactDetailsRecord::middleName).skip { !fields.contains(ContactField.MIDDLE_NAME) }
     property(GetContactDetailsRecord::familyName).skip { !fields.contains(ContactField.FAMILY_NAME) }
@@ -21,11 +22,16 @@ class SkipFormatter(private val fields: Set<ContactField>?) {
     property(GetContactDetailsRecord::company).skip { !fields.contains(ContactField.COMPANY) }
     property(GetContactDetailsRecord::department).skip { !fields.contains(ContactField.DEPARTMENT) }
     property(GetContactDetailsRecord::jobTitle).skip { !fields.contains(ContactField.JOB_TITLE) }
+    property(GetContactDetailsRecord::phoneticCompanyName).skip { !fields.contains(ContactField.PHONETIC_COMPANY_NAME) }
+    property(GetContactDetailsRecord::image).skip { !fields.contains(ContactField.IMAGE) }
+    property(GetContactDetailsRecord::thumbnail).skip { !fields.contains(ContactField.THUMBNAIL) }
+    property(GetContactDetailsRecord::note).skip { !fields.contains(ContactField.NOTE) }
+    property(GetContactDetailsRecord::isFavourite).skip { !fields.contains(ContactField.IS_FAVOURITE) }
     property(GetContactDetailsRecord::emails).skip { !fields.contains(ContactField.EMAILS) }
     property(GetContactDetailsRecord::phones).skip { !fields.contains(ContactField.PHONES) }
     property(GetContactDetailsRecord::addresses).skip { !fields.contains(ContactField.ADDRESSES) }
     property(GetContactDetailsRecord::dates).skip { !fields.contains(ContactField.DATES) }
-    property(GetContactDetailsRecord::relationships).skip { !fields.contains(ContactField.RELATIONSHIPS) }
+    property(GetContactDetailsRecord::relations).skip { !fields.contains(ContactField.RELATIONS) }
     property(GetContactDetailsRecord::urlAddresses).skip { !fields.contains(ContactField.URL_ADDRESSES) }
     property(GetContactDetailsRecord::extraNames).skip { !fields.contains(ContactField.EXTRA_NAMES) }
   }
