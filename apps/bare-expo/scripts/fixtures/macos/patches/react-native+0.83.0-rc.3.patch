@@ -11,13 +11,13 @@ index 4241e5e..3939434 100644
 +  ) => mixed;
 +  +cancelIdleCallback: (handle: mixed) => void;
  }
-
+ 
  export default (TurboModuleRegistry.getEnforcing<Spec>(
 diff --git a/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js b/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
-index f5e3609..9c207d2 100644
+index fed5c09..ffa6e3a 100644
 --- a/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
 +++ b/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
-@@ -36,10 +36,10 @@ export opaque type NativeIntersectionObserverToken = mixed;
+@@ -37,10 +37,10 @@ export opaque type NativeIntersectionObserverToken = mixed;
  export interface Spec extends TurboModule {
    +observeV2?: (
      options: NativeIntersectionObserverObserveOptions,
@@ -31,18 +31,18 @@ index f5e3609..9c207d2 100644
    +connect: (notifyIntersectionObserversCallback: () => void) => void;
    +disconnect: () => void;
 diff --git a/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js b/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
-index e191d0a..603ae59 100644
+index af194df..b2e4ae5 100644
 --- a/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
 +++ b/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
-@@ -80,16 +80,16 @@ export interface Spec extends TurboModule {
-
+@@ -83,16 +83,16 @@ export interface Spec extends TurboModule {
+ 
    +createObserver: (
      callback: NativeBatchedObserverCallback,
 -  ) => OpaqueNativeObserverHandle;
 -  +getDroppedEntriesCount: (observer: OpaqueNativeObserverHandle) => number;
 +  ) => mixed;
 +  +getDroppedEntriesCount: (observer: mixed) => number;
-
+ 
    +observe: (
 -    observer: OpaqueNativeObserverHandle,
 +    observer: mixed,
@@ -55,4 +55,4 @@ index e191d0a..603ae59 100644
 +    observer: mixed,
      sort: boolean,
    ) => $ReadOnlyArray<RawPerformanceEntry>;
-
+ 

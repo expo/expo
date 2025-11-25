@@ -31,7 +31,7 @@
     "expo-task-manager": "14.0.7",
     "react-native-gesture-handler": "~2.28.0",
     "react": "19.2.0",
-    "react-native": "0.83.0-nightly-20251104-502efe1cc",
+    "react-native": "0.83.0-rc.3",
     "react-native-safe-area-context": "5.6.0",
     "react-native-screens": "4.19.0-nightly-20251123-253b82666"
   },
@@ -43,7 +43,6 @@
   "resolutions": {
     "react-test-renderer": "19.2.0"
   },
-  "expo": {
-  },
+  "expo": {},
   "private": true
 }
