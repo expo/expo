@@ -30,7 +30,7 @@ jobs:
         with:
           yarn-tools: "true"
       - name: 🧶 Yarn install
-        #working-directory: tools
+        working-directory: tools
         if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
         run: yarn install --immutable
 
@@ -50,6 +50,14 @@ jobs:
       #     path: SwiftLint/.build
       #     include-hidden-files: true
 
+      - name: 🔍 Debug bin/expotools
+        run: |
+          echo "=== Git status ==="
+          git status
+          echo "=== Content of bin/expotools ==="
+          cat bin/expotools
+          echo "=== Check if @expo/spawn-async is mentioned ==="
+          grep -r "spawn-async" bin/ || echo "Not found in bin/"
       - name: 🔬 Reviewing a pull request
         run: expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
         env:
