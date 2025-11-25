@@ -9,7 +9,9 @@ export const paddingAll: (all: number) => ExpoModifier = nativeExpoUIModule.padd
 export const padding: (start: number, top: number, end: number, bottom: number) => ExpoModifier =
   nativeExpoUIModule.padding;
 export const size: (width: number, height: number) => ExpoModifier = nativeExpoUIModule.size;
-export const fillMaxSize: () => ExpoModifier = nativeExpoUIModule.fillMaxSize;
+export const fillMaxSize: (fraction?: number) => ExpoModifier = nativeExpoUIModule.fillMaxSize;
+export const fillMaxWidth: (fraction?: number) => ExpoModifier = nativeExpoUIModule.fillMaxWidth;
+export const fillMaxHeight: (fraction?: number) => ExpoModifier = nativeExpoUIModule.fillMaxHeight;
 export const offset: (x: number, y: number) => ExpoModifier = nativeExpoUIModule.offset;
 export const background: (color: string) => ExpoModifier = nativeExpoUIModule.background;
 export const border: (borderWidth: number, borderColor: string) => ExpoModifier =

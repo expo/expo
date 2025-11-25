@@ -8,7 +8,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -137,8 +139,16 @@ class ExpoUIModule : Module() {
       return@Function ExpoModifier(Modifier.size(width.dp, height.dp))
     }
 
-    Function("fillMaxSize") {
-      return@Function ExpoModifier(Modifier.fillMaxSize())
+    Function("fillMaxSize") { fraction: Float? ->
+      return@Function ExpoModifier(Modifier.fillMaxSize(fraction = fraction ?: 1.0f))
+    }
+
+    Function("fillMaxWidth") { fraction: Float? ->
+      return@Function ExpoModifier(Modifier.fillMaxWidth(fraction = fraction ?: 1.0f))
+    }
+
+    Function("fillMaxHeight") { fraction: Float? ->
+      return@Function ExpoModifier(Modifier.fillMaxHeight(fraction = fraction ?: 1.0f))
     }
 
     Function("offset") { x: Int, y: Int ->
