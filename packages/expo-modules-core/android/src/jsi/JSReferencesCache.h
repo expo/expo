@@ -2,16 +2,11 @@
 
 #pragma once
 
-#include "JavaReferencesCache.h"
-#include "Exceptions.h"
-#include "JavaScriptObject.h"
-#include "JavaScriptRuntime.h"
-#include "JSIObjectWrapper.h"
-#include "WeakRuntimeHolder.h"
-
 #include <jsi/jsi.h>
 #include <memory>
 #include <unordered_map>
+
+namespace jsi = facebook::jsi;
 
 namespace expo {
 /**

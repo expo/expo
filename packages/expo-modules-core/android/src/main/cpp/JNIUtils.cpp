@@ -6,6 +6,7 @@
 #include "types/JNIToJSIConverter.h"
 #include <jsi/JSIDynamic.h>
 #include "JSIContext.h"
+#include "Exceptions.h"
 
 namespace expo {
 
