@@ -6,6 +6,8 @@ import React
 public final class GlassView: ExpoView {
   private var glassEffect: Any?
   private var glassEffectView = UIVisualEffectView()
+  private var wasEffectivelyInvisible = true
+  private var displayLink: CADisplayLink?
 
   private var glassStyle: GlassStyle?
   private var glassTintColor: UIColor?
@@ -206,5 +208,76 @@ public final class GlassView: ExpoView {
 
   public override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
     childComponentView.removeFromSuperview()
+  }
+
+  deinit {
+    displayLink?.invalidate()
+  }
+
+  public override func didMoveToWindow() {
+    super.didMoveToWindow()
+    // to fix a bug in iOS 26.1 where the glass effect is not visible when opacity changes from 0 to 1
+    // TODO: remove this once the bug is fixed
+    if #available(iOS 26.1, *) {
+      if window != nil {
+        startMonitoringIfNeeded()
+      } else {
+        stopMonitoring()
+      }
+    }
+  }
+
+  private func startMonitoringIfNeeded() {
+    if !isEffectivelyVisible() && displayLink == nil {
+      displayLink = CADisplayLink(target: self, selector: #selector(checkVisibilityChange))
+      displayLink?.add(to: .main, forMode: .common)
+    }
+  }
+
+  private func stopMonitoring() {
+    displayLink?.invalidate()
+    displayLink = nil
+  }
+
+  @objc private func checkVisibilityChange() {
+    let isVisible = isEffectivelyVisible()
+
+    if wasEffectivelyInvisible && isVisible {
+      stopMonitoring()
+      refreshGlassEffect()
+    }
+
+    wasEffectivelyInvisible = !isVisible
+  }
+
+  private func isEffectivelyVisible() -> Bool {
+    var view: UIView? = self
+    while let currentView = view {
+      if currentView.alpha < 0.01 {
+        return false
+      }
+      view = currentView.superview
+    }
+    return window != nil
+  }
+
+  private func refreshGlassEffect() {
+    guard isGlassEffectAvailable() else {
+      return
+    }
+    if #available(iOS 26.0, *) {
+      #if compiler(>=6.2)
+      if let style = glassStyle {
+        // setting nil here is necessary to avoid a bug in iOS 26.2 where the glass effect is not visible when opacity changes from 0 to 1
+        glassEffectView.effect = nil
+        let effect = UIGlassEffect(style: style.toUIGlassEffectStyle())
+        effect.tintColor = glassTintColor
+        effect.isInteractive = glassIsInteractive ?? false
+        glassEffect = effect
+        glassEffectView.effect = effect
+        updateEffect()
+      }
+      #endif
+    }
   }
 }
