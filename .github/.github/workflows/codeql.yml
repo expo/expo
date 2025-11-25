@@ -1,0 +1,70 @@
+name: "CodeQL (Android + Linux)"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["javascript-typescript", "java-kotlin"]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # Node + TS setup for JS/TS analysis
+      - name: Setup Node
+        if: matrix.language == 'javascript-typescript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install latest TypeScript
+        if: matrix.language == 'javascript-typescript'
+        run: |
+          npm install -g typescript@latest
+
+      - name: Install JS dependencies
+        if: matrix.language == 'javascript-typescript'
+        run: |
+          npm install || true
+
+      # Java/Kotlin setup for Android builds
+      - name: Setup JDK
+        if: matrix.language == 'java-kotlin'
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      # Initialize CodeQL
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          config-file: .github/codeql/codeql-config.yml
+
+      # —— Build Section ——
+      - name: Build (Android or JS)
+        run: |
+          if [[ "${{ matrix.language }}" == "javascript-typescript" ]]; then
+            npm run build || true
+          elif [[ "${{ matrix.language }}" == "java-kotlin" ]]; then
+            ./gradlew build || true
+          fi
+
+      - name: CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
