@@ -76,11 +76,11 @@ class DateTimePickerView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
-      ExpoTimePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value)) {
+      ExpoTimePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)) {
         onDateSelected(it)
       }
     } else {
-      ExpoDatePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value)) {
+      ExpoDatePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)) {
         onDateSelected(it)
       }
     }
