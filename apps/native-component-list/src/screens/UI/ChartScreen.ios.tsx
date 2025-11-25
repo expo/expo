@@ -43,6 +43,16 @@ const performanceData: ChartDataPoint[] = [
   { x: 'Q4', y: 95 },
 ];
 
+// Numeric x-axis data example
+const numericData: ChartDataPoint[] = [
+  { x: 0, y: 10 },
+  { x: 1.5, y: 25 },
+  { x: 3, y: 18 },
+  { x: 4.5, y: 32 },
+  { x: 6, y: 28 },
+  { x: 7.5, y: 35 },
+];
+
 const salesAnnotations: ChartDataPoint[] = [
   { x: 'Sales Target', y: 30, color: '#10B981' },
   { x: 'Average', y: 25, color: '#F59E0B' },
@@ -61,15 +71,21 @@ const performanceAnnotations: ChartDataPoint[] = [
   { x: 'Minimum', y: 65, color: '#EF4444' },
 ];
 
-type DataSet = 'sales' | 'temperature' | 'performance';
+const numericAnnotations: ChartDataPoint[] = [
+  { x: 'High', y: 30, color: '#10B981' },
+  { x: 'Average', y: 25, color: '#F59E0B' },
+  { x: 'Low', y: 15, color: '#EF4444' },
+];
 
-const dataSet: DataSet[] = ['sales', 'temperature', 'performance'];
+type DataSet = 'sales' | 'temperature' | 'performance' | 'numeric';
+
+const dataSet: DataSet[] = ['sales', 'temperature', 'performance', 'numeric'];
 
 const charts: ChartType[] = ['line', 'point', 'bar', 'area', 'pie', 'rectangle'];
 
 const chartConfig = {
   chartTypeOptions: ['Line', 'Point', 'Bar', 'Area', 'Pie', 'Rectangle'],
-  dataSetOptions: ['Sales', 'Temperature', 'Performance'],
+  dataSetOptions: ['Sales', 'Temperature', 'Performance', 'Numeric'],
   toggleOptions: ['OFF', 'ON'],
   lineStyle: {
     options: ['Solid', 'Dashed', 'Dotted'],
@@ -134,6 +150,8 @@ export default function ChartScreen() {
         return temperatureData;
       case 'performance':
         return performanceData;
+      case 'numeric':
+        return numericData;
       default:
         return salesData;
     }
@@ -145,6 +163,8 @@ export default function ChartScreen() {
         return temperatureAnnotations;
       case 'performance':
         return performanceAnnotations;
+      case 'numeric':
+        return numericAnnotations;
       default:
         return salesAnnotations;
     }
@@ -222,6 +242,7 @@ export default function ChartScreen() {
       <HeadingText style={styles.heading}>Native Swift Charts with Styling</HeadingText>
       <Text style={styles.description}>
         Interactive charts with custom styling options per chart type (iOS 16+)
+        {'\n'}Supports both categorical (string) and numeric x-axis values
         {'\n'}Pie charts require iOS 17+
       </Text>
       <View style={styles.chartContainer}>
