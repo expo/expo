@@ -12,7 +12,7 @@ const result = spawnSync(
   [path.join(expotoolsDir, 'bin', 'expotools.js'), ...process.argv.slice(2)],
   {
     stdio: 'inherit',
-    cwd: expotoolsDir,
+    cwd: repositoryRoot,
   }
 );
 
