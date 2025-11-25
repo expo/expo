@@ -159,12 +159,12 @@ class ContactsNextModule : Module() {
         self.jobTitle.set(newJobTitle)
       }
 
-      AsyncFunction("getPhoneticOrganizationName") Coroutine { self: Contact ->
-        self.phoneticOrganizationName.get()
+      AsyncFunction("getPhoneticCompanyName") Coroutine { self: Contact ->
+        self.phoneticCompanyName.get()
       }
 
-      AsyncFunction("setPhoneticOrganizationName") Coroutine { self: Contact, newPhoneticName: String? ->
-        self.phoneticOrganizationName.set(newPhoneticName)
+      AsyncFunction("setPhoneticCompanyName") Coroutine { self: Contact, newPhoneticName: String? ->
+        self.phoneticCompanyName.set(newPhoneticName)
       }
 
       AsyncFunction("getNote") Coroutine { self: Contact ->
@@ -207,20 +207,20 @@ class ContactsNextModule : Module() {
         self.phones.delete(phoneRecord)
       }
 
-      AsyncFunction("getPostalAddresses") Coroutine { self: Contact ->
-        self.postalAddresses.getAll()
+      AsyncFunction("getAddresses") Coroutine { self: Contact ->
+        self.addresses.getAll()
       }
 
-      AsyncFunction("addPostalAddress") Coroutine { self: Contact, postalAddressRecord: PostalAddressRecord.New ->
-        self.postalAddresses.add(postalAddressRecord)
+      AsyncFunction("addAddress") Coroutine { self: Contact, postalAddressRecord: PostalAddressRecord.New ->
+        self.addresses.add(postalAddressRecord)
       }
 
-      AsyncFunction("updatePostalAddress") Coroutine { self: Contact, postalAddressRecord: PostalAddressRecord.Existing ->
-        self.postalAddresses.update(postalAddressRecord)
+      AsyncFunction("updateAddress") Coroutine { self: Contact, addressRecord: PostalAddressRecord.Existing ->
+        self.addresses.update(addressRecord)
       }
 
-      AsyncFunction("deletePostalAddress") Coroutine { self: Contact, postalAddressRecord: PostalAddressRecord.Existing ->
-        self.postalAddresses.delete(postalAddressRecord)
+      AsyncFunction("deleteAddress") Coroutine { self: Contact, addressRecord: PostalAddressRecord.Existing ->
+        self.addresses.delete(addressRecord)
       }
 
       AsyncFunction("getDates") Coroutine { self: Contact ->
@@ -255,20 +255,20 @@ class ContactsNextModule : Module() {
         self.extraNames.delete(extraNameRecord)
       }
 
-      AsyncFunction("getRelationships") Coroutine { self: Contact ->
-        self.relationships.getAll()
+      AsyncFunction("getRelations") Coroutine { self: Contact ->
+        self.relations.getAll()
       }
 
-      AsyncFunction("addRelationship") Coroutine { self: Contact, relationshipRecord: RelationshipRecord.New ->
-        self.relationships.add(relationshipRecord)
+      AsyncFunction("addRelation") Coroutine { self: Contact, relationRecord: RelationshipRecord.New ->
+        self.relations.add(relationRecord)
       }
 
-      AsyncFunction("updateRelationship") Coroutine { self: Contact, relationshipRecord: RelationshipRecord.Existing ->
-        self.relationships.update(relationshipRecord)
+      AsyncFunction("updateRelation") Coroutine { self: Contact, relationRecord: RelationshipRecord.Existing ->
+        self.relations.update(relationRecord)
       }
 
-      AsyncFunction("deleteRelationship") Coroutine { self: Contact, relationshipRecord: RelationshipRecord.Existing ->
-        self.relationships.delete(relationshipRecord)
+      AsyncFunction("deleteRelation") Coroutine { self: Contact, relationRecord: RelationshipRecord.Existing ->
+        self.relations.delete(relationRecord)
       }
 
       AsyncFunction("getUrlAddresses") Coroutine { self: Contact ->
@@ -290,35 +290,35 @@ class ContactsNextModule : Module() {
       AsyncFunction("editWithForm") Coroutine { self: Contact ->
         self.editWithForm()
       }
-    }
 
-    AsyncFunction("createContact") Coroutine { createContactRecord: CreateContactRecord ->
-      permissionsDelegate.ensurePermissions()
-      Contact.create(createContactRecord, contactRepository, contactMapper, contactFactory)
-    }
+      StaticAsyncFunction("create") Coroutine { createContactRecord: CreateContactRecord ->
+        permissionsDelegate.ensurePermissions()
+        Contact.create(createContactRecord, contactRepository, contactMapper, contactFactory)
+      }
 
-    AsyncFunction("addWithFormContact") Coroutine { createContactRecord: CreateContactRecord ->
-      Contact.createWithForm(createContactRecord, contactMapper, contactIntentDelegate)
-    }
+      StaticAsyncFunction("addWithForm") Coroutine { createContactRecord: CreateContactRecord ->
+        Contact.createWithForm(createContactRecord, contactMapper, contactIntentDelegate)
+      }
 
-    AsyncFunction("pickContact") Coroutine { ->
-      Contact.pick(contactIntentDelegate, contactFactory)
-    }
+      StaticAsyncFunction("pick") Coroutine { ->
+        Contact.pick(contactIntentDelegate, contactFactory)
+      }
 
-    AsyncFunction("getAllContact") Coroutine { ->
-      Contact.getAll(contactRepository, contactFactory)
-    }
+      StaticAsyncFunction("getAll") Coroutine { ->
+        Contact.getAll(contactRepository, contactFactory)
+      }
 
-    AsyncFunction("getAllWithDetailsContact") Coroutine { fields: List<ContactField> ->
-      Contact.getAllWithDetails(contactRepository, contactMapper, fields)
-    }
+      StaticAsyncFunction("getAllDetails") Coroutine { fields: List<ContactField> ->
+        Contact.getAllWithDetails(contactRepository, contactMapper, fields)
+      }
 
-    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
-      permissionsDelegate.requestPermissions(promise)
-    }
+      StaticAsyncFunction("requestPermissionsAsync") { promise: Promise ->
+        permissionsDelegate.requestPermissions(promise)
+      }
 
-    AsyncFunction("getPermissions") { promise: Promise ->
-      permissionsDelegate.getPermissions(promise)
+      StaticAsyncFunction("getPermissions") { promise: Promise ->
+        permissionsDelegate.getPermissions(promise)
+      }
     }
 
     Events(ContactsObserverDelegate.ON_CONTACTS_CHANGE_EVENT_NAME)

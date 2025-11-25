@@ -166,7 +166,7 @@ class Contact(
     repository = repository
   )
 
-  val phoneticOrganizationName = PropertyManager(
+  val phoneticCompanyName = PropertyManager(
     contactId = contactId,
     field = OrganizationField,
     fieldPropertyAccessor = OrganizationProperty.PhoneticName,
@@ -194,7 +194,7 @@ class Contact(
     mapper
   )
 
-  val postalAddresses = ListPropertyManager<ExistingStructuredPostal, PostalAddressRecord.New, PostalAddressRecord.Existing>(
+  val addresses = ListPropertyManager<ExistingStructuredPostal, PostalAddressRecord.New, PostalAddressRecord.Existing>(
     StructuredPostalField,
     contactId,
     repository,
@@ -215,7 +215,7 @@ class Contact(
     mapper
   )
 
-  val relationships = ListPropertyManager<ExistingRelation, RelationshipRecord.New, RelationshipRecord.Existing>(
+  val relations = ListPropertyManager<ExistingRelation, RelationshipRecord.New, RelationshipRecord.Existing>(
     RelationField,
     contactId,
     repository,
