@@ -22,6 +22,7 @@ import {
   pickerStyle,
   refreshable,
   scrollDismissesKeyboard,
+  foregroundStyle,
   tag,
 } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
@@ -201,10 +202,9 @@ export default function ListScreen() {
           {data.map((item, index) => (
             <Label
               key={index}
-              modifiers={[frame({ height: 24 })]}
+              modifiers={[frame({ height: 24 }), foregroundStyle(color)]}
               title={item.text}
               systemImage={item.systemImage}
-              color={color}
             />
           ))}
         </Section>
