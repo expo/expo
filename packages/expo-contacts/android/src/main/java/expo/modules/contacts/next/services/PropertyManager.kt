@@ -34,7 +34,7 @@ class PropertyManager<TExisting : Extractable, TPropertyType>(
       val rawContactId = repository.getRawContactId(contactId)
         ?: throw RawContactIdNotFoundException()
       val appendable = fieldPropertyAccessor.toFieldAppendable(newValue, rawContactId)
-      repository.appendField(appendable)
+      repository.appendFieldEntry(appendable)
       return true
     }
   }

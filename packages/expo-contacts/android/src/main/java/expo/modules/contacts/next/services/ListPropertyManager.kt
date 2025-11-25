@@ -27,7 +27,7 @@ class ListPropertyManager<
   suspend fun add(record: TNewRecord): String {
     val rawContactId = repository.getRawContactId(contactId)
       ?: throw RawContactIdNotFoundException()
-    return repository.appendField(mapper.toAppendable(record, rawContactId)).value
+    return repository.appendFieldEntry(mapper.toAppendable(record, rawContactId)).value
   }
 
   suspend fun update(record: TExistingRecord) =

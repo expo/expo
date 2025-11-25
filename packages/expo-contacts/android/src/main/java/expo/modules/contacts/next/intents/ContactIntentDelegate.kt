@@ -19,7 +19,7 @@ class ContactIntentDelegate {
   suspend fun launchEditContact(lookupKeyUri: Uri) =
     editContactLauncher.launch(EditContactInput(lookupKeyUri))
 
-  suspend fun launchAddContact(contentValues: ArrayList<ContentValues>) =
+  suspend fun launchAddContact(contentValues: List<ContentValues>) =
     addContactLauncher.launch(AddContactInput(contentValues))
 
   suspend fun launchPickContact() =

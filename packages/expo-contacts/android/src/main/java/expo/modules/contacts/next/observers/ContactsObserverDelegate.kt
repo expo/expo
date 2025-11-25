@@ -3,12 +3,14 @@ package expo.modules.contacts.next.observers
 import android.os.Handler
 import android.os.HandlerThread
 import android.provider.ContactsContract
+import expo.modules.contacts.next.ContactsNextModule
+import expo.modules.contacts.next.ContactsObserverException
 import expo.modules.contacts.next.ContentResolverNotObtainedException
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.modules.Module
 import java.lang.ref.WeakReference
 
-class ContactsObserverDelegate(appContext: AppContext, val module: Module) {
+class ContactsObserverDelegate(appContext: AppContext, module: ContactsNextModule) {
   companion object {
     const val ON_CONTACTS_CHANGE_EVENT_NAME = "onContactsChange"
   }
@@ -17,6 +19,7 @@ class ContactsObserverDelegate(appContext: AppContext, val module: Module) {
   private var contactsHandler: Handler? = null
   private var observer: ContactsObserver? = null
   private val weakAppContextRef = WeakReference(appContext)
+  private val weakModuleRef = WeakReference(module)
 
   private val resolver = weakAppContextRef.get()
     ?.reactContext
@@ -30,14 +33,15 @@ class ContactsObserverDelegate(appContext: AppContext, val module: Module) {
     val thread = HandlerThread("ContactsObserverThread")
     thread.start()
     if (!thread.isAlive) {
-      throw IllegalStateException("HandlerThread failed to start")
+      throw ContactsObserverException("The observer thread failed to start")
     }
     contactsHandlerThread = thread
     contactsHandler = Handler(thread.looper)
     observer = ContactsObserver(
-      module,
+      weakModuleRef.get()
+        ?: throw ContactsObserverException("The module has not been initialized"),
       contactsHandler
-        ?: throw IllegalStateException("Thread looper is null")
+        ?: throw ContactsObserverException("Failed to get the thread handler")
     )
     val urisToObserve = listOf(
       ContactsContract.Contacts.CONTENT_URI,
@@ -45,7 +49,8 @@ class ContactsObserverDelegate(appContext: AppContext, val module: Module) {
     )
 
     urisToObserve.forEach { uri ->
-      resolver.registerContentObserver(uri, true, observer ?: throw Exception("XD"))
+      resolver.registerContentObserver(uri, true, observer
+        ?: throw ContactsObserverException("Failed to register content observer"))
     }
   }
 

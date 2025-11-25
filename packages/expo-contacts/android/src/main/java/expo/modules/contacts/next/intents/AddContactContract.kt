@@ -9,14 +9,14 @@ import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import java.io.Serializable
 
 data class AddContactInput(
-  val contactValues: ArrayList<ContentValues>
+  val contactValues: List<ContentValues>
 ) : Serializable
 
 class AddContactContract : AppContextActivityResultContract<AddContactInput, Boolean> {
   override fun createIntent(context: Context, input: AddContactInput): Intent {
     val intent = Intent(Intent.ACTION_INSERT)
     intent.type = ContactsContract.Contacts.CONTENT_TYPE
-    intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, input.contactValues)
+    intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, ArrayList(input.contactValues))
     return intent
   }
 

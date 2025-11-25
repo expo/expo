@@ -53,22 +53,22 @@ class ContactRepository(val contentResolver: ContentResolver) {
     return@withContext rowsDeleted > 0
   }
 
-  suspend fun appendField(appendable: Appendable): DataId = withContext(Dispatchers.IO) {
+  suspend fun appendFieldEntry(appendable: Appendable): DataId = withContext(Dispatchers.IO) {
     val operation = appendable.toAppendOperation()
-    val result = contentResolver.applyBatch(ContactsContract.AUTHORITY, arrayListOf(operation))
+    val result = contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, operation)
     val id = result.extractId()
     return@withContext DataId(id)
   }
 
   suspend fun updateFieldEntry(updatable: Updatable): Boolean = withContext(Dispatchers.IO) {
     val operation = updatable.toUpdateOperation()
-    contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, arrayListOf(operation))
+    contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, operation)
     return@withContext true
   }
 
   suspend fun patchFieldEntry(patchable: Patchable): Boolean = withContext(Dispatchers.IO) {
     val operation = patchable.toPatchOperation()
-    contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, arrayListOf(operation))
+    contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, operation)
     return@withContext true
   }
 
@@ -76,7 +76,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
     val operation = ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
       .withSelection("${DataId.COLUMN_IN_DATA_TABLE} = ?", arrayOf(dataId.value))
       .build()
-    contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, arrayListOf(operation))
+    contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, operation)
     return@withContext true
   }
 
