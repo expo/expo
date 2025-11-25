@@ -4282,11 +4282,6 @@
   dependencies:
     "@babel/types" "^7.28.2"
 
-"@types/base64-js@^1.2.5":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@types/base64-js/-/base64-js-1.3.2.tgz#9e94abe3c521f4127f2e6a8b537b63bbc04d0956"
-  integrity sha512-Q2Xn2/vQHRGLRXhQ5+BSLwhHkR3JVflxVKywH0Q6fVoAiUE8fFYL2pE5/l2ZiOiBDfA8qUqRnSxln4G/NFz1Sg==
-
 "@types/better-sqlite3@^7.6.6":
   version "7.6.6"
   resolved "https://registry.yarnpkg.com/@types/better-sqlite3/-/better-sqlite3-7.6.6.tgz#d4c21613df0518be58d56ae4d58576121a6f56fa"
