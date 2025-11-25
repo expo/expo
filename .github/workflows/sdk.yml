@@ -29,13 +29,7 @@ concurrency:
 
 jobs:
   check-packages:
-    strategy:
-      matrix:
-        os:
-          - ubuntu-24.04
-          - ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'windows-latest' || '' }}
-    runs-on: ${{ matrix.os }}
-    if: ${{ matrix.os != '' }}
+    runs-on: ["ubuntu-24.04", "${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'windows-latest' || '' }}"]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
