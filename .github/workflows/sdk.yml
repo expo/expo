@@ -31,9 +31,11 @@ jobs:
   check-packages:
     strategy:
       matrix:
-        os:
-          - ubuntu-24.04
-          - ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'windows-latest' || '' }}
+        os: [ubuntu-24.04]
+        include:
+          - os: windows-latest
+            # Optional: only include this OS in schedule or workflow_dispatch events
+            include_conditions: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: 👀 Checkout
