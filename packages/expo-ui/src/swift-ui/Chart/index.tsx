@@ -206,6 +206,21 @@ export type ChartProps = {
 const ChartNativeView: React.ComponentType<ChartProps> = requireNativeView('ExpoUI', 'ChartView');
 
 /**
+ * Transform data points to split x into xString/xNumber for native layer.
+ */
+function transformDataPoint(point: ChartDataPoint) {
+  const transformed: any = {
+    y: point.y,
+    xString: typeof point.x === 'string' ? point.x : null,
+    xNumber: typeof point.x === 'number' ? point.x : null,
+  };
+  if (point.color) {
+    transformed.color = point.color;
+  }
+  return transformed;
+}
+
+/**
  * Renders a native Chart component using Swift Charts.
  * @platform ios 16.0+
  * @platform tvos 16.0+
@@ -214,11 +229,16 @@ export function Chart({
   style,
   data,
   modifiers,
+  referenceLines,
   ...props
 }: ChartProps & { style?: StyleProp<ViewStyle> }) {
+  const transformedData = data.map(transformDataPoint);
+  const transformedReferenceLines = referenceLines?.map(transformDataPoint);
+
   return (
     <ChartNativeView
-      data={data}
+      data={transformedData}
+      referenceLines={transformedReferenceLines}
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...props}
