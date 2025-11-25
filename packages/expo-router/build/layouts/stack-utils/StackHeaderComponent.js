@@ -9,7 +9,7 @@ const StackHeaderLeft_1 = require("./StackHeaderLeft");
 const StackHeaderRight_1 = require("./StackHeaderRight");
 const StackHeaderSearchBar_1 = require("./StackHeaderSearchBar");
 const StackHeaderTitle_1 = require("./StackHeaderTitle");
-const utils_1 = require("./utils");
+const children_1 = require("../../utils/children");
 function StackHeaderComponent(props) {
     return null;
 }
@@ -37,19 +37,19 @@ function appendStackHeaderPropsToOptions(options, props) {
     };
     function appendChildOptions(child, options) {
         let updatedOptions = options;
-        if ((0, utils_1.isChildOfType)(child, StackHeaderTitle_1.StackHeaderTitle)) {
+        if ((0, children_1.isChildOfType)(child, StackHeaderTitle_1.StackHeaderTitle)) {
             updatedOptions = (0, StackHeaderTitle_1.appendStackHeaderTitlePropsToOptions)(updatedOptions, child.props);
         }
-        else if ((0, utils_1.isChildOfType)(child, StackHeaderLeft_1.StackHeaderLeft)) {
+        else if ((0, children_1.isChildOfType)(child, StackHeaderLeft_1.StackHeaderLeft)) {
             updatedOptions = (0, StackHeaderLeft_1.appendStackHeaderLeftPropsToOptions)(updatedOptions, child.props);
         }
-        else if ((0, utils_1.isChildOfType)(child, StackHeaderRight_1.StackHeaderRight)) {
+        else if ((0, children_1.isChildOfType)(child, StackHeaderRight_1.StackHeaderRight)) {
             updatedOptions = (0, StackHeaderRight_1.appendStackHeaderRightPropsToOptions)(updatedOptions, child.props);
         }
-        else if ((0, utils_1.isChildOfType)(child, StackHeaderBackButton_1.StackHeaderBackButton)) {
+        else if ((0, children_1.isChildOfType)(child, StackHeaderBackButton_1.StackHeaderBackButton)) {
             updatedOptions = (0, StackHeaderBackButton_1.appendStackHeaderBackButtonPropsToOptions)(updatedOptions, child.props);
         }
-        else if ((0, utils_1.isChildOfType)(child, StackHeaderSearchBar_1.StackHeaderSearchBar)) {
+        else if ((0, children_1.isChildOfType)(child, StackHeaderSearchBar_1.StackHeaderSearchBar)) {
             updatedOptions = (0, StackHeaderSearchBar_1.appendStackHeaderSearchBarPropsToOptions)(updatedOptions, child.props);
         }
         else {
