@@ -15,10 +15,15 @@ export const SdkPackageButton = ({ label, Icon, tooltip, href }: SdkPackageButto
   return (
     <Tooltip.Root key={label} delayDuration={500}>
       <Tooltip.Trigger asChild>
-        <Button theme="quaternary" className="justify-center px-2.5" openInNewTab href={href}>
+        <Button
+          theme="quaternary"
+          className="justify-center px-2.5"
+          openInNewTab
+          href={href}
+          aria-label={label}>
           <div className="flex items-center gap-1.5">
             <Icon className="icon-sm text-icon-secondary" />
-            <FOOTNOTE crawlable={false} theme="secondary">
+            <FOOTNOTE crawlable={false} theme="secondary" className="max-md-gutters:hidden">
               {label}
             </FOOTNOTE>
           </div>

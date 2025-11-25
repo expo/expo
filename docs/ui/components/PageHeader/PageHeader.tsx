@@ -45,9 +45,10 @@ export function PageHeader({
   });
   const showPackageMarkdown = packageName ? !hasDynamicData(currentPath) : false;
   const isSdkPage = currentPath.includes('/sdk/');
+  const hasAskAIButton = showAskAIButton && !!onAskAIClick;
 
   const renderAskAIButton = () => {
-    if (!showAskAIButton || !onAskAIClick) {
+    if (!hasAskAIButton) {
       return null;
     }
 
@@ -80,19 +81,36 @@ export function PageHeader({
           )}
           {platforms && <PagePlatformTags platforms={platforms} className="mt-4" />}
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pb-1">
-          <div className="flex flex-wrap items-center">
-            {renderAskAIButton()}
-            {renderAskAIButton() && (sourceCodeUrl || packageName) && (
-              <div className="max-sm:hidden bg-secondary mx-1 h-5 w-px" />
-            )}
-            <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+        <div
+          className={mergeClasses(
+            'mt-4 flex flex-wrap items-center justify-between gap-3 pb-1',
+            'max-md-gutters:flex-col max-md-gutters:items-stretch max-md-gutters:gap-0 max-md-gutters:pb-0'
+          )}>
+          <div
+            className={mergeClasses(
+              'flex flex-wrap items-center gap-2',
+              'max-md-gutters:w-full max-md-gutters:items-center max-md-gutters:justify-between max-md-gutters:border-b max-md-gutters:border-default max-md-gutters:py-3'
+            )}>
+            <div className="flex flex-wrap items-center">
+              {renderAskAIButton()}
+              {hasAskAIButton && (sourceCodeUrl || packageName) && (
+                <div className="max-sm:hidden bg-secondary mx-1 h-5 w-px" />
+              )}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div
+            className={mergeClasses(
+              'flex flex-wrap items-center gap-3',
+              'max-md-gutters:w-full max-md-gutters:justify-between max-md-gutters:py-3'
+            )}>
             <PagePackageVersion
               packageName={packageName}
               testRequire={testRequire}
               showMarkdownActions={showPackageMarkdown}
+              className="max-md-gutters:w-full max-md-gutters:justify-between"
             />
           </div>
         </div>
@@ -120,13 +138,13 @@ export function PageHeader({
         </H1>
         <span className="-mt-0.5 flex items-center gap-1 max-xl-gutters:hidden">
           <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
-          {(showMarkdownActions || (showAskAIButton && onAskAIClick)) && (
+          {(showMarkdownActions || hasAskAIButton) && (
             <span className="flex items-center gap-1">
-              {showAskAIButton && onAskAIClick && askAIButtonVariant === 'config' && (
+              {hasAskAIButton && askAIButtonVariant === 'config' && (
                 <AskPageAIConfigTrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
               )}
               {showMarkdownActions && <MarkdownActionsDropdown />}
-              {showAskAIButton && onAskAIClick && askAIButtonVariant !== 'config' && (
+              {hasAskAIButton && askAIButtonVariant !== 'config' && (
                 <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
               )}
             </span>
@@ -140,13 +158,13 @@ export function PageHeader({
       )}
       <span className="mb-1 mt-3 hidden items-center gap-1 max-xl-gutters:flex">
         <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
-        {(showMarkdownActions || (showAskAIButton && onAskAIClick)) && (
+        {(showMarkdownActions || hasAskAIButton) && (
           <span className="ml-1 flex items-center gap-1">
-            {showAskAIButton && onAskAIClick && askAIButtonVariant === 'config' && (
+            {hasAskAIButton && askAIButtonVariant === 'config' && (
               <AskPageAIConfigTrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
             )}
             {showMarkdownActions && <MarkdownActionsDropdown />}
-            {showAskAIButton && onAskAIClick && askAIButtonVariant !== 'config' && (
+            {hasAskAIButton && askAIButtonVariant !== 'config' && (
               <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
             )}
           </span>

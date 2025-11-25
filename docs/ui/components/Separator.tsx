@@ -6,7 +6,7 @@ export function Separator() {
   const isSdkPage = currentPath.includes('/sdk/');
 
   if (isSdkPage) {
-    return <hr className="mb-6 h-[0.05rem] border-0 bg-palette-gray6" />;
+    return <hr className="mb-6 h-[0.05rem] border-0 bg-palette-gray6 max-md-gutters:hidden" />;
   }
 
   return <hr className="mb-6 mt-4 h-[0.05rem] border-0 bg-palette-gray6" />;
