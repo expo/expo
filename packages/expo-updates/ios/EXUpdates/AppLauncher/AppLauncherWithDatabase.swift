@@ -237,36 +237,55 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         return
       }
 
-      self.maybeCopyAssetFromMainBundle(asset, withLocalUrl: assetLocalUrl) { success, error in
-        if success {
-          completion(true)
-          return
+      FileDownloader.assetFilesQueue.async {
+        if FileManager.default.fileExists(atPath: assetLocalUrl.path) {
+          self.logger.warn(
+            message: "Asset \(asset.key ?? asset.filename) exists but is invalid, will re-download/copy",
+            code: UpdatesErrorCode.assetsFailedToLoad
+          )
+          do {
+            try FileManager.default.removeItem(atPath: assetLocalUrl.path)
+          } catch {
+            self.logger.warn(
+              message: "Failed to delete corrupted asset \(asset.key ?? asset.filename): \(error.localizedDescription)",
+              code: UpdatesErrorCode.assetsFailedToLoad
+            )
+          }
         }
 
-        if let error = error {
-          self.logger.warn(message: "AppLauncherWithDatabase: Error copying embedded asset \(asset.key ?? ""): \(error.localizedDescription)")
-        }
-
-        self.downloadAsset(asset, withLocalUrl: assetLocalUrl) { downloadAssetError, downloadAssetAsset, _ in
-          if let downloadAssetError = downloadAssetError {
-            if downloadAssetAsset.isLaunchAsset {
-              // save the error -- since this is the launch asset, the launcher will fail
-              // so we want to propagate this error
-              self.launchAssetError = downloadAssetError
+        self.launcherQueue.async {
+          self.maybeCopyAssetFromMainBundle(asset, withLocalUrl: assetLocalUrl) { success, error in
+            if success {
+              completion(true)
+              return
             }
-            self.logger.warn(message: "AppLauncherWithDatabase: Failed to load missing asset \(downloadAssetAsset.key ?? ""): \(downloadAssetError.localizedDescription)")
-            completion(false)
-          } else {
-            // attempt to update the database record to match the newly downloaded asset
-            // but don't block launching on this
-            self.database.databaseQueue.async {
-              do {
-                try self.database.updateAsset(downloadAssetAsset)
-              } catch {
-                self.logger.warn(message: "AppLauncherWithDatabase: Could not write data for downloaded asset to database: \(error.localizedDescription)")
+
+            if let error {
+              self.logger.warn(message: "AppLauncherWithDatabase: Error copying embedded asset \(asset.key ?? ""): \(error.localizedDescription)")
+            }
+
+            self.downloadAsset(asset, withLocalUrl: assetLocalUrl) { downloadAssetError, downloadAssetAsset, _ in
+              if let downloadAssetError = downloadAssetError {
+                if downloadAssetAsset.isLaunchAsset {
+                  // save the error -- since this is the launch asset, the launcher will fail
+                  // so we want to propagate this error
+                  self.launchAssetError = downloadAssetError
+                }
+                self.logger.warn(message: "AppLauncherWithDatabase: Failed to load missing asset \(downloadAssetAsset.key ?? ""): \(downloadAssetError.localizedDescription)")
+                completion(false)
+              } else {
+                // attempt to update the database record to match the newly downloaded asset
+                // but don't block launching on this
+                self.database.databaseQueue.async {
+                  do {
+                    try self.database.updateAsset(downloadAssetAsset)
+                  } catch {
+                    self.logger.warn(message: "AppLauncherWithDatabase: Could not write data for downloaded asset to database: \(error.localizedDescription)")
+                  }
+                }
+                completion(true)
               }
             }
-            completion(true)
           }
         }
       }
@@ -275,11 +294,60 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
 
   private func checkExistence(ofAsset asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (Bool) -> Void) {
     FileDownloader.assetFilesQueue.async {
-      let exists = FileManager.default.fileExists(atPath: assetLocalUrl.path)
+      let isValid = self.isAssetValid(asset: asset, atPath: assetLocalUrl.path)
       self.launcherQueue.async {
-        completion(exists)
+        completion(isValid)
       }
     }
+  }
+
+  private func isAssetValid(asset: UpdateAsset, atPath path: String) -> Bool {
+    guard FileManager.default.fileExists(atPath: path) else {
+      return false
+    }
+
+    if asset.isLaunchAsset {
+      if let expectedSize = asset.expectedSize {
+        do {
+          let attributes = try FileManager.default.attributesOfItem(atPath: path)
+          if let actualSize = attributes[.size] as? NSNumber {
+            if actualSize.int64Value != expectedSize.int64Value {
+              logger.warn(
+                message: "Launch asset \(asset.key ?? asset.filename) size mismatch: expected=\(expectedSize.int64Value) actual=\(actualSize.int64Value). File is corrupted.",
+                code: UpdatesErrorCode.assetsFailedToLoad
+              )
+              return false
+            }
+          }
+        } catch {
+          logger.warn(
+            message: "Failed to get file size for launch asset \(asset.key ?? asset.filename): \(error.localizedDescription)",
+            code: UpdatesErrorCode.assetsFailedToLoad
+          )
+          return false
+        }
+      } else {
+        do {
+          let data = try Data(contentsOf: URL(fileURLWithPath: path))
+          let actualHash = UpdatesUtils.hexEncodedSHA256WithData(data)
+          if let contentHash = asset.contentHash, actualHash != contentHash {
+            logger.warn(
+              message: "Launch asset \(asset.key ?? asset.filename) hash mismatch. File is corrupted.",
+              code: UpdatesErrorCode.assetsFailedToLoad
+            )
+            return false
+          }
+        } catch {
+          logger.warn(
+            message: "Failed to validate launch asset \(asset.key ?? asset.filename): \(error.localizedDescription)",
+            code: UpdatesErrorCode.assetsFailedToLoad
+          )
+          return false
+        }
+      }
+    }
+
+    return true
   }
 
   private func maybeCopyAssetFromMainBundle(
@@ -310,6 +378,14 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
 
         do {
           try FileManager.default.copyItem(atPath: bundlePath, toPath: assetLocalUrl.path)
+
+          if asset.isLaunchAsset {
+            let attributes = try FileManager.default.attributesOfItem(atPath: assetLocalUrl.path)
+            if let fileSize = attributes[.size] as? NSNumber {
+              asset.expectedSize = fileSize
+            }
+          }
+
           self.launcherQueue.async {
             completion(true, nil)
           }
@@ -348,13 +424,16 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         extraHeaders: asset.extraRequestHeaders ?? [:],
         allowPatch: false,
         launchedUpdate: self.launchedUpdate
-      ) { _, response, base64URLEncodedSHA256Hash in
+      ) { data, response, base64URLEncodedSHA256Hash in
         self.launcherQueue.async {
           if let response = response as? HTTPURLResponse {
             asset.headers = response.allHeaderFields as? [String: Any]
           }
           asset.contentHash = base64URLEncodedSHA256Hash
           asset.downloadTime = Date()
+          if asset.isLaunchAsset {
+            asset.expectedSize = NSNumber(value: data.count)
+          }
           completion(nil, asset, assetLocalUrl)
         }
       } errorBlock: { error in
