@@ -23,3 +23,6 @@ class CouldNotExecuteQueryException(override val message: String?, cause: Throwa
 
 class PermissionException(permission: String, cause: Throwable? = null) :
   CodedException("Missing $permission permission", cause)
+
+class ContactsObserverException(message: String, cause: Throwable? = null) :
+  CodedException(message, cause)

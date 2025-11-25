@@ -118,7 +118,7 @@ class ContactRecordDomainMapper {
   }
 
   fun toDomain(record: CreateContactRecord): NewContact {
-    val modelsToInsert = mutableListOf<Insertable>().apply {
+    val modelsToInsert = buildList {
       add(toNewStructuredName(record))
       add(toNewOrganization(record))
       record.emails?.let { addAll(it.map(EmailMapper::toNew)) }
@@ -173,63 +173,60 @@ class ContactRecordDomainMapper {
     build()
   }
 
-  fun toContentValues(createContactRecord: CreateContactRecord): ArrayList<ContentValues> {
-    val contentValuesList = ArrayList<ContentValues>()
+  fun toContentValues(createContactRecord: CreateContactRecord) = buildList {
     val structuredName = toNewStructuredName(createContactRecord)
-    contentValuesList.add(structuredName.contentValues)
+    add(structuredName.contentValues)
 
     val organization = toNewOrganization(createContactRecord)
     if (organization.company != null || organization.department != null || organization.jobTitle != null || organization.phoneticName != null) {
-      contentValuesList.add(organization.contentValues)
+      add(organization.contentValues)
     }
 
     val note = toNewNote(createContactRecord)
     if (note.note != null) {
-      contentValuesList.add(note.contentValues)
+      add(note.contentValues)
     }
 
     createContactRecord.emails?.map { emailRecord ->
       EmailMapper.toNew(emailRecord).contentValues
     }?.let {
-      contentValuesList.addAll(it)
+      addAll(it)
     }
 
     createContactRecord.phones?.map { phoneRecord ->
       PhoneMapper.toNew(phoneRecord).contentValues
     }?.let {
-      contentValuesList.addAll(it)
+      addAll(it)
     }
 
     createContactRecord.dates?.map { dateRecord ->
       EventMapper.toNew(dateRecord).contentValues
     }?.let {
-      contentValuesList.addAll(it)
+      addAll(it)
     }
 
     createContactRecord.addresses?.map { addressRecord ->
       StructuredPostalMapper.toNew(addressRecord).contentValues
     }?.let {
-      contentValuesList.addAll(it)
+      addAll(it)
     }
 
     createContactRecord.relationships?.map { relationRecord ->
       RelationMapper.toNew(relationRecord).contentValues
     }?.let {
-      contentValuesList.addAll(it)
+      addAll(it)
     }
 
     createContactRecord.urlAddresses?.map { urlRecord ->
       WebsiteMapper.toNew(urlRecord).contentValues
     }?.let {
-      contentValuesList.addAll(it)
+      addAll(it)
     }
 
     createContactRecord.extraNames?.map { extraNameRecord ->
       NicknameMapper.toNew(extraNameRecord).contentValues
     }?.let {
-      contentValuesList.addAll(it)
+      addAll(it)
     }
-
-    return contentValuesList
   }
 }

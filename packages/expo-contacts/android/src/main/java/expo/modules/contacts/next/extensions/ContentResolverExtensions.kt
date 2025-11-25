@@ -29,10 +29,16 @@ suspend fun ContentResolver.safeDelete(
 
 suspend fun ContentResolver.safeApplyBatch(
   authority: String,
-  operations: ArrayList<ContentProviderOperation>
+  operation: ContentProviderOperation
+): Array<ContentProviderResult> =
+  safeApplyBatch(authority, listOf(operation))
+
+suspend fun ContentResolver.safeApplyBatch(
+  authority: String,
+  operations: List<ContentProviderOperation>
 ): Array<ContentProviderResult> = withContext(Dispatchers.IO) {
   try {
-    applyBatch(authority, operations)
+    applyBatch(authority, ArrayList(operations))
   } catch (e: SecurityException) {
     throw PermissionException(Manifest.permission.WRITE_CONTACTS, e)
   }
