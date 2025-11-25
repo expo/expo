@@ -19,7 +19,6 @@ on:
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
       - packages/expo-audio/ios/**
-      - packages/expo-av/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**
       - packages/expo-image/ios/**
@@ -51,7 +50,6 @@ on:
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
       - packages/expo-audio/ios/**
-      - packages/expo-av/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**
       - packages/expo-image/ios/**
