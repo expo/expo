@@ -36,4 +36,5 @@ dependencies {
   implementation 'androidx.fragment:fragment-ktx:1.8.9'
   implementation 'androidx.compose.material3:material3-android:1.3.2'
   implementation "androidx.graphics:graphics-shapes:1.0.1"
+  implementation 'androidx.compose.material3:material3-android:1.5.0-alpha09'
 }
