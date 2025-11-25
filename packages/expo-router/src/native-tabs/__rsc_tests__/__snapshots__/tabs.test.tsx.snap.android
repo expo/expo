@@ -31,7 +31,7 @@ exports[`renders Label 1`] = `
 `;
 
 exports[`renders NativeTabs 1`] = `
-"2:I["src/native-tabs/NativeBottomTabsNavigator.tsx",[],"NativeTabsNavigatorWithContext",1]
+"2:I["src/native-tabs/NativeBottomTabsNavigator.tsx",[],"NativeTabsNavigatorWrapper",1]
 1:{"name":"","env":"Server","key":null,"owner":null,"props":{}}
 0:D"$1"
 0:["$","$L2",null,{},"$1"]"

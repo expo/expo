@@ -19,10 +19,11 @@ import type { NativeTabsProps } from './types';
  */
 export declare const NativeTabs: ((props: NativeTabsProps) => import("react").JSX.Element) & {
     Trigger: ((props: import("./types").NativeTabTriggerProps) => null) & {
-        Label: import("react").FC<import(".").NativeTabsTriggerLabelProps>;
-        Icon: import("react").FC<import(".").NativeTabsTriggerIconProps>;
-        Badge: import("react").FC<import(".").NativeTabsTriggerBadgeProps>;
+        Label: import("react").FC<import("./common/elements").NativeTabsTriggerLabelProps>;
+        Icon: import("react").FC<import("./common/elements").NativeTabsTriggerIconProps>;
+        Badge: import("react").FC<import("./common/elements").NativeTabsTriggerBadgeProps>;
         VectorIcon: typeof import("..").VectorIcon;
     };
+    BottomAccessory: import("react").FC<import("./common/elements").NativeTabsBottomAccessoryProps>;
 };
 //# sourceMappingURL=NativeTabs.d.ts.map
