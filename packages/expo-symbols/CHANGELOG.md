@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [Android] Add support for MaterialSymbol symbols on Android and Web. ([#39516](https://github.com/expo/expo/pull/39516) by [@aleqsio](https://github.com/aleqsio))
+- [Android] add unstable_getMaterialSymbolSourceAsync ([#41064](https://github.com/expo/expo/pull/41064) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
