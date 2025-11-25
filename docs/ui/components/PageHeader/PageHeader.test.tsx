@@ -18,7 +18,7 @@ describe(PageHeader, () => {
     fireEvent.focus(linkElement);
     const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
     expect(tooltip).toBeInTheDocument();
-    expect(tooltip).toHaveTextContent('View package in npm registry');
+    expect(tooltip).toHaveTextContent('View library in npm registry');
   });
 
   test('displays GitHub source code link', async () => {
@@ -58,7 +58,7 @@ describe(PageHeader, () => {
     fireEvent.focus(linkElement);
     const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
     expect(tooltip).toBeInTheDocument();
-    expect(tooltip).toHaveTextContent('View package changelog on GitHub');
+    expect(tooltip).toHaveTextContent('View library changelog on GitHub');
   });
 
   test('do not display GitHub changelog link for vendored packages', async () => {
