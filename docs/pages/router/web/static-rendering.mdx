@@ -243,6 +243,21 @@ export default function Page() {
 }
 ```
 
+For this to work correctly, make sure to wrap your root _layout.tsx with `<Head.Provider>`:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import Head from 'expo-router/head';
+
+export default function StackLayout() {
+  return (
+    <Head.Provider>
+        <Stack />
+    </Head.Provider>
+  )
+}
+```
+
 The head elements can be updated dynamically using the same API. However, it's useful for SEO to have static head elements rendered ahead of time.
 
 ## Static files
