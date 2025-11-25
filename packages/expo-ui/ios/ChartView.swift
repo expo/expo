@@ -14,26 +14,23 @@ enum ChartType: String, Enumerable {
 }
 
 struct ChartDataPoint: Record {
-  @Field var x: Either<String, Double>
+  @Field var xString: String?
+  @Field var xNumber: Double?
   @Field var y: Double
   @Field var color: Color?
 
   var xValue: String {
-    switch x {
-    case .left(let stringValue):
-      return stringValue
-    case .right(let doubleValue):
-      return String(format: "%.2f", doubleValue)
+    if let s = xString {
+      return s
     }
+    if let n = xNumber {
+      return String(format: "%.2f", n)
+    }
+    return ""
   }
 
   var xNumericValue: Double? {
-    switch x {
-    case .left:
-      return nil
-    case .right(let doubleValue):
-      return doubleValue
-    }
+    return xNumber
   }
 }
 
@@ -224,7 +221,7 @@ struct ChartView: ExpoSwiftUI.View {
           }
         }
 
-        ForEach(props.referenceLines, id: \.x) { referenceLine in
+        ForEach(props.referenceLines, id: \.xValue) { referenceLine in
           createRuleMark(for: referenceLine)
         }
       }
