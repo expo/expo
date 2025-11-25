@@ -3,14 +3,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.convertEntryPointToRelative = convertEntryPointToRelative;
 exports.ensureSlash = ensureSlash;
 exports.getFileWithExtensions = getFileWithExtensions;
 exports.getMetroServerRoot = getMetroServerRoot;
 exports.getMetroWorkspaceGlobs = getMetroWorkspaceGlobs;
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.resolveEntryPoint = resolveEntryPoint;
-exports.resolveRelativeEntryPoint = void 0;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -166,24 +164,4 @@ function getMetroServerRoot(projectRoot) {
 function getMetroWorkspaceGlobs(monorepoRoot) {
   return (0, _resolveWorkspaceRoot().getWorkspaceGlobs)(monorepoRoot);
 }
-
-/**
- * Convert an absolute entry point to a server or project root relative filepath.
- * This is useful on Android where the entry point is an absolute path.
- */
-function convertEntryPointToRelative(projectRoot, absolutePath) {
-  // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
-  // We need to make sure to get the non-symlinked path to the server or project root.
-  return _path().default.relative(_fs().default.realpathSync(getMetroServerRoot(projectRoot)), _fs().default.realpathSync(absolutePath));
-}
-
-/**
- * Resolve the entry point relative to either the server or project root.
- * This relative entry path should be used to pass non-absolute paths to Metro,
- * accounting for possible monorepos and keeping the cache sharable (no absolute paths).
- */
-const resolveRelativeEntryPoint = (projectRoot, options) => {
-  return convertEntryPointToRelative(projectRoot, resolveEntryPoint(projectRoot, options));
-};
-exports.resolveRelativeEntryPoint = resolveRelativeEntryPoint;
 //# sourceMappingURL=paths.js.map

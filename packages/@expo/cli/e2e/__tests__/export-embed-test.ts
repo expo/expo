@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { resolveEntryPoint } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 
@@ -96,7 +96,7 @@ it('runs `npx expo export:embed`', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      resolveEntryPoint(projectRoot, { platform: 'ios' }),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -155,7 +155,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      resolveEntryPoint(projectRoot, { platform: 'ios' }),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -217,7 +217,7 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      resolveEntryPoint(projectRoot, { platform: 'ios' }),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -278,7 +278,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
+      resolveEntryPoint(projectRoot, { platform: 'android' }),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -354,7 +354,8 @@ it('runs `npx expo export:embed --platform android` with relative paths', async 
     // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
     [
       'export:embed',
-      '--entry-file',
+      '--dev',
+      'false',
       // This has to be the relative entry path, pointing to any file within the workspace
       // It's also what React Native will provide by default.
       'index.js',
@@ -366,8 +367,6 @@ it('runs `npx expo export:embed --platform android` with relative paths', async 
       `${output}/${assetsDestDir}`,
       '--platform',
       'android',
-      // Not provided by React Native by default on Windows
-      // '--dev', 'false',
       '--sourcemap-output',
       // This is what React Native provides by default, prefixed by `output`
       `${output}/${sourcemapOutputDir}/index.android.bundle.packager.map`,
@@ -401,13 +400,10 @@ it('runs `npx expo export:embed --platform android` with relative paths', async 
   expect(outputJS).toContain('//# sourceMappingURL=index.android.bundle.packager.map');
 
   expect(findProjectFiles(path.join(outputDir, assetsDestDir))).toEqual([
-    'drawable-mdpi/__packages_expo_logbox_assets_alerttriangle.png',
-    'drawable-mdpi/__packages_expo_logbox_assets_loader.png',
     'drawable-mdpi/__packages_exporouter_assets_arrow_down.png',
     'drawable-mdpi/__packages_exporouter_assets_error.png',
     'drawable-mdpi/__packages_exporouter_assets_file.png',
     'drawable-mdpi/__packages_exporouter_assets_forward.png',
-    'drawable-mdpi/__packages_exporouter_assets_logotype.png',
     'drawable-mdpi/__packages_exporouter_assets_pkg.png',
     'drawable-mdpi/__packages_exporouter_assets_sitemap.png',
     'drawable-mdpi/__packages_exporouter_assets_unmatched.png',
@@ -429,7 +425,7 @@ it('runs `npx expo export:embed --bytecode`', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      resolveEntryPoint(projectRoot, { platform: 'ios' }),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',

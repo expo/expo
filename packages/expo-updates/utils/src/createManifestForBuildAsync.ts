@@ -1,6 +1,6 @@
 import type { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import crypto from 'crypto';
-import { convertEntryPointToRelative, resolveRelativeEntryPoint } from 'expo/config/paths';
+import { resolveEntryPoint } from 'expo/config/paths';
 import {
   drawableFileTypes,
   createMetroServerAndBundleRequestAsync,
@@ -18,16 +18,11 @@ export async function createManifestForBuildAsync(
   destinationDir: string,
   entryFileArg?: string
 ): Promise<void> {
-  let entryFile =
+  const entryFile =
     entryFileArg ||
     process.env.ENTRY_FILE ||
-    resolveRelativeEntryPoint(projectRoot, { platform }) ||
+    resolveEntryPoint(projectRoot, { platform }) ||
     'index.js';
-
-  // Android uses absolute paths for the entry file, so we need to convert that to a relative path.
-  if (path.isAbsolute(entryFile)) {
-    entryFile = convertEntryPointToRelative(projectRoot, entryFile);
-  }
 
   process.chdir(projectRoot);
 
