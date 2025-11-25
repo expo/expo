@@ -31,11 +31,8 @@ jobs:
   check-packages:
     strategy:
       matrix:
-        os:
-          - ubuntu-24.04
-          - windows-latest
+        os: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJSON('["ubuntu-24.04", "windows-latest"]') || fromJSON('["ubuntu-24.04"]') }}
     runs-on: ${{ matrix.os }}
-    if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && true || runner.os != 'windows-latest' }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
