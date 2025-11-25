@@ -3938,13 +3938,14 @@
   dependencies:
     nanoid "^3.3.11"
 
-"@react-navigation/stack@7.6.2", "@react-navigation/stack@^7.6.2", "@react-navigation/stack@^7.8.0":
-  version "7.6.2"
-  resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-7.6.2.tgz#cb1d0d380f11ca619954b0b08988a9069de306d2"
-  integrity sha512-DVWYYTj5/QXYlFuO8Y232aDcJ4SFABQs9m99BYPs+hepjXzXivva9L4rbmsymFtqEPASx69dzX+nIKzlnxyqpw==
+"@react-navigation/stack@7.6.7", "@react-navigation/stack@^7.6.7":
+  version "7.6.7"
+  resolved "https://registry.npmjs.org/@react-navigation/stack/-/stack-7.6.7.tgz#8cd599681964ba930a15b70134bcbe38bf96424d"
+  integrity sha512-8NZWKTBYRVl8oSvhLKs26C6Dw5a3OhyfRc8ITS9A0kRSYaaX/KcZpObbAxp8kCJfTaJ7ZmghyX2NCGwnKw6V7A==
   dependencies:
-    "@react-navigation/elements" "^2.8.1"
+    "@react-navigation/elements" "^2.8.3"
     color "^4.2.3"
+    use-latest-callback "^0.2.4"
 
 "@repeaterjs/repeater@3.0.4", "@repeaterjs/repeater@^3.0.4":
   version "3.0.4"
