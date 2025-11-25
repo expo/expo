@@ -44,6 +44,61 @@ export function PageHeader({
     path: currentPath,
   });
   const showPackageMarkdown = packageName ? !hasDynamicData(currentPath) : false;
+  const isSdkPage = currentPath.includes('/sdk/');
+
+  const renderAskAIButton = () => {
+    if (!showAskAIButton || !onAskAIClick) {
+      return null;
+    }
+
+    if (askAIButtonVariant === 'config') {
+      return <AskPageAIConfigTrigger onClick={onAskAIClick} isActive={isAskAIVisible} />;
+    }
+
+    return <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />;
+  };
+
+  if (packageName && isSdkPage) {
+    return (
+      <>
+        <div className="mt-2 flex flex-col">
+          <H1 className="!my-0">
+            {iconUrl && (
+              <img
+                src={iconUrl}
+                className="relative -top-0.5 float-left mr-3.5 size-[42px]"
+                alt={`Expo ${title} icon`}
+              />
+            )}
+            {packageName && packageName.startsWith('expo-') && 'Expo '}
+            {title}
+          </H1>
+          {description && (
+            <P theme="secondary" data-description="true" className="mt-2">
+              {description}
+            </P>
+          )}
+          {platforms && <PagePlatformTags platforms={platforms} className="mt-4" />}
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pb-1">
+          <div className="flex flex-wrap items-center">
+            {renderAskAIButton()}
+            {renderAskAIButton() && (sourceCodeUrl || packageName) && (
+              <div className="max-sm:hidden bg-secondary mx-2 h-5 w-px" />
+            )}
+            <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <PagePackageVersion
+              packageName={packageName}
+              testRequire={testRequire}
+              showMarkdownActions={showPackageMarkdown}
+            />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
