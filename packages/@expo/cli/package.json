@@ -103,7 +103,7 @@
     "tar": "^7.5.2",
     "terminal-link": "^2.1.1",
     "undici": "^6.18.2",
-    "wrap-ansi": "^7.0.0",
+    "wrap-ansi": "^9.0.2",
     "ws": "^8.12.1",
     "zod": "^3.25.76"
   },
@@ -153,7 +153,6 @@
     "@types/send": "^0.17.1",
     "@types/webpack": "~4.41.32",
     "@types/webpack-dev-server": "^3.11.0",
-    "@types/wrap-ansi": "^8.0.1",
     "@types/ws": "^8.5.4",
     "devtools-protocol": "^0.0.1113120",
     "expo-atlas": "^0.4.1",
