@@ -7,7 +7,7 @@ import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.phone.operations.ExistingPhone
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object PhoneField : ExtractableField<ExistingPhone>, ClearableField {
+object PhoneField : ExtractableField.Data<ExistingPhone>, ClearableField {
   override val mimeType = Phone.CONTENT_ITEM_TYPE
 
   override val projection = arrayOf(

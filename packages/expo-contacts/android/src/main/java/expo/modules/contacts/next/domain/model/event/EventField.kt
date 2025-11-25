@@ -9,7 +9,7 @@ import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
 import expo.modules.contacts.next.domain.wrappers.ContactDate
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object EventField : ExtractableField<ExistingEvent>, ClearableField {
+object EventField : ExtractableField.Data<ExistingEvent>, ClearableField {
   override val mimeType = Event.CONTENT_ITEM_TYPE
 
   override val projection = arrayOf(

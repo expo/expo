@@ -3,6 +3,7 @@ package expo.modules.contacts.next.records.fields
 import expo.modules.kotlin.types.Enumerable
 
 enum class ContactField(val key: String) : Enumerable {
+  FULL_NAME("fullName"),
   GIVEN_NAME("givenName"),
   MIDDLE_NAME("middleName"),
   FAMILY_NAME("familyName"),
@@ -14,14 +15,16 @@ enum class ContactField(val key: String) : Enumerable {
   COMPANY("company"),
   DEPARTMENT("department"),
   JOB_TITLE("jobTitle"),
-
-//  IS_FAVOURITE("isFavourite"),
-//  NOTE("note"),
+  PHONETIC_COMPANY_NAME("phoneticCompanyName"),
+  IS_FAVOURITE("isFavourite"),
+  NOTE("note"),
+  IMAGE("image"),
+  THUMBNAIL("thumbnail"),
   EMAILS("emails"),
   PHONES("phones"),
   ADDRESSES("addresses"),
   DATES("dates"),
-  RELATIONSHIPS("relationships"),
+  RELATIONS("relations"),
   URL_ADDRESSES("urlAddresses"),
   EXTRA_NAMES("extraNames")
 }

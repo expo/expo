@@ -2,7 +2,7 @@ package expo.modules.contacts.next.mappers
 
 import expo.modules.contacts.next.domain.model.Appendable
 import expo.modules.contacts.next.domain.model.ClearableField
-import expo.modules.contacts.next.domain.model.Patchable
+import expo.modules.contacts.next.domain.model.Updatable
 import expo.modules.contacts.next.domain.model.contact.ContactPatch
 import expo.modules.contacts.next.domain.wrappers.ContactId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
@@ -21,13 +21,13 @@ class ContactPatchBuilder(
   val mapper: ContactRecordDomainMapper
 ) {
   val fieldsToClear = mutableListOf<ClearableField>()
-  val modelsToPatch = mutableListOf<Patchable>()
+  val modelsToPatch = mutableListOf<Updatable>()
   val modelsToAppend = mutableListOf<Appendable>()
 
   fun build() = ContactPatch(contactId, fieldsToClear, modelsToAppend, modelsToPatch)
 
-  fun withPatchable(patchable: Patchable) = apply {
-    modelsToPatch.add(patchable)
+  fun withUpdatable(updatable: Updatable) = apply {
+    modelsToPatch.add(updatable)
   }
 
   fun withAppendable(appendable: Appendable) = apply {

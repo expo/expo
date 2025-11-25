@@ -8,4 +8,4 @@ import expo.modules.contacts.next.domain.wrappers.DataId
 class ExistingNote(
   override val dataId: DataId,
   note: String
-) : NoteModel(note), Extractable, Updatable
+) : NoteModel(note), Extractable.Data, Updatable.Data

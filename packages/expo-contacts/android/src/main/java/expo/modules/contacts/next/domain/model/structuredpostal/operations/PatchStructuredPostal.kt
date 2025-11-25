@@ -2,7 +2,7 @@ package expo.modules.contacts.next.domain.model.structuredpostal.operations
 
 import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
-import expo.modules.contacts.next.domain.model.Patchable
+import expo.modules.contacts.next.domain.model.Updatable
 import expo.modules.contacts.next.domain.model.structuredpostal.StructuredPostalLabel
 import expo.modules.contacts.next.domain.model.structuredpostal.StructuredPostalModel
 import expo.modules.contacts.next.domain.wrappers.DataId
@@ -24,7 +24,7 @@ class PatchStructuredPostal(
   country = country.optional,
   label = label.optional ?: StructuredPostalLabel.Unknown
 ),
-  Patchable {
+  Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!street.isUndefined) {
       put(StructuredPostal.STREET, street.optional)

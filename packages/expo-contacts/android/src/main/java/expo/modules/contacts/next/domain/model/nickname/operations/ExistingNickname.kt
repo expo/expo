@@ -10,4 +10,4 @@ class ExistingNickname(
   override val dataId: DataId,
   name: String?,
   label: NicknameLabel
-) : NicknameModel(name, label), Updatable, Extractable
+) : NicknameModel(name, label), Updatable.Data, Extractable.Data

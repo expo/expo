@@ -25,5 +25,5 @@ class ExistingStructuredName(
   phoneticMiddleName,
   phoneticFamilyName
 ),
-  Updatable,
-  Extractable
+  Updatable.Data,
+  Extractable.Data

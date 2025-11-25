@@ -6,6 +6,8 @@ import expo.modules.contacts.next.domain.wrappers.ContactId
 import expo.modules.contacts.next.domain.wrappers.DataId
 
 class QueryBuilder(val extractors: Set<ExtractableField<*>>) {
+  val dataFields = extractors.filterIsInstance<ExtractableField.Data<*>>().toSet()
+
   fun buildProjection(): Array<String> {
     val requiredColumns = listOf(
       ContactId.COLUMN_IN_DATA_TABLE,
@@ -20,7 +22,7 @@ class QueryBuilder(val extractors: Set<ExtractableField<*>>) {
   }
 
   fun buildMimeTypeSelection(): String {
-    val mimeTypes = extractors
+    val mimeTypes = dataFields
       .map { it.mimeType }
       .toSet()
       .toTypedArray()
@@ -38,7 +40,7 @@ class QueryBuilder(val extractors: Set<ExtractableField<*>>) {
   }
 
   fun buildMimeTypeSelectionArgs(): Array<String> {
-    return extractors
+    return dataFields
       .map { it.mimeType }
       .toTypedArray()
   }

@@ -22,5 +22,5 @@ class ExistingStructuredPostal(
   country = country,
   label = label
 ),
-  Updatable,
-  Extractable
+  Updatable.Data,
+  Extractable.Data

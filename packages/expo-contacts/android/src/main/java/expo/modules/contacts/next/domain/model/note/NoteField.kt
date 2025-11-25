@@ -6,7 +6,7 @@ import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.note.operations.ExistingNote
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object NoteField : ExtractableField<ExistingNote> {
+object NoteField : ExtractableField.Data<ExistingNote> {
   override val projection = arrayOf(
     Note._ID,
     Note.NOTE
