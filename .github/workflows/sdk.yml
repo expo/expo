@@ -33,7 +33,7 @@ jobs:
       matrix:
         os: ["ubuntu-24.04", "windows-latest"]
     runs-on: ${{ matrix.os }}
-    if: ${{ runner.os != 'Windows' || (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+    if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
