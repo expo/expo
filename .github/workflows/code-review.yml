@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       pullNumber:
-        description: "Number of the pull request to review"
+        description: 'Number of the pull request to review'
         required: true
   pull_request_target:
 
@@ -28,7 +28,7 @@ jobs:
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         with:
-          yarn-tools: "true"
+          yarn-tools: 'true'
       - name: 🧶 Yarn install
         working-directory: tools
         if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
