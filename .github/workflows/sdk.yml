@@ -31,7 +31,9 @@ jobs:
   check-packages:
     strategy:
       matrix:
-        os: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJSON('["ubuntu-24.04", "windows-latest"]') || fromJSON('["ubuntu-24.04"]') }}
+        os:
+          - ubuntu-24.04
+          - ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'windows-latest' || '' }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: 👀 Checkout
