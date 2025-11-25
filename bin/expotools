@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-import { spawn } from 'node:child_process';
-import path from 'path';
+import { spawnSync } from 'node:child_process';
+import path from 'node:path';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
 const expotoolsDir = path.join(repositoryRoot, 'tools');
 const nodeBinary = process.env.NODE_BINARY || 'node';
 
-const child = spawn(
+const result = spawnSync(
   nodeBinary,
   [path.join(expotoolsDir, 'bin', 'expotools.js'), ...process.argv.slice(2)],
   {
@@ -16,11 +16,9 @@ const child = spawn(
   }
 );
 
-child.on('close', (code) => {
-  process.exit(code ?? 0);
-});
-
-child.on('error', (error) => {
-  console.error(error);
+if (result.error) {
+  console.error(result.error);
   process.exit(1);
-});
+}
+
+process.exit(result.status ?? 0);
