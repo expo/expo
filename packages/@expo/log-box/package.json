@@ -24,7 +24,7 @@
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
-    "@expo/metro-runtime": "^6.1.2",
+    "@expo/metro-runtime": "6.1.1",
     "@expo/spawn-async": "^1.7.2",
     "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*",
