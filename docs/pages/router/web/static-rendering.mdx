@@ -243,22 +243,32 @@ export default function Page() {
 }
 ```
 
-Then, wrap the root layout navigator (**app/_layout.tsx) with `<Head.Provider>`:
+Head elements added this way are rendered dynamically on the client-side, so this approach doesn't work for SEO and social links.
 
-```tsx app/_layout.tsx
-import { Stack } from 'expo-router';
+If you want to statically pre-rendered meta tags, which is the best approach for SEO and social links, you will need to use the `app/+html.tsx` file mentioned above. You can use `<Head />` inside app/+html.tsx and even have different static meta tags for different paths. Remember that you cannot use `window.location` here, but `usePathname` / `useSegment` will both work:
+
+```tsx app/+html.tsx
 import Head from 'expo-router/head';
+import { usePathName } from 'expo-router';
 
-export default function RootLayout() {
+// This file is web-only and used to configure the root HTML for every
+// web page during static rendering.
+// The contents of this function only run in Node.js environments and
+// do not have access to the DOM or browser APIs.
+export default function Root({ children }) {
+  const pathname = usePathname();
+
   return (
-    <Head.Provider>
-        <Stack />
-    </Head.Provider>
-  )
+    <html lang="en">
+      <Head>
+        <title>{pathname === "/about" ? "About Me" : "My Blog"}</title>
+        <meta name="description" content="Check out my blog!" />
+      </Head>
+      <body>{children}</body>
+    </html>
+  );
 }
 ```
-
-The head elements can be updated dynamically using the same API. However, it's useful for SEO to have static head elements rendered ahead of time.
 
 ## Static files
 
