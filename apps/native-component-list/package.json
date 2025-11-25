@@ -50,7 +50,7 @@
     "@react-navigation/drawer": "^7.7.2",
     "@react-navigation/elements": "^2.8.1",
     "@react-navigation/native": "^7.1.21",
-    "@react-navigation/stack": "^7.6.2",
+    "@react-navigation/stack": "^7.6.7",
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.2.12",
     "date-format": "^2.0.0",
