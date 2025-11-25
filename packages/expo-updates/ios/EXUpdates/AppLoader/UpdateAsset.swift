@@ -30,6 +30,7 @@ public final class UpdateAsset: NSObject {
   public var downloadTime: Date?
   public var contentHash: String? // base64url-encoded sha-256
   public var headers: [String: Any]?
+  public var expectedSize: NSNumber? // file size in bytes for validation
 
   /**
    * properties determined by updates database
