@@ -28,6 +28,11 @@ object UpdatesUtils {
 
   private const val UPDATES_DIRECTORY_NAME = ".expo-internal"
 
+  data class FileWriteResult(
+    val hash: ByteArray,
+    val size: Long
+  )
+
   @Throws(Exception::class)
   fun getMapFromJSONString(stringifiedJSON: String): Map<String, String> {
     val jsonObject = JSONObject(stringifiedJSON)
@@ -111,15 +116,23 @@ object UpdatesUtils {
   }
 
   @Throws(NoSuchAlgorithmException::class, IOException::class)
-  fun verifySHA256AndWriteToFile(inputStream: InputStream, destination: File, expectedBase64URLEncodedHash: String?): ByteArray {
+  fun verifySHA256AndWriteToFile(inputStream: InputStream, destination: File, expectedBase64URLEncodedHash: String?): FileWriteResult {
     DigestInputStream(inputStream, MessageDigest.getInstance("SHA-256")).use { digestInputStream ->
       // write file atomically by writing it to a temporary path and then renaming
       // this protects us against partially written files if the process is interrupted
       val tmpFile = File(destination.absolutePath + ".tmp")
       tmpFile.parentFile?.mkdirs()
+
+      var bytesWritten = 0L
       digestInputStream.use { input ->
         tmpFile.outputStream().use { output ->
-          input.copyTo(output)
+          val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+          var bytes = input.read(buffer)
+          while (bytes >= 0) {
+            output.write(buffer, 0, bytes)
+            bytesWritten += bytes
+            bytes = input.read(buffer)
+          }
         }
       }
 
@@ -128,15 +141,24 @@ object UpdatesUtils {
       val hash = md.digest()
       val hashBase64String = toBase64Url(hash)
       if (expectedBase64URLEncodedHash != null && expectedBase64URLEncodedHash != hashBase64String) {
+        tmpFile.delete()
         throw IOException("File download was successful but base64url-encoded SHA-256 did not match expected; expected: $expectedBase64URLEncodedHash; actual: $hashBase64String")
       }
+
+      if (destination.exists() && destination.length() == bytesWritten) {
+        val existingHash = sha256(destination)
+        if (existingHash.contentEquals(hash)) {
+          tmpFile.delete()
+          return FileWriteResult(hash, bytesWritten)
+        }
+        destination.delete()
+      }
+
       // only rename after the hash has been verified
       // Since renameTo() does not expose detailed errors, and can fail if source and destination
       // are not on the same mount point, we do a copyTo followed by delete
-      // if there are two assets with identical content, they will be written to the same file path,
-      // so we allow overwrites
       try {
-        tmpFile.copyTo(destination, true)
+        tmpFile.copyTo(destination, false)
       } catch (e: NoSuchFileException) {
         throw IOException("File download was successful, but temp file ${tmpFile.absolutePath} does not exist")
       } catch (e: Exception) {
@@ -145,7 +167,7 @@ object UpdatesUtils {
         tmpFile.delete()
       }
 
-      return hash
+      return FileWriteResult(hash, bytesWritten)
     }
   }
 
