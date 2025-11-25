@@ -17,9 +17,11 @@ target_compile_options(
   -fstack-protector-all
   -DUSE_HERMES=${USE_HERMES_INT}
   -DUNIT_TEST=${UNIT_TEST_INT}
+  -DIS_NEW_ARCHITECTURE_ENABLED=1 
+  -DRN_FABRIC_ENABLED=1 
+  -DRN_SERIALIZABLE_STATE=1
   ${folly_FLAGS}
   ${ADDITIONAL_CXX_FLAGS}
-  ${NEW_ARCHITECTURE_COMPILE_OPTIONS}
 )
 
 target_link_libraries(

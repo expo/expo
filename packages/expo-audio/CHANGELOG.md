@@ -21,6 +21,7 @@
 - [web] Bring fix from [#38273](https://github.com/expo/expo/pull/38273) to web. ([#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes)
 - [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
 - [Web] Fix recording options not being applied to web correctly. ([#41154](https://github.com/expo/expo/pull/41154) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
 
 ### 💡 Others
 
