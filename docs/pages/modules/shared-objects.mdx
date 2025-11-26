@@ -1,11 +1,12 @@
 ---
 title: Using shared objects
+sidebar_title: Shared objects
 description: Learn how to use a shared object from the Expo Modules API.
 ---
 
-import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-import { BookOpen02Icon } from '~/ui/icons/BookOpen02Icon';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 Shared objects let you expose long-lived native instances from Android and iOS to your app's JavaScript/TypeScript without giving control of their lifecycle. They can be used to keep heavy state objects, such as a decoded bitmap, alive across React components, rather than spinning up a new native instance every time a component mounts.
 
@@ -41,7 +42,7 @@ The performance gains are significant. By eliminating redundant disk I/O and dec
 
 ### Implementation with shared objects
 
-Now that you understand why shared objects matter, let's look into a minimal implementation that demonstrates the core concepts of the previous example.
+Now that you understand why shared objects are useful, let's look into a minimal implementation that demonstrates the core concepts of the previous example.
 
 The example creates a simple image manipulation module that loads an image from a file path, rotates it in memory, and exposes a shared reference that other modules can consume.
 
