@@ -1,12 +1,9 @@
 import JsonFile from '@expo/json-file';
-import {
-  isMultipartPartWithName,
-  parseMultipartMixedResponseAsync,
-} from '@expo/multipart-body-parser';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import crypto from 'crypto';
 import { lanNetwork } from 'lan-network';
+import { parseMultipart } from 'multitars';
 import os from 'os';
 import path from 'path';
 
@@ -43,30 +40,31 @@ async function getManifestBodyAsync(response: Response): Promise<{
   const contentType = response.headers.get('content-type');
   if (!contentType) {
     throw new Error('The multipart manifest response is missing the content-type header');
+  } else if (!response.body) {
+    throw new Error('The multipart manifest response is missing a body');
   }
 
   if (contentType === 'application/expo+json' || contentType === 'application/json') {
-    const text = await response.text();
-    return { manifest: JSON.parse(text), assetRequestHeaders: {} };
+    return { manifest: await response.json(), assetRequestHeaders: {} };
   }
 
-  const bodyBuffer = await response.arrayBuffer();
-  const multipartParts = await parseMultipartMixedResponseAsync(
-    contentType,
-    Buffer.from(bodyBuffer)
-  );
+  let manifest: Manifest | undefined;
+  let assetRequestHeaders: Record<string, AssetRequestHeaders> | undefined;
+  for await (const part of parseMultipart(response.body, { contentType })) {
+    if (part.name === 'manifest') {
+      manifest = await part.json();
+    } else if (part.name === 'extensions') {
+      assetRequestHeaders = (await part.json())?.assetRequestHeaders;
+    }
+  }
 
-  const manifestPart = multipartParts.find((part) => isMultipartPartWithName(part, 'manifest'));
-  if (!manifestPart) {
+  if (!manifest) {
     throw new Error('The multipart manifest response is missing the manifest part');
+  } else if (!assetRequestHeaders) {
+    throw new Error('The multipart manifest response is missing the extensions part');
   }
 
-  const extensionsPart = multipartParts.find((part) => isMultipartPartWithName(part, 'extensions'));
-  const assetRequestHeaders = extensionsPart
-    ? JSON.parse(extensionsPart.body).assetRequestHeaders
-    : {};
-
-  return { manifest: JSON.parse(manifestPart.body), assetRequestHeaders };
+  return { manifest, assetRequestHeaders };
 }
 
 async function getManifestAsync(
