@@ -1,6 +1,9 @@
 import { UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
 import { CryptoDigestAlgorithm, CryptoDigestOptions, Digest } from './Crypto.types';
 export * from './Crypto.types';
+/**
+ * @hidden
+ */
 export * as AES from './aes';
 /**
  * Generates completely random bytes using native implementations. The `byteCount` property

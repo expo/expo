@@ -23,16 +23,19 @@ export declare enum KeySize {
 export interface SealedDataConfig {
     /**
      * The length of the initialization vector in bytes. Defaults to 12.
+     * @default 12
      */
     ivLength: number;
     /**
      * The length of the authentication tag in bytes. Defaults to 16.
+     * @default 16
      */
     tagLength: number;
 }
 interface CommonDecryptOptions {
     /**
      * Output format for the decrypted data. Defaults to 'bytes'.
+     * @default 'bytes'
      */
     output?: 'bytes' | 'base64';
     /**
@@ -70,12 +73,16 @@ export interface EncryptOptions {
     /**
      * Parameters for nonce generation.
      * Defaults to a 12-byte random value.
+     * @default { length: 12 }
      */
     nonce?: NonceParam;
     /**
      * The length of the authentication tag in bytes.
      * Defaults to 16 bytes.
-     * @ios: Not configurable, iOS will always create a 16 byte tag
+     * NONE: On Apple, this option is ignored, tag will always have 16 bytes.
+     * @platform android
+     * @platform web
+     * @default 16
      */
     tagLength?: number;
     /**
