@@ -17,18 +17,26 @@ const HomeIndex = () => {
       <CaseLink href="/js-only" text="JS Only" />
       <CaseLink href="/js-only/tabs" text="JS Only Tabs" />
       <CaseLink href="/modals" text="Modals" />
-      <CaseLink href="/misc" text="Misc" />
+      <CaseLink href="/misc" text="Misc" zoomTransition />
       <CaseLink href="/menu" text="Menu" />
       <CaseLink href="/nested" text="Nested" />
-      <CaseLink href="/performance" text="Performance" />
+      <CaseLink href="/performance" text="Performance" zoomTransition />
       <CaseLink href="/param" text="Param" />
     </ScrollView>
   );
 };
 
-function CaseLink({ href, text }: { href: Href; text: string }) {
+function CaseLink({
+  href,
+  text,
+  zoomTransition,
+}: {
+  href: Href;
+  text: string;
+  zoomTransition?: boolean;
+}) {
   return (
-    <Link href={href} asChild>
+    <Link href={href} asChild unstable_transition={zoomTransition ? 'zoom' : undefined}>
       <Pressable style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
         <Text style={{ color: '#fff' }}>{text}</Text>
       </Pressable>

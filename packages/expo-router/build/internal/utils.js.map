@@ -1,1 +1,1 @@
-{"version":3,"file":"utils.js","sourceRoot":"","sources":["../../src/internal/utils.ts"],"names":[],"mappings":";;;AAAA,oCAAoD;AAA3C,2GAAA,oBAAoB,OAAA","sourcesContent":["export { shouldLinkExternally } from '../utils/url';\n"]}
+{"version":3,"file":"utils.js","sourceRoot":"","sources":["../../src/internal/utils.ts"],"names":[],"mappings":";;;AAAA,oCAAoD;AAA3C,2GAAA,oBAAoB,OAAA;AAC7B,uEAAqE;AAA5D,6HAAA,oBAAoB,OAAA","sourcesContent":["export { shouldLinkExternally } from '../utils/url';\nexport { enableZoomTransition } from '../link/ZoomTransitionEnabler';\n"]}

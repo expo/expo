@@ -38,6 +38,8 @@
 
 + (nullable RNSTabBarController *)getBottomTabControllerFromView:(UIView *)view;
 
++ (BOOL)isRNScreen:(UIResponder *)view;
+
 + (BOOL)isRNSBottomTabsHostComponentView:(UIView *)view;
 
 + (nullable UIView *)getTab:(UITabBarController *)controller

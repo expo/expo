@@ -5,7 +5,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
 {
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
-  private var directChild: UIView?
+  var directChild: UIView?
   var nextScreenId: String? {
     didSet {
       performUpdateOfPreloadedView()

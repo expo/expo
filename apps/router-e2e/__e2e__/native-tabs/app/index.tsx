@@ -30,7 +30,7 @@ export default function Index() {
       </Text>
       <Text style={{ color: colors.text, fontSize: 24, fontWeight: 'bold' }}>Best faces</Text>
       <Faces numberOfFaces={3} />
-      <Link href="/faces" style={{ color: colors.text, fontSize: 18 }}>
+      <Link href="/faces" style={{ color: colors.text, fontSize: 18 }} unstable_transition="zoom">
         <Link.Trigger>See all faces</Link.Trigger>
         <Link.Preview />
       </Link>

@@ -1,0 +1,1 @@
+{"version":3,"file":"useZoomTransitionPrimitives.d.ts","sourceRoot":"","sources":["../../src/link/useZoomTransitionPrimitives.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAkB,MAAM,OAAO,CAAC;AAEvC,OAAO,EAAE,SAAS,EAAE,MAAM,gBAAgB,CAAC;AAE3C,wBAAgB,2BAA2B,CAAC,EAAE,IAAI,EAAE,EAAE,SAAS;mCAE5C;QAAE,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAA;KAAE;;EAG/C"}

@@ -25,6 +25,14 @@
   return NO;
 }
 
++ (BOOL)isRNScreen:(UIResponder *)view {
+  if (view != nil) {
+    return [view isKindOfClass:[RNSScreen class]];
+  }
+
+  return NO;
+}
+
 + (BOOL)isRNSBottomTabsHostComponentView:(UIView *)view {
   if (view != nil) {
     return [view isKindOfClass:[RNSBottomTabsHostComponentView class]];
