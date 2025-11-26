@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
+// Executes expo-modules-autolinking CLI directly
+// WARN: This is used in expo-templates-bare-minimum (prebuild) templates and expo-modules-autolinking's expo-gradle-plugin
 require('expo-modules-autolinking/bin/expo-modules-autolinking');
