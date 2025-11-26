@@ -6,9 +6,6 @@
 __mocks__
 __tests__
 
-/e2e
-/e2e-cli
 /babel.config.js
 /android/src/androidTest/
 /android/src/test/
-/ios/Tests
