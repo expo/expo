@@ -19,7 +19,7 @@ async function action(options: ActionOptions) {
   } catch (error) {
     if (isDiffTooLargeError(error)) {
       // If the diff is too large, we can't do much. It's better not to fail the workflow though.
-      logger.info(error.message);
+      logger.warn(error.message);
       return;
     }
     logger.error(error, error.stack);
