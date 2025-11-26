@@ -1,0 +1,49 @@
+{
+  "name": "@expo/local-build-cache-provider",
+  "version": "0.0.1",
+  "description": "Local build cache provider for Expo",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "expo-module typecheck"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/devtools"
+  },
+  "keywords": [
+    "expo",
+    "react-native",
+    "build-cache-provider",
+    "local-build-cache"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/local-build-cache-provider#readme",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@expo/config": "~12.0.9",
+    "chalk": "^4.1.2"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^5.0.7"
+  }
+}
