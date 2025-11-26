@@ -8,6 +8,7 @@
 
 - Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add patch content negotiation headers. ([#40583](https://github.com/expo/expo/pull/40583) by [@alanjhughes](https://github.com/alanjhughes))
+- Add launch asset size validation. ([#41229](https://github.com/expo/expo/pull/41229) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 

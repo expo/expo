@@ -315,6 +315,7 @@ open class AppLoader: NSObject {
     }
     asset.contentHash = UpdatesUtils.hexEncodedSHA256WithData(data)
     asset.downloadTime = Date()
+    asset.expectedSize = NSNumber(value: data.count)
 
     finishedAssets.append(asset)
     notifyProgress(withAsset: asset)

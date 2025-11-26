@@ -137,8 +137,8 @@ public final class UpdatesDatabase: NSObject {
     sqlite3_exec(db, "BEGIN;", nil, nil, nil)
 
     let assetInsertSql = """
-      INSERT OR REPLACE INTO "assets" ("key", "url", "headers", "extra_request_headers", "type", "metadata", "download_time", "relative_path", "hash", "hash_type", "expected_hash", "marked_for_deletion")
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 0);
+      INSERT OR REPLACE INTO "assets" ("key", "url", "headers", "extra_request_headers", "type", "metadata", "download_time", "relative_path", "hash", "hash_type", "expected_hash", "expected_size", "marked_for_deletion")
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, 0);
     """
     for asset in assets {
       do {
@@ -155,7 +155,8 @@ public final class UpdatesDatabase: NSObject {
             asset.filename,
             asset.contentHash,
             UpdatesDatabaseHashType.Sha1.rawValue,
-            asset.expectedHash
+            asset.expectedHash,
+            asset.expectedSize
           ]
         )
       } catch {
@@ -233,7 +234,7 @@ public final class UpdatesDatabase: NSObject {
 
   public func updateAsset(_ asset: UpdateAsset) throws {
     let assetUpdateSql = """
-      UPDATE "assets" SET "headers" = ?2, "extra_request_headers" = ?3, "type" = ?4, "metadata" = ?5, "download_time" = ?6, "relative_path" = ?7, "hash" = ?8, "expected_hash" = ?9, "url" = ?10 WHERE "key" = ?1;
+      UPDATE "assets" SET "headers" = ?2, "extra_request_headers" = ?3, "type" = ?4, "metadata" = ?5, "download_time" = ?6, "relative_path" = ?7, "hash" = ?8, "expected_hash" = ?9, "expected_size" = ?10, "url" = ?11 WHERE "key" = ?1;
     """
     _ = try execute(
       sql: assetUpdateSql,
@@ -247,6 +248,7 @@ public final class UpdatesDatabase: NSObject {
         asset.filename,
         asset.contentHash.require("asset contentHash should be nonnull"),
         asset.expectedHash,
+        asset.expectedSize,
         asset.url?.absoluteString
       ]
     )
@@ -693,6 +695,7 @@ public final class UpdatesDatabase: NSObject {
     asset.filename = row.requiredValue(forKey: "relative_path")
     asset.contentHash = row.requiredValue(forKey: "hash")
     asset.expectedHash = row.optionalValue(forKey: "expected_hash")
+    asset.expectedSize = row.optionalValue(forKey: "expected_size")
     asset.metadata = metadata
 
     if let launchAssetId = launchAssetId?.intValue,

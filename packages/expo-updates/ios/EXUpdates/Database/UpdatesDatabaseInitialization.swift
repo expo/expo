@@ -43,7 +43,7 @@ enum UpdatesDatabaseInitializationError: Error, Sendable, LocalizedError {
  * Utility class that handles database initialization and migration.
  */
 internal final class UpdatesDatabaseInitialization {
-  private static let LatestFilename = "expo-v11.db"
+  private static let LatestFilename = "expo-v12.db"
   private static let LatestSchema = """
     CREATE TABLE "updates" (
       "id"  BLOB UNIQUE,
@@ -75,7 +75,8 @@ internal final class UpdatesDatabaseInitialization {
       "relative_path"  TEXT NOT NULL,
       "hash"  BLOB NOT NULL,
       "hash_type"  INTEGER NOT NULL,
-      "marked_for_deletion"  INTEGER NOT NULL
+      "marked_for_deletion"  INTEGER NOT NULL,
+      "expected_size"  INTEGER
     );
     CREATE TABLE "updates_assets" (
       "update_id"  BLOB NOT NULL,
