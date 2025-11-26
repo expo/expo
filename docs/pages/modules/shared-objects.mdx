@@ -1,0 +1,290 @@
+---
+title: Using shared objects
+description: Learn how to use a shared object from the Expo Modules API.
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+import { BookOpen02Icon } from '~/ui/icons/BookOpen02Icon';
+
+Shared objects let you expose long-lived native instances from Android and iOS to your app's JavaScript/TypeScript without giving control of their lifecycle. They can be used to keep heavy state objects, such as a decoded bitmap, alive across React components, rather than spinning up a new native instance every time a component mounts.
+
+In this guide, let's understand what a shared object is and how they are implemented in native platforms.
+
+## What is a shared object?
+
+A shared object is a custom class that bridges a native instance from Android and/or iOS to your app's JavaScript/TypeScript code through an Expo module. On the native side in Kotlin and Swift, you declare the class by inheriting from `SharedObject` and expose it in your module definition using `Class()`. The Expo Modules API handles reference counting, lifecycle management, and cleanup automatically.
+
+## Why use shared objects?
+
+Large media assets, like images, can exceed several megabytes once decoded into memory. Without shared objects, passing these assets between different parts of your app forces each part to reload from the disk every time and decode the same file multiple times. This can increase memory pressure, create an I/O bottleneck, drop frames, or cause battery drain.
+
+Shared objects solve this by keeping a single native instance alive in memory while multiple JavaScript references point to it.
+
+## Example: Image manipulation without disk I/O
+
+To understand shared objects, consider an example where you need to rotate an image picked by the app user and then display that image in your app after manipulating it.
+
+### Without shared objects
+
+Historically, native modules were often written in a _stateless_ way, where each function operated independently without maintaining state between calls. If you wanted to perform two separate operations on the same object (such as an image file), you would load it from disk in both places and repeat the I/O operation each time.
+
+Without shared objects, `ImagePicker` returns a file URI such as `"file:///path/to/image.jpg"`. The image manipulator module then reads the URI and decodes the image from the disk into memory. When the app user calls `rotate()` method to rotate the image, the module saves the rotated image to a new file. Finally, when the new URI is passed to the `Image` component, it decodes the image from disk again to render the image. This workflow results in two or more decode and disk read operations.
+
+### With shared objects
+
+The same scenario becomes much more efficient with shared objects. `ImagePicker` returns a file URI, but the image manipulator module reads the URI and decodes the image once into a shared object. When the app user calls `rotate()`, the module manipulates the in-memory bitmap without writing to the disk.
+
+Finally, the new URI is passed to the `Image` component and this time the image is rendered from memory. The entire workflow requires just one disk read and one decode operation, with all transformations happening in memory.
+
+The performance gains are significant. By eliminating redundant disk I/O and decode operations, you keep only a single bitmap in memory instead of multiple copies. This reduces CPU usage, which helps preserve battery life, and lowers the risk of crashes from memory pressure.
+
+### Implementation with shared objects
+
+Now that you understand why shared objects matter, let's look into a minimal implementation that demonstrates the core concepts of the previous example.
+
+The example creates a simple image manipulation module that loads an image from a file path, rotates it in memory, and exposes a shared reference that other modules can consume.
+
+### Android implementation
+
+In Android, you create a shared object from `SharedObject` class provided by `expo.modules.kotlin.sharedobjects.SharedObject`. This class manages the decoded bitmap and exposes methods to manipulate it. The implementation keeps track of both the original image and the current state after any transformation, allowing you to reset to the original image if needed:
+
+```kotlin
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.sharedobjects.SharedObject
+
+class ImageRef(bitmap: Bitmap, runtimeContext: RuntimeContext) : SharedRef<Bitmap>(bitmap, runtimeContext)
+
+class SimpleImageContext(
+  runtimeContext: RuntimeContext,
+  private val original: Bitmap
+) : SharedObject(runtimeContext) {
+  private var current = original.copy(original.config, true)
+
+  fun rotate(degrees: Float) = apply {
+    val matrix = Matrix().apply { postRotate(degrees) }
+    current = Bitmap.createBitmap(current, 0, 0, current.width, current.height, matrix, true)
+  }
+
+  fun render(): ImageRef {
+    return ImageRef(current.copy(current.config, true), runtimeContext)
+  }
+
+  override fun sharedObjectDidRelease() {
+    if (!current.isRecycled) current.recycle()
+  }
+}
+```
+
+The above example is quite similar to the iOS implementation. However, there is one difference on Android: the `sharedObjectDidRelease()` method. This lifecycle callback is invoked when JavaScript releases all references to the shared object, providing an opportunity to clean up native resources.
+
+When the result of this class is passed to another module, the `render` method returns an `ImageRef`, which is a specialized `SharedRef<Bitmap>` type that `expo-image` and other image-aware modules already understand.
+
+The module definition exposes an async function to create the context and a class definition to bind methods. The Expo Modules API uses a declarative syntax where you specify the module name, functions to create instances, and a class definition that maps methods to the shared object:
+
+```kotlin
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+
+class SimpleImageModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("SimpleImageModule")
+
+    AsyncFunction("createContextAsync") { path: String ->
+      val bitmap = BitmapFactory.decodeFile(path)
+        ?: throw Exceptions.IllegalArgument("Unable to decode image at $path")
+      SimpleImageContext(runtimeContext, bitmap)
+    }
+
+    Class<SimpleImageContext>("Context") {
+      Function("rotate") { ctx: SimpleImageContext, degrees: Float -> ctx.rotate(degrees) }
+      AsyncFunction("renderAsync") Coroutine { ctx: SimpleImageContext -> ctx.render() }
+      Function("reset") { ctx: SimpleImageContext -> ctx.apply { rotate(0f) } }
+    }
+  }
+}
+```
+
+In the above example, `createContextAsync` function decodes the bitmap from the file path and returns a new `SimpleImageContext` instance. Once the context exists, the `rotate` function runs synchronously because it only manipulates in memory. The `renderAsync` function is marked async to signal that it might involve copying or preparing the bitmap for consumption by other modules.
+
+### iOS implementation
+
+In iOS, you create a shared object by inheriting from `SharedObject` class provided by `ExpoModulesCore`. This class manages the decoded bitmap and exposes methods to manipulate it. The implementation keeps track of both the original image and the current state after any transformation, allowing you to reset to the original image if needed:
+
+```swift
+import ExpoModulesCore
+import UIKit
+
+final class ImageRef: SharedRef<UIImage> {
+  init(_ image: UIImage) {
+    super.init(object: image)
+  }
+}
+
+final class SimpleImageContext: SharedObject {
+  private let original: UIImage
+  private var current: UIImage
+
+  init(path: String) throws {
+    guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+          let image = UIImage(data: data) else {
+      throw Exceptions.InvalidArgument()
+    }
+    self.original = image
+    self.current = image
+    super.init()
+  }
+
+  func rotate(by degrees: Double) {
+    current = current.rotated(degrees: degrees)
+  }
+
+  func render() -> ImageRef {
+    return ImageRef(current)
+  }
+
+  func reset() {
+    current = original
+  }
+}
+```
+
+In the above example, `SimpleImageContext` class reads an image file and stores both the original and current versions. The `rotate` method mutates the current image in memory without touching the disk.
+
+When the result of this class is passed to another module, the `render` method returns an `ImageRef`, which is a specialized `SharedRef<UIImage>` type that `expo-image` and other image-aware modules already understand.
+
+Now, with the shared object class definition, you can expose it through your module definition. The Expo Modules API uses a declarative syntax where you specify the module name, functions to create instances, and a class definition that maps methods to the shared object:
+
+```swift
+public final class SimpleImageModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("SimpleImageModule")
+
+    AsyncFunction("createContextAsync") { (path: String) -> SimpleImageContext in
+      return try SimpleImageContext(path: path)
+    }
+
+    Class("Context", SimpleImageContext.self) {
+      Function("rotate") { (ctx, degrees: Double) -> SimpleImageContext in
+        ctx.rotate(by: degrees)
+        return ctx
+      }
+
+      AsyncFunction("renderAsync") { (ctx: SimpleImageContext) -> ImageRef in
+        return ctx.render()
+      }
+
+      Function("reset") { (ctx: SimpleImageContext) in
+        ctx.reset()
+      }
+    }
+  }
+}
+```
+
+In the above example, the `createContextAsync` is an asynchronous function because loading and decoding an image from disk is an I/O operation. Once the context exists, the `rotate` runs synchronously because it only manipulates in memory. The `renderAsync` function is marked async to signal that it might involve copying or preparing the bitmap for consumption by other modules, though in this simple example, it returns immediately.
+
+### Using a shared object in your app
+
+You can now use the shared object in your app's JavaScript/TypeScript code to load the image from the path, create a context of the loaded image, rotate it, render it to get a shared reference, and then pass that reference to an `Image` component:
+
+```tsx
+import { useState } from 'react';
+import { Button } from 'react-native';
+import { Image } from 'expo-image';
+import type { SharedRef } from 'expo';
+import SimpleImageModule from 'simple-image-module'; // The native custom module
+
+import { pickImageAsync } from './pickImage'; // The custom TypeScript function
+
+export function SharedImageExample() {
+  const [context, setContext] = useState(null);
+  const [result, setResult] = useState<SharedRef<'image'> | null>(null);
+
+  const load = async () => {
+    const uri = await pickImageAsync();
+    if (!uri) {
+      return;
+    }
+
+    const ctx = await SimpleImageModule.createContextAsync(uri);
+
+    setContext(ctx);
+    setResult(await ctx.renderAsync());
+  };
+
+  const rotate = async () => {
+    if (!context) {
+      return;
+    }
+
+    context.rotate(90);
+    setResult(await context.renderAsync());
+  };
+
+  return (
+    <>
+      <Button title="Pick image" onPress={load} />
+      <Button title="Rotate 90°" onPress={rotate} disabled={!context} />
+      {result && <Image source={result} style={{ width: 200, height: 200 }} />}
+    </>
+  );
+}
+```
+
+In the above example, the React component never receives raw pixels or deals with file paths after the initial load. It only manages a context object and a shared reference.
+
+The JavaScript API picks an image using `ImagePicker`, which returns a standard file URI. This URI is handed to a custom native module to create a shared object in `SharedImageExample()`:
+
+```tsx
+import * as ImagePicker from 'expo-image-picker';
+
+export async function pickImageAsync() {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    quality: 1,
+    allowsMultipleSelection: false,
+  });
+
+  if (result.canceled || !result.assets?.length) {
+    return null;
+  }
+
+  // At this point we still have a disk URI.
+  // The native module will lift it into a shared object.
+  return result.assets[0].uri;
+}
+```
+
+In the above example, `ImagePicker` doesn't need to know about shared objects. It returns what it should, which is a file path. Your native module is responsible for transforming that path into a shared object that other modules (whether custom or Expo modules) can work with, such as `Image` from `expo-image`.
+
+## Expo libraries that use shared objects
+
+Some examples of [Expo SDK libraries](/versions/latest/) that use shared objects and their purpose:
+
+- `expo-image` library uses `SharedObject` to keep a decoded operation alive and the view component accepts `SharedRef<Bitmap>` on Android and `SharedRef<UIImage>` on iOS. This design allows images to be passed between modules without decoding it again. To explore more, see `expo-image` library's source code for [Android](https://github.com/expo/expo/tree/main/packages/expo-image/android/src/main/java/expo/modules/image) and [iOS](https://github.com/expo/expo/tree/main/packages/expo-image/ios).
+- `expo-image-manipulator` library demonstrates handling asynchronous operations, queuing multiple operations, and exposing a clean JavaScript API. To explore more, see `expo-image-manipulator` library's source code for [Android](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/android/src/main/java/expo/modules/imagemanipulator) and [iOS](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios).
+
+## Performance benefits of shared objects
+
+Using shared objects provides several performance improvements, such as:
+
+- **Reduced disk I/O:** A single read operation instead of multiple reads across different modules or function calls
+- **Fewer decode operations:** Expensive decoding (such as JPEG/PNG to bitmap) happens once, not repeatedly
+- **Lower memory pressure:** One decode instance in memory instead of multiple copies
+- **Faster operations:** In-memory transformations are significantly faster than disk-based ones
+- **Avoid frame drops:** Less I/O blocking means smoother UI interactions
+
+## Additional resources
+
+<BoxLink
+  title="The real-world impact of Shared Objects in Expo Modules"
+  description="Shared Objects solve a lot of fundamental problems with Expo APIs and also unlock a whole new way to design object-oriented APIs."
+  href="https://expo.dev/blog/the-real-world-impact-of-shared-objects"
+  Icon={BookOpen02Icon}
+/>
