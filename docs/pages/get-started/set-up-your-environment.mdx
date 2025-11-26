@@ -1,32 +1,40 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
-searchRank: 3
----
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+// Simple Professional-Style Motorcycle Game (Unity C# Example)
+// Note: This is a basic starter script. You can expand physics, animations, UI, etc.
 
-Let's set up a local development environment for running your project on Android and iOS.
+using UnityEngine;
 
-## Where would you like to develop?
+public class MotorcycleController : MonoBehaviour
+{
+    public float speed = 30f;          // Forward speed
+    public float turnSpeed = 100f;     // Turning sensitivity
+    public float tiltAmount = 15f;     // Leaning animation
 
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
+    private Rigidbody rb;
 
-<PlatformAndDeviceForm />
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.centerOfMass = new Vector3(0, -0.5f, 0); // More stability
+    }
 
-## How would you like to develop?
+    void FixedUpdate()
+    {
+        // Forward movement
+        float moveInput = Input.GetAxis("Vertical");
+        rb.AddForce(transform.forward * moveInput * speed);
 
-Expo Go is a sandbox for trying out Expo quickly. A development build is a build of your own app that includes Expo's developer tools.
+        // Turning
+        float turnInput = Input.GetAxis("Horizontal");
+        transform.Rotate(0, turnInput * turnSpeed * Time.fixedDeltaTime, 0);
 
-<DevelopmentModeForm />
+        // Leaning effect
+        float tilt = -turnInput * tiltAmount;
+        Vector3 currentRotation = transform.localEulerAngles;
+        transform.localEulerAngles = new Vector3(currentRotation.x, currentRotation.y, tilt);
+    }
+}
 
----
-
-<DevelopmentEnvironmentInstructions />
-
-## Next step
-
-You have a project and a development environment. Now it's time to start developing.
+// Attach this script to your motorcycle object in Unity.
+// Add RigidBody + Wheel Colliders for realistic physics.
+// Create track, add colliders, add camera follow script for a complete setup.
