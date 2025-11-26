@@ -26,6 +26,7 @@
     "@types/babel__generator": "^7.27.0",
     "@types/babel__template": "^7.4.4",
     "@types/babel__traverse": "^7.20.7",
+    "expo-modules-core": "workspace:*",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "util": "~0.12.4"
@@ -51,6 +52,8 @@
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "expo-modules-core": "workspace:*",
+    "jest-expo": "workspace:*",
     "ts-node": "^10.9.2"
   }
 }
