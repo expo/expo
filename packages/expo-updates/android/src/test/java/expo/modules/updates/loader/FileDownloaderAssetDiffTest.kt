@@ -336,7 +336,7 @@ class FileDownloaderAssetDiffTest {
     )
 
     assertArrayEquals(patched, destination.readBytes())
-    assertArrayEquals(UpdatesUtils.sha256(destination), result)
+    assertArrayEquals(UpdatesUtils.sha256(destination), result.hash)
     // Verify clean up runs correctly
     assertFalse(File(destination.absolutePath + ".patch").exists())
     assertFalse(File(destination.absolutePath + ".patched").exists())
