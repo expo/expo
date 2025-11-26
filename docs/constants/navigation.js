@@ -370,6 +370,7 @@ export const general = [
         makePage('guides/using-push-notifications-services.mdx'),
         makePage('guides/using-feature-flags.mdx'),
         makePage('guides/using-a-cms.mdx'),
+        makePage('guides/using-resend.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
