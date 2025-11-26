@@ -9,7 +9,7 @@ endmacro()
 createVarAsBoolToInt(USE_HERMES_INT ${USE_HERMES})
 createVarAsBoolToInt(UNIT_TEST_INT ${UNIT_TEST})
 
-set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(ANDROID_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 
 include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
