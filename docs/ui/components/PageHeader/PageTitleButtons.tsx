@@ -39,7 +39,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
       {(sourceCodeUrl ||
         sourceCodeUrl?.startsWith('https://github.com/expo/expo') ||
         packageName) && (
-        <span className="flex items-center">
+        <span className="flex items-center gap-1">
           {sourceCodeUrl && (
             <>
               <SdkPackageButton
@@ -49,7 +49,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
                 tooltip="View source code on GitHub"
               />
               {(packageName || sourceCodeUrl?.startsWith('https://github.com/expo/expo')) && (
-                <div className="max-sm:hidden bg-secondary mx-1 h-5 w-px" />
+                <div className="max-sm:hidden bg-secondary h-5 w-px" />
               )}
             </>
           )}
@@ -62,7 +62,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
                 tooltip="View library in npm registry"
               />
               {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
-                <div className="max-sm:hidden bg-secondary mx-1 h-5 w-px" />
+                <div className="max-sm:hidden bg-secondary h-5 w-px" />
               )}
             </>
           )}
