@@ -5,7 +5,6 @@ import { isValidElement, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet, type ImageSourcePropType } from 'react-native';
 
 import type { NativeTabOptions, NativeTabTriggerProps } from './types';
-import { filterAllowedChildrenElements, isChildOfType } from './utils';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
 import type { VectorIconProps } from '../primitives';
 import { useSafeLayoutEffect } from '../views/useSafeLayoutEffect';
@@ -19,6 +18,7 @@ import {
   type NativeTabsTriggerIconProps,
   type SrcIcon,
 } from './common/elements';
+import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
 
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.

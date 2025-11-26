@@ -8,10 +8,10 @@ exports.isNativeTabTrigger = isNativeTabTrigger;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
-const utils_1 = require("./utils");
 const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
 const useSafeLayoutEffect_1 = require("../views/useSafeLayoutEffect");
 const elements_1 = require("./common/elements");
+const children_1 = require("../utils/children");
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
  *
@@ -93,19 +93,19 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
             role,
             nativeProps: unstable_nativeProps,
         };
-    const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [
+    const allowedChildren = (0, children_1.filterAllowedChildrenElements)(children, [
         elements_1.NativeTabsTriggerBadge,
         elements_1.NativeTabsTriggerLabel,
         elements_1.NativeTabsTriggerIcon,
     ]);
     return allowedChildren.reduce((acc, child) => {
-        if ((0, utils_1.isChildOfType)(child, elements_1.NativeTabsTriggerBadge)) {
+        if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerBadge)) {
             appendBadgeOptions(acc, child.props);
         }
-        else if ((0, utils_1.isChildOfType)(child, elements_1.NativeTabsTriggerLabel)) {
+        else if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerLabel)) {
             appendLabelOptions(acc, child.props);
         }
-        else if ((0, utils_1.isChildOfType)(child, elements_1.NativeTabsTriggerIcon)) {
+        else if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerIcon)) {
             appendIconOptions(acc, child.props);
         }
         return acc;
