@@ -67,7 +67,7 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
   private val appConfig: String?
     get() {
       try {
-        context
+        return context
           .assets
           .open(CONFIG_FILE_NAME)
           .use { input ->
