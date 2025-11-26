@@ -8302,6 +8302,11 @@ expo-atlas@^0.4.1:
     serve-static "^1.15.0"
     stream-json "^1.8.0"
 
+expo-av@~16.0.7:
+  version "16.0.7"
+  resolved "https://registry.yarnpkg.com/expo-av/-/expo-av-16.0.7.tgz#51668b335e3a460ca712a281d7138341119ebe26"
+  integrity sha512-QReef6/RYuZ4GekTcZZw5zY26pcPOmHqK6LMgFlPhnsT0ga97HJrgMc63pvIiojDP+q4oIv24g+QPD8ljZu4XQ==
+
 expo-progress@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/expo-progress/-/expo-progress-0.0.2.tgz#0d42470f8f1f019d3ae0f1da377c9bca891f3dd8"
