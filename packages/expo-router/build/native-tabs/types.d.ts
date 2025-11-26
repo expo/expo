@@ -100,7 +100,7 @@ export interface NativeTabsProps extends PropsWithChildren {
      * - `onScrollUp` - the tab bar minimizes when scrolling up and expands
      *   when scrolling back down
      *
-     * @see The supported values correspond to the official [UIKit documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior).
+     * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior).
      *
      * @default automatic
      *
@@ -263,7 +263,7 @@ export interface NativeTabTriggerProps {
      * properties will override the system icon, but the system-defined title cannot
      * be customized.
      *
-     * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem|UITabBarItem.SystemItem}
+     * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
      * @platform ios
      */
     role?: NativeTabsTabBarItemRole;
