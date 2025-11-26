@@ -2565,6 +2565,9 @@ importers:
       eslint-plugin-eslint-plugin:
         specifier: ^6.2.0
         version: 6.2.0(eslint@9.24.0(jiti@1.21.0))
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2))
