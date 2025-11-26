@@ -24,7 +24,7 @@ struct ChartDataPoint: Record {
       return s
     }
     if let n = xNumber {
-      return String(format: "%.2f", n)
+      return String(n)
     }
     return ""
   }
