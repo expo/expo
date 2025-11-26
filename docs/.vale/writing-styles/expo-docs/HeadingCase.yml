@@ -162,6 +162,7 @@ exceptions:
   - '.*React Navigation.*'
   - '.*Reanimated.*'
   - '.*Remote Debugging.*'
+  - '.*Resend.*'
   - '.*REST API.*'
   - '.*Remote JS.*'
   - '.*Router.*'
