@@ -1,6 +1,13 @@
 'use client';
 
-import React, { isValidElement, use, type PropsWithChildren, type ReactElement } from 'react';
+import { nanoid } from 'nanoid/non-secure';
+import React, {
+  isValidElement,
+  use,
+  useMemo,
+  type PropsWithChildren,
+  type ReactElement,
+} from 'react';
 import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -56,6 +63,7 @@ export interface LinkMenuActionProps {
  * @platform ios
  */
 export function LinkMenuAction(props: LinkMenuActionProps) {
+  const identifier = useMemo(() => nanoid(), []);
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
@@ -65,6 +73,7 @@ export function LinkMenuAction(props: LinkMenuActionProps) {
       {...rest}
       onSelected={onPress}
       keepPresented={unstable_keepPresented}
+      identifier={identifier}
     />
   );
 }
@@ -120,6 +129,7 @@ export interface LinkMenuProps {
  * @platform ios
  */
 export const LinkMenu: React.FC<LinkMenuProps> = (props) => {
+  const identifier = useMemo(() => nanoid(), []);
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
@@ -132,6 +142,7 @@ export const LinkMenu: React.FC<LinkMenuProps> = (props) => {
       title={props.title ?? ''}
       onSelected={() => {}}
       children={children}
+      identifier={identifier}
     />
   );
 };

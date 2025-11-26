@@ -53,6 +53,7 @@
     "expo-router": "^6.0.6",
     "expo-speech": "~14.0.7",
     "expo-sqlite": "~16.0.8",
+    "expo-symbols": "~1.0.7",
     "jose": "^5",
     "react": "19.2.0",
     "react-native": "0.83.0-rc.3",

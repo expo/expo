@@ -20,6 +20,7 @@
 - add Color utility ([#40904](https://github.com/expo/expo/pull/40904) by [@Ubax](https://github.com/Ubax))
 - wrap NativeTabs style properties with StyleProp ([#41013](https://github.com/expo/expo/pull/41013) by [@Ubax](https://github.com/Ubax))
 - [iOS] add zoom transition support ([#41083](https://github.com/expo/expo/pull/41083) by [@Ubax](https://github.com/Ubax))
+- [iOS] toolbar PoC ([#41106](https://github.com/expo/expo/pull/41106) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
