@@ -11,6 +11,7 @@ public class AudioModule: Module {
   private var interruptedPlayers = Set<String>()
   private var playerVolumes = [String: Float]()
   private var allowsRecording = false
+  private var allowsBackgroundRecording = false
   private var sessionOptions: AVAudioSession.CategoryOptions = []
 
   public func definition() -> ModuleDefinition {
@@ -67,12 +68,22 @@ public class AudioModule: Module {
       if !shouldPlayInBackground {
         pauseAllPlayers()
       }
+      #if os(iOS)
+      if !allowsBackgroundRecording {
+        pauseAllRecorders()
+      }
+      #endif
     }
 
     OnAppEntersForeground {
       if !shouldPlayInBackground {
         resumeAllPlayers()
       }
+      #if os(iOS)
+      if !allowsBackgroundRecording {
+        resumeAllRecorders()
+      }
+      #endif
     }
 
     // swiftlint:disable:next closure_body_length
@@ -174,8 +185,10 @@ public class AudioModule: Module {
         }
 
         if player.shouldCorrectPitch {
-          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
+          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .timeDomain
           player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
+        } else {
+          player.ref.currentItem?.audioTimePitchAlgorithm = .varispeed
         }
       }
 
@@ -197,6 +210,25 @@ public class AudioModule: Module {
       Function("setAudioSamplingEnabled") { (player, enabled: Bool) in
         if player.samplingEnabled != enabled {
           player.setSamplingEnabled(enabled: enabled)
+        }
+      }
+
+      Function("setActiveForLockScreen") { (player: AudioPlayer, active: Bool, metadata: Metadata?, options: LockScreenOptions?) in
+        player.setActiveForLockScreen(active, metadata: metadata, options: options)
+      }
+
+      Function("updateLockScreenMetadata") { (player: AudioPlayer, metadata: Metadata?) in
+        if player.isActiveForLockScreen {
+          player.metadata = metadata
+          MediaController.shared.updateNowPlayingInfo(for: player)
+        }
+      }
+
+      Function("clearLockScreenControls") { (player: AudioPlayer) in
+        if player.isActiveForLockScreen {
+          player.metadata = nil
+          player.isActiveForLockScreen = false
+          MediaController.shared.setActivePlayer(nil)
         }
       }
 
@@ -376,7 +408,7 @@ public class AudioModule: Module {
 
   private func handleInterruptionEnded(with options: AVAudioSession.InterruptionOptions) {
     do {
-      try AVAudioSession.sharedInstance().setActive(true, options: [.notifyOthersOnDeactivation])
+      try AVAudioSession.sharedInstance().setActive(true)
       if options.contains(.shouldResume) {
         resumeInterruptedPlayers()
       }
@@ -444,6 +476,26 @@ public class AudioModule: Module {
     }
   }
 
+  private func pauseAllRecorders() {
+#if os(iOS)
+    registry.allRecorders.values.forEach { recorder in
+      if recorder.isRecording {
+        recorder.pauseRecording()
+      }
+    }
+#endif
+  }
+
+  private func resumeAllRecorders() {
+#if os(iOS)
+    registry.allRecorders.values.forEach { recorder in
+      if recorder.allowsRecording && !recorder.isRecording {
+        _ = try? recorder.startRecording()
+      }
+    }
+#endif
+  }
+
   private func recordingDirectory() throws -> URL {
     guard let cachesDir = appContext?.fileSystem?.cachesDirectory else {
       throw Exceptions.AppContextLost()
@@ -457,7 +509,7 @@ public class AudioModule: Module {
     }
 
     do {
-      try AVAudioSession.sharedInstance().setActive(isActive, options: [.notifyOthersOnDeactivation])
+      try AVAudioSession.sharedInstance().setActive(isActive, options: isActive ? [] : [.notifyOthersOnDeactivation])
       sessionIsActive = isActive
     } catch {
       throw AudioStateException(error.localizedDescription)
@@ -472,6 +524,7 @@ public class AudioModule: Module {
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
     self.allowsRecording = mode.allowsRecording
+    self.allowsBackgroundRecording = mode.allowsBackgroundRecording
 
     #if os(iOS)
     if !mode.allowsRecording {
@@ -510,18 +563,26 @@ public class AudioModule: Module {
 
 #if !os(tvOS)
       if category == .playAndRecord {
+#if compiler(>=6.2) // Xcode 26
+        categoryOptions.insert(.allowBluetoothHFP)
+#else
         categoryOptions.insert(.allowBluetooth)
+#endif
       }
 #endif
 
       sessionOptions = categoryOptions
     }
 
-    try session.setCategory(category, options: sessionOptions)
+    if sessionOptions.isEmpty {
+      try session.setCategory(category, mode: .default)
+    } else {
+      try session.setCategory(category, options: sessionOptions)
+    }
   }
 
   private func activateSession() throws {
-    try AVAudioSession.sharedInstance().setActive(true, options: [.notifyOthersOnDeactivation])
+    try AVAudioSession.sharedInstance().setActive(true)
   }
 
   private func deactivateSession() {

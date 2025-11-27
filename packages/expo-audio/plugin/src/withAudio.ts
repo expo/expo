@@ -1,12 +1,24 @@
-import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'expo/config-plugins';
+import {
+  AndroidConfig,
+  ConfigPlugin,
+  IOSConfig,
+  createRunOncePlugin,
+  withInfoPlist,
+} from 'expo/config-plugins';
 
 const pkg = require('expo-audio/package.json');
 
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 
-const withAudio: ConfigPlugin<{ microphonePermission?: string | false } | void> = (
+const withAudio: ConfigPlugin<
+  {
+    microphonePermission?: string | false;
+    recordAudioAndroid?: boolean;
+    enableBackgroundRecording?: boolean;
+  } | void
+> = (
   config,
-  { microphonePermission } = {}
+  { microphonePermission, recordAudioAndroid = true, enableBackgroundRecording = false } = {}
 ) => {
   IOSConfig.Permissions.createPermissionsPlugin({
     NSMicrophoneUsageDescription: MICROPHONE_USAGE,
@@ -14,12 +26,31 @@ const withAudio: ConfigPlugin<{ microphonePermission?: string | false } | void> 
     NSMicrophoneUsageDescription: microphonePermission,
   });
 
+  if (enableBackgroundRecording) {
+    config = withInfoPlist(config, (config) => {
+      if (!Array.isArray(config.modResults.UIBackgroundModes)) {
+        config.modResults.UIBackgroundModes = [];
+      }
+      if (!config.modResults.UIBackgroundModes.includes('audio')) {
+        config.modResults.UIBackgroundModes.push('audio');
+      }
+      return config;
+    });
+  }
+
+  const androidPermissions = [
+    recordAudioAndroid !== false && 'android.permission.RECORD_AUDIO',
+    'android.permission.MODIFY_AUDIO_SETTINGS',
+  ];
+
+  if (enableBackgroundRecording) {
+    androidPermissions.push('android.permission.FOREGROUND_SERVICE_MICROPHONE');
+    androidPermissions.push('android.permission.POST_NOTIFICATIONS');
+  }
+
   return AndroidConfig.Permissions.withPermissions(
     config,
-    [
-      microphonePermission !== false && 'android.permission.RECORD_AUDIO',
-      'android.permission.MODIFY_AUDIO_SETTINGS',
-    ].filter(Boolean) as string[]
+    androidPermissions.filter(Boolean) as string[]
   );
 };
 
