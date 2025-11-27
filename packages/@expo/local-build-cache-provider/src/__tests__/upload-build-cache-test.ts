@@ -40,7 +40,8 @@ describe('LocalBuildCacheProvider.uploadBuildCache', () => {
           platform: 'ios',
           fingerprintHash,
           buildPath: buildDir,
-        } as any,
+          runOptions: {},
+        },
         undefined
       );
 
@@ -71,11 +72,14 @@ describe('LocalBuildCacheProvider.uploadBuildCache', () => {
           platform: 'android',
           fingerprintHash,
           buildPath: buildFile,
-        } as any,
+          runOptions: {
+            variant: 'debug',
+          },
+        },
         { cacheDir }
       );
 
-      const expectedPath = path.join(cacheDir, 'android-def456.apk');
+      const expectedPath = path.join(cacheDir, 'android-def456-debug.apk');
       expect(destPath).toBe(expectedPath);
       expect(fs.existsSync(expectedPath)).toBe(true);
       expect(fs.readFileSync(expectedPath, 'utf8')).toBe('apk-bytes');

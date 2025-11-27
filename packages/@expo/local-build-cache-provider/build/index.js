@@ -1,4 +1,3 @@
-import { getPackageJson, } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -8,7 +7,7 @@ async function resolveBuildCacheAsync({ projectRoot, platform, fingerprintHash, 
         console.debug('Local build cache directory does not exist, skipping check');
         return null;
     }
-    const expectedFile = `${platform}-${fingerprintHash}${isDevClientBuild({ runOptions, projectRoot }) ? '-dev-client' : ''}`;
+    const expectedFile = `${platform}-${fingerprintHash}-${getBuildVariant(runOptions)}`;
     const files = fs.readdirSync(cacheDir);
     const file = files.find((file) => file.includes(expectedFile));
     if (!file) {
@@ -25,7 +24,7 @@ async function uploadBuildCacheAsync({ projectRoot, platform, fingerprintHash, b
     }
     try {
         console.log(chalk `{whiteBright \u203A} {bold Copying build to local cache}`);
-        const destFile = `${platform}-${fingerprintHash}${isDevClientBuild({ runOptions, projectRoot }) ? '-dev-client' : ''}${path.extname(buildPath)}`;
+        const destFile = `${platform}-${fingerprintHash}-${getBuildVariant(runOptions)}${path.extname(buildPath)}`;
         const destPath = path.join(cacheDir, destFile);
         // Remove existing cache entry if it exists.
         if (fs.existsSync(destPath)) {
@@ -50,21 +49,14 @@ async function uploadBuildCacheAsync({ projectRoot, platform, fingerprintHash, b
     }
     return null;
 }
-function isDevClientBuild({ runOptions, projectRoot, }) {
-    if (!hasDirectDevClientDependency(projectRoot)) {
-        return false;
-    }
+function getBuildVariant(runOptions) {
     if ('variant' in runOptions && runOptions.variant !== undefined) {
-        return runOptions.variant === 'debug';
+        return runOptions.variant;
     }
     if ('configuration' in runOptions && runOptions.configuration !== undefined) {
-        return runOptions.configuration === 'Debug';
+        return runOptions.configuration;
     }
-    return true;
-}
-function hasDirectDevClientDependency(projectRoot) {
-    const { dependencies = {}, devDependencies = {} } = getPackageJson(projectRoot);
-    return !!dependencies['expo-dev-client'] || !!devDependencies['expo-dev-client'];
+    return 'unknown';
 }
 const LocalBuildCacheProvider = {
     resolveBuildCache: resolveBuildCacheAsync,
