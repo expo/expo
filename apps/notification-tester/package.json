@@ -40,9 +40,6 @@
     "@types/jest": "^29.5.12",
     "@types/react": "~19.2.0"
   },
-  "resolutions": {
-    "react-test-renderer": "19.2.0"
-  },
   "expo": {},
   "private": true
 }
