@@ -8,8 +8,7 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && expo-module build",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "expo-module clean && expo-module build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },

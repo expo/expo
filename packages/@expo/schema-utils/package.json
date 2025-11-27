@@ -13,8 +13,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "generate": "node ./scripts/generate.js",
-    "prepare": "pnpm run clean && pnpm run build",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },

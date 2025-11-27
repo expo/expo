@@ -30,11 +30,10 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "pnpm run clean && pnpm run build:prod",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
-    "watch": "pnpm run build --watch",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "watch": "pnpm run build --watch"
   },
   "devDependencies": {
     "@expo/config-plugins": "workspace:*",

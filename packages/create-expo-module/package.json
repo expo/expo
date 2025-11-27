@@ -33,7 +33,7 @@
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "prepare": "expo-module clean && pnpm run build:prod",
+    "prepublishOnly": "expo-module clean && pnpm run build:prod",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
