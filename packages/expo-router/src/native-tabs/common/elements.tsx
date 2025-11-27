@@ -172,7 +172,7 @@ export interface NativeTabsBottomAccessoryProps {
    *
    * If only one version of the accessory is provided, it will be used for both states.
    *
-   * - In `inline` state, the accessory is displayed inline with the tab bar. This happens when minimizeBehavior is set and content is scrolled.
+   * - In `inline` state, the accessory is displayed inline with the tab bar. This happens when `minimizeBehavior` is set and content is scrolled.
    * - In `regular` state, the accessory is displayed above the tab bar.
    *
    * @platform iOS 26+

@@ -5,7 +5,7 @@ import type { NativeTabsBottomAccessoryProps } from '../common/elements';
 
 /**
  * Converts an array of `<NativeTabs.BottomAccessory>` components into a function,
- * which can be used by `react-native-screens` to render the accessory
+ * which can be used by `react-native-screens` to render the accessory.
  */
 export function useBottomAccessoryFunctionFromBottomAccessories(
   bottomAccessories: ReactElement<
