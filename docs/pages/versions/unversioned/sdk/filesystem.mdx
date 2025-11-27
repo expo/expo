@@ -97,6 +97,7 @@ The file or directory does not need to exist &mdash; an error will be thrown fro
 - Available properties, such as `type`, `size`, `creationDate`, and more
 - Ability to read and write files as streams or using the `FileHandle` class
 - Easy file download/upload using `downloadFileAsync` or `expo/fetch`
+- Read-only access to bundled assets via `Paths.bundle` (see [Reading bundled assets](#reading-bundled-assets) example)
 
 ## Examples
 
@@ -217,6 +218,69 @@ const response = await fetch('https://example.com', {
   body: formData,
 });
 ```
+
+</Collapsible>
+
+<Collapsible summary="Reading bundled assets">
+
+Bundled assets are files included with your app during the build process. These are typically resources like images, fonts, or data files that you want to ship with your app.
+
+**iOS**: On iOS, bundled assets are stored in the app bundle directory (`Paths.bundle`), which maps to `Bundle.main.bundlePath`. You can directly read files from this location.
+
+**Android**: On Android, bundled assets use the `asset://` protocol. Files in the Android `assets` folder are accessed through this scheme.
+
+> **Prerequisite:** To access a file here, it must be bundled into the native build (e.g., via `assetBundlePatterns` in `app.json`). Files simply existing in your project structure are not automatically available in the bundle directory.
+
+> **Note**: Bundled assets are read-only. If you need to modify a file, copy it to a writable location like `Paths.cache` or `Paths.document` first.
+
+```ts example.ts
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
+
+try {
+  // Step 1: Register the asset so Metro/packager provides a usable URI.
+  // Use the correct relative path to your asset in the `require()` call.
+  const asset = Asset.fromModule(require('./assets/data.json'));
+  await asset.downloadAsync();
+
+  // Step 2: Get the local file URI (prefers downloaded localUri)
+  const fileUri = asset.localUri || asset.uri;
+
+  // Step 3: Read as text
+  const content = await FileSystem.readAsStringAsync(fileUri);
+  console.log('Asset content:', content);
+
+  // Step 4: Read as Base64 (useful for ArrayBuffer conversion)
+  const base64 = await FileSystem.readAsStringAsync(fileUri, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+  console.log('Base64 length:', base64.length);
+
+  // If you need to modify the file, copy it to a writable location first
+  await FileSystem.copyAsync({ from: fileUri, to: FileSystem.cacheDirectory + 'data-copy.json' });
+  await FileSystem.writeAsStringAsync(
+    FileSystem.cacheDirectory + 'data-copy.json',
+    'Modified content'
+  );
+} catch (error) {
+  console.error('Error reading bundled asset:', error);
+}
+```
+
+To bundle assets with your app:
+
+1. Place files in your project's `assets` directory (e.g., `assets/data.json`)
+2. Configure `assetBundlePatterns` in **app.json**:
+   ```json
+   {
+     "expo": {
+       "assetBundlePatterns": ["assets/**"]
+     }
+   }
+   ```
+3. Build your app - the assets will be included in the bundle
+
+> **Note:** Metro may inline JSON into JS bundles when you import JSON directly. Registering the file with `expo-asset` (as shown above) ensures you get a proper file URI you can read with the FileSystem APIs.
 
 </Collapsible>
 
