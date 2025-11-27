@@ -177,6 +177,8 @@ export type ContactPatch = {
   addresses?: (Address.Existing | Address.New)[];
   relations?: (Relation.Existing | Relation.New)[];
   urlAddresses?: (UrlAddress.Existing | UrlAddress.New)[];
+  socialProfiles?: (SocialProfile.Existing | SocialProfile.New)[];
+  imAddresses?: (ImAddress.Existing | ImAddress.New)[];
 };
 
 export type CreateContactRecord = {
