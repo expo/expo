@@ -1,3 +1,358 @@
+import React, { useEffect, useState, useRef } from 'react';
+
+// Simple single-file React app for storing ~1500 people records locally (IndexedDB).
+// Features:
+// - Add / edit / delete person records
+// - Search by name
+// - Scan QR / barcode using BarcodeDetector (camera) to find a record by ID
+// - Generate QR (data URL) for each record so you can print/stick an ID tag
+// - Import / export CSV
+// - Uses Tailwind CSS classes for styling (no imports required here; include Tailwind in your host page)
+
+/*
+How to use (short):
+- Paste this component into a React app (e.g., create-react-app) and render <PeopleDirectoryApp />.
+- Make sure Tailwind is available in your project (or replace class names with your own styles).
+- The app stores data in the browser's IndexedDB so it works offline and can hold thousands of entries.
+*/
+
+// ---------- IndexedDB helper (minimal) ----------
+const DB_NAME = 'people-directory-db';
+const DB_STORE = 'people';
+const DB_VERSION = 1;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(DB_STORE)) {
+        const store = db.createObjectStore(DB_STORE, { keyPath: 'id' });
+        store.createIndex('name', 'name', { unique: false });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function getAllPeople() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, 'readonly');
+    const store = tx.objectStore(DB_STORE);
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function putPerson(person) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    const store = tx.objectStore(DB_STORE);
+    const req = store.put(person);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function deletePerson(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    const store = tx.objectStore(DB_STORE);
+    const req = store.delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function clearAll() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    const store = tx.objectStore(DB_STORE);
+    const req = store.clear();
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ---------- Utilities ----------
+function uid() {
+  // simple unique id (not cryptographically strong)
+  return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+}
+
+function downloadFile(filename, text) {
+  const el = document.createElement('a');
+  el.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' }));
+  el.download = filename;
+  document.body.appendChild(el);
+  el.click();
+  el.remove();
+}
+
+function personToCsvRow(p) {
+  // escape commas
+  const esc = (s) => '"' + (String(s ?? '')).replace(/"/g, '""') + '"';
+  return [esc(p.id), esc(p.name), esc(p.phone ?? ''), esc(p.note ?? '')].join(',');
+}
+
+function csvToPeople(csv) {
+  const lines = csv.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const rows = lines.map((l) => {
+    // very permissive parsing: split by commas outside quotes
+    const values = [];
+    let cur = '';
+    let inQ = false;
+    for (let i = 0; i < l.length; i++) {
+      const ch = l[i];
+      if (ch === '"') { inQ = !inQ; continue; }
+      if (ch === ',' && !inQ) { values.push(cur); cur = ''; continue; }
+      cur += ch;
+    }
+    if (cur !== '') values.push(cur);
+    return values.map(v => v.trim());
+  });
+  // Accept rows that have at least name; if id missing, generate.
+  return rows.map((r) => ({ id: r[0] || uid(), name: r[1] || r[0] || 'Unknown', phone: r[2] || '', note: r[3] || '' }));
+}
+
+// ---------- QR generation (simple) ----------
+function generateQrDataUrl(text, size = 160) {
+  // Minimal QR generation using a tiny JS QR lib would be ideal, but to keep single-file
+  // we'll use an online-free approach: draw a canvas with a simple QR via a minimal implementation.
+  // For production, replace with a library like 'qrcode' or 'kjua'.
+  try {
+    // Use 'QRCode' if available globally (many projects include it). If not, fall back to plain text.
+    if (window.QRCode) {
+      const container = document.createElement('div');
+      new window.QRCode(container, { text, width: size, height: size });
+      const img = container.querySelector('img');
+      if (img) return img.src;
+    }
+  } catch (e) {
+    console.warn('QR generation fallback', e);
+  }
+  // fallback: generate a data URL with text
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#eee'; ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#333'; ctx.font = '12px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text.slice(0, 12), size/2, size/2);
+  return canvas.toDataURL();
+}
+
+// ---------- Main Component ----------
+export default function PeopleDirectoryApp() {
+  const [people, setPeople] = useState([]);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [note, setNote] = useState('');
+  const [query, setQuery] = useState('');
+  const [scanning, setScanning] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const videoRef = useRef(null);
+  const detectorRef = useRef(null);
+
+  useEffect(() => {
+    loadAll();
+    // try to create BarcodeDetector instance
+    if ('BarcodeDetector' in window) {
+      try { detectorRef.current = new window.BarcodeDetector({ formats: ['qr_code', 'code_128', 'ean_13', 'ean_8'] }); }
+      catch (e) { detectorRef.current = null; }
+    }
+  }, []);
+
+  async function loadAll() {
+    const all = await getAllPeople();
+    setPeople(all.sort((a,b)=> (a.name||'').localeCompare(b.name||''))); 
+  }
+
+  async function handleAdd() {
+    if (!name.trim()) return alert('নাম দিন');
+    const p = { id: uid(), name: name.trim(), phone: phone.trim(), note: note.trim() };
+    await putPerson(p);
+    setName(''); setPhone(''); setNote('');
+    await loadAll();
+  }
+
+  async function handleSelect(p) {
+    setSelected(p);
+    setName(p.name); setPhone(p.phone || ''); setNote(p.note || '');
+  }
+
+  async function handleUpdate() {
+    if (!selected) return;
+    const p = { ...selected, name: name.trim(), phone: phone.trim(), note: note.trim() };
+    await putPerson(p);
+    setSelected(null); setName(''); setPhone(''); setNote('');
+    await loadAll();
+  }
+
+  async function handleDelete(id) {
+    if (!confirm('মুছে ফেলতে চান?')) return;
+    await deletePerson(id);
+    await loadAll();
+  }
+
+  function filtered() {
+    const q = query.trim().toLowerCase();
+    if (!q) return people;
+    return people.filter(p => (p.name||'').toLowerCase().includes(q) || (p.phone||'').toLowerCase().includes(q) || (p.id||'').toLowerCase().includes(q));
+  }
+
+  async function startScan() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return alert('আপনার ব্রাউজারে ক্যামেরা সাপোর্ট নেই');
+    setScanning(true);
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    if (videoRef.current) videoRef.current.srcObject = stream;
+    videoRef.current.play();
+
+    // If BarcodeDetector available
+    if (detectorRef.current) {
+      const track = stream.getVideoTracks()[0];
+      const interval = setInterval(async () => {
+        if (!videoRef.current || videoRef.current.readyState < 2) return;
+        try {
+          const bitmap = await createImageBitmap(videoRef.current);
+          const barcodes = await detectorRef.current.detect(bitmap);
+          if (barcodes && barcodes.length) {
+            stopStream(stream);
+            setScanning(false);
+            const raw = barcodes[0].rawValue || barcodes[0].rawData || '';
+            lookupByIdOrCode(raw);
+            clearInterval(interval);
+          }
+        } catch (e) { /* ignore */ }
+      }, 800);
+    } else {
+      // fallback: capture stills and try decoding via open-source js decoder (not included). We'll keep a minimal UX: ask user to take snapshot and paste code.
+      alert('QR/Barcode স্ক্যান করার জন্য সমর্থন সীমিত; যদি কাজ না করে হলে QR-ট্যাগের কোডটি ম্যানুয়ালি লিখুন');
+    }
+  }
+
+  function stopStream(stream) {
+    if (!stream) return;
+    stream.getTracks().forEach(t => t.stop());
+    if (videoRef.current) videoRef.current.srcObject = null;
+  }
+
+  function stopScan() {
+    setScanning(false);
+    if (videoRef.current && videoRef.current.srcObject) stopStream(videoRef.current.srcObject);
+  }
+
+  async function lookupByIdOrCode(raw) {
+    const id = raw.trim();
+    const found = people.find(p => p.id === id || p.id === ('id-'+id) || (p.note||'') === raw || (p.phone||'') === raw);
+    if (found) {
+      setQuery('');
+      setSelected(found);
+      setName(found.name); setPhone(found.phone||''); setNote(found.note||'');
+      alert('রেকর্ড পাওয়া গেল: ' + found.name);
+    } else {
+      alert('কোনো মিল পাওয়া যায়নি। (স্ক্যান করা মান: ' + raw + ')');
+    }
+  }
+
+  async function exportCsv() {
+    const all = await getAllPeople();
+    const rows = ['"id","name","phone","note"', ...all.map(personToCsvRow)];
+    downloadFile('people-directory.csv', rows.join('\n'));
+  }
+
+  async function importCsvFile(file) {
+    const text = await file.text();
+    const imported = csvToPeople(text);
+    if (!confirm('ইম্পোর্ট করলে আপডেট করা হবে। মোট ' + imported.length + ' রেকর্ড। চালিয়ে যেতে চান?')) return;
+    for (const p of imported) await putPerson(p);
+    await loadAll();
+  }
+
+  async function clearDatabase() {
+    if (!confirm('সত্যিই সব ডাটা মুছে ফেলতে চান?')) return;
+    await clearAll();
+    await loadAll();
+  }
+
+  return (
+    <div className="p-4 max-w-4xl mx-auto">
+      <h1 className="text-2xl font-semibold mb-4">People Directory — লোকাল (1500+ রেকর্ড সাপোর্ট)</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="md:col-span-2 p-4 border rounded-lg"> 
+          <div className="mb-2"> <label className="block text-sm font-medium">অনুসন্ধান (নাম/মোবাইল/আইডি)</label>
+            <input value={query} onChange={(e)=>setQuery(e.target.value)} className="w-full p-2 border rounded" placeholder="নাম লিখুন বা স্ক্যান করুন" />
+          </div>
+          <div className="flex gap-2 mt-2">
+            <button className="px-3 py-2 rounded bg-blue-600 text-white" onClick={()=>setQuery('')}>রিসেট</button>
+            <button className="px-3 py-2 rounded bg-green-600 text-white" onClick={exportCsv}>Export CSV</button>
+            <label className="px-3 py-2 rounded bg-yellow-500 text-black cursor-pointer">
+              Import CSV
+              <input type="file" accept=".csv,text/csv" className="hidden" onChange={(e)=>e.target.files?.[0] && importCsvFile(e.target.files[0])} />
+            </label>
+            <button className="px-3 py-2 rounded bg-red-600 text-white" onClick={clearDatabase}>Clear All</button>
+          </div>
+
+          <div className="mt-4">
+            <ul className="max-h-80 overflow-auto">
+              {filtered().slice(0, 500).map(p => (
+                <li key={p.id} className="flex justify-between items-center p-2 border-b">
+                  <div>
+                    <div className="font-medium">{p.name}</div>
+                    <div className="text-sm text-gray-600">{p.phone} • {p.id}</div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="px-2 py-1 border rounded" onClick={()=>handleSelect(p)}>Edit</button>
+                    <button className="px-2 py-1 border rounded" onClick={()=>{
+                      const url = generateQrDataUrl(p.id, 120);
+                      const w = window.open();
+                      w.document.body.style.margin = '0';
+                      w.document.body.innerHTML = `<img src=\"${url}\" />`;
+                    }}>QR</button>
+                    <button className="px-2 py-1 border rounded text-red-600" onClick={()=>handleDelete(p.id)}>Delete</button>
+                  </div>
+                </li>
+              ))}
+              {filtered().length === 0 && <li className="p-2 text-gray-500">কোনো রেকর্ড নেই</li>}
+            </ul>
+            <div className="text-sm text-gray-500 mt-2">শুরুতে উপরের তালিকা থেকে নাম ক্লিক করে এডিট করুন। তালিকায় সর্বোচ্চ 500টি দেখানো হবে — সার্চ ব্যবহার করলে দ্রুত মিল পাওয়া যাবে।</div>
+          </div>
+        </div>
+
+        <div className="p-4 border rounded-lg">
+          <h2 className="font-semibold mb-2">নতুন/আপডেট</h2>
+          <input className="w-full p-2 border rounded mb-2" placeholder="নাম" value={name} onChange={(e)=>setName(e.target.value)} />
+          <input className="w-full p-2 border rounded mb-2" placeholder="মোবাইল" value={phone} onChange={(e)=>setPhone(e.target.value)} />
+          <textarea className="w-full p-2 border rounded mb-2" placeholder="নোট" value={note} onChange={(e)=>setNote(e.target.value)} />
+          <div className="flex gap-2">
+            {!selected && <button className="px-3 py-2 rounded bg-blue-600 text-white" onClick={handleAdd}>Add</button>}
+            {selected && <button className="px-3 py-2 rounded bg-green-600 text-white" onClick={handleUpdate}>Update</button>}
+            <button className="px-3 py-2 rounded border" onClick={()=>{ setSelected(null); setName(''); setPhone(''); setNote(''); }}>Clear</button>
+          </div>
+
+          <div className="mt-4">
+            <h3 className="font-medium mb-2">Scan (QR/Barcode)</h3>
+            {!scanning && <button className="px-3 py-2 rounded bg-indigo-600 text-white" onClick={startScan}>Start Camera Scan</button>}
+            {scanning && <button className="px-3 py-2 rounded bg-red-600 text-white" onClick={stopScan}>Stop Scan</button>}
+            <div className="mt-2">
+              <video ref={videoRef} className="w-full border rounded max-h-48" />
+            </div>
+            <div className="text-sm text-gray-500 mt-2">ক্যামেরা স্ক্যান সাপোর্ট ব্রাউজার-নির্ভর। যদি কাজ না করে, QR-এর ভেতরের আইডি/কোড ম্যানুয়ালি লিখে সার্চ করুন।</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="text-sm text-gray-600 mt-4">নোট: IndexedDB ব্যবহার করে লোকালি ডাটা রাখা হয় — ব্যাকআপের জন্য Export CSV ব্যবহার করুন। 1500 রেকর্ড হলেও ব্রাউজারে সাধারণত ঠিক থাকে; ব্যাকআপ রাখুন।</div>
+    </div>
+  );
+}
 ---
 title: create-expo-app
 maxHeadingDepth: 4
@@ -92,55 +447,7 @@ Prints the list of available options and exits.
 
 ## Node Package Managers support
 
-Creating a new project with `create-expo-app` also handles setting up additional configuration needed for a specific Node Package Manager.
-
-**If you are migrating from one package manager to another**, you've to manually carry out the additional configuration in your project. **If you are using [EAS](/eas/)**, you also have to configure your project for any additional required steps manually.
-
-All the additional steps for each package manager are listed below.
-
-### npm
-
-#### Local installation
-
-npm is installed as part of Node.js installation. See [Node.js documentation](https://nodejs.org/en/download/package-manager) for installation instructions.
-
-#### EAS installation
-
-Supported by default if the project directory contains **package-lock.json**.
-
-### Yarn 1 (Classic)
-
-#### Local installation
-
-Yarn 1 (Classic) is usually installed as a global dependency of npm. See [Yarn 1 documentation](https://classic.yarnpkg.com/en/docs/getting-started) for installation instructions.
-
-#### EAS installation
-
-Supported by default if the project directory contains **yarn.lock**.
-
-### Yarn 2+ (Modern)
-
-#### Local installation
-
-See [Yarn documentation](https://yarnpkg.com/getting-started/install) for installation instructions.
-
-Yarn 2+ handles package management differently than Yarn 1. One of the core changes in Yarn 2+ is the [Plug'n'Play (PnP)](https://yarnpkg.com/features/pnp) node linking model that does not work with React Native.
-
-By default, a project created with `create-expo-app` and Yarn 2+ uses [`nodeLinker`](https://yarnpkg.com/features/linkers#nodelinker-node-modules) with its value set to `node-modules` to install dependencies.
-
-```yaml .yarnrc.yml
-nodeLinker: node-modules
-```
-
-#### EAS installation
-
-Yarn Modern on EAS requires adding [`eas-build-pre-install` hook](/build-reference/npm-hooks/). In your project's **package.json**, add the following configuration:
-
-```json package.json
-{
-  "scripts": {
-    "eas-build-pre-install": "corepack enable && yarn set version 4"
-  }
+Creating a new project with `create-expo-app` also handles setting up additional configuration needed for a 
 }
 ```
 
