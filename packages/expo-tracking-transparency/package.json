@@ -30,6 +30,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/tracking-transparency",
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

@@ -63,6 +63,8 @@
     "react-native": "*"
   },
   "devDependencies": {
+    "@types/react": "~19.2.0",
+    "@types/invariant": "^2.2.33",
     "@testing-library/react-native": "^13.2.0",
     "expo-module-scripts": "workspace:*"
   }

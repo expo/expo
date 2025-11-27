@@ -36,6 +36,7 @@
     "unimodules-app-loader": "~6.0.7"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

@@ -40,6 +40,7 @@
     "react-native-is-edge-to-edge": "^1.2.1"
   },
   "devDependencies": {
+    "@types/react": "~19.2.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",

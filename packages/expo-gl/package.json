@@ -43,6 +43,7 @@
     "@types/invariant": "^2.2.33",
     "@types/offscreencanvas": "2019.6.4",
     "@types/webgl2": "^0.0.6",
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*",
     "react-test-renderer": "19.2.0"
   },

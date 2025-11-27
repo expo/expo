@@ -35,6 +35,8 @@
     "semver": "^7.6.0"
   },
   "devDependencies": {
+    "@types/semver": "^7.0.0",
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

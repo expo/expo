@@ -47,6 +47,8 @@
     "@expo/env": "~2.0.7"
   },
   "devDependencies": {
+    "expo-manifests": "workspace:*",
+    "expo-updates": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

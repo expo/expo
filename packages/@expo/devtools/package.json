@@ -46,6 +46,8 @@
     "chalk": "^4.1.2"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*",
     "ws": "^8.18.0"
   },

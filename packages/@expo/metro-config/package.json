@@ -66,7 +66,10 @@
   },
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",
+    "@types/babel__code-frame": "^7.0.1",
     "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/getenv": "^1.0.0",
     "dedent": "^1.5.3",
     "expo-module-scripts": "workspace:*",
     "sass": "^1.60.0"

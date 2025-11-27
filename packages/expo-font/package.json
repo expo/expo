@@ -52,6 +52,8 @@
   "devDependencies": {
     "@testing-library/react-native": "^13.2.0",
     "@types/fontfaceobserver": "^2.1.3",
+    "@types/react": "~19.2.0",
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

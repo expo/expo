@@ -37,6 +37,7 @@
     "@expo/prebuild-config": "^54.0.3"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

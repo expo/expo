@@ -48,6 +48,9 @@
     "sucrase": "~3.35.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@types/getenv": "^1.0.0",
+    "@types/semver": "^7.5.8",
     "@types/require-from-string": "^1.2.1",
     "expo-module-scripts": "workspace:*"
   },

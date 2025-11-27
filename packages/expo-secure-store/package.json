@@ -37,6 +37,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

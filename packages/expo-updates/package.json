@@ -54,10 +54,14 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
+    "@expo/metro-config": "workspace:*",
+    "@types/debug": "^4.1.7",
+    "@types/getenv": "^1.0.0",
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/node-forge": "^1.0.0",
     "@types/picomatch": "^4.0.0",
+    "@types/react": "~19.2.0",
     "@vercel/ncc": "^0.38.3",
     "expo-module-scripts": "workspace:*",
     "express": "^5.1.0",

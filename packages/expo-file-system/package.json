@@ -35,6 +35,7 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
     "jest-expo": "workspace:*"
   },

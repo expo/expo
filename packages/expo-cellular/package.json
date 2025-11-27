@@ -31,6 +31,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/cellular/",
   "dependencies": {},
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

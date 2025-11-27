@@ -80,7 +80,9 @@
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@types/babel__core": "^7.20.5",
+    "@types/node": "^22.14.0",
     "@expo/metro": "~54.1.0",
+    "@expo/metro-config": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "jest": "^29.2.1",
     "react-refresh": "^0.14.2"

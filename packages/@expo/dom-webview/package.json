@@ -37,6 +37,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
