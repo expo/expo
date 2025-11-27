@@ -97,6 +97,13 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     const onTabChange = (0, react_1.useCallback)((tabKey) => {
         const descriptor = descriptors[tabKey];
         const route = descriptor.route;
+        navigation.emit({
+            type: 'tabPress',
+            target: tabKey,
+            data: {
+                __internalTabsType: 'native',
+            },
+        });
         navigation.dispatch({
             type: 'JUMP_TO',
             target: state.key,

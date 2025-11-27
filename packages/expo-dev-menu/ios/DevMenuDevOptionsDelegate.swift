@@ -7,7 +7,7 @@ class DevMenuDevOptionsDelegate {
   internal private(set) weak var devSettings: RCTDevSettings?
 
   #if DEBUG
-  internal private(set) weak var perfMonitor: RCTPerfMonitor?
+  internal private(set) weak var perfMonitor: NSObject?
   #endif
 
   internal init(forBridge bridge: RCTBridge) {
@@ -15,7 +15,7 @@ class DevMenuDevOptionsDelegate {
     devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings
 
     #if DEBUG
-    perfMonitor = bridge.module(forName: "PerfMonitor") as? RCTPerfMonitor
+    perfMonitor = bridge.module(forName: "PerfMonitor") as? NSObject
     #endif
   }
 
@@ -56,8 +56,13 @@ class DevMenuDevOptionsDelegate {
     }
 
     DispatchQueue.main.async {
+      let hide = NSSelectorFromString("hide")
+      let show = NSSelectorFromString("show")
+
       if devSettings.isPerfMonitorShown {
-        perfMonitor.hide()
+        if perfMonitor.responds(to: hide) {
+          perfMonitor.perform(hide)
+        }
       } else {
         let devMenuManager = DevMenuManager.shared
         let devMenuWindow = devMenuManager.window
@@ -67,7 +72,9 @@ class DevMenuDevOptionsDelegate {
           devMenuWindow?.isHidden = true
         }
 
-        perfMonitor.show()
+        if perfMonitor.responds(to: show) {
+          perfMonitor.perform(show)
+        }
 
         if menuWasVisible {
           devMenuWindow?.isHidden = false

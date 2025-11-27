@@ -13,10 +13,12 @@
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXRootViewController.h"
-#import "EXDevMenuManager.h"
+#import "EXDevMenu-Swift.h"
 #import "EXEmbeddedHomeLoader.h"
 #import "EXBuildConstants.h"
 #import "EXUtil.h"
+#import <React/RCTBridge+Private.h>
+
 #import "Expo_Go-Swift.h"
 
 @import ExpoScreenOrientation;
@@ -152,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveHomeToVisible
 {
-  [[EXDevMenuManager sharedInstance] close];
+  [DevMenuManager.shared hideMenu];
   [[self _getHomeAppManager] dispatchForegroundHomeEvent];
   [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
 }
@@ -171,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
 
-  [[EXDevMenuManager sharedInstance] close];
+  [DevMenuManager.shared closeMenuWithCompletion:nil];
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;
@@ -210,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (!self.isNuxFinished
       && appRecord == [EXKernel sharedInstance].visibleApp
       && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-    [[EXDevMenuManager sharedInstance] open];
+    [DevMenuManager.shared openMenu];
   }
 
   // Re-apply the default orientation after the app has been loaded (eq. after a reload)
@@ -261,8 +263,13 @@ NS_ASSUME_NONNULL_BEGIN
     if (viewControllerToShow) {
       [viewControllerToShow didMoveToParentViewController:self];
       self.contentViewController = viewControllerToShow;
+
+      if (appRecord.appManager.reactHost) {
+        [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
+        [[DevMenuManager shared] updateCurrentManifest:appRecord.appLoader.manifest manifestURL:appRecord.appLoader.manifestUrl];
+      }
     }
-    
+
     [self.view setNeedsLayout];
     self.isAnimatingAppTransition = NO;
     self.transitioningToViewController = nil;

@@ -14,7 +14,7 @@ import {
   StackHeaderSearchBar,
 } from './StackHeaderSearchBar';
 import { appendStackHeaderTitlePropsToOptions, StackHeaderTitle } from './StackHeaderTitle';
-import { isChildOfType } from './utils';
+import { isChildOfType } from '../../utils/children';
 
 export interface StackHeaderProps {
   children?: ReactNode;

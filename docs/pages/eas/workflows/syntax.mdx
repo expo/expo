@@ -889,6 +889,19 @@ jobs:
       prod: boolean # optional
 ```
 
+This job outputs the following properties:
+
+```json
+{
+  "deploy_json": string, // JSON object containing the deployment details (output of `npx eas-cli deploy --json`).
+  "deploy_url": string, // URL to the deployment. It uses production URL if this was a production deployment. Otherwise, it uses the first alias URL or the deployment URL.
+  "deploy_alias_url": string, // Alias URL to the deployment (for example, `https://account-project--alias.expo.app`).
+  "deploy_deployment_url": string, // Unique URL to the deployment (for example, `https://account-project--uniqueid.expo.app`).
+  "deploy_identifier": string, // Identifier of the deployment.
+  "deploy_dashboard_url": string, // URL to the deployment dashboard (for example, `https://expo.dev/projects/[project]/hosting/deployments`).
+}
+```
+
 #### `fingerprint`
 
 Calculates a fingerprint of your project. See [Fingerprint job documentation](/eas/workflows/pre-packaged-jobs#fingerprint) for detailed information and examples.
@@ -1187,6 +1200,7 @@ jobs:
       profile: string # optional
       embed_bundle_assets: boolean # optional
       message: string # optional
+      repack_version: string # optional
     # @end #
 ```
 

@@ -43,7 +43,7 @@ const icon_1 = require("./utils/icon");
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
 function NativeTabsView(props) {
-    const { minimizeBehavior, disableIndicator, focusedIndex, tabs } = props;
+    const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable } = props;
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     // We need to check if the deferred index is not out of bounds
     // This can happen when the focused index is the last tab, and user removes that tab
@@ -60,6 +60,11 @@ function NativeTabsView(props) {
         return (<Screen key={tab.routeKey} routeKey={tab.routeKey} name={tab.name} options={tab.options} isFocused={isFocused} standardAppearance={appearances[index].standardAppearance} scrollEdgeAppearance={appearances[index].scrollEdgeAppearance} badgeTextColor={tab.options.badgeTextColor} contentRenderer={tab.contentRenderer}/>);
     });
     const currentTabAppearance = appearances[inBoundsDeferredFocusedIndex]?.standardAppearance;
+    const tabBarControllerMode = sidebarAdaptable
+        ? 'tabSidebar'
+        : sidebarAdaptable === false
+            ? 'tabBar'
+            : 'automatic';
     return (<BottomTabsWrapper 
     // #region android props
     tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor} tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor} tabBarItemRippleColor={props.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor} tabBarItemTitleFontColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor} 
@@ -67,7 +72,7 @@ function NativeTabsView(props) {
     tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
     // #endregion
     // #region iOS props
-    tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} 
+    tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} tabBarControllerMode={tabBarControllerMode} 
     // #endregion
     onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
             props.onTabChange(tabKey);

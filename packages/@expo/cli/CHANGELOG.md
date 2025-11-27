@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Drop `EXPO_USE_FAST_RESOLVER` flag and implementation ([#40673](https://github.com/expo/expo/pull/40673) by [@kitten](https://github.com/kitten))
+- Update to `tar@^7.5.2` ([#40732](https://github.com/expo/expo/pull/40732) by [@kitten](https://github.com/kitten))
 
 ### 🎉 New features
 
@@ -30,6 +31,7 @@
 - Deduplicate shared types across `@expo/cli`, `@expo/router-server`, `expo-server` ([#40614](https://github.com/expo/expo/pull/40614) by [@hassankhan](https://github.com/hassankhan))
 - Alias `transformer.asyncRequireModulePath` via Node resolution, when provided ([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
 - Added MCP server handshaking and graceful shutdown. ([#40660](https://github.com/expo/expo/pull/40660) by [@kudo](https://github.com/kudo))
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

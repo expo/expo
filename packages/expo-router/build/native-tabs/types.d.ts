@@ -1,139 +1,35 @@
 import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
-import type { ColorValue, ImageSourcePropType, TextStyle } from 'react-native';
+import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { BottomTabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export type NativeScreenProps = Partial<Omit<BottomTabsScreenProps, 'tabKey' | 'isFocused'>>;
 export interface NativeTabOptions extends DefaultRouterOptions {
-    /**
-     * The icon to display in the tab bar.
-     * @platform android
-     * @platform iOS
-     */
     icon?: SymbolOrImageSource;
-    /**
-     * The icon to display when the tab is selected.
-     * @platform iOS
-     */
     selectedIcon?: SymbolOrImageSource;
-    /**
-     * Title of the tab screen, displayed in the tab bar item.
-     *
-     * @platform android
-     * @platform iOS
-     */
     title?: string;
-    /**
-     * Specifies content of tab bar item badge.
-     *
-     * On Android, the value is interpreted in the following order:
-     * - If the string can be parsed to integer, displays the value as a number
-     * - Otherwise if the string is empty, displays "small dot" badge
-     * - Otherwise, displays the value as a text
-     *
-     * On iOS, badge is displayed as regular string.
-     *
-     * @platform android
-     * @platform ios
-     */
     badgeValue?: string;
-    /**
-     * The style of the tab label when the tab is selected.
-     */
     selectedLabelStyle?: NativeTabsLabelStyle;
-    /**
-     * The style of all the tab labels, when the tab is selected
-     */
     labelStyle?: NativeTabsLabelStyle;
-    /**
-     * System-provided tab bar item with predefined icon and title
-     *
-     * Uses Apple's built-in tab bar items (e.g., bookmarks, contacts, downloads) with
-     * standard iOS styling and localized titles. If you override the `title`,
-     * `icon`, or `selectedIcon`, note that this is not officially supported
-     * by Apple and may lead to unexpected results.
-     *
-     * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem|UITabBarItem.SystemItem}
-     * @platform ios
-     */
     role?: NativeTabsTabBarItemRole;
-    /**
-     * The color of the icon when the tab is selected.
-     */
     selectedIconColor?: ColorValue;
-    /**
-     * The color of the badge when the tab is selected.
-     */
     selectedBadgeBackgroundColor?: ColorValue;
-    /**
-     * The color of all the badges when the tab is selected.
-     */
     badgeBackgroundColor?: ColorValue;
-    /**
-     * The color of the badge text.
-     *
-     * @platform android
-     * @platform web
-     */
     badgeTextColor?: ColorValue;
-    /**
-     * The color of the background when the tab is selected.
-     */
     backgroundColor?: ColorValue;
-    /**
-     * The blur effect to apply when the tab is selected.
-     *
-     * @platform iOS
-     */
     blurEffect?: NativeTabsBlurEffect;
-    /**
-     * The color of the shadow when the tab is selected.
-     *
-     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
-     *
-     * @platform iOS
-     */
     shadowColor?: ColorValue;
-    /**
-     * The color of the icon when the tab is selected.
-     *
-     * On iOS 26+ you can change the icon color in the scroll edge state.
-     */
     iconColor?: ColorValue;
-    /**
-     * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
-     *
-     * @platform iOS
-     */
     disableTransparentOnScrollEdge?: boolean;
-    /**
-     * The position adjustment for all the labels when the tab is selected.
-     *
-     * @platform iOS
-     */
     titlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
     };
-    /**
-     * The position adjustment for the label when the tab is selected.
-     *
-     * @platform iOS
-     */
     selectedTitlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
     };
-    /**
-     * The color of the tab indicator.
-     *
-     * @platform android
-     * @platform web
-     */
     indicatorColor?: ColorValue;
-    /**
-     * If true, the tab will be hidden from the tab bar.
-     */
     hidden?: boolean;
     specialEffects?: BottomTabsScreenProps['specialEffects'];
     nativeProps?: NativeScreenProps;
@@ -155,66 +51,19 @@ export type SymbolOrImageSource = {
      */
     src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
 };
-type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
-export interface NativeTabsLabelStyle {
-    /**
-     * The font family of the tab label.
-     */
-    fontFamily?: TextStyle['fontFamily'];
-    /**
-     * The font size of the tab label.
-     */
-    fontSize?: TextStyle['fontSize'];
-    /**
-     * The font weight of the tab label.
-     */
-    fontWeight?: NumericFontWeight | `${NumericFontWeight}`;
-    /**
-     * The font style of the tab label.
-     */
-    fontStyle?: TextStyle['fontStyle'];
-    /**
-     * The color of the tab label.
-     */
-    color?: TextStyle['color'];
-}
+export type NativeTabsLabelStyle = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'color'>;
 export declare const SUPPORTED_BLUR_EFFECTS: readonly ["none", "systemDefault", "extraLight", "light", "dark", "regular", "prominent", "systemUltraThinMaterial", "systemThinMaterial", "systemMaterial", "systemThickMaterial", "systemChromeMaterial", "systemUltraThinMaterialLight", "systemThinMaterialLight", "systemMaterialLight", "systemThickMaterialLight", "systemChromeMaterialLight", "systemUltraThinMaterialDark", "systemThinMaterialDark", "systemMaterialDark", "systemThickMaterialDark", "systemChromeMaterialDark"];
 /**
  * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiblureffect/style)
  */
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
-/**
- * @platform android
- * @platform web
- */
-export interface NativeTabsActiveStyleType {
-    /**
-     * @platform android
-     * @platform web
-     */
-    color?: ColorValue;
-    /**
-     * @platform android
-     * @platform web
-     */
-    fontSize?: TextStyle['fontSize'];
-    /**
-     * @platform android
-     */
-    iconColor?: ColorValue;
-    /**
-     * @platform android
-     * @platform web
-     */
-    indicatorColor?: ColorValue;
-}
 export interface NativeTabsProps extends PropsWithChildren {
     /**
      * The style of the every tab label in the tab bar.
      */
-    labelStyle?: NativeTabsLabelStyle | {
-        default?: NativeTabsLabelStyle;
-        selected?: NativeTabsLabelStyle;
+    labelStyle?: StyleProp<NativeTabsLabelStyle> | {
+        default?: StyleProp<NativeTabsLabelStyle>;
+        selected?: StyleProp<NativeTabsLabelStyle>;
     };
     /**
      * The color of every tab icon in the tab bar.
@@ -251,7 +100,7 @@ export interface NativeTabsProps extends PropsWithChildren {
      * - `onScrollUp` - the tab bar minimizes when scrolling up and expands
      *   when scrolling back down
      *
-     * @see The supported values correspond to the official [UIKit documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior).
+     * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior).
      *
      * @default automatic
      *
@@ -287,6 +136,12 @@ export interface NativeTabsProps extends PropsWithChildren {
      * @platform iOS
      */
     disableTransparentOnScrollEdge?: boolean;
+    /**
+     * When set to `true`, enables the sidebarAdaptable tab bar style on iPadOS and macOS. This prop has no effect on iPhone.
+     *
+     * @platform iOS 18+
+     */
+    sidebarAdaptable?: boolean;
     /**
      * Disables the active indicator for the tab bar.
      *
@@ -408,7 +263,7 @@ export interface NativeTabTriggerProps {
      * properties will override the system icon, but the system-defined title cannot
      * be customized.
      *
-     * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem|UITabBarItem.SystemItem}
+     * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
      * @platform ios
      */
     role?: NativeTabsTabBarItemRole;

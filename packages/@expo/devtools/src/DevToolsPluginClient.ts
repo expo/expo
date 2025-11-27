@@ -181,16 +181,22 @@ export abstract class DevToolsPluginClient {
   protected connectAsync(): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
       const endpoint = 'expo-dev-plugins/broadcast';
-      const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/${endpoint}`, {
-        binaryType: this.options?.websocketBinaryType,
-        onError: (e: unknown) => {
-          if (e instanceof Error) {
-            console.warn(`Error happened from the WebSocket connection: ${e.message}\n${e.stack}`);
-          } else {
-            console.warn(`Error happened from the WebSocket connection: ${JSON.stringify(e)}`);
-          }
-        },
-      });
+      const protocol = this.connectionInfo.useWss ? 'wss' : 'ws';
+      const ws = new WebSocketWithReconnect(
+        `${protocol}://${this.connectionInfo.devServer}/${endpoint}`,
+        {
+          binaryType: this.options?.websocketBinaryType,
+          onError: (e: unknown) => {
+            if (e instanceof Error) {
+              console.warn(
+                `Error happened from the WebSocket connection: ${e.message}\n${e.stack}`
+              );
+            } else {
+              console.warn(`Error happened from the WebSocket connection: ${JSON.stringify(e)}`);
+            }
+          },
+        }
+      );
       ws.addEventListener('open', () => {
         resolve(ws);
       });

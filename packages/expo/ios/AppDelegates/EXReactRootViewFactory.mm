@@ -31,6 +31,7 @@
   return self;
 }
 
+#if TARGET_OS_IOS
 - (UIView *)viewWithModuleName:(NSString *)moduleName
              initialProperties:(nullable NSDictionary *)initialProperties
                  launchOptions:(nullable NSDictionary *)launchOptions
@@ -50,9 +51,27 @@
   if (devMenuConfiguration == nil) {
     devMenuConfiguration = [RCTDevMenuConfiguration defaultConfiguration];
   }
-  
+
   return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions devMenuConfiguration:devMenuConfiguration];
 }
+#else
+- (UIView *)viewWithModuleName:(NSString *)moduleName
+             initialProperties:(nullable NSDictionary *)initialProperties
+                 launchOptions:(nullable NSDictionary *)launchOptions
+{
+  if (self.reactDelegate != nil) {
+    return [self.reactDelegate createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+  }
+  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+}
+
+- (UIView *)superViewWithModuleName:(NSString *)moduleName
+                  initialProperties:(nullable NSDictionary *)initialProperties
+                      launchOptions:(nullable NSDictionary *)launchOptions
+{
+  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+}
+#endif
 
 - (NSURL *)bundleURL
 {

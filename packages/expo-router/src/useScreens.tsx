@@ -13,6 +13,11 @@ import React, { useEffect } from 'react';
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import {
+  hasParam,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  removeParams,
+} from './navigationParams';
 import { Screen } from './primitives';
 import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
@@ -267,6 +272,13 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       () =>
         navigation.addListener('focus', () => {
           const state = navigation.getState();
+          // When navigating to a screen, remove the no animation param to re-enable animations
+          // Otherwise the navigation back would also have no animation
+          if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+            navigation.replaceParams(
+              removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])
+            );
+          }
           const isLeaf = !('state' in state.routes[state.index]);
           // Because setFocusedState caches the route info, this call will only trigger rerenders
           // if the component itself didn’t rerender and the route info changed.

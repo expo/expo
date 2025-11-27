@@ -55,8 +55,6 @@ def USE_HERMES = findProperty("hermesEnabled") ?: true
 USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 // END HERMES
 
-def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
-
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
 def enableWorkletsIntegration = findProperty("expo.core.worklets") == "true"
@@ -90,7 +88,7 @@ android {
     versionCode 1
     versionName "3.0.16"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
-    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true"
 
     testInstrumentationRunner "expo.modules.TestRunner"
 
@@ -102,7 +100,6 @@ android {
           "-DREACT_NATIVE_DIR=${expoModuleExtension.reactNativeDir}",
           "-DREACT_NATIVE_TARGET_VERSION=${expoModuleExtension.reactNativeVersion.minor}",
           "-DUSE_HERMES=${USE_HERMES}",
-          "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
           "-DUNIT_TEST=${isExpoModulesCoreTests}"
         ]
 

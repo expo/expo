@@ -6,9 +6,9 @@
 
 #include <memory>
 
-namespace expo {
-
 namespace jsi = facebook::jsi;
+
+namespace expo {
 
 class JavaScriptRuntime;
 

@@ -55,6 +55,8 @@ import {
   badge,
   badgeProminence,
   listSectionMargins,
+  pickerStyle,
+  tag,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -121,13 +123,17 @@ export default function ModifiersScreen() {
             <Text modifiers={[badge('Hello'), badgeProminence(badgeType[badgeIndex])]}>Badge</Text>
             <Picker
               label="Select dabge type"
-              options={[...badgeType]}
-              selectedIndex={badgeIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setBadgeIndex(index);
-              }}
-              variant="menu"
-            />
+              modifiers={[pickerStyle('menu')]}
+              selection={badgeIndex}
+              onSelectionChange={({ nativeEvent: { selection } }) => {
+                setBadgeIndex(selection as number);
+              }}>
+              {badgeType.map((type, index) => (
+                <Text key={index} modifiers={[tag(index)]}>
+                  {type}
+                </Text>
+              ))}
+            </Picker>
           </Section>
 
           {/* List modifiers */}
@@ -207,13 +213,17 @@ export default function ModifiersScreen() {
             </Text>
             <Picker
               label="Select mode"
-              options={truncationModeOptions}
-              selectedIndex={truncationModeIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setTruncationMode(index);
-              }}
-              variant="menu"
-            />
+              modifiers={[pickerStyle('menu')]}
+              selection={truncationModeIndex}
+              onSelectionChange={({ nativeEvent: { selection } }) => {
+                setTruncationMode(selection as number);
+              }}>
+              {truncationModeOptions.map((option, index) => (
+                <Text key={index} modifiers={[tag(index)]}>
+                  {option}
+                </Text>
+              ))}
+            </Picker>
             <Switch
               label="Allow Tightening"
               value={allowTightening}
@@ -293,13 +303,17 @@ export default function ModifiersScreen() {
             <VStack spacing={15}>
               <Picker
                 label="Select alignment"
-                options={multilineTextAlignmentOptions}
-                selectedIndex={multilineTextAlignmentIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setMultilineTextAlignment(index);
-                }}
-                variant="menu"
-              />
+                modifiers={[pickerStyle('menu')]}
+                selection={multilineTextAlignmentIndex}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  setMultilineTextAlignment(selection as number);
+                }}>
+                {multilineTextAlignmentOptions.map((option, index) => (
+                  <Text key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </Text>
+                ))}
+              </Picker>
               <Text
                 size={14}
                 modifiers={[
@@ -570,20 +584,24 @@ export default function ModifiersScreen() {
                 label="Enable Picker"
               />
               <Picker
-                options={['Option 1', 'Option 2', 'Option 3', 'Option 4']}
-                selectedIndex={1}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  console.log('Picker option selected:', index);
+                selection={1}
+                onSelectionChange={({ nativeEvent: { selection } }) => {
+                  console.log('Picker option selected:', selection);
                 }}
-                variant="segmented"
                 modifiers={[
+                  pickerStyle('segmented'),
                   disabled(isDisabled),
                   background(isDisabled ? '#BDC3C7' : '#3498DB'),
                   cornerRadius(8),
                   padding({ all: 4 }),
                   shadow({ radius: 2, y: 1, color: isDisabled ? '#BDC3C740' : '#3498DB40' }),
-                ]}
-              />
+                ]}>
+                {['Option 1', 'Option 2', 'Option 3', 'Option 4'].map((option, index) => (
+                  <Text key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </Text>
+                ))}
+              </Picker>
             </VStack>
           </Section>
 

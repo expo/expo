@@ -1,6 +1,8 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
+import { convertFontWeightToStringFontWeight } from '../../utils/style';
+
 export type StackHeaderTitleProps = {
   children?: string;
   style?: StyleProp<{
@@ -56,13 +58,4 @@ export function appendStackHeaderTitlePropsToOptions(
         : {}),
     },
   };
-}
-
-function convertFontWeightToStringFontWeight(
-  fontWeight: TextStyle['fontWeight']
-): Exclude<TextStyle['fontWeight'], number> | undefined {
-  if (typeof fontWeight === 'number') {
-    return String(fontWeight) as `${Extract<TextStyle['fontWeight'], number>}`;
-  }
-  return fontWeight;
 }

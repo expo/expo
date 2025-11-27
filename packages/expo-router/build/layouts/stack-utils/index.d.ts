@@ -13,5 +13,4 @@ export declare const StackHeader: typeof StackHeaderComponent & {
 };
 export { StackHeaderBackButton, type StackHeaderBackButtonProps, StackHeaderComponent, type StackHeaderProps, StackHeaderLeft, type StackHeaderLeftProps, StackHeaderRight, type StackHeaderRightProps, StackHeaderSearchBar, type StackHeaderSearchBarProps, StackHeaderTitle, type StackHeaderTitleProps, };
 export { StackScreen, appendScreenStackPropsToOptions, type StackScreenProps } from './StackScreen';
-export { isChildOfType } from './utils';
 //# sourceMappingURL=index.d.ts.map

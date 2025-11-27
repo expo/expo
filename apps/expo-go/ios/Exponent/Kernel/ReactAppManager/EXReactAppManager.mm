@@ -25,7 +25,19 @@
 #endif
 
 #import <React/RCTBridge.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTRootView.h>
+
+#if __has_include(<ExpoModulesCore-Swift.h>)
+#import <ExpoModulesCore-Swift.h>
+#endif
+
+#if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
+#import <EXDevMenu/EXDevMenu-Swift.h>
+#else
+#import "EXDevMenu-Swift.h"
+#endif
+
 
 #import "Expo_Go-Swift.h"
 
@@ -126,6 +138,12 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     
     if (!_isHeadless) {
       _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
+    }
+
+    RCTHost *host = (RCTHost *)self.reactHost;
+    if (host) {
+      [DevMenuManager.shared updateCurrentManifest:_appRecord.appLoader.manifest
+                                       manifestURL:_appRecord.appLoader.manifestUrl];
     }
 
     [self setupWebSocketControls];
@@ -325,6 +343,13 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _hasHostEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
+    // Update expo-dev-menu with the current bridge and manifest
+    if ([self enablesDeveloperTools]) {
+      [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
+      [[DevMenuManager shared] updateCurrentManifest:_appRecord.appLoader.manifest
+                                         manifestURL:_appRecord.appLoader.manifestUrl];
+    }
+
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {
       EX_WEAKIFY(self);
@@ -411,7 +436,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 {
   if ([self enablesDeveloperTools]) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.versionManager showDevMenuForHost:self.reactHost];
+      [[DevMenuManager shared] toggleMenu];
     });
   }
 }

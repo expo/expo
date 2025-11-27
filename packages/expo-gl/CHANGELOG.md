@@ -10,8 +10,14 @@
 
 ### 💡 Others
 
+- Methods of the legacy `EXGLObjectManager` module are now exported from the existing native module in Swift. ([#41171](https://github.com/expo/expo/pull/41171) by [@tsapeta](https://github.com/tsapeta))
+- [android] rename module to align with iOS ([#41193](https://github.com/expo/expo/pull/41193) by [@Ubax](https://github.com/Ubax))
+
+
 ### ⚠️ Notices
 
+- **Performance optimization**: reduce supported old image formats in lib `stb_image.h` used for image decoding in `texImage2D` expo wrapper to support only **JPEG, PNG, GIF** image formats. Formats **BMP, PSD, TGA, HDR, PIC, PNM** are no longer supported. ([#41001](https://github.com/expo/expo/pull/41001) by [@psnet](https://github.com/psnet))
+- Updated library `stb_image.h` used for image decoding in `texImage2D` expo wraper method. A lot of fixes and performance improvements, see related PR. ([#41000](https://github.com/expo/expo/pull/41000) by [@psnet](https://github.com/psnet))
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 16.0.7 — 2025-09-11

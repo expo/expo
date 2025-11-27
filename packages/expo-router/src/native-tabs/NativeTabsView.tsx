@@ -29,7 +29,7 @@ import {
 featureFlags.experiment.controlledBottomTabs = false;
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { minimizeBehavior, disableIndicator, focusedIndex, tabs } = props;
+  const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable } = props;
 
   const deferredFocusedIndex = useDeferredValue(focusedIndex);
   // We need to check if the deferred index is not out of bounds
@@ -65,6 +65,11 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   });
 
   const currentTabAppearance = appearances[inBoundsDeferredFocusedIndex]?.standardAppearance;
+  const tabBarControllerMode: BottomTabsProps['tabBarControllerMode'] = sidebarAdaptable
+    ? 'tabSidebar'
+    : sidebarAdaptable === false
+      ? 'tabBar'
+      : 'automatic';
 
   return (
     <BottomTabsWrapper
@@ -92,6 +97,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       // #region iOS props
       tabBarTintColor={props?.tintColor}
       tabBarMinimizeBehavior={minimizeBehavior}
+      tabBarControllerMode={tabBarControllerMode}
       // #endregion
       onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
         props.onTabChange(tabKey);

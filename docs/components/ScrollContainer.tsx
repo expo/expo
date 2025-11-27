@@ -1,5 +1,12 @@
 import { mergeClasses } from '@expo/styleguide';
-import { Component, createRef, PropsWithChildren } from 'react';
+import {
+  forwardRef,
+  type PropsWithChildren,
+  type RefObject,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 
 type ScrollContainerProps = PropsWithChildren<{
   className?: string;
@@ -7,34 +14,43 @@ type ScrollContainerProps = PropsWithChildren<{
   scrollHandler?: () => void;
 }>;
 
-export class ScrollContainer extends Component<ScrollContainerProps> {
-  scrollRef = createRef<HTMLDivElement>();
+export type ScrollContainerHandle = {
+  getScrollTop: () => number;
+  getScrollRef: () => RefObject<HTMLDivElement | null>;
+};
 
-  componentDidMount() {
-    if (this.props.scrollPosition && this.scrollRef.current) {
-      this.scrollRef.current.scrollTop = this.props.scrollPosition;
-    }
-  }
+export const ScrollContainer = forwardRef<ScrollContainerHandle, ScrollContainerProps>(
+  ({ className, scrollPosition, scrollHandler, children }, ref) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-  public getScrollTop = () => {
-    return this.scrollRef.current?.scrollTop ?? 0;
-  };
+    useEffect(() => {
+      if (scrollPosition != null && scrollRef.current) {
+        scrollRef.current.scrollTop = scrollPosition;
+      }
+    }, [scrollPosition]);
 
-  public getScrollRef = () => {
-    return this.scrollRef;
-  };
+    useImperativeHandle(
+      ref,
+      () => ({
+        getScrollTop: () => scrollRef.current?.scrollTop ?? 0,
+        getScrollRef: () => scrollRef,
+      }),
+      []
+    );
 
-  render() {
     return (
       <div
         className={mergeClasses(
-          'size-full overflow-y-auto overflow-x-hidden',
-          this.props.className
+          'size-full transform-gpu overflow-y-auto overflow-x-hidden',
+          className
         )}
-        ref={this.scrollRef}
-        onScroll={this.props.scrollHandler}>
-        {this.props.children}
+        ref={scrollRef}
+        onScroll={scrollHandler}
+        style={{ transform: 'translate3d(0, 0, 0)' }}>
+        {children}
       </div>
     );
   }
-}
+);
+
+ScrollContainer.displayName = 'ScrollContainer';

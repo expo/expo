@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added SQLite inspector devtools plugin. ([#40872](https://github.com/expo/expo/pull/40872), [#40900](https://github.com/expo/expo/pull/40900) by [@kudo](https://github.com/kudo))
+- Added tagged template literals support. ([#40972](https://github.com/expo/expo/pull/40972) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -16,6 +17,8 @@
 - Fixed `serializeAsync` / `serializeSync` errors from memory database on web. ([#40899](https://github.com/expo/expo/pull/40899) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
 
 ## 16.0.8 — 2025-09-10
 

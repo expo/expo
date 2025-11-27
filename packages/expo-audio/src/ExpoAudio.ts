@@ -195,10 +195,23 @@ export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
  *
  * @example
  * ```tsx
- * import { useAudioPlayer, useAudioSampleListener } from 'expo-audio';
+ * import { useEffect } from 'react';
+ * import { useAudioPlayer, useAudioSampleListener, requestRecordingPermissionsAsync } from 'expo-audio';
  *
  * function AudioVisualizerComponent() {
  *   const player = useAudioPlayer(require('./music.mp3'));
+ *
+ *   // if required on Android, request recording permissions
+ *   useEffect(() => {
+ *     async function requestPermission() {
+ *       const { granted } = await requestRecordingPermissionsAsync();
+ *       if (granted) {
+ *         console.log("Permission granted");
+ *       }
+ *     }
+ *
+ *     requestPermission();
+ *    }, []);
  *
  *   useAudioSampleListener(player, (sample) => {
  *     // Use sample.channels array for audio visualization
@@ -335,7 +348,7 @@ export function useAudioRecorderState(recorder: AudioRecorder, interval: number 
 /**
  * Creates an instance of an `AudioPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayer) hook instead.
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-options) hook instead.
  * > See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
  * @param source The audio source to load.
  * @param options Audio player configuration options.
@@ -430,6 +443,7 @@ export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void>
           shouldPlayInBackground: mode.shouldPlayInBackground,
           shouldRouteThroughEarpiece: mode.shouldRouteThroughEarpiece,
           interruptionMode: mode.interruptionModeAndroid,
+          allowsBackgroundRecording: mode.allowsBackgroundRecording,
         };
   return await AudioModule.setAudioModeAsync(audioMode);
 }

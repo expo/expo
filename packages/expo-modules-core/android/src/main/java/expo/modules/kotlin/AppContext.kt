@@ -224,7 +224,7 @@ class AppContext(
    * @return true if there is an non-null, alive react native instance
    */
   val hasActiveReactInstance: Boolean
-    get() = hostingRuntimeContext.reactContext?.hasActiveReactInstance() ?: false
+    get() = hostingRuntimeContext.reactContext?.hasActiveReactInstance() == true
 
   /**
    * Provides access to the event emitter
@@ -234,7 +234,8 @@ class AppContext(
       ?: return null
     return KModuleEventEmitterWrapper(
       requireNotNull(registry.getModuleHolder(module)) {
-        "Cannot create an event emitter for the module that isn't present in the module registry."
+        val availableModulesNames = registry.registry.keys.joinToString(", ")
+        "Cannot create an event emitter for module ${module.javaClass} that isn't present in the module registry. Available modules: $availableModulesNames."
       },
       legacyEventEmitter,
       hostingRuntimeContext.reactContextHolder

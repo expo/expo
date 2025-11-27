@@ -42,7 +42,7 @@ public:
 
 private:
   JavaScriptWeakObject(WeakRuntimeHolder runtime,
-                       std::shared_ptr<jsi::Object> jsObject);
+                       const std::shared_ptr<jsi::Object>& jsObject);
 
 private:
   friend HybridBase;

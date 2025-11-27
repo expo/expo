@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Drop support for legacy architecture.
+
 ### 🎉 New features
 
 - Add `map` to `ValueOrUndefined`. ([#40593](https://github.com/expo/expo/pull/40593) by [@Wenszel](https://github.com/Wenszel))
@@ -22,9 +24,11 @@
 - [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers. ([#40684](https://github.com/expo/expo/pull/40684) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Remove `hermesEnabled` property requirement for internal testing ([#40678](https://github.com/expo/expo/pull/40678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] `Class` definition for shared objects is now optional. ([#40708](https://github.com/expo/expo/pull/40708) by [@tsapeta](https://github.com/tsapeta))
+- Split out JSI layer from the modules core. ([#40755](https://github.com/expo/expo/pull/40755) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [core] [iOS] Addresses a potential crash where `[NSString UTF8String]` could return `nil` for certain string inputs (non-English), leading to an attempt to dereference a null pointer during `jsi::String` creation. ([#40639](https://github.com/expo/expo/pull/40639) by [@mohammadamin16](https://github.com/mohammadamin16))
 - [iOS] Fix `Either` conversion in `Record` ([#40655](https://github.com/expo/expo/pull/40655) by [@vonovak](https://github.com/vonovak))
 - [RSC] Fix server components asserting from missing native modules. ([#40388](https://github.com/expo/expo/pull/40388) by [@EvanBacon](https://github.com/EvanBacon))
@@ -34,6 +38,8 @@
 - [iOS] Fix `ValueOrUndefined` conversion in `Record`. ([#40289](https://github.com/expo/expo/pull/40289) by [@jakex7](https://github.com/jakex7))
 - [iOS] Fix sizing glitch when React Native components are used as child in Expo UI components ([#40693](https://github.com/expo/expo/pull/40693) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Improve RN component layout when hosted in SwiftUI ([#40794](https://github.com/expo/expo/pull/40794) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `TextField` causing crash when reload and unmounting. ([#40960](https://github.com/expo/expo/pull/40960) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed `null` not being correctly converted to `ValueOrUndefined` in `Record`. ([#41005](https://github.com/expo/expo/pull/41005) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
@@ -191,6 +197,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [Android] Rework compose integration. ([#40653](https://github.com/expo/expo/pull/40653) by [@aleqsio](https://github.com/aleqsio))
 - Added support for expo modules written using TurboModules ([#36996](https://github.com/expo/expo/pull/36996) by [@acoates-ms](https://github.com/acoates-ms))
 - [Android] Add Array converter and handle nullable values. ([#37220](https://github.com/expo/expo/pull/37220) by [@jakex7](https://github.com/jakex7))
 - [Android] Support object arrays in type converters. ([#37276](https://github.com/expo/expo/pull/37276) by [@jakex7](https://github.com/jakex7))

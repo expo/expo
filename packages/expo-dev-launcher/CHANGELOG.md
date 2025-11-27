@@ -17,12 +17,14 @@
 - [iOS] Fix React Native dev menu not showing up in 0.83.x ([#40819](https://github.com/expo/expo/pull/40819) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix port scanning on pysical devices. ([#40824](https://github.com/expo/expo/pull/40824) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix RCTDevMenuConfiguration in release builds ([#40870](https://github.com/expo/expo/pull/40870) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix Safe Area being ignored on physical devices ([#41119](https://github.com/expo/expo/pull/41119) by [@betomoedano](https://github.com/betomoedano))
 
 ### 💡 Others
 
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
 - [android] Make reactNativeHost optional in ReactHostWrapper ([#40085](https://github.com/expo/expo/pull/40085) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Remove `ReactHostWrapper` ([#40295](https://github.com/expo/expo/pull/40295) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Remove custom `ReactNativeFactory`. ([#41084](https://github.com/expo/expo/pull/41084) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 6.0.16 - 2025-10-21
 

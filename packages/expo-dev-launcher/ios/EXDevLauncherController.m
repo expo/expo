@@ -15,8 +15,7 @@
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
-#import <EXDevLauncher/EXDevLauncherReactNativeFactory.h>
-#import <EXDevMenu/DevClientNoOpLoadingView.h>
+
 #import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
@@ -53,7 +52,7 @@
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
-@property (nonatomic, strong) EXDevLauncherReactNativeFactory *reactNativeFactory;
+@property (nonatomic, strong) RCTReactNativeFactory *reactNativeFactory;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 @property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
@@ -84,7 +83,7 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     self.dependencyProvider = [RCTAppDependencyProvider new];
-    self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
+    self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
     self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
     [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
   }

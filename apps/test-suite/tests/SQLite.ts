@@ -121,6 +121,60 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
 
       await db.closeAsync();
     });
+
+    it('should support tagged template literals syntax', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.sql`DROP TABLE IF EXISTS users`;
+      await db.sql`CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL)`;
+      await db.sql`INSERT INTO users (name, k, j) VALUES (${'John'}, ${42}, ${42.1})`;
+      const inputs = {
+        name: 'Alice',
+        k: 123,
+        j: 123.4,
+      };
+      await db.sql`INSERT INTO users (name, k, j) VALUES (${inputs.name}, ${inputs.k}, ${inputs.j})`;
+
+      const sql = db.sql;
+      const results = await sql<UserEntity>`SELECT * FROM users`;
+      expect(results.length).toBe(2);
+      expect(results[0].name).toBe('John');
+      expect(results[0].k).toBe(42);
+      expect(results[0].j).toBeCloseTo(42.1);
+      expect(results[1].name).toBe('Alice');
+      expect(results[1].k).toBe(123);
+      expect(results[1].j).toBeCloseTo(123.4);
+
+      const results2 = await sql<UserEntity>`SELECT * FROM users WHERE name = ${inputs.name}`;
+      expect(results2.length).toBe(1);
+      expect(results2[0].name).toBe('Alice');
+
+      const updated =
+        (await sql`INSERT INTO users (name, k, j) VALUES (${'Bob'}, ${33}, ${33.1})`) as SQLite.SQLiteRunResult;
+      expect(updated.lastInsertRowId).toBeGreaterThan(0);
+      expect(updated.changes).toBe(1);
+
+      const results3 = await sql<UserEntity>`SELECT * FROM users`;
+      expect(results3.length).toBe(3);
+
+      const names: string[] = [];
+      for await (const user of sql<UserEntity>`SELECT * FROM users ORDER BY name ASC`.each()) {
+        names.push(user.name);
+      }
+      expect(names).toEqual(['Alice', 'Bob', 'John']);
+
+      const firstEntity =
+        await sql<UserEntity>`SELECT * FROM users ORDER BY name ASC LIMIT 1`.first();
+      expect(firstEntity?.name).toBe('Alice');
+      const firstEntity2 =
+        sql<UserEntity>`SELECT * FROM users ORDER BY name ASC LIMIT 1`.firstSync();
+      expect(firstEntity2?.name).toBe('Alice');
+
+      const notFoundEntity =
+        await sql<UserEntity>`SELECT * FROM users WHERE name = ${'Non-existent'}`.first();
+      expect(notFoundEntity).toBeNull();
+
+      await db.closeAsync();
+    });
   });
 
   describe('File system tests', () => {

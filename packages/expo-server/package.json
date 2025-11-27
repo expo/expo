@@ -60,8 +60,9 @@
   ],
   "devDependencies": {
     "@types/express": "^5.0.3",
+    "expo-module-scripts": "^5.0.7",
     "npm-run-all2": "^8.0.4",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.1.2"
   },
   "publishConfig": {
     "access": "public"

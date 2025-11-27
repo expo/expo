@@ -44,6 +44,7 @@ const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
 const stack_utils_1 = require("./stack-utils");
+const children_1 = require("../utils/children");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
@@ -59,7 +60,7 @@ function isStackAction(action) {
 const isPreviewAction = (action) => !!action.payload &&
     'params' in action.payload &&
     typeof action.payload.params === 'object' &&
-    !!(0, navigationParams_1.getInternalExpoRouterParams)(action.payload?.params ?? undefined)['__internal__expo_router_is_preview_navigation'];
+    !!(0, navigationParams_1.getInternalExpoRouterParams)(action.payload?.params ?? undefined)[navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME];
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -380,15 +381,15 @@ function mapProtectedScreen(props) {
         ...props,
         children: react_1.Children.toArray(props.children)
             .map((child, index) => {
-            if ((0, stack_utils_1.isChildOfType)(child, stack_utils_1.StackScreen)) {
+            if ((0, children_1.isChildOfType)(child, stack_utils_1.StackScreen)) {
                 const options = (0, stack_utils_1.appendScreenStackPropsToOptions)({}, child.props);
                 const { children, ...rest } = child.props;
                 return <Screen_1.Screen key={child.props.name} {...rest} options={options}/>;
             }
-            else if ((0, stack_utils_1.isChildOfType)(child, Protected_1.Protected)) {
+            else if ((0, children_1.isChildOfType)(child, Protected_1.Protected)) {
                 return <Protected_1.Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)}/>;
             }
-            else if ((0, stack_utils_1.isChildOfType)(child, stack_utils_1.StackHeader)) {
+            else if ((0, children_1.isChildOfType)(child, stack_utils_1.StackHeader)) {
                 // Ignore Stack.Header, because it can be used to set header options for Stack
                 // and we use this function to process children of Stack, as well.
                 return null;
@@ -409,7 +410,7 @@ function mapProtectedScreen(props) {
 const Stack = Object.assign((props) => {
     const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptionsWithCompositionAPIOptions = (0, react_1.useMemo)(() => {
-        const stackHeader = react_1.Children.toArray(props.children).find((child) => (0, stack_utils_1.isChildOfType)(child, stack_utils_1.StackHeader));
+        const stackHeader = react_1.Children.toArray(props.children).find((child) => (0, children_1.isChildOfType)(child, stack_utils_1.StackHeader));
         if (stackHeader) {
             const screenStackProps = { children: stackHeader };
             const currentOptions = props.screenOptions;
@@ -466,7 +467,7 @@ function disableAnimationInScreenOptions(options, condition) {
 }
 function shouldDisableAnimationBasedOnParams(route) {
     const expoParams = (0, navigationParams_1.getInternalExpoRouterParams)(route.params);
-    return !!expoParams.__internal_expo_router_no_animation;
+    return !!expoParams[navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME];
 }
 exports.default = Stack;
 const StackRouter = (options) => {

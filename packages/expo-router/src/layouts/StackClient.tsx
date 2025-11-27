@@ -22,15 +22,20 @@ import React, { Children, ComponentProps, useMemo } from 'react';
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
-import { getInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
+import {
+  getInternalExpoRouterParams,
+  INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  type InternalExpoRouterParams,
+} from '../navigationParams';
 import { SingularOptions, getSingularId } from '../useScreens';
 import {
   type StackScreenProps,
   StackHeader,
   StackScreen,
   appendScreenStackPropsToOptions,
-  isChildOfType,
 } from './stack-utils';
+import { isChildOfType } from '../utils/children';
 import { Protected, type ProtectedProps } from '../views/Protected';
 import { Screen } from '../views/Screen';
 
@@ -115,7 +120,7 @@ const isPreviewAction = (action: NavigationAction): action is ExpoNavigationActi
   'params' in action.payload &&
   typeof action.payload.params === 'object' &&
   !!getInternalExpoRouterParams(action.payload?.params ?? undefined)[
-    '__internal__expo_router_is_preview_navigation'
+    INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME
   ];
 
 /**
@@ -611,7 +616,7 @@ function disableAnimationInScreenOptions(
 
 function shouldDisableAnimationBasedOnParams(route: RouteProp<ParamListBase, string>): boolean {
   const expoParams = getInternalExpoRouterParams(route.params);
-  return !!expoParams.__internal_expo_router_no_animation;
+  return !!expoParams[INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME];
 }
 
 export default Stack;

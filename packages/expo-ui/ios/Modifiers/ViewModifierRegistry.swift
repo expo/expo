@@ -474,6 +474,31 @@ internal struct ScrollDismissesKeyboardModifier: ViewModifier, Record {
   }
 }
 
+internal enum MenuActionDismissBehaviorMode: String, Enumerable {
+  case automatic
+  case disabled
+  case enabled
+}
+
+internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
+  @Field var behavior: MenuActionDismissBehaviorMode = .automatic
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.4, macOS 13.3, tvOS 17.0, *) {
+      switch behavior {
+      case .automatic:
+        content.menuActionDismissBehavior(.automatic)
+      case .disabled:
+        content.menuActionDismissBehavior(.disabled)
+      case .enabled:
+        content.menuActionDismissBehavior(.enabled)
+      }
+    } else {
+      content
+    }
+  }
+}
+
 internal struct AccessibilityLabelModifier: ViewModifier, Record {
   @Field var label: String?
 
@@ -1332,6 +1357,31 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
   }
 }
 
+internal enum TextFieldStyle: String, Enumerable {
+  case automatic
+  case plain
+  case roundedBorder
+}
+
+internal struct TextFieldStyleModifier: ViewModifier, Record {
+  @Field var style: TextFieldStyle = .automatic
+
+  func body(content: Content) -> some View {
+    switch style {
+    case .plain:
+      content.textFieldStyle(.plain)
+    case .roundedBorder:
+      #if os(iOS)
+      content.textFieldStyle(.roundedBorder)
+      #else
+      content.textFieldStyle(.automatic)
+      #endif
+    default:
+      content.textFieldStyle(.automatic)
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -1525,6 +1575,10 @@ extension ViewModifierRegistry {
       return try ButtonStyleModifier(from: params, appContext: appContext)
     }
 
+    register("textFieldStyle") { params, appContext, _ in
+      return try TextFieldStyleModifier(from: params, appContext: appContext)
+    }
+
     register("scrollContentBackground") { params, appContext, _ in
       return try ScrollContentBackground(from: params, appContext: appContext)
     }
@@ -1588,6 +1642,10 @@ extension ViewModifierRegistry {
       return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
     }
 
+    register("menuActionDismissBehavior") { params, appContext, _ in
+      return try MenuActionDismissBehaviorModifier(from: params, appContext: appContext)
+    }
+
     register("headerProminence") { params, appContext, _ in
       return try HeaderProminence(from: params, appContext: appContext)
     }
@@ -1610,6 +1668,18 @@ extension ViewModifierRegistry {
 
     register("gridCellAnchor") { params, appContext, _ in
       return try GridCellAnchor(from: params, appContext: appContext)
+    }
+
+    register("tag") { params, appContext, _ in
+      return try TagModifier(from: params, appContext: appContext)
+    }
+    
+    register("pickerStyle") { params, appContext, _ in
+      return try PickerStyleModifier(from: params, appContext: appContext)
+    }
+      
+    register("submitLabel") { params, appContext, _ in
+      return try SubmitLabelModifier(from: params, appContext: appContext)
     }
   }
 }

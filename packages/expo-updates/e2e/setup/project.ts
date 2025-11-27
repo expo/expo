@@ -67,7 +67,6 @@ function getExpoDependencyChunks({
           [
             'expo-app-integrity',
             'expo-audio',
-            'expo-av',
             'expo-background-task',
             'expo-blur',
             'expo-crypto',

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
@@ -23,8 +24,11 @@ import androidx.compose.ui.zIndex
 import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.Button
 import expo.modules.ui.menu.ContextMenu
+import kotlin.reflect.KProperty
 
 class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -42,8 +46,11 @@ class ExpoUIModule : Module() {
       }
     }
 
-    View(BottomSheetView::class) {
+    View("BottomSheetView", events = {
       Events("onIsOpenedChange")
+    }) { props: BottomSheetProps ->
+      val onIsOpenedChange by remember { EventDispatcher<IsOpenedChangeEvent>() }
+      BottomSheetContent(props) { onIsOpenedChange(it) }
     }
 
     // Defines a single view for now – a single choice segmented control

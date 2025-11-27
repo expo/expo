@@ -73,20 +73,10 @@ Pod::Spec.new do |s|
   end
   install_modules_dependencies(s)
 
-  s.subspec 'SafeAreaView' do |safearea|
-    safearea.dependency 'ExpoModulesCore'
-
-    # Swift/Objective-C compatibility
-    safearea.pod_target_xcconfig = {
-      'DEFINES_MODULE' => 'YES',
-      'SWIFT_COMPILATION_MODE' => 'wholemodule'
-    }
-  end
-
   s.subspec 'Main' do |main|
     s.source_files   = 'ios/**/*.{h,m,mm,swift}'
     s.preserve_paths = 'ios/**/*.{h,m,mm,swift}'
-    s.exclude_files  = 'ios/*Tests/**/*', 'ios/ReactNativeCompatibles/**/*'
+    s.exclude_files  = 'ios/*Tests/**/*'
     s.compiler_flags = compiler_flags
 
     # add_dependency() requires to be defined
@@ -100,12 +90,6 @@ Pod::Spec.new do |s|
     main.dependency "EXManifests"
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
-  end
-
-  s.subspec 'ReactNativeCompatibles' do |ss|
-    ss.source_files = 'ios/ReactNativeCompatibles/ReactNative/**/*'
-    ss.compiler_flags = compiler_flags
-    ss.dependency 'React-Core'
   end
 
   s.test_spec 'Tests' do |test_spec|
@@ -132,5 +116,5 @@ Pod::Spec.new do |s|
     }
   end
 
-  s.default_subspec = ['Main', 'ReactNativeCompatibles']
+  s.default_subspec = ['Main']
 end

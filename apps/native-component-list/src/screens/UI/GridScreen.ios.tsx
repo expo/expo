@@ -22,6 +22,8 @@ import {
   gridCellColumns,
   gridCellUnsizedAxes,
   padding,
+  pickerStyle,
+  tag,
 } from '@expo/ui/swift-ui/modifiers';
 import { Image as ExpoImage } from 'expo-image';
 import * as React from 'react';
@@ -150,11 +152,17 @@ export default function GridScreen() {
             </Grid>
             <Spacer />
             <Picker
-              options={[...gridCellAxesOptions]}
-              selectedIndex={gridCellAxesIndex}
-              onOptionSelected={(e) => setGridCellAxesIndex(e.nativeEvent.index)}
-              variant="menu"
-            />
+              modifiers={[pickerStyle('menu')]}
+              selection={gridCellAxesIndex}
+              onSelectionChange={({ nativeEvent: { selection } }) =>
+                setGridCellAxesIndex(selection as number)
+              }>
+              {gridCellAxesOptions.map((option, index) => (
+                <Text key={index} modifiers={[tag(index)]}>
+                  {option}
+                </Text>
+              ))}
+            </Picker>
           </HStack>
 
           {/* 3x3 Grid and Circle Grid */}
@@ -210,11 +218,17 @@ export default function GridScreen() {
                   <Text>Alignment</Text>
                   <Spacer />
                   <Picker
-                    options={[...alignmentOptions]}
-                    selectedIndex={alignmentIndex}
-                    onOptionSelected={(e) => setAlignmentIndex(e.nativeEvent.index)}
-                    variant="menu"
-                  />
+                    modifiers={[pickerStyle('menu')]}
+                    selection={alignmentIndex}
+                    onSelectionChange={({ nativeEvent: { selection } }) =>
+                      setAlignmentIndex(selection as number)
+                    }>
+                    {alignmentOptions.map((option, index) => (
+                      <Text key={index} modifiers={[tag(index)]}>
+                        {option}
+                      </Text>
+                    ))}
+                  </Picker>
                 </HStack>
 
                 {/* Colored Rectangles Grid */}
@@ -241,21 +255,28 @@ export default function GridScreen() {
               modifiers={[background('white'), clipShape('roundedRectangle')]}>
               <VStack modifiers={[padding({ all: 5 })]} alignment="center" spacing={20}>
                 <Picker
-                  variant="segmented"
-                  options={['Custom', 'Preset']}
-                  selectedIndex={anchorType === 'custom' ? 0 : 1}
-                  onOptionSelected={({ nativeEvent }) =>
-                    setAnchorType(nativeEvent.index === 0 ? 'custom' : 'preset')
-                  }
-                />
+                  modifiers={[pickerStyle('segmented')]}
+                  selection={anchorType === 'custom' ? 0 : 1}
+                  onSelectionChange={({ nativeEvent: { selection } }) =>
+                    setAnchorType(selection === 0 ? 'custom' : 'preset')
+                  }>
+                  <Text modifiers={[tag(0)]}>Custom</Text>
+                  <Text modifiers={[tag(1)]}>Preset</Text>
+                </Picker>
                 <VStack alignment="center">
                   {anchorType === 'preset' ? (
                     <Picker
-                      options={[...anchorOptions]}
-                      onOptionSelected={(event) => setAnchorIndex(event.nativeEvent.index)}
-                      selectedIndex={anchorIndex}
-                      variant="menu"
-                    />
+                      modifiers={[pickerStyle('menu')]}
+                      selection={anchorIndex}
+                      onSelectionChange={({ nativeEvent: { selection } }) =>
+                        setAnchorIndex(selection as number)
+                      }>
+                      {anchorOptions.map((option, index) => (
+                        <Text key={index} modifiers={[tag(index)]}>
+                          {option}
+                        </Text>
+                      ))}
+                    </Picker>
                   ) : (
                     <VStack spacing={12}>
                       {(['x', 'y'] as const).map((anchor) => (

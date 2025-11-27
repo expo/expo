@@ -133,8 +133,6 @@ export function getTestModules() {
 
     modules.push(optionalRequire(() => require('./tests/Battery')));
     modules.push(optionalRequire(() => require('./tests/Brightness')));
-    // Crashes app when mounting component
-    modules.push(optionalRequire(() => require('./tests/Video')));
     // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
     // 'java.util.Map expo.modules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
     modules.push(TaskManagerTestScreen);

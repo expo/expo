@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `wss://` support. ([#40893](https://github.com/expo/expo/pull/40893) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.1.7 — 2025-09-11

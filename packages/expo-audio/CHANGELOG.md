@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
+- [iOS/Android] Add support background recording. ([#41134](https://github.com/expo/expo/pull/41134) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
@@ -18,6 +19,9 @@
 - [Android] Fix incorrect volume read. ([#40258](https://github.com/expo/expo/pull/40258) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix issue where local assets don't resolve correctly in release mode. ([#40642](https://github.com/expo/expo/pull/40642) by [@alanjhughes](https://github.com/alanjhughes))
 - [web] Bring fix from [#38273](https://github.com/expo/expo/pull/38273) to web. ([#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes)
+- [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fix recording options not being applied to web correctly. ([#41154](https://github.com/expo/expo/pull/41154) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
 
 ### 💡 Others
 

@@ -18,11 +18,15 @@
 - Add support for a new error overlay UI from `@expo/log-box` ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers. ([#40684](https://github.com/expo/expo/pull/40684) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `Class` definition for shared objects is now optional. ([#40708](https://github.com/expo/expo/pull/40708) by [@tsapeta](https://github.com/tsapeta))
+- Split out JSI layer from the modules core. ([#40755](https://github.com/expo/expo/pull/40755) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- Fix setting filename in `FormData`. ([#40586](https://github.com/expo/expo/pull/40586) by [@aleqsio](https://github.com/aleqsio))
 - Fixed DOM Components entry not found from updates on Android. ([#40574](https://github.com/expo/expo/pull/40574) by [@kudo](https://github.com/kudo))
 - Empty HMR update should not reset the error overlay ([#40741](https://github.com/expo/expo/pull/40741) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Fix `ExpoAppDelegate` not extending `UIResponder`. ([#41066](https://github.com/expo/expo/pull/41066) by [@tsapeta](https://github.com/tsapeta))
+- Fixed broken `Updates.reloadAsync`. ([#41260](https://github.com/expo/expo/pull/41260) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
