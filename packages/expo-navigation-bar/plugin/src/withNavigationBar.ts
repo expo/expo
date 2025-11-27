@@ -12,12 +12,13 @@ import {
   withAndroidColors,
   withAndroidStyles,
 } from 'expo/config-plugins';
-import {
+
+import type {
   NavigationBarVisibility,
   NavigationBarBehavior,
   NavigationBarPosition,
   NavigationBarButtonStyle,
-} from 'expo-navigation-bar';
+} from '../..';
 
 const debug = Debug('expo:system-navigation-bar:plugin');
 
