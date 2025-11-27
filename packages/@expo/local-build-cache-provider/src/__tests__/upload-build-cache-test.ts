@@ -46,9 +46,10 @@ describe('LocalBuildCacheProvider.uploadBuildCache', () => {
       );
 
       expect(destPath).toBeTruthy();
-      expect(fs.existsSync(destPath!)).toBe(true);
-      expect(fs.statSync(destPath!).isDirectory()).toBe(true);
-      expect(fs.readFileSync(path.join(destPath!, 'Contents', 'Info.plist'), 'utf8')).toBe(
+      assert(destPath);
+      expect(fs.existsSync(destPath)).toBe(true);
+      expect(fs.statSync(destPath).isDirectory()).toBe(true);
+      expect(fs.readFileSync(path.join(destPath, 'Contents', 'Info.plist'), 'utf8')).toBe(
         'plist-data'
       );
     } finally {

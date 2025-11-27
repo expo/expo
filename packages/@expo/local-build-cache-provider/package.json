@@ -23,7 +23,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/devtools"
+    "directory": "packages/@expo/local-build-cache-provider"
   },
   "keywords": [
     "expo",
