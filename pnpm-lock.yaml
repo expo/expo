@@ -1342,7 +1342,7 @@ importers:
         version: 54.1.0
       '@expo/metro-config':
         specifier: ~54.0.3
-        version: 54.0.9(expo@54.0.25)
+        version: 54.0.9(expo@54.0.25(@babel/core@7.26.0)(@expo/dom-webview@packages+@expo+dom-webview)(@expo/metro-runtime@packages+@expo+metro-runtime)(expo-router@packages+expo-router)(graphql@15.8.0)(react-native-webview@13.15.0(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))
       '@expo/osascript':
         specifier: ^2.3.7
         version: link:../osascript
@@ -1354,7 +1354,7 @@ importers:
         version: link:../plist
       '@expo/prebuild-config':
         specifier: ^54.0.3
-        version: 54.0.6(expo@54.0.25)
+        version: 54.0.6(expo@54.0.25(@babel/core@7.26.0)(@expo/dom-webview@packages+@expo+dom-webview)(@expo/metro-runtime@packages+@expo+metro-runtime)(expo-router@packages+expo-router)(graphql@15.8.0)(react-native-webview@13.15.0(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))
       '@expo/router-server':
         specifier: ^0.1.0
         version: link:../router-server
@@ -1595,10 +1595,13 @@ importers:
         version: 0.0.1113120
       expo-atlas:
         specifier: ^0.4.1
-        version: 0.4.1(expo@54.0.25)
+        version: 0.4.1(expo@54.0.25(@babel/core@7.26.0)(@expo/dom-webview@packages+@expo+dom-webview)(@expo/metro-runtime@packages+@expo+metro-runtime)(expo-router@packages+expo-router)(graphql@15.8.0)(react-native-webview@13.15.0(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      expo-router:
+        specifier: workspace:*
+        version: link:../../expo-router
       find-process:
         specifier: ^1.4.7
         version: 1.4.7
@@ -21238,14 +21241,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  expo-atlas@0.4.1(expo@54.0.25):
+  expo-atlas@0.4.1(expo@54.0.25(@babel/core@7.26.0)(@expo/dom-webview@packages+@expo+dom-webview)(@expo/metro-runtime@packages+@expo+metro-runtime)(expo-router@packages+expo-router)(graphql@15.8.0)(react-native-webview@13.15.0(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)):
     dependencies:
       '@expo/server': 0.5.3
       arg: 5.0.2
       chalk: 4.1.2
       compression: 1.8.0
       connect: 3.7.0
-      expo: 54.0.25(@babel/core@7.26.0)(@expo/dom-webview@packages+@expo+dom-webview)(@expo/metro-runtime@packages+@expo+metro-runtime)(expo-router@6.0.15)(graphql@15.8.0)(react-native-webview@13.15.0(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      expo: 54.0.25(@babel/core@7.26.0)(@expo/dom-webview@packages+@expo+dom-webview)(@expo/metro-runtime@packages+@expo+metro-runtime)(expo-router@packages+expo-router)(graphql@15.8.0)(react-native-webview@13.15.0(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.3(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
       express: 4.21.1
       freeport-async: 2.0.0
       getenv: 2.0.0
