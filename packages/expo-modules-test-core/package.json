@@ -33,5 +33,8 @@
     "prettier": "^3.0.3",
     "xml-js": "^1.6.11",
     "yaml": "^2.3.2"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "workspace:*"
   }
 }

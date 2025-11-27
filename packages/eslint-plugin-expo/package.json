@@ -33,6 +33,7 @@
     "@types/jest": "^29.5.12",
     "@typescript-eslint/rule-tester": "^8.29.1",
     "eslint-config-universe": "workspace:*",
+    "eslint-import-resolver-typescript": "^3.6.0",
     "eslint-plugin-eslint-plugin": "^6.2.0",
     "expo-module-scripts": "workspace:*",
     "jest": "^29.7.0",
