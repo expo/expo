@@ -30,17 +30,22 @@
     "react-dom": "19.2.0",
     "util": "~0.12.4"
   },
+  "// TODO": "This should be empty, remove remaining deps",
   "dependencies": {
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
     "patch-package": "^8.0.1",
-    "prettier": "^3.4.2",
-    "yarn-deduplicate": "^6.0.2"
+    "prettier": "^3.4.2"
   },
   "volta": {
     "node": "22.14.0"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2"
+    "@types/jest": "^29.5.12",
+    "@vercel/ncc": "^0.38.4",
+    "expo-module-scripts": "workspace:*",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   }
 }
