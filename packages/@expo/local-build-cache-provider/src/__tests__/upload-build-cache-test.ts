@@ -1,7 +1,9 @@
 import { BuildCacheProviderPlugin } from '@expo/config';
+import assert from 'assert';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { vol } from 'memfs';
 
 import LocalBuildCacheProvider from '../index';
 

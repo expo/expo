@@ -40,6 +40,8 @@
     "fetch.d.ts",
     "fingerprint.js",
     "fingerprint.d.ts",
+    "local-build-cache-provider.js",
+    "local-build-cache-provider.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
     "tsconfig.base.json",

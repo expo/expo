@@ -16,16 +16,16 @@ async function resolveBuildCacheAsync(
   { projectRoot, platform, fingerprintHash, runOptions }: ResolveBuildCacheProps,
   options: Options = {}
 ): Promise<string | null> {
-  const cacheDir = options?.cacheDir ?? path.join(projectRoot, '.expo', 'build-cache');
+  const cacheDir = resolveCacheDir(projectRoot, options);
 
   if (!fs.existsSync(cacheDir)) {
     console.debug('Local build cache directory does not exist, skipping check');
     return null;
   }
 
-  const expectedFile = `${platform}-${fingerprintHash}-${getBuildVariant(runOptions)}`;
-  const files = fs.readdirSync(cacheDir);
+  const files = await fs.promises.readdir(cacheDir);
 
+  const expectedFile = `${platform}-${fingerprintHash}-${getBuildVariant(runOptions)}`;
   const file = files.find((file) => file.includes(expectedFile));
   if (!file) {
     console.debug('No matching builds found in local cache, starting build process');
@@ -39,7 +39,7 @@ async function uploadBuildCacheAsync(
   { projectRoot, platform, fingerprintHash, buildPath, runOptions }: UploadBuildCacheProps,
   options: Options = {}
 ): Promise<string | null> {
-  const cacheDir = options?.cacheDir ?? path.join(projectRoot, '.expo', 'build-cache');
+  const cacheDir = resolveCacheDir(projectRoot, options);
 
   if (!fs.existsSync(cacheDir)) {
     console.debug(
@@ -47,7 +47,7 @@ async function uploadBuildCacheAsync(
       cacheDir
     );
 
-    fs.mkdirSync(cacheDir, { recursive: true });
+    await fs.promises.mkdir(cacheDir, { recursive: true });
   }
 
   try {
@@ -57,15 +57,15 @@ async function uploadBuildCacheAsync(
 
     // Remove existing cache entry if it exists.
     if (fs.existsSync(destPath)) {
-      fs.rmSync(destPath, { recursive: true, force: true });
+      await fs.promises.rm(destPath, { recursive: true, force: true });
     }
 
-    const stats = fs.statSync(buildPath);
+    const stats = await fs.promises.stat(buildPath);
     // iOS builds are usually directories, Android builds are usually files.
     if (stats.isDirectory()) {
-      fs.cpSync(buildPath, destPath, { recursive: true });
+      await fs.promises.cp(buildPath, destPath, { recursive: true });
     } else if (stats.isFile()) {
-      fs.copyFileSync(buildPath, destPath);
+      await fs.promises.copyFile(buildPath, destPath);
     } else {
       console.debug('Unsupported build artifact type for caching:', buildPath);
       return null;
@@ -75,6 +75,10 @@ async function uploadBuildCacheAsync(
     console.debug(' error:', error);
   }
   return null;
+}
+
+function resolveCacheDir(projectRoot: string, options: Options) {
+  return options?.cacheDir ?? path.join(projectRoot, '.expo', 'build-cache');
 }
 
 function getBuildVariant(runOptions: RunOptions): string {

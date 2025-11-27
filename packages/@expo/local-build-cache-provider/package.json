@@ -44,6 +44,7 @@
     "chalk": "^4.1.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^5.0.7",
+    "memfs": "^3.2.0"
   }
 }
