@@ -49,7 +49,6 @@
     "@expo/env": "~2.0.7",
     "@expo/image-utils": "^0.8.7",
     "@expo/json-file": "^10.0.7",
-    "@expo/mcp-tunnel": "~0.1.0",
     "@expo/metro": "~54.1.0",
     "@expo/metro-config": "~54.0.3",
     "@expo/osascript": "^2.3.7",
@@ -126,6 +125,7 @@
     }
   },
   "devDependencies": {
+    "@expo/mcp-tunnel": "~0.2.1",
     "@expo/multipart-body-parser": "^1.0.0",
     "@expo/ngrok": "4.1.3",
     "@graphql-codegen/cli": "^2.16.3",
