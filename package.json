@@ -7,7 +7,7 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "pnpm --filter @expo/cli prepare && patch-package",
+    "prepare": "pnpm --filter @expo/cli build",
     "install:react-native-lab": "(([ \"$(ls -A react-native-lab/react-native)\" ] && (yarn --cwd react-native-lab/react-native install --frozen-lockfile || true)) || echo \"Skipping installing Node modules in react-native-lab/react-native (directory empty)\")",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
@@ -34,7 +34,6 @@
   "dependencies": {
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
-    "patch-package": "^8.0.1",
     "prettier": "^3.4.2"
   },
   "volta": {

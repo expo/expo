@@ -22,6 +22,11 @@ overrides:
   react-dom: 19.2.0
   util: ~0.12.4
 
+patchedDependencies:
+  react-server-dom-webpack:
+    hash: af2de78f3c300516430a402fe1a5e41c6870c2090cf2fb1364b881a0334fe873
+    path: patches/react-server-dom-webpack.patch
+
 importers:
 
   .:
@@ -32,9 +37,6 @@ importers:
       jsc-android:
         specifier: ^250231.0.0
         version: 250231.0.0
-      patch-package:
-        specifier: ^8.0.1
-        version: 8.0.1
       prettier:
         specifier: ^3.4.2
         version: 3.5.3
@@ -2329,7 +2331,7 @@ importers:
     devDependencies:
       react-server-dom-webpack:
         specifier: ~19.0.1
-        version: 19.0.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(webpack@5.103.0(@swc/core@1.11.11))
+        version: 19.0.1(patch_hash=af2de78f3c300516430a402fe1a5e41c6870c2090cf2fb1364b881a0334fe873)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(webpack@5.103.0(@swc/core@1.11.11))
       tsd:
         specifier: ^0.28.1
         version: 0.28.1
@@ -4404,7 +4406,7 @@ importers:
         version: 10.1.1
       react-server-dom-webpack:
         specifier: ~19.0.1
-        version: 19.0.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(webpack@5.103.0(@swc/core@1.11.11))
+        version: 19.0.1(patch_hash=af2de78f3c300516430a402fe1a5e41c6870c2090cf2fb1364b881a0334fe873)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(webpack@5.103.0(@swc/core@1.11.11))
 
   packages/expo-screen-capture:
     dependencies:
@@ -5071,7 +5073,7 @@ importers:
     devDependencies:
       react-server-dom-webpack:
         specifier: ~19.0.1
-        version: 19.0.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(webpack@5.103.0(@swc/core@1.11.11))
+        version: 19.0.1(patch_hash=af2de78f3c300516430a402fe1a5e41c6870c2090cf2fb1364b881a0334fe873)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(webpack@5.103.0(@swc/core@1.11.11))
 
   packages/patch-project:
     dependencies:
@@ -8464,9 +8466,6 @@ packages:
   '@xtuc/long@4.2.2':
     resolution: {integrity: sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==}
 
-  '@yarnpkg/lockfile@1.1.0':
-    resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
-
   abab@2.0.6:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}
     deprecated: Use your platform's native atob() and btoa() methods instead
@@ -10313,9 +10312,6 @@ packages:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
 
-  find-yarn-workspace-root@2.0.0:
-    resolution: {integrity: sha512-1IMnbjt4KzsQfnhnzNd8wUEgXZ44IzZaZmnLYx7D5FZlaHt2gW20Cri8Q+E/t5tIj4+epTBub+2Zxu/vNILzqQ==}
-
   firebase@9.6.10:
     resolution: {integrity: sha512-pnWXhH2J/O5To/TXEp7Dx1nSKkDRspl1bo4f4p6f2noVrn3lvz+cbQNM7DTT0xyA0RsNM/V7aSv3ZbAQj8Od3Q==}
 
@@ -10393,10 +10389,6 @@ packages:
 
   fs-constants@1.0.0:
     resolution: {integrity: sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==}
-
-  fs-extra@10.1.0:
-    resolution: {integrity: sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==}
-    engines: {node: '>=12'}
 
   fs-monkey@1.0.3:
     resolution: {integrity: sha512-cybjIfiiE+pTWicSCLFHSrXZ6EilF30oh91FDP9S2B051prEa7QWfrVTQm10/dDpswBDXZugPa1Ogu8Yh+HV0Q==}
@@ -11478,9 +11470,6 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  jsonfile@6.1.0:
-    resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
-
   jsonify@0.0.1:
     resolution: {integrity: sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==}
 
@@ -12485,11 +12474,6 @@ packages:
   pascalcase@0.1.1:
     resolution: {integrity: sha512-XHXfu/yOQRy9vYOtUDVMN60OEJjW013GoObG1o+xwQTpB9eYJX/BjXMsdW13ZDPruFhYYn0AG22w0xgQMwl3Nw==}
     engines: {node: '>=0.10.0'}
-
-  patch-package@8.0.1:
-    resolution: {integrity: sha512-VsKRIA8f5uqHQ7NGhwIna6Bx6D9s/1iXlA1hthBVBEbkq+t4kXD0HHt+rJhf/Z+Ci0F/HCB2hvn0qLdLG+Qxlw==}
-    engines: {node: '>=14', npm: '>5'}
-    hasBin: true
 
   path-case@3.0.4:
     resolution: {integrity: sha512-qO4qCFjXqVTrcbPt/hQfhTQ+VhFsqNKOPtytgNKkKxSoEp3XPUQ8ObFuePylOIok5gjn69ry8XiULxCwot3Wfg==}
@@ -14354,10 +14338,6 @@ packages:
   universalify@0.2.0:
     resolution: {integrity: sha512-CJ1QgKmNg3CwvAv/kOFmtnEN05f0D/cn9QntgNOQlQF9dgvVTHj3t+8JPdjqawCHk7V/KA+fbUqzZ9XWhcqPUg==}
     engines: {node: '>= 4.0.0'}
-
-  universalify@2.0.0:
-    resolution: {integrity: sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==}
-    engines: {node: '>= 10.0.0'}
 
   unixify@1.0.0:
     resolution: {integrity: sha512-6bc58dPYhCMHHuwxldQxO3RRNZ4eCogZ/st++0+fcC1nr0jiGUtAdBJ2qzmLQWSxbtz42pWt4QQMiZ9HvZf5cg==}
@@ -19149,8 +19129,6 @@ snapshots:
 
   '@xtuc/long@4.2.2': {}
 
-  '@yarnpkg/lockfile@1.1.0': {}
-
   abab@2.0.6: {}
 
   abbrev@1.1.1: {}
@@ -21430,10 +21408,6 @@ snapshots:
       locate-path: 6.0.0
       path-exists: 4.0.0
 
-  find-yarn-workspace-root@2.0.0:
-    dependencies:
-      micromatch: 4.0.8
-
   firebase@9.6.10(encoding@0.1.13):
     dependencies:
       '@firebase/analytics': 0.7.7(@firebase/app@0.7.20)
@@ -21532,12 +21506,6 @@ snapshots:
   fresh@2.0.0: {}
 
   fs-constants@1.0.0: {}
-
-  fs-extra@10.1.0:
-    dependencies:
-      graceful-fs: 4.2.11
-      jsonfile: 6.1.0
-      universalify: 2.0.0
 
   fs-monkey@1.0.3: {}
 
@@ -22837,12 +22805,6 @@ snapshots:
 
   json5@2.2.3: {}
 
-  jsonfile@6.1.0:
-    dependencies:
-      universalify: 2.0.0
-    optionalDependencies:
-      graceful-fs: 4.2.11
-
   jsonify@0.0.1: {}
 
   jsx-ast-utils@3.2.1:
@@ -24089,23 +24051,6 @@ snapshots:
 
   pascalcase@0.1.1: {}
 
-  patch-package@8.0.1:
-    dependencies:
-      '@yarnpkg/lockfile': 1.1.0
-      chalk: 4.1.2
-      ci-info: 3.9.0
-      cross-spawn: 7.0.6
-      find-yarn-workspace-root: 2.0.0
-      fs-extra: 10.1.0
-      json-stable-stringify: 1.1.1
-      klaw-sync: 6.0.0
-      minimist: 1.2.8
-      open: 7.4.2
-      semver: 7.6.3
-      slash: 2.0.0
-      tmp: 0.2.5
-      yaml: 2.8.1
-
   path-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
@@ -24915,7 +24860,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.2
 
-  react-server-dom-webpack@19.0.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(webpack@5.103.0(@swc/core@1.11.11)):
+  react-server-dom-webpack@19.0.1(patch_hash=af2de78f3c300516430a402fe1a5e41c6870c2090cf2fb1364b881a0334fe873)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(webpack@5.103.0(@swc/core@1.11.11)):
     dependencies:
       acorn-loose: 8.4.0
       neo-async: 2.6.2
@@ -26292,8 +26237,6 @@ snapshots:
       crypto-random-string: 2.0.0
 
   universalify@0.2.0: {}
-
-  universalify@2.0.0: {}
 
   unixify@1.0.0:
     dependencies:

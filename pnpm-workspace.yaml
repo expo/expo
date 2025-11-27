@@ -1,10 +1,7 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
-  - 'packages/@expo/*'
-
-linkWorkspacePackages: deep
-preferWorkspacePackages: true
+  - apps/*
+  - packages/*
+  - packages/@expo/*
 
 ignoredBuiltDependencies:
   - '@parcel/watcher'
@@ -14,8 +11,15 @@ ignoredBuiltDependencies:
   - fmerge
   - protobufjs
 
+linkWorkspacePackages: deep
+
 onlyBuiltDependencies:
   - better-sqlite3
   - fsevents
   - sharp
   - workerd
+
+patchedDependencies:
+  react-server-dom-webpack: patches/react-server-dom-webpack.patch
+
+preferWorkspacePackages: true
