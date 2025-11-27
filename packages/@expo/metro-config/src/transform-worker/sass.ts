@@ -2,6 +2,7 @@ import resolveFrom from 'resolve-from';
 
 let sassInstance: typeof import('sass') | null = null;
 
+// TODO(@kitten): Incorrect; rely on optional peer
 function getSassInstance(projectRoot: string) {
   if (!sassInstance) {
     const sassPath = resolveFrom.silent(projectRoot, 'sass');
@@ -30,14 +31,13 @@ export function matchSass(filename: string): import('sass').Syntax | null {
 export function compileSass(
   projectRoot: string,
   { filename, src }: { filename: string; src: string },
-  // TODO: Expose to users somehow...
-  options?: Partial<import('sass').StringOptions<'sync'>>
+  options?: Record<string, any>
 ) {
   const sass = getSassInstance(projectRoot);
   const result = sass.compileString(src, options);
   return {
     src: result.css,
     // TODO: Should we use this? Leaning towards no since the CSS will be parsed again by the CSS loader.
-    map: result.sourceMap,
+    map: result.sourceMap as any,
   };
 }
