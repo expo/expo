@@ -21,18 +21,18 @@ import java.util.*
 open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseMessagingDelegate {
   companion object {
     // Unfortunately we cannot save state between instances of a service other way
-    // than by static properties. Fortunately, using weak references we can
-    // be somehow sure instances of PushTokenListeners won't be leaked by this component.
+    // than by static properties.
     /**
      * We store this value to be able to inform new listeners of last known token.
      */
     protected var sLastToken: String? = null
 
     /**
-     * A weak map of listeners -> reference. Used to check quickly whether given listener
+     * A Set of listeners. Used to check quickly whether given listener
      * is already registered and to iterate over when notifying of new token.
+     * If you register a listener, make sure to also un-register it
      */
-    protected val sTokenListenersReferences = WeakHashMap<FirebaseTokenListener, WeakReference<FirebaseTokenListener?>?>()
+    protected val sTokenListenersReferences = HashSet<FirebaseTokenListener>()
 
     /**
      * Used only by [FirebaseTokenListener] instances. If you look for a place to register
@@ -47,8 +47,8 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     @JvmStatic
     fun addTokenListener(listener: FirebaseTokenListener) {
       // Checks whether this listener has already been registered
-      if (!sTokenListenersReferences.containsKey(listener)) {
-        sTokenListenersReferences[listener] = WeakReference(listener)
+      if (!sTokenListenersReferences.contains(listener)) {
+        sTokenListenersReferences.add(listener)
         // Since it's a new listener and we know of a last valid token, let's let them know.
         sLastToken?.let {
           listener.onNewToken(it)
@@ -56,7 +56,13 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
       }
     }
 
+    @JvmStatic
+    fun removeTokenListener(listener: FirebaseTokenListener) {
+      sTokenListenersReferences.remove(listener)
+    }
+
     /**
+     * TODO vonovak this WeakHashMap is an awkward construct - simplify it
      * A weak map of task consumers -> reference. Used to check quickly whether given task
      * is already registered and to iterate over when notifying of new notification received
      * while the app is not in the foreground.
@@ -94,8 +100,8 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
    * @param token New device push token.
    */
   override fun onNewToken(token: String) {
-    for (listenerReference in sTokenListenersReferences.values) {
-      listenerReference?.get()?.onNewToken(token)
+    for (listenerReference in sTokenListenersReferences) {
+      listenerReference.onNewToken(token)
     }
     sLastToken = token
   }
