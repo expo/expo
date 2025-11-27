@@ -1,32 +1,32 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
-searchRank: 3
----
+// REAL WORLD LOGIC FLOW
+const handleAnalyze = async () => {
+  setIsAnalyzing(true);
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+  // 1. Prepare the image (base64)
+  const formData = new FormData();
+  formData.append('image', selectedImage);
 
-Let's set up a local development environment for running your project on Android and iOS.
+  try {
+    // 2. Send to YOUR backend
+    const response = await fetch('https://your-api.com/scan-prescription', {
+      method: 'POST',
+      body: formData
+    });
 
-## Where would you like to develop?
+    const data = await response.json();
 
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
-
-<PlatformAndDeviceForm />
-
-## How would you like to develop?
-
-Expo Go is a sandbox for trying out Expo quickly. A development build is a build of your own app that includes Expo's developer tools.
-
-<DevelopmentModeForm />
-
----
-
-<DevelopmentEnvironmentInstructions />
-
-## Next step
-
-You have a project and a development environment. Now it's time to start developing.
+    // 3. Update the UI with real data
+    setCurrentScanResults({
+      doctor: data.doctorName,     // Extracted from OCR
+      medications: data.medicines, // Extracted from OCR
+      confidence: data.confidence
+    });
+    
+    setView('results');
+  } catch (error) {
+    console.error("Scanning failed", error);
+    alert("Could not read prescription. Please try again.");
+  } finally {
+    setIsAnalyzing(false);
+  }
+};
