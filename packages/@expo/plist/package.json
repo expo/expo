@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {

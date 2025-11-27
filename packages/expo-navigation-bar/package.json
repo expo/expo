@@ -40,6 +40,8 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "@types/react": "~19.2.0",
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

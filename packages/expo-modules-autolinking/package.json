@@ -39,6 +39,8 @@
   },
   "dependencies": {
     "@expo/spawn-async": "^1.7.2",
+    "@tsconfig/node18": "^18.2.2",
+    "@types/require-from-string": "^1.2.1",
     "chalk": "^4.1.0",
     "commander": "^7.2.0",
     "require-from-string": "^2.0.2",

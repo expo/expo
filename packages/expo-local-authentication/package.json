@@ -41,6 +41,8 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
+    "@types/invariant": "^2.2.33",
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

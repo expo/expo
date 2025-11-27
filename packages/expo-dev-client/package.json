@@ -39,6 +39,7 @@
     "expo-updates-interface": "~2.0.0"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
     "expo-test-runner": "workspace:*"
   },

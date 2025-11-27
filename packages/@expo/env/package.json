@@ -34,7 +34,7 @@
     "getenv": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
+    "@babel/cli": "^7.23.4",
     "@types/getenv": "^1.0.0",
     "expo-module-scripts": "workspace:*"
   },

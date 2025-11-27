@@ -55,7 +55,13 @@
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },
+  "// TODO": "Replace type-only expo imports with internal package imports",
   "devDependencies": {
+    "@types/debug": "^4.1.5",
+    "@types/getenv": "^1.0.0",
+    "@types/semver": "^7.5.8",
+    "@types/node": "^22.14.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"

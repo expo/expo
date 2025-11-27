@@ -38,6 +38,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/react-native": "^13.2.0",
+    "@types/node": "^22.14.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",

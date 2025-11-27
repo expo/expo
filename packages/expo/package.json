@@ -107,6 +107,7 @@
     "@types/react": "~19.2.0",
     "@types/react-test-renderer": "~19.1.0",
     "expo-module-scripts": "workspace:*",
+    "expo-updates": "workspace:*",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.1",

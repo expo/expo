@@ -36,6 +36,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-env-info#readme",
   "devDependencies": {
     "@types/envinfo": "^7.8.1",
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "engines": {

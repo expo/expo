@@ -46,7 +46,8 @@
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.0.0",
     "expo-module-scripts": "workspace:*",
-    "sharp-cli": "^5.2.0"
+    "sharp-cli": "^5.2.0",
+    "sharp": "^0.34.2"
   },
   "publishConfig": {
     "access": "public"

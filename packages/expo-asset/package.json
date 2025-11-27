@@ -52,6 +52,7 @@
     "expo-constants": "~18.0.9"
   },
   "devDependencies": {
+    "@types/react": "~19.2.0",
     "@testing-library/react-native": "^13.2.0",
     "@types/node": "^22.14.0",
     "@types/react-native__assets": "^1.0.3",

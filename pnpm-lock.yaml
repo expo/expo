@@ -1643,9 +1643,18 @@ importers:
         specifier: ~3.35.1
         version: 3.35.1
     devDependencies:
+      '@babel/cli':
+        specifier: ^7.23.4
+        version: 7.23.4(@babel/core@7.26.0)
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@types/require-from-string':
         specifier: ^1.2.1
         version: 1.2.1
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.7.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -1695,9 +1704,18 @@ importers:
         specifier: 0.6.0
         version: 0.6.0
     devDependencies:
+      '@babel/cli':
+        specifier: ^7.23.4
+        version: 7.23.4(@babel/core@7.26.0)
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@types/semver':
+        specifier: ^7.7.0
+        version: 7.7.0
       '@types/xml2js':
         specifier: ~0.4.11
         version: 0.4.11
@@ -1726,6 +1744,12 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -1745,6 +1769,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -1767,9 +1794,9 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
     devDependencies:
-      '@babel/core':
-        specifier: ^7.15.5
-        version: 7.26.0
+      '@babel/cli':
+        specifier: ^7.23.4
+        version: 7.23.4(@babel/core@7.26.0)
       '@types/getenv':
         specifier: ^1.0.0
         version: 1.0.0
@@ -1813,6 +1840,21 @@ importers:
         specifier: ^7.6.0
         version: 7.7.2
     devDependencies:
+      '@types/debug':
+        specifier: ^4.1.5
+        version: 4.1.12
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.7.0
+      expo:
+        specifier: workspace:*
+        version: link:../../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -1865,6 +1907,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      sharp:
+        specifier: ^0.34.2
+        version: 0.34.2
       sharp-cli:
         specifier: ^5.2.0
         version: 5.2.0
@@ -1884,6 +1929,9 @@ importers:
       '@types/json5':
         specifier: ^2.2.0
         version: 2.2.0
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2031,9 +2079,18 @@ importers:
       '@jridgewell/trace-mapping':
         specifier: ^0.3.20
         version: 0.3.29
+      '@types/babel__code-frame':
+        specifier: ^7.0.1
+        version: 7.0.6
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
+      '@types/babel__generator':
+        specifier: ^7.27.0
+        version: 7.27.0
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.0
       dedent:
         specifier: ^1.5.3
         version: 1.5.3
@@ -2071,6 +2128,9 @@ importers:
         specifier: ^3.0.0
         version: 3.6.2
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2131,6 +2191,12 @@ importers:
         specifier: ^1.2.1
         version: 1.3.1
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/node-forge':
+        specifier: ^1.0.0
+        version: 1.3.11
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2150,6 +2216,9 @@ importers:
       '@types/base64-js':
         specifier: ^1.2.5
         version: 1.5.0
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2174,6 +2243,9 @@ importers:
       '@react-native/normalize-colors':
         specifier: 0.83.1
         version: 0.83.1
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.7.0
       debug:
         specifier: ^4.3.1
         version: 4.4.0
@@ -2190,6 +2262,9 @@ importers:
         specifier: 0.6.0
         version: 0.6.0
     devDependencies:
+      '@babel/cli':
+        specifier: ^7.23.4
+        version: 7.23.4(@babel/core@7.26.0)
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
@@ -2239,6 +2314,9 @@ importers:
 
   packages/@expo/schema-utils:
     devDependencies:
+      '@babel/cli':
+        specifier: ^7.23.4
+        version: 7.23.4(@babel/core@7.26.0)
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2349,9 +2427,15 @@ importers:
       '@expo/metro':
         specifier: ~54.2.0
         version: 54.2.0
+      '@expo/metro-config':
+        specifier: workspace:*
+        version: link:../@expo/metro-config
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2448,6 +2532,9 @@ importers:
       '@octokit/types':
         specifier: ^15.0.0
         version: 15.0.0
+      '@tsconfig/node18':
+        specifier: ^18.2.2
+        version: 18.2.2
       '@types/ejs':
         specifier: ^3.1.5
         version: 3.1.5
@@ -2723,6 +2810,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-updates:
+        specifier: workspace:*
+        version: link:../expo-updates
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -2771,6 +2861,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2809,6 +2902,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       '@types/react-native__assets':
         specifier: ^1.0.3
         version: 1.0.3
@@ -2831,6 +2927,12 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2862,6 +2964,12 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/invariant':
+        specifier: ^2.2.33
+        version: 2.2.35
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2875,6 +2983,9 @@ importers:
         specifier: ~14.0.7
         version: link:../expo-task-manager
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2888,6 +2999,9 @@ importers:
         specifier: ~14.0.7
         version: link:../expo-task-manager
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2901,6 +3015,9 @@ importers:
         specifier: 19.2.0
         version: 19.2.0
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2911,6 +3028,9 @@ importers:
         specifier: '*'
         version: link:../expo
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2939,6 +3059,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2952,6 +3075,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2968,6 +3094,12 @@ importers:
         specifier: ^7.6.0
         version: 7.7.2
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/semver':
+        specifier: ^7.0.0
+        version: 7.7.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -2981,6 +3113,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3003,6 +3138,15 @@ importers:
         specifier: '*'
         version: 0.21.0(encoding@0.1.13)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
     devDependencies:
+      '@types/invariant':
+        specifier: ^2.2.33
+        version: 2.2.35
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3013,6 +3157,9 @@ importers:
         specifier: '*'
         version: link:../expo
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3041,6 +3188,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3057,6 +3207,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3076,9 +3229,15 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      expo-manifests:
+        specifier: workspace:*
+        version: link:../expo-manifests
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-updates:
+        specifier: workspace:*
+        version: link:../expo-updates
 
   packages/expo-contacts:
     dependencies:
@@ -3092,6 +3251,12 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3127,6 +3292,9 @@ importers:
         specifier: ~2.0.0
         version: link:../expo-updates-interface
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3183,6 +3351,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.83.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       babel-plugin-module-resolver:
         specifier: ^5.0.0
         version: 5.0.2
@@ -3247,6 +3418,12 @@ importers:
       '@types/debug':
         specifier: ^4.1.8
         version: 4.1.12
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.7.0
       '@vercel/ncc':
         specifier: 0.38.3
         version: 0.38.3
@@ -3256,9 +3433,15 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.0
+      expo:
+        specifier: workspace:*
+        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-autolinking:
+        specifier: workspace:*
+        version: link:../expo-modules-autolinking
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
@@ -3290,6 +3473,9 @@ importers:
         specifier: '*'
         version: link:../expo
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3309,6 +3495,9 @@ importers:
       '@types/envinfo':
         specifier: ^7.8.1
         version: 7.8.3
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3322,6 +3511,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3350,6 +3542,12 @@ importers:
       '@types/fontfaceobserver':
         specifier: ^2.1.3
         version: 2.1.3
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3384,6 +3582,9 @@ importers:
       '@types/offscreencanvas':
         specifier: 2019.6.4
         version: 2019.6.4
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       '@types/webgl2':
         specifier: ^0.0.6
         version: 0.0.6
@@ -3418,6 +3619,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3447,6 +3651,12 @@ importers:
         specifier: '*'
         version: 0.21.0(encoding@0.1.13)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3482,6 +3692,9 @@ importers:
       '@testing-library/user-event':
         specifier: ^14.6.1
         version: 14.6.1(@testing-library/dom@10.4.0)
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3523,6 +3736,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.83.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3551,6 +3767,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3570,6 +3789,12 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/invariant':
+        specifier: ^2.2.33
+        version: 2.2.35
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3586,6 +3811,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3599,6 +3827,12 @@ importers:
         specifier: ^2.2.4
         version: 2.2.4
     devDependencies:
+      '@types/invariant':
+        specifier: ^2.2.33
+        version: 2.2.35
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3615,6 +3849,12 @@ importers:
         specifier: ^1.0.2
         version: 1.0.4
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       '@types/rtl-detect':
         specifier: ^1.0.3
         version: 1.0.3
@@ -3628,6 +3868,9 @@ importers:
         specifier: '*'
         version: link:../expo
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3638,6 +3881,9 @@ importers:
         specifier: '*'
         version: link:../expo
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3670,6 +3916,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.2
@@ -3686,6 +3935,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3723,6 +3975,9 @@ importers:
       '@babel/preset-typescript':
         specifier: ^7.23.3
         version: 7.27.1(@babel/core@7.26.0)
+      '@expo/metro':
+        specifier: ~54.1.0
+        version: 54.1.0
       '@expo/npm-proofread':
         specifier: ^1.0.1
         version: 1.0.1
@@ -3793,6 +4048,12 @@ importers:
       '@expo/spawn-async':
         specifier: ^1.7.2
         version: 1.7.2
+      '@tsconfig/node18':
+        specifier: ^18.2.2
+        version: 18.2.2
+      '@types/require-from-string':
+        specifier: ^1.2.1
+        version: 1.2.1
       chalk:
         specifier: ^4.1.0
         version: 4.1.2
@@ -3828,6 +4089,12 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/invariant':
+        specifier: ^2.2.33
+        version: 2.2.35
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3874,6 +4141,12 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3887,6 +4160,9 @@ importers:
         specifier: 19.2.0
         version: 19.2.0
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3934,6 +4210,12 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4114,6 +4396,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.83.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4127,6 +4412,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4137,6 +4425,9 @@ importers:
         specifier: '*'
         version: link:../expo
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4153,6 +4444,12 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/invariant':
+        specifier: ^2.2.33
+        version: 2.2.35
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4211,6 +4508,9 @@ importers:
         specifier: '*'
         version: link:../expo
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4236,6 +4536,9 @@ importers:
       '@types/better-sqlite3':
         specifier: ^7.6.6
         version: 7.6.6
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       better-sqlite3:
         specifier: ^11.6.0
         version: 11.6.0
@@ -4279,12 +4582,18 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
 
   packages/expo-store-review:
     dependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo:
         specifier: '*'
         version: link:../expo
@@ -4316,6 +4625,9 @@ importers:
         specifier: ^2.0.0
         version: 2.1.0
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-font:
         specifier: workspace:*
         version: link:../expo-font
@@ -4341,6 +4653,9 @@ importers:
         specifier: '*'
         version: 0.21.0(encoding@0.1.13)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4357,6 +4672,9 @@ importers:
         specifier: ~6.0.7
         version: link:../unimodules-app-loader
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4416,6 +4734,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4496,6 +4817,15 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
+      '@expo/metro-config':
+        specifier: workspace:*
+        version: link:../@expo/metro-config
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.12
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.12
@@ -4508,6 +4838,9 @@ importers:
       '@types/picomatch':
         specifier: ^4.0.0
         version: 4.0.0
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       '@vercel/ncc':
         specifier: ^0.38.3
         version: 0.38.4
@@ -4548,6 +4881,9 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4571,6 +4907,12 @@ importers:
         specifier: '*'
         version: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
+      '@expo/config-types':
+        specifier: workspace:*
+        version: link:../@expo/config-types
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4599,6 +4941,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.2.0
         version: 13.2.0(jest@29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2)))(react-native@0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
+      '@types/react':
+        specifier: ~19.2.2
+        version: 19.2.2
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4748,6 +5093,9 @@ importers:
       '@expo/cli':
         specifier: workspace:*
         version: link:../@expo/cli
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -5899,6 +6247,9 @@ packages:
     peerDependenciesMeta:
       '@modelcontextprotocol/sdk':
         optional: true
+
+  '@expo/metro@54.1.0':
+    resolution: {integrity: sha512-MgdeRNT/LH0v1wcO0TZp9Qn8zEF0X2ACI0wliPtv5kXVbXWI+yK9GyrstwLAiTXlULKVIg3HVSCCvmLu0M3tnw==}
 
   '@expo/metro@54.2.0':
     resolution: {integrity: sha512-h68TNZPGsk6swMmLm9nRSnE2UXm48rWwgcbtAHVMikXvbxdS41NDHHeqg1rcQ9AbznDRp6SQVC2MVpDnsRKU1w==}
@@ -11554,58 +11905,116 @@ packages:
     resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
     engines: {node: '>= 0.6'}
 
+  metro-babel-transformer@0.83.2:
+    resolution: {integrity: sha512-rirY1QMFlA1uxH3ZiNauBninwTioOgwChnRdDcbB4tgRZ+bGX9DiXoh9QdpppiaVKXdJsII932OwWXGGV4+Nlw==}
+    engines: {node: '>=20.19.4'}
+
   metro-babel-transformer@0.83.3:
     resolution: {integrity: sha512-1vxlvj2yY24ES1O5RsSIvg4a4WeL7PFXgKOHvXTXiW0deLvQr28ExXj6LjwCCDZ4YZLhq6HddLpZnX4dEdSq5g==}
+    engines: {node: '>=20.19.4'}
+
+  metro-cache-key@0.83.2:
+    resolution: {integrity: sha512-3EMG/GkGKYoTaf5RqguGLSWRqGTwO7NQ0qXKmNBjr0y6qD9s3VBXYlwB+MszGtmOKsqE9q3FPrE5Nd9Ipv7rZw==}
     engines: {node: '>=20.19.4'}
 
   metro-cache-key@0.83.3:
     resolution: {integrity: sha512-59ZO049jKzSmvBmG/B5bZ6/dztP0ilp0o988nc6dpaDsU05Cl1c/lRf+yx8m9WW/JVgbmfO5MziBU559XjI5Zw==}
     engines: {node: '>=20.19.4'}
 
+  metro-cache@0.83.2:
+    resolution: {integrity: sha512-Z43IodutUZeIS7OTH+yQFjc59QlFJ6s5OvM8p2AP9alr0+F8UKr8ADzFzoGKoHefZSKGa4bJx7MZJLF6GwPDHQ==}
+    engines: {node: '>=20.19.4'}
+
   metro-cache@0.83.3:
     resolution: {integrity: sha512-3jo65X515mQJvKqK3vWRblxDEcgY55Sk3w4xa6LlfEXgQ9g1WgMh9m4qVZVwgcHoLy0a2HENTPCCX4Pk6s8c8Q==}
+    engines: {node: '>=20.19.4'}
+
+  metro-config@0.83.2:
+    resolution: {integrity: sha512-1FjCcdBe3e3D08gSSiU9u3Vtxd7alGH3x/DNFqWDFf5NouX4kLgbVloDDClr1UrLz62c0fHh2Vfr9ecmrOZp+g==}
     engines: {node: '>=20.19.4'}
 
   metro-config@0.83.3:
     resolution: {integrity: sha512-mTel7ipT0yNjKILIan04bkJkuCzUUkm2SeEaTads8VfEecCh+ltXchdq6DovXJqzQAXuR2P9cxZB47Lg4klriA==}
     engines: {node: '>=20.19.4'}
 
+  metro-core@0.83.2:
+    resolution: {integrity: sha512-8DRb0O82Br0IW77cNgKMLYWUkx48lWxUkvNUxVISyMkcNwE/9ywf1MYQUE88HaKwSrqne6kFgCSA/UWZoUT0Iw==}
+    engines: {node: '>=20.19.4'}
+
   metro-core@0.83.3:
     resolution: {integrity: sha512-M+X59lm7oBmJZamc96usuF1kusd5YimqG/q97g4Ac7slnJ3YiGglW5CsOlicTR5EWf8MQFxxjDoB6ytTqRe8Hw==}
+    engines: {node: '>=20.19.4'}
+
+  metro-file-map@0.83.2:
+    resolution: {integrity: sha512-cMSWnEqZrp/dzZIEd7DEDdk72PXz6w5NOKriJoDN9p1TDQ5nAYrY2lHi8d6mwbcGLoSlWmpPyny9HZYFfPWcGQ==}
     engines: {node: '>=20.19.4'}
 
   metro-file-map@0.83.3:
     resolution: {integrity: sha512-jg5AcyE0Q9Xbbu/4NAwwZkmQn7doJCKGW0SLeSJmzNB9Z24jBe0AL2PHNMy4eu0JiKtNWHz9IiONGZWq7hjVTA==}
     engines: {node: '>=20.19.4'}
 
+  metro-minify-terser@0.83.2:
+    resolution: {integrity: sha512-zvIxnh7U0JQ7vT4quasKsijId3dOAWgq+ip2jF/8TMrPUqQabGrs04L2dd0haQJ+PA+d4VvK/bPOY8X/vL2PWw==}
+    engines: {node: '>=20.19.4'}
+
   metro-minify-terser@0.83.3:
     resolution: {integrity: sha512-O2BmfWj6FSfzBLrNCXt/rr2VYZdX5i6444QJU0fFoc7Ljg+Q+iqebwE3K0eTvkI6TRjELsXk1cjU+fXwAR4OjQ==}
+    engines: {node: '>=20.19.4'}
+
+  metro-resolver@0.83.2:
+    resolution: {integrity: sha512-Yf5mjyuiRE/Y+KvqfsZxrbHDA15NZxyfg8pIk0qg47LfAJhpMVEX+36e6ZRBq7KVBqy6VDX5Sq55iHGM4xSm7Q==}
     engines: {node: '>=20.19.4'}
 
   metro-resolver@0.83.3:
     resolution: {integrity: sha512-0js+zwI5flFxb1ktmR///bxHYg7OLpRpWZlBBruYG8OKYxeMP7SV0xQ/o/hUelrEMdK4LJzqVtHAhBm25LVfAQ==}
     engines: {node: '>=20.19.4'}
 
+  metro-runtime@0.83.2:
+    resolution: {integrity: sha512-nnsPtgRvFbNKwemqs0FuyFDzXLl+ezuFsUXDbX8o0SXOfsOPijqiQrf3kuafO1Zx1aUWf4NOrKJMAQP5EEHg9A==}
+    engines: {node: '>=20.19.4'}
+
   metro-runtime@0.83.3:
     resolution: {integrity: sha512-JHCJb9ebr9rfJ+LcssFYA2x1qPYuSD/bbePupIGhpMrsla7RCwC/VL3yJ9cSU+nUhU4c9Ixxy8tBta+JbDeZWw==}
+    engines: {node: '>=20.19.4'}
+
+  metro-source-map@0.83.2:
+    resolution: {integrity: sha512-5FL/6BSQvshIKjXOennt9upFngq2lFvDakZn5LfauIVq8+L4sxXewIlSTcxAtzbtjAIaXeOSVMtCJ5DdfCt9AA==}
     engines: {node: '>=20.19.4'}
 
   metro-source-map@0.83.3:
     resolution: {integrity: sha512-xkC3qwUBh2psVZgVavo8+r2C9Igkk3DibiOXSAht1aYRRcztEZNFtAMtfSB7sdO2iFMx2Mlyu++cBxz/fhdzQg==}
     engines: {node: '>=20.19.4'}
 
+  metro-symbolicate@0.83.2:
+    resolution: {integrity: sha512-KoU9BLwxxED6n33KYuQQuc5bXkIxF3fSwlc3ouxrrdLWwhu64muYZNQrukkWzhVKRNFIXW7X2iM8JXpi2heIPw==}
+    engines: {node: '>=20.19.4'}
+    hasBin: true
+
   metro-symbolicate@0.83.3:
     resolution: {integrity: sha512-F/YChgKd6KbFK3eUR5HdUsfBqVsanf5lNTwFd4Ca7uuxnHgBC3kR/Hba/RGkenR3pZaGNp5Bu9ZqqP52Wyhomw==}
     engines: {node: '>=20.19.4'}
     hasBin: true
 
+  metro-transform-plugins@0.83.2:
+    resolution: {integrity: sha512-5WlW25WKPkiJk2yA9d8bMuZrgW7vfA4f4MBb9ZeHbTB3eIAoNN8vS8NENgG/X/90vpTB06X66OBvxhT3nHwP6A==}
+    engines: {node: '>=20.19.4'}
+
   metro-transform-plugins@0.83.3:
     resolution: {integrity: sha512-eRGoKJU6jmqOakBMH5kUB7VitEWiNrDzBHpYbkBXW7C5fUGeOd2CyqrosEzbMK5VMiZYyOcNFEphvxk3OXey2A==}
+    engines: {node: '>=20.19.4'}
+
+  metro-transform-worker@0.83.2:
+    resolution: {integrity: sha512-G5DsIg+cMZ2KNfrdLnWMvtppb3+Rp1GMyj7Bvd9GgYc/8gRmvq1XVEF9XuO87Shhb03kFhGqMTgZerz3hZ1v4Q==}
     engines: {node: '>=20.19.4'}
 
   metro-transform-worker@0.83.3:
     resolution: {integrity: sha512-Ztekew9t/gOIMZX1tvJOgX7KlSLL5kWykl0Iwu2cL2vKMKVALRl1hysyhUw0vjpAvLFx+Kfq9VLjnHIkW32fPA==}
     engines: {node: '>=20.19.4'}
+
+  metro@0.83.2:
+    resolution: {integrity: sha512-HQgs9H1FyVbRptNSMy/ImchTTE5vS2MSqLoOo7hbDoBq6hPPZokwJvBMwrYSxdjQZmLXz2JFZtdvS+ZfgTc9yw==}
+    engines: {node: '>=20.19.4'}
+    hasBin: true
 
   metro@0.83.3:
     resolution: {integrity: sha512-+rP+/GieOzkt97hSJ0MrPOuAH/jpaS21ZDvL9DJ35QYRDlQcwzcvUlGUf79AnQxq/2NPiS/AULhhM4TKutIt8Q==}
@@ -11906,6 +12315,10 @@ packages:
 
   nwsapi@2.2.2:
     resolution: {integrity: sha512-90yv+6538zuvUMnN+zCr8LuV6bPFdq50304114vJYJ8RDyK8D5O9Phpbd6SZWgI7PwzmmfN1upeOJlvybDSgCw==}
+
+  ob1@0.83.2:
+    resolution: {integrity: sha512-XlK3w4M+dwd1g1gvHzVbxiXEbUllRONEgcF2uEO0zm4nxa0eKlh41c6N65q1xbiDOeKKda1tvNOAD33fNjyvCg==}
+    engines: {node: '>=20.19.4'}
 
   ob1@0.83.3:
     resolution: {integrity: sha512-egUxXCDwoWG06NGCS5s5AdcpnumHKJlfd3HH06P3m9TEMwwScfcY35wpQxbm9oHof+dM/lVH9Rfyu1elTVelSA==}
@@ -14669,7 +15082,7 @@ snapshots:
   '@ardatan/relay-compiler@12.0.0(encoding@0.1.13)(graphql@15.8.0)':
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/generator': 7.28.0
+      '@babel/generator': 7.28.5
       '@babel/parser': 7.28.5
       '@babel/runtime': 7.25.6
       '@babel/traverse': 7.28.5
@@ -15893,6 +16306,25 @@ snapshots:
       zod-to-json-schema: 3.24.6(zod@3.25.76)
     transitivePeerDependencies:
       - bufferutil
+      - utf-8-validate
+
+  '@expo/metro@54.1.0':
+    dependencies:
+      metro: 0.83.2
+      metro-babel-transformer: 0.83.2
+      metro-cache: 0.83.2
+      metro-cache-key: 0.83.2
+      metro-config: 0.83.2
+      metro-core: 0.83.2
+      metro-file-map: 0.83.2
+      metro-resolver: 0.83.2
+      metro-runtime: 0.83.2
+      metro-source-map: 0.83.2
+      metro-transform-plugins: 0.83.2
+      metro-transform-worker: 0.83.2
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
       - utf-8-validate
 
   '@expo/metro@54.2.0':
@@ -22899,6 +23331,15 @@ snapshots:
 
   methods@1.1.2: {}
 
+  metro-babel-transformer@0.83.2:
+    dependencies:
+      '@babel/core': 7.26.0
+      flow-enums-runtime: 0.0.6
+      hermes-parser: 0.32.0
+      nullthrows: 1.1.1
+    transitivePeerDependencies:
+      - supports-color
+
   metro-babel-transformer@0.83.3:
     dependencies:
       '@babel/core': 7.26.0
@@ -22908,9 +23349,22 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  metro-cache-key@0.83.2:
+    dependencies:
+      flow-enums-runtime: 0.0.6
+
   metro-cache-key@0.83.3:
     dependencies:
       flow-enums-runtime: 0.0.6
+
+  metro-cache@0.83.2:
+    dependencies:
+      exponential-backoff: 3.1.1
+      flow-enums-runtime: 0.0.6
+      https-proxy-agent: 7.0.6
+      metro-core: 0.83.2
+    transitivePeerDependencies:
+      - supports-color
 
   metro-cache@0.83.3:
     dependencies:
@@ -22920,6 +23374,21 @@ snapshots:
       metro-core: 0.83.3
     transitivePeerDependencies:
       - supports-color
+
+  metro-config@0.83.2:
+    dependencies:
+      connect: 3.7.0
+      flow-enums-runtime: 0.0.6
+      jest-validate: 29.7.0
+      metro: 0.83.2
+      metro-cache: 0.83.2
+      metro-core: 0.83.2
+      metro-runtime: 0.83.2
+      yaml: 2.8.1
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
 
   metro-config@0.83.3:
     dependencies:
@@ -22936,11 +23405,31 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  metro-core@0.83.2:
+    dependencies:
+      flow-enums-runtime: 0.0.6
+      lodash.throttle: 4.1.1
+      metro-resolver: 0.83.2
+
   metro-core@0.83.3:
     dependencies:
       flow-enums-runtime: 0.0.6
       lodash.throttle: 4.1.1
       metro-resolver: 0.83.3
+
+  metro-file-map@0.83.2:
+    dependencies:
+      debug: 4.4.0
+      fb-watchman: 2.0.1
+      flow-enums-runtime: 0.0.6
+      graceful-fs: 4.2.11
+      invariant: 2.2.4
+      jest-worker: 29.7.0
+      micromatch: 4.0.8
+      nullthrows: 1.1.1
+      walker: 1.0.8
+    transitivePeerDependencies:
+      - supports-color
 
   metro-file-map@0.83.3:
     dependencies:
@@ -22956,19 +23445,48 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  metro-minify-terser@0.83.2:
+    dependencies:
+      flow-enums-runtime: 0.0.6
+      terser: 5.43.1
+
   metro-minify-terser@0.83.3:
     dependencies:
       flow-enums-runtime: 0.0.6
       terser: 5.43.1
 
+  metro-resolver@0.83.2:
+    dependencies:
+      flow-enums-runtime: 0.0.6
+
   metro-resolver@0.83.3:
     dependencies:
+      flow-enums-runtime: 0.0.6
+
+  metro-runtime@0.83.2:
+    dependencies:
+      '@babel/runtime': 7.25.6
       flow-enums-runtime: 0.0.6
 
   metro-runtime@0.83.3:
     dependencies:
       '@babel/runtime': 7.25.6
       flow-enums-runtime: 0.0.6
+
+  metro-source-map@0.83.2:
+    dependencies:
+      '@babel/traverse': 7.28.5
+      '@babel/traverse--for-generate-function-map': '@babel/traverse@7.28.5'
+      '@babel/types': 7.28.5
+      flow-enums-runtime: 0.0.6
+      invariant: 2.2.4
+      metro-symbolicate: 0.83.2
+      nullthrows: 1.1.1
+      ob1: 0.83.2
+      source-map: 0.5.7
+      vlq: 1.0.1
+    transitivePeerDependencies:
+      - supports-color
 
   metro-source-map@0.83.3:
     dependencies:
@@ -22985,6 +23503,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  metro-symbolicate@0.83.2:
+    dependencies:
+      flow-enums-runtime: 0.0.6
+      invariant: 2.2.4
+      metro-source-map: 0.83.2
+      nullthrows: 1.1.1
+      source-map: 0.5.7
+      vlq: 1.0.1
+    transitivePeerDependencies:
+      - supports-color
+
   metro-symbolicate@0.83.3:
     dependencies:
       flow-enums-runtime: 0.0.6
@@ -22993,6 +23522,17 @@ snapshots:
       nullthrows: 1.1.1
       source-map: 0.5.7
       vlq: 1.0.1
+    transitivePeerDependencies:
+      - supports-color
+
+  metro-transform-plugins@0.83.2:
+    dependencies:
+      '@babel/core': 7.26.0
+      '@babel/generator': 7.28.5
+      '@babel/template': 7.27.2
+      '@babel/traverse': 7.28.5
+      flow-enums-runtime: 0.0.6
+      nullthrows: 1.1.1
     transitivePeerDependencies:
       - supports-color
 
@@ -23006,6 +23546,26 @@ snapshots:
       nullthrows: 1.1.1
     transitivePeerDependencies:
       - supports-color
+
+  metro-transform-worker@0.83.2:
+    dependencies:
+      '@babel/core': 7.26.0
+      '@babel/generator': 7.28.5
+      '@babel/parser': 7.28.5
+      '@babel/types': 7.28.5
+      flow-enums-runtime: 0.0.6
+      metro: 0.83.2
+      metro-babel-transformer: 0.83.2
+      metro-cache: 0.83.2
+      metro-cache-key: 0.83.2
+      metro-minify-terser: 0.83.2
+      metro-source-map: 0.83.2
+      metro-transform-plugins: 0.83.2
+      nullthrows: 1.1.1
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
 
   metro-transform-worker@0.83.3:
     dependencies:
@@ -23022,6 +23582,53 @@ snapshots:
       metro-source-map: 0.83.3
       metro-transform-plugins: 0.83.3
       nullthrows: 1.1.1
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
+  metro@0.83.2:
+    dependencies:
+      '@babel/code-frame': 7.27.1
+      '@babel/core': 7.26.0
+      '@babel/generator': 7.28.5
+      '@babel/parser': 7.28.5
+      '@babel/template': 7.27.2
+      '@babel/traverse': 7.28.5
+      '@babel/types': 7.28.5
+      accepts: 1.3.8
+      chalk: 4.1.2
+      ci-info: 2.0.0
+      connect: 3.7.0
+      debug: 4.4.0
+      error-stack-parser: 2.0.7
+      flow-enums-runtime: 0.0.6
+      graceful-fs: 4.2.11
+      hermes-parser: 0.32.0
+      image-size: 1.0.2
+      invariant: 2.2.4
+      jest-worker: 29.7.0
+      jsc-safe-url: 0.2.4
+      lodash.throttle: 4.1.1
+      metro-babel-transformer: 0.83.2
+      metro-cache: 0.83.2
+      metro-cache-key: 0.83.2
+      metro-config: 0.83.2
+      metro-core: 0.83.2
+      metro-file-map: 0.83.2
+      metro-resolver: 0.83.2
+      metro-runtime: 0.83.2
+      metro-source-map: 0.83.2
+      metro-symbolicate: 0.83.2
+      metro-transform-plugins: 0.83.2
+      metro-transform-worker: 0.83.2
+      mime-types: 2.1.35
+      nullthrows: 1.1.1
+      serialize-error: 2.1.0
+      source-map: 0.5.7
+      throat: 5.0.0
+      ws: 7.5.10
+      yargs: 17.7.2
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -23390,6 +23997,10 @@ snapshots:
   nullthrows@1.1.1: {}
 
   nwsapi@2.2.2: {}
+
+  ob1@0.83.2:
+    dependencies:
+      flow-enums-runtime: 0.0.6
 
   ob1@0.83.3:
     dependencies:

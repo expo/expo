@@ -41,6 +41,7 @@
     "@expo-google-fonts/material-symbols": "^0.4.1"
   },
   "devDependencies": {
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*",
     "expo-font": "workspace:*"
   },
