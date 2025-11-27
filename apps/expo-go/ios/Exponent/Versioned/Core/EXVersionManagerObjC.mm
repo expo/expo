@@ -303,22 +303,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     }
   }
 
-  if (params[@"browserModuleClass"]) {
-    Class browserModuleClass = params[@"browserModuleClass"];
-    id homeModule = [[browserModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                        scopeKey:self.manifest.scopeKey
-                                                                    easProjectId:self.manifest.easProjectId
-                                                           kernelServiceDelegate:services[EX_UNVERSIONED(@"EXHomeModuleManager")]
-                                                                          params:params];
-    [extraModules addObject:homeModule];
-  }
-
   [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
   id exceptionsManager = [self getModuleInstanceFromClass:RCTExceptionsManagerCls()];
   if (exceptionsManager) {
     [extraModules addObject:exceptionsManager];
   }
-  [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
   [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
   
   return extraModules;

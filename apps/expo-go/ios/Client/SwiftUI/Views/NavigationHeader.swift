@@ -58,7 +58,3 @@ struct NavigationHeader: View {
     .background(Color.expoSystemBackground)
   }
 }
-
-#Preview {
-  NavigationHeader()
-}

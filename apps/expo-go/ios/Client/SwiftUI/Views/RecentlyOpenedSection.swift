@@ -29,7 +29,3 @@ struct RecentlyOpenedSection: View {
     }
   }
 }
-
-#Preview {
-  RecentlyOpenedSection()
-}
