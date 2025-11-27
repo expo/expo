@@ -6,7 +6,8 @@
   "types": "build/index.d.ts",
   "sideEffects": [
     "*.fx.ts",
-    "./src/polyfill/*.ts"
+    "./src/polyfill/*.ts",
+    "./src/index.ts"
   ],
   "exports": {
     "./package.json": "./package.json",
