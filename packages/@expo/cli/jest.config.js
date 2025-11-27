@@ -14,6 +14,12 @@ module.exports = {
       roots,
       setupFiles: ['<rootDir>/jest.setup.ts'],
       clearMocks: true,
+      moduleNameMapper: {
+        // Allow `@expo/cli` to resolve itself during tests
+        '^@expo/cli/(.*)$': '<rootDir>/$1',
+      },
+      // Ignore packages that Jest can't handle
+      transformIgnorePatterns: ['node_modules/(?!(@expo/metro|expo)/)'],
     },
   ],
 };
