@@ -34,6 +34,12 @@ importers:
       eslint:
         specifier: ^8.57.1
         version: 8.57.1
+      expo-asset:
+        specifier: workspace:*
+        version: link:packages/expo-asset
+      expo-modules-core:
+        specifier: workspace:*
+        version: link:packages/expo-modules-core
       jsc-android:
         specifier: ^250231.0.0
         version: 250231.0.0

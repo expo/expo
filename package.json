@@ -34,7 +34,9 @@
   "dependencies": {
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "expo-asset": "workspace:*",
+    "expo-modules-core": "workspace:*"
   },
   "volta": {
     "node": "22.14.0"
