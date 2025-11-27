@@ -3,10 +3,10 @@ import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native
 import { VectorIcon } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
-import { Appearance, Platform, Text, useColorScheme, View } from 'react-native';
+import { Appearance, Platform, useColorScheme } from 'react-native';
 
-import { ActiveTabsContext } from '../utils/active-tabs-context';
 import { MiniPlayer } from '../components/mini-player';
+import { ActiveTabsContext } from '../utils/active-tabs-context';
 
 if (process.env.EXPO_OS !== 'web') {
   Appearance.setColorScheme('unspecified');
@@ -14,6 +14,7 @@ if (process.env.EXPO_OS !== 'web') {
 
 export default function Layout() {
   const [activeTabs, setActiveTabs] = useState<string[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
   const scheme = useColorScheme();
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -96,7 +97,7 @@ export default function Layout() {
             <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
           <NativeTabs.BottomAccessory>
-            <MiniPlayer />
+            <MiniPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
           </NativeTabs.BottomAccessory>
         </NativeTabs>
       </ActiveTabsContext.Provider>

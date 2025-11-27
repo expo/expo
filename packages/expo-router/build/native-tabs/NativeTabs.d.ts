@@ -24,6 +24,8 @@ export declare const NativeTabs: ((props: NativeTabsProps) => import("react").JS
         Badge: import("react").FC<import("./common/elements").NativeTabsTriggerBadgeProps>;
         VectorIcon: typeof import("..").VectorIcon;
     };
-    BottomAccessory: import("react").FC<import("./common/elements").NativeTabsBottomAccessoryProps>;
+    BottomAccessory: import("react").FC<import("./common/elements").NativeTabsBottomAccessoryProps> & {
+        usePlacement: () => "regular" | "inline";
+    };
 };
 //# sourceMappingURL=NativeTabs.d.ts.map

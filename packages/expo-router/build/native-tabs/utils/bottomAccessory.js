@@ -2,22 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useBottomAccessoryFunctionFromBottomAccessories = useBottomAccessoryFunctionFromBottomAccessories;
 const react_1 = require("react");
+const hooks_1 = require("../hooks");
 /**
- * Converts an array of `<NativeTabs.BottomAccessory>` components into a function,
- * which can be used by `react-native-screens` to render the accessory
+ * Converts `<NativeTabs.BottomAccessory>` component into a function,
+ * which can be used by `react-native-screens` to render the accessory.
  */
-function useBottomAccessoryFunctionFromBottomAccessories(bottomAccessories) {
-    const regularAccessory = (0, react_1.useMemo)(() => bottomAccessories.find((accessory) => accessory.props.forState === 'regular') ??
-        bottomAccessories[0], [bottomAccessories]);
-    const inlineAccessory = (0, react_1.useMemo)(() => bottomAccessories.find((accessory) => accessory.props.forState === 'inline') ??
-        bottomAccessories[0], [bottomAccessories]);
-    return (0, react_1.useMemo)(() => bottomAccessories.length > 0
-        ? (environment) => {
-            if (environment === 'inline') {
-                return inlineAccessory.props.children;
-            }
-            return regularAccessory.props.children;
-        }
-        : undefined, [regularAccessory, inlineAccessory]);
+function useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory) {
+    return (0, react_1.useMemo)(() => bottomAccessory
+        ? (environment) => (<hooks_1.BottomAccessoryPlacementContext value={environment}>
+              {bottomAccessory.props.children}
+            </hooks_1.BottomAccessoryPlacementContext>)
+        : undefined, [bottomAccessory]);
 }
 //# sourceMappingURL=bottomAccessory.js.map

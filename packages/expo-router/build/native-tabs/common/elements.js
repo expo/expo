@@ -62,27 +62,6 @@ exports.NativeTabsTriggerBadge = primitives_1.Badge;
  * }
  * ```
  *
- * Optionally you can provide different accessories for `inline` and `regular` states:
- *
- * @example
- * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
- *
- * export default Layout(){
- *   return (
- *     <NativeTabs>
- *       <NativeTabs.BottomAccessory forState="regular">
- *         <RegularAccessoryComponent />
- *       </NativeTabs.BottomAccessory>
- *       <NativeTabs.BottomAccessory forState="inline">
- *         <InlineAccessoryComponent />
- *       </NativeTabs.BottomAccessory>
- *       <NativeTabs.Trigger name="index" />
- *     </NativeTabs>
- *   );
- * }
- * ```
- *
  * @platform iOS 26+
  */
 const NativeTabsBottomAccessory = () => {

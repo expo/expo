@@ -25,7 +25,7 @@ import {
   convertOptionsIconToIOSPropsIcon,
   useAwaitedScreensIcon,
 } from './utils/icon';
-import { getAllChildrenOfType } from '../utils/children';
+import { getFirstChildOfType } from '../utils/children';
 import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
 
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
@@ -57,12 +57,12 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
   const options = tabs.map((tab) => tab.options);
 
-  const bottomAccessories = useMemo(
-    () => getAllChildrenOfType(nonTriggerChildren, NativeTabsBottomAccessory),
+  const bottomAccessory = useMemo(
+    () => getFirstChildOfType(nonTriggerChildren, NativeTabsBottomAccessory),
     [nonTriggerChildren]
   );
 
-  const bottomAccessoryFn = useBottomAccessoryFunctionFromBottomAccessories(bottomAccessories);
+  const bottomAccessoryFn = useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory);
 
   const children = tabs.map((tab, index) => {
     const isFocused = index === inBoundsDeferredFocusedIndex;
