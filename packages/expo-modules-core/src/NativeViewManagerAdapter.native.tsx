@@ -7,9 +7,9 @@
 import { type Component, type ComponentType, createRef, PureComponent } from 'react';
 import {
   findNodeHandle,
-  type HostComponent,
   NativeModules,
-  ReactNativeElement,
+  type HostComponent,
+  type NativeMethods,
 } from 'react-native';
 import { get as componentRegistryGet } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
@@ -120,7 +120,7 @@ export function requireNativeViewManager<P>(
   class NativeComponent extends PureComponent<P> {
     static displayName = viewName ? viewName : moduleName;
 
-    nativeRef = createRef<Component & ReactNativeElement>();
+    nativeRef = createRef<Component & NativeMethods>();
 
     // This will be accessed from native when the prototype functions are called,
     // in order to find the associated native view.
