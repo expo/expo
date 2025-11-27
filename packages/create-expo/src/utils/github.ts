@@ -83,11 +83,7 @@ async function extractRemoteGitHubTarballAsync(
     }
   );
 
-  await extractNpmTarballAsync(
-    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
-    Readable.fromWeb(response.body),
-    { ...props, filter, strip }
-  );
+  await extractNpmTarballAsync(Readable.fromWeb(response.body), { ...props, filter, strip });
 }
 
 export async function downloadAndExtractGitHubRepositoryAsync(
