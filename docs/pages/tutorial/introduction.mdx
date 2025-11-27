@@ -1,75 +1,102 @@
----
-title: 'Tutorial: Using React Native and Expo'
-sidebar_title: Introduction
-description: An introduction to a React Native tutorial on how to build a universal app that runs on Android, iOS and the web using Expo.
----
+// ---------------------------
+// App.js - TrzeFx Pro AI (Net, Expo-ready)
+// ---------------------------
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+export default function TrzeFxProAI() {
+  const [licenseKey, setLicenseKey] = useState('');
+  const [status, setStatus] = useState('');
+  const [botActive, setBotActive] = useState(false);
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+  const otcSymbols = [
+    'ZAR/USD','YER/USD','USD/VND','USD/THB','USD/SGD','USD/RUB','USD/PKR',
+    'USD/MYR','USD/MXN','USD/JPY','USD/INR','USD/IDR','USD/EGP','USD/DZD',
+    'USD/COP','USD/CNH','USD/CLP','USD/CHF','USD/CAD','USD/BRL','USD/ARS',
+    'UAH/USD','TND/USD','SAR/CNY','QAR/CNY','OMR/CNY','NGN/USD','MAD/USD',
+    'LBP/USD','KES/USD','EUR/USD','EUR/TRY','EUR/RUB','EUR/JPY','EUR/HUF',
+    'EUR/CHF','CHF/NOK','CHF/JPY','CAD/JPY','CAD/CHF','BHD/CNY','AUD/USD',
+    'AUD/JPY','AUD/CHF','AUD/CAD','AED/CNY'
+  ];
 
-We're about to embark on a journey of building universal apps. In this tutorial, we'll create an Expo app that runs on Android, iOS, and web; all with a single codebase. Let's get started!
+  // -------------------------
+  // Mock License Verification
+  // -------------------------
+  const verifyKey = () => {
+    // Si key se "TRZEFX2025" → valide, sinon invalid
+    if (licenseKey.trim().toUpperCase() === 'TRZEFX2025') {
+      setStatus('License Valid ✅');
+      setBotActive(true);
+    } else {
+      setStatus('License Invalid ❌');
+      setBotActive(false);
+    }
+  };
 
-## About React Native and Expo tutorial
+  const handleBuy = (symbol) => {
+    Alert.alert('BUY Signal', `Execute BUY for ${symbol}`);
+  };
 
-The objective of this tutorial is to get started with Expo and become familiar with the Expo SDK. It'll cover the following topics:
+  const handleSell = (symbol) => {
+    Alert.alert('SELL Signal', `Execute SELL for ${symbol}`);
+  };
 
-- Create an app using the default template with TypeScript enabled
-- Implement a two-screen bottom tabs layout with Expo Router
-- Break down the app layout and implement it with flexbox
-- Use each platform's system UI to select an image from the media library
-- Create a sticker modal using the `<Modal>` and `<FlatList>` components from React Native
-- Add touch gestures to interact with a sticker
-- Use third-party libraries to capture a screenshot and save it to the disk
-- Handle platform differences between Android, iOS, and web
-- Finally, go through the process of configuring a status bar, a splash screen, and an icon to complete the app
-
-These topics provide a foundation to learn the fundamentals of building an Expo app. The tutorial is self-paced and can take up to two hours to complete.
-
-To keep it beginner friendly, we divided the tutorial into nine chapters so that you can follow along or put it down and come back to it later. Each chapter contains the necessary code snippets to complete the steps, so you can follow along by creating an app from scratch or copy and paste it.
-
-Before we get started, take a look at what we'll build. It's an app named **StickerSmash** that runs on Android, iOS, and the web:
-
-<ContentSpotlight file="tutorial/final.mp4" />
-
-> **info** The complete source code for this tutorial is available on [GitHub](https://github.com/expo/examples/tree/master/stickersmash).
-
-## How to use this tutorial
-
-We believe in [learning by doing](https://en.wikipedia.org/wiki/Learning-by-doing), so this tutorial emphasizes doing over explaining. You can follow along the journey of building an app by creating the app from scratch.
-
-Throughout the tutorial, any important code or code that has changed between examples will be <span className="tutorial-code-annotation">highlighted in green</span>. You can hover over the highlights (on desktop) or tap them (on mobile) to learn more about the change. For example, the code highlighted in the snippet below explains what it does:
-
-{/* prettier-ignore */}
-```tsx Hello World|collapseHeight=300
-import { StyleSheet, Text, View } from 'react-native';
-
-export default function Index() {
   return (
-    <View style={styles.container}>
-      /* @tutinfo This used to say: "Edit app/index.tsx to edit this screen.". Now it says: "Hello world!". */<Text>Hello world!</Text>/* @end */
-    </View>
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>TrzeFx Pro AI</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Enter License Key"
+        placeholderTextColor="#F4F6F9"
+        value={licenseKey}
+        onChangeText={setLicenseKey}
+      />
+
+      <TouchableOpacity style={styles.button} onPress={verifyKey}>
+        <Text style={styles.buttonText}>Verify License</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.status}>{status}</Text>
+
+      {botActive && (
+        <View style={styles.panel}>
+          <Text style={styles.panelTitle}>🚀 OTC Signals Active</Text>
+          {otcSymbols.map((symbol, i) => (
+            <View key={i} style={styles.symbolRow}>
+              <Text style={styles.panelText}>{symbol}</Text>
+              <View style={styles.symbolButtons}>
+                <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy(symbol)}>
+                  <Text style={styles.buttonTextSmall}>BUY ⬆️</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.sellButton} onPress={() => handleSell(symbol)}>
+                  <Text style={styles.buttonTextSmall}>SELL ⬇️</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+    </ScrollView>
   );
 }
 
+// ----------------------
+// Styles
+// ----------------------
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#0A0A0F', padding: 10 },
+  title: { color: '#9b5cff', fontSize: 28, fontWeight: 'bold', marginVertical: 15, textAlign: 'center' },
+  input: { borderWidth: 1, borderColor: '#F4F6F9', color: '#F4F6F9', padding: 12, borderRadius: 10, marginBottom: 12 },
+  button: { backgroundColor: '#9b5cff', padding: 12, borderRadius: 10, alignItems: 'center', marginBottom: 12 },
+  buttonText: { color: '#F4F6F9', fontWeight: 'bold', fontSize: 16 },
+  buttonTextSmall: { color: '#F4F6F9', fontWeight: 'bold', fontSize: 12 },
+  status: { color: '#F4F6F9', fontWeight: 'bold', fontSize: 16, marginBottom: 10, textAlign: 'center' },
+  panel: { borderWidth: 1, borderColor: '#9b5cff', borderRadius: 12, padding: 12, marginTop: 15 },
+  panelTitle: { color: '#9b5cff', fontSize: 20, fontWeight: 'bold', marginBottom: 8, textAlign: 'center' },
+  panelText: { color: '#F4F6F9', fontSize: 16 },
+  symbolRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 },
+  symbolButtons: { flexDirection: 'row' },
+  buyButton: { backgroundColor: 'green', padding: 5, borderRadius: 6, marginRight: 5 },
+  sellButton: { backgroundColor: 'red', padding: 5, borderRadius: 6 },
 });
-```
-
-## Next step
-
-We're ready to start building our app.
-
-<BoxLink
-  title="Start"
-  Icon={BookOpen02Icon}
-  description="Let's start by creating a new Expo app."
-  href="/tutorial/create-your-first-app"
-/>
