@@ -19,7 +19,7 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && pnpm run build:prod",
+    "prepublishOnly": "expo-module clean && pnpm run build:prod",
     "test": "expo-module test",
     "watch": "pnpm run build -w"
   },

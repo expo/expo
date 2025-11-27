@@ -37,7 +37,7 @@
     "build:cjs": "tsc -p tsconfig.json",
     "build:mjs": "tsc -p tsconfig.mjs.json",
     "clean": "rimraf build",
-    "prepare": "run-s clean build",
+    "prepublishOnly": "run-s clean build",
     "lint": "eslint .",
     "test": "jest"
   },

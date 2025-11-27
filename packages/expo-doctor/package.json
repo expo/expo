@@ -24,13 +24,12 @@
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "prepare": "pnpm run clean && pnpm run build:prod",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "pnpm run build -w",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "watch": "pnpm run build -w"
   },
   "devDependencies": {
     "@expo/cli": "workspace:*",

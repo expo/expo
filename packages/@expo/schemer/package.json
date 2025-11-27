@@ -10,14 +10,13 @@
   ],
   "scripts": {
     "build": "expo-module tsc",
-    "prepare": "pnpm run clean && pnpm run build",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:e2e": "expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
-    "watch": "pnpm run --watch --preserveWatchOutput",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "watch": "pnpm run --watch --preserveWatchOutput"
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/schemer#readme",
   "repository": {

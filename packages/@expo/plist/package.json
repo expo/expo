@@ -5,13 +5,12 @@
   "main": "build/index.js",
   "scripts": {
     "build": "expo-module tsc",
-    "prepare": "pnpm run clean && pnpm run build",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "pnpm run build --watch --preserveWatchOutput",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "watch": "pnpm run build --watch --preserveWatchOutput"
   },
   "repository": {
     "type": "git",
