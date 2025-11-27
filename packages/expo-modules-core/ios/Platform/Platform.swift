@@ -18,4 +18,10 @@ extension UIApplication {
   public typealias LaunchOptionsKey = String
 }
 
+extension Image {
+  init(uiImage: NSImage) {
+    self.init(nsImage: uiImage)
+  }
+}
+
 #endif // os(macOS)
