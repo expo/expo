@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabsTriggerBadge = exports.NativeTabsTriggerVectorIcon = exports.NativeTabsTriggerIcon = exports.NativeTabsTriggerLabel = void 0;
+exports.NativeTabsTriggerBadge = exports.NativeTabsTriggerPromiseIcon = exports.NativeTabsTriggerVectorIcon = exports.NativeTabsTriggerIcon = exports.NativeTabsTriggerLabel = void 0;
 const primitives_1 = require("../../primitives");
 exports.NativeTabsTriggerLabel = primitives_1.Label;
 /**
@@ -38,5 +38,9 @@ exports.NativeTabsTriggerIcon = primitives_1.Icon;
  * ```
  */
 exports.NativeTabsTriggerVectorIcon = primitives_1.VectorIcon;
+const NativeTabsTriggerPromiseIcon = function NativeTabsTriggerPromiseIcon(props) {
+    return null;
+};
+exports.NativeTabsTriggerPromiseIcon = NativeTabsTriggerPromiseIcon;
 exports.NativeTabsTriggerBadge = primitives_1.Badge;
 //# sourceMappingURL=elements.js.map

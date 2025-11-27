@@ -55,7 +55,7 @@ export default function Layout() {
             <NativeTabs.Trigger.Icon
               // selectedColor="deepNavy"
               sf="applewatch.side.right"
-              src={<VectorIcon family={MIcons} name="watch" />}
+              md="watch"
             />
           </NativeTabs.Trigger>
           {activeTabs.map((tab, index) => (

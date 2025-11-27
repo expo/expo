@@ -12,6 +12,8 @@ const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
 const useSafeLayoutEffect_1 = require("../views/useSafeLayoutEffect");
 const elements_1 = require("./common/elements");
 const children_1 = require("../utils/children");
+const icon_1 = require("./utils/icon");
+const materialIconConverter_1 = require("./utils/materialIconConverter");
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
  *
@@ -158,8 +160,19 @@ function appendIconOptions(options, props) {
         }
     }
     else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
+        if ('md' in props) {
+            console.warn('Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.');
+        }
         options.icon = { drawable: props.drawable };
         options.selectedIcon = undefined;
+    }
+    else if ('md' in props && props.md && process.env.EXPO_OS === 'android') {
+        if (process.env.NODE_ENV !== 'production') {
+            if ('drawable' in props) {
+                console.warn('Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.');
+            }
+        }
+        options.icon = (0, materialIconConverter_1.convertMaterialIconNameToImageSource)(props.md);
     }
     else if ('src' in props && props.src) {
         const icon = convertIconSrcToIconOption(props);
@@ -185,13 +198,7 @@ function convertIconSrcToIconOption(icon) {
 function convertSrcOrComponentToSrc(src) {
     if (src) {
         if ((0, react_1.isValidElement)(src)) {
-            if (src.type === elements_1.NativeTabsTriggerVectorIcon) {
-                const props = src.props;
-                return { src: props.family.getImageSource(props.name, 24, 'white') };
-            }
-            else {
-                console.warn('Only VectorIcon is supported as a React element in Icon.src');
-            }
+            return (0, icon_1.convertComponentSrcToImageSource)(src);
         }
         else {
             return { src };

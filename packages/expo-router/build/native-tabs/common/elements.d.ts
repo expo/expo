@@ -1,3 +1,4 @@
+import type { AndroidSymbol } from 'expo-symbols';
 import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { VectorIcon } from '../../primitives';
@@ -77,10 +78,13 @@ export interface DrawableIcon {
      */
     drawable?: string;
 }
+export interface MaterialIcon {
+    md: AndroidSymbol;
+}
 export type BaseNativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
 };
-export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
+export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
 /**
  * Renders an icon for the tab.
  *
@@ -116,6 +120,10 @@ export declare const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps>
  * ```
  */
 export declare const NativeTabsTriggerVectorIcon: typeof VectorIcon;
+export interface NativeTabsTriggerPromiseIconProps {
+    loader: () => Promise<ImageSourcePropType | null>;
+}
+export declare const NativeTabsTriggerPromiseIcon: (props: NativeTabsTriggerPromiseIconProps) => null;
 export interface NativeTabsTriggerBadgeProps {
     /**
      * The text to display as the badge for the tab.
