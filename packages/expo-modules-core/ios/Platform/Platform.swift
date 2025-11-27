@@ -13,13 +13,14 @@ public typealias UIWindow = NSWindow
 public typealias UIHostingController = NSHostingController
 public typealias UIViewRepresentable = NSViewRepresentable
 public typealias UILabel = NSLabel
+public typealias UIImage = NSImage
 
 extension UIApplication {
   public typealias LaunchOptionsKey = String
 }
 
 extension Image {
-  init(uiImage: NSImage) {
+  public init(uiImage: NSImage) {
     self.init(nsImage: uiImage)
   }
 }
