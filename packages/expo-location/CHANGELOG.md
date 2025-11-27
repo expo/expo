@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add option `androidForegroundServiceIcon` for controlling the icon for the foreground service. ([#41132](https://github.com/expo/expo/pull/41132) by [@jeppester](https://github.com/jeppester))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
