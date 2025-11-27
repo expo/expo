@@ -59,6 +59,7 @@
   "expo-mail-composer": "~15.0.7",
   "expo-manifests": "~1.0.8",
   "expo-maps": "~0.12.7",
+  "expo-mcp": "~0.2.1",
   "expo-media-library": "~18.2.0",
   "expo-mesh-gradient": "~0.4.7",
   "expo-module-template": "~11.0.13",
