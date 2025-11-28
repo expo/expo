@@ -1516,6 +1516,9 @@ importers:
       '@graphql-codegen/typescript-operations':
         specifier: ^2.5.12
         version: 2.5.13(encoding@0.1.13)(graphql@15.8.0)
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@playwright/test':
         specifier: ^1.53.1
         version: 1.53.1
@@ -1603,6 +1606,9 @@ importers:
       devtools-protocol:
         specifier: ^0.0.1113120
         version: 0.0.1113120
+      expect:
+        specifier: ^29.7.0
+        version: 29.7.0
       expo-atlas:
         specifier: ^0.4.1
         version: 0.4.1(expo@packages+expo)
@@ -1615,6 +1621,9 @@ importers:
       find-process:
         specifier: ^1.4.7
         version: 1.4.7
+      jest-matcher-utils:
+        specifier: ^29.7.0
+        version: 29.7.0
       jest-runner-tsd:
         specifier: ^6.0.0
         version: 6.0.0(@jest/test-result@29.7.0)(@tsd/typescript@5.0.4)(jest-runner@29.7.0)
@@ -6250,7 +6259,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/code-signing-certificates@0.0.5':
     resolution: {integrity: sha512-BNhXkY1bblxKZpltzAx98G2Egj9g1Q+JRcvR7E99DOj862FTCX+ZPsAUtPTr7aHxwtrL7+fL3r0JSmM9kBm+Bw==}
@@ -8234,8 +8243,8 @@ packages:
   '@types/source-map-support@0.5.10':
     resolution: {integrity: sha512-tgVP2H469x9zq34Z0m/fgPewGhg/MLClalNOiPIzQlXrSS2YrKu/xCdSCKnEDwkFha51VKEKB6A9wW26/ZNwzA==}
 
-  '@types/stack-utils@2.0.1':
-    resolution: {integrity: sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==}
+  '@types/stack-utils@2.0.3':
+    resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
 
   '@types/tapable@1.0.8':
     resolution: {integrity: sha512-ipixuVrh2OdNmauvtT51o3d8z12p6LtFW9in7U79der/kwejjdNchQC5UMn5u/KxNoM7VHHOs/l8KS8uHxhODQ==}
@@ -13788,8 +13797,8 @@ packages:
   stack-generator@2.0.10:
     resolution: {integrity: sha512-mwnua/hkqM6pF4k8SnmZ2zfETsRUpWXREfA/goT8SLCV4iOFa4bzOX2nDipWAZFPTjLvQB82f5yaodMVhK0yJQ==}
 
-  stack-utils@2.0.5:
-    resolution: {integrity: sha512-xrQcmYhOsn/1kX+Vraq+7j4oE2j/6BFscZ0etmYg81xuM8Gq0022Pxb8+IqgOFUIaxHs0KaSb7T1+OegiNrNFA==}
+  stack-utils@2.0.6:
+    resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
     engines: {node: '>=10'}
 
   stackframe@1.3.4:
@@ -18786,7 +18795,7 @@ snapshots:
     dependencies:
       source-map: 0.6.1
 
-  '@types/stack-utils@2.0.1': {}
+  '@types/stack-utils@2.0.3': {}
 
   '@types/tapable@1.0.8': {}
 
@@ -22387,7 +22396,7 @@ snapshots:
       pretty-format: 29.7.0
       pure-rand: 6.0.4
       slash: 3.0.0
-      stack-utils: 2.0.5
+      stack-utils: 2.0.6
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -22519,13 +22528,13 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.27.1
       '@jest/types': 29.6.3
-      '@types/stack-utils': 2.0.1
+      '@types/stack-utils': 2.0.3
       chalk: 4.1.2
       graceful-fs: 4.2.11
       micromatch: 4.0.8
       pretty-format: 29.7.0
       slash: 3.0.0
-      stack-utils: 2.0.5
+      stack-utils: 2.0.6
 
   jest-mock@29.7.0:
     dependencies:
@@ -25624,7 +25633,7 @@ snapshots:
     dependencies:
       stackframe: 1.3.4
 
-  stack-utils@2.0.5:
+  stack-utils@2.0.6:
     dependencies:
       escape-string-regexp: 2.0.0
 
