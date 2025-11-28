@@ -151,6 +151,31 @@ export type DownloadOptions = {
      */
     idempotent?: boolean;
 };
+export type FilePickerOptions = {
+    /**
+     * An optional URI pointing to an initial folder on which the file picker is opened.
+     */
+    initialUri?: string;
+    /**
+     * A mime type that is used to filter out files that can be picked out.
+     */
+    mimeType?: string;
+    /**
+     * Whether to open the picked file as a copy.
+     * If you want to disable it, make sure you set `supportsOpeningDocumentsInPlace` in [app config](#configuration-in-app-config) to `true`.
+     * @default true
+     *
+     * @platform ios
+     */
+    copyToCacheDirectory?: boolean;
+    /**
+     * Allows multiple files to be selected from the system UI.
+     * @default false
+     *
+     * @platform ios
+     */
+    multiple?: boolean;
+};
 /**
  * Represents a file on the file system.
  */
@@ -270,13 +295,12 @@ export declare class File {
     /**
      * A static method that opens a file picker to select a single file of specified type. On iOS, it returns a temporary copy of the file leaving the original file untouched.
      *
-     * Selecting multiple files is not supported yet.
+     * On iOS, by default, this method returns a temporary copy of the selected file, ensuring the original remains unchanged. To open the original file in place (without copying), set `copyToCacheDirectory` to `false` in the options.
      *
-     * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
-     * @param mimeType A mime type that is used to filter out files that can be picked out.
-     * @returns A `File` instance or an array of `File` instances.
+     * @param options An optional [`FilePickerOptions`](#filepickeroptions) object containing options for the file picker.
+     * @returns A `File` instance or an array of `File` instances if the `multiple` option is `true`.
      */
-    static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
+    static pickFileAsync(options?: FilePickerOptions): Promise<File | File[]>;
     /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */

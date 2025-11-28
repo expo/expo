@@ -13,6 +13,8 @@ type FileSystemProps = {
 };
 
 const withFileSystem: ConfigPlugin<FileSystemProps> = (config, options = {}) => {
+  const { supportsOpeningDocumentsInPlace = false, enableFileSharing = false } = options;
+
   // Apply Android permissions
   config = AndroidConfig.Permissions.withPermissions(config, [
     'android.permission.READ_EXTERNAL_STORAGE',
@@ -22,11 +24,11 @@ const withFileSystem: ConfigPlugin<FileSystemProps> = (config, options = {}) => 
 
   // Apply iOS modifications
   return withInfoPlist(config, (config) => {
-    if ('supportsOpeningDocumentsInPlace' in options) {
-      config.modResults.LSSupportsOpeningDocumentsInPlace = options.supportsOpeningDocumentsInPlace;
+    if (supportsOpeningDocumentsInPlace) {
+      config.modResults.LSSupportsOpeningDocumentsInPlace = true;
     }
-    if ('enableFileSharing' in options) {
-      config.modResults.UIFileSharingEnabled = options.enableFileSharing;
+    if (enableFileSharing) {
+      config.modResults.UIFileSharingEnabled = true;
     }
     return config;
   });

@@ -4,9 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- `File.pickFileAsync` now accepts a single `FilePickerOptions` object instead of multiple parameters, and may return an array of files if `allowsMultipleSelection` is true. ([#39295](https://github.com/expo/expo/pull/39295) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🎉 New features
 
 - [Android] Add contentUri property. ([#40002](https://github.com/expo/expo/pull/40002) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add `openAsCopy` and `allowsMultipleSelection` options to the `pickFileAsync` ([#39295](https://github.com/expo/expo/pull/39295) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 
@@ -27,7 +30,6 @@
 ### 🎉 New features
 
 - Add write options for base64 encoded bytes. ([#39963](https://github.com/expo/expo/pull/39963) by [@aleqsio](https://github.com/aleqsio))
-- [iOS] Add file sharing config options ([#39286](https://github.com/expo/expo/pull/39286) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 
