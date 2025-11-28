@@ -216,13 +216,17 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
   ) {
     let selector = #selector(application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
     let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
+    if subs.isEmpty {
+      completionHandler(.noData)
+      return
+    }
+
     var subscribersLeft = subs.count
-    let dispatchQueue = DispatchQueue(label: "expo.application.remoteNotification", qos: .userInteractive)
     var failedCount = 0
     var newDataCount = 0
 
-    let handler = { (result: UIBackgroundFetchResult) in
-      dispatchQueue.sync {
+    let aggregateHandler = { (result: UIBackgroundFetchResult) in
+      DispatchQueue.main.async {
         if result == .failed {
           failedCount += 1
         } else if result == .newData {
@@ -243,12 +247,8 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
       }
     }
 
-    if subs.isEmpty {
-      completionHandler(.noData)
-    } else {
-      subs.forEach { subscriber in
-        subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: handler)
-      }
+    subs.forEach { subscriber in
+      subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: aggregateHandler)
     }
   }
 
