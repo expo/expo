@@ -403,7 +403,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showManagedSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
 {
-
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
   EX_WEAKIFY(self);
