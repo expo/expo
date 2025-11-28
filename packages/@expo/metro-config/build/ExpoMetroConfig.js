@@ -86,24 +86,23 @@ function memoize(fn) {
         return result;
     });
 }
-function findUpTSConfig(cwd) {
-    const tsconfigPath = path_1.default.resolve(cwd, './tsconfig.json');
-    if (fs_1.default.existsSync(tsconfigPath)) {
-        return path_1.default.dirname(tsconfigPath);
+function findUpPackageJsonDirectory(cwd, directoryToPackage) {
+    if (['.', path_1.default.sep].includes(cwd))
+        return undefined;
+    if (directoryToPackage.has(cwd))
+        return directoryToPackage.get(cwd);
+    const packageFound = fs_1.default.existsSync(path_1.default.resolve(cwd, './package.json'));
+    if (packageFound) {
+        directoryToPackage.set(cwd, cwd);
+        return cwd;
     }
-    const parent = path_1.default.dirname(cwd);
-    if (parent === cwd)
-        return null;
-    return findUpTSConfig(parent);
-}
-function findUpTSProjectRootOrThrow(dir) {
-    const tsProjectRoot = findUpTSConfig(dir);
-    if (!tsProjectRoot) {
-        throw new Error('Local modules watched dir needs to be inside a TS project with tsconfig.json');
+    const packageRoot = findUpPackageJsonDirectory(path_1.default.dirname(cwd), directoryToPackage);
+    if (packageRoot) {
+        directoryToPackage.set(cwd, packageRoot);
     }
-    return tsProjectRoot;
+    return packageRoot;
 }
-function resolveinlineModules(projectRoot, context, moduleName, platform) {
+function resolveInlineModules(projectRoot, directoryToPackage, context, moduleName, platform) {
     const inlineModulesModulesPath = path_1.default.resolve(projectRoot, './.expo/inlineModules/modules');
     let inlineModuleFileExtension = null;
     if (moduleName.endsWith('.module')) {
@@ -113,9 +112,16 @@ function resolveinlineModules(projectRoot, context, moduleName, platform) {
         inlineModuleFileExtension = '.view.js';
     }
     if (inlineModuleFileExtension) {
-        const tsProjectRoot = findUpTSProjectRootOrThrow(path_1.default.dirname(context.originModulePath));
-        const modulePathRelativeToTSRoot = path_1.default.relative(tsProjectRoot, fs_1.default.realpathSync(path_1.default.dirname(context.originModulePath)));
-        const modulePath = path_1.default.resolve(inlineModulesModulesPath, modulePathRelativeToTSRoot, moduleName.substring(0, moduleName.lastIndexOf('.')) + inlineModuleFileExtension);
+        const originModuleDirname = path_1.default.dirname(context.originModulePath);
+        let modulePackageRoot = directoryToPackage.get(originModuleDirname);
+        if (!modulePackageRoot) {
+            modulePackageRoot = findUpPackageJsonDirectory(path_1.default.dirname(context.originModulePath), directoryToPackage);
+        }
+        if (!modulePackageRoot) {
+            return { type: 'empty' };
+        }
+        const modulePathRelativeToItsPackageRoot = path_1.default.relative(modulePackageRoot, fs_1.default.realpathSync(path_1.default.dirname(context.originModulePath)));
+        const modulePath = path_1.default.resolve(inlineModulesModulesPath, modulePathRelativeToItsPackageRoot, moduleName.substring(0, moduleName.lastIndexOf('.')) + inlineModuleFileExtension);
         return {
             filePath: modulePath,
             type: 'sourceFile',
@@ -232,8 +238,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
     const expoConfig = (0, config_1.getConfig)(projectRoot, { skipSDKVersionRequirement: true });
-    const resolveinlineModulesWithRoot = (context, moduleName, platform) => {
-        return resolveinlineModules(projectRoot, context, moduleName, platform);
+    const directoryToPackage = new Map();
+    const resolveInlineModulesWithAdditionalConfig = (context, moduleName, platform) => {
+        return resolveInlineModules(projectRoot, directoryToPackage, context, moduleName, platform);
     };
     const contextResolveRequest = (context, moduleName, platform) => context.resolveRequest(context, moduleName, platform);
     const defaultResolveRequest = metroDefaultValues.resolver.resolveRequest ?? contextResolveRequest;
@@ -261,7 +268,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             sourceExts,
             nodeModulesPaths,
             resolveRequest: expoConfig.exp.experiments?.inlineModules === true
-                ? resolveinlineModulesWithRoot
+                ? resolveInlineModulesWithAdditionalConfig
                 : defaultResolveRequest,
             blockList: [
                 // .expo/types contains generated declaration files which are not and should not be processed by Metro.
