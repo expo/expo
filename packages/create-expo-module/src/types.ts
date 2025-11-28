@@ -10,6 +10,7 @@ export type CommandOptions = {
   withChangelog: boolean;
   example: boolean;
   local: boolean;
+  includeGhConfig: boolean;
 };
 
 /**

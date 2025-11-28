@@ -37,8 +37,11 @@ export function getLocalFolderNamePrompt(customTargetPath?: string | null): Prom
   };
 }
 
-export async function getSubstitutionDataPrompts(slug: string): Promise<PromptObject<string>[]> {
-  return [
+export async function getSubstitutionDataPrompts(
+  slug: string,
+  includeGhConfig = false
+): Promise<PromptObject<string>[]> {
+  const prompts: PromptObject<string>[] = [
     {
       type: 'text',
       name: 'name',
@@ -71,34 +74,41 @@ export async function getSubstitutionDataPrompts(slug: string): Promise<PromptOb
       },
       validate: (input) => !!input || 'The Android package name cannot be empty',
     },
-    {
-      type: 'text',
-      name: 'authorName',
-      message: 'What is the name of the package author?',
-      initial: await findMyName(),
-      validate: (input) => !!input || 'Cannot be empty',
-    },
-    {
-      type: 'text',
-      name: 'authorEmail',
-      message: 'What is the email address of the author?',
-      initial: await findGitHubEmail(),
-    },
-    {
-      type: 'text',
-      name: 'authorUrl',
-      message: "What is the URL to the author's GitHub profile?",
-      initial: async (_, answers: Answers<string>) =>
-        await findGitHubUserFromEmail(answers.authorEmail).then((actor) => actor || ''),
-    },
-    {
-      type: 'text',
-      name: 'repo',
-      message: 'What is the URL for the repository?',
-      initial: async (_, answers: Answers<string>) => await guessRepoUrl(answers.authorUrl, slug),
-      validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
-    },
   ];
+
+  if (includeGhConfig) {
+    prompts.push(
+      {
+        type: 'text',
+        name: 'authorName',
+        message: 'What is the name of the package author?',
+        initial: await findMyName(),
+        validate: (input) => !!input || 'Cannot be empty',
+      },
+      {
+        type: 'text',
+        name: 'authorEmail',
+        message: 'What is the email address of the author?',
+        initial: await findGitHubEmail(),
+      },
+      {
+        type: 'text',
+        name: 'authorUrl',
+        message: "What is the URL to the author's GitHub profile?",
+        initial: async (_, answers: Answers<string>) =>
+          await findGitHubUserFromEmail(answers.authorEmail).then((actor) => actor || ''),
+      },
+      {
+        type: 'text',
+        name: 'repo',
+        message: 'What is the URL for the repository?',
+        initial: async (_, answers: Answers<string>) => await guessRepoUrl(answers.authorUrl, slug),
+        validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
+      }
+    );
+  }
+
+  return prompts;
 }
 
 export async function getLocalSubstitutionDataPrompts(

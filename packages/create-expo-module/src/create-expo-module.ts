@@ -103,7 +103,7 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   options.target = targetDir;
 
-  const data = await askForSubstitutionDataAsync(slug, options.local);
+  const data = await askForSubstitutionDataAsync(slug, options.local, options.includeGhConfig);
 
   // Make one line break between prompts and progress logs
   console.log();
@@ -365,11 +365,14 @@ async function askForPackageSlugAsync(customTargetPath?: string, isLocal = false
  */
 async function askForSubstitutionDataAsync(
   slug: string,
-  isLocal = false
+  isLocal = false,
+  includeGhConfig = false
 ): Promise<SubstitutionData | LocalSubstitutionData> {
-  const promptQueries = await (
-    isLocal ? getLocalSubstitutionDataPrompts : getSubstitutionDataPrompts
-  )(slug);
+  const getPromptQueries = isLocal
+    ? getLocalSubstitutionDataPrompts
+    : (slugArg: string) => getSubstitutionDataPrompts(slugArg, includeGhConfig);
+
+  const promptQueries = await getPromptQueries(slug);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
@@ -399,6 +402,12 @@ async function askForSubstitutionDataAsync(
     };
   }
 
+  const author =
+    includeGhConfig && authorName
+      ? `${authorName}${authorEmail ? ` <${authorEmail}>` : ''}${authorUrl ? ` (${authorUrl})` : ''}`
+      : '';
+  const repoOut = includeGhConfig && repo ? repo : '';
+
   return {
     project: {
       slug,
@@ -409,9 +418,9 @@ async function askForSubstitutionDataAsync(
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
     },
-    author: `${authorName} <${authorEmail}> (${authorUrl})`,
+    author,
     license: 'MIT',
-    repo,
+    repo: repoOut,
     type: 'remote',
   };
 }
@@ -498,6 +507,11 @@ program
   .option(
     '--local',
     'Whether to create a local module in the current project, skipping installing node_modules and creating the example directory.',
+    false
+  )
+  .option(
+    '--include-gh-config',
+    'Include prompts for author and GitHub/repository configuration.',
     false
   )
   .action(main);
