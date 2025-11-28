@@ -134,7 +134,6 @@ export type FileTypeInformationSerialized = {
   declaredTypeIdentifiersList: string[];
   typeParametersCountList: [string, number][];
   typeIdentifierDefinitionList: TypeIdentifierDefinitionList;
-  functions: FunctionDeclaration[];
   moduleClasses: ModuleClassDeclaration[];
   records: RecordType[];
   enums: EnumType[];
@@ -145,7 +144,6 @@ export type FileTypeInformation = {
   declaredTypeIdentifiers: Set<string>;
   typeParametersCount: Map<string, number>;
   typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap;
-  functions: FunctionDeclaration[];
   moduleClasses: ModuleClassDeclaration[];
   records: RecordType[];
   enums: EnumType[];
@@ -156,7 +154,6 @@ export function serializeTypeInformation({
   declaredTypeIdentifiers,
   typeParametersCount,
   typeIdentifierDefinitionMap,
-  functions,
   moduleClasses,
   records,
   enums,
@@ -166,7 +163,6 @@ export function serializeTypeInformation({
     declaredTypeIdentifiersList: [...declaredTypeIdentifiers.keys()].sort(),
     typeParametersCountList: [...typeParametersCount.entries()].sort(),
     typeIdentifierDefinitionList: [...typeIdentifierDefinitionMap.entries()].sort(),
-    functions,
     moduleClasses,
     records,
     enums,
@@ -178,7 +174,6 @@ export function deserializeTypeInformation({
   declaredTypeIdentifiersList,
   typeParametersCountList,
   typeIdentifierDefinitionList,
-  functions,
   moduleClasses,
   records,
   enums,
@@ -188,7 +183,6 @@ export function deserializeTypeInformation({
     declaredTypeIdentifiers: new Set<string>(declaredTypeIdentifiersList),
     typeParametersCount: new Map<string, number>(typeParametersCountList),
     typeIdentifierDefinitionMap: new Map(typeIdentifierDefinitionList),
-    functions,
     moduleClasses,
     records,
     enums,

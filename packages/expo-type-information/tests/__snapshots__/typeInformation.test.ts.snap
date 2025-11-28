@@ -265,7 +265,6 @@ exports[`Same type information 1`] = `
       "name": "TestEnum",
     },
   ],
-  "functions": [],
   "moduleClasses": [
     {
       "asyncFunctions": [
