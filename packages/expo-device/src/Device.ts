@@ -1,9 +1,9 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
-import { DeviceType } from './Device.types';
+import { CameraCutoutInfo, CameraRect, DeviceType } from './Device.types';
 import ExpoDevice from './ExpoDevice';
 
-export { DeviceType };
+export { CameraCutoutInfo, CameraRect, DeviceType };
 
 /**
  * `true` if the app is running on a real device and `false` if running in a simulator or emulator.
@@ -340,6 +340,30 @@ export async function getPlatformFeaturesAsync(): Promise<string[]> {
     return [];
   }
   return await ExpoDevice.getPlatformFeaturesAsync();
+}
+
+/**
+ * Gets the camera cutout information.
+ * This is useful for adjusting your UI to avoid overlapping with the camera cutout (notch) on devices that have one.
+ * You can also use this to create interactive UI elements around the cutout, similar to the Dynamic Island on iOS.
+ *
+ * @example
+ * ```js
+ * const info = await Device.getCameraCutoutInfoAsync();
+ * if (info.hasCameraCutout) {
+ *   console.log(info.cameraRects, info.safeInsets);
+ * }
+ * ```
+ * @platform android
+ * @platform ios
+ * @returns A promise that resolves to `CameraCutoutInfo` object containing the camera cutout information.
+ */
+export async function getCameraCutoutInfoAsync(): Promise<CameraCutoutInfo> {
+  if (!ExpoDevice.getCameraCutoutInfoAsync) {
+    throw new UnavailabilityError('expo-device', 'getCameraCutoutInfoAsync');
+  }
+  // The native module returns numbers in physical pixels (consistent with native impl).
+  return await ExpoDevice.getCameraCutoutInfoAsync();
 }
 
 /**

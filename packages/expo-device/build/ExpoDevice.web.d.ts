@@ -1,4 +1,4 @@
-import { DeviceType } from './Device.types';
+import { CameraCutoutInfo, DeviceType } from './Device.types';
 declare const _default: {
     readonly isDevice: boolean;
     readonly brand: null;
@@ -15,6 +15,7 @@ declare const _default: {
     readonly deviceName: null;
     getDeviceTypeAsync(): Promise<DeviceType>;
     isRootedExperimentalAsync(): Promise<boolean>;
+    getCameraCutoutInfoAsync(): Promise<CameraCutoutInfo>;
 };
 export default _default;
 //# sourceMappingURL=ExpoDevice.web.d.ts.map

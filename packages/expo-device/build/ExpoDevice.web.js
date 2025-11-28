@@ -75,5 +75,16 @@ export default {
     async isRootedExperimentalAsync() {
         return false;
     },
+    // inside the default web export object
+    async getCameraCutoutInfoAsync() {
+        // Web has no standardized camera-cutout API; return safe fallback.
+        // Optionally we could sample CSS env(safe-area-inset-*) but that's not universally reliable.
+        return {
+            hasCameraCutout: false,
+            cameraRects: [],
+            safeInsets: { top: 0, bottom: 0, left: 0, right: 0 },
+            type: 'unknown',
+        };
+    },
 };
 //# sourceMappingURL=ExpoDevice.web.js.map

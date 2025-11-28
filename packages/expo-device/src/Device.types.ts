@@ -23,3 +23,28 @@ export enum DeviceType {
    */
   TV,
 }
+
+/**
+ * Represents a rectangle describing a camera cutout.
+ * @platform android
+ * @platform ios
+ */
+export interface CameraRect {
+  x: number; // left in physical pixels
+  y: number; // top in physical pixels
+  width: number; // width in physical pixels
+  height: number; // height in physical pixels
+  radius?: number | null; // optional radius estimate in pixels
+}
+
+/**
+ * Represents the camera cutout information.
+ * @platform android
+ * @platform ios
+ */
+export interface CameraCutoutInfo {
+  hasCameraCutout: boolean;
+  cameraRects: CameraRect[];
+  safeInsets: { top: number; bottom: number; left: number; right: number }; // pixels
+  type?: 'hole' | 'pill' | 'wide' | 'unknown';
+}
