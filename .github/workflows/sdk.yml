@@ -45,22 +45,20 @@ jobs:
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
         if: github.event_name == 'pull_request'
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'pnpm'
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-      - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 📦⬇️ Install workspace node modules
+        run: pnpm install
       - name: 🧐 Check all packages
         if:
           github.event_name == 'schedule' ||

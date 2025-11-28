@@ -81,7 +81,7 @@
     "@babel/core": "^7.26.0",
     "@types/babel__core": "^7.20.5",
     "@expo/metro": "~54.1.0",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "jest": "^29.2.1",
     "react-refresh": "^0.14.2"
   }

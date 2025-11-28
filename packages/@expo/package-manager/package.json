@@ -47,7 +47,7 @@
   "devDependencies": {
     "@types/micromatch": "^4.0.2",
     "@types/npm-package-arg": "^6.1.0",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

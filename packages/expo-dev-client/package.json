@@ -39,8 +39,8 @@
     "expo-updates-interface": "~2.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
-    "expo-test-runner": "0.3.7"
+    "expo-module-scripts": "workspace:*",
+    "expo-test-runner": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

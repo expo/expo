@@ -40,9 +40,9 @@
     "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "@expo-google-fonts/material-symbols": "^0.4.1",
-    "expo-font": "^14.0.7"
+    "expo-font": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

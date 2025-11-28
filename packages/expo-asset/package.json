@@ -55,7 +55,7 @@
     "@testing-library/react-native": "^13.2.0",
     "@types/node": "^22.14.0",
     "@types/react-native__assets": "^1.0.3",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

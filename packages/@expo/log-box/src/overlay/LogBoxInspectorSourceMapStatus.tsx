@@ -134,11 +134,11 @@ export function LogBoxInspectorSourceMapStatus(props: {
   let color;
   switch (props.status) {
     case 'FAILED':
-      image = require('@expo/log-box/assets/alert-triangle.png');
+      image = require('../../assets/alert-triangle.png');
       color = `rgba(243, 83, 105, 1)`;
       break;
     case 'PENDING':
-      image = require('@expo/log-box/assets/loader.png');
+      image = require('../../assets/loader.png');
       color = `rgba(250, 186, 48, 1)`;
       break;
   }

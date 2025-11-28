@@ -98,12 +98,12 @@
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
-    "@expo/dom-webview": "0.2.7",
-    "@expo/metro-runtime": "^6.1.2",
+    "@expo/dom-webview": "workspace:*",
+    "@expo/metro-runtime": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "@types/react-test-renderer": "~19.1.0",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.0-rc.3",

@@ -34,7 +34,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
   "devDependencies": {
-    "expo-module-scripts": "~5.0.7",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },
   "dependencies": {
