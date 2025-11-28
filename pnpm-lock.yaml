@@ -1052,35 +1052,50 @@ importers:
   apps/router-e2e:
     dependencies:
       '@expo/dom-webview':
-        specifier: 0.2.7
+        specifier: workspace:*
         version: link:../../packages/@expo/dom-webview
+      '@expo/router-server':
+        specifier: workspace:*
+        version: link:../../packages/@expo/router-server
       '@expo/vector-icons':
         specifier: ^15.0.2
         version: 15.0.2(expo-font@packages+expo-font)(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      '@react-navigation/bottom-tabs':
+        specifier: 7.7.3
+        version: 7.7.3(@react-native-masked-view/masked-view@0.3.2(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(@react-navigation/native@7.1.21(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.0(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native-screens@4.19.0-nightly-20251203-1746a584e(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      '@react-navigation/native':
+        specifier: 7.1.21
+        version: 7.1.21(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      '@react-navigation/native-stack':
+        specifier: 7.8.0
+        version: 7.8.0(@react-native-masked-view/masked-view@0.3.2(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(@react-navigation/native@7.1.21(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.0(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native-screens@4.19.0-nightly-20251203-1746a584e(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
       expo:
-        specifier: ~54.0.8
+        specifier: workspace:*
         version: link:../../packages/expo
       expo-haptics:
-        specifier: ~15.0.7
+        specifier: workspace:*
         version: link:../../packages/expo-haptics
       expo-linking:
-        specifier: ~8.0.8
+        specifier: workspace:*
         version: link:../../packages/expo-linking
       expo-router:
-        specifier: ^6.0.6
+        specifier: workspace:*
         version: link:../../packages/expo-router
       expo-speech:
-        specifier: ~14.0.7
+        specifier: workspace:*
         version: link:../../packages/expo-speech
       expo-sqlite:
-        specifier: ~16.0.8
+        specifier: workspace:*
         version: link:../../packages/expo-sqlite
       expo-symbols:
-        specifier: ~1.0.7
+        specifier: workspace:*
         version: link:../../packages/expo-symbols
       jose:
         specifier: ^5
         version: 5.10.0
+      metro-runtime:
+        specifier: ^0.83.2
+        version: 0.83.2
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -1633,6 +1648,9 @@ importers:
       memfs:
         specifier: ^3.2.0
         version: 3.4.12
+      metro-source-map:
+        specifier: ^0.83.2
+        version: 0.83.2
       nock:
         specifier: ^14.0.10
         version: 14.0.10
@@ -2120,6 +2138,9 @@ importers:
       lightningcss:
         specifier: ^1.30.1
         version: 1.30.1
+      metro-minify-terser:
+        specifier: ^0.83.2
+        version: 0.83.2
       minimatch:
         specifier: ^9.0.0
         version: 9.0.5
@@ -2867,6 +2888,9 @@ importers:
       expo-updates:
         specifier: workspace:*
         version: link:../expo-updates
+      metro-source-map:
+        specifier: ^0.83.2
+        version: 0.83.2
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -18216,6 +18240,20 @@ snapshots:
       react-native: 0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
       react-native-safe-area-context: 5.6.0(react-native@0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
       react-native-screens: 4.18.0(react-native@0.82.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      sf-symbols-typescript: 2.1.0
+      warn-once: 0.1.1
+    transitivePeerDependencies:
+      - '@react-native-masked-view/masked-view'
+
+  '@react-navigation/native-stack@7.8.0(@react-native-masked-view/masked-view@0.3.2(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(@react-navigation/native@7.1.21(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.0(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native-screens@4.19.0-nightly-20251203-1746a584e(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      '@react-navigation/elements': 2.8.3(@react-native-masked-view/masked-view@0.3.2(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(@react-navigation/native@7.1.21(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.0(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      '@react-navigation/native': 7.1.21(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      color: 4.2.3
+      react: 19.2.0
+      react-native: 0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
+      react-native-safe-area-context: 5.6.0(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      react-native-screens: 4.19.0-nightly-20251203-1746a584e(react-native@0.83.0-rc.5(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
       sf-symbols-typescript: 2.1.0
       warn-once: 0.1.1
     transitivePeerDependencies:
