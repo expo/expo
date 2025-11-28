@@ -45,21 +45,21 @@ export function getTypedRoutesDeclarationFile(
   const groupedNodes = groupRouteNodes(routeNode);
   const staticRoutesStrings: string[] = ['Router.RelativePathString', 'Router.ExternalPathString'];
   const staticRouteInputObjects: string[] = [
-    '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams }',
-    '{ pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }',
+    '{ pathname: Router.RelativePathString, params: Router.UnknownInputParams | undefined }',
+    '{ pathname: Router.ExternalPathString, params: Router.UnknownInputParams | undefined }',
   ];
   const staticRouteOutputObjects: string[] = [
-    '{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams }',
-    '{ pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams }',
+    '{ pathname: Router.RelativePathString, params: Router.UnknownOutputParams | undefined }',
+    '{ pathname: Router.ExternalPathString, params: Router.UnknownOutputParams | undefined }',
   ];
 
   for (const type of groupedNodes.static) {
     staticRoutesStrings.push(contextKeyToType(type + urlParams, partialTypedGroups));
     staticRouteInputObjects.push(
-      `{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownInputParams; }`
+      `{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params: Router.UnknownInputParams | undefined; }`
     );
     staticRouteOutputObjects.push(
-      `{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownOutputParams; }`
+      `{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params: Router.UnknownOutputParams | undefined; }`
     );
   }
 
