@@ -1,14 +1,11 @@
+import fs from 'fs';
+
 import { generateMocks } from './mockgen';
-import {
-  getFileTypeInformation,
-  getFileTypeInformationForString,
-  serializeTypeInformation,
-} from './typeInformation';
+import { getFileTypeInformation, serializeTypeInformation } from './typeInformation';
 import {
   getGeneratedModuleTypesFileContent,
   getGeneratedViewTypesFileContent,
 } from './typescriptGeneration';
-import fs from 'fs';
 
 const usage: string = `yarn expo-type-information [--typeinfo, --typegen-module, --typegen-view, --mockgen] <absoluteFilePath>
     | --typegen-module-t <fileContent>`;
@@ -49,16 +46,6 @@ if (!process.argv || process.argv.length < 3) {
       const typeInfo = getFileTypeInformation(fileName, true);
       if (typeInfo) {
         generateMocks([typeInfo], 'typescript');
-      }
-      break;
-    }
-    case '--typegen-module-t': {
-      const fileContent = process.argv[3];
-      if (fileContent) {
-        const typeInfo = getFileTypeInformationForString(fileContent, 'swift');
-        if (typeInfo) {
-          getGeneratedModuleTypesFileContent(fileContent, typeInfo).then(console.log);
-        }
       }
       break;
     }
