@@ -1,6 +1,6 @@
 import { usePreventRemove } from '@react-navigation/core';
 import { screen } from '@testing-library/react-native';
-import React from 'react';
+import React, { isValidElement } from 'react';
 import { Button, View } from 'react-native';
 import {
   BottomTabsScreen as _BottomTabsScreen,
@@ -19,6 +19,7 @@ import {
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
   SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
 } from '../types';
+import { BottomAccessoryEnvironmentContext } from '../hooks';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -543,5 +544,37 @@ describe('Misc', () => {
 
     router.navigate('/stack');
     expect(screen.getByTestId('stack-index')).toBeVisible();
+  });
+
+  it('passes the bottom accessory to NativeTabsView', () => {
+    const BottomAccessoryContent = jest.fn(() => <View testID="bottom-accessory" />);
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.BottomAccessory>
+            <BottomAccessoryContent />
+          </NativeTabs.BottomAccessory>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0].bottomAccessory).toBeDefined();
+
+    const bottomAccessoryFn = BottomTabs.mock.calls[0][0].bottomAccessory!;
+    const regularRender = bottomAccessoryFn('regular');
+    const inlineRender = bottomAccessoryFn('inline');
+
+    expect(isValidElement(regularRender)).toBe(true);
+    // To satisfy TypeScript
+    if (!isValidElement(regularRender)) throw new Error();
+    expect(regularRender.type === BottomAccessoryEnvironmentContext).toBe(true);
+
+    expect(isValidElement(inlineRender)).toBe(true);
+    // To satisfy TypeScript
+    if (!isValidElement(inlineRender)) throw new Error();
+    expect(inlineRender.type === BottomAccessoryEnvironmentContext).toBe(true);
   });
 });

@@ -223,9 +223,13 @@ export interface NativeTabsProps extends PropsWithChildren {
   badgeTextColor?: ColorValue;
   // #endregion android props
 }
+
+export interface InternalNativeTabsProps extends NativeTabsProps {
+  nonTriggerChildren?: React.ReactNode;
+}
 export interface NativeTabsViewProps
   extends Omit<
-    NativeTabsProps,
+    InternalNativeTabsProps,
     | 'labelStyle'
     | 'iconColor'
     | 'backgroundColor'

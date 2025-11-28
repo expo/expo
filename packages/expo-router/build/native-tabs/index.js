@@ -14,10 +14,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabs = exports.NativeTabTrigger = void 0;
+exports.useBottomAccessoryEnvironment = exports.NativeTabs = exports.NativeTabTrigger = void 0;
 __exportStar(require("./common/elements"), exports);
 var NativeTabTrigger_1 = require("./NativeTabTrigger");
 Object.defineProperty(exports, "NativeTabTrigger", { enumerable: true, get: function () { return NativeTabTrigger_1.NativeTabTrigger; } });
 var NativeTabs_1 = require("./NativeTabs");
 Object.defineProperty(exports, "NativeTabs", { enumerable: true, get: function () { return NativeTabs_1.NativeTabs; } });
+var hooks_1 = require("./hooks");
+Object.defineProperty(exports, "useBottomAccessoryEnvironment", { enumerable: true, get: function () { return hooks_1.useBottomAccessoryEnvironment; } });
 //# sourceMappingURL=index.js.map

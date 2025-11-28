@@ -183,7 +183,10 @@ export interface NativeTabsProps extends PropsWithChildren {
      */
     badgeTextColor?: ColorValue;
 }
-export interface NativeTabsViewProps extends Omit<NativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor'> {
+export interface InternalNativeTabsProps extends NativeTabsProps {
+    nonTriggerChildren?: React.ReactNode;
+}
+export interface NativeTabsViewProps extends Omit<InternalNativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor'> {
     focusedIndex: number;
     tabs: NativeTabsViewTabItem[];
     onTabChange: (tabKey: string) => void;

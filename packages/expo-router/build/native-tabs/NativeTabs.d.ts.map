@@ -1,1 +1,1 @@
-{"version":3,"file":"NativeTabs.d.ts","sourceRoot":"","sources":["../../src/native-tabs/NativeTabs.tsx"],"names":[],"mappings":"AAIA,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,SAAS,CAAC;AAE/C;;;;;;;;;;;;;;;;;GAiBG;AACH,eAAO,MAAM,UAAU,WACb,eAAe;;;;;;;CAIxB,CAAC"}
+{"version":3,"file":"NativeTabs.d.ts","sourceRoot":"","sources":["../../src/native-tabs/NativeTabs.tsx"],"names":[],"mappings":"AAKA,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,SAAS,CAAC;AAE/C;;;;;;;;;;;;;;;;;GAiBG;AACH,eAAO,MAAM,UAAU,WACb,eAAe;;;;;;;;CAIxB,CAAC"}

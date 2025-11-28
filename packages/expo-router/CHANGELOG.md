@@ -21,6 +21,7 @@
 - wrap NativeTabs style properties with StyleProp ([#41013](https://github.com/expo/expo/pull/41013) by [@Ubax](https://github.com/Ubax))
 - [android] add md prop to native tabs icon ([#40966](https://github.com/expo/expo/pull/40966) by [@Ubax](https://github.com/Ubax))
 - emit tabPress on tab change ([#41159](https://github.com/expo/expo/pull/41159) by [@Ubax](https://github.com/Ubax))
+- [iOS] add bottom accessory support ([#41239](https://github.com/expo/expo/pull/41239) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

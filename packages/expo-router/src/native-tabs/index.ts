@@ -11,3 +11,4 @@ export type {
 } from './types';
 export { NativeTabTrigger } from './NativeTabTrigger';
 export { NativeTabs } from './NativeTabs';
+export { useBottomAccessoryEnvironment } from './hooks';
