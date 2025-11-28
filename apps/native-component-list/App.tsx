@@ -1,14 +1,10 @@
 import { ThemeProvider } from 'ThemeProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { Platform, StatusBar } from 'react-native';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
-import KeyboardRepro from './KeyboardRepro';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import HostIgnoreSafeAreaInsetsScreen from 'src/screens/UI/HostIgnoreSafeAreaInsetsScreen.ios';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,15 +39,5 @@ export default function App() {
     await loadAssetsAsync();
   });
 
-  return (
-    <ThemeProvider>
-      {isLoadingCompleted ? (
-        <SafeAreaProvider style={{ flex: 1 }}>
-          <KeyboardProvider>
-            <HostIgnoreSafeAreaInsetsScreen />
-          </KeyboardProvider>
-        </SafeAreaProvider>
-      ) : null}
-    </ThemeProvider>
-  );
+  return <ThemeProvider>{isLoadingCompleted ? <RootNavigation /> : null}</ThemeProvider>;
 }
