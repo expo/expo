@@ -136,6 +136,7 @@ function Screen(props: {
   return (
     <BottomTabsScreen
       {...options}
+      overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets}
       tabBarItemBadgeBackgroundColor={
         standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor
       }

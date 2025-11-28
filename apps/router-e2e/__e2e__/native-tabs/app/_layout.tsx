@@ -46,7 +46,10 @@ export default function Layout() {
         // indicatorColor="black"
         // sidebarAdaptable
         >
-          <NativeTabs.Trigger name="index">
+          <NativeTabs.Trigger
+            name="index"
+            // disableAutomaticContentInsets
+          >
             <NativeTabs.Trigger.Label
             // selectedStyle={{ color: '#0f0' }}
             >
