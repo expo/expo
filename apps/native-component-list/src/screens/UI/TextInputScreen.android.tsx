@@ -28,6 +28,11 @@ export default function TextInputScreen() {
           />
         </Host>
       </Section>
+      <Section title="Text Input with Label">
+        <Host>
+          <TextInput label="A label" onChangeText={setValue} />
+        </Host>
+      </Section>
       <Section title="Multiline Text Input">
         <Host>
           <TextInput
