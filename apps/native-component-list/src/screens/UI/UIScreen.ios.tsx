@@ -218,6 +218,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./GridScreen'));
     },
   },
+  {
+    name: 'Host Ignore Safe Area Insets',
+    route: 'ui/host-ignore-safe-area-insets',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostIgnoreSafeAreaInsetsScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

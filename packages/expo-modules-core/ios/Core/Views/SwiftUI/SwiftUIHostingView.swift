@@ -58,7 +58,12 @@ extension ExpoSwiftUI {
     /**
      View controller that embeds the content view into the UIKit view hierarchy.
      */
-    private let hostingController: UIViewController
+    private let hostingController: UIHostingController<AnyView>
+
+    /**
+     Tracks whether safe area has been configured (can only be set once on mount)
+     */
+    private var hasSafeAreaBeenConfigured = false
 
     /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
@@ -85,13 +90,13 @@ extension ExpoSwiftUI {
         self.setViewSize(size)
         #endif
       }
-      
+
       shadowNodeProxy.setStyleSize = { width, height in
         #if RCT_NEW_ARCH_ENABLED
         self.setStyleSize(width, height: height)
         #endif
       }
-      
+
       shadowNodeProxy.objectWillChange.send()
 
       #if os(iOS) || os(tvOS)
@@ -120,6 +125,13 @@ extension ExpoSwiftUI {
         try props.updateRawProps(rawProps, appContext: appContext)
       } catch let error {
         log.error("Updating props for \(ContentView.self) has failed: \(error.localizedDescription)")
+      }
+
+      if !hasSafeAreaBeenConfigured,
+         let safeAreaProps = props as? SafeAreaControllable,
+         safeAreaProps.ignoreSafeAreaInsets {
+        hostingController.disableSafeArea()
+        hasSafeAreaBeenConfigured = true
       }
     }
 
@@ -204,8 +216,8 @@ extension ExpoSwiftUI {
       guard let view = hostingController.view as UIView? else {
         return
       }
-      let frame = self.bounds;
-      view.frame = frame;
+      let frame = self.bounds
+      view.frame = frame
         #if os(iOS) || os(tvOS)
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         #elseif os(macOS)
@@ -251,5 +263,14 @@ extension ExpoSwiftUI {
       return self.window?.contentViewController
     }
 #endif
+  }
+}
+
+extension UIHostingController {
+  func disableSafeArea() {
+    // Disables safe area insets for SwiftUI views
+    if #available(iOS 16.4, tvOS 16.4, *) {
+      self.safeAreaRegions.remove(.all)
+    }
   }
 }
