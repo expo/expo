@@ -1,6 +1,7 @@
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
+import { AsyncCloudflareTunnel } from './AsyncCloudflareTunnel';
 import { AsyncNgrok } from './AsyncNgrok';
 import { AsyncWsTunnel } from './AsyncWsTunnel';
 import DevToolsPluginManager from './DevToolsPluginManager';
@@ -92,7 +93,7 @@ export abstract class BundlerDevServer {
   abstract get name(): string;
 
   /** Tunnel instance for managing tunnel connections. */
-  protected tunnel: AsyncNgrok | AsyncWsTunnel | null = null;
+  protected tunnel: AsyncNgrok | AsyncWsTunnel | AsyncCloudflareTunnel | null = null;
   /** Interfaces with the Expo 'Development Session' API. */
   protected devSession: DevelopmentSession | null = null;
   /** Http server and related info. */
@@ -250,9 +251,13 @@ export abstract class BundlerDevServer {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
     debug('[tunnel] connect to port: ' + port);
-    this.tunnel = envIsWebcontainer()
-      ? new AsyncWsTunnel(this.projectRoot, port)
-      : new AsyncNgrok(this.projectRoot, port);
+    if (envIsWebcontainer()) {
+      this.tunnel = new AsyncWsTunnel(this.projectRoot, port);
+    } else if ((env.EXPO_TUNNEL_PROVIDER || '').toLowerCase() === 'cloudflare') {
+      this.tunnel = new AsyncCloudflareTunnel(this.projectRoot, port);
+    } else {
+      this.tunnel = new AsyncNgrok(this.projectRoot, port);
+    }
     await this.tunnel.startAsync();
     return this.tunnel;
   }
