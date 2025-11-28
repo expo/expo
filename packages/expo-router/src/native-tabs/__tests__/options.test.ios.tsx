@@ -143,6 +143,7 @@ it('when no options are passed, default ones are used', () => {
     indicatorColor: undefined,
     badgeTextColor: undefined,
     nativeProps: undefined,
+    contentStyle: undefined,
   } as NativeTabOptions);
 });
 

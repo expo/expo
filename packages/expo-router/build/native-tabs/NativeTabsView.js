@@ -34,7 +34,9 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
+const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const appearance_1 = require("./appearance");
 const types_1 = require("./types");
@@ -86,8 +88,17 @@ function Screen(props) {
     // We need to await the icon, as VectorIcon will load asynchronously
     const icon = (0, icon_1.useAwaitedScreensIcon)(options.icon);
     const selectedIcon = (0, icon_1.useAwaitedScreensIcon)(options.selectedIcon);
+    const { colors } = (0, native_1.useTheme)();
     return (<react_native_screens_1.BottomTabsScreen {...options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>
-      {contentRenderer()}
+      <react_native_1.View 
+    // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+    collapsable={false} style={[
+            { backgroundColor: colors.background },
+            options.contentStyle,
+            { flex: 1, position: 'relative', overflow: 'hidden' },
+        ]}>
+        {contentRenderer()}
+      </react_native_1.View>
     </react_native_screens_1.BottomTabsScreen>);
 }
 const supportedTabBarMinimizeBehaviorsSet = new Set(types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);

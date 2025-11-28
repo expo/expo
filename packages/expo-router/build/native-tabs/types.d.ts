@@ -1,6 +1,6 @@
 import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
-import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
+import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { BottomTabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export type NativeScreenProps = Partial<Omit<BottomTabsScreenProps, 'tabKey' | 'isFocused'>>;
@@ -33,6 +33,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
     hidden?: boolean;
     specialEffects?: BottomTabsScreenProps['specialEffects'];
     nativeProps?: NativeScreenProps;
+    contentStyle?: Pick<ViewStyle, 'backgroundColor' | 'experimental_backgroundImage' | 'padding' | 'paddingTop' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingBlock' | 'paddingBlockEnd' | 'paddingBlockStart' | 'paddingInline' | 'paddingInlineEnd' | 'paddingInlineStart' | 'paddingEnd' | 'paddingHorizontal' | 'paddingVertical' | 'paddingStart' | 'alignContent' | 'alignItems' | 'justifyContent' | 'flexDirection' | 'gap'>;
 }
 export type SymbolOrImageSource = {
     /**
@@ -267,6 +268,12 @@ export interface NativeTabTriggerProps {
      * @platform ios
      */
     role?: NativeTabsTabBarItemRole;
+    /**
+     * The style applied to the content of the tab
+     *
+     * Note: Only certain style properties are supported.
+     */
+    contentStyle?: NativeTabOptions['contentStyle'];
 }
 declare const SUPPORTED_TAB_BAR_ITEM_ROLES: readonly ["bookmarks", "contacts", "downloads", "favorites", "featured", "history", "more", "mostRecent", "mostViewed", "recents", "search", "topRated"];
 export type NativeTabsTabBarItemRole = (typeof SUPPORTED_TAB_BAR_ITEM_ROLES)[number];

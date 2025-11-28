@@ -100,6 +100,7 @@ export function convertTabPropsToOptions(
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
+    contentStyle,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
@@ -115,6 +116,7 @@ export function convertTabPropsToOptions(
             scrollToTop: !disableScrollToTop,
           },
         },
+        contentStyle,
         role,
         nativeProps: unstable_nativeProps,
       };

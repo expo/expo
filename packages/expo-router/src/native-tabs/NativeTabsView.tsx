@@ -1,5 +1,6 @@
+import { useTheme } from '@react-navigation/native';
 import React, { useDeferredValue } from 'react';
-import type { ColorValue } from 'react-native';
+import { View, type ColorValue } from 'react-native';
 import {
   BottomTabs,
   BottomTabsScreen,
@@ -132,6 +133,7 @@ function Screen(props: {
   // We need to await the icon, as VectorIcon will load asynchronously
   const icon = useAwaitedScreensIcon(options.icon);
   const selectedIcon = useAwaitedScreensIcon(options.selectedIcon);
+  const { colors } = useTheme();
 
   return (
     <BottomTabsScreen
@@ -150,7 +152,16 @@ function Screen(props: {
       {...options.nativeProps}
       tabKey={routeKey}
       isFocused={isFocused}>
-      {contentRenderer()}
+      <View
+        // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+        collapsable={false}
+        style={[
+          { backgroundColor: colors.background },
+          options.contentStyle,
+          { flex: 1, position: 'relative', overflow: 'hidden' },
+        ]}>
+        {contentRenderer()}
+      </View>
     </BottomTabsScreen>
   );
 }
