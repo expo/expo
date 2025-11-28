@@ -22,7 +22,6 @@ it('Same type information', () => {
         declaredTypeIdentifiers: new Set(),
         typeParametersCount: new Map(),
         typeIdentifierDefinitionMap: new Map(),
-        functions: [],
         moduleClasses: [],
         records: [],
         enums: [],
