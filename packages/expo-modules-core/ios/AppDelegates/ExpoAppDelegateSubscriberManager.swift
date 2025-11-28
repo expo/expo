@@ -216,40 +216,39 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
   ) {
     let selector = #selector(application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
     let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
-    let lock = NSLock()
+    if subs.isEmpty {
+      completionHandler(.noData)
+      return
+    }
+
     var subscribersLeft = subs.count
     var failedCount = 0
     var newDataCount = 0
 
     let aggregateHandler = { (result: UIBackgroundFetchResult) in
-      lock.lock()
-      defer { lock.unlock() }
+      DispatchQueue.main.async {
+        if result == .failed {
+          failedCount += 1
+        } else if result == .newData {
+          newDataCount += 1
+        }
 
-      if result == .failed {
-        failedCount += 1
-      } else if result == .newData {
-        newDataCount += 1
-      }
+        subscribersLeft -= 1
 
-      subscribersLeft -= 1
-
-      if subscribersLeft == 0 {
-        if newDataCount > 0 {
-          completionHandler(.newData)
-        } else if failedCount > 0 {
-          completionHandler(.failed)
-        } else {
-          completionHandler(.noData)
+        if subscribersLeft == 0 {
+          if newDataCount > 0 {
+            completionHandler(.newData)
+          } else if failedCount > 0 {
+            completionHandler(.failed)
+          } else {
+            completionHandler(.noData)
+          }
         }
       }
     }
 
-    if subs.isEmpty {
-      completionHandler(.noData)
-    } else {
-      subs.forEach { subscriber in
-        subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: aggregateHandler)
-      }
+    subs.forEach { subscriber in
+      subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: aggregateHandler)
     }
   }
 
