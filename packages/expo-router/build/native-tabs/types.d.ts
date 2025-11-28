@@ -269,12 +269,20 @@ export interface NativeTabTriggerProps {
      */
     role?: NativeTabsTabBarItemRole;
     /**
-     * By default, the first scroll view nested inside native tabs has automatic content inset adjustment enabled.
+     * The default behavior differs between iOS and Android.
+     *
+     * On **Android**, the content of a native tabs screen is automatically wrapped in a `SafeAreaView`,
+     * and the **bottom** inset is applied. Other insets must be handled manually.
+     *
+     * On **iOS**, the first scroll view nested inside a native tabs screen has
+     * [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled
      *
      * When this property is set to `true`, automatic content inset adjustment is disabled for the screen
-     * and must be managed manually.
+     * and must be managed manually. You can use `SafeAreaView` from `react-native-screens/experimental`
+     * to handle safe area insets.
      *
-     * @platform iOS
+     * @platform android
+     * @platform ios
      */
     disableAutomaticContentInsets?: boolean;
 }

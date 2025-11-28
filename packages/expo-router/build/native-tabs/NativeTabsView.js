@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
 const react_1 = __importStar(require("react"));
 const react_native_screens_1 = require("react-native-screens");
+const experimental_1 = require("react-native-screens/experimental");
 const appearance_1 = require("./appearance");
 const types_1 = require("./types");
 const icon_1 = require("./utils/icon");
@@ -86,8 +87,12 @@ function Screen(props) {
     // We need to await the icon, as VectorIcon will load asynchronously
     const icon = (0, icon_1.useAwaitedScreensIcon)(options.icon);
     const selectedIcon = (0, icon_1.useAwaitedScreensIcon)(options.selectedIcon);
+    const content = contentRenderer();
+    const wrappedContent = process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets ? (<experimental_1.SafeAreaView style={{ flex: 1 }} edges={{ bottom: true }}>
+        {content}
+      </experimental_1.SafeAreaView>) : (content);
     return (<react_native_screens_1.BottomTabsScreen {...options} overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>
-      {contentRenderer()}
+      {wrappedContent}
     </react_native_screens_1.BottomTabsScreen>);
 }
 const supportedTabBarMinimizeBehaviorsSet = new Set(types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
