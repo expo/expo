@@ -143,28 +143,28 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
   }) as T;
 }
 
-function findUpTSConfig(cwd: string): string | null {
-  const tsconfigPath = path.resolve(cwd, './tsconfig.json');
-  if (fs.existsSync(tsconfigPath)) {
-    return path.dirname(tsconfigPath);
+function findUpPackageJsonDirectory(
+  cwd: string,
+  directoryToPackage: Map<string, string>
+): string | undefined {
+  if (['.', path.sep].includes(cwd)) return undefined;
+  if (directoryToPackage.has(cwd)) return directoryToPackage.get(cwd);
+
+  const packageFound = fs.existsSync(path.resolve(cwd, './package.json'));
+  if (packageFound) {
+    directoryToPackage.set(cwd, cwd);
+    return cwd;
   }
-
-  const parent = path.dirname(cwd);
-  if (parent === cwd) return null;
-
-  return findUpTSConfig(parent);
+  const packageRoot = findUpPackageJsonDirectory(path.dirname(cwd), directoryToPackage);
+  if (packageRoot) {
+    directoryToPackage.set(cwd, packageRoot);
+  }
+  return packageRoot;
 }
 
-function findUpTSProjectRootOrThrow(dir: string): string {
-  const tsProjectRoot = findUpTSConfig(dir);
-  if (!tsProjectRoot) {
-    throw new Error('Local modules watched dir needs to be inside a TS project with tsconfig.json');
-  }
-  return tsProjectRoot;
-}
-
-function resolveinlineModules(
+function resolveInlineModules(
   projectRoot: string,
+  directoryToPackage: Map<string, string>,
   context: CustomResolutionContext,
   moduleName: string,
   platform: string | null
@@ -177,16 +177,27 @@ function resolveinlineModules(
   } else if (moduleName.endsWith('.view')) {
     inlineModuleFileExtension = '.view.js';
   }
+
   if (inlineModuleFileExtension) {
-    const tsProjectRoot = findUpTSProjectRootOrThrow(path.dirname(context.originModulePath));
-    const modulePathRelativeToTSRoot = path.relative(
-      tsProjectRoot,
+    const originModuleDirname = path.dirname(context.originModulePath);
+    let modulePackageRoot: string | undefined = directoryToPackage.get(originModuleDirname);
+    if (!modulePackageRoot) {
+      modulePackageRoot = findUpPackageJsonDirectory(
+        path.dirname(context.originModulePath),
+        directoryToPackage
+      );
+    }
+    if (!modulePackageRoot) {
+      return { type: 'empty' };
+    }
+    const modulePathRelativeToItsPackageRoot = path.relative(
+      modulePackageRoot,
       fs.realpathSync(path.dirname(context.originModulePath))
     );
 
     const modulePath = path.resolve(
       inlineModulesModulesPath,
-      modulePathRelativeToTSRoot,
+      modulePathRelativeToItsPackageRoot,
       moduleName.substring(0, moduleName.lastIndexOf('.')) + inlineModuleFileExtension
     );
 
@@ -346,12 +357,13 @@ export function getDefaultConfig(
 
   const serverRoot = getMetroServerRoot(projectRoot);
   const expoConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  const resolveinlineModulesWithRoot = (
+  const directoryToPackage = new Map<string, string>();
+  const resolveInlineModulesWithAdditionalConfig = (
     context: CustomResolutionContext,
     moduleName: string,
     platform: string | null
   ) => {
-    return resolveinlineModules(projectRoot, context, moduleName, platform);
+    return resolveInlineModules(projectRoot, directoryToPackage, context, moduleName, platform);
   };
 
   const contextResolveRequest = (
@@ -387,7 +399,7 @@ export function getDefaultConfig(
       nodeModulesPaths,
       resolveRequest:
         expoConfig.exp.experiments?.inlineModules === true
-          ? resolveinlineModulesWithRoot
+          ? resolveInlineModulesWithAdditionalConfig
           : defaultResolveRequest,
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
