@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- fix completion handler never called for background notifications ([#41300](https://github.com/expo/expo/pull/41300) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 - remove token listener on module destroy ([#41275](https://github.com/expo/expo/pull/41275) by [@vonovak](https://github.com/vonovak))
