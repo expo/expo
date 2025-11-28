@@ -25,27 +25,22 @@ config.watchFolders = [
   path.join(monorepoRoot, 'apps/test-suite'), // Workaround for Yarn v1 workspace issue where workspace dependencies aren't properly linked, should be at `<root>/node_modules/apps/test-suite`
 ];
 
-function findUpTSConfig(cwd) {
-  const tsconfigPath = path.resolve(cwd, './tsconfig.json');
-  if (fs.existsSync(tsconfigPath)) {
-    return path.dirname(tsconfigPath);
+function findUpPackageJsonDirectory(cwd, directoryToPackage) {
+  if (['.', path.sep].includes(cwd)) return undefined;
+  if (directoryToPackage.has(cwd)) return directoryToPackage.get(cwd);
+
+  const packageFound = fs.existsSync(path.resolve(cwd, './package.json'));
+  if (packageFound) {
+    directoryToPackage.set(cwd, cwd);
+    return cwd;
   }
-
-  const parent = path.dirname(cwd);
-  if (parent === cwd) return null;
-
-  return findUpTSConfig(parent);
-}
-
-function findUpTSProjectRootOrThrow(dir) {
-  const tsProjectRoot = findUpTSConfig(dir);
-  if (!tsProjectRoot) {
-    throw new Error(
-      'Inline modules watched dir needs to be inside a TS project with tsconfig.json'
-    );
+  const packageRoot = findUpPackageJsonDirectory(path.dirname(cwd), directoryToPackage);
+  if (packageRoot) {
+    directoryToPackage.set(cwd, packageRoot);
   }
-  return tsProjectRoot;
+  return packageRoot;
 }
+const directoryToPackage = new Map();
 
 // When testing on MacOS we need to swap out `react-native` for `react-native-macos`
 config.resolver.resolveRequest = (context, moduleName, platform) => {
@@ -66,15 +61,24 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     inlineModuleFileExtension = '.view.js';
   }
   if (inlineModuleFileExtension) {
-    const tsProjectRoot = findUpTSProjectRootOrThrow(path.dirname(context.originModulePath));
-    const modulePathRelativeToTSRoot = path.relative(
-      tsProjectRoot,
+    const originModuleDirname = path.dirname(context.originModulePath);
+    let modulePackageRoot = directoryToPackage.get(originModuleDirname);
+    if (!modulePackageRoot) {
+      modulePackageRoot = findUpPackageJsonDirectory(
+        path.dirname(context.originModulePath),
+        directoryToPackage
+      );
+    }
+    if (!modulePackageRoot) {
+      return { type: 'empty' };
+    }
+    const modulePathRelativeToItsPackageRoot = path.relative(
+      modulePackageRoot,
       fs.realpathSync(path.dirname(context.originModulePath))
     );
-
     const modulePath = path.resolve(
       inlineModulesModulesPath,
-      modulePathRelativeToTSRoot,
+      modulePathRelativeToItsPackageRoot,
       moduleName.substring(0, moduleName.lastIndexOf('.')) + inlineModuleFileExtension
     );
 
