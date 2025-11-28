@@ -120,11 +120,13 @@ export const registerTask = () => {
       }
 
       doSomeAsyncWork('BG_ASYNC_FETCH_RESULT');
+      return 2; //todo use BackgroundNotificationTaskResult.NewData from https://github.com/expo/expo/pull/41291
     } catch (err: any) {
       addItemToStorage({
         source: 'BACKGROUND_TASK_ERR',
         data: { err: err.toString(), payload: JSON.stringify(taskPayload, null, 2) },
       });
+      return 3; //todo use BackgroundNotificationTaskResult.Failed from https://github.com/expo/expo/pull/41291
     }
   });
 

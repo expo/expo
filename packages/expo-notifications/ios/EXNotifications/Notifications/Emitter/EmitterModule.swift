@@ -32,11 +32,6 @@ open class EmitterModule: Module, NotificationDelegate {
     }
   }
 
-  public func didReceive(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
-    completionHandler(.noData)
-    return true
-  }
-
   open func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
     let notificationResponse = serializedResponse(response)
     lastResponse = notificationResponse
