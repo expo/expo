@@ -113,14 +113,12 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           UserAnnotation()
         }
       }
-      // We use simultaneousGesture to work around the iOS 26 onTapGesture known issue
+      // https://developer.apple.com/forums/thread/795909?answerId=855111022#855111022
+      // onTapGesture with Map is broken on iOS 26 so we use this workaround
       // https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-26-release-notes#Maps
-      // TODO: Replace with onTapGesture once apple fixes the issue
-      .simultaneousGesture(
-        DragGesture(minimumDistance: 0)
-          // swiftlint:disable:next closure_body_length
-          .onEnded { value in
-            if let coordinate = reader.convert(value.location, from: .local) {
+      .simultaneousGesture(SpatialTapGesture()
+          .onEnded { event in
+            if let coordinate = reader.convert(event.location, from: .local) {
               // check if we hit a polygon and send an event
               if let hit = props.polygons.first(where: { polygon in
                 isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.clLocationCoordinates2D)

@@ -8,13 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix MapKit built-in buttons not responding ([#41151](https://github.com/expo/expo/pull/41151) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 0.12.8 - 2025-10-01
 
 ### 🐛 Bug fixes
 
-- [iOS] Add workaround for iOS 26 onTapGesture known issue ([#39849](https://github.com/expo/expo/pull/39849) by [@nishan](https://github.com/intergalacticspacehighway)) ([#39849](https://github.com/expo/expo/pull/39849) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Add workaround for iOS 26 onTapGesture known issue ([#39849](https://github.com/expo/expo/pull/39849) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 0.12.7 — 2025-09-11
 
