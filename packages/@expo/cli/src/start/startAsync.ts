@@ -16,6 +16,9 @@ import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import { maybeCreateMCPServerAsync } from './server/MCP';
+import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
+
+const debug = require('debug')('expo:start');
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -114,6 +117,7 @@ export async function startAsync(
   await profile(openPlatformsAsync)(devServerManager, options);
 
   const defaultServerUrl = devServerManager.getDefaultDevServer()?.getDevServerUrl() ?? '';
+
   // Present the Terminal UI.
   if (isInteractive()) {
     const mcpServer =
@@ -127,7 +131,11 @@ export async function startAsync(
       mcpServer,
     });
 
-    mcpServer?.start();
+    mcpServer != null ? debug('MCP server is starting...') : debug('MCP server is disabled.');
+    if (mcpServer) {
+      await addMcpCapabilities(mcpServer, devServerManager);
+      await mcpServer.start();
+    }
   } else {
     // Display the server location in CI...
     if (defaultServerUrl) {
