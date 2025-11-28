@@ -207,7 +207,41 @@ The API takes `file://` URIs pointing to local files on the device to identify f
 - [`FileSystem.documentDirectory`](#filesystemdocumentdirectory)
 - [`FileSystem.cacheDirectory`](#filesystemcachedirectory)
 
+Apps also have **read-only** access to bundled assets:
+
+- [`FileSystem.bundleDirectory`](#filesystembundledirectory) - Contains assets bundled with the app (read-only)
+  - On iOS: Maps to `Bundle.main.bundlePath`
+  - On Android: Uses the `asset://` protocol
+
+> **Prerequisite:** To access a file here, it must be bundled into the native build (e.g., via `bundledAssets` in `app.json`). Files simply existing in your project structure are not automatically available in the bundle directory.
+
 So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the app's user documents directory would be `FileSystem.documentDirectory + 'myDirectory/myFile'`.
+
+To read a bundled asset like `data.json` or a binary file from your bundled assets, use `expo-asset` to obtain a proper file URI:
+
+```ts
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
+
+// Step 1: Register the asset so the packager provides a usable URI
+const asset = Asset.fromModule(require('./assets/data.json'));
+await asset.downloadAsync();
+
+// Step 2: Resolve local URI
+const fileUri = asset.localUri || asset.uri;
+
+// Read text content
+const content = await FileSystem.readAsStringAsync(fileUri);
+
+// Read binary data (e.g., for ArrayBuffer conversion)
+const base64 = await FileSystem.readAsStringAsync(fileUri, {
+  encoding: FileSystem.EncodingType.Base64,
+});
+```
+
+> **Note:** Metro may inline JSON into JS bundles when you import JSON directly. Registering the file with `expo-asset` (as shown above) ensures you get a proper file URI you can read with the FileSystem APIs.
+
+> **Note**: Bundled assets are read-only. To modify a bundled file, first copy it to a writable location using `copyAsync()`.
 
 Expo APIs that create files generally operate within these directories. This includes `Audio` recordings, `Camera` photos, `ImagePicker` results, `SQLite` databases and `takeSnapShotAsync()` results. This allows their use with the `FileSystem` API.
 
