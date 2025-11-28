@@ -188,7 +188,7 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
   override fun ComposableScope.Content() {
     Text(
       text = props.text.value,
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value),
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
       color = colorToComposeColor(props.color.value),
       style = TextStyle(
         fontSize = props.fontSize.value.sp,

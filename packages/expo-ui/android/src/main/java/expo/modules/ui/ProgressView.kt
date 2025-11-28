@@ -67,7 +67,7 @@ class ProgressView(context: Context, appContext: AppContext) :
                 color = composeColor,
                 trackColor = trackColor,
                 drawStopIndicator = {},
-                modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+                modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
               )
             } else {
               LinearProgressIndicator(
@@ -85,13 +85,13 @@ class ProgressView(context: Context, appContext: AppContext) :
                 progress = { progress },
                 color = composeColor,
                 trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor,
-                modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+                modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
               )
             } else {
               CircularProgressIndicator(
                 color = composeColor,
                 trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+                modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
               )
             }
           }
