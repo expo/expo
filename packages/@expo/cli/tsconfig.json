@@ -3,10 +3,7 @@
   "include": ["./src", "./ts-declarations"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__typetests__/*"],
   "compilerOptions": {
+    "lib": ["dom"],
     "outDir": "./build",
-    "typeRoots": [
-      "../../expo-module-scripts/ts-declarations",
-      "../../../node_modules/@types"
-    ]
   }
 }

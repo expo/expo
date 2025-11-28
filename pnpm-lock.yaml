@@ -1485,6 +1485,9 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
+      '@expo/fingerprint':
+        specifier: workspace:*
+        version: link:../fingerprint
       '@expo/mcp-tunnel':
         specifier: ~0.2.1
         version: 0.2.1
@@ -1530,9 +1533,15 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
+      '@types/eslint':
+        specifier: ^8.56.12
+        version: 8.56.12
       '@types/execa':
         specifier: ^0.9.0
         version: 0.9.0
+      '@types/express':
+        specifier: ^5.0.3
+        version: 5.0.3
       '@types/getenv':
         specifier: ^1.0.0
         version: 1.0.0
@@ -1554,6 +1563,9 @@ importers:
       '@types/prompts':
         specifier: ^2.0.6
         version: 2.4.9
+      '@types/require-from-string':
+        specifier: ^1.2.1
+        version: 1.2.1
       '@types/resolve':
         specifier: ^1.20.2
         version: 1.20.2
@@ -1587,6 +1599,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      expo-modules-autolinking:
+        specifier: workspace:*
+        version: link:../../expo-modules-autolinking
       find-process:
         specifier: ^1.4.7
         version: 1.4.7
@@ -6252,7 +6267,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {'0': node >=0.10.0}
+    engines: {node: '>=0.10.0'}
 
   '@expo/code-signing-certificates@0.0.5':
     resolution: {integrity: sha512-BNhXkY1bblxKZpltzAx98G2Egj9g1Q+JRcvR7E99DOj862FTCX+ZPsAUtPTr7aHxwtrL7+fL3r0JSmM9kBm+Bw==}
