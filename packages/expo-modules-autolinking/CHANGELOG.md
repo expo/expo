@@ -23,6 +23,7 @@
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
 - Refactor test suite and file discovery implementation to drop `glob` ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 - Improve recursive dependency resolution performance ([#40651](https://github.com/expo/expo/pull/40651) by [@kitten](https://github.com/kitten))
+- Add `expo-max-sdk-override-plugin` gradle plugin to change the default manifest merger behaviour for `android:maxSdkVersion` conflicts. ([#40973](https://github.com/expo/expo/pull/40973) by [@behenate](https://github.com/behenate))
 
 ## 3.0.19 - 2025-10-23
 
