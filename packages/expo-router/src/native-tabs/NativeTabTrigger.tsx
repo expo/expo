@@ -100,6 +100,7 @@ export function convertTabPropsToOptions(
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
+    disableAutomaticContentInsets,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
@@ -117,6 +118,7 @@ export function convertTabPropsToOptions(
         },
         role,
         nativeProps: unstable_nativeProps,
+        disableAutomaticContentInsets,
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     NativeTabsTriggerBadge,

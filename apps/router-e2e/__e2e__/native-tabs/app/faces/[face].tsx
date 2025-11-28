@@ -24,8 +24,7 @@ export default function Index() {
         }}
         contentContainerStyle={{
           height: '150%',
-        }}
-        contentInsetAdjustmentBehavior="automatic">
+        }}>
         <View
           style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
           <Text style={{ color: '#fff' }}>Heavy Computation</Text>

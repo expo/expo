@@ -86,7 +86,7 @@ function Screen(props) {
     // We need to await the icon, as VectorIcon will load asynchronously
     const icon = (0, icon_1.useAwaitedScreensIcon)(options.icon);
     const selectedIcon = (0, icon_1.useAwaitedScreensIcon)(options.selectedIcon);
-    return (<react_native_screens_1.BottomTabsScreen {...options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>
+    return (<react_native_screens_1.BottomTabsScreen {...options} overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>
       {contentRenderer()}
     </react_native_screens_1.BottomTabsScreen>);
 }

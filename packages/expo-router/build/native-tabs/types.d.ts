@@ -33,6 +33,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
     hidden?: boolean;
     specialEffects?: BottomTabsScreenProps['specialEffects'];
     nativeProps?: NativeScreenProps;
+    disableAutomaticContentInsets?: boolean;
 }
 export type SymbolOrImageSource = {
     /**
@@ -267,6 +268,15 @@ export interface NativeTabTriggerProps {
      * @platform ios
      */
     role?: NativeTabsTabBarItemRole;
+    /**
+     * By default, the first scroll view nested inside native tabs has automatic content inset adjustment enabled.
+     *
+     * When this property is set to `true`, automatic content inset adjustment is disabled for the screen
+     * and must be managed manually.
+     *
+     * @platform iOS
+     */
+    disableAutomaticContentInsets?: boolean;
 }
 declare const SUPPORTED_TAB_BAR_ITEM_ROLES: readonly ["bookmarks", "contacts", "downloads", "favorites", "featured", "history", "more", "mostRecent", "mostViewed", "recents", "search", "topRated"];
 export type NativeTabsTabBarItemRole = (typeof SUPPORTED_TAB_BAR_ITEM_ROLES)[number];
