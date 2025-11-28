@@ -1,10 +1,11 @@
 import { screen, act, fireEvent, waitFor } from '@testing-library/react-native';
-import React from 'react';
+import React, { isValidElement, type ComponentProps } from 'react';
 import { Button, View } from 'react-native';
 import {
   BottomTabsScreen as _BottomTabsScreen,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
+import { SafeAreaView } from 'react-native-screens/experimental';
 
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
@@ -22,6 +23,18 @@ jest.mock('react-native-screens', () => {
     ...(jest.requireActual('react-native-screens') as typeof import('react-native-screens')),
     BottomTabs: jest.fn(({ children }) => <View testID="BottomTabs">{children}</View>),
     BottomTabsScreen: jest.fn(({ children }) => <View testID="BottomTabsScreen">{children}</View>),
+  };
+});
+jest.mock('react-native-screens/experimental', () => {
+  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  function RNSSafeAreaView({ children }: { children: React.ReactNode }) {
+    return <View testID="SafeAreaView">{children}</View>;
+  }
+  return {
+    ...(jest.requireActual(
+      'react-native-screens/experimental'
+    ) as typeof import('react-native-screens/experimental')),
+    SafeAreaView: RNSSafeAreaView,
   };
 });
 
@@ -760,6 +773,51 @@ describe('Tab options', () => {
         },
       } as BottomTabsScreenProps);
     });
+  });
+
+  it.each([false, undefined])(
+    'When disableAutomaticContentInsets is %p, the content of the screen is wrapped with SafeAreaView',
+    (value) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" disableAutomaticContentInsets={value} />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+      const children = BottomTabsScreen.mock.calls[0][0].children;
+      expect(isValidElement(children)).toBe(true);
+      // Type assertion to satisfy TypeScript
+      if (!isValidElement(children)) throw new Error();
+      expect(children.type).toBe(SafeAreaView);
+      expect(Object.keys(children.props)).toContain('edges');
+      expect((children.props as ComponentProps<typeof SafeAreaView>).edges).toStrictEqual({
+        bottom: true,
+      });
+    }
+  );
+  it('When disableAutomaticContentInsets is true, the content of the screen is not wrapped with SafeAreaView', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" disableAutomaticContentInsets />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    const children = BottomTabsScreen.mock.calls[0][0].children;
+    expect(React.Children.count(children)).toBe(1);
+    expect(isValidElement(children)).toBe(true);
+    // Type assertion to satisfy TypeScript
+    if (!isValidElement(children)) throw new Error();
+    expect(children.type).not.toBe(View);
   });
 });
 

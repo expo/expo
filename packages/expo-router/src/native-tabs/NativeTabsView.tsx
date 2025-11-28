@@ -7,6 +7,7 @@ import {
   type BottomTabsProps,
   type BottomTabsScreenAppearance,
 } from 'react-native-screens';
+import { SafeAreaView } from 'react-native-screens/experimental';
 
 import {
   createScrollEdgeAppearanceFromOptions,
@@ -133,6 +134,16 @@ function Screen(props: {
   const icon = useAwaitedScreensIcon(options.icon);
   const selectedIcon = useAwaitedScreensIcon(options.selectedIcon);
 
+  const content = contentRenderer();
+  const wrappedContent =
+    process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets ? (
+      <SafeAreaView style={{ flex: 1 }} edges={{ bottom: true }}>
+        {content}
+      </SafeAreaView>
+    ) : (
+      content
+    );
+
   return (
     <BottomTabsScreen
       {...options}
@@ -151,7 +162,7 @@ function Screen(props: {
       {...options.nativeProps}
       tabKey={routeKey}
       isFocused={isFocused}>
-      {contentRenderer()}
+      {wrappedContent}
     </BottomTabsScreen>
   );
 }
