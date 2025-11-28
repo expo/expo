@@ -238,26 +238,6 @@ jest.doMock('expo-modules-core', () => {
 
   const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
 
-  // support old hard-coded mocks TODO: remove this
-  const { NativeModulesProxy } = ExpoModulesCore;
-
-  // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
-  // into the native proxy module. We're not really interested in checking whether the underlying
-  // method is called, just that the proxy method is called, since we have unit tests for the
-  // adapter and believe it works correctly.
-  //
-  // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
-  // This means the mock functions will not throw validation errors the way they would in an app.
-
-  for (const moduleName of Object.keys(NativeModulesProxy)) {
-    const nativeModule = NativeModulesProxy[moduleName];
-    for (const propertyName of Object.keys(nativeModule)) {
-      if (typeof nativeModule[propertyName] === 'function') {
-        nativeModule[propertyName] = jest.fn(async () => {});
-      }
-    }
-  }
-
   function requireMockModule(name) {
     // Support auto-mocking of expo-modules that:
     // 1. have a mock in the `mocks` directory

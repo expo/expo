@@ -43,10 +43,7 @@
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryDelegate.h>
-#import <ExpoModulesCore/EXModuleRegistryAdapter.h>
-#import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
