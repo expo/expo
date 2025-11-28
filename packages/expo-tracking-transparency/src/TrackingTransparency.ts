@@ -11,6 +11,15 @@ import { Platform } from 'react-native';
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
 
 /**
+ * Returns whether tracking functionality is available on the current device.
+ *
+ * @returns `true` on iOS and Android (if Google Play Services are available), `false` on Web.
+ */
+export function isAvailable(): boolean {
+  return ExpoTrackingTransparency.isAvailable();
+}
+
+/**
  * Gets the advertising ID, a UUID string intended only for advertising. Use this string for
  * frequency capping, attribution, conversion events, estimating the number of unique users,
  * advertising fraud detection, and debugging.
@@ -139,15 +148,5 @@ export const useTrackingPermissions = createPermissionHook({
   getMethod: getTrackingPermissionsAsync,
   requestMethod: requestTrackingPermissionsAsync,
 });
-
-/**
- * Returns whether the TrackingTransparency API is available on the current device.
- *
- * @returns On devices where the Tracking Transparency API is unavailable,
- * the get and request permissions methods will always resolve to `granted`.
- */
-export function isAvailable(): boolean {
-  return Boolean(ExpoTrackingTransparency);
-}
 
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
