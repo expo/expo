@@ -37,6 +37,7 @@ function getExpoDependencyChunks({
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['@expo/plist'],
+    ['@expo/local-build-cache-provider'],
     ['expo-modules-core'],
     ['unimodules-app-loader'],
     ['expo-task-manager'],
