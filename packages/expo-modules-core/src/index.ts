@@ -11,7 +11,6 @@ export { SharedRef } from './SharedRef';
 export { default as Platform } from './Platform';
 export { default as uuid } from './uuid';
 
-export type { ProxyNativeModule } from './NativeModulesProxy.types';
 export { requireNativeViewManager } from './NativeViewManagerAdapter';
 
 export * from './requireNativeModule';
@@ -32,4 +31,3 @@ export { UnavailabilityError } from './errors/UnavailabilityError';
 
 // Deprecated
 export { LegacyEventEmitter } from './LegacyEventEmitter';
-export { default as NativeModulesProxy } from './NativeModulesProxy';

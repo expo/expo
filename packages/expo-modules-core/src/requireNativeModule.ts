@@ -1,6 +1,5 @@
 import { TurboModuleRegistry } from 'react-native';
 
-import NativeModulesProxy from './NativeModulesProxy';
 import { createTurboModuleToExpoProxy } from './TurboModuleToExpoModuleProxy';
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
 
@@ -37,7 +36,6 @@ export function requireOptionalNativeModule<ModuleType = any>(
   try {
     return (
       globalThis.expo?.modules?.[moduleName] ??
-      NativeModulesProxy[moduleName] ??
       createTurboModuleToExpoProxy(TurboModuleRegistry.get(moduleName), moduleName) ??
       null
     );
