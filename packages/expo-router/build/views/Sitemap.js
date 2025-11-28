@@ -151,7 +151,7 @@ function SystemInfo() {
         }
         return HERMES_VERSION;
     };
-    const locationOrigin = window.location.origin;
+    const locationOrigin = typeof window !== 'undefined' && window.location ? window.location.origin : null;
     const expoSdkVersion = expo_constants_1.default.expoConfig?.sdkVersion || 'Unknown';
     const hermesVersion = getHermesVersion();
     return (<react_native_1.View testID="sitemap-system-info" style={{

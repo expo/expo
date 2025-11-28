@@ -28,6 +28,8 @@
 - activate animation on back navigation, when initial animation was disabled using internal param ([#41141](https://github.com/expo/expo/pull/41141) by [@Ubax](https://github.com/Ubax))
 - prevent `onPreviewTapped` from firing when `<Link.Preview />` is not configured ([#41160](https://github.com/expo/expo/pull/41160) by [@Ubax](https://github.com/Ubax))
 
+- Fixed crash in Sitemap due to undefined `window.location`. ([#41175](https://github.com/expo/expo/pull/41175) by [@md_abid_nafi](https://github.com/MohammedAbidNafi))
+
 ### 💡 Others
 
 - Move state update logic from addListener to onStateChange ([#40261](https://github.com/expo/expo/pull/40261) by [@Ubax](https://github.com/Ubax))
@@ -70,7 +72,7 @@
 ### 🎉 New features
 
 - Allow specifying user-defined headers for all routes ([#40173](https://github.com/expo/expo/pull/40173) by [@hassankhan](https://github.com/hassankhan))
-- Add support for customizing icon and title of search tab  ([#40139](https://github.com/expo/expo/pull/40139) by [@Ubax](https://github.com/Ubax))
+- Add support for customizing icon and title of search tab ([#40139](https://github.com/expo/expo/pull/40139) by [@Ubax](https://github.com/Ubax))
 - Add icon component to declare sf and androidSrc at the same time ([#40151](https://github.com/expo/expo/pull/40151) by [@Ubax](https://github.com/Ubax))
 - popToTop when tapping active bottom tab on web ([#40174](https://github.com/expo/expo/pull/40174) by [@juliesaia](https://github.com/juliesaia))
 

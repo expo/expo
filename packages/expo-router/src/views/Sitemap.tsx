@@ -249,7 +249,8 @@ function SystemInfo() {
     return HERMES_VERSION;
   };
 
-  const locationOrigin = window.location.origin;
+  const locationOrigin =
+    typeof window !== 'undefined' && window.location ? window.location.origin : null;
   const expoSdkVersion = Constants.expoConfig?.sdkVersion || 'Unknown';
   const hermesVersion = getHermesVersion();
 
