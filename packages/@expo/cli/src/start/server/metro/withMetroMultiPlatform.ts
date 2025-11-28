@@ -922,11 +922,6 @@ export async function withMetroMultiPlatformAsync(
   > = require('@expo/metro/metro-config/defaults/defaults');
   metroDefaults.moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
 
-  if (!config.projectRoot) {
-    // @ts-expect-error: read-only types
-    config.projectRoot = projectRoot;
-  }
-
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 

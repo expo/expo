@@ -20,7 +20,7 @@
     ]
   },
   "resolutions": {
-    "@expo/metro": "~54.1.0",
+    "@expo/metro": "file:./tarballs/expo-metro-v54.2.0-canary.b04ed4f.tgz",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "@types/babel__core": "^7.20.5",
