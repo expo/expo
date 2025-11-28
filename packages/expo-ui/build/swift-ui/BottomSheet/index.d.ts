@@ -1,6 +1,10 @@
 import { type CommonViewModifierProps } from '../types';
 export type PresentationDetent = 'medium' | 'large' | number;
 export type PresentationDragIndicatorVisibility = 'automatic' | 'visible' | 'hidden';
+export type PresentationBackgroundInteraction = 'automatic' | 'enabled' | 'disabled' | {
+    type: 'enabledUpThrough';
+    detent: PresentationDetent;
+};
 export type BottomSheetProps = {
     /**
      * The children of the `BottomSheet` component.
@@ -33,6 +37,14 @@ export type BottomSheetProps = {
      * - `hidden` - Never show the drag indicator
      */
     presentationDragIndicator?: PresentationDragIndicatorVisibility;
+    /**
+     * Controls how interactions on the dimmed background are handled while the sheet is visible.
+     * - `automatic` - System decides the interaction behavior (default)
+     * - `enabled` - Allow touches to pass through to the presenting view
+     * - `disabled` - Prevent interactions with the presenting view
+     * - `{ type: 'enabledUpThrough', detent: <detent> }` - Enable interactions while the sheet is expanded up through the specified detent
+     */
+    presentationBackgroundInteraction?: PresentationBackgroundInteraction;
 } & CommonViewModifierProps;
 export declare function BottomSheet(props: BottomSheetProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
