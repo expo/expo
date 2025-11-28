@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow `$schema` in `app.json` ([#35770](https://github.com/expo/expo/pull/35770) by [@typeofweb](https://github.com/typeofweb))
+
 ### 💡 Others
 
 - Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
