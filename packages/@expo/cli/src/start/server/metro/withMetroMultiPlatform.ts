@@ -931,12 +931,12 @@ export async function withMetroMultiPlatformAsync(
   if (!isDirectoryIn(__dirname, projectRoot)) {
     const watchFolders = (config.watchFolders as string[]) || [];
     asWritable(config).watchFolders = watchFolders;
-
-    watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    // TODO: Make this generic or reduce
     watchFolders.push(
       path.join(require.resolve('@expo/metro-config/package.json'), '../..'),
       // For virtual modules
-      path.join(require.resolve('expo/package.json'), '..')
+      path.join(require.resolve('expo/package.json'), '..'),
+      path.join(require.resolve('@react-native/js-polyfills/package.json'), '..')
     );
   }
 
