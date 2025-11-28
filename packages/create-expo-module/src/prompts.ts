@@ -83,6 +83,17 @@ export async function getSubstitutionDataPrompts(
       validate: (input) => !!input || 'The description cannot be empty',
     },
     {
+      type: 'multiselect',
+      name: 'platform',
+      message: 'Which platform do you want to generate?',
+      choices: [
+        { title: 'iOS', value: 'ios' },
+        { title: 'Android', value: 'android' },
+        { title: 'Web', value: 'web' },
+      ],
+      initial: 0,
+    },
+    {
       type: 'text',
       name: 'package',
       message: 'What is the Android package name?',
@@ -149,6 +160,17 @@ export async function getLocalSubstitutionDataPrompts(
           .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
       },
       validate: (input) => !!input || 'The native module name cannot be empty',
+    },
+    {
+      type: 'select',
+      name: 'platform',
+      message: 'Which platform do you want to generate?',
+      choices: [
+        { title: 'iOS', value: 'ios' },
+        { title: 'Android', value: 'android' },
+        { title: 'Web', value: 'web' },
+      ],
+      initial: 0,
     },
     {
       type: 'text',

@@ -387,7 +387,10 @@ async function askForSubstitutionDataAsync(
     authorEmail,
     authorUrl,
     repo,
+    platform,
   } = await prompts(promptQueries, { onCancel });
+
+  console.log('platform', platform); //TODO: add code to generate correct template base on user selection.
 
   if (isLocal) {
     return {
