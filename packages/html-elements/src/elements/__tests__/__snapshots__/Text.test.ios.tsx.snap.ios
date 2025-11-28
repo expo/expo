@@ -12,17 +12,6 @@ exports[`renders B 1`] = `
 </Text>
 `;
 
-exports[`renders BR 1`] = `
-<Text
-  style={
-    {
-      "height": 16,
-      "width": 0,
-    }
-  }
-/>
-`;
-
 exports[`renders BlockQuote 1`] = `
 <View
   style={
