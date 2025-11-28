@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added the new ExpoModulesJSI to the forceStaticLinking default values
 - [Android] Fix passing exclude options. ([#40014](https://github.com/expo/expo/pull/40014) by [@jakex7](https://github.com/jakex7))
 - Sort results from file discovery to keep fingerprint stable ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 - Fix [#40601](https://github.com/expo/expo/pull/40601) assuming case-insensitive path for default derived podspec path in `react-native-config` resolution ([#40894](https://github.com/expo/expo/pull/40894) by [@kitten](https://github.com/kitten)) ([#40931](https://github.com/expo/expo/pull/40931) by [@kitten](https://github.com/kitten))
