@@ -2,13 +2,15 @@ package expo.modules.notifications.notifications.model;
 
 import android.os.Parcel;
 
+import expo.modules.notifications.notifications.categories.NotificationActionRecord;
+
 /**
  * A POJO representing user's response to a text input notification action
  */
 public class TextInputNotificationResponse extends NotificationResponse {
   private String mUserText;
 
-  public TextInputNotificationResponse(NotificationAction action, Notification notification, String userText) {
+  public TextInputNotificationResponse(NotificationActionRecord action, Notification notification, String userText) {
     super(action, notification);
     mUserText = userText;
   }
