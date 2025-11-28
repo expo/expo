@@ -3,7 +3,7 @@
   "include": ["./src", "./ts-declarations"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__typetests__/*"],
   "compilerOptions": {
-    "lib": ["dom"],
+    "lib": ["dom", "esnext"],
     "outDir": "./build",
   }
 }
