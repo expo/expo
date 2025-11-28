@@ -1,6 +1,10 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+#import <React/RCTComponentViewFactory.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTModuleData.h>
 #import <ReactCommon/RCTTurboModule.h>
+
 #import <ExpoModulesCore/ExpoBridgeModule.h>
 #import <ExpoModulesCore/EXRuntime.h>
 #import <ExpoModulesCore/Swift.h>
@@ -58,15 +62,7 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   }
 }
 
-/**
- This should be called inside `[EXNativeModulesProxy setBridge:]`.
- */
-- (void)legacyProxyDidSetBridge:(nonnull EXNativeModulesProxy *)moduleProxy
-           legacyModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
-{
-  _appContext.legacyModulesProxy = moduleProxy;
-  _appContext.legacyModuleRegistry = moduleRegistry;
-}
+#pragma mark - Exports
 
 /**
  A synchronous method that is called from JS before requiring

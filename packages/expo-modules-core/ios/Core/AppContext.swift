@@ -45,9 +45,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
   @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
 
-  @objc
-  public weak var legacyModulesProxy: LegacyNativeModulesProxy?
-
   /**
    React bridge of the context's app. Can be `nil` when the bridge
    hasn't been propagated to the bridge modules yet (see ``ExpoBridgeModule``),
@@ -68,6 +65,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
         // Otherwise the JSCRuntime asserts may fail on deallocation.
         releaseRuntimeObjects()
       } else if _runtime != oldValue {
+        useModulesProvider("ExpoModulesProvider")
         // Try to install the core object automatically when the runtime changes.
         try? prepareRuntime()
       }
@@ -132,9 +130,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
     listenToClientAppNotifications()
   }
 
-  public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig? = nil) {
+  public convenience init(legacyModuleRegistry: Any, config: AppContextConfig? = nil) {
     self.init(config: config)
-    self.legacyModulesProxy = legacyModulesProxy as? LegacyNativeModulesProxy
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
   }
 
@@ -379,11 +376,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
       }
   }
 
-  @objc
-  public final lazy var expoModulesConfig = ModulesProxyConfig(constants: self.exportedModulesConstants(),
-                                                               methodNames: self.exportedFunctionNames(),
-                                                               viewManagers: self.viewManagersMetadata())
-
   private func exportedFunctionNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()
 
@@ -401,8 +393,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   private func exportedModulesConstants() -> [String: Any] {
     return moduleRegistry
-      // prevent infinite recursion - exclude NativeProxyModule constants
-      .filter { $0.name != NativeModulesProxyModule.moduleName }
       .reduce(into: [String: Any]()) { acc, holder in
         acc[holder.name] = holder.getLegacyConstants()
       }

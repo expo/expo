@@ -11,7 +11,6 @@ import EXManifests
 @objc(EXVersionManager)
 final class VersionManager: EXVersionManagerObjC {
   var appContext: AppContext?
-  var legacyModulesProxy: LegacyNativeModulesProxy?
   var legacyModuleRegistry: EXModuleRegistry?
 
   let params: [AnyHashable: Any]
@@ -54,13 +53,13 @@ final class VersionManager: EXVersionManagerObjC {
     // Ideally if we don't initialize the app context here, but unfortunately there is no better place in bridge lifecycle
     // that would work well for us (especially properly invalidating existing app context on reload).
     let legacyModuleRegistry = createLegacyModuleRegistry(params: params, manifest: manifest)
-    let legacyModulesProxy = LegacyNativeModulesProxy(customModuleRegistry: legacyModuleRegistry)
+//    let legacyModulesProxy = LegacyNativeModulesProxy(customModuleRegistry: legacyModuleRegistry)
     let config = createAppContextConfig()
-    let appContext = AppContext(legacyModulesProxy: legacyModulesProxy, legacyModuleRegistry: legacyModuleRegistry, config: config)
+    let appContext = AppContext(legacyModuleRegistry: legacyModuleRegistry, config: config)
 
     self.appContext = appContext
     self.legacyModuleRegistry = legacyModuleRegistry
-    self.legacyModulesProxy = legacyModulesProxy
+//    self.legacyModulesProxy = legacyModulesProxy
 
     let modules: [Any] = [
       EXAppState(),
@@ -68,10 +67,10 @@ final class VersionManager: EXVersionManagerObjC {
       EXStatusBarManager(),
 
       // Adding EXNativeModulesProxy with the custom moduleRegistry.
-      legacyModulesProxy,
+//      legacyModulesProxy,
 
       // Adding the way to access the module registry from RCTBridgeModules.
-      EXModuleRegistryHolderReactModule(moduleRegistry: legacyModuleRegistry),
+//      EXModuleRegistryHolderReactModule(moduleRegistry: legacyModuleRegistry),
 
       // When ExpoBridgeModule is initialized by RN, it automatically creates the app context.
       // In Expo Go, it has to use already created app context.
