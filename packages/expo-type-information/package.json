@@ -24,9 +24,10 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^22.14.0",
     "prettier": "^3.0.3",
-    "yaml": "^2.3.2"
+    "yaml": "^2.3.2",
+    "chalk": "^4.1.0",
+    "commander": "^7.2.0"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
