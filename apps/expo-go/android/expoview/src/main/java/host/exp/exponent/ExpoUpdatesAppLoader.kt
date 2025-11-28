@@ -164,7 +164,13 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       return
     }
     val logger = UpdatesLogger(context.filesDir)
-    val fileDownloader = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), configuration, logger)
+    val fileDownloader = FileDownloader(
+      context.filesDir,
+      EASClientID(context).uuid.toString(),
+      configuration,
+      logger,
+      databaseHolder.database
+    )
     loaderScope.launch {
       startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
     }
