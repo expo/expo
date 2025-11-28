@@ -441,13 +441,6 @@ exports[`built-in plugins compiles mods 1`] = `
     },
   },
   "name": "my cool app",
-  "notification": {
-    "androidCollapsedTitle": "#{unread_notifications} new interactions",
-    "androidMode": "collapse",
-    "color": "green",
-    "icon": "./icons/notification-icon.png",
-    "iosDisplayInForeground": true,
-  },
   "orientation": "default",
   "packagerOpts": {
     "extraThing": true,
