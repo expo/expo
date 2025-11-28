@@ -5,6 +5,27 @@ import validateNpmPackage from 'validate-npm-package-name';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 
+function sanitizeNamespaceFromSlug(slug: string): string {
+  // Remove non-alphanumeric characters and reserved prefixes, then lowercase
+  let namespace = slug
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .replace(/^(expo|reactnative)/i, '')
+    .toLowerCase();
+
+  // Ensure it starts with a letter to satisfy iOS bundle identifier rules
+  if (!/^[a-z]/.test(namespace)) {
+    namespace = `m${namespace}`;
+  }
+  // Fallback if empty
+  if (!namespace) {
+    namespace = 'module';
+  }
+  return namespace;
+}
+
+// Java/Android package validation: lowercase letters and digits, segments separated by dots, each starting with a letter.
+const ANDROID_PACKAGE_REGEX = /^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$/;
+
 function getInitialName(customTargetPath?: string | null): string {
   const targetBasename = customTargetPath && path.basename(customTargetPath);
   return targetBasename && validateNpmPackage(targetBasename).validForNewPackages
@@ -66,13 +87,15 @@ export async function getSubstitutionDataPrompts(
       name: 'package',
       message: 'What is the Android package name?',
       initial: () => {
-        const namespace = slug
-          .replace(/\W/g, '')
-          .replace(/^(expo|reactnative)/, '')
-          .toLowerCase();
+        const namespace = sanitizeNamespaceFromSlug(slug);
         return `expo.modules.${namespace}`;
       },
-      validate: (input) => !!input || 'The Android package name cannot be empty',
+      validate: (input) => {
+        if (!input) return 'The Android package name cannot be empty';
+        return ANDROID_PACKAGE_REGEX.test(input)
+          ? true
+          : 'Must be like com.example.name (lowercase, dot-separated, each segment starts with a letter)';
+      },
     },
   ];
 
@@ -132,13 +155,15 @@ export async function getLocalSubstitutionDataPrompts(
       name: 'package',
       message: 'What is the Android package name?',
       initial: () => {
-        const namespace = slug
-          .replace(/\W/g, '')
-          .replace(/^(expo|reactnative)/, '')
-          .toLowerCase();
+        const namespace = sanitizeNamespaceFromSlug(slug);
         return `expo.modules.${namespace}`;
       },
-      validate: (input) => !!input || 'The Android package name cannot be empty',
+      validate: (input) => {
+        if (!input) return 'The Android package name cannot be empty';
+        return ANDROID_PACKAGE_REGEX.test(input)
+          ? true
+          : 'Must be like com.example.name (lowercase, dot-separated, each segment starts with a letter)';
+      },
     },
   ];
 }
