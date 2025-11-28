@@ -85,9 +85,9 @@ export type RouteInputParams<T extends Route> =
       ? H extends Record<'pathname' | 'params', any>
         ? T extends H['pathname']
           ? H['params']
-          : Record<string, never>
-        : Record<string, never>
-      : Record<string, never>
+          : never
+        : never
+      : never
     : Extract<HrefInputParams, { pathname: T }>['params'];
 
 /**
@@ -99,9 +99,9 @@ export type RouteOutputParams<T extends Route> =
       ? H extends Record<'pathname' | 'params', any>
         ? T extends H['pathname']
           ? H['params']
-          : Record<string, never>
-        : Record<string, never>
-      : Record<string, never>
+          : never
+        : never
+      : never
     : Extract<HrefOutputParams, { pathname: T }>['params'];
 
 /**
