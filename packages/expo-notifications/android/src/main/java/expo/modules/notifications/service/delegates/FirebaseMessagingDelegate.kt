@@ -45,7 +45,7 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
      * @param listener A listener instance to be informed of new push device tokens.
      */
     @JvmStatic
-    fun addTokenListener(listener: FirebaseTokenListener) {
+    fun addTokenListener(listener: FirebaseTokenListener) = synchronized(sTokenListenersReferences) {
       // Checks whether this listener has already been registered
       if (!sTokenListenersReferences.contains(listener)) {
         sTokenListenersReferences.add(listener)
@@ -57,7 +57,7 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     }
 
     @JvmStatic
-    fun removeTokenListener(listener: FirebaseTokenListener) {
+    fun removeTokenListener(listener: FirebaseTokenListener) = synchronized(sTokenListenersReferences) {
       sTokenListenersReferences.remove(listener)
     }
 
