@@ -2,7 +2,11 @@ import fs from 'fs';
 import path from 'path';
 
 import { memoize } from '../utils';
-import type { DependencyResolution, ResolutionResult } from './types';
+import {
+  DependencyResolutionSource,
+  type DependencyResolution,
+  type ResolutionResult,
+} from './types';
 
 const NODE_MODULES_PATTERN = `${path.sep}node_modules${path.sep}`;
 
@@ -135,7 +139,18 @@ export async function filterMapResolutionResult<T extends { name: string }>(
   const resolutions = await Promise.all(
     Object.keys(results).map(async (key) => {
       const resolution = results[key];
-      return resolution ? await filterMap(resolution) : null;
+      let result = resolution ? await filterMap(resolution) : null;
+      // If we failed to find a matching resolution from `searchPaths`, also try the other duplicates
+      // to see if the `searchPaths` result is not a module but another is
+      if (resolution?.source === DependencyResolutionSource.SEARCH_PATH && !result) {
+        for (let idx = 0; resolution.duplicates && idx < resolution.duplicates.length; idx++) {
+          const duplicate = resolution.duplicates[idx];
+          if ((result = await filterMap({ ...resolution, ...duplicate })) != null) {
+            return result;
+          }
+        }
+      }
+      return result;
     })
   );
   const output: Record<string, T> = Object.create(null);
