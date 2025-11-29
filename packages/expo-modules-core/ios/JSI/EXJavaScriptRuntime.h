@@ -48,9 +48,10 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 #ifdef __cplusplus
 
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime;
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
                        runtimeScheduler:(std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeScheduler;
 
@@ -63,6 +64,8 @@ NS_SWIFT_NAME(JavaScriptRuntime)
  Returns the call invoker the runtime was initialized with.
  */
 - (std::shared_ptr<react::CallInvoker>)callInvoker;
+
+- (void)setCallInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
 
 /**
  Wraps given host object to `EXJavaScriptObject`.

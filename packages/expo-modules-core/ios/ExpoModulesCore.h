@@ -1,6 +1,7 @@
 @class RCTBundleURLProvider;
 
 #import <React/RCTHTTPRequestHandler.h>
+#import <ReactCommon/RCTHost.h>
 
 #import <ExpoModulesCore/ExpoBridgeModule.h>
 #import <ExpoModulesCore/CoreModuleHelper.h>

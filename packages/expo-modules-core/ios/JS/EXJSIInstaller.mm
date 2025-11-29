@@ -54,7 +54,7 @@ static NSString *modulesHostObjectPropertyName = @"modules";
     return nil;
   }
 
-  return [[EXRuntime alloc] initWithRuntime:jsiRuntime
+  return [[EXRuntime alloc] initWithRuntime:*jsiRuntime
                                 callInvoker:bridge.jsCallInvoker
                            runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
 }
