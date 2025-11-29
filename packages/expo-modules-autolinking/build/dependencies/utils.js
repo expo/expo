@@ -104,12 +104,14 @@ function mergeWithDuplicate(a, b) {
     }
     const duplicates = target.duplicates || (target.duplicates = []);
     if (target.path !== duplicate.path) {
-        duplicates.push({
-            name: duplicate.name,
-            version: duplicate.version,
-            path: duplicate.path,
-            originPath: duplicate.originPath,
-        });
+        if (duplicates.every((parent) => parent.path !== duplicate.path)) {
+            duplicates.push({
+                name: duplicate.name,
+                version: duplicate.version,
+                path: duplicate.path,
+                originPath: duplicate.originPath,
+            });
+        }
     }
     else if (!target.version && duplicate.version) {
         target.version = duplicate.version;
@@ -122,7 +124,19 @@ function mergeWithDuplicate(a, b) {
 async function filterMapResolutionResult(results, filterMap) {
     const resolutions = await Promise.all(Object.keys(results).map(async (key) => {
         const resolution = results[key];
-        return resolution ? await filterMap(resolution) : null;
+        const result = resolution ? await filterMap(resolution) : null;
+        // If we failed to find a matching resolution from `searchPaths`, also try the other duplicates
+        // to see if the `searchPaths` result is not a module but another is
+        if (resolution?.source === 1 /* DependencyResolutionSource.SEARCH_PATH */ && !result) {
+            for (let idx = 0; resolution.duplicates && idx < resolution.duplicates.length; idx++) {
+                const duplicate = resolution.duplicates[idx];
+                const duplicateResult = await filterMap({ ...resolution, ...duplicate });
+                if (duplicateResult != null) {
+                    return duplicateResult;
+                }
+            }
+        }
+        return result;
     }));
     const output = Object.create(null);
     for (let idx = 0; idx < resolutions.length; idx++) {
