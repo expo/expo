@@ -98,6 +98,7 @@
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
+    "expo-template-bare-minimum": "link:../../templates/expo-template-bare-minimum",
     "@expo/dom-webview": "0.2.7",
     "@expo/metro-runtime": "^6.1.2",
     "@types/node": "^22.14.0",
@@ -112,6 +113,7 @@
   "peerDependencies": {
     "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
+    "expo-template-bare-minimum": "*",
     "react": "*",
     "react-native": "*",
     "react-native-webview": "*"
@@ -124,6 +126,9 @@
       "optional": true
     },
     "react-native-webview": {
+      "optional": true
+    },
+    "expo-templates-bare-minimum": {
       "optional": true
     }
   }
