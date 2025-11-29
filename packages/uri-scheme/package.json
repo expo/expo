@@ -30,20 +30,19 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "yarn run clean && yarn run build:prod",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
-    "watch": "yarn run build --watch",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "watch": "pnpm run build --watch"
   },
   "devDependencies": {
-    "@expo/config-plugins": "~54.0.1",
-    "@expo/plist": "^0.4.7",
+    "@expo/config-plugins": "workspace:*",
+    "@expo/plist": "workspace:*",
     "@expo/spawn-async": "^1.7.2",
     "@types/prompts": "^2.0.6",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
     "prompts": "^2.3.2",
     "update-check": "^1.5.4"

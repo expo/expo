@@ -34,9 +34,10 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
+    "@types/react": "~19.2.0",
     "expo": "*",
     "react-native": "*"
   }

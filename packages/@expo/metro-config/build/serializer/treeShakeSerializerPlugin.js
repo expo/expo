@@ -110,9 +110,7 @@ function populateModuleWithImportUsage(value) {
         const reconcile = outputItem.data.reconcile;
         (0, assert_1.default)(ast, 'ast must be defined.');
         (0, assert_1.default)(reconcile, 'reconcile settings are required in the module graph for post transform.');
-        const deps = (0, metro_transform_worker_1.collectDependenciesForShaking)(
-        // @ts-expect-error
-        ast, reconcile.collectDependenciesOptions).dependencies;
+        const deps = (0, metro_transform_worker_1.collectDependenciesForShaking)(ast, reconcile.collectDependenciesOptions).dependencies;
         // @ts-expect-error: Mutating the value in place.
         value.dependencies =
             //

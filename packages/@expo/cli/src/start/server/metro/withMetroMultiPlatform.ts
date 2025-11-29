@@ -937,13 +937,18 @@ export async function withMetroMultiPlatformAsync(
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders = [];
     }
-    // @ts-expect-error: watchFolders is readonly
-    config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    // NOTE(@hassankhan): Temporarily disabled watching `metro-runtime` as pnpm's disk output format
+    // differs from Yarn and causes resolution errors for `metro-runtime`
+  //   // @ts-expect-error: watchFolders is readonly
+  //   // config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+  //   config.watchFolders.push(path.join(resolveFrom(projectRoot, 'metro-runtime/package.json'), '../..'));
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(
       path.join(require.resolve('@expo/metro-config/package.json'), '../..'),
       // For virtual modules
-      path.join(require.resolve('expo/package.json'), '..')
+      path.join(require.resolve('expo/package.json'), '..'),
+      // Ugh
+      path.join(require.resolve('@react-native/js-polyfills/package.json'), '..')
     );
   }
 

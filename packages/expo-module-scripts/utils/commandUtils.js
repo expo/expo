@@ -23,7 +23,7 @@ export async function packageManagerExecAsync(params, { cwd } = {}) {
     args.push(...params);
   } else if (npmConfigUserAgent?.includes('pnpm')) {
     command = 'pnpm';
-    args.push('exec', ...params);
+    args.push(...params);
   } else if (npmConfigUserAgent?.includes('bun')) {
     command = 'bunx';
     args.push(...params);
