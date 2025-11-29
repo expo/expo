@@ -124,14 +124,15 @@ function mergeWithDuplicate(a, b) {
 async function filterMapResolutionResult(results, filterMap) {
     const resolutions = await Promise.all(Object.keys(results).map(async (key) => {
         const resolution = results[key];
-        let result = resolution ? await filterMap(resolution) : null;
+        const result = resolution ? await filterMap(resolution) : null;
         // If we failed to find a matching resolution from `searchPaths`, also try the other duplicates
         // to see if the `searchPaths` result is not a module but another is
         if (resolution?.source === 1 /* DependencyResolutionSource.SEARCH_PATH */ && !result) {
             for (let idx = 0; resolution.duplicates && idx < resolution.duplicates.length; idx++) {
                 const duplicate = resolution.duplicates[idx];
-                if ((result = await filterMap({ ...resolution, ...duplicate })) != null) {
-                    return result;
+                const duplicateResult = await filterMap({ ...resolution, ...duplicate });
+                if (duplicateResult != null) {
+                    return duplicateResult;
                 }
             }
         }
