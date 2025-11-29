@@ -33,6 +33,7 @@
 - Added MCP server handshaking and graceful shutdown. ([#40660](https://github.com/expo/expo/pull/40660) by [@kudo](https://github.com/kudo))
 - Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
 - Use `@expo/mcp-tunnel` from `expo-mcp`. ([#41276](https://github.com/expo/expo/pull/41276) by [@kudo](https://github.com/kudo))
+- Use `expo/internal/unstable-template` as preferred local prebuild template path ([#41306](https://github.com/expo/expo/pull/41306) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

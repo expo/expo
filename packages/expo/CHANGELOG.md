@@ -35,6 +35,7 @@
 - [Android] Remove edge-to-edge logic from `ReactActivityDelegateWrapper`. ([#40263](https://github.com/expo/expo/pull/40263) by [@behenate](https://github.com/behenate))
 - [expo/dom] Add `overrideUri` to `DOMProps` to enable pre-bundled DOM Components. ([#40397](https://github.com/expo/expo/pull/40397) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Add `internal/async-require-module` for `@expo/metro-config`'s `asyncRequireModulePath`([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
+- [Internal] Add `internal/unstable-template` for local prebuild ([#41306](https://github.com/expo/expo/pull/41306) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
