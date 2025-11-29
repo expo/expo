@@ -235,7 +235,7 @@ class AppContext(
     return KModuleEventEmitterWrapper(
       requireNotNull(registry.getModuleHolder(module)) {
         val availableModulesNames = registry.registry.keys.joinToString(", ")
-        "Cannot create an event emitter for module ${module.javaClass} that isn't present in the module registry. Available modules: $availableModulesNames."
+        "Cannot create an event emitter for module ${module.javaClass} that isn't present in the module registry. Available modules: [$availableModulesNames]."
       },
       legacyEventEmitter,
       hostingRuntimeContext.reactContextHolder
