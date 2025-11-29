@@ -56,6 +56,7 @@ export function getTestModules() {
   modules.push(
     require('./tests/EASClient'),
     require('./tests/Crypto'),
+    require('./tests/CryptoAES'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
     require('./tests/LinearGradient'),

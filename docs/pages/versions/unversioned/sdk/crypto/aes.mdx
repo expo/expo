@@ -1,0 +1,129 @@
+---
+title: Crypto AES
+description: A universal library for crypto operations.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-crypto'
+packageName: 'expo-crypto'
+iconUrl: '/static/images/packages/expo-crypto.png'
+platforms: ['android', 'ios', 'tvos', 'web']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { SnackInline } from '~/ui/components/Snippet';
+
+`expo-crypto` enables you to perform AES encryption and decryption using platform native APIs.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<SnackInline label='Simple encryption / decryption' dependencies={['expo-crypto']}>
+
+```jsx
+import { useEffect } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
+import { AES } from 'expo-crypto';
+
+export default function App() {
+  useEffect(() => {
+    (async () => {
+      const plaintext = 'Hello, world!';
+      const plaintextBase64 = btoa(plaintexxt);
+
+      const encryptionKey = await AES.EncryptionKey.generate();
+      const sealedData = await AES.encryptAsync(plaintextBase64, key);
+      const decryptedBase64 = await AES.decryptAsync(sealedData, key, {
+        output: 'base64'
+      });
+
+      const decrpyted = atob(decryptedBase64);
+      console.log('Decrypted: ', decrpyted);
+    })()j
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text>Crypto Module Example</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+</SnackInline>
+
+### Usage with FileSystem and SecureStore
+
+Encrypt data and save to file
+
+```ts
+import { AES } from 'expo-crypto';
+import { File, Paths } from 'expo-file-system';
+import * as SecureStore from 'expo-secure-store';
+
+async function encryptAndSaveData(plaintextData: Uint8Array) {
+  // generate encryption key
+  const encryptionKey = await AES.EncryptionKey.generate();
+
+  // encrypt data
+  const sealedData = await AES.encryptAsync(plaintextData, encryptionKey);
+  const encryptedBytes = await sealedData.combined();
+
+  // store encryption key
+  const keyHex = await encryptionKey.encoded('hex');
+  await SecureStore.setItemAsync('aes-encryption-key', keyHex);
+
+  // save encrypted file
+  const file = new File(Paths.cache, 'encrypted.dat');
+  file.create({ overwrite: true });
+  file.write(encryptedBytes);
+}
+```
+
+Load file and decrypt data
+
+```ts
+import { AES } from 'expo-crypto';
+import { File, Paths } from 'expo-file-system';
+import * as SecureStore from 'expo-secure-store';
+
+async function loadAndDecryptData(): Promise<Uint8Array | null> {
+  // Load encryption key
+  const keyHex = await SecureStore.getItemAsync('aes-encryption-key');
+  if (!keyHex) {
+    return null;
+  }
+  const encryptionKey = await AES.EncryptionKey.import(keyHex, 'hex');
+
+  // Load encrypted file
+  const file = new File(Paths.cache, 'encrypted.dat');
+  if (!file.exists) {
+    return null;
+  }
+  const encryptedBytes = await file.bytes();
+  const sealedData = AES.SealedData.fromCombined(encryptedBytes);
+
+  // decrypt data
+  const plaintextBytes = await AES.decryptAsync(data, encryptionKey);
+
+  return plaintextBytes;
+}
+```
+
+## API
+
+```js
+import { AES } from 'expo-crypto';
+```
+
+<APISection packageName="expo-crypto-aes" apiName="AES" />
