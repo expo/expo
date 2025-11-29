@@ -194,18 +194,21 @@ export async function copyNodeModuleAsync(
   });
 
   await pipeline(
-    tarCreate({
-      cwd: targetPath,
-      filter(entry) {
-        switch (path.basename(entry)) {
-          case '.npmignore':
-          case 'node_modules':
-            return false;
-          default:
-            return true;
-        }
+    tarCreate(
+      {
+        cwd: targetPath,
+        filter(entry) {
+          switch (path.basename(entry)) {
+            case '.npmignore':
+            case 'node_modules':
+              return false;
+            default:
+              return true;
+          }
+        },
       },
-    }, ['.']),
+      ['.']
+    ),
     transformStream,
     tarExtract(
       {
