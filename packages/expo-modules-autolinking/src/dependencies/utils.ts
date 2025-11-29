@@ -107,12 +107,14 @@ export function mergeWithDuplicate(
   }
   const duplicates = target.duplicates || (target.duplicates = []);
   if (target.path !== duplicate.path) {
-    duplicates.push({
-      name: duplicate.name,
-      version: duplicate.version,
-      path: duplicate.path,
-      originPath: duplicate.originPath,
-    });
+    if (duplicates.every((parent) => parent.path !== duplicate.path)) {
+      duplicates.push({
+        name: duplicate.name,
+        version: duplicate.version,
+        path: duplicate.path,
+        originPath: duplicate.originPath,
+      });
+    }
   } else if (!target.version && duplicate.version) {
     target.version = duplicate.version;
   }
