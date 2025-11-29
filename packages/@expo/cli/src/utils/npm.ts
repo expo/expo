@@ -3,9 +3,10 @@ import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import crypto from 'crypto';
 import fs from 'fs';
+import path from 'path';
 import slugify from 'slugify';
 import { PassThrough, Readable, Stream } from 'stream';
-import { extract as tarExtract, TarOptionsWithAliases } from 'tar';
+import { extract as tarExtract, create as tarCreate, TarOptionsWithAliases } from 'tar';
 import { promisify } from 'util';
 
 import { createEntryResolver } from './createFileTransform';
@@ -163,6 +164,48 @@ export async function extractNpmTarballAsync(
 
   await pipeline(
     stream,
+    transformStream,
+    tarExtract(
+      {
+        cwd,
+        filter,
+        onentry: createEntryResolver(name),
+        strip: strip ?? 1,
+      },
+      fileList
+    )
+  );
+
+  return hash.digest('hex');
+}
+
+export async function copyNodeModuleAsync(
+  targetPath: string,
+  props: ExtractProps
+): Promise<string> {
+  const { cwd, strip, name, fileList = [], filter } = props;
+
+  await ensureDirectoryAsync(cwd);
+
+  const hash = crypto.createHash(props.checksumAlgorithm ?? 'md5');
+  const transformStream = new PassThrough();
+  transformStream.on('data', (chunk) => {
+    hash.update(chunk);
+  });
+
+  await pipeline(
+    tarCreate({
+      cwd: targetPath,
+      filter(entry) {
+        switch (path.basename(entry)) {
+          case '.npmignore':
+          case 'node_modules':
+            return false;
+          default:
+            return true;
+        }
+      },
+    }, ['.']),
     transformStream,
     tarExtract(
       {
