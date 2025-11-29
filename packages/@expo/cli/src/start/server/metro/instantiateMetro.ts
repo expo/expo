@@ -93,20 +93,26 @@ export async function loadMetroConfigAsync(
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
   const hasConfig = await resolveConfig(options.config, projectRoot);
-  let config: ConfigT = {
-    ...(await loadConfig(
-      { cwd: projectRoot, projectRoot, ...options },
-      // If the project does not have a metro.config.js, then we use the default config.
-      hasConfig.isEmpty ? getDefaultConfig(projectRoot) : undefined
-    )),
-    reporter: {
+  let config: ConfigT = await loadConfig(
+    { cwd: projectRoot, projectRoot, ...options },
+    // If the project does not have a metro.config.js, then we use the default config.
+    hasConfig.isEmpty ? getDefaultConfig(projectRoot) : undefined
+  )
+
+  const configReporter = config.reporter;
+  config = {
+    ...config,
+    reporter : {
       update(event: any) {
+        if(configReporter){
+          configReporter.update(event);
+        }
         terminalReporter.update(event);
         if (reportEvent) {
           reportEvent(event);
         }
-      },
-    },
+      }
+    }
   };
 
   // @ts-expect-error: Set the global require cycle ignore patterns for SSR bundles. This won't work with custom global prefixes, but we don't use those.
