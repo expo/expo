@@ -40,7 +40,8 @@ export function sendWorkerResult({
     const resultJson = error != null ? serialize({ error }) : serialize({ result });
     const resultBytes = new TextEncoder().encode(resultJson);
     const length = resultBytes.length;
-    resultArray.set(new Uint32Array([length]), 0);
+    const view = new DataView(resultArray.buffer);
+    view.setUint32(0, length, true);
     resultArray.set(resultBytes, 4);
     Atomics.store(lock, 0, RESOLVED);
   } else {
@@ -137,7 +138,8 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
     }
   }
 
-  const length = new Uint32Array(resultArray.buffer, 0, 1)[0];
+  const view = new DataView(resultArray.buffer);
+  const length = view.getUint32(0, true);
   const resultCopy = new Uint8Array(length);
   resultCopy.set(new Uint8Array(resultArray.buffer, 4, length));
   const resultJson = new TextDecoder().decode(resultCopy);
