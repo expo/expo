@@ -9,6 +9,7 @@
 #import <jsi/jsi.h>
 #import <hermes/hermes.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #import <ReactCommon/SchedulerPriority.h>
 
 @implementation EXJavaScriptRuntime {
@@ -46,13 +47,19 @@
   return self;
 }
 
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
-                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
 {
-  return [self initWithRuntime:runtime callInvoker:callInvoker runtimeScheduler:nullptr];
+  return [self initWithRuntime:runtime callInvoker:nullptr];
 }
 
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
+                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+{
+  auto runtimeScheduler = [EXJavaScriptRuntime runtimeSchedulerFromRuntime:runtime];
+  return [self initWithRuntime:runtime callInvoker:callInvoker runtimeScheduler:runtimeScheduler];
+}
+
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
                        runtimeScheduler:(std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeScheduler
 {
@@ -60,7 +67,7 @@
     // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
     // In this code flow, the runtime should be owned by something else like the RCTBridge.
     // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
-    _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
+    _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), &runtime);
     _jsCallInvoker = callInvoker;
     _runtimeScheduler = runtimeScheduler;
   }
@@ -75,6 +82,11 @@
 - (std::shared_ptr<react::CallInvoker>)callInvoker
 {
   return _jsCallInvoker;
+}
+
+- (void)setCallInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+{
+  _jsCallInvoker = callInvoker;
 }
 
 - (nonnull EXJavaScriptObject *)createObject
@@ -225,6 +237,14 @@
   };
   std::shared_ptr<jsi::Object> fnPtr = std::make_shared<jsi::Object>(jsi::Function::createFromHostFunction(*_runtime, propNameId, (unsigned int)argsCount, function));
   return [[EXJavaScriptObject alloc] initWith:fnPtr runtime:self];
+}
+
++ (std::shared_ptr<react::RuntimeScheduler>)runtimeSchedulerFromRuntime:(jsi::Runtime &)jsiRuntime
+{
+  if (auto binding = react::RuntimeSchedulerBinding::getBinding(jsiRuntime)) {
+    return binding->getRuntimeScheduler();
+  }
+  return nullptr;
 }
 
 @end

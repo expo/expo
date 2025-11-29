@@ -64,6 +64,9 @@ public final class AppContext: NSObject, @unchecked Sendable {
   @objc
   public weak var reactBridge: RCTBridge?
 
+  @objc
+  public weak var host: RCTHost?
+
   /**
    Underlying JSI runtime of the running app.
    */
