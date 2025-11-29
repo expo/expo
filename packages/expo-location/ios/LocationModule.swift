@@ -201,9 +201,6 @@ public final class LocationModule: Module {
       guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
         throw Exceptions.GeofencingUnavailable()
       }
-      guard try taskManager.hasBackgroundModeEnabled("location") else {
-        throw Exceptions.LocationUpdatesUnavailable()
-      }
 
       try taskManager.registerTask(withName: taskName, consumer: EXGeofencingTaskConsumer.self, options: options)
     }
