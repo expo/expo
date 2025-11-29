@@ -13,9 +13,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
-- **`expo`**
-  - [metro] call projects metro reporter update ([#41310](https://github.com/expo/expo/pull/41310) by [@bmatusiak](https://github.com/bmatusiak))
-
 ## 54.0.0 — 2025-09-10
 
 ### 📚 3rd party library updates
