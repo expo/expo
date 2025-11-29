@@ -9,6 +9,7 @@
 #import <ReactCommon/TurboModuleUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <react/bridging/CallbackWrapper.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -47,6 +48,10 @@ namespace expo
 #pragma mark - Errors
 
     jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *message);
+
+#pragma mark - RuntimeScheduler
+
+std::shared_ptr<react::RuntimeScheduler> runtimeSchedulerFromRuntime(jsi::Runtime &runtime);
 
 } // namespace expo
 
