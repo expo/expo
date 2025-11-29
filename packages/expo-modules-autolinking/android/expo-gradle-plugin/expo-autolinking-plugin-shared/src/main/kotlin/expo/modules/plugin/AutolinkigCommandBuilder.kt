@@ -11,8 +11,8 @@ class AutolinkingCommandBuilder {
     "node",
     "--no-warnings",
     "--eval",
-    "require(require.resolve('expo-modules-autolinking', { paths: [require.resolve('expo/package.json')] }))(process.argv.slice(1))",
-    "--"
+    "require('expo/bin/autolinking')",
+    "expo-modules-autolinking"
   )
 
   private val platform = listOf(

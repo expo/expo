@@ -293,7 +293,8 @@ module Expo
 
       with_node \\
         --no-warnings \\
-        --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" \\
+        --eval "require(\'expo/bin/autolinking\')" \\
+        expo-modules-autolinking \\
         generate-modules-provider #{args.join(' ')} \\
         --target "#{modules_provider_path}" \\
         #{entitlement_param} \\

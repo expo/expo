@@ -21,6 +21,7 @@
 
 - [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
+- [Android] Align `expo-gradle-plugin`'s CLI command to align with iOS invocation of `expo-modules-autolinking` ([#41264](https://github.com/expo/expo/pull/41264) by [@kitten](https://github.com/kitten))
 - Refactor test suite and file discovery implementation to drop `glob` ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 - Improve recursive dependency resolution performance ([#40651](https://github.com/expo/expo/pull/40651) by [@kitten](https://github.com/kitten))
 

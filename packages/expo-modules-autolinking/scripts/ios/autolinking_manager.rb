@@ -216,7 +216,8 @@ module Expo
         'node',
         '--no-warnings',
         '--eval',
-        'require(require.resolve(\'expo-modules-autolinking\', { paths: [\'' +  __dir__ + '\'] }))(process.argv.slice(1))',
+        'require(\'expo/bin/autolinking\')',
+        'expo-modules-autolinking',
         command_name,
         '--platform',
         'apple'
