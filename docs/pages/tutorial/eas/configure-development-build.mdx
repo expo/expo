@@ -1,206 +1,609 @@
----
-title: Configure a development build in cloud
-sidebar_title: Configure development build
-description: Learn how to configure a development build for a project using EAS Build.
-hasVideoLink: true
----
+# Car Wash System - Monorepo (Backend + Web + Mobile)
 
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { ProgressTracker } from '~/ui/components/ProgressTracker';
-import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
-import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
-
-In this chapter, we'll set up and configure a development build with EAS for our example app.
-
-<VideoBoxLink videoId="uQCE9zl3dXU" title="Watch: How to configure a development build" />
+Este repositório contém um scaffold completo (MVP) para **site + app** com sistema de controle de lavagens, status em tempo real (fila → lavando → pronto), emojis de modelo, indicação com desconto de 20% e integrações essenciais (Socket.IO, FCM token stub, Postgres, Redis).
 
 ---
 
-## Understanding development builds
+## Estrutura do repositório
 
-Let's start by learning about what are development builds and why we need them.
+```
+car-wash-system-monorepo/
+├── docker-compose.yml
+├── README.md
+├── backend/
+│   ├── package.json
+│   ├── .env.example
+│   └── src/
+│       ├── index.js
+│       ├── models.js
+│       ├── routes.js
+│       ├── socket.js
+│       └── migrations/
+│           └── init.sql
+├── frontend/
+│   ├── package.json
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx
+│       ├── api.js
+│       └── styles.css
+└── mobile/
+    ├── package.json
+    └── App.js
+```
 
-A [development build](/develop/development-builds/introduction/) is a debug version of our project. It is optimized for quick iterations when creating an app. It contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which offers a robust and complete development environment. This setup allows us to integrate any native library or change code inside the [native directories](/workflow/overview/#android-and-ios-native-projects) as required.
+---
 
-### Key highlights
+> **Observação:** esse scaffold foi pensado para ser um ponto de partida funcional. Em produção, ajuste secrets, CORS, SSL, autenticação completa e deployment.
 
-> **Note:** If you are familiar with [Expo Go](/get-started/expo-go/), think of a development build as a customizable version of Expo Go that is unique to the requirements of a project.
+---
 
-| Feature                           | Development Builds                                                                                                                             | Expo Go                                                                                              |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Development phase**             | Offers web-like iteration speed for mobile app development.                                                                                    | Allows for quick iteration and testing of Expo SDK projects using the client app.                    |
-| **Collaboration**                 | Facilitates team testing with shared native runtime.                                                                                           | Easy project sharing via QR codes on a device.                                                       |
-| **Third-party libraries support** | Full support for any [third-party library](/workflow/using-libraries/#third-party-libraries), including those that require custom native code. | Limited to libraries within the Expo SDK, not suitable for custom native dependencies.               |
-| **Customization**                 | Extensive customization with [config plugins](/config-plugins/introduction/) and direct access to native code.                                 | Limited customization with a focus on Expo SDK capabilities without direct native code modification. |
-| **Intended use**                  | Ideal for full-fledged app development aimed at store deployment, offering a complete development environment and tools.                       | Ideal for learning, prototyping, and experimenting. Not recommended for production apps.             |
+## docker-compose.yml
 
-<Step label="1">
+```yaml
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: carwash
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
-## Install expo-dev-client library
+  redis:
+    image: redis:7
+    ports:
+      - '6379:6379'
 
-To initialize our project for a development build, let's [`cd`](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line#basic_built-in_terminal_commands) inside our project directory and run the following command to install the library:
+  backend:
+    build: ./backend
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/carwash
+      - REDIS_URL=redis://redis:6379
+      - PORT=4000
+    ports:
+      - '4000:4000'
+    volumes:
+      - ./backend:/usr/src/app
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+volumes:
+  db_data:
+```
 
-### Start the development server
+---
 
-Run the `npx expo start` to start the [development server](/get-started/start-developing/#start-a-development-server):
+## BACKEND (Node.js + Express + Sequelize + Socket.IO)
 
-<Terminal cmd={['$ npx expo start']} />
-
-This command starts the metro bundler. In the terminal window, we see the QR code followed by the `Metro waiting on...` and a manifest URL:
-
-<ContentSpotlight
-  alt="Running development server"
-  src="/static/images/tutorial/eas/development-server.png"
-  className="max-w-[600px]"
-/>
-
-Let's notice the changes installing the `expo-dev-client` library:
-
-- The manifest URL contains `expo-development-client` along with the app scheme
-- The development server now operates for a development build (instead of Expo Go).
-
-Since we do not have a development build installed on one of our devices or an emulator/simulator, we can't run our project yet.
-
-</Step>
-
-<Step label="2">
-
-## Initialize a development build
-
-### Install EAS CLI
-
-We need to install the EAS Command Line Interface (CLI) tool as a global dependency on our local machine. Run the following command:
-
-<Terminal cmd={['$ npm install -g eas-cli']} />
-
-### Log in or sign up for an Expo account
-
-> If you have an Expo account and are signed in using Expo CLI, skip this step. If you don't have an Expo account, [sign up here](https://expo.dev/signup) and proceed with the login command described below.
-
-To log in, run the following command:
-
-<Terminal cmd={['$ eas login']} />
-
-This command asks for our Expo account email or username and password to complete the login.
-
-### Initialize and link the project to EAS
-
-For any new project, the first step is to initialize and link it to the EAS servers. Run the following command:
-
-<Terminal cmd={['$ eas init']} />
-
-On running, this command:
-
-- Requests verification of the account owner by entering our Expo account credentials and asks if we want to create a new EAS project:
-
-<Terminal
-  cmd={[
-    '# Output after running eas init',
-    '✔ Which account should own this project? > your-username',
-    '✔ Would you like to create a project for @your-username/sticker-smash? … yes',
-    '✔ Created @your-username/sticker-smash',
-    '✔ Project successfully linked (ID: XXXX-XX-XX-XXXX) (modified app.json)',
-  ]}
-/>
-
-- Creates EAS project and provides a link to that project which we can open in the EAS dashboard:
-
-<ContentSpotlight
-  alt="New project in EAS dashboard"
-  src="/static/images/tutorial/eas/new-project.png"
-/>
-
-- Generates a unique `projectId` and links this EAS project to the example app on our development machine.
-- Modifies **app.json** to include [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) and updates its value with the unique ID created.
-
-<Collapsible summary={<>What is <CODE>projectId</CODE> in app.json?</>}>
-
-When `eas init` runs, it associates a unique identifier for our project in **app.json** under `extra.eas.projectId`. The value of this property is used to identify our project on EAS servers.
+### backend/package.json
 
 ```json
 {
-  "extra": {
-    "eas": {
-      "projectId": "0cd3da2d-xxx-xxx-xxx-xxxxxxxxxx"
-    }
+  "name": "carwash-backend",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.0",
+    "sequelize": "^6.32.1",
+    "socket.io": "^4.8.1",
+    "cors": "^2.8.5",
+    "ioredis": "^5.3.2",
+    "bcrypt": "^5.1.0",
+    "uuid": "^9.0.0",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }
 ```
 
-</Collapsible>
+### backend/.env.example
 
-</Step>
+```
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/carwash
+REDIS_URL=redis://localhost:6379
+PORT=4000
+JWT_SECRET=change_this
+FCM_SERVER_KEY=your_fcm_key
+```
 
-<Step label="3">
+### backend/src/models.js
 
-## Configure project for EAS Build
+```js
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = new Sequelize(process.env.DATABASE_URL, { logging: false });
 
-To set up our project for EAS Build, run the following command:
+const User = sequelize.define('User', {
+  name: { type: DataTypes.STRING },
+  email: { type: DataTypes.STRING, unique: true },
+  password_hash: { type: DataTypes.STRING },
+  role: { type: DataTypes.STRING, defaultValue: 'customer' },
+  referral_code: { type: DataTypes.STRING, unique: true }
+});
 
-<Terminal cmd={['$ eas build:configure']} />
+const Vehicle = sequelize.define('Vehicle', {
+  plate: { type: DataTypes.STRING },
+  model: { type: DataTypes.STRING },
+  category: { type: DataTypes.STRING } // suv, sedan, hatch, pickup, moto
+});
 
-On running, this command:
+const Wash = sequelize.define('Wash', {
+  status: { type: DataTypes.STRING, defaultValue: 'queued' },
+  queue_position: { type: DataTypes.INTEGER },
+  code: { type: DataTypes.STRING },
+  started_at: { type: DataTypes.DATE },
+  finished_at: { type: DataTypes.DATE }
+});
 
-- Prompts to select a platform: **Android**, **iOS**, or **All**. Since we are creating Android and iOS apps, let's select **All**.
-- Creates **eas.json** in the root of our project's directory with the following configuration:
+const ReferralReward = sequelize.define('ReferralReward', {
+  used: { type: DataTypes.BOOLEAN, defaultValue: false },
+  discount_percent: { type: DataTypes.INTEGER, defaultValue: 20 }
+});
 
-```json eas.json
+User.hasMany(Vehicle, { as: 'vehicles' });
+Vehicle.belongsTo(User, { as: 'owner' });
+Vehicle.hasMany(Wash);
+Wash.belongsTo(Vehicle);
+Wash.belongsTo(User, { as: 'referredBy' });
+ReferralReward.belongsTo(User, { as: 'user' });
+ReferralReward.belongsTo(Wash, { as: 'wash' });
+
+module.exports = { sequelize, User, Vehicle, Wash, ReferralReward };
+```
+
+### backend/src/routes.js
+
+```js
+const express = require('express');
+const router = express.Router();
+const { User, Vehicle, Wash, ReferralReward, sequelize } = require('./models');
+const { v4: uuidv4 } = require('uuid');
+
+// map emoji
+const carEmojis = {
+  suv: '🚙',
+  sedan: '🚗',
+  hatch: '🚕',
+  pickup: '🛻',
+  sport: '🏎️',
+  moto: '🏍️',
+  van: '🚐',
+  eletric: '⚡🚗'
+};
+
+// Create wash (with optional referral_code)
+router.post('/washes', async (req, res) => {
+  const t = await sequelize.transaction();
+  try {
+    const { plate, model, category, owner_name, referred_code, user_email } = req.body;
+
+    // upsert user (simplified)
+    let user = null;
+    if (user_email) {
+      user = await User.findOne({ where: { email: user_email } });
+      if (!user) user = await User.create({ email: user_email, name: owner_name, referral_code: uuidv4().slice(0,8) }, { transaction: t });
+    }
+
+    const vehicle = await Vehicle.create({ plate, model, category, UserId: user ? user.id : null }, { transaction: t });
+
+    // calculate queue position
+    const maxPos = await Wash.max('queue_position', { where: { status: 'queued' } }) || 0;
+    const wash = await Wash.create({ VehicleId: vehicle.id, status: 'queued', queue_position: maxPos + 1, code: uuidv4().slice(0,8) }, { transaction: t });
+
+    // handle referral
+    if (referred_code) {
+      const referrer = await User.findOne({ where: { referral_code: referred_code } });
+      if (referrer) {
+        wash.set('referredById', referrer.id);
+        await wash.save({ transaction: t });
+        await ReferralReward.create({ userId: referrer.id, washId: wash.id }, { transaction: t });
+      }
+    }
+
+    await t.commit();
+
+    const vehicleJson = vehicle.toJSON();
+    res.json({ wash, vehicle: { ...vehicleJson, emoji: carEmojis[vehicle.category] || '🚗' } });
+  } catch (err) {
+    await t.rollback();
+    console.error(err);
+    res.status(500).json({ error: 'erro ao criar lavagem' });
+  }
+});
+
+// Get wash by id
+router.get('/washes/:id', async (req,res) => {
+  const wash = await Wash.findByPk(req.params.id, { include: [Vehicle] });
+  if (!wash) return res.status(404).json({ error: 'not found' });
+  const vehicle = await Vehicle.findByPk(wash.VehicleId);
+  res.json({ wash, vehicle: { ...vehicle.toJSON(), emoji: carEmojis[vehicle.category] || '🚗' } });
+});
+
+// Update status (operator)
+router.put('/washes/:id/status', async (req,res) => {
+  try {
+    const { status } = req.body;
+    const wash = await Wash.findByPk(req.params.id, { include: [Vehicle] });
+    if (!wash) return res.status(404).json({ error: 'not found' });
+
+    // if starting, set started_at
+    if (status === 'washing') wash.started_at = new Date();
+    if (status === 'ready') wash.finished_at = new Date();
+    wash.status = status;
+    await wash.save();
+
+    // if become ready and referredBy exists -> reward was already created; notify via push (placeholder)
+    // Emit socket event via socket module (socket.js will export io)
+    const io = require('./socket').getIo();
+    io.to(`wash_${wash.id}`).emit('wash-updated', { washId: wash.id, status: wash.status });
+    io.emit('queue-updated');
+
+    res.json({ wash });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'erro' });
+  }
+});
+
+// Apply reward automatically at new wash creation (example endpoint to consume reward)
+router.post('/washes/:id/apply-reward', async (req,res) => {
+  try {
+    const wash = await Wash.findByPk(req.params.id);
+    if (!wash) return res.status(404).json({ error: 'not found' });
+
+    // find reward for vehicle owner (simplified; assumes vehicle owner user exists)
+    const vehicle = await Vehicle.findByPk(wash.VehicleId);
+    if (!vehicle || !vehicle.UserId) return res.json({ applied: false });
+
+    const reward = await ReferralReward.findOne({ where: { userId: vehicle.UserId, used: false } });
+    if (reward) {
+      reward.used = true;
+      await reward.save();
+      return res.json({ applied: true, discount_percent: reward.discount_percent });
+    }
+    return res.json({ applied: false });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'erro' });
+  }
+});
+
+module.exports = router;
+```
+
+### backend/src/socket.js
+
+```js
+let io = null;
+
+module.exports = {
+  init: (server) => {
+    const { Server } = require('socket.io');
+    io = new Server(server, { cors: { origin: '*' } });
+
+    io.on('connection', (socket) => {
+      socket.on('join-wash-room', ({ washId }) => {
+        socket.join(`wash_${washId}`);
+      });
+      socket.on('disconnect', () => {});
+    });
+
+    return io;
+  },
+  getIo: () => io
+};
+```
+
+### backend/src/index.js
+
+```js
+require('dotenv').config();
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const http = require('http');
+const { sequelize } = require('./models');
+const routes = require('./routes');
+const socketModule = require('./socket');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use('/api', routes);
+
+const server = http.createServer(app);
+const io = socketModule.init(server);
+
+(async () => {
+  await sequelize.sync();
+  const PORT = process.env.PORT || 4000;
+  server.listen(PORT, () => console.log('Server running on', PORT));
+})();
+```
+
+---
+
+## FRONTEND (React - Vite)
+
+### frontend/package.json
+
+```json
 {
-  "cli": {
-    "version": ">= 16.18.0",
-    "appVersionSource": "remote"
+  "name": "carwash-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {
-      "autoIncrement": true
-    }
-  },
-  "submit": {
-    "production": {}
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "socket.io-client": "^4.8.1",
+    "axios": "^1.4.0"
   }
 }
 ```
 
-This is the default configuration for **eas.json** in a new project. It does two things:
+### frontend/src/api.js
 
-- Defines the current EAS CLI version.
-- Adds three [build profiles](/build/eas-json/#build-profiles): `development`, `preview`, and `production`.
+```js
+import axios from 'axios';
+const API = axios.create({ baseURL: 'http://localhost:4000/api' });
+export default API;
+```
 
-</Step>
+### frontend/src/main.jsx
 
-<Collapsible summary="Explore development profile further">
+```jsx
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App'
+import './styles.css'
 
-**eas.json** is a collection of different build profiles. Each profile is tailored with distinct configurations to produce specific build types. These profiles can also include platform-specific settings for Android or iOS.
+createRoot(document.getElementById('root')).render(<App />)
+```
 
-Currently, our focus is on the `development` profile, which includes the following configuration:
+### frontend/src/App.jsx
 
-- [`developmentClient`](/eas/json/#developmentclient): Enabled (`true`) for creating a debug build. It loads the app using the `expo-dev-client` library, which provides development tools and generates a build artifact for device or emulator/simulator installation and allows using the app for local development as it supports updating the JavaScript on the fly.
-- [`distribution`](/eas/json/#distribution): Configured as `internal` to indicate that we want to share the build internally (instead of uploading it on app stores).
+```jsx
+import React, { useEffect, useState } from 'react';
+import API from './api';
+import { io } from 'socket.io-client';
 
-> **Note**: Builds offer extensive customization options, including platform-specific settings and the ability to extend configurations across different build profiles. Learn more about [customizing build profiles](/build/eas-json/#build-profiles).
+const socket = io('http://localhost:4000');
 
-</Collapsible>
+export default function App() {
+  const [washId, setWashId] = useState('');
+  const [wash, setWash] = useState(null);
+  const [plate, setPlate] = useState('');
+  const [model, setModel] = useState('');
+  const [category, setCategory] = useState('sedan');
 
-## Summary
+  useEffect(() => {
+    socket.on('wash-updated', (data) => {
+      if (wash && data.washId === wash.id) {
+        // refetch
+        fetchWash(wash.id);
+      }
+    });
+    return () => socket.disconnect();
+  }, [wash]);
 
-<ProgressTracker
-  currentChapterIndex={0}
-  name="EAS_TUTORIAL"
-  summary="
-We successfully used the EAS CLI to initialize, and configure our project, link it to EAS servers, and prepare a development build."
-  nextChapterDescription="In the next chapter, let's create a development build for Android, install it on a device and an emulator, and get it running with the development server."
-  nextChapterTitle="Create and run a cloud build for Android"
-  nextChapterLink="/tutorial/eas/android-development-build/"
-/>
+  async function createWash() {
+    const res = await API.post('/washes', { plate, model, category, owner_name: 'Cliente Teste', user_email: '' });
+    setWash(res.data.wash);
+  }
+
+  async function fetchWash(id) {
+    const res = await API.get('/washes/' + id);
+    setWash(res.data.wash);
+  }
+
+  async function joinRoom() {
+    socket.emit('join-wash-room', { washId: wash.id });
+  }
+
+  return (
+    <div className="container">
+      <h1>Car Wash - Cliente</h1>
+      <div className="card">
+        <input placeholder="Placa" value={plate} onChange={e=>setPlate(e.target.value)} />
+        <input placeholder="Modelo" value={model} onChange={e=>setModel(e.target.value)} />
+        <select value={category} onChange={e=>setCategory(e.target.value)}>
+          <option value="sedan">🚗 Sedan</option>
+          <option value="hatch">🚕 Hatch</option>
+          <option value="suv">🚙 SUV</option>
+          <option value="pickup">🛻 Picape</option>
+          <option value="moto">🏍️ Moto</option>
+        </select>
+        <button onClick={createWash}>Registrar lavagem</button>
+      </div>
+
+      {wash && (
+        <div className="card">
+          <h2>Status</h2>
+          <p>ID: {wash.id}</p>
+          <p>Posição: {wash.queue_position}</p>
+          <p>Status: {wash.status}</p>
+          <button onClick={joinRoom}>Acompanhar em tempo real</button>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### frontend/src/styles.css
+
+```css
+body { font-family: Arial, sans-serif; padding: 24px; }
+.container { max-width: 700px; margin: 0 auto; }
+.card { padding: 12px; border: 1px solid #ddd; margin-bottom: 12px; border-radius: 8px }
+input, select { display:block; margin-bottom:8px; padding:8px; width:100%; }
+button { padding:8px 12px }
+```
+
+---
+
+## MOBILE (React Native - Expo Minimal)
+
+### mobile/package.json
+
+```json
+{
+  "name": "carwash-mobile",
+  "version": "1.0.0",
+  "main": "App.js",
+  "scripts": {
+    "start": "expo start"
+  },
+  "dependencies": {
+    "expo": "^48.0.0",
+    "react": "18.2.0",
+    "react-native": "0.71.8",
+    "socket.io-client": "^4.8.1",
+    "axios": "^1.4.0"
+  }
+}
+```
+
+### mobile/App.js
+
+```js
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button } from 'react-native';
+import API from './src/api';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:4000');
+
+export default function App(){
+  const [plate, setPlate] = useState('');
+  const [model, setModel] = useState('');
+  const [category, setCategory] = useState('sedan');
+  const [wash, setWash] = useState(null);
+
+  useEffect(()=>{
+    socket.on('wash-updated', data => {
+      if (wash && data.washId === wash.id) {
+        fetchWash(wash.id);
+      }
+    });
+    return () => socket.disconnect();
+  }, [wash]);
+
+  async function createWash(){
+    const res = await API.post('/washes', { plate, model, category, owner_name: 'Mobile User' });
+    setWash(res.data.wash);
+  }
+
+  async function fetchWash(id){
+    const res = await API.get('/washes/' + id);
+    setWash(res.data.wash);
+  }
+
+  return (
+    <View style={{ padding:20 }}>
+      <Text>Car Wash - Mobile</Text>
+      <TextInput placeholder="Placa" value={plate} onChangeText={setPlate} style={{borderWidth:1, padding:8, marginVertical:8}} />
+      <TextInput placeholder="Modelo" value={model} onChangeText={setModel} style={{borderWidth:1, padding:8, marginVertical:8}} />
+      <Button title="Registrar" onPress={createWash} />
+
+      {wash && (
+        <View style={{ marginTop:20 }}>
+          <Text>ID: {wash.id}</Text>
+          <Text>Status: {wash.status}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+```
+
+---
+
+## MIGRATION SQL (in backend/src/migrations/init.sql)
+
+```sql
+-- run only if not using sequelize.sync()
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(150),
+  email VARCHAR(150) UNIQUE,
+  password_hash VARCHAR(200),
+  role VARCHAR(20),
+  referral_code VARCHAR(20) UNIQUE
+);
+
+CREATE TABLE vehicles (
+  id SERIAL PRIMARY KEY,
+  plate VARCHAR(20),
+  model VARCHAR(100),
+  category VARCHAR(20),
+  "UserId" INT REFERENCES users(id)
+);
+
+CREATE TABLE washes (
+  id SERIAL PRIMARY KEY,
+  "VehicleId" INT REFERENCES vehicles(id),
+  status VARCHAR(30),
+  queue_position INT,
+  code VARCHAR(32),
+  started_at TIMESTAMP,
+  finished_at TIMESTAMP,
+  "referredById" INT REFERENCES users(id)
+);
+
+CREATE TABLE "ReferralRewards" (
+  id SERIAL PRIMARY KEY,
+  "userId" INT REFERENCES users(id),
+  "washId" INT REFERENCES washes(id),
+  used BOOLEAN DEFAULT FALSE,
+  discount_percent INT DEFAULT 20,
+  created_at TIMESTAMP DEFAULT now()
+);
+```
+
+---
+
+## README - Como rodar localmente (resumo)
+
+1. Tenha Docker e Docker Compose instalados.
+2. No diretório raiz, rode `docker-compose up --build`.
+3. Backend estará em `http://localhost:4000`.
+4. Entrar em `frontend/` e rodar `npm install && npm run dev`.
+5. Entrar em `mobile/` e rodar `npm install && npm start` (Expo) — no emulador use host machine IP se necessário.
+
+**Atenção:** sockets e mobile podem precisar ajustar `localhost` para IP da máquina (por exemplo `http://192.168.0.10:4000`).
+
+---
+
+## Observações finais e próximos passos sugeridos
+- Implementar autenticação JWT completa e RBAC.
+- Salvar tokens FCM e enviar push reais usando pacote `firebase-admin` ou serviços externos.
+- Melhorar UI e UX (barra de progresso, timeline com emojis e imagens pequenas se quiser usar imagens reais em vez de emoji).
+- Polir concorrência da fila (usar advisory locks ou filas Redis).
+- Testes unit e E2E.
+
+---
+
+Se quiser, eu já adapto esse scaffold com:
+- código pronto em TypeScript + Prisma, ou
+- painel admin React com drag&drop para iniciar lavagens, ou
+- integração real com FCM para push.
+
+Diga qual destes prefere que eu gere a seguir e eu já atualizo o código aqui no canvas.
