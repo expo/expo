@@ -4,6 +4,16 @@
   "description": "Scripts that autolink Expo modules.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./build/index.d.ts",
+      "require": "./build/index.js",
+      "default": "./build/index.js"
+    },
+    "./*": "./*.js",
+    "./*.js": "./*.js"
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

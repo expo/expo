@@ -12,6 +12,12 @@
     "static",
     "build"
   ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./build/bin/cli",
+    "./*": "./*.js",
+    "./*.js": "./*.js"
+  },
   "scripts": {
     "build": "taskr",
     "clean": "expo-module clean",
