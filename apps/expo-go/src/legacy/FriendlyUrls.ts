@@ -8,9 +8,8 @@ const FriendlyUrls = {
       return '';
     }
 
-    const components = url.parse(rawUrl, false, true);
+    const components = new URL(rawUrl);
     if (components.hostname === Config.api.host) {
-      components.slashes = false;
       components.protocol = '';
       components.pathname = components.pathname ? components.pathname.substr(1) : '';
       if (removeHomeHost) {
