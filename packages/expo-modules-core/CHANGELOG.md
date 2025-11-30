@@ -324,6 +324,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fixed build errors on Windows. ([#36211](https://github.com/expo/expo/pull/36211) by [@kudo](https://github.com/kudo))
+- [android][expo-image-manipulator] Add Custom Headers to Image Loader Interface ([#36242](https://github.com/expo/expo/pull/36242) by [@HADeveloper](https://github.com/HADeveloper))
 
 ## 2.3.5 — 2025-04-14
 
