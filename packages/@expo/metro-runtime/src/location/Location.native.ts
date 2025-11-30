@@ -23,11 +23,18 @@ class Location {
     try {
       url.username = '';
     } catch {
-      throw new Error(
+      console.error(
         'Attempting to use the window.location polyfill before the URL built-in has been polyfilled.'
       );
     }
-    url.password = '';
+
+    try {
+      url.password = '';
+    } catch {
+      console.error(
+        'Attempting to use the window.location polyfill before the URL built-in has been polyfilled.'
+      );
+    }
     Object.defineProperties(this, {
       hash: {
         get() {
