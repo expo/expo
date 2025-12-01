@@ -175,6 +175,17 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
 
       await db.closeAsync();
     });
+
+    it('should support math functions', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      expect(
+        (await db.getFirstAsync<{ result: number }>('SELECT sqrt(2) as result')).result
+      ).toBeCloseTo(1.4142135623730951);
+      expect(
+        (await db.getFirstAsync<{ result: number }>('SELECT pi() as result')).result
+      ).toBeCloseTo(3.141592653589793);
+      await db.closeAsync();
+    });
   });
 
   describe('File system tests', () => {
