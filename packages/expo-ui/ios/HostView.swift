@@ -37,7 +37,7 @@ internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaC
   @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
-  @Field var ignoreSafeAreaInsets: Bool = false
+  @Field var ignoreSafeAreaKeyboardInsets: Bool = false
   var onLayoutContent = EventDispatcher()
 }
 

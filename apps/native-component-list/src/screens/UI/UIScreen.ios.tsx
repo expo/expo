@@ -219,11 +219,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Host Ignore Safe Area Insets',
-    route: 'ui/host-ignore-safe-area-insets',
+    name: 'Host Ignore Safe Area Keyboard',
+    route: 'ui/host-ignore-safe-area-keyboard',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./HostIgnoreSafeAreaInsetsScreen'));
+      return optionalRequire(() => require('./HostIgnoreSafeAreaKeyboardScreen'));
     },
   },
 ];

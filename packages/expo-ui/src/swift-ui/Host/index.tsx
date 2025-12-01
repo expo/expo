@@ -37,11 +37,11 @@ export type HostProps = {
   layoutDirection?: 'leftToRight' | 'rightToLeft';
 
   /**
-   * When `true`, the SwiftUI content will ignore the safe area insets. `ignoreSafeAreaInsets` modifier will not be necessary.
+   * When `true`, the SwiftUI content will not perform keyboard avoidance behaviour when keyboard is shown.
    * Can be only set once on mount.
    * @default false
    */
-  ignoreSafeAreaInsets?: boolean;
+  ignoreSafeAreaKeyboardInsets?: boolean;
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -58,7 +58,7 @@ export function Host(props: HostProps) {
   const {
     matchContents,
     onLayoutContent,
-    ignoreSafeAreaInsets,
+    ignoreSafeAreaKeyboardInsets,
     modifiers,
     layoutDirection,
     ...restProps
@@ -77,8 +77,8 @@ export function Host(props: HostProps) {
       onLayoutContent={onLayoutContent}
       layoutDirection={
         layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
-      }
-      ignoreSafeAreaInsets={ignoreSafeAreaInsets}
+      } 
+      ignoreSafeAreaKeyboardInsets={ignoreSafeAreaKeyboardInsets}
       {...restProps}
     />
   );

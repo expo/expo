@@ -9,7 +9,7 @@ extension ExpoSwiftUI {
    Protocol for view props that support controlling safe area behavior of SwiftUI content. Used by HostView
    */
   public protocol SafeAreaControllable {
-    var ignoreSafeAreaInsets: Bool { get set }
+    var ignoreSafeAreaKeyboardInsets: Bool { get set }
   }
 
   /**
