@@ -688,6 +688,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
+    // TODO(@kitten): We've flagged this way of "direct transpilation" for replacement, since it's hard to maintain
+    // It's possible that the intention here was to do something like what `exportEmbedAsync` is doing (using Server.DEFAULT_BUNDLE_OPTIONS)
+    // That's why the defaults were added to match types. It's unclear though if that was correct
+    // Maybe the `Server.DEFAULT_BUNDLE_OPTIONS` logic should be hoisted into `getMetroDirectBundleOptions`?
     const results = await this._bundleDirectAsync(resolvedEntryFilePath, {
       graphOptions: {
         lazy: expoBundleOptions.lazy ?? false,

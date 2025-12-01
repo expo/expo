@@ -1,4 +1,5 @@
 import { ExpoConfig } from '@expo/config';
+import Server from '@expo/metro/metro/Server';
 import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types';
 
 import { env } from '../../../utils/env';
@@ -124,7 +125,7 @@ export function getMetroDirectBundleOptionsForExpoConfig(
   projectRoot: string,
   exp: ExpoConfig,
   options: Omit<ExpoMetroOptions, 'baseUrl' | 'reactCompiler' | 'routerRoot' | 'asyncRoutes'>
-): Partial<ExpoMetroBundleOptions> {
+) {
   return getMetroDirectBundleOptions({
     ...options,
     reactCompiler: !!exp.experiments?.reactCompiler,
@@ -134,9 +135,7 @@ export function getMetroDirectBundleOptionsForExpoConfig(
   });
 }
 
-export function getMetroDirectBundleOptions(
-  options: ExpoMetroOptions
-): Partial<ExpoMetroBundleOptions> {
+export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
   const {
     mainModuleName,
     platform,
@@ -215,7 +214,7 @@ export function getMetroDirectBundleOptions(
     }
   }
 
-  const bundleOptions: Partial<ExpoMetroBundleOptions> = {
+  return {
     platform,
     entryFile: mainModuleName,
     dev,
@@ -240,9 +239,10 @@ export function getMetroDirectBundleOptions(
       includeSourceMaps: serializerIncludeMaps,
       exporting: isExporting || undefined,
     },
-  };
-
-  return bundleOptions;
+    // TODO(@kitten): See comments in MetroBundlerDevServer.ts; should all defaults be added and the logic
+    // from `src/start/server/middleware/metroOptions.ts` that adds default be moved here?
+    shallow: Server.DEFAULT_BUNDLE_OPTIONS.shallow,
+  } as const;
 }
 
 export function createBundleUrlPathFromExpoConfig(
