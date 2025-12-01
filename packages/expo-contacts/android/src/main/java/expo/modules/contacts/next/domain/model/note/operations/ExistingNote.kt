@@ -7,5 +7,5 @@ import expo.modules.contacts.next.domain.wrappers.DataId
 
 class ExistingNote(
   override val dataId: DataId,
-  note: String
+  note: String?
 ) : NoteModel(note), Extractable.Data, Updatable.Data

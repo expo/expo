@@ -28,7 +28,7 @@ class GetContactDetailsRecord(
   @Field val note: String? = null,
   @Field val image: String? = null,
   @Field val thumbnail: String? = null,
-  @Field val isFavourite: String? = null,
+  @Field val isFavourite: Boolean? = null,
   @Field val emails: List<EmailRecord.Existing>? = listOf(),
   @Field val dates: List<DateRecord.Existing>? = listOf(),
   @Field val phones: List<PhoneRecord.Existing>? = listOf(),

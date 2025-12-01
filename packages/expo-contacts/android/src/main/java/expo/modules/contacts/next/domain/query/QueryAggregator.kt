@@ -10,11 +10,12 @@ import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
 import expo.modules.contacts.next.domain.model.headers.DisplayName
 import expo.modules.contacts.next.domain.model.headers.PhotoThumbnailUri
 import expo.modules.contacts.next.domain.model.headers.PhotoUri
-import expo.modules.contacts.next.domain.model.headers.isfavourite.Starred
+import expo.modules.contacts.next.domain.model.headers.starred.Starred
 import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
 import expo.modules.contacts.next.domain.model.note.operations.ExistingNote
 import expo.modules.contacts.next.domain.model.organization.operations.ExistingOrganization
 import expo.modules.contacts.next.domain.model.phone.operations.ExistingPhone
+import expo.modules.contacts.next.domain.model.photo.operations.ExistingPhoto
 import expo.modules.contacts.next.domain.model.relationship.operations.ExistingRelation
 import expo.modules.contacts.next.domain.model.structuredname.operations.ExistingStructuredName
 import expo.modules.contacts.next.domain.model.structuredpostal.operations.ExistingStructuredPostal
@@ -77,6 +78,7 @@ class QueryAggregator() {
     var structuredName: ExistingStructuredName? = null
     var organization: ExistingOrganization? = null
     var note: ExistingNote? = null
+    var photo: ExistingPhoto? = null
     val emails = mutableListOf<ExistingEmail>()
     val events = mutableListOf<ExistingEvent>()
     val nicknames = mutableListOf<ExistingNickname>()
@@ -94,6 +96,7 @@ class QueryAggregator() {
         is ExistingStructuredName -> structuredName = extractable
         is ExistingOrganization -> organization = extractable
         is ExistingNote -> note = extractable
+        is ExistingPhoto -> photo = extractable
         is ExistingEmail -> emails.add(extractable)
         is ExistingEvent -> events.add(extractable)
         is ExistingNickname -> nicknames.add(extractable)
@@ -113,6 +116,7 @@ class QueryAggregator() {
       structuredName = structuredName,
       organization = organization,
       note = note,
+      photo = photo,
       emails = emails,
       events = events,
       nicknames = nicknames,

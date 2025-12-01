@@ -3,6 +3,7 @@ package expo.modules.contacts.next.domain.model
 import android.database.Cursor
 import expo.modules.contacts.next.domain.model.email.EmailField
 import expo.modules.contacts.next.domain.model.event.EventField
+import expo.modules.contacts.next.domain.model.headers.starred.StarredField
 import expo.modules.contacts.next.domain.model.nickname.NicknameField
 import expo.modules.contacts.next.domain.model.organization.OrganizationField
 import expo.modules.contacts.next.domain.model.phone.PhoneField
@@ -31,6 +32,7 @@ sealed interface ExtractableField<T: Extractable> {
 
   companion object {
     fun getAll(): Set<ExtractableField<*>> = setOf(
+      StarredField,
       StructuredNameField,
       OrganizationField,
       EmailField,
@@ -39,7 +41,7 @@ sealed interface ExtractableField<T: Extractable> {
       EventField,
       RelationField,
       WebsiteField,
-      NicknameField
+      NicknameField,
     )
   }
 }

@@ -15,6 +15,7 @@ import expo.modules.kotlin.types.ValueOrUndefined
 
 @OptIn(EitherType::class)
 data class PatchContactRecord(
+  @Field val isFavourite: ValueOrUndefined<Boolean> = ValueOrUndefined.Undefined(),
   @Field val givenName: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val middleName: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val familyName: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
@@ -28,11 +29,12 @@ data class PatchContactRecord(
   @Field val jobTitle: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val phoneticOrganizationName: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val note: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
+  @Field val image: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val emails: ValueOrUndefined<List<Either<EmailRecord.Patch, EmailRecord.New>>?> = ValueOrUndefined.Undefined(),
   @Field val phones: ValueOrUndefined<List<Either<PhoneRecord.Patch, PhoneRecord.New>>?> = ValueOrUndefined.Undefined(),
   @Field val dates: ValueOrUndefined<List<Either<DateRecord.Patch, DateRecord.New>>?> = ValueOrUndefined.Undefined(),
-  @Field val postalAddresses: ValueOrUndefined<List<Either<PostalAddressRecord.Patch, PostalAddressRecord.New>>?> = ValueOrUndefined.Undefined(),
-  @Field val relationships: ValueOrUndefined<List<Either<RelationRecord.Patch, RelationRecord.New>>?> = ValueOrUndefined.Undefined(),
+  @Field val addresses: ValueOrUndefined<List<Either<PostalAddressRecord.Patch, PostalAddressRecord.New>>?> = ValueOrUndefined.Undefined(),
+  @Field val relations: ValueOrUndefined<List<Either<RelationRecord.Patch, RelationRecord.New>>?> = ValueOrUndefined.Undefined(),
   @Field val urlAddresses: ValueOrUndefined<List<Either<UrlAddressRecord.Patch, UrlAddressRecord.New>>?> = ValueOrUndefined.Undefined(),
   @Field val extraNames: ValueOrUndefined<List<Either<ExtraNameRecord.Patch, ExtraNameRecord.New>>?> = ValueOrUndefined.Undefined()
 ) : Record

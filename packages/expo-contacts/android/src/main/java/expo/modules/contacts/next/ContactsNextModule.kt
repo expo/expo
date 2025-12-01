@@ -4,6 +4,7 @@ import expo.modules.contacts.next.intents.ContactIntentDelegate
 import expo.modules.contacts.next.domain.ContactRepository
 import expo.modules.contacts.next.mappers.ContactRecordDomainMapper
 import expo.modules.contacts.next.observers.ContactsObserverDelegate
+import expo.modules.contacts.next.records.ContactQueryOptions
 import expo.modules.contacts.next.records.SkipFormatter
 import expo.modules.contacts.next.records.contact.PatchContactRecord
 import expo.modules.contacts.next.records.contact.CreateContactRecord
@@ -73,6 +74,14 @@ class ContactsNextModule : Module() {
 
       AsyncFunction("patch") Coroutine { self: Contact, patchContactRecord: PatchContactRecord ->
         self.patch(patchContactRecord)
+      }
+
+      AsyncFunction("update") Coroutine { self: Contact, createContactRecord: CreateContactRecord ->
+        self.update(createContactRecord)
+      }
+
+      AsyncFunction("getFullName") Coroutine { self: Contact ->
+        self.fullName.get()
       }
 
       AsyncFunction("getGivenName") Coroutine { self: Contact ->
@@ -189,6 +198,10 @@ class ContactsNextModule : Module() {
 
       AsyncFunction("getThumbnail") Coroutine { self: Contact ->
         self.thumbnail.get()
+      }
+
+      AsyncFunction("setIsFavourite") Coroutine { self: Contact, isFavourite: Boolean ->
+        self.isFavourite.set(isFavourite)
       }
 
       AsyncFunction("getIsFavourite") Coroutine { self: Contact ->
@@ -324,12 +337,12 @@ class ContactsNextModule : Module() {
         Contact.pick(contactIntentDelegate, contactFactory)
       }
 
-      StaticAsyncFunction("getAll") Coroutine { ->
-        Contact.getAll(contactRepository, contactFactory)
+      StaticAsyncFunction("getAll") Coroutine { contactQueryOptions: ContactQueryOptions? ->
+        Contact.getAll(contactRepository, contactFactory, contactQueryOptions)
       }
 
-      StaticAsyncFunction("getAllDetails") Coroutine { fields: List<ContactField> ->
-        Contact.getAllWithDetails(contactRepository, contactMapper, fields)
+      StaticAsyncFunction("getAllDetails") Coroutine { fields: List<ContactField>, contactQueryOptions: ContactQueryOptions? ->
+        Contact.getAllWithDetails(contactRepository, contactMapper, fields,  contactQueryOptions)
       }
 
       StaticAsyncFunction("requestPermissionsAsync") { promise: Promise ->

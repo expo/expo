@@ -1,6 +1,7 @@
 package expo.modules.contacts.next.mappers.label
 
 import EventLabel
+import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.types.ValueOrUndefined
 import expo.modules.kotlin.types.map
 
@@ -19,7 +20,8 @@ object EventLabelMapper {
   }
 
   fun toDomain(label: ValueOrUndefined<String?>): ValueOrUndefined<EventLabel> {
-    return label.map { toDomain(it) }
+    return label
+      .map { toDomain(it)}
   }
 
   fun toRecord(label: EventLabel): String? {

@@ -15,4 +15,4 @@ object PhotoThumbnailUriField: ExtractableField.Contacts<PhotoThumbnailUri> {
 }
 
 @JvmInline
-value class PhotoThumbnailUri(val value: String): Extractable
+value class PhotoThumbnailUri(val value: String?): Extractable

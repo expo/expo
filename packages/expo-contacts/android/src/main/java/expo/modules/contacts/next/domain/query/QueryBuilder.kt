@@ -5,8 +5,11 @@ import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.wrappers.ContactId
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-class QueryBuilder(val extractors: Set<ExtractableField<*>>) {
-  val dataFields = extractors.filterIsInstance<ExtractableField.Data<*>>().toSet()
+class QueryBuilder(
+  val extractors: Set<ExtractableField<*>>,
+  val contactIds: Collection<ContactId>? = null
+) {
+  private val dataFields = extractors.filterIsInstance<ExtractableField.Data<*>>().toSet()
 
   fun buildProjection(): Array<String> {
     val requiredColumns = listOf(
@@ -21,27 +24,39 @@ class QueryBuilder(val extractors: Set<ExtractableField<*>>) {
       .toTypedArray()
   }
 
-  fun buildMimeTypeSelection(): String {
+  fun buildSelection(): String? {
+    val selectionParts = mutableListOf<String>()
+
     val mimeTypes = dataFields
       .map { it.mimeType }
       .toSet()
-      .toTypedArray()
-    val placeholders = mimeTypes.joinToString(separator = ", ") { "?" }
-    return "${ContactsContract.Data.MIMETYPE} IN ($placeholders)"
+
+    if (mimeTypes.isNotEmpty()) {
+      val mimePlaceholders = mimeTypes.joinToString(separator = ", ") { "?" }
+      selectionParts.add("${ContactsContract.Data.MIMETYPE} IN ($mimePlaceholders)")
+    }
+
+    if (!contactIds.isNullOrEmpty()) {
+      val idPlaceholders = contactIds.joinToString(separator = ", ") { "?" }
+      selectionParts.add("${ContactId.COLUMN_IN_DATA_TABLE} IN ($idPlaceholders)")
+    }
+
+    if (selectionParts.isEmpty()) {
+      return null
+    }
+
+    return selectionParts.joinToString(separator = " AND ") { "($it)" }
   }
 
-  fun buildMimeTypeAndContactIdSelection(): String {
-    return "${buildMimeTypeSelection()} AND ${ContactId.COLUMN_IN_DATA_TABLE} = ?"
-  }
+  fun buildSelectionArgs(): Array<String> {
+    val mimeTypes = dataFields.map { it.mimeType }.toSet()
+    val mimeArgs = mimeTypes.toTypedArray()
 
-  fun buildMimeTypeAndContactIdSelectionArgs(contactId: ContactId): Array<String> {
-    return buildMimeTypeSelectionArgs()
-      .plus(contactId.value)
-  }
+    if (contactIds.isNullOrEmpty()) {
+      return mimeArgs
+    }
 
-  fun buildMimeTypeSelectionArgs(): Array<String> {
-    return dataFields
-      .map { it.mimeType }
-      .toTypedArray()
+    val idArgs = contactIds.map { it.value }.toTypedArray()
+    return mimeArgs + idArgs
   }
 }
