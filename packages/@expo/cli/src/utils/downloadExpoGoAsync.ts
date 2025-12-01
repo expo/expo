@@ -123,7 +123,7 @@ export async function downloadExpoGoAsync(
               incomplete: ' ',
             });
           } else {
-            bar!.update(progress, total);
+            bar.update(progress, total);
           }
         }
       },
@@ -131,7 +131,6 @@ export async function downloadExpoGoAsync(
     return outputPath;
   } finally {
     spinner.stop();
-    // @ts-expect-error
-    bar?.terminate();
+    (bar as ProgressBar | null)?.terminate();
   }
 }
