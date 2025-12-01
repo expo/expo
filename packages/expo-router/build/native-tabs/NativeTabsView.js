@@ -38,13 +38,16 @@ const react_1 = __importStar(require("react"));
 const react_native_screens_1 = require("react-native-screens");
 const experimental_1 = require("react-native-screens/experimental");
 const appearance_1 = require("./appearance");
+const elements_1 = require("./common/elements");
 const types_1 = require("./types");
 const icon_1 = require("./utils/icon");
+const children_1 = require("../utils/children");
+const bottomAccessory_1 = require("./utils/bottomAccessory");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
 function NativeTabsView(props) {
-    const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable } = props;
+    const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable, nonTriggerChildren, } = props;
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     // We need to check if the deferred index is not out of bounds
     // This can happen when the focused index is the last tab, and user removes that tab
@@ -56,6 +59,8 @@ function NativeTabsView(props) {
         scrollEdgeAppearance: (0, appearance_1.createScrollEdgeAppearanceFromOptions)(tab.options),
     }));
     const options = tabs.map((tab) => tab.options);
+    const bottomAccessory = (0, react_1.useMemo)(() => (0, children_1.getFirstChildOfType)(nonTriggerChildren, elements_1.NativeTabsBottomAccessory), [nonTriggerChildren]);
+    const bottomAccessoryFn = (0, bottomAccessory_1.useBottomAccessoryFunctionFromBottomAccessories)(bottomAccessory);
     const children = tabs.map((tab, index) => {
         const isFocused = index === inBoundsDeferredFocusedIndex;
         return (<Screen key={tab.routeKey} routeKey={tab.routeKey} name={tab.name} options={tab.options} isFocused={isFocused} standardAppearance={appearances[index].standardAppearance} scrollEdgeAppearance={appearances[index].scrollEdgeAppearance} badgeTextColor={tab.options.badgeTextColor} contentRenderer={tab.contentRenderer}/>);
@@ -73,7 +78,7 @@ function NativeTabsView(props) {
     tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
     // #endregion
     // #region iOS props
-    tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} tabBarControllerMode={tabBarControllerMode} 
+    tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} tabBarControllerMode={tabBarControllerMode} bottomAccessory={bottomAccessoryFn} 
     // #endregion
     onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
             props.onTabChange(tabKey);
