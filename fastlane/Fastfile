@@ -177,11 +177,12 @@ platform :ios do
     run_tests(
       workspace: workspace,
       scheme: generated_scheme,
+      # NOTE: Keep simulator name in sync with .github/workflows/ios-unit-tests.yml
       devices: ["iPhone 17 Pro (26.0)"],
       configuration: 'Debug',
       clean: false,
       skip_build: true,
-      prelaunch_simulator: true,
+      prelaunch_simulator: false,
       skip_detect_devices: false,
       skip_package_dependencies_resolution: true,
       derived_data_path: "/tmp/ExpoUnitTestsDerivedData",
