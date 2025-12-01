@@ -22,13 +22,13 @@ export type ExpoMetroOptions = {
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
-  bytecode: boolean;
+  bytecode?: boolean;
   /** Enable async routes (route-based bundle splitting) in Expo Router. */
   asyncRoutes?: boolean;
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
-  routerRoot: string;
+  routerRoot?: string;
   /** Enable React compiler support in Babel. */
-  reactCompiler: boolean;
+  reactCompiler?: boolean;
   baseUrl?: string;
   isExporting: boolean;
   /** Is bundling a DOM Component ("use dom"). Requires the entry dom component file path. */
