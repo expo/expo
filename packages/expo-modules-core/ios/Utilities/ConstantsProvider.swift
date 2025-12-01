@@ -69,7 +69,7 @@ private func getSystemFontNames() -> [String] {
   }
   return fontNames.sorted()
   #elseif os(macOS)
-  return FontManager.shared.availableFontFamilies
+  return NSFontManager.shared.availableFontFamilies
   #endif
 }
 
@@ -78,7 +78,7 @@ private func getDeviceName() -> String {
   #if os(iOS) || os(tvOS)
   return UIDevice.current.name
   #elseif os(macOS)
-  return NSHost.current.localizedName
+  return ProcessInfo.processInfo.hostName
   #endif
 }
 
