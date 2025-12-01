@@ -95,6 +95,73 @@ try {
 }
 ```
 
+### Reading files from the native bundle
+
+Files bundled with your app can be accessed using `FileSystem.bundleDirectory`.
+
+> **Note:** This requires the file to exist in the **native platform bundle**. Files sitting in your JavaScript project structure are **not** automatically available here unless you move them during the build process (using a Config Plugin or manually).
+
+**Prerequisites:**
+
+You must ensure the file is copied to the correct native location during the build:
+
+- **Android:** `android/app/src/main/assets/`
+- **iOS:** The root of the Main Bundle (added via Xcode "Copy Bundle Resources").
+
+If you are using **Expo Prebuild** (Managed Workflow), you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
+
+**Usage:**
+
+On iOS, the application bundle is read-only and direct access may be restricted due to sandboxing permissions. The recommended approach is to copy the file to a writable location (like `documentDirectory`) before reading it.
+
+```js
+import * as FileSystem from 'expo-file-system/legacy';
+import { Platform } from 'react-native';
+
+const readBundleFile = async () => {
+  try {
+    const fileName = 'example.txt';
+
+    // 1. Path inside the native bundle (read-only)
+    const bundleFile = FileSystem.bundleDirectory + fileName;
+
+    // Check if file exists
+    const fileInfo = await FileSystem.getInfoAsync(bundleFile);
+    if (!fileInfo.exists) {
+      console.warn('File not found in native bundle');
+      return;
+    }
+
+    // --- Platform Differences ---
+    // iOS: must copy (bundle is read-only)
+    // Android: can read directly
+
+    let fileToRead = bundleFile;
+
+    if (Platform.OS === 'ios') {
+      // Copy only for iOS
+      const documentFile = FileSystem.documentDirectory + fileName;
+
+      await FileSystem.copyAsync({
+        from: bundleFile,
+        to: documentFile,
+      });
+
+      fileToRead = documentFile;
+    }
+
+    // 2. Read the file
+    const content = await FileSystem.readAsStringAsync(fileToRead);
+    console.log(content);
+  } catch (error) {
+    console.error(
+      'Error reading bundle file. Make sure the file is added to Android/iOS native project.',
+      error
+    );
+  }
+};
+```
+
 ### Managing Giphy's
 
 <SnackInline
