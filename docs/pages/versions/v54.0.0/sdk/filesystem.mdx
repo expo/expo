@@ -223,7 +223,7 @@ You must ensure the file is copied to the correct native location during the bui
 If you are using **Expo Prebuild** (Managed Workflow), you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
 
 **Usage:**
-On iOS, the application bundle is read-only and direct access may be restricted due to sandboxing permissions. The recommended approach is to copy the file to a writable location (like `Paths.cache`,paths.document) before reading it.
+On iOS, the application bundle is read-only and direct access may be restricted due to sandboxing permissions. The recommended approach is to copy the file to a writable location (like `Paths.document`) before reading it.
 
 Assuming you have a file named `example.txt` in the native locations described above:
 
@@ -250,14 +250,10 @@ const readNativeBundle = async () => {
 
     if (Platform.OS === 'ios') {
       // Copy only for iOS
-      const tempFile = new File(Paths.cacheDirectory, fileName);
+      const documentFile = new File(Paths.document, fileName);
 
-      if (tempFile.exists) {
-        await tempFile.delete();
-      }
-
-      await bundleFile.copy(tempFile);
-      fileToRead = tempFile;
+      await bundleFile.copy(documentFile);
+      fileToRead = documentFile;
     }
 
     // 2. Read text
