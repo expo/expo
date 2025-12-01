@@ -38,6 +38,8 @@
 
 + (nullable RNSTabBarController *)getBottomTabControllerFromView:(UIView *)view;
 
++ (BOOL)isRNScreen:(UIResponder *)view;
+
 + (BOOL)isRNSBottomTabsHostComponentView:(UIView *)view;
 
 + (nullable UIView *)getTab:(UITabBarController *)controller
@@ -45,6 +47,7 @@
 
 @end
 
-@protocol RouterNavigationHelpersDismissibleModalProtocol <RNSDismissibleModalProtocol>
+@protocol RouterNavigationHelpersDismissibleModalProtocol <
+    RNSDismissibleModalProtocol>
 @required
 @end
