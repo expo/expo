@@ -6,6 +6,15 @@ import { warn } from '../log';
 
 const debug = require('debug')('expo:utils:exit') as typeof console.log;
 
+// NOTE: This is an internal method, not designed to be exposed. It's also our only way to get this info
+declare global {
+  namespace NodeJS {
+    interface Process {
+      _getActiveHandles(): readonly any[];
+    }
+  }
+}
+
 type AsyncExitHook = (signal: NodeJS.Signals) => void | Promise<void>;
 
 const PRE_EXIT_SIGNALS: NodeJS.Signals[] = ['SIGHUP', 'SIGINT', 'SIGTERM', 'SIGBREAK'];
@@ -141,7 +150,6 @@ function tryWarnActiveProcesses() {
 
   try {
     const children: ChildProcess[] = process
-      // @ts-expect-error - This is an internal method, not designed to be exposed. It's also our only way to get this info
       ._getActiveHandles()
       .filter((handle: any) => handle instanceof ChildProcess);
 
