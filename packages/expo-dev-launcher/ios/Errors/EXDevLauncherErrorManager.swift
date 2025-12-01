@@ -21,7 +21,12 @@ public class EXDevLauncherErrorManager: NSObject {
 
   @objc
   public func showError(_ error: EXDevLauncherAppError) {
-    if let launcherVC = controller?.currentWindow()?.rootViewController as? DevLauncherViewController {
+#if !os(macOS)
+    let launcherVC = controller?.currentWindow()?.rootViewController
+#else
+    let launcherVC = controller?.currentWindow()?.contentViewController
+#endif
+    if let launcherVC = launcherVC as? DevLauncherViewController {
       DispatchQueue.main.async {
         launcherVC.viewModel.showError(error)
       }
@@ -29,10 +34,17 @@ public class EXDevLauncherErrorManager: NSObject {
     }
 
     DispatchQueue.main.async { [weak self] in
+#if !os(macOS)
       guard let window = self?.controller?.currentWindow(),
         let rootVC = window.rootViewController else {
         return
       }
+#else
+      guard let window = self?.controller?.currentWindow(),
+        let rootVC = window.contentViewController else {
+        return
+      }
+#endif
 
       self?.dismissCurrentErrorView()
 
@@ -56,9 +68,15 @@ public class EXDevLauncherErrorManager: NSObject {
 
       rootVC.addChild(hostingController)
       hostingController.view.frame = rootVC.view.bounds
+#if !os(macOS)
       hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+#else
+      hostingController.view.autoresizingMask = [.width, .height]
+#endif
       rootVC.view.addSubview(hostingController.view)
+#if !os(macOS)
       hostingController.didMove(toParent: rootVC)
+#endif
     }
   }
 
@@ -67,7 +85,9 @@ public class EXDevLauncherErrorManager: NSObject {
       return
     }
 
+#if !os(macOS)
     vc.willMove(toParent: nil)
+#endif
     vc.view.removeFromSuperview()
     vc.removeFromParent()
     currentErrorViewController = nil

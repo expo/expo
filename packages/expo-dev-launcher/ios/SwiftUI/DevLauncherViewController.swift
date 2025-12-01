@@ -28,6 +28,9 @@ import ExpoModulesCore
     let rootView = DevLauncherRootView(viewModel: viewModel)
     hostingController = UIHostingController(rootView: rootView)
     hostingController?.view.backgroundColor = UIColor.clear
+#if os(macOS)
+    hostingController?.view.appearance = NSAppearance(named: .aqua)
+#endif
   }
 
   @objc public func resetHostingController() {
@@ -51,12 +54,13 @@ import ExpoModulesCore
 #if !os(macOS)
     hostingController.view.frame = view.bounds
     hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    hostingController.didMove(toParent: self)
+    navigationController?.setNavigationBarHidden(true, animated: false)
 #else
     hostingController.view.frame = view.frame
     hostingController.view.autoresizingMask = [.width, .height]
 #endif
-    hostingController.didMove(toParent: self)
-    navigationController?.setNavigationBarHidden(true, animated: false)
+    
   }
 
 #if os(iOS) || os(tvOS)

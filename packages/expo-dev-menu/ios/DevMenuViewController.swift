@@ -14,8 +14,10 @@ class DevMenuViewController: UIViewController {
     self.manager = manager
     super.init(nibName: nil, bundle: nil)
 
+#if !os(macOS)
     edgesForExtendedLayout = UIRectEdge.init(rawValue: 0)
     extendedLayoutIncludesOpaqueBars = true
+#endif
   }
 
   @available(*, unavailable)
@@ -34,12 +36,14 @@ class DevMenuViewController: UIViewController {
   }
   #endif
 
+#if !os(macOS)
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {
       return manager.userInterfaceStyle
     }
     set {}
   }
+#endif
 
   private func setupSwiftUIView() {
     let rootView = DevMenuRootView()
@@ -49,7 +53,9 @@ class DevMenuViewController: UIViewController {
 
     addChild(hostingController)
     view.addSubview(hostingController.view)
+#if !os(macOS)
     hostingController.didMove(toParent: self)
+#endif
 
     hostingController.view.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
