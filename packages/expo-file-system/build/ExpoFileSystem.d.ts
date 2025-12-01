@@ -1,8 +1,9 @@
+import { Blob as ExpoBlob } from 'expo-blob';
 import { NativeModule } from 'expo-modules-core';
 import type { Directory, File, DownloadOptions } from './ExpoFileSystem.types';
 declare class ExpoFileSystemModule extends NativeModule {
     FileSystemDirectory: typeof Directory;
-    FileSystemFile: typeof File;
+    FileSystemFile: typeof File & ExpoBlob;
     downloadFileAsync(url: string, destination: File | Directory, options?: DownloadOptions): Promise<string>;
     pickDirectoryAsync(initialUri?: string): Promise<Directory>;
     pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
