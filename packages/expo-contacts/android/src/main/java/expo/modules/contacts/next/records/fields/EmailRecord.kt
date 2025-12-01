@@ -19,9 +19,10 @@ sealed interface EmailRecord {
     @Field val address: String? = null
   ) : NewRecord
 
-  data class Patch(
-    @Required @Field override val id: String,
-    @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-    @Field val address: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
-  ) : PatchRecord
+  // Comment
+  class Patch(): PatchRecord {
+    @Required @Field override lateinit var id: String
+    @Field var label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+    @Field var address: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+  }
 }

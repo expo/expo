@@ -1,4 +1,4 @@
-package expo.modules.contacts.next.domain.model.headers.isfavourite
+package expo.modules.contacts.next.domain.model.headers.starred
 
 import android.database.Cursor
 import android.provider.ContactsContract.Contacts

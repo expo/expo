@@ -20,13 +20,14 @@ import expo.modules.contacts.next.domain.model.Appendable
 import expo.modules.contacts.next.domain.model.Extractable
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.Updatable
+import expo.modules.contacts.next.domain.model.contact.UpdateContact
 import expo.modules.contacts.next.domain.model.email.operations.ExistingEmail
 import expo.modules.contacts.next.domain.model.headers.DisplayNameField
 import expo.modules.contacts.next.domain.model.headers.PhotoThumbnailUriField
 import expo.modules.contacts.next.domain.model.headers.PhotoUriField
-import expo.modules.contacts.next.domain.model.headers.isfavourite.PatchIsFavourite
-import expo.modules.contacts.next.domain.model.headers.isfavourite.Starred
-import expo.modules.contacts.next.domain.model.headers.isfavourite.StarredField
+import expo.modules.contacts.next.domain.model.headers.starred.PatchStarred
+import expo.modules.contacts.next.domain.model.headers.starred.Starred
+import expo.modules.contacts.next.domain.model.headers.starred.StarredField
 import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
 import expo.modules.contacts.next.domain.model.note.NoteField
 import expo.modules.contacts.next.domain.model.organization.OrganizationField
@@ -39,6 +40,7 @@ import expo.modules.contacts.next.domain.wrappers.ContactId
 import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.intents.ContactIntentDelegate
+import expo.modules.contacts.next.records.ContactQueryOptions
 import expo.modules.contacts.next.records.contact.PatchContactRecord
 import expo.modules.contacts.next.records.contact.CreateContactRecord
 import expo.modules.contacts.next.records.contact.GetContactDetailsRecord
@@ -60,6 +62,7 @@ import expo.modules.contacts.next.services.property.OrganizationPropertyMapper
 import expo.modules.contacts.next.services.property.PropertyMapper
 import expo.modules.contacts.next.services.property.StructuredNamePropertyMapper
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.ValueOrUndefined
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -74,27 +77,35 @@ class Contact(
   }
 
   suspend fun patch(patchContactRecord: PatchContactRecord): Boolean {
+    // In order to patch a contact we have to get fields that can only occur once.
+    // That is because if they exist we want to patch and if do not we have to create new ones.
     val existingContact = repository.getById(
-      setOf(StructuredNameField, OrganizationField),
+      setOf(StructuredNameField, OrganizationField, NoteField, PhotoField),
       contactId
     ) ?: throw ContactNotFoundException()
     val rawContactId = repository.getRawContactId(contactId)
       ?: throw RawContactIdNotFoundException()
     val contactPatch = mapper.toPatchContact(
-      patchContactRecord,
-      rawContactId,
-      contactId,
-      existingContact.structuredName?.dataId,
-      existingContact.organization?.dataId,
-      existingContact.note?.dataId
+      record = patchContactRecord,
+      rawContactId = rawContactId,
+      contactId = contactId,
+      structuredNameDataId = existingContact.structuredName?.dataId,
+      organizationDataId = existingContact.organization?.dataId,
+      noteDataId = existingContact.note?.dataId,
+      photoDataId = existingContact.photo?.dataId
     )
     return repository.patch(contactPatch)
   }
 
+  suspend fun update(newContactRecord: CreateContactRecord): Boolean {
+    val rawContactId = repository.getRawContactId(contactId)
+      ?: throw RawContactIdNotFoundException()
+    val updateContact = mapper.toUpdateContact(newContactRecord, contactId, rawContactId)
+    return repository.update(updateContact)
+  }
+
   suspend fun getDetails(fields: Set<ContactField>?): GetContactDetailsRecord {
-    val extractableFields = fields
-      ?.map { mapper.toExtractableField(it) }
-      ?.toSet()
+    val extractableFields = fields?.let { mapper.toExtractableFields(fields).toSet() }
       ?: ExtractableField.getAll()
     val existingContact = repository.getById(extractableFields, contactId)
       ?: throw ContactNotFoundException()
@@ -128,9 +139,9 @@ class Contact(
   val jobTitle = singleDataProperty(OrganizationField, OrganizationPropertyMapper.JobTitle)
   val phoneticCompanyName = singleDataProperty(OrganizationField, OrganizationPropertyMapper.PhoneticName)
   val note = singleDataProperty(NoteField, NoteMapper)
+
   val fullName = ReadOnlyHeaderProperty(contactId, repository, DisplayNameField, mapToDto = {v -> v.value})
   val thumbnail = ReadOnlyHeaderProperty(contactId, repository, PhotoThumbnailUriField) { v -> v.value }
-
   val imageUri = ReadOnlyHeaderProperty(contactId, repository, PhotoUriField) { v -> v.value }
 
   val image = singleDataProperty(PhotoField,  object: PropertyMapper<ExistingPhoto, String> {
@@ -159,7 +170,7 @@ class Contact(
     contactId, repository,
     field = StarredField,
     mapToDto = { value: Starred -> value.value == 1 },
-    mapToUpdatable = { boolean: Boolean -> PatchIsFavourite(contactId) }
+    mapToUpdatable = { boolean: Boolean -> PatchStarred(contactId, ValueOrUndefined.Value(boolean)) }
   )
 
   val emails = ListDataProperty<ExistingEmail, EmailRecord.New, EmailRecord.Existing>(
@@ -234,22 +245,33 @@ class Contact(
 
     suspend fun getAll(
       contactRepository: ContactRepository,
-      contactFactory: ContactFactory
+      contactFactory: ContactFactory,
+      contactQueryOptions: ContactQueryOptions?
     ): List<Contact> =
       contactRepository
-        .getAllIds()
+        .getAllIds(
+          limit = contactQueryOptions?.limit,
+          offset = contactQueryOptions?.offset,
+          searchedDisplayName = contactQueryOptions?.name,
+          sortOrder = contactQueryOptions?.sortOrder
+        )
         .map { contactFactory.create(it) }
 
     suspend fun getAllWithDetails(
       contactRepository: ContactRepository,
       contactMapper: ContactRecordDomainMapper,
-      fields: List<ContactField>
+      fields: List<ContactField>,
+      contactQueryOptions: ContactQueryOptions?
     ): List<GetContactDetailsRecord> {
-      val extractableFields = fields
-        .map { contactMapper.toExtractableField(it) }
-        .toSet()
+      val extractableFields = contactMapper.toExtractableFields(fields).toSet()
       return contactRepository
-        .getAll(extractableFields)
+        .getAllPaginated(
+          extractableFields = extractableFields,
+          limit = contactQueryOptions?.limit,
+          offset = contactQueryOptions?.offset,
+          searchedDisplayName = contactQueryOptions?.name,
+          sortOrder = contactQueryOptions?.sortOrder
+        )
         .map { contactMapper.toRecord(it) }
     }
 

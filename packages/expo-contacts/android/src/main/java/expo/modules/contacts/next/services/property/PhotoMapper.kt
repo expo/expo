@@ -32,7 +32,7 @@ sealed class PhotoMapper {
   }
 
   object ThumbnailUri : ReadPropertyMapper<PhotoThumbnailUri, String> {
-    override fun toDto(model: PhotoThumbnailUri): String {
+    override fun toDto(model: PhotoThumbnailUri): String? {
       return model.value
     }
   }

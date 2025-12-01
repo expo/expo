@@ -1,4 +1,16 @@
-import { Email, Date, Address, Phone, Relation, UrlAddress } from './Contact.type';
+import {
+  Email,
+  Date,
+  Address,
+  Phone,
+  Relation,
+  UrlAddress,
+  ExtraName,
+  SocialProfile,
+  ImAddress,
+  NonGregorianBirthday,
+  ContactDate,
+} from './Contact.type';
 
 /**
  * Denotes the functionality of a native contact form.
@@ -48,6 +60,7 @@ export type FormOptions = {
 };
 
 export enum ContactField {
+  IS_FAVOURITE = 'isFavourite',
   FULL_NAME = 'fullName',
   GIVEN_NAME = 'givenName',
   MIDDLE_NAME = 'middleName',
@@ -64,6 +77,8 @@ export enum ContactField {
   JOB_TITLE = 'jobTitle',
   NOTE = 'note',
   IMAGE = 'image',
+  BIRTHDAY = 'birthday',
+  NON_GREGORIAN_BIRTHDAY = 'nonGregorianBirthday',
   EMAILS = 'emails',
   PHONES = 'phones',
   ADDRESSES = 'addresses',
@@ -124,6 +139,7 @@ export type ContactQueryOptions = {
 };
 
 export type CreateContactRecord = {
+  isFavourite?: boolean;
   givenName?: string | null;
   middleName?: string;
   familyName?: string;
@@ -137,18 +153,24 @@ export type CreateContactRecord = {
   company?: string;
   department?: string;
   jobTitle?: string;
-  isFavourite?: boolean;
   note?: string;
   image?: string;
+  birthday?: ContactDate;
+  nonGregorianBirthday?: NonGregorianBirthday;
   emails?: Email.New[];
   dates?: Date.New[];
   phones?: Phone.New[];
   addresses?: Address.New[];
   relations?: Relation.New[];
   urlAddresses?: UrlAddress.New[];
+  imAddresses?: ImAddress.New[];
+  socialProfiles?: SocialProfile.New[];
+  extraNames?: ExtraName.New[];
 };
 
 export type ContactDetails = {
+  isFavourite?: boolean;
+  fullName?: string;
   givenName?: string | null;
   middleName?: string;
   familyName?: string;
@@ -164,16 +186,22 @@ export type ContactDetails = {
   jobTitle?: string;
   note?: string;
   image?: string;
+  birthday?: ContactDate;
+  nonGregorianBirthday?: NonGregorianBirthday;
   emails?: Email.New[];
   dates?: Date.New[];
   phones?: Phone.New[];
-  extraNames?: string[];
+  extraNames?: ExtraName.New[];
   addresses?: Address.New[];
   relations?: Relation.New[];
   urlAddresses?: UrlAddress.New[];
+  socialProfiles?: SocialProfile.New[];
+  imAddresses?: ImAddress.New[];
 };
 
 export type ContactFieldKey = {
+  [ContactField.IS_FAVOURITE]: 'isFavourite';
+  [ContactField.FULL_NAME]: 'fullName';
   [ContactField.GIVEN_NAME]: 'givenName';
   [ContactField.MIDDLE_NAME]: 'middleName';
   [ContactField.FAMILY_NAME]: 'familyName';
@@ -189,6 +217,8 @@ export type ContactFieldKey = {
   [ContactField.JOB_TITLE]: 'jobTitle';
   [ContactField.NOTE]: 'note';
   [ContactField.IMAGE]: 'image';
+  [ContactField.BIRTHDAY]: 'birthday';
+  [ContactField.NON_GREGORIAN_BIRTHDAY]: 'nonGregorianBirthday';
   [ContactField.EMAILS]: 'emails';
   [ContactField.PHONES]: 'phones';
   [ContactField.ADDRESSES]: 'addresses';
@@ -196,6 +226,8 @@ export type ContactFieldKey = {
   [ContactField.EXTRA_NAMES]: 'extraNames';
   [ContactField.RELATIONS]: 'relations';
   [ContactField.URL_ADDRESSES]: 'urlAddresses';
+  [ContactField.SOCIAL_PROFILES]: 'socialProfiles';
+  [ContactField.IM_ADDRESSES]: 'imAddresses';
 };
 
 export type PartialContactDetails<T extends readonly ContactField[]> = {

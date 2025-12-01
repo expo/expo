@@ -1,6 +1,5 @@
 package expo.modules.contacts.next.records.contact
 
-import expo.modules.contacts.next.domain.model.headers.isfavourite.PatchIsFavourite
 import expo.modules.contacts.next.records.fields.DateRecord
 import expo.modules.contacts.next.records.fields.EmailRecord
 import expo.modules.contacts.next.records.fields.ExtraNameRecord
@@ -12,7 +11,6 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
 data class CreateContactRecord(
-  @Field val displayName: String? = null,
   @Field val givenName: String? = null,
   @Field val middleName: String? = null,
   @Field val familyName: String? = null,

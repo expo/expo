@@ -138,6 +138,9 @@ export type ContactDate = {
 };
 
 export type ContactPatch = {
+  isFavourite?: boolean | null;
+  nickname?: string | null;
+  maidenName?: string | null;
   givenName?: string | null;
   middleName?: string | null;
   familyName?: string | null;
@@ -185,6 +188,20 @@ export declare class Contact {
    * ```
    */
   patch(contact: ContactPatch): Promise<void>;
+  /**
+   * Updates the contact with the provided fields. All fields will be replaced with the new values.
+   * @param contact  An object containing the new contact details.
+   * @returns A promise that resolves when the contact has been updated.
+   * @usage ```ts
+   * await contact.update({
+   *   givenName: 'NewGiven',
+   *   familyName: 'NewFamily',
+   *   phones: [{ label: 'home', number: '098-765-4321' }],
+   *   // All other
+   * });
+   * ```
+   */
+  update(contact: CreateContactRecord): Promise<void>;
   /**
    * Gets the contact details for the specified fields.
    * @param fields  An array of `ContactField` to retrieve. If not provided, all details will be fetched.
@@ -282,6 +299,9 @@ export declare class Contact {
   editWithForm(options?: FormOptions): Promise<boolean>;
   share(subject: string): Promise<boolean>;
 
+  getFullName(): Promise<string>;
+  getIsFavourite(): Promise<boolean>;
+  setIsFavourite(isFavourite: boolean): Promise<boolean>;
   getGivenName(): Promise<string | null>;
   setGivenName(givenName: string | null): Promise<boolean>;
   getFamilyName(): Promise<string | null>;

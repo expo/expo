@@ -20,11 +20,11 @@ sealed interface DateRecord {
     @Field val date: ContactDateRecord? = null
   ) : NewRecord
 
-  data class Patch(
-    @Required @Field override val id: String,
-    @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
+  class Patch(): PatchRecord {
+    @Required @Field override lateinit var id: String
+    @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
     @Field val date: ValueOrUndefined<ContactDateRecord?> = ValueOrUndefined.Undefined()
-  ) : PatchRecord
+  }
 
   data class ContactDateRecord(
     @Field val year: String? = null,

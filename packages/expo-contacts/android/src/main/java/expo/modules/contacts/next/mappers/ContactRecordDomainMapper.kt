@@ -9,10 +9,13 @@ import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
 import expo.modules.contacts.next.domain.model.headers.DisplayNameField
 import expo.modules.contacts.next.domain.model.headers.PhotoThumbnailUriField
 import expo.modules.contacts.next.domain.model.headers.PhotoUriField
-import expo.modules.contacts.next.domain.model.headers.isfavourite.StarredField
+import expo.modules.contacts.next.domain.model.headers.starred.ExistingStarred
+import expo.modules.contacts.next.domain.model.headers.starred.PatchStarred
+import expo.modules.contacts.next.domain.model.headers.starred.StarredField
 import expo.modules.contacts.next.domain.model.nickname.NicknameField
 import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
 import expo.modules.contacts.next.domain.model.note.NoteField
+import expo.modules.contacts.next.domain.model.note.operations.AppendableNote
 import expo.modules.contacts.next.domain.model.organization.OrganizationField
 import expo.modules.contacts.next.domain.model.phone.PhoneField
 import expo.modules.contacts.next.domain.model.phone.operations.ExistingPhone
@@ -24,10 +27,6 @@ import expo.modules.contacts.next.domain.model.structuredpostal.operations.Exist
 import expo.modules.contacts.next.domain.model.website.WebsiteField
 import expo.modules.contacts.next.domain.model.website.operations.ExistingWebsite
 import expo.modules.contacts.next.domain.wrappers.*
-import expo.modules.contacts.next.mappers.ContactMapper.toNewNote
-import expo.modules.contacts.next.mappers.ContactMapper.toNewOrganization
-import expo.modules.contacts.next.mappers.ContactMapper.toNewPhoto
-import expo.modules.contacts.next.mappers.ContactMapper.toNewStructuredName
 import expo.modules.contacts.next.mappers.model.EmailMapper
 import expo.modules.contacts.next.mappers.model.EventMapper
 import expo.modules.contacts.next.mappers.model.NicknameMapper
@@ -41,9 +40,11 @@ import expo.modules.contacts.next.records.fields.*
 import expo.modules.contacts.next.services.ImageByteArrayConverter
 import expo.modules.kotlin.apifeatures.EitherType
 
-class ContactRecordDomainMapper(val imageByteArrayConverter: ImageByteArrayConverter){
+class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter){
+  val contactMapper = ContactMapper(imageByteArrayConverter)
+
   fun toRecord(existingContact: ExistingContact): GetContactDetailsRecord =
-    ContactMapper.toRecord(existingContact)
+    contactMapper.toRecord(existingContact)
 
   fun toAppendable(record: NewRecord, rawContactId: RawContactId): Appendable {
     return when (record) {
@@ -84,36 +85,43 @@ class ContactRecordDomainMapper(val imageByteArrayConverter: ImageByteArrayConve
     }
   }
 
-  fun toExtractableField(contactField: ContactField): ExtractableField<*> {
-    return when (contactField) {
-      ContactField.GIVEN_NAME,
-      ContactField.MIDDLE_NAME,
-      ContactField.FAMILY_NAME,
-      ContactField.PREFIX,
-      ContactField.SUFFIX,
-      ContactField.PHONETIC_GIVEN_NAME,
-      ContactField.PHONETIC_MIDDLE_NAME,
-      ContactField.PHONETIC_FAMILY_NAME
-        -> StructuredNameField
-      ContactField.COMPANY,
-      ContactField.DEPARTMENT,
-      ContactField.JOB_TITLE,
-      ContactField.PHONETIC_COMPANY_NAME
-        -> OrganizationField
-      ContactField.EMAILS -> EmailField
-      ContactField.PHONES -> PhoneField
-      ContactField.ADDRESSES -> StructuredPostalField
-      ContactField.DATES -> EventField
-      ContactField.RELATIONS -> RelationField
-      ContactField.URL_ADDRESSES -> WebsiteField
-      ContactField.EXTRA_NAMES -> NicknameField
-      ContactField.IS_FAVOURITE -> StarredField
-      ContactField.NOTE -> NoteField
-      ContactField.IMAGE -> PhotoUriField
-      ContactField.THUMBNAIL -> PhotoThumbnailUriField
-      ContactField.FULL_NAME -> DisplayNameField
+  fun toExtractableFields(contactFields: Collection<ContactField>) =
+    contactFields.mapNotNull {
+      when (it) {
+        ContactField.GIVEN_NAME,
+        ContactField.MIDDLE_NAME,
+        ContactField.FAMILY_NAME,
+        ContactField.PREFIX,
+        ContactField.SUFFIX,
+        ContactField.PHONETIC_GIVEN_NAME,
+        ContactField.PHONETIC_MIDDLE_NAME,
+        ContactField.PHONETIC_FAMILY_NAME
+          -> StructuredNameField
+        ContactField.COMPANY,
+        ContactField.DEPARTMENT,
+        ContactField.JOB_TITLE,
+        ContactField.PHONETIC_COMPANY_NAME
+          -> OrganizationField
+        ContactField.EMAILS -> EmailField
+        ContactField.PHONES -> PhoneField
+        ContactField.ADDRESSES -> StructuredPostalField
+        ContactField.DATES -> EventField
+        ContactField.RELATIONS -> RelationField
+        ContactField.URL_ADDRESSES -> WebsiteField
+        ContactField.EXTRA_NAMES -> NicknameField
+        ContactField.IS_FAVOURITE -> StarredField
+        ContactField.NOTE -> NoteField
+        ContactField.IMAGE -> PhotoUriField
+        ContactField.THUMBNAIL -> PhotoThumbnailUriField
+        ContactField.FULL_NAME -> DisplayNameField
+        // filters iOS fields
+        ContactField.NICKNAME,
+        ContactField.MAIDEN_NAME,
+        ContactField.IM_ADDRESS,
+        ContactField.SOCIAL_PROFILES
+          -> null
+      }
     }
-  }
 
   @Suppress("UNCHECKED_CAST")
   fun <TRecord : ExistingRecord, TModel : Extractable> toRecord(model: TModel): TRecord {
@@ -131,10 +139,10 @@ class ContactRecordDomainMapper(val imageByteArrayConverter: ImageByteArrayConve
 
   fun toDomain(record: CreateContactRecord): NewContact {
     val modelsToInsert = buildList {
-      add(toNewStructuredName(record))
-      add(toNewOrganization(record))
-      add(toNewNote(record))
-      add(toNewPhoto(record, imageByteArrayConverter))
+      add(contactMapper.toNewStructuredName(record))
+      add(contactMapper.toNewOrganization(record))
+      add(contactMapper.toNewNote(record))
+      add(contactMapper.toNewPhoto(record))
       record.emails?.let { addAll(it.map(EmailMapper::toNew)) }
       record.phones?.let { addAll(it.map(PhoneMapper::toNew)) }
       record.dates?.let { addAll(it.map(EventMapper::toNew)) }
@@ -146,6 +154,28 @@ class ContactRecordDomainMapper(val imageByteArrayConverter: ImageByteArrayConve
     return NewContact(record.isFavourite, modelsToInsert)
   }
 
+  fun toUpdateContact(
+    record: CreateContactRecord,
+    contactId: ContactId,
+    rawContactId: RawContactId,
+  ): UpdateContact {
+    val modelsToAppend = buildList {
+      add(contactMapper.toAppendableStructuredName(record, rawContactId))
+      add(contactMapper.toAppendableOrganization(record, rawContactId))
+      add(AppendableNote(rawContactId, record.note))
+      add(contactMapper.toAppendablePhoto(record, rawContactId))
+      record.emails?.let { addAll(it.map { email -> EmailMapper.toAppendable(email, rawContactId) }) }
+      record.phones?.let { addAll(it.map { phone -> PhoneMapper.toAppendable(phone, rawContactId) }) }
+      record.dates?.let { addAll(it.map { date -> EventMapper.toAppendable(date, rawContactId)}) }
+      record.extraNames?.let { addAll(it.map { extraName -> NicknameMapper.toAppendable(extraName, rawContactId)}) }
+      record.addresses?.let { addAll(it.map { address -> StructuredPostalMapper.toAppendable(address, rawContactId)}) }
+      record.relations?.let { addAll(it.map { relation -> RelationMapper.toAppendable(relation, rawContactId) }) }
+      record.urlAddresses?.let { addAll(it.map { urlAddress -> WebsiteMapper.toAppendable(urlAddress, rawContactId)}) }
+    }
+    val existingStarred = ExistingStarred(contactId, record.isFavourite)
+    return UpdateContact(rawContactId, existingStarred, modelsToAppend)
+  }
+
   @OptIn(EitherType::class)
   fun toPatchContact(
     record: PatchContactRecord,
@@ -153,52 +183,69 @@ class ContactRecordDomainMapper(val imageByteArrayConverter: ImageByteArrayConve
     contactId: ContactId,
     structuredNameDataId: DataId?,
     organizationDataId: DataId?,
-    noteDataId: DataId?
+    noteDataId: DataId?,
+    photoDataId: DataId?
   ) = with(ContactPatchBuilder(contactId, rawContactId, this)) {
     if (record.isChangingStructuredName()) {
       if (structuredNameDataId != null) {
-        withUpdatable(ContactMapper.toPatchStructuredName(record, structuredNameDataId))
+        withUpdatable(contactMapper.toPatchStructuredName(record, structuredNameDataId))
       } else {
-        withAppendable(ContactMapper.toAppendableStructuredName(record, rawContactId))
+        withAppendable(contactMapper.toAppendableStructuredName(record, rawContactId))
       }
     }
     if (record.isChangingOrganization()) {
       if (organizationDataId != null) {
-        withUpdatable(ContactMapper.toPatchOrganization(record, organizationDataId))
+        withUpdatable(contactMapper.toPatchOrganization(record, organizationDataId))
       } else {
-        withAppendable(ContactMapper.toAppendableOrganization(record, rawContactId))
+        withAppendable(contactMapper.toAppendableOrganization(record, rawContactId))
       }
     }
 
     if (!record.note.isUndefined) {
       if (noteDataId != null) {
-        withUpdatable(ContactMapper.toPatchNote(record, noteDataId))
+        withUpdatable(contactMapper.toPatchNote(record, noteDataId))
       } else {
-        withAppendable(ContactMapper.toAppendableNote(record, rawContactId))
+        withAppendable(contactMapper.toAppendableNote(record, rawContactId))
       }
+    }
+
+    if (!record.image.isUndefined) {
+      if (photoDataId != null) {
+        withUpdatable(contactMapper.toPatchPhoto(record, photoDataId))
+      } else {
+        withAppendable(contactMapper.toAppendablePhoto(record, rawContactId))
+      }
+    }
+    if (!record.isFavourite.isUndefined) {
+      withUpdatable(PatchStarred(contactId, record.isFavourite))
     }
     withListProperty(record.emails, EmailField)
     withListProperty(record.phones, PhoneField)
     withListProperty(record.dates, EventField)
     withListProperty(record.extraNames, NicknameField)
-    withListProperty(record.postalAddresses, StructuredPostalField)
-    withListProperty(record.relationships, RelationField)
+    withListProperty(record.addresses, StructuredPostalField)
+    withListProperty(record.relations, RelationField)
     withListProperty(record.urlAddresses, WebsiteField)
     build()
   }
 
   fun toContentValues(createContactRecord: CreateContactRecord) = buildList {
-    val structuredName = toNewStructuredName(createContactRecord)
+    val structuredName = contactMapper.toNewStructuredName(createContactRecord)
     add(structuredName.contentValues)
 
-    val organization = toNewOrganization(createContactRecord)
+    val organization = contactMapper.toNewOrganization(createContactRecord)
     if (organization.company != null || organization.department != null || organization.jobTitle != null || organization.phoneticName != null) {
       add(organization.contentValues)
     }
 
-    val note = toNewNote(createContactRecord)
+    val note = contactMapper.toNewNote(createContactRecord)
     if (note.note != null) {
       add(note.contentValues)
+    }
+
+    val photo = contactMapper.toNewPhoto(createContactRecord)
+    if (photo.photo != null) {
+      add(photo.contentValues)
     }
 
     createContactRecord.emails?.map { emailRecord ->

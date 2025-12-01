@@ -8,7 +8,9 @@ import expo.modules.contacts.next.domain.model.note.operations.PatchNote
 import expo.modules.contacts.next.domain.model.organization.operations.AppendableOrganization
 import expo.modules.contacts.next.domain.model.organization.operations.NewOrganization
 import expo.modules.contacts.next.domain.model.organization.operations.PatchOrganization
+import expo.modules.contacts.next.domain.model.photo.operations.AppendablePhoto
 import expo.modules.contacts.next.domain.model.photo.operations.NewPhoto
+import expo.modules.contacts.next.domain.model.photo.operations.PatchPhoto
 import expo.modules.contacts.next.domain.model.structuredname.operations.AppendableStructuredName
 import expo.modules.contacts.next.domain.model.structuredname.operations.NewStructuredName
 import expo.modules.contacts.next.domain.model.structuredname.operations.PatchStructuredName
@@ -25,11 +27,13 @@ import expo.modules.contacts.next.records.contact.CreateContactRecord
 import expo.modules.contacts.next.records.contact.GetContactDetailsRecord
 import expo.modules.contacts.next.records.contact.PatchContactRecord
 import expo.modules.contacts.next.services.ImageByteArrayConverter
+import expo.modules.kotlin.types.map
 
-object ContactMapper {
+class ContactMapper(val imageByteArrayConverter: ImageByteArrayConverter) {
   fun toRecord(existingContact: ExistingContact) =
     GetContactDetailsRecord(
       id = existingContact.contactId.value,
+      isFavourite = existingContact.starred?.let { it.value == 1 },
       givenName = existingContact.structuredName?.givenName,
       middleName = existingContact.structuredName?.middleName,
       familyName = existingContact.structuredName?.familyName,
@@ -76,6 +80,19 @@ object ContactMapper {
       phoneticFamilyName = record.phoneticFamilyName.optional
     )
 
+  fun toAppendableStructuredName(record: CreateContactRecord, rawContactId: RawContactId) =
+    AppendableStructuredName(
+      rawContactId = rawContactId,
+      givenName = record.givenName,
+      middleName = record.middleName,
+      familyName = record.familyName,
+      prefix = record.prefix,
+      suffix = record.suffix,
+      phoneticGivenName = record.phoneticGivenName,
+      phoneticMiddleName = record.phoneticMiddleName,
+      phoneticFamilyName = record.phoneticFamilyName
+    )
+
   fun toPatchStructuredName(record: PatchContactRecord, structuredNameDataId: DataId) =
     PatchStructuredName(
       dataId = structuredNameDataId,
@@ -106,6 +123,15 @@ object ContactMapper {
       phoneticName = record.phoneticOrganizationName.optional
     )
 
+  fun toAppendableOrganization(record: CreateContactRecord, rawContactId: RawContactId) =
+    AppendableOrganization(
+      rawContactId = rawContactId,
+      company = record.company,
+      department = record.department,
+      jobTitle = record.jobTitle,
+      phoneticName = record.phoneticOrganizationName
+    )
+
   fun toPatchOrganization(record: PatchContactRecord, organizationDataId: DataId) =
     PatchOrganization(
       dataId = organizationDataId,
@@ -132,8 +158,33 @@ object ContactMapper {
       note = record.note
     )
 
-  fun toNewPhoto(record: CreateContactRecord, imageByteArrayConverter: ImageByteArrayConverter) =
+  fun toAppendablePhoto(record: PatchContactRecord, rawContactId: RawContactId) =
+    AppendablePhoto(
+      rawContactId = rawContactId,
+      photo = record.image.optional?.let {
+        imageByteArrayConverter.toByteArray(it.toUri())
+      }
+    )
 
+  fun toAppendablePhoto(record: CreateContactRecord, rawContactId: RawContactId) =
+    AppendablePhoto(
+      rawContactId = rawContactId,
+      photo = record.image?.let {
+        imageByteArrayConverter.toByteArray(it.toUri())
+      }
+    )
+
+  fun toPatchPhoto(record: PatchContactRecord, photoDataId: DataId) =
+    PatchPhoto(
+      dataId = photoDataId,
+      photo = record.image.map {
+        it?.let {
+          imageByteArrayConverter.toByteArray(it.toUri())
+        }
+      }
+    )
+
+  fun toNewPhoto(record: CreateContactRecord)=
     NewPhoto(
       photo = record.image?.let {
         imageByteArrayConverter.toByteArray(it.toUri())

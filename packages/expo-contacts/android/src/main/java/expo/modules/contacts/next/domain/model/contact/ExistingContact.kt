@@ -5,7 +5,7 @@ import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
 import expo.modules.contacts.next.domain.model.headers.DisplayName
 import expo.modules.contacts.next.domain.model.headers.PhotoThumbnailUri
 import expo.modules.contacts.next.domain.model.headers.PhotoUri
-import expo.modules.contacts.next.domain.model.headers.isfavourite.Starred
+import expo.modules.contacts.next.domain.model.headers.starred.Starred
 import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
 import expo.modules.contacts.next.domain.model.note.operations.ExistingNote
 import expo.modules.contacts.next.domain.model.organization.operations.ExistingOrganization
