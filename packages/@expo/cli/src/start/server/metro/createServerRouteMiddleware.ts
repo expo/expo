@@ -49,7 +49,7 @@ export function createRouteHandlerMiddleware(
     { build: '' },
     {
       async getRoutesManifest() {
-        const manifest = await fetchManifest<RegExp>(projectRoot, options);
+        const manifest = await fetchManifest(projectRoot, options);
         debug('manifest', manifest);
         // NOTE: no app dir if null
         // TODO: Redirect to 404 page
