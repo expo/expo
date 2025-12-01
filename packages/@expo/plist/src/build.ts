@@ -26,6 +26,8 @@ OTHER DEALINGS IN THE SOFTWARE. */
 import base64 from 'base64-js';
 import xmlbuilder from 'xmlbuilder';
 
+import { PlistValue } from '.';
+
 /**
  * Accepts a `Date` instance and returns an ISO date string.
  *
@@ -80,7 +82,7 @@ function type(obj: object): string | null {
  */
 
 export function build(
-  obj: any,
+  obj: PlistValue,
   xmlToStringOpts?: xmlbuilder.XMLToStringOptions,
   createOpts?: xmlbuilder.CreateOptions
 ): string {
