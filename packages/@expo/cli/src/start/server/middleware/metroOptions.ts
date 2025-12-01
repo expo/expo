@@ -238,6 +238,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
       exporting: isExporting || undefined,
+      excludeSource: Server.DEFAULT_BUNDLE_OPTIONS.excludeSource,
     },
     // TODO(@kitten): See comments in MetroBundlerDevServer.ts; should all defaults be added and the logic
     // from `src/start/server/middleware/metroOptions.ts` that adds default be moved here?

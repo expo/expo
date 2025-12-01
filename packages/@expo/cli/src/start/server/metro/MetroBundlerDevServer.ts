@@ -698,14 +698,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       resolverOptions,
       serializerOptions: {
         ...expoBundleOptions.serializerOptions,
-
         inlineSourceMap: expoBundleOptions.inlineSourceMap ?? false,
         modulesOnly: expoBundleOptions.modulesOnly ?? false,
         runModule: expoBundleOptions.runModule ?? true,
-        // @ts-expect-error
-        sourceUrl: expoBundleOptions.sourceUrl,
-        // @ts-expect-error
-        sourceMapUrl: extraOptions.sourceMapUrl ?? expoBundleOptions.sourceMapUrl,
+        sourceUrl: expoBundleOptions.sourceUrl!,
+        sourceMapUrl: extraOptions.sourceMapUrl ?? expoBundleOptions.sourceMapUrl!,
       },
       transformOptions,
     });
