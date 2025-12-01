@@ -48,9 +48,13 @@ import ExpoModulesCore
     addChild(hostingController)
     view.addSubview(hostingController.view)
 
+#if !os(macOS)
     hostingController.view.frame = view.bounds
     hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
+#else
+    hostingController.view.frame = view.frame
+    hostingController.view.autoresizingMask = [.width, .height]
+#endif
     hostingController.didMove(toParent: self)
     navigationController?.setNavigationBarHidden(true, animated: false)
   }
