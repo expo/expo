@@ -279,12 +279,25 @@ If you wish to avoid `expo-asset` or need to access resources already existing i
 > **Note:** This requires the file to exist in the **native platform bundle**. Files sitting in your JavaScript project structure are **not** automatically available here unless you move them during the build process (using a Config Plugin or manually).
 
 **Prerequisites:**
-You must ensure the file is copied to the correct native location during the build:
+
+For **Expo managed workflow**, add the following to your `app.json` to ensure assets are bundled:
+
+```json app.json
+{
+  "expo": {
+    "assetBundlePatterns": ["**/*"]
+  }
+}
+```
+
+> **Important:** Without this configuration, iOS will not be able to read files from the bundle, though Android may still work.
+
+For **bare workflow**, you must ensure the file is copied to the correct native location during the build:
 
 - **Android:** `android/app/src/main/assets/`
 - **iOS:** The root of the Main Bundle (added via Xcode "Copy Bundle Resources").
 
-If you are using **Expo Prebuild** (Managed Workflow), you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
+If you are using **Expo Prebuild**, you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
 
 **Usage:**
 On iOS, the application bundle is read-only and direct access may be restricted due to sandboxing permissions. The recommended approach is to copy the file to a writable location (like `Paths.document`) before reading it.
