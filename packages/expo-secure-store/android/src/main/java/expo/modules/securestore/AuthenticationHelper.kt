@@ -2,6 +2,7 @@ package expo.modules.securestore
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.KeyguardManager
 import android.content.Context
 import android.os.Build
 import androidx.biometric.BiometricManager
@@ -19,9 +20,9 @@ class AuthenticationHelper(
 ) {
   private var isAuthenticating = false
 
-  suspend fun authenticateCipher(cipher: Cipher, requiresAuthentication: Boolean, title: String): Cipher {
+  suspend fun authenticateCipher(cipher: Cipher, requiresAuthentication: Boolean, title: String, enableDeviceFallback: Boolean): Cipher {
     if (requiresAuthentication) {
-      return openAuthenticationPrompt(cipher, title).cryptoObject?.cipher
+      return openAuthenticationPrompt(cipher, title, enableDeviceFallback).cryptoObject?.cipher
         ?: throw AuthenticationException("Couldn't get cipher from authentication result")
     }
     return cipher
@@ -29,7 +30,8 @@ class AuthenticationHelper(
 
   private suspend fun openAuthenticationPrompt(
     cipher: Cipher,
-    title: String
+    title: String,
+    enableDeviceFallback: Boolean
   ): BiometricPrompt.AuthenticationResult {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       throw AuthenticationException("Biometric authentication requires Android API 23")
@@ -41,11 +43,16 @@ class AuthenticationHelper(
     isAuthenticating = true
 
     try {
-      assertBiometricsSupport()
+      if (enableDeviceFallback) {
+        assertDeviceSecurity()
+      } else {
+        assertBiometricsSupport()
+      }
+
       val fragmentActivity = getCurrentActivity() as? FragmentActivity
         ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
 
-      val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title)
+      val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title, enableDeviceFallback)
 
       return withContext(Dispatchers.Main.immediate) {
         return@withContext authenticationPrompt.authenticate(cipher)
@@ -53,6 +60,14 @@ class AuthenticationHelper(
       }
     } finally {
       isAuthenticating = false
+    }
+  }
+
+  fun assertDeviceSecurity() {
+    val manager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+    val isSecure = manager.isDeviceSecure
+    if (!isSecure) {
+      throw AuthenticationException("No authentication method available")
     }
   }
 

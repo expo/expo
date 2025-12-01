@@ -15,4 +15,7 @@ internal struct SecureStoreOptions: Record {
 
   @Field
   var accessGroup: String?
+
+  @Field
+  var enableDeviceFallback: Bool = false
 }

@@ -45,13 +45,34 @@ function SecureStoreView() {
   const [value, setValue] = React.useState<string | undefined>();
   const [service, setService] = React.useState<string | undefined>();
   const [requireAuth, setRequireAuth] = React.useState<boolean>(false);
+  const [canUseFallback, setCanUseFallback] = React.useState<boolean>(false);
   const [byteSize, setByteSize] = React.useState<string>('4096');
+
+  const forceDeviceFallback = React.useMemo(
+    () =>
+      !SecureStore.canUseBiometricAuthentication() &&
+      SecureStore.canUseDeviceCredentialsAuthentication(),
+    []
+  );
+
+  const canUseAnyAuthentication = React.useMemo(
+    () =>
+      SecureStore.canUseDeviceCredentialsAuthentication() ||
+      SecureStore.canUseBiometricAuthentication(),
+    []
+  );
+
+  const enableDeviceFallback = React.useMemo(
+    () => forceDeviceFallback || canUseFallback,
+    [canUseFallback, forceDeviceFallback]
+  );
 
   const storeOptions = React.useMemo<SecureStore.SecureStoreOptions>(
     () => ({
       keychainService: service,
       requireAuthentication: requireAuth,
       authenticationPrompt: requireAuth ? 'Authenticate' : undefined,
+      enableDeviceFallback,
     }),
     [requireAuth, service]
   );
@@ -62,6 +83,7 @@ function SecureStoreView() {
         keychainService: service,
         requireAuthentication: requireAuth,
         authenticationPrompt: 'Authenticate',
+        enableDeviceFallback,
       });
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
@@ -77,6 +99,7 @@ function SecureStoreView() {
         keychainService: service,
         requireAuthentication: requireAuth,
         authenticationPrompt: 'Authenticate',
+        enableDeviceFallback,
       });
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
@@ -92,6 +115,7 @@ function SecureStoreView() {
         keychainService: service,
         requireAuthentication: requireAuth,
         authenticationPrompt: 'Authenticate',
+        enableDeviceFallback,
       });
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
@@ -107,6 +131,7 @@ function SecureStoreView() {
         keychainService: service,
         requireAuthentication: requireAuth,
         authenticationPrompt: 'Authenticate',
+        enableDeviceFallback,
       });
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
@@ -191,10 +216,24 @@ function SecureStoreView() {
       <Text style={{ marginBottom: 10 }}>
         Can use biometric authentication: {SecureStore.canUseBiometricAuthentication().toString()}
       </Text>
-      {SecureStore.canUseBiometricAuthentication() && (
-        <View style={styles.authToggleContainer}>
+      <Text style={{ marginBottom: 10 }}>
+        Can use fallback authentication:{' '}
+        {SecureStore.canUseDeviceCredentialsAuthentication().toString()}
+      </Text>
+      {canUseAnyAuthentication && (
+        <View style={[styles.authToggleContainer, { marginBottom: 10 }]}>
           <Text>Requires authentication:</Text>
           <Switch value={requireAuth} onValueChange={setRequireAuth} />
+        </View>
+      )}
+      {SecureStore.canUseDeviceCredentialsAuthentication() && requireAuth && (
+        <View style={styles.authToggleContainer}>
+          <Text>Allow device fallback:</Text>
+          <Switch
+            value={canUseFallback || forceDeviceFallback}
+            disabled={forceDeviceFallback}
+            onValueChange={setCanUseFallback}
+          />
         </View>
       )}
       {value && key && (
