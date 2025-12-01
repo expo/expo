@@ -17,13 +17,24 @@ export type LabelProps = {
   systemImage?: SFSymbol;
 
   /**
+   * Custom icon view to be displayed in the label.
+   * When provided, this takes precedence over `systemImage`.
+   */
+  icon?: React.ReactNode;
+
+  /**
    * The color of the label icon.
    * @deprecated Use `foregroundStyle` modifier instead.
    */
   color?: ColorValue;
 } & CommonViewModifierProps;
 
-const LabelNativeView: React.ComponentType<LabelProps> = requireNativeView('ExpoUI', 'LabelView');
+const LabelNativeView: React.ComponentType<LabelProps & { children?: React.ReactNode }> =
+  requireNativeView('ExpoUI', 'LabelView');
+const LabelIconNativeView: React.ComponentType<{ children?: React.ReactNode }> = requireNativeView(
+  'ExpoUI',
+  'LabelIcon'
+);
 
 /**
  * Renders a native label view, which could be used in a list or section.
@@ -32,12 +43,13 @@ const LabelNativeView: React.ComponentType<LabelProps> = requireNativeView('Expo
  * @returns {JSX.Element} The rendered native Label component.
  */
 export function Label(props: LabelProps) {
-  const { modifiers, ...restProps } = props;
+  const { modifiers, icon, ...restProps } = props;
   return (
     <LabelNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}
-    />
+      {...restProps}>
+      {icon && <LabelIconNativeView>{icon}</LabelIconNativeView>}
+    </LabelNativeView>
   );
 }
