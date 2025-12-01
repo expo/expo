@@ -26,11 +26,6 @@ export type LabelProps = {
  *
  * @param {LabelProps} props - The properties passed to the Label component.
  * @returns {JSX.Element} The rendered native Label component.
- *
- * @example
- * ```tsx
- * <Label title="Custom Icon" icon={<Image systemName="star.fill" />} />
- * ```
  */
 export declare function Label(props: LabelProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
