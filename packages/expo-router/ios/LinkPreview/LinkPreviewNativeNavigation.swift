@@ -21,7 +21,7 @@ internal class LinkPreviewNativeNavigation {
     else {
       return
     }
-    LinkPreviewNativeNavigationObjC.pushPreloadedView(
+    RouterNavigationHelpers.pushPreloadedView(
       preloadedView, ontoStackView: preloadedStackView)
   }
 
@@ -31,26 +31,26 @@ internal class LinkPreviewNativeNavigation {
     let stackOrTabView = findStackViewWithScreenIdOrTabBarController(
       screenId: screenId, tabKeys: oldTabKeys, responder: responder)
     if let stackOrTabView = stackOrTabView {
-      if LinkPreviewNativeNavigationObjC.isRNSBottomTabsScreenComponentView(stackOrTabView) {
+      if RouterNavigationHelpers.isRNSBottomTabsScreenComponentView(stackOrTabView) {
         let tabView = stackOrTabView
         let newTabKeys = tabPath?.path.map { $0.newTabKey } ?? []
         let stackView = findStackViewWithScreenIdInSubViews(
           screenId: screenId, tabKeys: newTabKeys, rootView: tabView)
         if let stackView = stackView {
-          let screenViews = LinkPreviewNativeNavigationObjC.getScreenViews(stackView)
+          let screenViews = RouterNavigationHelpers.getScreenViews(stackView)
           if let screenView = screenViews.first(where: {
-            LinkPreviewNativeNavigationObjC.getScreenId($0) == screenId
+            RouterNavigationHelpers.getScreenId($0) == screenId
           }) {
             preloadedView = screenView
             preloadedStackView = stackView
             print("LinkPreviewNativeNavigation: Preloaded view for screenId \(screenId).")
           }
         }
-      } else if LinkPreviewNativeNavigationObjC.isRNSScreenStackView(stackOrTabView) {
+      } else if RouterNavigationHelpers.isRNSScreenStackView(stackOrTabView) {
         let stackView = stackOrTabView
-        let screenViews = LinkPreviewNativeNavigationObjC.getScreenViews(stackView)
+        let screenViews = RouterNavigationHelpers.getScreenViews(stackView)
         if let screenView = screenViews.first(where: {
-          LinkPreviewNativeNavigationObjC.getScreenId($0) == screenId
+          RouterNavigationHelpers.getScreenId($0) == screenId
         }) {
           preloadedView = screenView
           preloadedStackView = stackView
@@ -65,23 +65,23 @@ internal class LinkPreviewNativeNavigation {
   private func findStackViewWithScreenIdInSubViews(
     screenId: String?, tabKeys: [String], rootView: UIView
   ) -> UIView? {
-    if LinkPreviewNativeNavigationObjC.isRNSScreenStackView(rootView),
+    if RouterNavigationHelpers.isRNSScreenStackView(rootView),
       let _screenId = screenId {
-      let screenIds = LinkPreviewNativeNavigationObjC.getStackViewScreenIds(rootView)
+      let screenIds = RouterNavigationHelpers.getStackViewScreenIds(rootView)
       if screenIds.contains(_screenId) {
         return rootView
       }
-    } else if LinkPreviewNativeNavigationObjC.isRNSBottomTabsScreenComponentView(rootView)
-      || LinkPreviewNativeNavigationObjC.isRNSBottomTabsHostComponentView(rootView) {
-      let tabBarController = LinkPreviewNativeNavigationObjC.getBottomTabController(from: rootView)
+    } else if RouterNavigationHelpers.isRNSBottomTabsScreenComponentView(rootView)
+      || RouterNavigationHelpers.isRNSBottomTabsHostComponentView(rootView) {
+      let tabBarController = RouterNavigationHelpers.getBottomTabController(from: rootView)
       if let tabBarController = tabBarController {
         let views = tabBarController.viewControllers?.compactMap { $0.view } ?? []
         let enumeratedViews = views.enumerated()
         if let (tabIndex, tabView) =
           enumeratedViews
           .first(where: { _, view in
-            LinkPreviewNativeNavigationObjC.isRNSBottomTabsScreenComponentView(view)
-              && tabKeys.contains(LinkPreviewNativeNavigationObjC.getTabKey(view))
+            RouterNavigationHelpers.isRNSBottomTabsScreenComponentView(view)
+              && tabKeys.contains(RouterNavigationHelpers.getTabKey(view))
           }) {
           self.tabChangeCommands.append(
             TabChangeCommand(tabBarController: tabBarController, tabIndex: tabIndex))
@@ -116,15 +116,15 @@ internal class LinkPreviewNativeNavigation {
 
     while let nextResponder = currentResponder?.next {
       if let view = nextResponder as? UIView,
-        LinkPreviewNativeNavigationObjC.isRNSScreenStackView(view),
+        RouterNavigationHelpers.isRNSScreenStackView(view),
         let _screenId = screenId {
-        let screenIds = LinkPreviewNativeNavigationObjC.getStackViewScreenIds(view)
+        let screenIds = RouterNavigationHelpers.getStackViewScreenIds(view)
         if screenIds.contains(_screenId) {
           return view
         }
       } else if let tabView = nextResponder as? UIView,
-        LinkPreviewNativeNavigationObjC.isRNSBottomTabsScreenComponentView(tabView) {
-        let tabKey = LinkPreviewNativeNavigationObjC.getTabKey(tabView)
+        RouterNavigationHelpers.isRNSBottomTabsScreenComponentView(tabView) {
+        let tabKey = RouterNavigationHelpers.getTabKey(tabView)
         if tabKeys.contains(tabKey) {
           return tabView
         }

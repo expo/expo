@@ -1,12 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "LinkPreviewNativeNavigation.h"
+#import "RouterNavigationHelpers.h"
 #import <Foundation/Foundation.h>
 #include <Foundation/NSObjCRuntime.h>
 #import <RNScreens/RNSScreen.h>
 #import <RNScreens/RNSScreenStack.h>
 
-@implementation LinkPreviewNativeNavigationObjC {
+@implementation RouterNavigationHelpers {
 }
 
 + (BOOL)isRNSScreenStackView:(UIView *)view {
@@ -106,7 +106,7 @@
 
 + (void)pushPreloadedView:(nonnull UIView *)view
             ontoStackView:(nonnull UIView *)rawStackView {
-  if (![LinkPreviewNativeNavigationObjC isRNSScreenStackView:rawStackView]) {
+  if (![RouterNavigationHelpers isRNSScreenStackView:rawStackView]) {
     NSLog(@"ExpoRouter: The provided stack view is not a RNSScreenStackView.");
     return;
   }

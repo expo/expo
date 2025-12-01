@@ -3,7 +3,7 @@
 #import <RNScreens/RNSDismissibleModalProtocol.h>
 #import <RNScreens/RNSTabBarController.h>
 
-@interface LinkPreviewNativeNavigationObjC : NSObject
+@interface RouterNavigationHelpers : NSObject
 
 /*
  * Pushes the previously preloaded view.
@@ -45,6 +45,6 @@
 
 @end
 
-@protocol LinkPreviewModalDismissible <RNSDismissibleModalProtocol>
+@protocol RouterNavigationHelpersDismissibleModalProtocol <RNSDismissibleModalProtocol>
 @required
 @end

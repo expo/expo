@@ -1,8 +1,7 @@
 import ExpoModulesCore
 
 class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
-  LinkPreviewModalDismissible, LinkPreviewMenuUpdatable
-{
+  RouterNavigationHelpersDismissibleModalProtocol, LinkPreviewMenuUpdatable {
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
   private var directChild: UIView?
