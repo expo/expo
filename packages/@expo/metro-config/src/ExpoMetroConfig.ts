@@ -143,7 +143,7 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 
 export function createStableModuleIdFactory(
   root: string
-): (path: string, context?: { platform: string; environment?: string }) => number {
+): (path: string, context?: { platform: string; environment?: string | null }) => number {
   const getModulePath = (modulePath: string, scope: string) => {
     // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
     if (modulePath == null) {
@@ -162,7 +162,10 @@ export function createStableModuleIdFactory(
 
   // This is an absolute file path.
   // TODO: We may want a hashed version for production builds in the future.
-  return (modulePath: string, context?: { platform: string; environment?: string }): number => {
+  return (
+    modulePath: string,
+    context?: { platform: string; environment?: string | null }
+  ): number => {
     const env = context?.environment ?? 'client';
 
     if (env === 'client') {
