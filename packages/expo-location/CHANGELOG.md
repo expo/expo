@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- use WGS 84 as reference for altitude on iOS ([#41318](https://github.com/expo/expo/pull/41318) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 - [Android] Removed unused `androidx.annotation:annotation` dependency. ([#39758](https://github.com/expo/expo/pull/39758) by [@lukmccall](https://github.com/lukmccall))
