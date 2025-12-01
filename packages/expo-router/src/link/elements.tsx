@@ -93,12 +93,20 @@ export interface LinkMenuProps {
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
    */
+  palette?: boolean;
+  /**
+   * @deprecated Use `palette` prop instead.
+   */
   displayAsPalette?: boolean;
   /**
    * If `true`, the menu will be displayed inline.
    * This means that the menu will not be collapsed
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
+   */
+  inline?: boolean;
+  /**
+   * @deprecated Use `inline` prop instead.
    */
   displayInline?: boolean;
   /**
@@ -136,9 +144,13 @@ export const LinkMenu: React.FC<LinkMenuProps> = (props) => {
   const children = React.Children.toArray(props.children).filter(
     (child) => isValidElement(child) && (child.type === LinkMenuAction || child.type === LinkMenu)
   );
+  const displayAsPalette = props.palette ?? props.displayAsPalette;
+  const displayInline = props.inline ?? props.displayInline;
   return (
     <NativeLinkPreviewAction
       {...props}
+      displayAsPalette={displayAsPalette}
+      displayInline={displayInline}
       title={props.title ?? ''}
       onSelected={() => {}}
       children={children}
