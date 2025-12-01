@@ -277,9 +277,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleKernelMenuCommand
 {
-  if ([EXKernel sharedInstance].visibleApp == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-    [[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager showDevMenu];
-  }
 }
 
 #pragma mark - managing list of commands

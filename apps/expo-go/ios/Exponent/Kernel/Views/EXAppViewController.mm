@@ -110,32 +110,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  _isHomeApp = NO;
 
-  // EXKernel.appRegistry.homeAppRecord does not contain any homeAppRecord until this point,
-  // therefore we cannot move this property initialization to the constructor/initializer
-  _isHomeApp = _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
+  
+  self.appLoadingCancelView = [EXAppLoadingCancelView new];
+  self.appLoadingCancelView.delegate = self;
+  [self.view addSubview:self.appLoadingCancelView];
+  [self.view bringSubviewToFront:self.appLoadingCancelView];
 
-  // show LoadingCancelView in managed apps only
-  if (!self.isHomeApp) {
-    self.appLoadingCancelView = [EXAppLoadingCancelView new];
-    // if home app is available then LoadingCancelView can show `go to home` button
-    if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
-      self.appLoadingCancelView.delegate = self;
-    }
-    [self.view addSubview:self.appLoadingCancelView];
-    [self.view bringSubviewToFront:self.appLoadingCancelView];
-  }
-
-  // show LoadingProgressWindow in the development client for all apps other than production home
-  BOOL isProductionHomeApp = self.isHomeApp && ![EXEnvironment sharedEnvironment].isDebugXCodeScheme;
-  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!isProductionHomeApp];
-
-  // show SplashScreen in standalone apps and home app only
-  // SplashScreen for managed is shown once the manifest is available
-  if (self.isHomeApp) {
-    EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
-    [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
-  }
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:YES];
 
   self.view.backgroundColor = [UIColor whiteColor];
   _appRecord.appManager.delegate = self;

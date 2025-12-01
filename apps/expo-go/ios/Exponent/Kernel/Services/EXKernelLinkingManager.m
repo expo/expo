@@ -54,10 +54,9 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
   if (destinationApp) {
     [[EXKernel sharedInstance] sendUrl:urlToRoute.absoluteString toAppRecord:destinationApp];
   } else {
-    if ([EXKernel sharedInstance].appRegistry.homeAppRecord
-        && [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager.status == kEXReactAppManagerStatusRunning) {
-      // if Home is present and running, open a new app with this url.
-      // if home isn't running yet, we'll handle the LaunchOptions url after home finishes launching.
+    if ([EXKernel sharedInstance].browserController) {
+      // Open a new app with this url.
+      // If home isn't initialized yet, we'll handle the LaunchOptions url after home finishes launching.
 
       if (@available(iOS 14, *)) {
         // Try to detect if we're trying to open a local network URL so we can preemptively show the
