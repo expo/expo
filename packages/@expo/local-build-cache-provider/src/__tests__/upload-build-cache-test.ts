@@ -5,32 +5,7 @@ import * as path from 'path';
 
 import LocalBuildCacheProvider from '../index';
 
-// memfs v3 doesn't support fs.promises.cp
-const mockFs = () => {
-  const { fs } = require('memfs');
-
-  async function copyDir(src: string, dest: string) {
-    await fs.promises.mkdir(dest, { recursive: true });
-    const entries = await fs.promises.readdir(src, { withFileTypes: true });
-    for (const entry of entries) {
-      const srcPath = path.join(src, entry.name);
-      const destPath = path.join(dest, entry.name);
-      if (entry.isDirectory()) {
-        await copyDir(srcPath, destPath);
-      } else {
-        await fs.promises.copyFile(srcPath, destPath);
-      }
-    }
-  }
-
-  fs.promises.cp = async (src: string, dest: string, _options?: { recursive?: boolean }) => {
-    await copyDir(src, dest);
-  };
-
-  return fs;
-};
-
-jest.mock('fs', () => mockFs());
+jest.mock('fs');
 
 function getUploadBuildCache(plugin: BuildCacheProviderPlugin) {
   if ('uploadBuildCache' in plugin && plugin.uploadBuildCache) {
