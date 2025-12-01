@@ -56,32 +56,28 @@ export function getUrlWithReactNavigationConcessions(
 ): UrlWithReactNavigationConcessions {
   const pathWithoutGroups = stripGroupSegmentsFromPath(stripBaseUrl(path, baseUrl));
 
-  let parsed: URL;
+  let pathname = '';
+  let hash = '';
   try {
     // NOTE(@kitten): This used to use a dummy base URL for parsing (phony [.] example)
     // However, this seems to get flagged since it's preserved 1:1 in the output bytecode by certain scanners
     // Instead, we use an empty `file:` URL. This will still perform `pathname` normalization, search parameter parsing
     // encoding, and all other logic, except the logic that applies to hostnames and protocols, and also not leave a
     // dummy URL in the output bytecode
-    parsed = new URL(path, 'file:');
+    const parsed = new URL(path, 'file:');
+    pathname = parsed.pathname;
+    hash = parsed.hash;
   } catch {
     // Do nothing with invalid URLs.
-    return {
-      path,
-      nonstandardPathname: '',
-      hash: '',
-      pathWithoutGroups,
-    };
   }
 
-  const pathname = parsed.pathname;
   const withoutBaseUrl = stripBaseUrl(pathname, baseUrl);
   return {
     path,
     // Make sure there is a trailing slash
     // The slashes are at the end, not the beginning
     nonstandardPathname: withoutBaseUrl.replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
-    hash: parsed.hash,
+    hash,
     pathWithoutGroups,
   };
 }
