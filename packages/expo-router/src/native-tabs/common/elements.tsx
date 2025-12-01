@@ -1,3 +1,4 @@
+import type { AndroidSymbol } from 'expo-symbols';
 import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -84,10 +85,21 @@ export interface DrawableIcon {
   drawable?: string;
 }
 
+export interface MaterialIcon {
+  md: AndroidSymbol;
+}
+
 export type BaseNativeTabsTriggerIconProps = { selectedColor?: ColorValue };
 
 export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps &
-  ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
+  (
+    | (SFSymbolIcon & DrawableIcon)
+    | (SFSymbolIcon & MaterialIcon)
+    | (SFSymbolIcon & SrcIcon)
+    | (MaterialIcon & SrcIcon)
+    | (DrawableIcon & SrcIcon)
+    | SrcIcon
+  );
 
 /**
  * Renders an icon for the tab.
@@ -126,6 +138,16 @@ export const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps> = Icon;
  */
 export const NativeTabsTriggerVectorIcon = VectorIcon;
 
+export interface NativeTabsTriggerPromiseIconProps {
+  loader: () => Promise<ImageSourcePropType | null>;
+}
+
+export const NativeTabsTriggerPromiseIcon = function NativeTabsTriggerPromiseIcon(
+  props: NativeTabsTriggerPromiseIconProps
+) {
+  return null;
+};
+
 export interface NativeTabsTriggerBadgeProps {
   /**
    * The text to display as the badge for the tab.
@@ -142,3 +164,32 @@ export interface NativeTabsTriggerBadgeProps {
 }
 
 export const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps> = Badge;
+
+export interface NativeTabsBottomAccessoryProps {
+  children?: React.ReactNode;
+}
+
+/**
+ * A [bottom accessory](https://developer.apple.com/documentation/uikit/uitabbarcontroller/bottomaccessory) for `NativeTabs` on iOS 26 and above.
+ *
+ * @example
+ * ```tsx
+ * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ *
+ * export default Layout(){
+ *   return (
+ *     <NativeTabs>
+ *       <NativeTabs.BottomAccessory>
+ *         <YourAccessoryComponent />
+ *       </NativeTabs.BottomAccessory>
+ *       <NativeTabs.Trigger name="index" />
+ *     </NativeTabs>
+ *   );
+ * }
+ * ```
+ *
+ * @platform iOS 26+
+ */
+export const NativeTabsBottomAccessory: React.FC<NativeTabsBottomAccessoryProps> = () => {
+  return null;
+};

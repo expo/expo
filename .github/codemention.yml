@@ -70,8 +70,6 @@ rules:
     mentions: ['aleqsio', 'wschurman']
   - patterns: ['packages/expo-audio/**']
     mentions: ['alanjhughes', 'behenate']
-  - patterns: ['packages/expo-av/**']
-    mentions: ['lukmccall', 'kudo']
   - patterns: ['packages/expo-background-fetch/**']
     mentions: ['kudo', 'chrfalch']
   - patterns: ['packages/expo-battery/**']

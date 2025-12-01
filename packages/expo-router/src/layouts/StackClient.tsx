@@ -34,8 +34,8 @@ import {
   StackHeader,
   StackScreen,
   appendScreenStackPropsToOptions,
-  isChildOfType,
 } from './stack-utils';
+import { isChildOfType } from '../utils/children';
 import { Protected, type ProtectedProps } from '../views/Protected';
 import { Screen } from '../views/Screen';
 

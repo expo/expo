@@ -8,10 +8,12 @@ exports.isNativeTabTrigger = isNativeTabTrigger;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
-const utils_1 = require("./utils");
 const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
 const useSafeLayoutEffect_1 = require("../views/useSafeLayoutEffect");
 const elements_1 = require("./common/elements");
+const children_1 = require("../utils/children");
+const icon_1 = require("./utils/icon");
+const materialIconConverter_1 = require("./utils/materialIconConverter");
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
  *
@@ -77,7 +79,7 @@ exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     Badge: elements_1.NativeTabsTriggerBadge,
     VectorIcon: elements_1.NativeTabsTriggerVectorIcon,
 });
-function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, }, isDynamic = false) {
+function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, }, isDynamic = false) {
     const initialOptions = isDynamic
         ? {
             ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
@@ -92,20 +94,21 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
             },
             role,
             nativeProps: unstable_nativeProps,
+            disableAutomaticContentInsets,
         };
-    const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [
+    const allowedChildren = (0, children_1.filterAllowedChildrenElements)(children, [
         elements_1.NativeTabsTriggerBadge,
         elements_1.NativeTabsTriggerLabel,
         elements_1.NativeTabsTriggerIcon,
     ]);
     return allowedChildren.reduce((acc, child) => {
-        if ((0, utils_1.isChildOfType)(child, elements_1.NativeTabsTriggerBadge)) {
+        if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerBadge)) {
             appendBadgeOptions(acc, child.props);
         }
-        else if ((0, utils_1.isChildOfType)(child, elements_1.NativeTabsTriggerLabel)) {
+        else if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerLabel)) {
             appendLabelOptions(acc, child.props);
         }
-        else if ((0, utils_1.isChildOfType)(child, elements_1.NativeTabsTriggerIcon)) {
+        else if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerIcon)) {
             appendIconOptions(acc, child.props);
         }
         return acc;
@@ -158,8 +161,19 @@ function appendIconOptions(options, props) {
         }
     }
     else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
+        if ('md' in props) {
+            console.warn('Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.');
+        }
         options.icon = { drawable: props.drawable };
         options.selectedIcon = undefined;
+    }
+    else if ('md' in props && props.md && process.env.EXPO_OS === 'android') {
+        if (process.env.NODE_ENV !== 'production') {
+            if ('drawable' in props) {
+                console.warn('Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.');
+            }
+        }
+        options.icon = (0, materialIconConverter_1.convertMaterialIconNameToImageSource)(props.md);
     }
     else if ('src' in props && props.src) {
         const icon = convertIconSrcToIconOption(props);
@@ -185,13 +199,7 @@ function convertIconSrcToIconOption(icon) {
 function convertSrcOrComponentToSrc(src) {
     if (src) {
         if ((0, react_1.isValidElement)(src)) {
-            if (src.type === elements_1.NativeTabsTriggerVectorIcon) {
-                const props = src.props;
-                return { src: props.family.getImageSource(props.name, 24, 'white') };
-            }
-            else {
-                console.warn('Only VectorIcon is supported as a React element in Icon.src');
-            }
+            return (0, icon_1.convertComponentSrcToImageSource)(src);
         }
         else {
             return { src };

@@ -22,6 +22,8 @@ import {
   pickerStyle,
   refreshable,
   scrollDismissesKeyboard,
+  foregroundStyle,
+  shapes,
   tag,
 } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
@@ -198,13 +200,29 @@ export default function ListScreen() {
           </Picker>
         </Section>
         <Section title="Data">
+          <Label
+            icon={
+              <Image
+                systemName="sun.max.fill"
+                color="white"
+                size={15}
+                modifiers={[
+                  padding({ all: 4 }),
+                  background(
+                    'blue',
+                    shapes.roundedRectangle({ cornerRadius: 12, roundedCornerStyle: 'continuous' })
+                  ),
+                ]}
+              />
+            }
+            title="Label with custom icon"
+          />
           {data.map((item, index) => (
             <Label
               key={index}
-              modifiers={[frame({ height: 24 })]}
+              modifiers={[frame({ height: 24 }), foregroundStyle(color)]}
               title={item.text}
               systemImage={item.systemImage}
-              color={color}
             />
           ))}
         </Section>

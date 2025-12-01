@@ -1,4 +1,4 @@
-import React, { useDeferredValue } from 'react';
+import React, { useDeferredValue, useMemo } from 'react';
 import type { ColorValue } from 'react-native';
 import {
   BottomTabs,
@@ -7,11 +7,13 @@ import {
   type BottomTabsProps,
   type BottomTabsScreenAppearance,
 } from 'react-native-screens';
+import { SafeAreaView } from 'react-native-screens/experimental';
 
 import {
   createScrollEdgeAppearanceFromOptions,
   createStandardAppearanceFromOptions,
 } from './appearance';
+import { NativeTabsBottomAccessory } from './common/elements';
 import {
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
   SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
@@ -23,13 +25,22 @@ import {
   convertOptionsIconToIOSPropsIcon,
   useAwaitedScreensIcon,
 } from './utils/icon';
+import { getFirstChildOfType } from '../utils/children';
+import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
 
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 featureFlags.experiment.controlledBottomTabs = false;
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable } = props;
+  const {
+    minimizeBehavior,
+    disableIndicator,
+    focusedIndex,
+    tabs,
+    sidebarAdaptable,
+    nonTriggerChildren,
+  } = props;
 
   const deferredFocusedIndex = useDeferredValue(focusedIndex);
   // We need to check if the deferred index is not out of bounds
@@ -45,6 +56,13 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   }));
 
   const options = tabs.map((tab) => tab.options);
+
+  const bottomAccessory = useMemo(
+    () => getFirstChildOfType(nonTriggerChildren, NativeTabsBottomAccessory),
+    [nonTriggerChildren]
+  );
+
+  const bottomAccessoryFn = useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory);
 
   const children = tabs.map((tab, index) => {
     const isFocused = index === inBoundsDeferredFocusedIndex;
@@ -98,6 +116,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       tabBarTintColor={props?.tintColor}
       tabBarMinimizeBehavior={minimizeBehavior}
       tabBarControllerMode={tabBarControllerMode}
+      bottomAccessory={bottomAccessoryFn}
       // #endregion
       onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
         props.onTabChange(tabKey);
@@ -133,9 +152,20 @@ function Screen(props: {
   const icon = useAwaitedScreensIcon(options.icon);
   const selectedIcon = useAwaitedScreensIcon(options.selectedIcon);
 
+  const content = contentRenderer();
+  const wrappedContent =
+    process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets ? (
+      <SafeAreaView style={{ flex: 1 }} edges={{ bottom: true }}>
+        {content}
+      </SafeAreaView>
+    ) : (
+      content
+    );
+
   return (
     <BottomTabsScreen
       {...options}
+      overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets}
       tabBarItemBadgeBackgroundColor={
         standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor
       }
@@ -150,7 +180,7 @@ function Screen(props: {
       {...options.nativeProps}
       tabKey={routeKey}
       isFocused={isFocused}>
-      {contentRenderer()}
+      {wrappedContent}
     </BottomTabsScreen>
   );
 }

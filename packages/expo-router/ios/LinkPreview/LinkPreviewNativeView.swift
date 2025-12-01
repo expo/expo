@@ -1,7 +1,8 @@
 import ExpoModulesCore
 
 class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
-  LinkPreviewModalDismissible, LinkPreviewMenuUpdatable {
+  LinkPreviewModalDismissible, LinkPreviewMenuUpdatable
+{
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
   private var directChild: UIView?
@@ -167,10 +168,12 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
     animator: UIContextMenuInteractionCommitAnimating
   ) {
-    self.onPreviewTapped()
-    animator.addCompletion { [weak self] in
-      self?.linkPreviewNativeNavigation.pushPreloadedView()
-      self?.onPreviewTappedAnimationCompleted()
+    if preview != nil {
+      self.onPreviewTapped()
+      animator.addCompletion { [weak self] in
+        self?.linkPreviewNativeNavigation.pushPreloadedView()
+        self?.onPreviewTappedAnimationCompleted()
+      }
     }
   }
 

@@ -46,9 +46,9 @@ export declare const NativeTabTrigger: typeof NativeTabTriggerImpl & {
     Label: import("react").FC<NativeTabsTriggerLabelProps>;
     Icon: import("react").FC<NativeTabsTriggerIconProps>;
     Badge: import("react").FC<NativeTabsTriggerBadgeProps>;
-    VectorIcon: typeof import("../primitives").VectorIcon;
+    VectorIcon: typeof import("..").VectorIcon;
 };
-export declare function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, }: NativeTabTriggerProps, isDynamic?: boolean): NativeTabOptions;
+export declare function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, }: NativeTabTriggerProps, isDynamic?: boolean): NativeTabOptions;
 export declare function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps): void;
 export declare function isNativeTabTrigger(child: ReactNode, contextKey?: string): child is ReactElement<NativeTabTriggerProps & {
     name: string;

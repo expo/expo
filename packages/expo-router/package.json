@@ -88,6 +88,7 @@
     "expo": "*",
     "expo-constants": "^18.0.9",
     "expo-linking": "^8.0.8",
+    "expo-symbols": "*",
     "react": "*",
     "react-dom": "*",
     "react-native": "*",

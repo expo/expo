@@ -52,7 +52,6 @@
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
-@property (nonatomic, strong) RCTReactNativeFactory *reactNativeFactory;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 @property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
@@ -83,7 +82,6 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     self.dependencyProvider = [RCTAppDependencyProvider new];
-    self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
     self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
     [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
   }
@@ -203,10 +201,10 @@
   self.networkInterceptor = nil;
 
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
- 
+
   // Reset app react host
   [self.delegate destroyReactInstance];
- 
+
   if (_devLauncherViewController != nil) {
     [_devLauncherViewController resetHostingController];
   }
@@ -251,12 +249,6 @@
   }
 
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
-
-  // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (_reactNativeFactory.rootViewFactory.reactHost == nil) {
-    [self navigateToLauncher];
-  }
-
   return true;
 }
 
@@ -573,25 +565,6 @@
   NSString *buildVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
   NSString *appVersion = [NSString stringWithFormat:@"%@ (%@)", shortVersion, buildVersion];
   return appVersion;
-}
-
--(RCTReleaseLevel)getReactNativeReleaseLevel
-{
-//  @TODO: Read this value from the main react-native factory instance on 0.82
-  NSString *releaseLevelString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactNativeReleaseLevel"];
-  RCTReleaseLevel releaseLevel = Stable;
-  if ([releaseLevelString isKindOfClass:[NSString class]]) {
-    NSString *lower = [releaseLevelString lowercaseString];
-    if ([lower isEqualToString:@"canary"]) {
-      releaseLevel = Canary;
-    } else if ([lower isEqualToString:@"experimental"]) {
-      releaseLevel = Experimental;
-    } else if ([lower isEqualToString:@"stable"]) {
-      releaseLevel = Stable;
-    }
-  }
-
-  return releaseLevel;
 }
 
 -(void)copyToClipboard:(NSString *)content {

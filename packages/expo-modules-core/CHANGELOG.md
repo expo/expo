@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Drop support for legacy architecture.
+
 ### 🎉 New features
 
 - Add `map` to `ValueOrUndefined`. ([#40593](https://github.com/expo/expo/pull/40593) by [@Wenszel](https://github.com/Wenszel))
