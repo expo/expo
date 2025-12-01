@@ -7,6 +7,13 @@ exports.getTransformEnvironment = getTransformEnvironment;
 exports.serverPreludeSerializerPlugin = serverPreludeSerializerPlugin;
 exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
 exports.getEnvVarDevString = getEnvVarDevString;
+/**
+ * Copyright © 2022 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+const env_1 = require("@expo/env");
 const CountingSet_1 = __importDefault(require("@expo/metro/metro/lib/CountingSet"));
 const countLines_1 = __importDefault(require("@expo/metro/metro/lib/countLines"));
 const debug = require('debug')('expo:metro-config:serializer:env-var');
@@ -80,7 +87,7 @@ function environmentVariableSerializerPlugin(entryPoint, preModules, graph, opti
     1, 0, getEnvPrelude(code));
     return [entryPoint, preModules, graph, options];
 }
-function getEnvVarDevString(env = process.env) {
+function getEnvVarDevString(env = env_1.initialEnv) {
     // Set the process.env object to the current environment variables object
     // ensuring they aren't iterable, settable, or enumerable.
     const str = `process.env=Object.defineProperties(process.env, {` +
