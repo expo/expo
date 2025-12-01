@@ -673,8 +673,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
       platform: expoBundleOptions.platform ?? 'web',
-      // @ts-expect-error: `runtimeBytecodeVersion` does not exist in `expoBundleOptions` or `TransformInputOptions`
-      runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
     };
 
     const resolvedEntryFilePath = await this.resolveRelativePathAsync(filePath, {
