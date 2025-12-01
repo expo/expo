@@ -36,7 +36,6 @@ The file or directory does not need to exist &mdash; an error will be thrown fro
 - Available properties, such as `type`, `size`, `creationDate`, and more
 - Ability to read and write files as streams or using the `FileHandle` class
 - Easy file download/upload using `downloadFileAsync` or `expo/fetch`
-- Read-only access to bundled assets via `Paths.bundle` (see [Reading bundled assets](#reading-bundled-assets) example)
 
 ## Examples
 
@@ -157,69 +156,6 @@ const response = await fetch('https://example.com', {
 
 </Collapsible>
 
-<Collapsible summary="Reading bundled assets">
-
-Bundled assets are files included with your app during the build process. These are typically resources like images, fonts, or data files that you want to ship with your app.
-
-**iOS**: On iOS, bundled assets are stored in the app bundle directory (`Paths.bundle`), which maps to `Bundle.main.bundlePath`. You can directly read files from this location.
-
-**Android**: On Android, bundled assets use the `asset://` protocol. Files in the Android `assets` folder are accessed through this scheme.
-
-> **Prerequisite:** To access a file here, it must be bundled into the native build (e.g., via `assetBundlePatterns` in `app.json`). Files simply existing in your project structure are not automatically available in the bundle directory.
-
-> **Note**: Bundled assets are read-only. If you need to modify a file, copy it to a writable location like `Paths.cache` or `Paths.document` first.
-
-```ts example.ts
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
-
-try {
-  // Step 1: Register the asset so Metro/packager provides a usable URI.
-  // Use the correct relative path to your asset in the `require()` call.
-  const asset = Asset.fromModule(require('./assets/data.json'));
-  await asset.downloadAsync();
-
-  // Step 2: Get the local file URI (prefers downloaded localUri)
-  const fileUri = asset.localUri || asset.uri;
-
-  // Step 3: Read as text
-  const content = await FileSystem.readAsStringAsync(fileUri);
-  console.log('Asset content:', content);
-
-  // Step 4: Read as Base64 (useful for ArrayBuffer conversion)
-  const base64 = await FileSystem.readAsStringAsync(fileUri, {
-    encoding: FileSystem.EncodingType.Base64,
-  });
-  console.log('Base64 length:', base64.length);
-
-  // If you need to modify the file, copy it to a writable location first
-  await FileSystem.copyAsync({ from: fileUri, to: FileSystem.cacheDirectory + 'data-copy.json' });
-  await FileSystem.writeAsStringAsync(
-    FileSystem.cacheDirectory + 'data-copy.json',
-    'Modified content'
-  );
-} catch (error) {
-  console.error('Error reading bundled asset:', error);
-}
-```
-
-To bundle assets with your app:
-
-1. Place files in your project's `assets` directory (e.g., `assets/data.json`)
-2. Configure `assetBundlePatterns` in **app.json**:
-   ```json
-   {
-     "expo": {
-       "assetBundlePatterns": ["assets/**"]
-     }
-   }
-   ```
-3. Build your app - the assets will be included in the bundle
-
-</Collapsible>
-
-> **Note:** Metro may inline JSON into JS bundles when you import JSON directly. Registering the file with `expo-asset` (as shown above) ensures you get a proper file URI you can read with the FileSystem APIs.
-
 <Collapsible summary="Moving and copying files">
 
 ```ts example.ts
@@ -238,6 +174,102 @@ try {
 } catch (error) {
   console.error(error);
 }
+```
+
+</Collapsible>
+
+<Collapsible summary="Working with Bundled Assets">
+
+There are two ways to read files bundled with your application: using the `expo-asset` integration (recommended) or accessing the native bundle directly.
+
+#### 1. Using `expo-asset` (Recommended)
+
+This method allows you to import files directly in your JavaScript. Expo handles mapping the file to the file system for you.
+
+```ts example.ts
+import { File } from 'expo-file-system';
+import { Asset } from 'expo-asset';
+
+const doSomethingWithAsset = async () => {
+  // 1. Resolve the asset
+  const asset = Asset.fromModule(require('./assets/example.txt'));
+
+  // 2. Ensure the file is downloaded/exists on the local device
+  await asset.downloadAsync();
+
+  // 3. Create a File reference using the localUri
+  if (asset.localUri) {
+    const file = new File(asset.localUri);
+
+    // 4. Read the content
+    const content = await file.text();
+    console.log(content);
+  }
+};
+```
+
+#### 2. Using `Paths.bundle` (Advanced / Native only)
+
+If you wish to avoid `expo-asset` or need to access resources already existing in the native platform projects, you can use `Paths.bundle`.
+
+> **Note:** This requires the file to exist in the **native platform bundle**. Files sitting in your JavaScript project structure are **not** automatically available here unless you move them during the build process (using a Config Plugin or manually).
+
+**Prerequisites:**
+You must ensure the file is copied to the correct native location during the build:
+
+- **Android:** `android/app/src/main/assets/`
+- **iOS:** The root of the Main Bundle (added via Xcode "Copy Bundle Resources").
+
+If you are using **Expo Prebuild** (Managed Workflow), you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
+
+**Usage:**
+On iOS, the application bundle is read-only and direct access may be restricted due to sandboxing permissions. The recommended approach is to copy the file to a writable location (like `Paths.cache`,paths.document) before reading it.
+
+Assuming you have a file named `example.txt` in the native locations described above:
+
+```ts example.ts
+import { File, Paths } from 'expo-file-system';
+
+const readNativeBundle = async () => {
+  try {
+    const fileName = 'example.txt';
+
+    // 1. Reference file inside native bundle
+    const bundleFile = new File(Paths.bundleDirectory, fileName);
+
+    if (!bundleFile.exists) {
+      console.warn('File not found in native bundle');
+      return;
+    }
+
+    // --- Platform Differences ---
+    // iOS: must copy (bundle is read-only)
+    // Android: can read directly
+
+    let fileToRead = bundleFile;
+
+    if (Platform.OS === 'ios') {
+      // Copy only for iOS
+      const tempFile = new File(Paths.cacheDirectory, fileName);
+
+      if (tempFile.exists) {
+        await tempFile.delete();
+      }
+
+      await bundleFile.copy(tempFile);
+      fileToRead = tempFile;
+    }
+
+    // 2. Read text
+    const content = await fileToRead.text();
+    console.log(content);
+  } catch (error) {
+    console.error(
+      'Error reading bundle file. Make sure the file is added to Android/iOS native project.',
+      error
+    );
+  }
+};
 ```
 
 </Collapsible>
