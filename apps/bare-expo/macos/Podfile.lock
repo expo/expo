@@ -2480,10 +2480,10 @@ SPEC CHECKSUMS:
   EXConstants: 59d46d25b89f88cc38291a56dbce4d550758f72d
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   Expo: 45a941ff0152444041b102e500a396b01ac58c95
-  expo-dev-client: a91113425e3e46e35f593a3b1c54677577820938
+  expo-dev-client: b8c16c699a35787e1ac38c6d44ef7552fe3f0334
   expo-dev-launcher: e6290877408899b5584d4ff90543ac2ae9043c41
-  expo-dev-menu: 7332789a324384b107093ab66b9dab73b11fe396
-  expo-dev-menu-interface: 1cf243be690b4da416d9afba67142c72c6a795b9
+  expo-dev-menu: a5d1e4c5ee464c42146e06486624205724147477
+  expo-dev-menu-interface: 30d9aa2fbca275a1335ca7e076273dac1d42d40a
   ExpoAsset: 4375a46b45b12bbfcf6efac8c8a33aebdb8ba12b
   ExpoCrypto: 4c50a152f5939e16a2ca10be77b002a3a391c4d3
   ExpoFileSystem: adffad7d1f57f768ca7a5e3bf450312fb9ebd27a

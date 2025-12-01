@@ -143,6 +143,7 @@ struct SettingsTabView: View {
       Button(showCopiedMessage ? "Copied to clipboard!" : "Copy system info") {
         let buildInfoJSON = createBuildInfoJSON()
 #if os(macOS)
+        NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(buildInfoJSON, forType: .string)
 #else
         let clipboard = UIPasteboard.general
