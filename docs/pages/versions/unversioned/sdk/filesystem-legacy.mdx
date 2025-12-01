@@ -103,12 +103,24 @@ Files bundled with your app can be accessed using `FileSystem.bundleDirectory`.
 
 **Prerequisites:**
 
-You must ensure the file is copied to the correct native location during the build:
+For **Expo managed workflow**, add the following to your `app.json` to ensure assets are bundled:
+
+```json app.json
+{
+  "expo": {
+    "assetBundlePatterns": ["**/*"]
+  }
+}
+```
+
+> **Important:** Without this configuration, iOS will not be able to read files from the bundle, though Android may still work.
+
+For **bare workflow**, you must ensure the file is copied to the correct native location during the build:
 
 - **Android:** `android/app/src/main/assets/`
 - **iOS:** The root of the Main Bundle (added via Xcode "Copy Bundle Resources").
 
-If you are using **Expo Prebuild** (Managed Workflow), you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
+If you are using **Expo Prebuild**, you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
 
 **Usage:**
 
