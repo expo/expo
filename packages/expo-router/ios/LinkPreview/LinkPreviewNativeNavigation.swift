@@ -1,3 +1,5 @@
+import ExpoModulesCore
+import RNScreens
 import UIKit
 
 struct TabChangeCommand {
@@ -6,93 +8,125 @@ struct TabChangeCommand {
 }
 
 internal class LinkPreviewNativeNavigation {
-  private var preloadedView: UIView?
-  private var preloadedStackView: UIView?
+  private var preloadedScreenView: RNSScreenView?
+  private var preloadedStackView: RNSScreenStackView?
   private var tabChangeCommands: [TabChangeCommand] = []
+  private let logger: Logger?
 
-  init() {}
+  init(logger: Logger?) {
+    self.logger = logger
+  }
 
   func pushPreloadedView() {
     self.tabChangeCommands.forEach { command in
       command.tabBarController?.selectedIndex = command.tabIndex
     }
-    guard let preloadedView,
+    guard let preloadedScreenView,
       let preloadedStackView
     else {
+      if self.tabChangeCommands.isEmpty {
+        logger?.warn(
+          "expo-router: No preloaded screen view to push. You should only use Link.Preview when navigating inside a stack or native tabs navigator."
+        )
+      }
       return
     }
-    LinkPreviewNativeNavigationObjC.pushPreloadedView(
-      preloadedView, ontoStackView: preloadedStackView)
+
+    // Instead of pushing the preloaded screen view, we set its activity state
+    // React native screens will then handle the rest.
+    preloadedScreenView.activityState = Int32(RNSActivityState.onTop.rawValue)
+    preloadedStackView.markChildUpdated()
+
+    // If the screen is modal with header then it will have exactly one child -
+    // RNSNavigationController.
+    // https://github.com/software-mansion/react-native-screens/blob/8b82e081e8fdfa6e0864821134bda9e87a745b00/src/components/ScreenStackItem.tsx#L146-L160
+    if preloadedScreenView.isModal() && preloadedScreenView.controller.children.count == 1 {
+      // The first child should be RNSNavigationController (<ScreenStack>).
+      if let rnsNavController = preloadedScreenView.controller.children.first
+        as? RNSNavigationController {
+        // The delegate of RNSNavigationController is RNSScreenStackView.
+        if let innerScreenStack = rnsNavController.delegate as? RNSScreenStackView {
+          // The first and only child of the inner screen stack should be
+          // RNSScreenView (<ScreenStackItem>).
+          if let screenContentView = innerScreenStack.reactSubviews().first as? RNSScreenView {
+            // Same as above, we let React Native Screens handle the transition.
+            // We need to set the activity of inner screen as well, because its
+            // react value is the same as the preloaded screen - 0.
+            // https://github.com/software-mansion/react-native-screens/blob/8b82e081e8fdfa6e0864821134bda9e87a745b00/src/components/ScreenStackItem.tsx#L151
+            screenContentView.activityState = Int32(RNSActivityState.onTop.rawValue)
+            innerScreenStack.markChildUpdated()
+          }
+        }
+      }
+    }
   }
 
   func updatePreloadedView(screenId: String?, tabPath: TabPathPayload?, responder: UIView) {
     self.tabChangeCommands = []
     let oldTabKeys = tabPath?.path.map { $0.oldTabKey } ?? []
-    let stackOrTabView = findStackViewWithScreenIdOrTabBarController(
-      screenId: screenId, tabKeys: oldTabKeys, responder: responder)
-    if let stackOrTabView = stackOrTabView {
-      if LinkPreviewNativeNavigationObjC.isRNSBottomTabsScreenComponentView(stackOrTabView) {
-        let tabView = stackOrTabView
+    if let stackOrTabView = findStackViewWithScreenIdOrTabBarController(
+      screenId: screenId, tabKeys: oldTabKeys, responder: responder) {
+      if let tabView = stackOrTabView as? RNSBottomTabsScreenComponentView {
         let newTabKeys = tabPath?.path.map { $0.newTabKey } ?? []
-        let stackView = findStackViewWithScreenIdInSubViews(
-          screenId: screenId, tabKeys: newTabKeys, rootView: tabView)
-        if let stackView = stackView {
-          let screenViews = LinkPreviewNativeNavigationObjC.getScreenViews(stackView)
-          if let screenView = screenViews.first(where: {
-            LinkPreviewNativeNavigationObjC.getScreenId($0) == screenId
-          }) {
-            preloadedView = screenView
-            preloadedStackView = stackView
-            print("LinkPreviewNativeNavigation: Preloaded view for screenId \(screenId).")
-          }
+        // The order is important here. findStackViewWithScreenIdInSubViews must be called
+        // even if screenId is nil to compute the tabChangeCommands.
+        if let stackView = findStackViewWithScreenIdInSubViews(
+          screenId: screenId, tabKeys: newTabKeys, rootView: tabView), let screenId {
+          setPreloadedView(stackView: stackView, screenId: screenId)
         }
-      } else if LinkPreviewNativeNavigationObjC.isRNSScreenStackView(stackOrTabView) {
-        let stackView = stackOrTabView
-        let screenViews = LinkPreviewNativeNavigationObjC.getScreenViews(stackView)
-        if let screenView = screenViews.first(where: {
-          LinkPreviewNativeNavigationObjC.getScreenId($0) == screenId
-        }) {
-          preloadedView = screenView
-          preloadedStackView = stackView
-          print("LinkPreviewNativeNavigation: Preloaded view for screenId \(screenId).")
-        }
+      } else if let stackView = stackOrTabView as? RNSScreenStackView, let screenId {
+        setPreloadedView(stackView: stackView, screenId: screenId)
       }
     } else {
-      print("LinkPreviewNativeNavigation: No stack view found for screenId \(screenId).")
+      logger?.warn(
+        "expo-router: No view found for link preview navigation. You should only use Link.Preview when navigating inside a stack or native tabs navigator."
+      )
     }
   }
 
+  private func setPreloadedView(
+    stackView: RNSScreenStackView, screenId: String
+  ) {
+    let screenViews = stackView.reactSubviews()
+    if let screenView = screenViews?.first(where: {
+      ($0 as? RNSScreenView)?.screenId == screenId
+    }) as? RNSScreenView {
+      preloadedScreenView = screenView
+      preloadedStackView = stackView
+    }
+  }
+
+  // Allowing for null screenId to support preloading tab navigators
+  // Even if the desired screenId is not found, we still need to compute the tabChangeCommands
   private func findStackViewWithScreenIdInSubViews(
     screenId: String?, tabKeys: [String], rootView: UIView
-  ) -> UIView? {
-    if LinkPreviewNativeNavigationObjC.isRNSScreenStackView(rootView),
-      let _screenId = screenId {
-      let screenIds = LinkPreviewNativeNavigationObjC.getStackViewScreenIds(rootView)
-      if screenIds.contains(_screenId) {
+  ) -> RNSScreenStackView? {
+    if let rootView = rootView as? RNSScreenStackView,
+      let screenId {
+      if rootView.screenIds.contains(screenId) {
         return rootView
       }
-    } else if LinkPreviewNativeNavigationObjC.isRNSBottomTabsScreenComponentView(rootView)
-      || LinkPreviewNativeNavigationObjC.isRNSBottomTabsHostComponentView(rootView) {
-      let tabBarController = LinkPreviewNativeNavigationObjC.getBottomTabController(from: rootView)
-      if let tabBarController = tabBarController {
-        let views = tabBarController.viewControllers?.compactMap { $0.view } ?? []
-        let enumeratedViews = views.enumerated()
-        if let (tabIndex, tabView) =
-          enumeratedViews
-          .first(where: { _, view in
-            LinkPreviewNativeNavigationObjC.isRNSBottomTabsScreenComponentView(view)
-              && tabKeys.contains(LinkPreviewNativeNavigationObjC.getTabKey(view))
-          }) {
-          self.tabChangeCommands.append(
-            TabChangeCommand(tabBarController: tabBarController, tabIndex: tabIndex))
-          let test = tabBarController.viewControllers
-
-          for subview in tabView.subviews {
-            let result = findStackViewWithScreenIdInSubViews(
-              screenId: screenId, tabKeys: tabKeys, rootView: subview)
-            if result != nil {
-              return result
-            }
+    } else if let tabBarController =
+      (rootView as? RNSBottomTabsScreenComponentView)?.reactViewController()?.tabBarController
+      as? UITabBarController
+      ?? (rootView as? RNSBottomTabsHostComponentView)?.controller as? UITabBarController {
+      let views = tabBarController.viewControllers?.compactMap { $0.view } ?? []
+      let enumeratedViews = views.enumerated()
+      if let (tabIndex, tabView) =
+        enumeratedViews
+        .first(where: { _, view in
+          guard let tabView = view as? RNSBottomTabsScreenComponentView, let tabKey = tabView.tabKey
+          else {
+            return false
+          }
+          return tabKeys.contains(tabKey)
+        }) {
+        self.tabChangeCommands.append(
+          TabChangeCommand(tabBarController: tabBarController, tabIndex: tabIndex))
+        for subview in tabView.subviews {
+          if let result = findStackViewWithScreenIdInSubViews(
+            screenId: screenId, tabKeys: tabKeys, rootView: subview) {
+            return result
           }
         }
       }
@@ -115,17 +149,13 @@ internal class LinkPreviewNativeNavigation {
     var currentResponder: UIResponder? = responder
 
     while let nextResponder = currentResponder?.next {
-      if let view = nextResponder as? UIView,
-        LinkPreviewNativeNavigationObjC.isRNSScreenStackView(view),
-        let _screenId = screenId {
-        let screenIds = LinkPreviewNativeNavigationObjC.getStackViewScreenIds(view)
-        if screenIds.contains(_screenId) {
+      if let view = nextResponder as? RNSScreenStackView,
+        let screenId {
+        if view.screenIds.contains(screenId) {
           return view
         }
-      } else if let tabView = nextResponder as? UIView,
-        LinkPreviewNativeNavigationObjC.isRNSBottomTabsScreenComponentView(tabView) {
-        let tabKey = LinkPreviewNativeNavigationObjC.getTabKey(tabView)
-        if tabKeys.contains(tabKey) {
+      } else if let tabView = nextResponder as? RNSBottomTabsScreenComponentView {
+        if let tabKey = tabView.tabKey, tabKeys.contains(tabKey) {
           return tabView
         }
       }
