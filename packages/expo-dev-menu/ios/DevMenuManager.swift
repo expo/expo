@@ -148,10 +148,8 @@ open class DevMenuManager: NSObject {
 
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
         if DevMenuPreferences.keyCommandsEnabled {
-          #if !os(macOS)
           DevMenuKeyCommandsInterceptor.isInstalled = false
           DevMenuKeyCommandsInterceptor.isInstalled = true
-          #endif
         }
       }
     } else {

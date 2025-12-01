@@ -14,7 +14,7 @@ class DevMenuDevOptionsDelegate {
     self.bridge = bridge
     devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings
 
-    #if DEBUG
+    #if DEBUG && !os(macOS)
     perfMonitor = bridge.module(forName: "PerfMonitor") as? NSObject
     #endif
   }

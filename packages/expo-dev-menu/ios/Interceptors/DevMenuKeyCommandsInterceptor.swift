@@ -2,6 +2,9 @@
 
 #if os(iOS) || os(tvOS)
 import UIKit
+#else
+import AppKit
+#endif
 import React
 import EXDevMenuInterface
 
@@ -125,4 +128,3 @@ class DevMenuKeyCommandsInterceptor {
     }
   }
 }
-#endif

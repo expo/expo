@@ -56,8 +56,8 @@ public class DevMenuPreferences: Module {
      */
 #if !os(macOS)
     DevMenuTouchInterceptor.isInstalled = DevMenuPreferences.touchGestureEnabled
-    DevMenuKeyCommandsInterceptor.isInstalled = DevMenuPreferences.keyCommandsEnabled
 #endif
+    DevMenuKeyCommandsInterceptor.isInstalled = DevMenuPreferences.keyCommandsEnabled
   }
 
   /**
