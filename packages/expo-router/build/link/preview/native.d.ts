@@ -42,6 +42,7 @@ export interface NativeLinkPreviewContentProps extends ViewProps {
 export declare function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps): import("react").JSX.Element | null;
 export declare function LinkZoomTransitionEnabler(props: {
     zoomTransitionSourceIdentifier: string;
+    preventInteractiveDismissal?: boolean;
 }): import("react").JSX.Element | null;
 interface LinkSourceAlignmentRect {
     x: number;

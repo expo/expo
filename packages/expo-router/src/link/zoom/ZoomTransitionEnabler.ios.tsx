@@ -1,4 +1,7 @@
+import { use } from 'react';
+
 import type { ZoomTransitionEnablerProps } from './ZoomTransitionEnabler.types';
+import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
@@ -42,7 +45,15 @@ export function ZoomTransitionEnabler({ route }: ZoomTransitionEnablerProps) {
     const hasZoomTransition =
       !!zoomTransitionId && zoomTransitionScreenId === route.key && !isLinkPreviewNavigation;
     if (hasZoomTransition && typeof zoomTransitionId === 'string') {
-      return <LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} />;
+      const descriptorsMap = use(DescriptorsContext);
+      const currentDescriptor = descriptorsMap[route.key];
+      const preventInteractiveDismissal = currentDescriptor?.options?.gestureEnabled === false;
+      return (
+        <LinkZoomTransitionEnabler
+          zoomTransitionSourceIdentifier={zoomTransitionId}
+          preventInteractiveDismissal={preventInteractiveDismissal}
+        />
+      );
     }
   }
   return null;

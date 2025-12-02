@@ -104,7 +104,10 @@ const LinkZoomTransitionEnablerNativeView: React.ComponentType<
 > | null = areNativeViewsAvailable
   ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
   : null;
-export function LinkZoomTransitionEnabler(props: { zoomTransitionSourceIdentifier: string }) {
+export function LinkZoomTransitionEnabler(props: {
+  zoomTransitionSourceIdentifier: string;
+  preventInteractiveDismissal?: boolean;
+}) {
   if (!LinkZoomTransitionEnablerNativeView) {
     return null;
   }
