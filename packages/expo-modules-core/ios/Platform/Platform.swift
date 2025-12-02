@@ -33,7 +33,7 @@ extension NSPasteboard {
     }
     set {
       self.clearContents()
-      if let newValue = newValue {
+      if let newValue {
         self.setString(newValue, forType: .string)
       }
     }
