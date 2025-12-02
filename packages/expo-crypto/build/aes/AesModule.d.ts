@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo';
-import { DecryptOptions, EncryptOptions, KeySize, SealedDataConfig, BinaryInput } from './aes.types';
+import { DecryptOptions, EncryptOptions, KeySize, SealedDataConfig, BinaryInput, TagByteLength } from './aes.types';
 /**
  * Represents an AES encryption key that can be used for encryption and decryption operations.
  * This class provides methods to generate, import, and export encryption keys.
@@ -110,7 +110,7 @@ declare class SealedData {
     /** Size of the initialization vector in bytes. */
     readonly ivSize: number;
     /** Size of the authentication tag in bytes. */
-    readonly tagSize: number;
+    readonly tagSize: TagByteLength;
 }
 type NativeEncryptOptions = Omit<EncryptOptions, 'nonce'> & {
     nonce?: number | BinaryInput | undefined;

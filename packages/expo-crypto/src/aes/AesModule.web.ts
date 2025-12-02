@@ -6,6 +6,7 @@ import {
   KeySize,
   SealedDataConfig,
   BinaryInput,
+  TagByteLength,
 } from './aes.types';
 import {
   base64ToUintArray,
@@ -90,7 +91,7 @@ class SealedData {
   static fromParts(
     iv: BinaryInput,
     ciphertext: BinaryInput,
-    tag?: BinaryInput | number
+    tag?: BinaryInput | TagByteLength
   ): SealedData {
     const ciphertextBytes = binaryInputBytes(ciphertext);
     const ivBytes = binaryInputBytes(iv);
@@ -114,7 +115,7 @@ class SealedData {
     }
 
     const tagBytes = binaryInputBytes(tag);
-    const tagLength = tagBytes.byteLength;
+    const tagLength = tagBytes.byteLength as TagByteLength;
     const totalLength = ivLength + ciphertextBytes.byteLength + tagLength;
 
     const combined = new Uint8Array(totalLength);
@@ -128,7 +129,7 @@ class SealedData {
   get ivSize(): number {
     return this.config.ivLength;
   }
-  get tagSize(): number {
+  get tagSize(): TagByteLength {
     return this.config.tagLength;
   }
   get combinedSize(): number {

@@ -7,7 +7,10 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
 @OptIn(EitherType::class)
-class DecryptOptions: Record {
-  @Field val output: DataFormat = DataFormat.BYTES
-  @Field val additionalData: BinaryInput? = null
+class DecryptOptions : Record {
+  @Field
+  val output: DataFormat = DataFormat.BYTES
+
+  @Field
+  val additionalData: BinaryInput? = null
 }

@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo';
-import { DecryptOptions, EncryptOptions, KeySize, SealedDataConfig, BinaryInput } from './aes.types';
+import { DecryptOptions, EncryptOptions, KeySize, SealedDataConfig, BinaryInput, TagByteLength } from './aes.types';
 declare class EncryptionKey {
     key: CryptoKey;
     keySize: KeySize;
@@ -15,9 +15,9 @@ declare class SealedData {
     private config;
     private constructor();
     static fromCombined(combined: BinaryInput, config?: SealedDataConfig): SealedData;
-    static fromParts(iv: BinaryInput, ciphertext: BinaryInput, tag?: BinaryInput | number): SealedData;
+    static fromParts(iv: BinaryInput, ciphertext: BinaryInput, tag?: BinaryInput | TagByteLength): SealedData;
     get ivSize(): number;
-    get tagSize(): number;
+    get tagSize(): TagByteLength;
     get combinedSize(): number;
     iv(encoding?: 'bytes' | 'base64'): Promise<Uint8Array | string>;
     tag(encoding?: 'bytes' | 'base64'): Promise<Uint8Array | string>;

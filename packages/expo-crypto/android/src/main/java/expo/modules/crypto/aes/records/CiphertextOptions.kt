@@ -7,4 +7,4 @@ import expo.modules.kotlin.records.Record
 data class CiphertextOptions(
   @Field val includeTag: Boolean = false,
   @Field val outputFormat: DataFormat = DataFormat.BYTES
-): Record
+) : Record

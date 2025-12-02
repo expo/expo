@@ -6,6 +6,7 @@ import {
   KeySize,
   SealedDataConfig,
   BinaryInput,
+  TagByteLength,
 } from './aes.types';
 
 /**
@@ -122,7 +123,7 @@ declare class SealedData {
   /** Size of the initialization vector in bytes. */
   readonly ivSize: number;
   /** Size of the authentication tag in bytes. */
-  readonly tagSize: number;
+  readonly tagSize: TagByteLength;
 }
 
 type NativeEncryptOptions = Omit<EncryptOptions, 'nonce'> & {

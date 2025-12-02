@@ -59,7 +59,7 @@ class AesCryptoModule : Module() {
         throw Exceptions.IllegalArgument("SealedData constructor cannot be used directly")
       }
       StaticFunction("fromParts", this@AesCryptoModule::sealedDataFromParts)
-      StaticFunction("fromCombined") { combined: ByteArray, config: SealedDataConfig?  ->
+      StaticFunction("fromCombined") { combined: ByteArray, config: SealedDataConfig? ->
         val config = config ?: SealedDataConfig()
         SealedData(config, content = combined)
       }
@@ -99,10 +99,11 @@ class AesCryptoModule : Module() {
       val encodedString = input.get(String::class)
       when (encoding) {
         KeyEncoding.BASE64 -> Base64.decode(encodedString, Base64.NO_WRAP)
-        KeyEncoding.HEX -> encodedString
-          .lowercase()
-          .substringAfter("0x")
-          .hexToByteArray(HexFormat.Default)
+        KeyEncoding.HEX ->
+          encodedString
+            .lowercase()
+            .substringAfter("0x")
+            .hexToByteArray(HexFormat.Default)
       }
     }
     return EncryptionKey(bytes)
@@ -111,7 +112,7 @@ class AesCryptoModule : Module() {
   private fun encrypt(
     plaintext: BinaryInput,
     key: EncryptionKey,
-    options: EncryptOptions?,
+    options: EncryptOptions?
   ): SealedData {
     val key = key.cryptoKey
     val plaintextBuffer = ByteBuffer.wrap(plaintext.toBytes())
@@ -128,7 +129,7 @@ class AesCryptoModule : Module() {
   private fun decrypt(
     sealedData: SealedData,
     key: EncryptionKey,
-    options: DecryptOptions?,
+    options: DecryptOptions?
   ): Any {
     val key = key.cryptoKey
 
