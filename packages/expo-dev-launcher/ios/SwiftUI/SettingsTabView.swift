@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+import ExpoModulesCore
 
 // swiftlint:disable:next line_length
 private let selectedGesturesInfoMessage = "Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools."
@@ -142,13 +143,8 @@ struct SettingsTabView: View {
 #else
       Button(showCopiedMessage ? "Copied to clipboard!" : "Copy system info") {
         let buildInfoJSON = createBuildInfoJSON()
-#if os(macOS)
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(buildInfoJSON, forType: .string)
-#else
         let clipboard = UIPasteboard.general
         clipboard.string = buildInfoJSON
-#endif
         showCopiedMessage = true
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {

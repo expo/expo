@@ -14,6 +14,7 @@ public typealias UIHostingController = NSHostingController
 public typealias UIViewRepresentable = NSViewRepresentable
 public typealias UILabel = NSLabel
 public typealias UIImage = NSImage
+public typealias UIPasteboard = NSPasteboard
 
 extension UIApplication {
   public typealias LaunchOptionsKey = String
@@ -22,6 +23,20 @@ extension UIApplication {
 extension Image {
   public init(uiImage: NSImage) {
     self.init(nsImage: uiImage)
+  }
+}
+
+extension NSPasteboard {
+  public var string: String? {
+    get {
+      return self.string(forType: .string)
+    }
+    set {
+      self.clearContents()
+      if let newValue = newValue {
+        self.setString(newValue, forType: .string)
+      }
+    }
   }
 }
 
