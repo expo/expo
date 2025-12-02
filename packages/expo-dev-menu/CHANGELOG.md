@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] don't trigger double reload on r key press ([#41355](https://github.com/expo/expo/pull/41355) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 7.0.17 — 2025-11-17
