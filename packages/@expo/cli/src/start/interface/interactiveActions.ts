@@ -150,7 +150,7 @@ export class DevServerManagerActions {
 
       const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
       const plugins = await this.devServerManager.devtoolsPluginManager.queryPluginsAsync();
-      Log.log();
+
       const menuItems = [
         ...defaultMenuItems,
         ...createDevToolsMenuItems(plugins, defaultServerUrl, metroServerOrigin),
