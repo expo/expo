@@ -212,17 +212,6 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      * @platform ios 18+
      */
     unstable_transition?: 'zoom';
-    /**
-     * Defines the rectangle used for the zoom transition's alignment. This rectangle is specified in the zoomed screen's coordinate space.
-     *
-     * @platform ios 18+
-     */
-    unstable_transitionAlignmentRect?: {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-    };
     ref?: Ref<Text>;
 }
 export declare function useInteropClassName(props: {

@@ -159,16 +159,18 @@ const HomeIndex = () => {
             </Pressable>
           </Link.Trigger>
         </Link>
-        <Link href="/zoom-dest" unstable_transition="zoom" asChild>
+        <Link href="/zoom-dest" unstable_transition="zoom" unstable_customTransitionSource asChild>
           <Link.Trigger>
             <Pressable style={{ flex: 3, alignItems: 'center' }}>
-              <View style={{ width: '100%', aspectRatio: width / height }}>
-                <Image
-                  source={require('../../../assets/frog.jpg')}
-                  resizeMode="cover"
-                  style={{ width: '100%', height: '100%' }}
-                />
-              </View>
+              <Link.TransitionSource>
+                <View style={{ width: '100%', aspectRatio: width / height }}>
+                  <Image
+                    source={require('../../../assets/frog.jpg')}
+                    resizeMode="cover"
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </View>
+              </Link.TransitionSource>
               <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
                 The frog
               </Text>

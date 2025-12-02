@@ -40,11 +40,11 @@ const react_1 = __importStar(require("react"));
 const navigationParams_1 = require("../navigationParams");
 const ZoomTransitionEnabler_1 = require("./ZoomTransitionEnabler");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
-const native_1 = require("./preview/native");
+const zoom_transition_context_1 = require("./zoom/zoom-transition-context");
 const NOOP_COMPONENT = (props) => {
     return props.children;
 };
-function useZoomTransitionPrimitives({ unstable_transition, unstable_transitionAlignmentRect, href, }) {
+function useZoomTransitionPrimitives({ unstable_transition, href }) {
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
     const zoomTransitionId = (0, react_1.useMemo)(() => unstable_transition === 'zoom' &&
         !isPreview &&
@@ -56,16 +56,10 @@ function useZoomTransitionPrimitives({ unstable_transition, unstable_transitionA
         if (!zoomTransitionId) {
             return NOOP_COMPONENT;
         }
-        return (props) => (<native_1.LinkZoomTransitionSource identifier={zoomTransitionId} alignment={unstable_transitionAlignmentRect}>
+        return (props) => (<zoom_transition_context_1.ZoomTransitionSourceContext value={{ identifier: zoomTransitionId }}>
         {props.children}
-      </native_1.LinkZoomTransitionSource>);
-    }, [
-        zoomTransitionId,
-        unstable_transitionAlignmentRect?.x,
-        unstable_transitionAlignmentRect?.y,
-        unstable_transitionAlignmentRect?.width,
-        unstable_transitionAlignmentRect?.height,
-    ]);
+      </zoom_transition_context_1.ZoomTransitionSourceContext>);
+    }, [zoomTransitionId]);
     const computedHref = (0, react_1.useMemo)(() => {
         if (!zoomTransitionId) {
             return href;
