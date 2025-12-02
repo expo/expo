@@ -47,6 +47,7 @@ const getPathFromState_1 = require("./getPathFromState");
 const serverLocationContext_1 = require("../global-state/serverLocationContext");
 const storeContext_1 = require("../global-state/storeContext");
 const utils_1 = require("../global-state/utils");
+const matchers_1 = require("../matchers");
 /**
  * Find the matching navigation state that changed between 2 navigation states
  * e.g.: a -> b -> c -> d and a -> b -> c -> e -> f, if history in b changed, b is the matching state
@@ -76,6 +77,105 @@ const findMatchingState = (a, b) => {
     }
     return findMatchingState(aChildState, bChildState);
 };
+/**
+ * Builds a URL path from a route with unresolved nested screen/params.
+ *
+ * When navigating to a screen in a navigator that hasn't been mounted yet,
+ * React Navigation stores the navigation intent as nested `screen`/`params`
+ * in the route params instead of creating a proper state tree:
+ *
+ *   { name: "(profile)", params: { screen: "profile", params: { screen: "[playerId]", params: { playerId: "123" } } } }
+ *
+ * vs the normal mounted state:
+ *
+ *   { name: "(profile)", state: { routes: [{ name: "profile", state: { routes: [{ name: "[playerId]", params: { playerId: "123" } }] } }] } }
+ *
+ * This function traverses that nested structure and builds the correct URL path
+ * by replacing dynamic segments with actual param values.
+ *
+ * @param route - The focused route with nested screen/params (no state property)
+ * @returns The resolved URL path, or null if the route doesn't match the pattern
+ */
+/**
+ * Builds a URL path from a route with unresolved nested screen/params.
+ *
+ * When navigating to a screen in a navigator that hasn't been mounted yet,
+ * React Navigation stores the navigation intent as nested `screen`/`params`
+ * in the route params instead of creating a proper state tree:
+ *
+ *   { name: "(profile)", params: { screen: "profile", params: { screen: "[playerId]", params: { playerId: "123" } } } }
+ *
+ * vs the normal mounted state:
+ *
+ *   { name: "(profile)", state: { routes: [{ name: "profile", state: { routes: [{ name: "[playerId]", params: { playerId: "123" } }] } }] } }
+ *
+ * This function traverses that nested structure and builds the correct URL path
+ * by replacing dynamic segments with actual param values.
+ *
+ * @param route - The focused route with nested screen/params (no state property)
+ * @returns The resolved URL path, or null if the route doesn't match the pattern
+ */
+function buildPathFromNestedParams(route) {
+    // Only handle routes with nested screen/params but no resolved state
+    if (!route || 'state' in route || !route.params || !('screen' in route.params)) {
+        return null;
+    }
+    const segments = [];
+    const allParams = {};
+    // Traverse nested screen/params to collect all route segments and params
+    let current = route;
+    while (current) {
+        if (current.name) {
+            // Split by '/' for compound segments like "[roomId]/index"
+            segments.push(...current.name.split('/'));
+        }
+        if (current.params) {
+            // Collect actual params (not navigation meta like screen/params)
+            for (const [key, value] of Object.entries(current.params)) {
+                if (key !== 'screen' && key !== 'params') {
+                    allParams[key] = value;
+                }
+            }
+            if (typeof current.params.screen === 'string') {
+                segments.push(...current.params.screen.split('/'));
+                current = { params: current.params.params };
+            }
+            else {
+                break;
+            }
+        }
+        else {
+            break;
+        }
+    }
+    // Build URL path from collected segments
+    const path = '/' +
+        segments
+            .map((segment) => {
+            // Skip 'index' routes - they're implicit in URLs
+            if (segment === 'index') {
+                return '';
+            }
+            // Skip group segments like (app), (profile)
+            if ((0, matchers_1.matchGroupName)(segment) != null) {
+                return '';
+            }
+            // Replace dynamic segments [param] with actual values
+            const dynamicMatch = (0, matchers_1.matchDynamicName)(segment);
+            if (dynamicMatch) {
+                const value = allParams[dynamicMatch.name];
+                // Handle catch-all [...param] routes
+                if (dynamicMatch.deep) {
+                    return Array.isArray(value) ? value.join('/') : String(value ?? '');
+                }
+                return String(value ?? segment);
+            }
+            return segment;
+        })
+            .filter(Boolean)
+            .join('/');
+    return path;
+}
 /**
  * Run async function in series as it's called.
  */
@@ -260,6 +360,11 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
         }
         const getPathForRoute = (route, state) => {
             let path;
+            // Handle unmounted navigator case (lazy-loaded tabs)
+            const nestedParamsPath = buildPathFromNestedParams(route);
+            if (nestedParamsPath) {
+                return (0, getPathFromState_1.appendBaseUrl)(nestedParamsPath);
+            }
             // If the `route` object contains a `path`, use that path as long as `route.name` and `params` still match
             // This makes sure that we preserve the original URL for wildcard routes
             if (route?.path) {
