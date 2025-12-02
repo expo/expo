@@ -23,7 +23,7 @@ class ScreenshotEventEmitter(val context: Context, onCapture: () -> Unit) : Life
       super.onChange(selfChange, uri)
       if (isListening) {
         if (!hasPermissions(context)) {
-          Log.e("expo-screen-capture", "Could not listen for screenshots, do not have READ_EXTERNAL_STORAGE permission.")
+          Log.e("expo-screen-capture", "Could not listen for screenshots, missing required permissions.")
           return
         }
         val path = getFilePathFromContentResolver(context, uri)

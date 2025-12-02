@@ -12,6 +12,8 @@
 
 - Remove warning about iOS screenshot limitations. ([#40115](https://github.com/expo/expo/pull/40115) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
+- [Android] Implement android permissions support with legacy mode. ([#40341](https://github.com/expo/expo/pull/40341) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ## 8.0.8 — 2025-09-13
 
 ### 🐛 Bug fixes

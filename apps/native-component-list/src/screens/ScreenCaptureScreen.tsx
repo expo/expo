@@ -8,7 +8,8 @@ import TitleSwitch from '../components/TitledSwitch';
 
 function useScreenCapture(onCapture: () => void) {
   const hasPermissions = async () => {
-    const { status } = await ScreenCapture.requestPermissionsAsync();
+    // Pass true for legacy mode to enable Android 13 and below support
+    const { status } = await ScreenCapture.requestPermissionsAsync(true);
     return status === 'granted';
   };
 
