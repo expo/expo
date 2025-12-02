@@ -203,13 +203,15 @@ it(`parses asset as string in react server environment for web`, async () => {
     []
   );
   expect(getAssetData).toHaveBeenCalledTimes(1);
-  expect(astString(results.ast)).toMatchInlineSnapshot(`
+  const asset = astString(results.ast);
+  expect(asset).toMatchInlineSnapshot(`
     "module.exports = {
       uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
       width: 1024,
       height: 1024
     };"
   `);
+  expect(asset).not.toContain('toString');
   expect(results.reactClientReference).toBe('file:///root/local/foo.png');
 });
 
