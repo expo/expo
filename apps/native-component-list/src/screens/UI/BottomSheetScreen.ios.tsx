@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Button,
   BottomSheet,
@@ -13,6 +12,7 @@ import {
   PresentationDragIndicatorVisibility,
 } from '@expo/ui/swift-ui';
 import { frame } from '@expo/ui/swift-ui/modifiers';
+import * as React from 'react';
 import { Pressable } from 'react-native';
 
 export default function BottomSheetScreen() {

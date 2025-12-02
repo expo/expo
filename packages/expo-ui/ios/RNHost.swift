@@ -12,11 +12,8 @@ public final class RNHost: ExpoView, ExpoSwiftUI.RNHostProtocol {
 
   public override func layoutSubviews() {
     super.layoutSubviews()
-    if matchContents {
-      let subview = self.subviews.first
-      if let subview {
-        self.setViewSize(subview.bounds.size)
-      }
+    if let matchContents, let subview = self.subviews.first {
+      self.setViewSize(subview.bounds.size)
     } else {
       self.setViewSize(bounds.size)
     }

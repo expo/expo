@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-const HostNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'RNHost');
+const RNHostNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'RNHost');
 
 interface RNHostProps {
   /**
@@ -17,7 +17,7 @@ interface RNHostProps {
 
 export function RNHost(props: RNHostProps) {
   return (
-    <HostNativeView
+    <RNHostNativeView
       {...props}
       // matchContents should only be used once on mount
       key={props.matchContents ? 'matchContents' : 'noMatchContents'}
