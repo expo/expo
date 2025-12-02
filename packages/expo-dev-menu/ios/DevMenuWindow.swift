@@ -1,10 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#if os(iOS) || os(tvOS)
-import UIKit
-#elseif os(macOS)
-import AppKit
-#endif
 import React
 
 #if os(tvOS) || os(macOS)

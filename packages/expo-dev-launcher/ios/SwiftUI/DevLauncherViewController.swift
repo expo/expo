@@ -1,6 +1,3 @@
-#if os(iOS) || os(tvOS)
-import UIKit
-#endif
 import SwiftUI
 import ExpoModulesCore
 
