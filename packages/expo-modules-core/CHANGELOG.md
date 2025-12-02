@@ -53,7 +53,7 @@
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 - Remove old REACT_NATIVE_TARGET_VERSION checks ([#40843](https://github.com/expo/expo/pull/40843) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Moved the implementation of the constants provider (`EXConstantsService`) from `expo-constants`. ([#41339](https://github.com/expo/expo/pull/41339) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Replaced `appContext.fileSystem` with the core implementation.
+- [iOS] Replaced `appContext.fileSystem` with the core implementation. ([#41350](https://github.com/expo/expo/pull/41350) by [@tsapeta](https://github.com/tsapeta))
 
 ## 3.0.22 - 2025-10-20
 
