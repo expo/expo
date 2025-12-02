@@ -95,6 +95,13 @@ internal class NonisolatedUnsafeVar<VarType>: @unchecked Sendable {
   }
 }
 
+internal func performSynchronouslyOnMainActor<Result: Sendable>(_ closure: @MainActor () throws -> Result) rethrows -> Result {
+  if Thread.isMainThread {
+    return try MainActor.assumeIsolated(closure)
+  }
+  return try DispatchQueue.main.sync(execute: closure)
+}
+
 /**
  A collection of utility functions for various Expo Modules common tasks.
  */

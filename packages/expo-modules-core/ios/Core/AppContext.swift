@@ -213,11 +213,9 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   /**
-   Provides access to app's constants from legacy module registry.
+   Provides access to app's constants.
    */
-  public var constants: EXConstantsInterface? {
-    return legacyModule(implementing: EXConstantsInterface.self)
-  }
+  public lazy var constants: EXConstantsInterface? = ConstantsProvider.shared
 
   /**
    Provides access to the file system manager from legacy module registry.
