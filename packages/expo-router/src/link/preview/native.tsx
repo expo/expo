@@ -8,6 +8,7 @@ const areNativeViewsAvailable =
 
 // #region Action View
 export interface NativeLinkPreviewActionProps {
+  identifier: string;
   title: string;
   icon?: string;
   children?: React.ReactNode;

@@ -1,5 +1,6 @@
 import { type ViewProps } from 'react-native';
 export interface NativeLinkPreviewActionProps {
+    identifier: string;
     title: string;
     icon?: string;
     children?: React.ReactNode;

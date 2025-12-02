@@ -849,14 +849,17 @@ describe('Preview', () => {
           title: '',
           children: [expect.any(Object), expect.any(Object)],
           onSelected: expect.any(Function),
+          identifier: expect.any(String),
         });
         expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
           title: 'Menu-1-1',
           onSelected: expect.any(Function),
+          identifier: expect.any(String),
         });
         expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
           title: 'Menu-1-2',
           onSelected: expect.any(Function),
+          identifier: expect.any(String),
         });
       });
     });
@@ -895,18 +898,22 @@ describe('Preview', () => {
           title: 'base menu',
           children: [expect.any(Object), expect.any(Object)],
           onSelected: expect.any(Function),
+          identifier: expect.any(String),
         });
         expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
           title: 'Action 1',
           onSelected: action1OnPress,
+          identifier: expect.any(String),
         });
         expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
           title: 'Nested Menu',
           children: [expect.any(Object)],
+          identifier: expect.any(String),
         });
         expect(NativeLinkPreviewAction.mock.calls[3][0]).toMatchObject({
           title: 'Action 2',
           onSelected: action2OnPress,
+          identifier: expect.any(String),
         });
       });
     });

@@ -2,6 +2,7 @@ import ExpoModulesCore
 import WebKit
 
 class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
+  var identifier: String = ""
   // MARK: - Shared props
   var title: String = "" {
     didSet {
