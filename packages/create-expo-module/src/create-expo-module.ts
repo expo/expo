@@ -110,7 +110,9 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   const packageManager = resolvePackageManager();
   const packagePath = options.source
-    ? path.join(CWD, options.source)
+    ? path.isAbsolute(options.source)
+      ? options.source
+      : path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
 
   await logEventAsync(eventCreateExpoModule(packageManager, options));
