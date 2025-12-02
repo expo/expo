@@ -20,6 +20,7 @@
 - refactor launching Expo Go on Android ([#40020](https://github.com/expo/expo/pull/40020) by [@vonovak](https://github.com/vonovak))
 - only skip dependency validation for `EXPO_NO_DEPENDENCY_VALIDATION=1` ([#40043](https://github.com/expo/expo/pull/40043) by [@kitten](https://github.com/kitten))
 - Fix RSC `[...rsc]+api.ts` template path resolution ([#40760](https://github.com/expo/expo/pull/40760) by [@kitten](https://github.com/kitten))
+- Fix updated import wrapper to handle absolute paths ([#41349](https://github.com/expo/expo/pull/41349) by [@TheAmphibianX](https://github.com/TheAmphibianX))
 
 ### 💡 Others
 
