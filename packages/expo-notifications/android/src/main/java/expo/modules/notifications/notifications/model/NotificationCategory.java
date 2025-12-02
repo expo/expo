@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * @deprecated in favor of NotificationCategoryRecord
  * A class representing a collection of notification actions.
  *
  * TODO vonovak: no need to implement serializable, parcelable is enough for storing

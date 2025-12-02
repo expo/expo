@@ -22,7 +22,10 @@ import expo.modules.notifications.notifications.model.NotificationResponse
 import expo.modules.notifications.notifications.model.TextInputNotificationAction
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.NotificationsService.Companion.createNotificationResponseIntent
+import expo.modules.notifications.service.delegates.HybridNotificationCategoriesStore
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
+import expo.modules.notifications.notifications.categories.NotificationCategoryRecord
+import expo.modules.notifications.notifications.categories.NotificationActionRecord
 import java.io.IOException
 import kotlin.math.max
 import kotlin.math.min
@@ -33,29 +36,23 @@ import kotlin.math.min
 open class ExpoNotificationBuilder(
   context: Context,
   notification: expo.modules.notifications.notifications.model.Notification,
-  private val store: SharedPreferencesNotificationCategoriesStore
+  private val hybridStore: HybridNotificationCategoriesStore
 ) : BaseNotificationBuilder(context, notification) {
 
   open fun addActionsToBuilder(
     builder: NotificationCompat.Builder,
     categoryIdentifier: String
   ) {
-    var actions = emptyList<NotificationAction>()
     try {
-      val category: NotificationCategory? = store.getNotificationCategory(categoryIdentifier)
-      if (category != null) {
-        actions = category.actions
+      val categoryRecord = hybridStore.getAllCategories().find { it.identifier == categoryIdentifier } ?: return
+      for (actionRecord in categoryRecord.actions) {
+        if (actionRecord.textInput != null) {
+          builder.addAction(buildTextInputAction(actionRecord))
+        } else {
+          builder.addAction(buildButtonAction(actionRecord))
+        }
       }
-    } catch (e: ClassNotFoundException) {
-      Log.e(
-        "expo-notifications",
-        String.format(
-          "Could not read category with identifier: %s. %s",
-          categoryIdentifier,
-          e.message
-        )
-      )
-    } catch (e: IOException) {
+    } catch (e: Exception) {
       Log.e(
         "expo-notifications",
         String.format(
@@ -65,27 +62,22 @@ open class ExpoNotificationBuilder(
         )
       )
     }
-    for (action in actions) {
-      if (action is TextInputNotificationAction) {
-        builder.addAction(buildTextInputAction(action))
-      } else {
-        builder.addAction(buildButtonAction(action))
-      }
-    }
   }
 
-  protected fun buildButtonAction(action: NotificationAction): NotificationCompat.Action {
-    val intent = createNotificationResponseIntent(context, notification, action)
-    return NotificationCompat.Action.Builder(icon, action.title, intent).build()
+  protected fun buildButtonAction(actionRecord: NotificationActionRecord): NotificationCompat.Action {
+    // Create the intent directly with action record data
+    val intent = createNotificationResponseIntent(context, notification, actionRecord)
+    return NotificationCompat.Action.Builder(icon, actionRecord.buttonTitle, intent).build()
   }
 
-  protected fun buildTextInputAction(action: TextInputNotificationAction): NotificationCompat.Action {
-    val intent = createNotificationResponseIntent(context, notification, action)
+  protected fun buildTextInputAction(actionRecord: NotificationActionRecord): NotificationCompat.Action {
+    // Create the intent directly with action record data
+    val intent = createNotificationResponseIntent(context, notification, actionRecord)
     val remoteInput = RemoteInput.Builder(NotificationsService.USER_TEXT_RESPONSE_KEY)
-      .setLabel(action.placeholder)
+      .setLabel(actionRecord.textInput?.placeholder ?: "")
       .build()
 
-    return NotificationCompat.Action.Builder(icon, action.title, intent)
+    return NotificationCompat.Action.Builder(icon, actionRecord.buttonTitle, intent)
       .addRemoteInput(remoteInput).build()
   }
 
@@ -108,7 +100,7 @@ open class ExpoNotificationBuilder(
     // entire text to be viewed.
     builder.setStyle(NotificationCompat.BigTextStyle().bigText(content.text))
 
-    color?.let { builder.color = it.toInt() }
+    color?.toInt()?.let { builder.color = it }
     notificationContent.badgeCount?.toInt()?.let { builder.setNumber(it) }
     notificationContent.categoryId?.let { addActionsToBuilder(builder, it) }
 
@@ -138,7 +130,7 @@ open class ExpoNotificationBuilder(
     builder.addExtras(requestExtras)
 
     val defaultAction =
-      NotificationAction(NotificationResponse.DEFAULT_ACTION_IDENTIFIER, null, true)
+      NotificationActionRecord(NotificationResponse.DEFAULT_ACTION_IDENTIFIER, "", null)
     builder.setContentIntent(
       createNotificationResponseIntent(
         context,
