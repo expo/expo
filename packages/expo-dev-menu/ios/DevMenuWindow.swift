@@ -258,7 +258,7 @@ class DevMenuWindow: NSObject, PresentationControllerDelegate {
   }
 
   private func resetScrollPosition() {
-    guard let hostingView = hostingView else { return }
+    guard let hostingView else { return }
     if let scrollView = findScrollView(in: hostingView) {
       if let documentView = scrollView.documentView {
         let origin = NSPoint(x: 0, y: documentView.bounds.height - scrollView.contentView.bounds.height)

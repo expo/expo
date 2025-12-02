@@ -127,7 +127,7 @@
   return launchOptions;
 }
 #else
-- (NSDictionary *)getLaunchOptions;
+- (NSDictionary *)getLaunchOptions
 {
   NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
   NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];

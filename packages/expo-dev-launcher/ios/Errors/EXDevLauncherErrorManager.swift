@@ -4,9 +4,6 @@ import Foundation
 import SwiftUI
 import ExpoModulesCore
 
-#if os(iOS) || os(tvOS)
-import UIKit
-#endif
 
 @objc
 public class EXDevLauncherErrorManager: NSObject {
