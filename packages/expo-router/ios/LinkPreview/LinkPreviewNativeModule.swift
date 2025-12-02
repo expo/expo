@@ -3,6 +3,7 @@ import ExpoModulesCore
 public class LinkPreviewNativeModule: Module {
   static let moduleName: String = "ExpoRouterNativeLinkPreview"
   lazy var zoomSourceRepository = LinkZoomTransitionsSourceRepository()
+  lazy var zoomAlignmentViewRepository = LinkZoomTransitionsAlignmentViewRepository()
 
   public func definition() -> ModuleDefinition {
     Name(LinkPreviewNativeModule.moduleName)
@@ -114,6 +115,16 @@ public class LinkPreviewNativeModule: Module {
 
       Prop("preventInteractiveDismissal") { (view: LinkZoomTransitionEnabler, prevent: Bool) in
         view.isPreventingInteractiveDismissal = prevent
+      }
+    }
+
+    View(LinkZoomTransitionAlignmentRectDetector.self) {
+      Prop("identifier") {
+        (view: LinkZoomTransitionAlignmentRectDetector, identifier: String) in
+        view.identifier = identifier
+      }
+      Prop("disableForceFlatten") { (_: LinkZoomTransitionAlignmentRectDetector, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }
     }
   }

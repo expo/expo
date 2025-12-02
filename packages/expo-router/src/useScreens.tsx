@@ -15,6 +15,7 @@ import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } fr
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
+import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
@@ -304,14 +305,16 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     return (
       <Route node={value} route={route}>
         <ZoomTransitionEnabler route={route} />
-        <React.Suspense fallback={<SuspenseFallback route={value} />}>
-          <ScreenComponent
-            {...props}
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment={value.route}
-          />
-        </React.Suspense>
+        <ZoomTransitionTargetContextProvider route={route}>
+          <React.Suspense fallback={<SuspenseFallback route={value} />}>
+            <ScreenComponent
+              {...props}
+              // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+              // the intention is to make it possible to deduce shared routes.
+              segment={value.route}
+            />
+          </React.Suspense>
+        </ZoomTransitionTargetContextProvider>
       </Route>
     );
   }
