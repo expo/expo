@@ -81,6 +81,14 @@ exports[`Notifications exports 1`] = `
     "SECRET": 3,
     "UNKNOWN": 0,
   },
+  "BackgroundNotificationTaskResult": {
+    "0": "NewData",
+    "1": "NoData",
+    "2": "Failed",
+    "Failed": 2,
+    "NewData": 0,
+    "NoData": 1,
+  },
   "DEFAULT_ACTION_IDENTIFIER": "expo.modules.notifications.actions.DEFAULT",
   "EventSubscription": undefined,
   "IosAlertStyle": {
