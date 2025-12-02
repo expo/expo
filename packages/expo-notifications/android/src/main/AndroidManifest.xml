@@ -6,7 +6,7 @@
     <service
       android:name=".service.ExpoFirebaseMessagingService"
       android:exported="false">
-      <intent-filter android:priority="-1">
+      <intent-filter android:priority="100">
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>

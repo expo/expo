@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix @react-native-firebase/messaging overriding Expo Notifications ([#33666](https://github.com/expo/expo/pull/33666) by [@scarlac](https://github.com/scarlac))
+
 ### 💡 Others
 
 - remove token listener on module destroy ([#41275](https://github.com/expo/expo/pull/41275) by [@vonovak](https://github.com/vonovak))
