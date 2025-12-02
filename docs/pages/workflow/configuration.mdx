@@ -1,177 +1,475 @@
----
-title: Configure with app config
-description: Learn about what app.json/app.config.js/app.config.ts files are and how you can customize and use them dynamically.
----
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, ReferenceLine, AreaChart, Area, Cell, Legend
+} from 'recharts';
+import { 
+  LayoutDashboard, Calendar, List, Plus, TrendingUp, TrendingDown, 
+  Target, DollarSign, Trash2, X, ChevronLeft, ChevronRight, PieChart, Activity, AlertTriangle, Clock, ArrowUpCircle, ArrowDownCircle, Layers, BarChart2, Zap, Globe
+} from 'lucide-react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken 
+} from 'firebase/auth';
+import { 
+  getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, Timestamp, where 
+} from 'firebase/firestore';
 
-import { DocsLogo } from '@expo/styleguide';
+// --- Configuração do Firebase ---
+const firebaseConfig = JSON.parse(__firebase_config);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof app_id !== 'undefined' ? app_id : 'default-app-id';
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import PossibleRedirectNotification from '~/ui/components/PossibleRedirectNotification';
-import { Terminal } from '~/ui/components/Snippet';
-
-<PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
-
-The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring [Expo Prebuild](/workflow/prebuild) generation, how a project loads in [Expo Go](/get-started/expo-go/), and the OTA update manifest.
-
-It must be located at the root of your project, next to the **package.json**. Here is a minimal example:
-
-```json app.json
-{
-  "name": "My app",
-  "slug": "my-app"
-}
-```
-
-If your Expo config has a top-level `expo: {}` object, then this will be used in place of the root object and all other keys will be ignored.
-
-<BoxLink
-  title="App config schema reference"
-  description="Explore the full schema of the app config (app.json/app.config.js)."
-  href="/versions/latest/config/app/"
-  Icon={DocsLogo}
-/>
-
-## Properties
-
-The app config configures many things such as app name, icon, splash screen, deep linking scheme, API keys to use for some services and so on. For a complete list of available properties, see [app.json/app.config.js/app.config.ts reference](/versions/latest/config/app/).
-
-> **info** Do you use Visual Studio Code? If so, we recommend that you install the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) extension to get auto-completion of properties in **app.json** files.
-
-## Reading configuration values in your app
-
-Most configuration in the app config is accessible at runtime from your JavaScript code, using [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties). You **should not** include any sensitive information in the app config (with a few exceptions for fields that are filtered out, as outlined below).
-
-You can verify which configuration will be embedded in your builds/updates and available at runtime by running `npx expo config --type public`.
-
-<Collapsible summary="Which fields are filtered out of the public app config?">
-
-The following fields are filtered out of the public app config (and not accessible through the `Constants.expoConfig` object):
-
-- [`hooks`](/versions/latest/config/app/#hooks)
-- [`ios.config`](/versions/latest/config/app/#config)
-- [`android.config`](/versions/latest/config/app/#config-1)
-- [`updates.codeSigningCertificate`](/versions/latest/config/app/#codesigningcertificate)
-- [`updates.codeSigningMetadata`](/versions/latest/config/app/#codesigningmetadata)
-
-</Collapsible>
-
-> **warning** You should also avoid importing **app.json** or **app.config.js** directly in your JavaScript code, because this will import the entire file rather than a processed version of it. Instead, use [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties) to access the configuration.
-
-## Extending configuration
-
-Library authors can extend the app config by using [Expo Config plugins](/config-plugins/introduction/).
-
-> **info** Config plugins are mostly used to configure the [`npx expo prebuild`](/workflow/prebuild) command.
-
-## Dynamic configuration
-
-For more customization, you can use the JavaScript (**app.config.js**) or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of-appconfigjs) (**app.config.ts**). These configs have the following properties:
-
-- Comments, variables, and single quotes.
-- ESM import syntax (the `import` keyword) is not supported, except when using [TypeScript with `tsx`](/guides/typescript/#appconfigjs). JS files that are compatible with your current version of Node.js can be imported with `require()`.
-- TypeScript support with nullish coalescing and optional chaining.
-- Updated whenever Metro bundler reloads.
-- Provide environment information to your app.
-- Does not support Promises.
-
-For example, you can export an object to define your custom config:
-
-```js app.config.js
-const myValue = 'My App';
-
-module.exports = {
-  name: myValue,
-  version: process.env.MY_CUSTOM_PROJECT_VERSION || '1.0.0',
-  // All values in extra will be passed to your app.
-  extra: {
-    fact: 'kittens are cool',
-  },
+// --- Utilitários ---
+const formatCurrency = (value, currency) => {
+  const locale = currency === 'BRL' ? 'pt-BR' : 'en-US';
+  return new Intl.NumberFormat(locale, { style: 'currency', currency: currency }).format(value);
 };
-```
 
-The `"extra"` key allows passing arbitrary configuration data to your app. The value of this key is accessed using [`expo-constants`](/versions/latest/sdk/constants/):
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString + 'T00:00:00'); 
+  return new Intl.DateTimeFormat('pt-BR').format(date);
+};
 
-```js App.js
-import Constants from 'expo-constants';
+// --- Listas de Ativos Padrão ---
+const ASSET_GROUPS = {
+  "B3 (Brasil)": [
+    "WIN (Mini Índice)", "WDO (Mini Dólar)", 
+    "PETR4", "VALE3", "ITUB4", "BBDC4", "BBAS3", "WEGE3", "ABEV3", "PRIO3", "RENT3"
+  ],
+  "Índices Americanos": [
+    "NAS100 (Nasdaq)", "SP500 (S&P 500)", "US30 (Dow Jones)", "US2000 (Russell 2000)"
+  ],
+  "Forex Majors": [
+    "EURUSD", "GBPUSD", "USDJPY", "USDCAD", "AUDUSD", "NZDUSD", "USDCHF"
+  ],
+  "Forex JPY & Crosses": [
+    "GBPJPY", "EURJPY", "AUDJPY", "CADJPY", "CHFJPY", "NZDJPY",
+    "EURGBP", "EURAUD", "GBPAUD", "GBPCAD"
+  ],
+  "Índices Globais": [
+    "DAX40 (Alemanha)", "UK100 (Londres)", "JP225 (Nikkei)", "HK50 (Hong Kong)", "EU50 (Europa)", "CN50 (China)"
+  ],
+  "Cripto": [
+    "BTCUSD", "ETHUSD", "SOLUSD", "BNBUSD", "XRPUSD", "ADAUSD", "DOGEUSD", "LTCUSD", "MATICUSD"
+  ],
+  "Commodities": [
+    "XAUUSD (Ouro)", "XAGUSD (Prata)", "WTI (Petróleo)", "BRENT (Petróleo)", "HG (Cobre)", "NG (Gás Natural)"
+  ]
+};
 
-Constants.expoConfig.extra.fact === 'kittens are cool';
-```
+// --- Componentes UI ---
 
-You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an **app.json**. By default, Expo CLI will read the **app.json** first and send the normalized results to the **app.config.js**.
+const Card = ({ children, className = "" }) => (
+  <div className={bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm ${className}}>
+    {children}
+  </div>
+);
 
-For example, your **app.json** could look like this:
-
-```json app.json
-{
-  "name": "My App"
-}
-```
-
-And in your **app.config.js**, you are provided with that configuration in the arguments to the exported function:
-
-```js app.config.js
-module.exports = ({ config }) => {
-  console.log(config.name); // prints 'My App'
-  return {
-    ...config,
+const Button = ({ children, onClick, variant = 'primary', className = "", ...props }) => {
+  const baseStyle = "px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2";
+  const variants = {
+    primary: "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20",
+    danger: "bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20",
+    ghost: "text-slate-400 hover:text-white hover:bg-slate-800",
+    success: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
   };
+  return (
+    <button onClick={onClick} className={${baseStyle} ${variants[variant]} ${className}} {...props}>
+      {children}
+    </button>
+  );
 };
-```
 
-### Switching configuration based on the environment
-
-It's common to have some different configuration in development, staging, and production environments, or to swap out configuration entirely to white label an app. To accomplish this, you can use **app.config.js** along with environment variables.
-
-```js app.config.js
-module.exports = () => {
-  if (process.env.MY_ENVIRONMENT === 'production') {
-    return {
-      /* your production config */
-    };
-  } else {
-    return {
-      /* your development config */
-    };
-  }
+const MetricCard = ({ title, value, subtext, type = 'neutral', icon: Icon }) => {
+  const colors = {
+    positive: "text-emerald-400",
+    negative: "text-rose-400",
+    neutral: "text-blue-400",
+    warning: "text-amber-400"
+  };
+  
+  return (
+    <Card>
+      <div className="flex justify-between items-start mb-2">
+        <h3 className="text-slate-400 text-sm font-medium">{title}</h3>
+        {Icon && <Icon size={18} className="text-slate-500" />}
+      </div>
+      <div className={text-2xl font-bold ${colors[type] || "text-white"}}>
+        {value}
+      </div>
+      {subtext && <div className="text-xs text-slate-500 mt-1">{subtext}</div>}
+    </Card>
+  );
 };
-```
 
-To use this configuration with Expo CLI commands, set the environment variable either for specific commands or in your shell profile. To set environment variables for specific commands, prefix the command with the variables and values as shown in the example:
+// --- Modals ---
 
-<Terminal cmd={['$ MY_ENVIRONMENT=production eas update']} />
+const AddTradeModal = ({ isOpen, onClose, onSave, currency }) => {
+  const [formData, setFormData] = useState({
+    symbol: 'WIN (Mini Índice)',
+    type: 'Long',
+    entryDate: new Date().toISOString().split('T')[0],
+    pnl: '',
+    setup: '',
+    riskMultiple: '', // Novo campo para o R (Unidades)
+    mistake: '',
+    notes: ''
+  });
 
-This is not anything unique to Expo CLI. On Windows you can approximate the above command with:
+  if (!isOpen) return null;
 
-<Terminal cmd={['$ npx cross-env MY_ENVIRONMENT=production eas update']} />
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      ...formData,
+      pnl: parseFloat(formData.pnl),
+      riskMultiple: formData.riskMultiple ? parseFloat(formData.riskMultiple) : null,
+      entryDate: formData.entryDate
+    });
+    setFormData({ symbol: 'WIN (Mini Índice)', type: 'Long', entryDate: new Date().toISOString().split('T')[0], pnl: '', setup: '', riskMultiple: '', mistake: '', notes: '' });
+    onClose();
+  };
 
-Or you can use any other mechanism that you are comfortable with for environment variables.
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div className="bg-slate-900 border border-slate-700 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-fade-in-up">
+        <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-white">Novo Trade</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-white"><X size={20} /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Ativo/Símbolo</label>
+              <select 
+                required
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                value={formData.symbol}
+                onChange={(e) => setFormData({...formData, symbol: e.target.value})}
+              >
+                 {Object.entries(ASSET_GROUPS).map(([group, assets]) => (
+                    <optgroup key={group} label={group}>
+                        {assets.map(asset => (
+                            <option key={asset} value={asset}>{asset}</option>
+                        ))}
+                    </optgroup>
+                 ))}
+                 <option value="OUTROS">Outros</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Direção</label>
+              <select 
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                value={formData.type}
+                onChange={(e) => setFormData({...formData, type: e.target.value})}
+              >
+                <option value="Long">Compra (Long)</option>
+                <option value="Short">Venda (Short)</option>
+              </select>
+            </div>
+          </div>
 
-### Using TypeScript for configuration: app.config.ts instead of app.config.js
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Data</label>
+              <input 
+                required
+                type="date" 
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                value={formData.entryDate}
+                onChange={(e) => setFormData({...formData, entryDate: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">P&L ({currency})</label>
+              <input 
+                required
+                type="number" 
+                step="0.01"
+                placeholder="-50.00 ou 100.00"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
 
-You can use autocomplete and doc-blocks with an Expo config in TypeScript. Create an **app.config.ts** with the following contents:
+value={formData.pnl}
+                onChange={(e) => setFormData({...formData, pnl: e.target.value})}
+              />
+            </div>
+          </div>
 
-```ts app.config.ts
-import { ExpoConfig, ConfigContext } from 'expo/config';
+          {/* Setup e Risco na mesma linha */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Estratégia/Setup</label>
+                <select 
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                value={formData.setup}
+                onChange={(e) => setFormData({...formData, setup: e.target.value})}
+                >
+                <option value="">Selecione...</option>
+                <option value="Pullback">Pullback</option>
+                <option value="Fluxo">Fluxo</option>
+                <option value="Reversão">Reversão</option>
+                <option value="Rompimento">Rompimento</option>
+                <option value="Consolidação">Consolidação</option>
+                </select>
+            </div>
+            <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Retorno (R)</label>
+                <input 
+                type="number" 
+                step="0.1"
+                placeholder="Ex: 2.0 ou -1.0"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                value={formData.riskMultiple}
+                onChange={(e) => setFormData({...formData, riskMultiple: e.target.value})}
+                />
+            </div>
+          </div>
 
-export default ({ config }: ConfigContext): ExpoConfig => ({
-  ...config,
-  slug: 'my-app',
-  name: 'My App',
-});
-```
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Erro / Fator Psicológico</label>
+            <select 
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+              value={formData.mistake}
+              onChange={(e) => setFormData({...formData, mistake: e.target.value})}
+            >
+              <option value="">Nenhum erro (Trade Técnico)</option>
+              <option value="FOMO">FOMO (Entrei por impulso)</option>
+              <option value="Hesitação">Hesitação (Entrei Tarde)</option>
+              <option value="Saída Antecipada">Saída Antecipada (Mão de Alface)</option>
+              <option value="Aumentou Lote">Aumentou Lote (Ganância)</option>
+              <option value="Preço Médio">Preço Médio Contra</option>
+              <option value="Revenge">Revenge Trading (Dia de Fúria)</option>
+            </select>
+          </div>
 
-To import other TypeScript files into **app.config.ts** or customize the language features, we recommend using [`tsx`](/guides/typescript/#appconfigjs). `tsx` also enables using `import` syntax in any file imported by **app.config.ts**. This means you can write local [config plugins](/config-plugins/introduction/) in TypeScript with full language features.
+          <div className="pt-4 flex justify-end gap-3">
+            <Button variant="ghost" type="button" onClick={onClose}>Cancelar</Button>
+            <Button variant="primary" type="submit">Salvar Trade</Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
-### Configuration resolution rules
+// --- Componentes de Visualização ---
 
-There are two different types of configs: static (**app.config.json**, **app.json**), and dynamic (**app.config.js**, **app.config.ts**). Static configs can be automatically updated with CLI tools, whereas dynamic configs must be manually updated by the developer.
+const DashboardView = ({ trades, currency }) => {
+  // Cálculos de Estatísticas Avançadas
+  const stats = useMemo(() => {
+    const totalPnl = trades.reduce((acc, t) => acc + t.pnl, 0);
+    const wins = trades.filter(t => t.pnl > 0);
+    const losses = trades.filter(t => t.pnl <= 0);
+    
+    // Básicos
+    const winRate = trades.length > 0 ? (wins.length / trades.length) : 0;
+    const avgWin = wins.length > 0 ? wins.reduce((acc, t) => acc + t.pnl, 0) / wins.length : 0;
+    const avgLoss = losses.length > 0 ? Math.abs(losses.reduce((acc, t) => acc + t.pnl, 0) / losses.length) : 0;
+    const profitFactor = avgLoss > 0 ? ((winRate * avgWin) / ((1 - winRate) * avgLoss)) : 0;
+    const pfSimple = avgLoss > 0 ? (wins.reduce((acc,t) => acc + t.pnl, 0) / Math.abs(losses.reduce((acc,t) => acc + t.pnl, 0))) : 0;
 
-1. The static config is read if **app.config.json** exists (falls back to **app.json**). If no static config exists, then default values are inferred from the **package.json** and your dependencies.
-2. The dynamic config is read if either **app.config.ts** or **app.config.js** exist. If both exist, then the TypeScript config is used.
-3. If the dynamic config returns a function, then the static config is passed to the function with `({ config }) => ({})`. This function can then mutate the static config values. Think of this like middleware for the static config.
-4. The return value from the dynamic config is used as the final config. It cannot have any promises.
-5. All functions in the config are evaluated and serialized before any tool in the Expo ecosystem uses it. The config must be a JSON manifest when it is hosted.
-6. If the final config object has a top-level `expo: {}` object, then this will be used in place of the root object and all other keys will be ignored.
+    // Expectativa Matemática
+    const expectancy = (winRate * avgWin) - ((1 - winRate) * avgLoss);
 
-Running `npx expo config` will display the final configuration that will be used in Expo CLI after resolution has occurred.
+// Dados para o Gráfico de Equidade (Acumulado)
+    const sortedTrades = [...trades].sort((a, b) => new Date(a.entryDate) - new Date(b.entryDate));
+    let runningTotal = 0;
+    const chartData = sortedTrades.map((t, index) => {
+      runningTotal += t.pnl;
+      return {
+        name: index + 1,
+        date: formatDate(t.entryDate),
+        pnl: t.pnl,
+        equity: runningTotal
+      };
+    });
+
+    // P&L por Ativo (Performance por Pasta)
+    const assetStats = {};
+    const assetSetups = {}; // Helper para rastrear setup por ativo
+
+    trades.forEach(t => {
+        const s = t.symbol || 'Outros';
+        const setup = t.setup || 'Sem Setup';
+
+        if (!assetStats[s]) assetStats[s] = { pnl: 0, wins: 0, losses: 0, total: 0 };
+        assetStats[s].pnl += t.pnl;
+        assetStats[s].total += 1;
+        if (t.pnl > 0) assetStats[s].wins += 1;
+        else assetStats[s].losses += 1;
+
+        // Rastrear performance do setup neste ativo
+        if (!assetSetups[s]) assetSetups[s] = {};
+        if (!assetSetups[s][setup]) assetSetups[s][setup] = 0;
+        assetSetups[s][setup] += t.pnl;
+    });
+
+    const assetData = Object.keys(assetStats).map(k => {
+        // Encontrar o melhor e pior setup para este ativo
+        const setups = assetSetups[k];
+        let bestSetup = '-';
+        let worstSetup = '-';
+        let maxPnl = -Infinity;
+        let minPnl = Infinity;
+        
+        // Verifica qual setup teve maior e menor lucro
+        Object.entries(setups).forEach(([setupName, pnl]) => {
+            if (pnl > maxPnl) {
+                maxPnl = pnl;
+                bestSetup = setupName;
+            }
+            if (pnl < minPnl) {
+                minPnl = pnl;
+                worstSetup = setupName;
+            }
+        });
+
+        // Se não houver dados suficientes
+        if (maxPnl === -Infinity) {
+            bestSetup = 'Sem dados';
+            maxPnl = 0;
+        }
+        if (minPnl === Infinity) {
+            worstSetup = 'Sem dados';
+            minPnl = 0;
+        }
+
+        return { 
+            name: k.split(' ')[0],
+            fullName: k,
+            value: assetStats[k].pnl,
+            wins: assetStats[k].wins,
+            losses: assetStats[k].losses,
+            bestSetup: bestSetup,
+            bestSetupPnl: maxPnl,
+            worstSetup: worstSetup,
+            worstSetupPnl: minPnl
+        };
+    }).sort((a,b) => b.value - a.value);
+
+    // P&L por Setup Geral
+    const setupStats = {};
+    trades.forEach(t => {
+        const s = t.setup || 'Outros';
+        if (!setupStats[s]) setupStats[s] = 0;
+        setupStats[s] += t.pnl;
+    });
+    const setupData = Object.keys(setupStats).map(k => ({ name: k, value: setupStats[k] })).sort((a,b) => b.value - a.value);
+
+    // P&L por Dia da Semana
+    const dayStats = { 'Dom': 0, 'Seg': 0, 'Ter': 0, 'Qua': 0, 'Qui': 0, 'Sex': 0, 'Sáb': 0 };
+    trades.forEach(t => {
+        const dayName = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][new Date(t.entryDate + 'T12:00:00').getDay()];
+        dayStats[dayName] += t.pnl;
+    });
+    const dayData = Object.keys(dayStats).map(k => ({ name: k, value: dayStats[k] }));
+
+    // Long vs Short
+    const longPnl = trades.filter(t => t.type === 'Long').reduce((acc, t) => acc + t.pnl, 0);
+    const shortPnl = trades.filter(t => t.type === 'Short').reduce((acc, t) => acc + t.pnl, 0);
+
+    return { 
+        totalPnl, winRate: winRate * 100, profitFactor: pfSimple, 
+        chartData, totalTrades: trades.length, avgWin, avgLoss, 
+        expectancy, setupData, dayData, assetData, longPnl, shortPnl 
+    };
+  }, [trades]);
+
+  return (
+    <div className="space-y-6 animate-fade-in pb-10">
+      {/* Cards de Métricas Principais */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+
+title="P&L Líquido" 
+          value={formatCurrency(stats.totalPnl, currency)} 
+          type={stats.totalPnl >= 0 ? 'positive' : 'negative'}
+          icon={DollarSign}
+        />
+        <MetricCard 
+          title="Taxa de Acerto" 
+          value={${stats.winRate.toFixed(1)}%} 
+          subtext={${stats.totalTrades} Trades totais}
+          type={stats.winRate >= 50 ? 'positive' : 'negative'}
+          icon={Target}
+        />
+        <MetricCard 
+          title="Expectativa / Trade" 
+          value={formatCurrency(stats.expectancy, currency)}
+          subtext="Valor esperado por operação"
+          type={stats.expectancy > 0 ? 'positive' : 'negative'}
+          icon={Activity}
+        />
+        <MetricCard 
+          title="Fator de Lucro" 
+          value={stats.profitFactor.toFixed(2)} 
+          type={stats.profitFactor >= 1.5 ? 'positive' : 'neutral'}
+          icon={PieChart}
+        />
+      </div>
+
+      {/* Gráfico Principal: Curva de Equidade */}
+      <Card className="h-80">
+        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <TrendingUp className="text-blue-500" size={20} />
+          Curva de Equidade
+        </h3>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={stats.chartData}>
+            <defs>
+              <linearGradient id="colorEquity" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+            <XAxis dataKey="name" stroke="#64748b" tick={{fontSize: 12}} tickLine={false} axisLine={false} />
+            <YAxis stroke="#64748b" tick={{fontSize: 12}} tickFormatter={(val) => formatCurrency(val, currency).replace(/\s/g, '').replace(',00', '')} tickLine={false} axisLine={false} />
+            <RechartsTooltip 
+              contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#fff' }}
+              itemStyle={{ color: '#fff' }}
+              formatter={(value) => formatCurrency(value, currency)}
+              labelFormatter={(label) => Trade #${label}}
+            />
+            <ReferenceLine y={0} stroke="#475569" />
+            <Area type="monotone" dataKey="equity" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorEquity)" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </Card>
+
+      {/* Seção de Detalhamento por Ativo (O Placar) */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <Layers className="text-emerald-500" size={24} />
+            Detalhamento por Ativo
+        </h3>
+        
+        {/* Gráfico de Barras */}
+        <Card className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats.assetData} layout="vertical" margin={{left: 30}}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
+                    <XAxis type="number" stroke="#64748b" tickFormatter={(val) => formatCurrency(val, currency).replace(',00','')} />
+                    <YAxis type="category" dataKey="name" stroke="#94a3b8" width={60} tick={{fontSize: 11, fontWeight: 'bold'}} />
+                    <RechartsTooltip 
+                        cursor={{fill: '#1e293b'}}
+                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#fff' }}
+                        formatter={(value) => [formatCurrency(value, currency), "P&L Total"]}
+                    />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+
+{stats.assetData.map((entry, index) => (
+                            <Cell key={cell-${index}} fill={entry.value >= 0 ? '#10b981' : '#f43f5e'} />
+                        ))}
+                    </Bar>
+                </BarChart>
+            </ResponsiveContainer>
+        </Card>
+
+        {/* Cards de Placar por Ativo */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {stats.assetData.map((asset) =>
