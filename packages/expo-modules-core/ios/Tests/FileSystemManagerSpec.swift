@@ -4,9 +4,9 @@ import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-final class FileSystemLegacyUtilitiesSpec: ExpoSpec {
+final class FileSystemManagerSpec: ExpoSpec {
   override class func spec() {
-    let fsUtils = FileSystemLegacyUtilities()
+    let fsManager = FileSystemManager()
 
     describe("getPathPermissions") {
       it("should return read/write permissions for filePath with `file:` scheme") {
@@ -14,7 +14,7 @@ final class FileSystemLegacyUtilitiesSpec: ExpoSpec {
         let fileUrl = dirUrl.appendingPathComponent("dir/test.txt")
         let filePath = fileUrl.absoluteString
         expect(filePath.starts(with: "file:")) == true
-        expect(fsUtils.getPathPermissions(filePath)) == [.read, .write]
+        expect(fsManager.getPathPermissions(filePath)) == [.read, .write]
       }
 
       it("should return read/write permissions for filePath without `file:` scheme") {
@@ -22,7 +22,7 @@ final class FileSystemLegacyUtilitiesSpec: ExpoSpec {
         let fileUrl = dirUrl.appendingPathComponent("dir/test.txt")
         let filePath = fileUrl.path
         expect(filePath.starts(with: "file:")) == false
-        expect(fsUtils.getPathPermissions(filePath)) == [.read, .write]
+        expect(fsManager.getPathPermissions(filePath)) == [.read, .write]
       }
     }
   }

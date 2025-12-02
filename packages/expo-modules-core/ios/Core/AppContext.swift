@@ -43,15 +43,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    The legacy module registry with modules written in the old-fashioned way.
    */
   @objc
-  public weak var legacyModuleRegistry: EXModuleRegistry? {
-    didSet {
-      if let registry = legacyModuleRegistry,
-        let legacyModule = registry.getModuleImplementingProtocol(EXFileSystemInterface.self) as? EXFileSystemInterface,
-        let fileSystemLegacyModule = legacyModule as? FileSystemLegacyUtilities {
-        fileSystemLegacyModule.maybeInitAppGroupSharedDirectories(self.config.appGroupSharedDirectories)
-      }
-    }
-  }
+  public weak var legacyModuleRegistry: EXModuleRegistry?
 
   @objc
   public weak var legacyModulesProxy: LegacyNativeModulesProxy?
@@ -218,11 +210,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
   public lazy var constants: EXConstantsInterface? = ConstantsProvider.shared
 
   /**
-   Provides access to the file system manager from legacy module registry.
+   Provides access to the file system utilities. Can be overridden if the app should use different different directories or file permissions.
+   For instance, Expo Go uses sandboxed environment per project where the cache and document directories must be scoped.
+   It's an optional type for historical reasons, for now let's keep it like this for backwards compatibility.
    */
-  public var fileSystem: EXFileSystemInterface? {
-    return legacyModule(implementing: EXFileSystemInterface.self)
-  }
+  public lazy var fileSystem: FileSystemManager? = FileSystemManager(appGroupSharedDirectories: self.config.appGroupSharedDirectories)
 
   /**
    Provides access to the permissions manager from legacy module registry.
