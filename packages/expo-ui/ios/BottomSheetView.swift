@@ -70,10 +70,8 @@ private struct BottomSheetSizeReader<Children: View>: View {
     children
       .modifier(ReadSizeModifier())
       .onPreferenceChange(SizePreferenceKey.self) { size in
-        if let size {
-          if let onChildrenSizeChange {
-            onChildrenSizeChange(size)
-          }
+        if let size, let onChildrenSizeChange {
+          onChildrenSizeChange(size)
         }
       }
     }
