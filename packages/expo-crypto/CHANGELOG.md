@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for AES-GCM encryption. ([#41249](https://github.com/expo/expo/pull/41249) by [@barthap](https://github.com/barthap))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
