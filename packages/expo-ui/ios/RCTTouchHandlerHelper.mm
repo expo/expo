@@ -1,4 +1,4 @@
-// Copyright 2024-present 650 Industries. All rights reserved.
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "RCTTouchHandlerHelper.h"
 #import <React/RCTSurfaceTouchHandler.h>
