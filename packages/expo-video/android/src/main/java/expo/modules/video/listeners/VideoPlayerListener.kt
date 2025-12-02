@@ -1,4 +1,4 @@
-package expo.modules.video.player
+package expo.modules.video.listeners
 
 import androidx.annotation.OptIn
 import androidx.media3.common.TrackSelectionParameters
@@ -7,11 +7,12 @@ import androidx.media3.common.util.UnstableApi
 import expo.modules.video.VideoView
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
+import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.SubtitleTrack
-import expo.modules.video.records.VideoSource
 import expo.modules.video.records.TimeUpdate
+import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoTrack
 
 @OptIn(UnstableApi::class)
