@@ -1,0 +1,305 @@
+---
+title: Contacts (Next)
+description: A library that provides access to the phone's system contacts.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-contacts'
+packageName: 'expo-contacts'
+iconUrl: '/static/images/packages/expo-contacts.png'
+platforms: ['android', 'ios']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { SnackInline } from '~/ui/components/Snippet';
+
+`expo-contacts` provides access to the device's system contacts, allowing you to get contact information as well as adding, editing, or removing contacts.
+
+On iOS, contacts have a multi-layered grouping system that you can also access through this API.
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-contacts` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'contactsPermission',
+      platform: 'ios',
+      description: 'A string to set the [`NSContactsUsageDescription`](#ios) permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your contacts"',
+    },
+  ]}
+/>
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
+
+- For Android, add `android.permission.READ_CONTACTS` and `android.permission.WRITE_CONTACTS` permissions to your project's **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml
+  <uses-permission android:name="android.permission.READ_CONTACTS" />
+  <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+  ```
+
+- For iOS, add the `NSContactsUsageDescription` key to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSContactsUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your contacts</string>
+  ```
+
+</ConfigReactNative>
+
+## Usage
+
+<Collapsible summary="Contacts Manipulations">
+<SnackInline label="Contacts Manipulations" dependencies={['expo-contacts']}>
+
+```tsx
+const contact = await Contact.create({ givenName: 'John', familyName: 'Doe' });
+// { givenName: "John", familyName: "Doe"}
+
+await contact.setGivenName('Andrew');
+// { givenName: "Andrew", familyName: "Doe"}
+
+await contact.addPhone({ label: 'work', number: '+12345678912' });
+// { givenName: "Andrew", familyName: "Doe", phones: [{label: "work", number: "+12345678912"}]}
+
+const phones = await contact.getPhones();
+// Changes only the defined fields, leaves the rest unchanged
+await contact.patch({ phones: [...phones, { label: 'home', number: '+98765432198' }] });
+// {
+// givenName: "Andrew",
+// familyName: "Doe",
+// phones: [
+// {label: "work", number: "+12345678912"}
+// {label: "home", number: "+98765432198"}
+// ]
+// }
+
+// Replaces all fields with the ones defined in the object
+await contact.update({ givenName: 'John', familyName: 'Doe' });
+// { givenName: "John", familyName: "Doe"}
+```
+
+</SnackInline>
+</Collapsible>
+
+<Collapsible summary="Retreiving contacts">
+<SnackInline label="Retreiving contacts" dependencies={['expo-contacts']}>
+
+```tsx
+const contactDetails = await Contact.getAllDetails([ContactField.FULL_NAME, ContactField.PHONES], {
+  limit: 20,
+  offset: 10,
+  sortOrder: ContactsSortOrder.GivenName,
+});
+
+// Contact instance can be created from fetched details
+const contacts = contactDetails.map(item => new Contact(item.id));
+
+const contactsFromGetAll = await Contact.getAll({
+  limit: 20,
+  offset: 10,
+  sortOrder: ContactsSortOrder.GivenName,
+});
+```
+
+</SnackInline>
+</Collapsible>
+
+<Collapsible summary="Example Contacts Infinite Scroll">
+<SnackInline label="Example Contacts Infinite" dependencies={['expo-contacts']}>
+
+```tsx
+import { Contact, ContactField, PartialContactDetails } from 'expo-contacts/next';
+import { useEffect, useState } from 'react';
+import { FlatList, Text, View } from 'react-native';
+
+const FIELDS = [ContactField.FULL_NAME, ContactField.PHONES] as const;
+
+export default function InfiniteContacts() {
+  const [contactDetails, setContactDetails] = useState<PartialContactDetails<typeof FIELDS>[]>([]);
+
+  useEffect(() => {
+    loadMore();
+  }, []);
+
+  const loadMore = async () => {
+    const newBatch = await Contact.getAllDetails(FIELDS, {
+      limit: 20,
+      offset: contactDetails.length,
+    });
+    setContactDetails(prev => [...prev, ...newBatch]);
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={contactDetails}
+        keyExtractor={item => item.id}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        renderItem={({ item }) => (
+          <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
+            <Text>{item.fullName}</Text>
+            <Text>{item.phones[0] ? item.phones[0].number : 'No phone number'}</Text>
+          </View>
+        )}
+      />
+    </View>
+  );
+}
+```
+
+</SnackInline>
+</Collapsible>
+
+<Collapsible summary="Example Edit Contact Form">
+<SnackInline label="Example Edit Contact Form" dependencies={['expo-contacts']}>
+
+```tsx
+import { Contact, ContactField, ContactPatch } from 'expo-contacts/next';
+import { useEffect, useState } from 'react';
+import { Alert, Button, ScrollView, Text, TextInput, View } from 'react-native';
+
+export default function ContactForm() {
+  const [contact, setContact] = useState<Contact | null>(null);
+  const [contactPatch, setContactPatch] = useState<ContactPatch>({});
+  const [newPhoneInput, setNewPhoneInput] = useState('');
+
+  useEffect(() => {
+    Contact.getAll({ limit: 1 }).then(async ([first]) => {
+      if (first) {
+        setContact(first);
+        setContactPatch(await first.getDetails([ContactField.GIVEN_NAME, ContactField.PHONES]));
+      }
+    });
+  }, []);
+
+  if (!contactPatch && contact) {
+    return <Text style={{ marginTop: 50 }}>Loading details...</Text>;
+  }
+
+  const handleChangeName = (text: string) =>
+    setContactPatch(prev => ({ ...prev, givenName: text }));
+
+  const handleAddPhone = () => {
+    if (!newPhoneInput) {
+      return;
+    }
+    setContactPatch(prev => ({
+      ...prev,
+      phones: [...(prev.phones || []), { label: 'mobile', number: newPhoneInput }],
+    }));
+    setNewPhoneInput('');
+  };
+
+  const handleRemovePhone = (idx: number) =>
+    setContactPatch(prev => ({
+      ...prev,
+      phones: prev.phones?.filter((_, i) => i !== idx),
+    }));
+
+  const handlePatch = async () => {
+    if (contact) {
+      await contact.patch(contactPatch);
+    }
+    Alert.alert('Contact patched successfully');
+  };
+
+  if (!contact) {
+    return <Text style={{ marginTop: 50 }}>Loading...</Text>;
+  }
+
+  return (
+    <ScrollView style={{ padding: 20, paddingTop: 60 }}>
+      <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>Edit ID: {contact.id}</Text>
+
+      <Text>Name:</Text>
+      <TextInput
+        style={{ borderWidth: 1, padding: 5, marginBottom: 10 }}
+        value={contactPatch.givenName || ''}
+        onChangeText={handleChangeName}
+      />
+
+      <Text>Phones:</Text>
+      {contactPatch.phones?.map((phone, index) => (
+        <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          <Text style={{ flex: 1 }}>{phone.number}</Text>
+          <Button title="Remove" onPress={() => handleRemovePhone(index)} />
+        </View>
+      ))}
+
+      <View style={{ flexDirection: 'row', marginBottom: 20, marginTop: 10 }}>
+        <TextInput
+          style={{ borderWidth: 1, flex: 1, padding: 5, marginRight: 5 }}
+          value={newPhoneInput}
+          onChangeText={setNewPhoneInput}
+          placeholder="New phone..."
+        />
+        <Button title="Add" onPress={handleAddPhone} />
+      </View>
+
+      <Button title="PATCH CONTACT" onPress={handlePatch} />
+    </ScrollView>
+  );
+}
+```
+
+</SnackInline>
+</Collapsible>
+
+## API
+
+```jsx
+import { Contact } from 'expo-contacts/next';
+```
+
+<APISection packageName="expo-contacts-next" apiName="Contacts (next)" />
+
+## Permissions
+
+### Android
+
+This library automatically adds `READ_CONTACTS` and `WRITE_CONTACTS` permissions to your app:
+
+<AndroidPermissions permissions={['READ_CONTACTS', 'WRITE_CONTACTS']} />
+
+### iOS
+
+The following usage description keys are used by this library:
+
+<IOSPermissions permissions={['NSContactsUsageDescription']} />
+````

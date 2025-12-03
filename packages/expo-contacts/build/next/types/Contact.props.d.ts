@@ -1,4 +1,8 @@
 import { ContactDetails } from './Contact.types';
+/**
+ * Enum representing the various fields of a contact. These fields can be used
+ * to specify which details to retrieve from a contact.
+ */
 export declare enum ContactField {
     IS_FAVOURITE = "isFavourite",
     FULL_NAME = "fullName",
@@ -29,12 +33,18 @@ export declare enum ContactField {
     SOCIAL_PROFILES = "socialProfiles",
     IM_ADDRESSES = "imAddresses"
 }
+/**
+ * Enum representing the sort order options for querying contacts.
+ */
 export declare enum ContactsSortOrder {
     UserDefault = "userDefault",
     GivenName = "givenName",
     FamilyName = "familyName",
     None = "none"
 }
+/**
+ * Options for querying multiple contacts.
+ */
 export type ContactQueryOptions = {
     limit?: number;
     offset?: number;
@@ -42,16 +52,50 @@ export type ContactQueryOptions = {
     name?: string;
     rawContacts?: boolean;
 };
+/**
+ * Denotes the functionality of a native contact form.
+ * @platform ios
+ */
 export type FormOptions = {
+    /**
+     * The properties that will be displayed when viewing a contact.
+     */
     displayedPropertyKeys?: ContactField[];
+    /**
+     * The message displayed under the name of the contact. Only applies when editing an existing contact.
+     */
     message?: string;
+    /**
+     * Used if contact doesn't have a name defined.
+     */
     alternateName?: string;
+    /**
+     * Allows for contact mutation.
+     */
     allowsEditing?: boolean;
+    /**
+     * Actions like share, add, create.
+     */
     allowsActions?: boolean;
+    /**
+     * Show or hide the similar contacts.
+     */
     shouldShowLinkedContacts?: boolean;
+    /**
+     * Present the new contact controller. If set to `false` the unknown controller will be shown.
+     */
     isNew?: boolean;
+    /**
+     * The name of the left bar button. Only applies when editing an existing contact.
+     */
     cancelButtonTitle?: string;
+    /**
+     * Prevents the controller from animating in.
+     */
     preventAnimation?: boolean;
+    /**
+     * The parent group for a new contact.
+     */
     groupId?: string;
 };
 export type ContactFieldKey = {
