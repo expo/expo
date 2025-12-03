@@ -15,6 +15,7 @@
 - Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
 - Update to `tar@^7.5.2` ([#40732](https://github.com/expo/expo/pull/40732) by [@kitten](https://github.com/kitten))
 - Use `@expo/mcp-tunnel` from `expo-mcp`. ([#41276](https://github.com/expo/expo/pull/41276) by [@kudo](https://github.com/kudo))
+- Allow MCP tunnel starting in background tasks. ([#41359](https://github.com/expo/expo/pull/41359) by [@kudo](https://github.com/kudo))
 
 ## 54.0.16 — 2025-11-07
 
