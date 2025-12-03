@@ -283,7 +283,7 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
   ) -> Bool {
-    let selector = #selector(application(_:continue:restorationHandler:))
+    let selector = NSSelectorFromString("application:continueUserActivity:restorationHandler:")
     let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.continueUserActivity", qos: .userInteractive)
@@ -314,7 +314,7 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([any NSUserActivityRestoring]) -> Void
   ) -> Bool {
-    let selector = #selector(application(_:continue:restorationHandler:))
+    let selector = NSSelectorFromString("application:continueUserActivity:restorationHandler:")
     let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.continueUserActivity", qos: .userInteractive)
@@ -363,7 +363,7 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
     performActionFor shortcutItem: UIApplicationShortcutItem,
     completionHandler: @escaping (Bool) -> Void
   ) {
-    let selector = #selector(application(_:performActionFor:completionHandler:))
+    let selector = NSSelectorFromString("application:performActionForShortcutItem:completionHandler:")
     let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     var result: Bool = false
@@ -469,7 +469,7 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
     let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask
 
     let parsedSubscribers = ExpoAppDelegateSubscriberRepository.subscribers.filter {
-      $0.responds(to: #selector(application(_:supportedInterfaceOrientationsFor:)))
+      $0.responds(to: NSSelectorFromString("application:supportedInterfaceOrientationsForWindow:"))
     }
 
     // We want to create an intersection of all orientations set by subscribers.
