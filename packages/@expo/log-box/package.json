@@ -12,9 +12,11 @@
     "watch": "run-p watch:lib watch:bundle",
     "watch:lib": "tsc -p tsconfig.lib.json --watch",
     "watch:bundle": "node ./scripts/watch-bundle.mjs",
+    "prebuild": "pnpm --filter @expo/cli run build",
     "build": "run-s build:lib build:bundle",
     "build:lib": "tsc -p tsconfig.lib.json",
     "build:bundle": "node ./scripts/build-bundle.mjs",
+    "prepare": "run-s clean build",
     "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
