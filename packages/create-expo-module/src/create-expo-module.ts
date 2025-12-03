@@ -306,6 +306,12 @@ async function createModuleFromTemplate(
       closeDelimiter: '}',
       escape: (value: string) => value.replace(/\./g, path.sep),
     });
+
+    // Skip files that the template marked as to be ignored.
+    if (!renderedRelativePath || renderedRelativePath.includes('__skip__')) {
+      continue;
+    }
+
     const fromPath = path.join(templatePath, file);
     const toPath = path.join(targetPath, renderedRelativePath);
     const template = await fs.promises.readFile(fromPath, 'utf8');
@@ -390,9 +396,8 @@ async function askForSubstitutionDataAsync(
     authorUrl,
     repo,
     platform,
+    includeView,
   } = await prompts(promptQueries, { onCancel });
-
-  console.log('platform', platform); //TODO: add code to generate correct template base on user selection.
 
   if (isLocal) {
     return {
@@ -402,6 +407,9 @@ async function askForSubstitutionDataAsync(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+      },
+      features: {
+        view: !!includeView,
       },
       type: 'local',
     };
@@ -422,6 +430,9 @@ async function askForSubstitutionDataAsync(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+    },
+    features: {
+      view: !!includeView,
     },
     author,
     license: 'MIT',

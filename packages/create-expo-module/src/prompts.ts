@@ -94,6 +94,12 @@ export async function getSubstitutionDataPrompts(
       initial: 0,
     },
     {
+      type: 'confirm',
+      name: 'includeView',
+      message: 'Do you want the module to include a native View component?',
+      initial: false, // todo revert to true
+    },
+    {
       type: 'text',
       name: 'package',
       message: 'What is the Android package name?',
@@ -171,6 +177,12 @@ export async function getLocalSubstitutionDataPrompts(
         { title: 'Web', value: 'web' },
       ],
       initial: 0,
+    },
+    {
+      type: 'confirm',
+      name: 'includeView',
+      message: 'Do you want the module to include a native View component?',
+      initial: false, // todo revert to true
     },
     {
       type: 'text',

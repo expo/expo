@@ -26,6 +26,9 @@ export type SubstitutionData = {
     moduleName: string;
     viewName: string;
   };
+  features: {
+    view: boolean;
+  };
   author: string;
   license: string;
   repo: string;
@@ -39,6 +42,9 @@ export type LocalSubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+  };
+  features: {
+    view: boolean;
   };
   type: 'local';
 };
