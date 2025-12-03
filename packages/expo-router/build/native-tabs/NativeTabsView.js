@@ -34,17 +34,22 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
+const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const experimental_1 = require("react-native-screens/experimental");
 const appearance_1 = require("./appearance");
+const elements_1 = require("./common/elements");
 const types_1 = require("./types");
 const icon_1 = require("./utils/icon");
+const children_1 = require("../utils/children");
+const bottomAccessory_1 = require("./utils/bottomAccessory");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
 function NativeTabsView(props) {
-    const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable } = props;
+    const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable, nonTriggerChildren, } = props;
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     // We need to check if the deferred index is not out of bounds
     // This can happen when the focused index is the last tab, and user removes that tab
@@ -56,6 +61,8 @@ function NativeTabsView(props) {
         scrollEdgeAppearance: (0, appearance_1.createScrollEdgeAppearanceFromOptions)(tab.options),
     }));
     const options = tabs.map((tab) => tab.options);
+    const bottomAccessory = (0, react_1.useMemo)(() => (0, children_1.getFirstChildOfType)(nonTriggerChildren, elements_1.NativeTabsBottomAccessory), [nonTriggerChildren]);
+    const bottomAccessoryFn = (0, bottomAccessory_1.useBottomAccessoryFunctionFromBottomAccessories)(bottomAccessory);
     const children = tabs.map((tab, index) => {
         const isFocused = index === inBoundsDeferredFocusedIndex;
         return (<Screen key={tab.routeKey} routeKey={tab.routeKey} name={tab.name} options={tab.options} isFocused={isFocused} standardAppearance={appearances[index].standardAppearance} scrollEdgeAppearance={appearances[index].scrollEdgeAppearance} badgeTextColor={tab.options.badgeTextColor} contentRenderer={tab.contentRenderer}/>);
@@ -73,7 +80,7 @@ function NativeTabsView(props) {
     tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
     // #endregion
     // #region iOS props
-    tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} tabBarControllerMode={tabBarControllerMode} 
+    tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} tabBarControllerMode={tabBarControllerMode} bottomAccessory={bottomAccessoryFn} 
     // #endregion
     onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
             props.onTabChange(tabKey);
@@ -87,8 +94,19 @@ function Screen(props) {
     // We need to await the icon, as VectorIcon will load asynchronously
     const icon = (0, icon_1.useAwaitedScreensIcon)(options.icon);
     const selectedIcon = (0, icon_1.useAwaitedScreensIcon)(options.selectedIcon);
-    const content = contentRenderer();
-    const wrappedContent = process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets ? (<experimental_1.SafeAreaView style={{ flex: 1 }} edges={{ bottom: true }}>
+    const { colors } = (0, native_1.useTheme)();
+    const content = (<react_native_1.View 
+    // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+    collapsable={false} style={[
+            { backgroundColor: colors.background },
+            options.contentStyle,
+            { flex: 1, position: 'relative', overflow: 'hidden' },
+        ]}>
+      {contentRenderer()}
+    </react_native_1.View>);
+    const wrappedContent = process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets ? (<experimental_1.SafeAreaView 
+    // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+    collapsable={false} style={{ flex: 1 }} edges={{ bottom: true }}>
         {content}
       </experimental_1.SafeAreaView>) : (content);
     return (<react_native_screens_1.BottomTabsScreen {...options} overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>

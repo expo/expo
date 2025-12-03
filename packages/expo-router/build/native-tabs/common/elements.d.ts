@@ -138,4 +138,29 @@ export interface NativeTabsTriggerBadgeProps {
     selectedBackgroundColor?: ColorValue;
 }
 export declare const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps>;
+export interface NativeTabsBottomAccessoryProps {
+    children?: React.ReactNode;
+}
+/**
+ * A [bottom accessory](https://developer.apple.com/documentation/uikit/uitabbarcontroller/bottomaccessory) for `NativeTabs` on iOS 26 and above.
+ *
+ * @example
+ * ```tsx
+ * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ *
+ * export default Layout(){
+ *   return (
+ *     <NativeTabs>
+ *       <NativeTabs.BottomAccessory>
+ *         <YourAccessoryComponent />
+ *       </NativeTabs.BottomAccessory>
+ *       <NativeTabs.Trigger name="index" />
+ *     </NativeTabs>
+ *   );
+ * }
+ * ```
+ *
+ * @platform iOS 26+
+ */
+export declare const NativeTabsBottomAccessory: React.FC<NativeTabsBottomAccessoryProps>;
 //# sourceMappingURL=elements.d.ts.map

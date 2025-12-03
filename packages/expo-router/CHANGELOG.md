@@ -23,6 +23,10 @@
 - emit tabPress on tab change ([#41159](https://github.com/expo/expo/pull/41159) by [@Ubax](https://github.com/Ubax))
 - add disableAutomaticContentInsets prop to NativeTabs.Trigger ([#41293](https://github.com/expo/expo/pull/41293) by [@Ubax](https://github.com/Ubax))
 - add safe area view to native tabs on Android ([#41295](https://github.com/expo/expo/pull/41295) by [@Ubax](https://github.com/Ubax))
+- [iOS] add bottom accessory support ([#41239](https://github.com/expo/expo/pull/41239) by [@Ubax](https://github.com/Ubax))
+- apply react-navigation background color to NativeTabsView ([#41068](https://github.com/expo/expo/pull/41068) by [@Ubax](https://github.com/Ubax))
+- [iOS] bottom toolbar ([#41106](https://github.com/expo/expo/pull/41106) by [@Ubax](https://github.com/Ubax))
+- [iOS] rename displayInline and displayAsPalette in Link.Menu ([#41317](https://github.com/expo/expo/pull/41317) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -30,6 +34,7 @@
 - activate animation on back navigation, when initial animation was disabled using internal param ([#41141](https://github.com/expo/expo/pull/41141) by [@Ubax](https://github.com/Ubax))
 - prevent `onPreviewTapped` from firing when `<Link.Preview />` is not configured ([#41160](https://github.com/expo/expo/pull/41160) by [@Ubax](https://github.com/Ubax))
 - fix Sitemap insets on Android ([#41280](https://github.com/expo/expo/pull/41280) by [@Ubax](https://github.com/Ubax))
+- Replace internal base URL for parsing pathnames with `file:` ([#41338](https://github.com/expo/expo/pull/41338) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

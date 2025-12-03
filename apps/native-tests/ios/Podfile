@@ -22,7 +22,10 @@ target 'NativeTests' do
   pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
 
   config_command = [
-    'npx',
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(\'expo/bin/autolinking\')',
     'expo-modules-autolinking',
     'react-native-config',
     '--json',

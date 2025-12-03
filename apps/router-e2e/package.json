@@ -40,6 +40,8 @@
     "ios:split-view": "E2E_ROUTER_SPLIT_VIEW=true E2E_ROUTER_SRC=split-view expo run:ios",
     "prebuild:split-view": "E2E_ROUTER_SPLIT_VIEW=true yarn prebuild",
     "start:stack": "E2E_ROUTER_SRC=stack expo start",
+    "ios:stack": "E2E_ROUTER_SRC=stack expo run:ios",
+    "android:stack": "E2E_ROUTER_SRC=stack expo run:android",
     "lint": "expo lint __e2e__",
     "android": "expo run:android",
     "ios": "expo run:ios"
@@ -53,6 +55,7 @@
     "expo-router": "^6.0.6",
     "expo-speech": "~14.0.7",
     "expo-sqlite": "~16.0.8",
+    "expo-symbols": "~1.0.7",
     "jose": "^5",
     "react": "19.2.0",
     "react-native": "0.83.0-rc.3",

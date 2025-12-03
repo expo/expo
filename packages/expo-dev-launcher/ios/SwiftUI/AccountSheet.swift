@@ -29,7 +29,7 @@ struct AccountSheet: View {
       .padding(.horizontal, 16)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     .background(Color(.systemGroupedBackground))
     #endif
   }
@@ -179,7 +179,7 @@ struct AccountSheet: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
-      #if !os(tvOS)
+      #if !os(tvOS) && !os(macOS)
       .background(Color(.systemBackground))
       #endif
     }
@@ -211,7 +211,7 @@ struct AccountSheet: View {
           .scaledToFill()
       } placeholder: {
         Circle()
-        #if !os(tvOS)
+        #if !os(tvOS) && !os(macOS)
           .fill(Color(.systemGray5))
         #endif
           .overlay(

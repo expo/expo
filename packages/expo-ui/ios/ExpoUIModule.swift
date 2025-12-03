@@ -69,6 +69,7 @@ public final class ExpoUIModule: Module {
     View(GridRowView.self)
     View(LabeledContentLabel.self)
     View(LabeledContentContent.self)
+    View(LabelIcon.self)
 
     View(HostView.self)
 

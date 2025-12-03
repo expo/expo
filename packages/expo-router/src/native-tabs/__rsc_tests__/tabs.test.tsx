@@ -4,6 +4,7 @@ import * as React from 'react';
 // Right now NativeTabs.Trigger.* components cannot be used in the server environment
 import { Badge, Icon, Label } from '../../primitives';
 import { NativeTabs } from '../NativeTabs';
+import { NativeTabsBottomAccessory } from '../common/elements';
 
 it(`renders NativeTabs`, async () => {
   await expect(<NativeTabs />).toMatchFlightSnapshot();
@@ -31,4 +32,8 @@ it(`renders Badge`, async () => {
 
 it(`renders Label`, async () => {
   await expect(<Label>Test</Label>).toMatchFlightSnapshot();
+});
+
+it(`renders NativeTabsBottomAccessory`, async () => {
+  await expect(<NativeTabsBottomAccessory>Test</NativeTabsBottomAccessory>).toMatchFlightSnapshot();
 });

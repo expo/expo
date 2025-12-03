@@ -12,7 +12,6 @@
 - Add types for `process.env.EXPO_DOM_HOST_OS`. ([#40382](https://github.com/expo/expo/pull/40382) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Add `ComposableScope` for compose Content functions. ([#39155](https://github.com/expo/expo/pull/39155) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Adds support for `ArrayBuffer`. ([#39943](https://github.com/expo/expo/pull/39943) by [@lukmccall](https://github.com/lukmccall))
-- [iOS] Add `AppContext` to views environment so it can be accessed if needed. ([#39207](https://github.com/expo/expo/pull/39207) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Add experimental formatters API. ([#38946](https://github.com/expo/expo/pull/38946) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Add `convertResult` to `Convertible`. ([#40302](https://github.com/expo/expo/pull/40302) by [@jakex7](https://github.com/jakex7))
 - [iOS] Adopted Swift 6 ([#40369](https://github.com/expo/expo/pull/40369) by [@tsapeta](https://github.com/tsapeta))
@@ -28,7 +27,9 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Universal links not working on cold start. ([#41185](https://github.com/expo/expo/pull/41185)) by [@jbaudanza](https://github.com/jbaudanza)
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
 - [core] [iOS] Addresses a potential crash where `[NSString UTF8String]` could return `nil` for certain string inputs (non-English), leading to an attempt to dereference a null pointer during `jsi::String` creation. ([#40639](https://github.com/expo/expo/pull/40639) by [@mohammadamin16](https://github.com/mohammadamin16))
 - [iOS] Fix `Either` conversion in `Record` ([#40655](https://github.com/expo/expo/pull/40655) by [@vonovak](https://github.com/vonovak))
 - [RSC] Fix server components asserting from missing native modules. ([#40388](https://github.com/expo/expo/pull/40388) by [@EvanBacon](https://github.com/EvanBacon))
@@ -52,6 +53,8 @@
 - [iOS] Removed some runtime type checks for dynamic types. ([#40611](https://github.com/expo/expo/pull/40611) by [@tsapeta](https://github.com/tsapeta))
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 - Remove old REACT_NATIVE_TARGET_VERSION checks ([#40843](https://github.com/expo/expo/pull/40843) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Moved the implementation of the constants provider (`EXConstantsService`) from `expo-constants`. ([#41339](https://github.com/expo/expo/pull/41339) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Replaced `appContext.fileSystem` with the core implementation. ([#41350](https://github.com/expo/expo/pull/41350) by [@tsapeta](https://github.com/tsapeta))
 
 ## 3.0.22 - 2025-10-20
 

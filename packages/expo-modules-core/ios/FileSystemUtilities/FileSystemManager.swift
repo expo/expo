@@ -3,15 +3,15 @@
 import Foundation
 
 @objc(EXFileSystemLegacyUtilities)
-public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
+public class FileSystemManager: NSObject, EXInternalModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
   @objc
-  public var documentDirectory: String
+  public let documentDirectory: String
 
   @objc
-  public var cachesDirectory: String
+  public let cachesDirectory: String
 
   @objc
-  public var applicationSupportDirectory: String
+  public let applicationSupportDirectory: String
 
   var appGroupSharedDirectories: [String]?
 
@@ -45,6 +45,11 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
     ensureDirExists(withPath: self.cachesDirectory)
     ensureDirExists(withPath: self.documentDirectory)
     ensureDirExists(withPath: self.applicationSupportDirectory)
+  }
+
+  public convenience init(appGroupSharedDirectories directories: [URL]) {
+    self.init()
+    maybeInitAppGroupSharedDirectories(directories)
   }
 
   public static func exportedInterfaces() -> [Protocol] {

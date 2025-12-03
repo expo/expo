@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import UIKit
 import React
 import EXDevMenuInterface
 
@@ -39,14 +38,6 @@ class DevMenuKeyCommandsInterceptor {
       withInput: "d",
       modifierFlags: .control,
       action: { _ in DevMenuManager.shared.toggleMenu() }
-    )
-
-    commands.registerKeyCommand(
-      withInput: "r",
-      modifierFlags: .command,
-      action: { _ in
-        DevMenuManager.shared.reload()
-      }
     )
 
     commands.registerKeyCommand(

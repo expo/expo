@@ -1,6 +1,6 @@
 import { screen, act, fireEvent, waitFor } from '@testing-library/react-native';
 import React, { isValidElement, type ComponentProps } from 'react';
-import { Button, View } from 'react-native';
+import { Button, Text, View } from 'react-native';
 import {
   BottomTabsScreen as _BottomTabsScreen,
   type BottomTabsScreenProps,
@@ -807,7 +807,7 @@ describe('Tab options', () => {
           <NativeTabs.Trigger name="index" disableAutomaticContentInsets />
         </NativeTabs>
       ),
-      index: () => <View testID="index" />,
+      index: () => <Text testID="index" />,
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
@@ -817,7 +817,7 @@ describe('Tab options', () => {
     expect(isValidElement(children)).toBe(true);
     // Type assertion to satisfy TypeScript
     if (!isValidElement(children)) throw new Error();
-    expect(children.type).not.toBe(View);
+    expect(children.type).not.toBe(SafeAreaView);
   });
 });
 

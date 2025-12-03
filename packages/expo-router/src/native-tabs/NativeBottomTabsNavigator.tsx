@@ -12,11 +12,18 @@ import {
 import React, { use, useCallback, useMemo } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
+import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
-import type { NativeTabOptions, NativeTabsProps, NativeTabsViewTabItem } from './types';
+import type {
+  InternalNativeTabsProps,
+  NativeTabOptions,
+  NativeTabsProps,
+  NativeTabsViewTabItem,
+} from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import { getPathFromState } from '../link/linking';
+import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
@@ -33,7 +40,7 @@ export function NativeTabsNavigator({
   indicatorColor,
   badgeTextColor,
   ...rest
-}: NativeTabsProps) {
+}: InternalNativeTabsProps) {
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
@@ -145,9 +152,28 @@ export function NativeTabsNavigator({
 
 const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
 
-export const NativeTabsNavigatorWithContext = withLayoutContext<
+const NativeTabsNavigatorWithContext = withLayoutContext<
   NativeTabOptions,
   typeof NativeTabsNavigator,
   NavigationState,
   EventMapBase
 >(createNativeTabNavigator().Navigator, undefined, true);
+
+export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
+  const triggerChildren = useMemo(
+    () => getAllChildrenOfType(props.children, NativeTabTrigger),
+    [props.children]
+  );
+  const nonTriggerChildren = useMemo(
+    () => getAllChildrenNotOfType(props.children, NativeTabTrigger),
+    [props.children]
+  );
+
+  return (
+    <NativeTabsNavigatorWithContext
+      {...props}
+      children={triggerChildren}
+      nonTriggerChildren={nonTriggerChildren}
+    />
+  );
+}

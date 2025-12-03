@@ -8,6 +8,7 @@
 
 - Added SQLite inspector devtools plugin. ([#40872](https://github.com/expo/expo/pull/40872), [#40900](https://github.com/expo/expo/pull/40900) by [@kudo](https://github.com/kudo))
 - Added tagged template literals support. ([#40972](https://github.com/expo/expo/pull/40972) by [@kudo](https://github.com/kudo))
+- Added `SQLITE_ENABLE_MATH_FUNCTIONS` support by default. ([#41333](https://github.com/expo/expo/pull/41333) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

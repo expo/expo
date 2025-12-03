@@ -6,7 +6,7 @@ ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 prepare_react_native_project!
 
 target 'BareExpo-macOS' do
-  platform :macos, '11.0'
+  platform :macos, '13.0'
   config_command = [
     'npx',
     'expo-modules-autolinking',
