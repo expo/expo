@@ -353,6 +353,14 @@ class ContactsNextModule : Module() {
         Contact.getAllWithDetails(contactRepository, contactMapper, fields,  contactQueryOptions)
       }
 
+      StaticAsyncFunction("getCount") Coroutine { ->
+        Contact.getCount(contactRepository)
+      }
+
+      StaticAsyncFunction("hasAny") Coroutine { ->
+        Contact.hasAny(contactRepository)
+      }
+
       StaticAsyncFunction("requestPermissionsAsync") { promise: Promise ->
         permissionsDelegate.requestPermissions(promise)
       }

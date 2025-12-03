@@ -194,6 +194,16 @@ class ContactRepository(val contentResolver: ContentResolver) {
     }
   }
 
+  suspend fun getCount(): Int = withContext(Dispatchers.IO) {
+    contentResolver.safeQuery(
+      uri = ContactsContract.Contacts.CONTENT_URI,
+      projection = arrayOf(ContactId.COLUMN_IN_CONTACTS_TABLE)
+    ).use { cursor ->
+      ensureActive()
+      return@withContext cursor.count
+    }
+  }
+
   suspend fun getLookupKey(contactId: ContactId): String? = withContext(Dispatchers.IO) {
     contentResolver.queryOne(
       uri = ContactsContract.Contacts.CONTENT_URI,
