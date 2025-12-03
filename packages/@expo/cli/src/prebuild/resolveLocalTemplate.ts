@@ -1,9 +1,10 @@
 import type { ExpoConfig } from '@expo/config';
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { copyNodeModuleAsync, extractNpmTarballAsync } from '../utils/npm';
+import { extractNpmTarballAsync } from '../utils/npm';
 
 const debug = require('debug')('expo:prebuild:resolveLocalTemplate') as typeof console.log;
 
@@ -18,6 +19,15 @@ const getMonorepoTemplatePath = async () => {
   }
 };
 
+async function packToTarballAsync(packageDir: string): Promise<string> {
+  const child = await spawnAsync('npm', ['pack', '--json', '--foreground-scripts=false'], {
+    env: { ...process.env },
+    cwd: packageDir,
+  });
+  const [json] = JSON.parse(child.stdout) as { filename: string }[];
+  return path.resolve(packageDir, json.filename);
+}
+
 export async function resolveLocalTemplateAsync({
   templateDirectory,
   projectRoot,
@@ -27,22 +37,32 @@ export async function resolveLocalTemplateAsync({
   projectRoot: string;
   exp: Pick<ExpoConfig, 'name'>;
 }): Promise<string> {
+  let templatePath: string;
+
+  // In the expo/expo monorepo only, we use `templates/expo-template-bare-minimum` directly
   const monorepoTemplatePath = await getMonorepoTemplatePath();
   if (monorepoTemplatePath) {
-    // NOTE: In the expo/expo monorepo only, we use `templates/expo-template-bare-minimum` directly
-    debug('Using local template from expo-template-bare-minimum path:', monorepoTemplatePath);
-    return await copyNodeModuleAsync(monorepoTemplatePath, {
-      cwd: templateDirectory,
-      name: exp.name,
-    });
+    debug('Packing local template from expo-template-bare-minimum path:', monorepoTemplatePath);
+    try {
+      templatePath = await packToTarballAsync(monorepoTemplatePath);
+      debug('Using packed local template at:', templatePath);
+    } catch (error) {
+      // We're vocal here about an error, since we don't expect this to fail, and it's only for our monorepo
+      console.error(
+        `Failed to pack local expo-template-bare-minimum to be used as a prebuild template:\n`,
+        error
+      );
+      throw error;
+    }
   } else {
     // The default is to use `expo/template.tgz` which exists in all published versions of it
-    const templatePath = resolveFrom(projectRoot, 'expo/template.tgz');
+    templatePath = resolveFrom(projectRoot, 'expo/template.tgz');
     debug('Using local template from Expo package:', templatePath);
-    const stream = fs.createReadStream(templatePath);
-    return await extractNpmTarballAsync(stream, {
-      cwd: templateDirectory,
-      name: exp.name,
-    });
   }
+
+  const stream = fs.createReadStream(templatePath);
+  return await extractNpmTarballAsync(stream, {
+    cwd: templateDirectory,
+    name: exp.name,
+  });
 }
