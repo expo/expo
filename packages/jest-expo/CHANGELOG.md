@@ -13,6 +13,7 @@
 - Improve local mock lookup. ([#39743](https://github.com/expo/expo/pull/39743) by [@aleqsio](https://github.com/aleqsio))
 - Remove `experiments.reactCanary` support in favor of built-in React +19.1 support. ([#40386](https://github.com/expo/expo/pull/40386) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+- Remove `expo-video` mocks, update other mocks. ([#39707](https://github.com/expo/expo/pull/39707) by [@behenate](https://github.com/behenate))
 
 ### ⚠️ Notices
 
