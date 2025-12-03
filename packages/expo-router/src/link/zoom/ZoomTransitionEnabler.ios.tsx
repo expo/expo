@@ -1,6 +1,7 @@
 import type { ZoomTransitionEnablerProps } from './ZoomTransitionEnabler.types';
 import {
   getInternalExpoRouterParams,
+  INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../../navigationParams';
@@ -36,7 +37,10 @@ export function ZoomTransitionEnabler({ route }: ZoomTransitionEnablerProps) {
       internalParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME];
     const zoomTransitionScreenId =
       internalParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME];
-    const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key;
+    const isLinkPreviewNavigation =
+      !!internalParams[INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME];
+    const hasZoomTransition =
+      !!zoomTransitionId && zoomTransitionScreenId === route.key && !isLinkPreviewNavigation;
     if (hasZoomTransition && typeof zoomTransitionId === 'string') {
       return <LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} />;
     }

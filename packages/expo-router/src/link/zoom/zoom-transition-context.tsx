@@ -1,8 +1,12 @@
 import { createContext } from 'react';
 
-export const ZoomTransitionSourceContext = createContext<
+export type ZoomTransitionSourceContextValueType =
   | {
       identifier: string;
+      addSource: () => void;
+      removeSource: () => void;
     }
-  | undefined
->(undefined);
+  | undefined;
+
+export const ZoomTransitionSourceContext =
+  createContext<ZoomTransitionSourceContextValueType>(undefined);

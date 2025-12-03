@@ -84,8 +84,13 @@ class LinkZoomTransitionsSourceRepository {
   }
 }
 
-class LinkZoomTransitionSource: ExpoView {
-  private var child: UIView?
+class LinkZoomTransitionSource: ExpoView, LinkPreviewIndirectTriggerProtocol {
+  var child: UIView?
+
+  var indirectTrigger: UIView? {
+    return child
+  }
+
   var alignment: CGRect? {
     didSet {
       // Update alignment info in the repository

@@ -28,7 +28,8 @@ function ZoomTransitionEnabler({ route }) {
         const internalParams = (0, navigationParams_1.getInternalExpoRouterParams)(params);
         const zoomTransitionId = internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME];
         const zoomTransitionScreenId = internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME];
-        const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key;
+        const isLinkPreviewNavigation = !!internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME];
+        const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key && !isLinkPreviewNavigation;
         if (hasZoomTransition && typeof zoomTransitionId === 'string') {
             return <native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId}/>;
         }

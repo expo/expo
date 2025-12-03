@@ -116,9 +116,6 @@ function LinkWithPreview({ children, ...rest }) {
                 router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
             }
         }} onPreviewTapped={() => {
-            if (process.env.NODE_ENV !== 'production' && rest.unstable_transition === 'zoom') {
-                console.warn('Zoom transition is not supported when navigating from preview. Falling back to standard navigation transition.');
-            }
             isPreviewTapped.current = true;
             if (!isPad) {
                 router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });

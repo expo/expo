@@ -28,7 +28,7 @@ const HomeIndex = () => {
       </View>
       <Text>Time: {time}</Text>
       <Spacer />
-      <Link href="/" unstable_transition="zoom">
+      <Link href="/">
         <Link.Trigger>Link.Preview: /</Link.Trigger>
         <Link.Preview />
       </Link>
@@ -41,7 +41,7 @@ const HomeIndex = () => {
       <Link href="/one">
         <Link.Trigger>Normal link with trigger: /one</Link.Trigger>
       </Link>
-      <Link href="/one" asChild unstable_transition="zoom">
+      <Link href="/one" asChild>
         <Link.Trigger>
           <TouchableOpacity>
             <Text>Normal link with trigger asChild: /one with zoom</Text>
@@ -64,7 +64,7 @@ const HomeIndex = () => {
           </TouchableOpacity>
         </Link.Trigger>
       </Link>
-      <Link href="/one" unstable_transition="zoom">
+      <Link href="/one">
         <Link.Trigger>Link.Preview: /one with zoom</Link.Trigger>
         <Link.Preview />
       </Link>
@@ -148,18 +148,20 @@ const HomeIndex = () => {
           gap: 8,
           width: '100%',
         }}>
-        <Link href="/zoom-dest" unstable_transition="zoom" asChild>
+        <Link href="/zoom-dest" asChild>
           <Link.Trigger>
-            <Pressable style={{ flex: 5, aspectRatio: width / height }}>
-              <Image
-                source={require('../../../assets/frog.jpg')}
-                resizeMode="cover"
-                style={{ width: '100%', height: '100%' }}
-              />
-            </Pressable>
+            <Link.AppleZoom>
+              <Pressable style={{ flex: 5, aspectRatio: width / height }}>
+                <Image
+                  source={require('../../../assets/frog.jpg')}
+                  resizeMode="cover"
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </Pressable>
+            </Link.AppleZoom>
           </Link.Trigger>
         </Link>
-        <Link href="/zoom-dest" unstable_transition="zoom" asChild>
+        <Link href="/zoom-dest" asChild>
           <Link.Trigger>
             <Pressable style={{ flex: 3, alignItems: 'center' }}>
               <Link.AppleZoom>
@@ -180,6 +182,22 @@ const HomeIndex = () => {
         </Link>
         <LinkWithZoomTransitionAlignRect />
       </View>
+      <Spacer />
+      <Text>Zoom with preview:</Text>
+      <Link href="/zoom-dest" asChild>
+        <Link.Trigger>
+          <Link.AppleZoom>
+            <Pressable style={{ flex: 1, width: '33%', aspectRatio: width / height }}>
+              <Image
+                source={require('../../../assets/frog.jpg')}
+                resizeMode="cover"
+                style={{ width: '100%', height: '100%' }}
+              />
+            </Pressable>
+          </Link.AppleZoom>
+        </Link.Trigger>
+        <Link.Preview />
+      </Link>
     </ScrollView>
   );
 };
@@ -234,33 +252,31 @@ function LinkWithZoomTransitionAlignRect() {
     }
   }, [imageWrapperLayout, imageOriginalSize, width, height]);
   return (
-    <Link
-      href="/zoom-dest-contain"
-      unstable_transition="zoom"
-      unstable_transitionAlignmentRect={zoomViewAlignmentRect}
-      asChild>
+    <Link href="/zoom-dest-contain" asChild>
       <Link.Trigger>
-        <Pressable style={{ flex: 5, alignItems: 'center' }}>
-          <View
-            style={{ width: '100%', aspectRatio: 1 }}
-            onLayout={(e) => {
-              setImageWrapperLayout(e.nativeEvent.layout);
-            }}>
-            <Image
-              source={require('../../../assets/frog.jpg')}
-              resizeMode="cover"
-              onLoad={(e) => {
-                if (process.env.EXPO_OS === 'ios') {
-                  setImageOriginalSize({
-                    width: e.nativeEvent.source.width,
-                    height: e.nativeEvent.source.height,
-                  });
-                }
-              }}
-              style={{ width: '100%', height: '100%' }}
-            />
-          </View>
-        </Pressable>
+        <Link.AppleZoom alignmentRect={zoomViewAlignmentRect}>
+          <Pressable style={{ flex: 5, alignItems: 'center' }}>
+            <View
+              style={{ width: '100%', aspectRatio: 1 }}
+              onLayout={(e) => {
+                setImageWrapperLayout(e.nativeEvent.layout);
+              }}>
+              <Image
+                source={require('../../../assets/frog.jpg')}
+                resizeMode="cover"
+                onLoad={(e) => {
+                  if (process.env.EXPO_OS === 'ios') {
+                    setImageOriginalSize({
+                      width: e.nativeEvent.source.width,
+                      height: e.nativeEvent.source.height,
+                    });
+                  }
+                }}
+                style={{ width: '100%', height: '100%' }}
+              />
+            </View>
+          </Pressable>
+        </Link.AppleZoom>
       </Link.Trigger>
     </Link>
   );

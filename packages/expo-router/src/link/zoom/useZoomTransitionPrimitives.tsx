@@ -1,12 +1,9 @@
 'use client';
 
-import React, { useMemo } from 'react';
-
 import { LinkProps } from '../useLinkHooks';
+import type { ZoomTransitionSourceContextValueType } from './zoom-transition-context';
 
 export function useZoomTransitionPrimitives({ href }: LinkProps) {
-  const ZoomTransitionWrapper = useMemo(() => {
-    return (props: { children: React.ReactNode }) => props.children;
-  }, []);
-  return { ZoomTransitionWrapper, href };
+  const zoomTransitionSourceContextValue: ZoomTransitionSourceContextValueType = undefined;
+  return { zoomTransitionSourceContextValue, href };
 }

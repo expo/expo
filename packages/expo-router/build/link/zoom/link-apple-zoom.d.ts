@@ -12,6 +12,12 @@ interface LinkAppleZoomProps extends PropsWithChildren {
         height: number;
     };
 }
-export declare function LinkAppleZoom({ children, alignmentRect }: LinkAppleZoomProps): string | number | bigint | boolean | Iterable<import("react").ReactNode> | Promise<string | number | bigint | boolean | import("react").ReactPortal | import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<import("react").ReactNode> | null | undefined> | import("react").JSX.Element | null | undefined;
+/**
+ * When this component is used inside a Link, [zoom transition](https://developer.apple.com/documentation/uikit/enhancing-your-app-with-fluid-transitions?language=objc)
+ * will be used when navigating to the link's href.
+ *
+ * @platform ios 18+
+ */
+export declare function LinkAppleZoom(props: LinkAppleZoomProps): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=link-apple-zoom.d.ts.map

@@ -1,42 +1,63 @@
 'use client';
 
 import { nanoid } from 'nanoid/non-secure';
-import React, { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
 import { INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME } from '../../navigationParams';
 import { useIsPreview } from '../preview/PreviewRouteContext';
 import { LinkProps } from '../useLinkHooks';
-import { ZoomTransitionSourceContext } from './zoom-transition-context';
 
-const NOOP_COMPONENT = (props: { children: React.ReactNode }) => {
-  return props.children;
-};
-
-export function useZoomTransitionPrimitives({ unstable_transition, href }: LinkProps) {
+export function useZoomTransitionPrimitives({ href, asChild }: LinkProps) {
   const isPreview = useIsPreview();
   const zoomTransitionId = useMemo(
     () =>
-      unstable_transition === 'zoom' &&
-      !isPreview &&
-      process.env.EXPO_OS === 'ios' &&
-      isZoomTransitionEnabled()
+      !isPreview && process.env.EXPO_OS === 'ios' && isZoomTransitionEnabled()
         ? nanoid()
         : undefined,
     []
   );
-  const ZoomTransitionWrapper = useMemo(() => {
-    if (!zoomTransitionId) {
-      return NOOP_COMPONENT;
+
+  const [numberOfSources, setNumberOfSources] = useState(0);
+  const addSource = useCallback(() => {
+    setNumberOfSources((prev) => prev + 1);
+  }, []);
+  const removeSource = useCallback(() => {
+    setNumberOfSources((prev) => prev - 1);
+  }, []);
+
+  const hasZoomSource = numberOfSources > 0;
+
+  useEffect(() => {
+    if (numberOfSources > 1) {
+      throw new Error(
+        '[expo-router] Only one Link.ZoomTransitionSource can be used within a single Link component.'
+      );
     }
-    return (props: { children: React.ReactNode }) => (
-      <ZoomTransitionSourceContext value={{ identifier: zoomTransitionId }}>
-        {props.children}
-      </ZoomTransitionSourceContext>
-    );
-  }, [zoomTransitionId]);
-  const computedHref = useMemo(() => {
+  }, [numberOfSources]);
+
+  useEffect(() => {
+    if (hasZoomSource && !asChild) {
+      console.warn(
+        '[expo-router] Using zoom transition links without `asChild` prop may lead to unexpected behavior. Please ensure to set `asChild` when using zoom transitions.'
+      );
+    }
+  }, [hasZoomSource, asChild]);
+
+  const zoomTransitionSourceContextValue = useMemo(() => {
     if (!zoomTransitionId) {
+      return undefined;
+    }
+    return {
+      identifier: zoomTransitionId,
+      addSource,
+      removeSource,
+      canAddSource: !hasZoomSource,
+    };
+  }, [zoomTransitionId, addSource, removeSource, hasZoomSource]);
+
+  const computedHref = useMemo(() => {
+    if (!hasZoomSource || !zoomTransitionId) {
       return href;
     }
     if (typeof href === 'string') {
@@ -54,6 +75,6 @@ export function useZoomTransitionPrimitives({ unstable_transition, href }: LinkP
         [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: zoomTransitionId,
       },
     };
-  }, [href, zoomTransitionId]);
-  return { ZoomTransitionWrapper, href: computedHref };
+  }, [href, zoomTransitionId, hasZoomSource]);
+  return { zoomTransitionSourceContextValue, href: computedHref };
 }
