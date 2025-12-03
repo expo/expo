@@ -3,11 +3,11 @@
 import { nanoid } from 'nanoid/non-secure';
 import React, { useMemo } from 'react';
 
-import { INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME } from '../navigationParams';
 import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
-import { useIsPreview } from './preview/PreviewRouteContext';
-import { LinkProps } from './useLinkHooks';
-import { ZoomTransitionSourceContext } from './zoom/zoom-transition-context';
+import { INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME } from '../../navigationParams';
+import { useIsPreview } from '../preview/PreviewRouteContext';
+import { LinkProps } from '../useLinkHooks';
+import { ZoomTransitionSourceContext } from './zoom-transition-context';
 
 const NOOP_COMPONENT = (props: { children: React.ReactNode }) => {
   return props.children;

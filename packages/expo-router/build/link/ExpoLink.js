@@ -44,7 +44,7 @@ const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const LinkWithPreview_1 = require("./LinkWithPreview");
 const elements_1 = require("./elements");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
-const useZoomTransitionPrimitives_1 = require("./useZoomTransitionPrimitives");
+const useZoomTransitionPrimitives_1 = require("./zoom/useZoomTransitionPrimitives");
 const url_1 = require("../utils/url");
 function ExpoLink(props) {
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();

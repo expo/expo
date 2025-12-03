@@ -8,7 +8,7 @@ import { LinkWithPreview } from './LinkWithPreview';
 import { LinkMenu, LinkPreview } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { LinkProps } from './useLinkHooks';
-import { useZoomTransitionPrimitives } from './useZoomTransitionPrimitives';
+import { useZoomTransitionPrimitives } from './zoom/useZoomTransitionPrimitives';
 import { shouldLinkExternally } from '../utils/url';
 
 export function ExpoLink(props: LinkProps) {

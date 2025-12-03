@@ -1,2 +1,2 @@
 export { shouldLinkExternally } from '../utils/url';
-export { enableZoomTransition } from '../link/ZoomTransitionEnabler';
+export { enableZoomTransition } from '../link/zoom/ZoomTransitionEnabler';

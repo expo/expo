@@ -1,11 +1,11 @@
+import type { ZoomTransitionEnablerProps } from './ZoomTransitionEnabler.types';
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
-} from '../navigationParams';
-import type { ZoomTransitionEnablerProps } from './ZoomTransitionEnabler.types';
-import { useIsPreview } from './preview/PreviewRouteContext';
-import { LinkZoomTransitionEnabler } from './preview/native';
+} from '../../navigationParams';
+import { useIsPreview } from '../preview/PreviewRouteContext';
+import { LinkZoomTransitionEnabler } from '../preview/native';
 
 let _isZoomTransitionEnabled = false;
 

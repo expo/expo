@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 
-import { LinkProps } from './useLinkHooks';
+import { LinkProps } from '../useLinkHooks';
 
 export function useZoomTransitionPrimitives({ href }: LinkProps) {
   const ZoomTransitionWrapper = useMemo(() => {
