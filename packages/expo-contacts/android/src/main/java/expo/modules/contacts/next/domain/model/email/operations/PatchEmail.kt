@@ -12,7 +12,7 @@ class PatchEmail(
   override val dataId: DataId,
   address: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   label: ValueOrUndefined<EmailLabel> = ValueOrUndefined.Undefined()
-) : EmailModel(address.optional, label.optional ?: EmailLabel.Unknown), Updatable.Data {
+) : EmailModel(address.optional, label.optional ?: EmailLabel.Custom("")), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!address.isUndefined) {
       put(Email.ADDRESS, address.optional)

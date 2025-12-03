@@ -1,6 +1,5 @@
 package expo.modules.contacts.next.domain.model.website
 
-import WebsiteLabel
 import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.Website
 

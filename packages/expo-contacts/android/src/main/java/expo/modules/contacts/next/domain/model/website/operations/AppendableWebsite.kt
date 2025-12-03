@@ -1,6 +1,6 @@
 package expo.modules.contacts.next.domain.model.website.operations
 
-import WebsiteLabel
+import expo.modules.contacts.next.domain.model.website.WebsiteLabel
 import expo.modules.contacts.next.domain.model.Appendable
 import expo.modules.contacts.next.domain.model.website.WebsiteModel
 import expo.modules.contacts.next.domain.wrappers.RawContactId

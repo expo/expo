@@ -32,10 +32,9 @@ object NicknameField : ExtractableField.Data<ExistingNickname>, ClearableField {
       Nickname.TYPE_MAIDEN_NAME -> NicknameLabel.MaidenName
       Nickname.TYPE_SHORT_NAME -> NicknameLabel.ShortName
       Nickname.TYPE_INITIALS -> NicknameLabel.Initials
-      Nickname.TYPE_CUSTOM -> {
+      else -> {
         val customLabel = getString(getColumnIndexOrThrow(Nickname.LABEL))
         NicknameLabel.Custom(customLabel)
       }
-      else -> NicknameLabel.Unknown
     }
 }

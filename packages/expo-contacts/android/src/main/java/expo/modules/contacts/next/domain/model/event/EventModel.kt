@@ -1,6 +1,5 @@
 package expo.modules.contacts.next.domain.model.event
 
-import EventLabel
 import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.Event
 import expo.modules.contacts.next.domain.wrappers.ContactDate

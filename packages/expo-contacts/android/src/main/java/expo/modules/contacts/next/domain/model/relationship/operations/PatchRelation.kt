@@ -12,7 +12,7 @@ class PatchRelation(
   override val dataId: DataId,
   name: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   label: ValueOrUndefined<RelationLabel> = ValueOrUndefined.Undefined()
-) : RelationModel(name.optional, label.optional ?: RelationLabel.Unknown), Updatable.Data {
+) : RelationModel(name.optional, label.optional ?: RelationLabel.Custom("")), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!name.isUndefined) {
       put(Relation.NAME, name.optional)

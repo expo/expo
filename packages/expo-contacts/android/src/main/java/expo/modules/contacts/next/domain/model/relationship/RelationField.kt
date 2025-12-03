@@ -36,10 +36,9 @@ object RelationField : ExtractableField.Data<ExistingRelation>, ClearableField {
       Relation.TYPE_RELATIVE -> RelationLabel.Relative
       Relation.TYPE_SISTER -> RelationLabel.Sister
       Relation.TYPE_SPOUSE -> RelationLabel.Spouse
-      Relation.TYPE_CUSTOM -> {
+      else -> {
         val customLabel = getString(getColumnIndexOrThrow(Relation.LABEL))
         RelationLabel.Custom(customLabel)
       }
-      else -> RelationLabel.Unknown
     }
 }

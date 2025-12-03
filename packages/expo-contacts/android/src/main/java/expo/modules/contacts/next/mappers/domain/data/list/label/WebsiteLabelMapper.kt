@@ -1,13 +1,13 @@
 package expo.modules.contacts.next.mappers.domain.data.list.label
 
-import WebsiteLabel
+import expo.modules.contacts.next.domain.model.website.WebsiteLabel
 import expo.modules.kotlin.types.ValueOrUndefined
 import expo.modules.kotlin.types.map
 
 object WebsiteLabelMapper {
   fun toDomain(label: String?): WebsiteLabel {
     if (label.isNullOrBlank()) {
-      return WebsiteLabel.Unknown
+      return WebsiteLabel.Custom("unknown")
     }
 
     return when (label.lowercase()) {
@@ -36,7 +36,6 @@ object WebsiteLabelMapper {
       is WebsiteLabel.Other -> "other"
       is WebsiteLabel.Profile -> "profile"
       is WebsiteLabel.Custom -> label.label
-      is WebsiteLabel.Unknown -> "unknown"
     }
   }
 }

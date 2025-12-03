@@ -31,10 +31,9 @@ object EmailField : ExtractableField.Data<ExistingEmail>, ClearableField {
       Email.TYPE_WORK -> EmailLabel.Work
       Email.TYPE_OTHER -> EmailLabel.Other
       Email.TYPE_MOBILE -> EmailLabel.Mobile
-      Email.TYPE_CUSTOM -> {
+      else -> {
         val customLabel = getString(getColumnIndexOrThrow(Email.LABEL))
-        EmailLabel.Custom(customLabel)
+        EmailLabel.Custom(customLabel ?: "")
       }
-      else -> EmailLabel.Unknown
     }
 }

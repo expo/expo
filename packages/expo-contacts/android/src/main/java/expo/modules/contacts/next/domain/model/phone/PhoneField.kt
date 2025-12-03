@@ -47,10 +47,9 @@ object PhoneField : ExtractableField.Data<ExistingPhone>, ClearableField {
       Phone.TYPE_WORK_PAGER -> PhoneLabel.WorkPager
       Phone.TYPE_ASSISTANT -> PhoneLabel.Assistant
       Phone.TYPE_MMS -> PhoneLabel.Mms
-      Phone.TYPE_CUSTOM -> {
+      else -> {
         val customLabel = getString(getColumnIndexOrThrow(Phone.LABEL))
         PhoneLabel.Custom(customLabel)
       }
-      else -> PhoneLabel.Unknown
     }
 }

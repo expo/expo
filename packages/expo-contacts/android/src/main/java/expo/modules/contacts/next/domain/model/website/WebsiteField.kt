@@ -1,6 +1,5 @@
 package expo.modules.contacts.next.domain.model.website
 
-import WebsiteLabel
 import android.database.Cursor
 import android.provider.ContactsContract.CommonDataKinds.Website
 import expo.modules.contacts.next.domain.model.ClearableField
@@ -30,10 +29,9 @@ object WebsiteField : ExtractableField.Data<ExistingWebsite>, ClearableField {
       Website.TYPE_WORK -> WebsiteLabel.Work
       Website.TYPE_OTHER -> WebsiteLabel.Other
       Website.TYPE_PROFILE -> WebsiteLabel.Profile
-      Website.TYPE_CUSTOM -> {
+      else -> {
         val customLabel = getString(getColumnIndexOrThrow(Website.LABEL))
         WebsiteLabel.Custom(customLabel)
       }
-      else -> WebsiteLabel.Unknown
     }
 }
