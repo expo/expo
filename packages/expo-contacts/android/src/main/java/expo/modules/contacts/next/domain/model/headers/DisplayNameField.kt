@@ -17,4 +17,4 @@ object DisplayNameField: ExtractableField.Contacts<DisplayName> {
 }
 
 @JvmInline
-value class DisplayName(val value: String): Extractable
+value class DisplayName(val value: String?): Extractable

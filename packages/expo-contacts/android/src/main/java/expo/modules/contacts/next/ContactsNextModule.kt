@@ -13,10 +13,11 @@ import expo.modules.contacts.next.records.fields.DateRecord
 import expo.modules.contacts.next.records.fields.EmailRecord
 import expo.modules.contacts.next.records.fields.ExtraNameRecord
 import expo.modules.contacts.next.records.fields.PhoneRecord
-import expo.modules.contacts.next.records.fields.PostalAddressRecord
+import expo.modules.contacts.next.records.fields.AddressRecord
 import expo.modules.contacts.next.records.fields.RelationRecord
 import expo.modules.contacts.next.records.fields.UrlAddressRecord
 import expo.modules.contacts.next.services.ImageByteArrayConverter
+import expo.modules.contacts.next.mappers.domain.data.PhotoPropertyMapper
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -29,8 +30,15 @@ class ContactsNextModule : Module() {
     get() = appContext.reactContext
       ?: throw Exceptions.ReactContextLost()
 
+  private val imageByteArrayConverter by lazy {
+    ImageByteArrayConverter(context.contentResolver)
+  }
+  private val photoPropertyMapper by lazy {
+    PhotoPropertyMapper(imageByteArrayConverter)
+  }
+
   private val contactMapper by lazy {
-    ContactRecordDomainMapper(ImageByteArrayConverter(context.contentResolver))
+    ContactRecordDomainMapper(imageByteArrayConverter)
   }
 
   private val contactIntentDelegate = ContactIntentDelegate()
@@ -40,7 +48,7 @@ class ContactsNextModule : Module() {
   }
 
   private val contactFactory by lazy {
-    ContactFactory(contactRepository, contactMapper, contactIntentDelegate)
+    ContactFactory(contactRepository, contactMapper, photoPropertyMapper, contactIntentDelegate)
   }
 
   private val permissionsDelegate by lazy {
@@ -244,15 +252,15 @@ class ContactsNextModule : Module() {
         self.addresses.getAll()
       }
 
-      AsyncFunction("addAddress") Coroutine { self: Contact, postalAddressRecord: PostalAddressRecord.New ->
-        self.addresses.add(postalAddressRecord)
+      AsyncFunction("addAddress") Coroutine { self: Contact, addressRecord: AddressRecord.New ->
+        self.addresses.add(addressRecord)
       }
 
-      AsyncFunction("updateAddress") Coroutine { self: Contact, addressRecord: PostalAddressRecord.Existing ->
+      AsyncFunction("updateAddress") Coroutine { self: Contact, addressRecord: AddressRecord.Existing ->
         self.addresses.update(addressRecord)
       }
 
-      AsyncFunction("deleteAddress") Coroutine { self: Contact, addressRecord: PostalAddressRecord.Existing ->
+      AsyncFunction("deleteAddress") Coroutine { self: Contact, addressRecord: AddressRecord.Existing ->
         self.addresses.delete(addressRecord)
       }
 

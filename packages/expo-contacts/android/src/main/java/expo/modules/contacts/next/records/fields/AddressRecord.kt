@@ -7,7 +7,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Required
 import expo.modules.kotlin.types.ValueOrUndefined
 
-sealed interface PostalAddressRecord {
+sealed interface AddressRecord {
   data class Existing(
     @Required @Field override val id: String,
     @Field val label: String? = null,

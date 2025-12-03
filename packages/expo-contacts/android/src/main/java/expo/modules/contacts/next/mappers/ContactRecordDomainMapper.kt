@@ -27,13 +27,13 @@ import expo.modules.contacts.next.domain.model.structuredpostal.operations.Exist
 import expo.modules.contacts.next.domain.model.website.WebsiteField
 import expo.modules.contacts.next.domain.model.website.operations.ExistingWebsite
 import expo.modules.contacts.next.domain.wrappers.*
-import expo.modules.contacts.next.mappers.model.EmailMapper
-import expo.modules.contacts.next.mappers.model.EventMapper
-import expo.modules.contacts.next.mappers.model.NicknameMapper
-import expo.modules.contacts.next.mappers.model.PhoneMapper
-import expo.modules.contacts.next.mappers.model.RelationMapper
-import expo.modules.contacts.next.mappers.model.StructuredPostalMapper
-import expo.modules.contacts.next.mappers.model.WebsiteMapper
+import expo.modules.contacts.next.mappers.domain.data.list.EmailMapper
+import expo.modules.contacts.next.mappers.domain.data.list.EventMapper
+import expo.modules.contacts.next.mappers.domain.data.list.NicknameMapper
+import expo.modules.contacts.next.mappers.domain.data.list.PhoneMapper
+import expo.modules.contacts.next.mappers.domain.data.list.RelationMapper
+import expo.modules.contacts.next.mappers.domain.data.list.StructuredPostalMapper
+import expo.modules.contacts.next.mappers.domain.data.list.WebsiteMapper
 import expo.modules.contacts.next.records.*
 import expo.modules.contacts.next.records.contact.*
 import expo.modules.contacts.next.records.fields.*
@@ -52,7 +52,7 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
       is PhoneRecord.New -> PhoneMapper.toAppendable(record, rawContactId)
       is DateRecord.New -> EventMapper.toAppendable(record, rawContactId)
       is ExtraNameRecord.New -> NicknameMapper.toAppendable(record, rawContactId)
-      is PostalAddressRecord.New -> StructuredPostalMapper.toAppendable(record, rawContactId)
+      is AddressRecord.New -> StructuredPostalMapper.toAppendable(record, rawContactId)
       is RelationRecord.New -> RelationMapper.toAppendable(record, rawContactId)
       is UrlAddressRecord.New -> WebsiteMapper.toAppendable(record, rawContactId)
       else -> throw IllegalArgumentException("Unsupported 'NewRecord' type: ${record::class.simpleName}")
@@ -61,13 +61,13 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
 
   fun toUpdatable(record: ExistingRecord): Updatable {
     return when (record) {
-      is EmailRecord.Existing -> EmailMapper.toExisting(record)
-      is PhoneRecord.Existing -> PhoneMapper.toExisting(record)
-      is DateRecord.Existing -> EventMapper.toExisting(record)
-      is ExtraNameRecord.Existing -> NicknameMapper.toExisting(record)
-      is PostalAddressRecord.Existing -> StructuredPostalMapper.toExisting(record)
-      is RelationRecord.Existing -> RelationMapper.toExisting(record)
-      is UrlAddressRecord.Existing -> WebsiteMapper.toExisting(record)
+      is EmailRecord.Existing -> EmailMapper.toUpdatable(record)
+      is PhoneRecord.Existing -> PhoneMapper.toUpdatable(record)
+      is DateRecord.Existing -> EventMapper.toUpdatable(record)
+      is ExtraNameRecord.Existing -> NicknameMapper.toUpdatable(record)
+      is AddressRecord.Existing -> StructuredPostalMapper.toUpdatable(record)
+      is RelationRecord.Existing -> RelationMapper.toUpdatable(record)
+      is UrlAddressRecord.Existing -> WebsiteMapper.toUpdatable(record)
       else -> throw IllegalArgumentException("Unsupported 'ExistingRecord' type: ${record::class.simpleName}")
     }
   }
@@ -78,7 +78,7 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
       is PhoneRecord.Patch -> PhoneMapper.toPatch(record)
       is DateRecord.Patch -> EventMapper.toPatch(record)
       is ExtraNameRecord.Patch -> NicknameMapper.toPatch(record)
-      is PostalAddressRecord.Patch -> StructuredPostalMapper.toPatch(record)
+      is AddressRecord.Patch -> StructuredPostalMapper.toPatch(record)
       is RelationRecord.Patch -> RelationMapper.toPatch(record)
       is UrlAddressRecord.Patch -> WebsiteMapper.toPatch(record)
       else -> throw IllegalArgumentException("Unsupported 'PatchRecord' type: ${record::class.simpleName}")
@@ -126,13 +126,13 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
   @Suppress("UNCHECKED_CAST")
   fun <TRecord : ExistingRecord, TModel : Extractable> toRecord(model: TModel): TRecord {
     return when (model) {
-      is ExistingEmail -> EmailMapper.toRecord(model)
-      is ExistingPhone -> PhoneMapper.toRecord(model)
-      is ExistingEvent -> EventMapper.toRecord(model)
-      is ExistingNickname -> NicknameMapper.toRecord(model)
-      is ExistingStructuredPostal -> StructuredPostalMapper.toRecord(model)
-      is ExistingRelation -> RelationMapper.toRecord(model)
-      is ExistingWebsite -> WebsiteMapper.toRecord(model)
+      is ExistingEmail -> EmailMapper.toDto(model)
+      is ExistingPhone -> PhoneMapper.toDto(model)
+      is ExistingEvent -> EventMapper.toDto(model)
+      is ExistingNickname -> NicknameMapper.toDto(model)
+      is ExistingStructuredPostal -> StructuredPostalMapper.toDto(model)
+      is ExistingRelation -> RelationMapper.toDto(model)
+      is ExistingWebsite -> WebsiteMapper.toDto(model)
       else -> throw IllegalArgumentException("Unsupported model type for mapping to record")
     } as TRecord
   }

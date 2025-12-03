@@ -1,4 +1,4 @@
-package expo.modules.contacts.next.mappers.label
+package expo.modules.contacts.next.mappers.domain.data.list.label
 
 import WebsiteLabel
 import expo.modules.kotlin.types.ValueOrUndefined

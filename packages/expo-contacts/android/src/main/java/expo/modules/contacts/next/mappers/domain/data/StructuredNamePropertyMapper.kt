@@ -1,4 +1,4 @@
-package expo.modules.contacts.next.services.property
+package expo.modules.contacts.next.mappers.domain.data
 
 import expo.modules.contacts.next.domain.model.structuredname.operations.AppendableStructuredName
 import expo.modules.contacts.next.domain.model.structuredname.operations.ExistingStructuredName
@@ -8,7 +8,7 @@ import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.kotlin.types.ValueOrUndefined
 
 sealed class StructuredNamePropertyMapper {
-  object GivenName : PropertyMapper<ExistingStructuredName, String> {
+  object GivenName : MutableDataPropertyMapper<ExistingStructuredName, String?> {
     override fun toDto(model: ExistingStructuredName) = model.givenName
     override fun toUpdatable(dataId: DataId, newValue: String?) =
       PatchStructuredName(dataId, givenName = ValueOrUndefined.Value(newValue))
@@ -16,7 +16,7 @@ sealed class StructuredNamePropertyMapper {
       AppendableStructuredName(rawContactId = rawContactId, givenName = newValue)
   }
 
-  object FamilyName : PropertyMapper<ExistingStructuredName, String> {
+  object FamilyName : MutableDataPropertyMapper<ExistingStructuredName, String?> {
     override fun toDto(model: ExistingStructuredName) = model.familyName
     override fun toUpdatable(dataId: DataId, newValue: String?) =
       PatchStructuredName(dataId, familyName = ValueOrUndefined.Value(newValue))
@@ -24,7 +24,7 @@ sealed class StructuredNamePropertyMapper {
       AppendableStructuredName(rawContactId = rawContactId, familyName = newValue)
   }
 
-  object MiddleName : PropertyMapper<ExistingStructuredName, String> {
+  object MiddleName : MutableDataPropertyMapper<ExistingStructuredName, String?> {
     override fun toDto(model: ExistingStructuredName) = model.middleName
     override fun toUpdatable(dataId: DataId, newValue: String?) =
       PatchStructuredName(dataId, middleName = ValueOrUndefined.Value(newValue))
@@ -32,7 +32,7 @@ sealed class StructuredNamePropertyMapper {
       AppendableStructuredName(rawContactId = rawContactId, middleName = newValue)
   }
 
-  object Prefix : PropertyMapper<ExistingStructuredName, String> {
+  object Prefix : MutableDataPropertyMapper<ExistingStructuredName, String?> {
     override fun toDto(model: ExistingStructuredName) = model.prefix
     override fun toUpdatable(dataId: DataId, newValue: String?) =
       PatchStructuredName(dataId, prefix = ValueOrUndefined.Value(newValue))
@@ -40,7 +40,7 @@ sealed class StructuredNamePropertyMapper {
       AppendableStructuredName(rawContactId = rawContactId, prefix = newValue)
   }
 
-  object Suffix : PropertyMapper<ExistingStructuredName, String> {
+  object Suffix : MutableDataPropertyMapper<ExistingStructuredName, String?> {
     override fun toDto(model: ExistingStructuredName) = model.suffix
     override fun toUpdatable(dataId: DataId, newValue: String?) =
       PatchStructuredName(dataId, suffix = ValueOrUndefined.Value(newValue))
@@ -48,7 +48,7 @@ sealed class StructuredNamePropertyMapper {
       AppendableStructuredName(rawContactId = rawContactId, suffix = newValue)
   }
 
-  object PhoneticGivenName : PropertyMapper<ExistingStructuredName, String> {
+  object PhoneticGivenName : MutableDataPropertyMapper<ExistingStructuredName, String?> {
     override fun toDto(model: ExistingStructuredName) = model.phoneticGivenName
     override fun toUpdatable(dataId: DataId, newValue: String?) =
       PatchStructuredName(dataId, phoneticGivenName = ValueOrUndefined.Value(newValue))
@@ -56,7 +56,7 @@ sealed class StructuredNamePropertyMapper {
       AppendableStructuredName(rawContactId = rawContactId, phoneticGivenName = newValue)
   }
 
-  object PhoneticFamilyName : PropertyMapper<ExistingStructuredName, String> {
+  object PhoneticFamilyName : MutableDataPropertyMapper<ExistingStructuredName, String?> {
     override fun toDto(model: ExistingStructuredName) = model.phoneticFamilyName
     override fun toUpdatable(dataId: DataId, newValue: String?) =
       PatchStructuredName(dataId, phoneticFamilyName = ValueOrUndefined.Value(newValue))
@@ -64,7 +64,7 @@ sealed class StructuredNamePropertyMapper {
       AppendableStructuredName(rawContactId = rawContactId, phoneticFamilyName = newValue)
   }
 
-  object PhoneticMiddleName : PropertyMapper<ExistingStructuredName, String> {
+  object PhoneticMiddleName : MutableDataPropertyMapper<ExistingStructuredName, String?> {
     override fun toDto(model: ExistingStructuredName) = model.phoneticMiddleName
     override fun toUpdatable(dataId: DataId, newValue: String?) =
       PatchStructuredName(dataId, phoneticMiddleName = ValueOrUndefined.Value(newValue))

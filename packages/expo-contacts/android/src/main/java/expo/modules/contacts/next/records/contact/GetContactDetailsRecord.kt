@@ -4,7 +4,7 @@ import expo.modules.contacts.next.records.fields.DateRecord
 import expo.modules.contacts.next.records.fields.EmailRecord
 import expo.modules.contacts.next.records.fields.ExtraNameRecord
 import expo.modules.contacts.next.records.fields.PhoneRecord
-import expo.modules.contacts.next.records.fields.PostalAddressRecord
+import expo.modules.contacts.next.records.fields.AddressRecord
 import expo.modules.contacts.next.records.fields.RelationRecord
 import expo.modules.contacts.next.records.fields.UrlAddressRecord
 import expo.modules.kotlin.records.Field
@@ -32,7 +32,7 @@ class GetContactDetailsRecord(
   @Field val emails: List<EmailRecord.Existing>? = listOf(),
   @Field val dates: List<DateRecord.Existing>? = listOf(),
   @Field val phones: List<PhoneRecord.Existing>? = listOf(),
-  @Field val addresses: List<PostalAddressRecord.Existing>? = listOf(),
+  @Field val addresses: List<AddressRecord.Existing>? = listOf(),
   @Field val relations: List<RelationRecord.Existing>? = listOf(),
   @Field val urlAddresses: List<UrlAddressRecord.Existing>? = listOf(),
   @Field val extraNames: List<ExtraNameRecord.Existing>? = listOf()
