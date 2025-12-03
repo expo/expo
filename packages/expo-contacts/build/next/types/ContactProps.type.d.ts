@@ -1,4 +1,4 @@
-import { Email, Date, PostalAddress, Phone, Relationship, UrlAddress, ExtraName } from './Contact.type';
+import { Email, Date, PostalAddress, Phone, Relationship, UrlAddress, ExtraName } from './Contact';
 export declare enum ContactField {
     GIVEN_NAME = "givenName",
     MIDDLE_NAME = "middleName",

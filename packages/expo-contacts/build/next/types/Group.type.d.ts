@@ -1,4 +1,4 @@
-import { Contact } from './Contact.type';
+import { Contact } from './Contact';
 export declare class Group {
     /**
      * Creates a new instance of a Group.

@@ -1,6 +1,6 @@
 import {
   Contact,
-  ContactDetails,
+  NonGregorianCalendar,
   ContactField,
   Group,
   Container,
@@ -9,7 +9,6 @@ import {
 import { Platform } from 'react-native';
 import { fetch } from 'expo/fetch';
 import { Paths, File } from 'expo-file-system';
-import { NonGregorianCalendar } from 'expo-contacts/src/next/types/Contact.type';
 
 export const name = 'Contacts@Next';
 
@@ -50,7 +49,7 @@ export async function test(t) {
     });
 
     t.it('should create full contact details', async () => {
-      const contactDetails: ContactDetails = {
+      const contactDetails = {
         givenName: 'Full',
         middleName: 'Detail',
         familyName: 'User',

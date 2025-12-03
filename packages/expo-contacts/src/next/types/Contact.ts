@@ -1,0 +1,122 @@
+import {
+  Email,
+  Phone,
+  Date,
+  ExtraName,
+  Address,
+  Relation,
+  UrlAddress,
+  SocialProfile,
+  ImAddress,
+  ContactPatch,
+  CreateContactRecord,
+  ContactDate,
+  NonGregorianBirthday,
+} from './Contact.types';
+
+import {
+  ContactField,
+  ContactQueryOptions,
+  FormOptions,
+  PartialContactDetails,
+} from './Contact.props';
+
+export declare class Contact {
+  constructor(id: string);
+  id: string;
+  delete(): Promise<void>;
+  patch(contact: ContactPatch): Promise<void>;
+  update(contact: CreateContactRecord): Promise<void>;
+  getDetails<T extends readonly ContactField[]>(fields?: T): Promise<PartialContactDetails<T>>;
+  getFullname(): Promise<string>;
+  addEmail(email: Email.New): Promise<string>;
+  getEmails(): Promise<Email.Existing[]>;
+  deleteEmail(email: Email.Existing): Promise<void>;
+  updateEmail(updatedEmail: Email.Existing): Promise<void>;
+  addPhone(phone: Phone.New): Promise<string>;
+  getPhones(): Promise<Phone.Existing[]>;
+  deletePhone(phone: Phone.Existing): Promise<void>;
+  updatePhone(updatedPhone: Phone.Existing): Promise<void>;
+  addDate(date: Date.New): Promise<string>;
+  getDates(): Promise<Date.Existing[]>;
+  deleteDate(date: Date.Existing | string): Promise<void>;
+  updateDate(updatedDate: Date.Existing): Promise<void>;
+  addExtraName(extraName: ExtraName.New): Promise<string>;
+  getExtraNames(): Promise<ExtraName.Existing[]>;
+  deleteExtraName(extraName: ExtraName.Existing | string): Promise<void>;
+  updateExtraName(updatedExtraName: ExtraName.Existing): Promise<void>;
+  addAddress(address: Address.New): Promise<string>;
+  getAddresses(): Promise<Address.Existing[]>;
+  deleteAddress(address: Address.Existing | string): Promise<void>;
+  updateAddress(updatedAddress: Address.Existing): Promise<void>;
+  addRelation(relation: Relation.New): Promise<string>;
+  getRelations(): Promise<Relation.Existing[]>;
+  deleteRelation(relation: Relation.Existing | string): Promise<void>;
+  updateRelation(updatedRelation: Relation.Existing): Promise<void>;
+  addUrlAddress(urlAddress: UrlAddress.New): Promise<string>;
+  getUrlAddresses(): Promise<UrlAddress.Existing[]>;
+  deleteUrlAddress(urlAddress: UrlAddress.Existing | string): Promise<void>;
+  updateUrlAddress(updatedUrlAddress: UrlAddress.Existing): Promise<void>;
+  addSocialProfile(socialProfile: SocialProfile.New): Promise<string>;
+  getSocialProfiles(): Promise<SocialProfile.Existing[]>;
+  deleteSocialProfile(socialProfile: SocialProfile.Existing | string): Promise<void>;
+  updateSocialProfile(updatedSocialProfile: SocialProfile.Existing): Promise<void>;
+  addImAddress(imAddress: ImAddress.New): Promise<string>;
+  getImAddresses(): Promise<ImAddress.Existing[]>;
+  deleteImAddress(imAddress: ImAddress.Existing | string): Promise<void>;
+  updateImAddress(updatedImAddress: ImAddress.Existing): Promise<void>;
+  editWithForm(options?: FormOptions): Promise<boolean>;
+  share(subject: string): Promise<boolean>;
+  getFullName(): Promise<string>;
+  getIsFavourite(): Promise<boolean>;
+  setIsFavourite(isFavourite: boolean): Promise<boolean>;
+  getGivenName(): Promise<string | null>;
+  setGivenName(givenName: string | null): Promise<boolean>;
+  getFamilyName(): Promise<string | null>;
+  setFamilyName(familyName: string | null): Promise<boolean>;
+  getMiddleName(): Promise<string | null>;
+  setMiddleName(middleName: string | null): Promise<boolean>;
+  getMaidenName(): Promise<string | null>;
+  setMaidenName(maidenName: string | null): Promise<boolean>;
+  getNickname(): Promise<string | null>;
+  setNickname(nickname: string | null): Promise<boolean>;
+  getPrefix(): Promise<string | null>;
+  setPrefix(prefix: string | null): Promise<boolean>;
+  getSuffix(): Promise<string | null>;
+  setSuffix(suffix: string | null): Promise<boolean>;
+  getPhoneticGivenName(): Promise<string | null>;
+  setPhoneticGivenName(phoneticGivenName: string | null): Promise<boolean>;
+  getPhoneticMiddleName(): Promise<string | null>;
+  setPhoneticMiddleName(phoneticMiddleName: string | null): Promise<boolean>;
+  getPhoneticFamilyName(): Promise<string | null>;
+  setPhoneticFamilyName(phoneticFamilyName: string | null): Promise<boolean>;
+  getCompany(): Promise<string | null>;
+  setCompany(company: string | null): Promise<boolean>;
+  getDepartment(): Promise<string | null>;
+  setDepartment(department: string | null): Promise<boolean>;
+  getJobTitle(): Promise<string | null>;
+  setJobTitle(jobTitle: string | null): Promise<boolean>;
+  getPhoneticCompanyName(): Promise<string | null>;
+  setPhoneticCompanyName(phoneticCompanyName: string | null): Promise<boolean>;
+  getNote(): Promise<string | null>;
+  setNote(note: string | null): Promise<boolean>;
+  getImage(): Promise<string | null>;
+  setImage(imageUri: string | null): Promise<boolean>;
+  getThumbnail(): Promise<string | null>;
+  getBirthday(): Promise<ContactDate | null>;
+  setBirthday(birthday: ContactDate | null): Promise<boolean>;
+  getNonGregorianBirthday(): Promise<NonGregorianBirthday | null>;
+  setNonGregorianBirthday(nonGregorianBirthday: NonGregorianBirthday | null): Promise<boolean>;
+  static getAll(options?: ContactQueryOptions): Promise<Contact[]>;
+  static create(contact: CreateContactRecord): Promise<Contact>;
+  static createWithForm(contact?: CreateContactRecord): Promise<boolean>;
+  static getCount(): Promise<number>;
+  static hasAny(): Promise<boolean>;
+  static presentPicker(): Promise<Contact>;
+  static presentAccessPicker(): Promise<boolean>;
+  static getAllDetails<T extends readonly ContactField[]>(
+    fields: T,
+    options?: ContactQueryOptions
+  ): Promise<PartialContactDetails<T>[]>;
+  static requestPermissionsAsync(): Promise<{ granted: boolean }>;
+}
