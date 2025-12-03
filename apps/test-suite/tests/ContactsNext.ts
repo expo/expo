@@ -1,3 +1,4 @@
+import { fetch } from 'expo/fetch';
 import {
   Contact,
   NonGregorianCalendar,
@@ -6,9 +7,8 @@ import {
   Container,
   ContactsSortOrder,
 } from 'expo-contacts/next';
-import { Platform } from 'react-native';
-import { fetch } from 'expo/fetch';
 import { Paths, File } from 'expo-file-system';
+import { Platform } from 'react-native';
 
 export const name = 'Contacts@Next';
 
@@ -656,15 +656,22 @@ export async function test(t) {
       await contact.delete();
     });
 
-    if (Platform.OS === 'android') {
-      t.it('.get/set IsFavourite()', async () => {
-        await contact.setIsFavourite(true);
-        let isFavourite = await contact.getIsFavourite();
+    t.it('.get/set IsFavourite()', async () => {
+      await contact.setIsFavourite(true);
+      const isFavourite = await contact.getIsFavourite();
+      if (Platform.OS === 'android') {
         t.expect(isFavourite).toBe(true);
-
-        await contact.setIsFavourite(false);
-      });
-    }
+      } else {
+        t.expect(isFavourite).toBeUndefined();
+      }
+      await contact.setIsFavourite(false);
+      const isNotFavourite = await contact.getIsFavourite();
+      if (Platform.OS === 'android') {
+        t.expect(isNotFavourite).toBe(false);
+      } else {
+        t.expect(isNotFavourite).toBeUndefined();
+      }
+    });
 
     t.it('.getFullName(), ', async () => {
       const newGivenName = 'John';
@@ -1787,7 +1794,7 @@ export async function test(t) {
     t.describe('Group', () => {
       let testGroup: Group;
       let testContact: Contact;
-      let groups: Group[] = [];
+      const groups: Group[] = [];
 
       t.beforeAll(async () => {
         testContact = await Contact.create({
@@ -2048,6 +2055,7 @@ export async function test(t) {
         if (defaultContainer) {
           const name = await defaultContainer.getName();
           const type = await defaultContainer.getType();
+          t.expect(name).toBeDefined();
           t.expect(type).toBeDefined();
         }
       });
