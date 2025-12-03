@@ -2,6 +2,7 @@ packages:
   - apps/*
   - packages/*
   - packages/@expo/*
+  - tools
 
 ignoredBuiltDependencies:
   - '@parcel/watcher'
