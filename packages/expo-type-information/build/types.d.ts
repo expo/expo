@@ -2,6 +2,11 @@ export type FileType = {
     path: string;
     content: string;
 };
+export type Attribute = {
+    'key.attribute': string;
+    'key.length': number;
+    'key.offset': number;
+};
 export type Structure = {
     'key.substructure': Structure[];
     'key.typename': string;
@@ -13,6 +18,7 @@ export type Structure = {
     'key.inheritedtypes': {
         'key.name': string;
     }[];
+    'key.attributes': Attribute[];
 };
 export type CursorInfoOutput = {
     'key.fully_annotated_decl': string;
