@@ -500,9 +500,9 @@ function collectTypeIdentifiers(type, typeIdentiers, typeParametersCount) {
             }
             break;
         case typeInformation_1.TypeKind.BASIC:
-            if (type.type === typeInformation_1.BasicType.UNRESOLVED) {
-                typeIdentiers.add('UnresolvedType');
-            }
+            // if ((type.type as BasicType) === BasicType.UNRESOLVED) {
+            //   typeIdentiers.add('UnresolvedType');
+            // }
             break;
         case typeInformation_1.TypeKind.IDENTIFIER:
             typeIdentiers.add(type.type);

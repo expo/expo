@@ -240,7 +240,7 @@ export function getTsFunction(
 function mapBasicTypeToTsNode(basicType: BasicType): ts.TypeNode {
   if (basicType === BasicType.UNRESOLVED) {
     return ts.addSyntheticTrailingComment(
-      ts.factory.createTypeReferenceNode('UnresolvedType'),
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword),
       ts.SyntaxKind.MultiLineCommentTrivia,
       "The type couldn't be resolved automatically."
     );
