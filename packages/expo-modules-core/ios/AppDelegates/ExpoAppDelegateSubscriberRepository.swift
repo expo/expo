@@ -42,11 +42,6 @@ public class ExpoAppDelegateSubscriberRepository: NSObject {
     return _subscribers.first { String(describing: $0) == name }
   }
 
-  @objc
-  public static func removeSubscriber(_ subscriber: ExpoAppDelegateSubscriberProtocol) -> Void {
-    return _subscribers.removeAll { $0 === subscriber }
-  }
-
   public static func getSubscriberOfType<Subscriber>(_ type: Subscriber.Type) -> Subscriber? {
     return _subscribers.first { $0 is Subscriber } as? Subscriber
   }

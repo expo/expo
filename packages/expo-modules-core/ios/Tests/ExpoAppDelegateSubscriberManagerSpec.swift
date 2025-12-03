@@ -1,4 +1,4 @@
-import ExpoModulesTestCore
+import Testing
 import UIKit
 
 @testable import ExpoModulesCore
@@ -19,11 +19,14 @@ class MockAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   var didCallDidFailToContinueUserActivity = false
   var didCallPerformActionForShortcut = false
   var didCallPerformFetch = false
+  var didCallFinishLaunchingWithOptions = false
+  var didCallwillFinishLaunchingWithOptions = false
 
   func application(
     _ application: UIApplication,
     willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+    didCallwillFinishLaunchingWithOptions = true
     return true
   }
 
@@ -31,7 +34,8 @@ class MockAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    return true
+    didCallFinishLaunchingWithOptions = true
+    return false // return value is ignored by ExpoAppDelegateSubscriberManager
   }
 
   func applicationDidBecomeActive(_ application: UIApplication) {
@@ -151,181 +155,190 @@ class MockAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   }
 }
 
-final class ExpoAppDelegateSubscriberManagerSpec: ExpoSpec {
-  override class func spec() {
-    describe("ExpoAppDelegateSubscriberManager") {
-      MainActor.assumeIsolated {
+@Suite
+@MainActor
+final class ExpoAppDelegateSubscriberManagerTests {
+  let subscriber = MockAppDelegateSubscriber()
 
-        // MARK: - Selector Tests
+  init() {
+    ExpoAppDelegateSubscriberRepository.registerSubscriber(subscriber)
+  }
 
-        describe("selector forwarding") {
-          let subscriber = MockAppDelegateSubscriber()
+  // MARK: - Non-void returning methods
 
-          beforeSuite {
-            ExpoAppDelegateSubscriberRepository.registerSubscriber(subscriber)
-          }
+  @Test
+  func willFinishLaunchingWithOptions() {
+    let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, willFinishLaunchingWithOptions: nil)
+    #expect(result == true) // NOTE: could also be true if no subscribers respond to selector
+    #expect(subscriber.didCallwillFinishLaunchingWithOptions == true)
+  }
 
-          afterSuite {
-            ExpoAppDelegateSubscriberRepository.removeSubscriber(subscriber)
-          }
+  @Test
+  func openURL() {
+    let url = URL(string: "https://example.com")!
+    let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, open: url, options: [:])
+    #expect(result == true)
+  }
 
-          describe("non-void returning methods") {
-            it("willFinishLaunchingWithOptions") {
-              let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, willFinishLaunchingWithOptions: nil)
-              expect(result) == true
-            }
+  @Test
+  func supportedInterfaceOrientationsFor() {
+    let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, supportedInterfaceOrientationsFor: nil)
+    #expect(result == .portrait)
+  }
 
-            it("didFinishLaunchingWithOptions") {
-              let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, didFinishLaunchingWithOptions: nil)
-              expect(result) == true
-            }
+  @Test
+  func willContinueUserActivityWithType() {
+    let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, willContinueUserActivityWithType: "test")
+    #expect(result == true)
+  }
 
-            it("openURL") {
-              let url = URL(string: "https://example.com")!
-              let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, open: url, options: [:])
-              expect(result) == true
-            }
+  @Test
+  func didFinishLaunchingWithOptions() {
+    let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, didFinishLaunchingWithOptions: nil)
+    #expect(result == true) // always true
+    #expect(subscriber.didCallFinishLaunchingWithOptions == true)
+  }
 
-            it("supportedInterfaceOrientationsFor") {
-              let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, supportedInterfaceOrientationsFor: nil)
-              expect(result) == .portrait
-            }
+  // MARK: - Void-returning methods
 
-            it("willContinueUserActivityWithType") {
-              let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, willContinueUserActivityWithType: "test")
-              expect(result) == true
-            }
-          }
+  @Test
+  func applicationDidBecomeActive() {
+    ExpoAppDelegateSubscriberManager.applicationDidBecomeActive(UIApplication.shared)
+    #expect(subscriber.didCallDidBecomeActive == true)
+  }
 
-          describe("void-returning methods") {
-            it("applicationDidBecomeActive") {
-              ExpoAppDelegateSubscriberManager.applicationDidBecomeActive(UIApplication.shared)
-              expect(subscriber.didCallDidBecomeActive) == true
-            }
+  @Test
+  func applicationWillResignActive() {
+    ExpoAppDelegateSubscriberManager.applicationWillResignActive(UIApplication.shared)
+    #expect(subscriber.didCallWillResignActive == true)
+  }
 
-            it("applicationWillResignActive") {
-              ExpoAppDelegateSubscriberManager.applicationWillResignActive(UIApplication.shared)
-              expect(subscriber.didCallWillResignActive) == true
-            }
+  @Test
+  func applicationDidEnterBackground() {
+    ExpoAppDelegateSubscriberManager.applicationDidEnterBackground(UIApplication.shared)
+    #expect(subscriber.didCallDidEnterBackground == true)
+  }
 
-            it("applicationDidEnterBackground") {
-              ExpoAppDelegateSubscriberManager.applicationDidEnterBackground(UIApplication.shared)
-              expect(subscriber.didCallDidEnterBackground) == true
-            }
+  @Test
+  func applicationWillEnterForeground() {
+    ExpoAppDelegateSubscriberManager.applicationWillEnterForeground(UIApplication.shared)
+    #expect(subscriber.didCallWillEnterForeground == true)
+  }
 
-            it("applicationWillEnterForeground") {
-              ExpoAppDelegateSubscriberManager.applicationWillEnterForeground(UIApplication.shared)
-              expect(subscriber.didCallWillEnterForeground) == true
-            }
+  @Test
+  func applicationWillTerminate() {
+    ExpoAppDelegateSubscriberManager.applicationWillTerminate(UIApplication.shared)
+    #expect(subscriber.didCallWillTerminate == true)
+  }
 
-            it("applicationWillTerminate") {
-              ExpoAppDelegateSubscriberManager.applicationWillTerminate(UIApplication.shared)
-              expect(subscriber.didCallWillTerminate) == true
-            }
+  @Test
+  func applicationDidReceiveMemoryWarning() {
+    ExpoAppDelegateSubscriberManager.applicationDidReceiveMemoryWarning(UIApplication.shared)
+    #expect(subscriber.didCallDidReceiveMemoryWarning == true)
+  }
 
-            it("applicationDidReceiveMemoryWarning") {
-              ExpoAppDelegateSubscriberManager.applicationDidReceiveMemoryWarning(UIApplication.shared)
-              expect(subscriber.didCallDidReceiveMemoryWarning) == true
-            }
+  @Test
+  func didRegisterForRemoteNotificationsWithDeviceToken() {
+    let deviceToken = Data()
+    ExpoAppDelegateSubscriberManager.application(UIApplication.shared, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+    #expect(subscriber.didCallDidRegisterForRemoteNotifications == true)
+  }
 
-            it("didRegisterForRemoteNotificationsWithDeviceToken") {
-              let deviceToken = Data()
-              ExpoAppDelegateSubscriberManager.application(UIApplication.shared, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
-              expect(subscriber.didCallDidRegisterForRemoteNotifications) == true
-            }
+  @Test
+  func didFailToRegisterForRemoteNotificationsWithError() {
+    let error = NSError(domain: "test", code: 0)
+    ExpoAppDelegateSubscriberManager.application(UIApplication.shared, didFailToRegisterForRemoteNotificationsWithError: error)
+    #expect(subscriber.didCallDidFailToRegisterForRemoteNotifications == true)
+  }
 
-            it("didFailToRegisterForRemoteNotificationsWithError") {
-              let error = NSError(domain: "test", code: 0)
-              ExpoAppDelegateSubscriberManager.application(UIApplication.shared, didFailToRegisterForRemoteNotificationsWithError: error)
-              expect(subscriber.didCallDidFailToRegisterForRemoteNotifications) == true
-            }
+  @Test
+  func didUpdateUserActivity() {
+    let userActivity = NSUserActivity(activityType: "test")
+    ExpoAppDelegateSubscriberManager.application(UIApplication.shared, didUpdate: userActivity)
+    #expect(subscriber.didCallDidUpdateUserActivity == true)
+  }
 
-            it("didUpdateUserActivity") {
-              let userActivity = NSUserActivity(activityType: "test")
-              ExpoAppDelegateSubscriberManager.application(UIApplication.shared, didUpdate: userActivity)
-              expect(subscriber.didCallDidUpdateUserActivity) == true
-            }
+  @Test
+  func didFailToContinueUserActivityWithType() {
+    let error = NSError(domain: "test", code: 0)
+    ExpoAppDelegateSubscriberManager.application(
+      UIApplication.shared,
+      didFailToContinueUserActivityWithType: "test",
+      error: error
+    )
+    #expect(subscriber.didCallDidFailToContinueUserActivity == true)
+  }
 
-            it("didFailToContinueUserActivityWithType") {
-              let error = NSError(domain: "test", code: 0)
-              ExpoAppDelegateSubscriberManager.application(
-                UIApplication.shared,
-                didFailToContinueUserActivityWithType: "test",
-                error: error
-              )
-              expect(subscriber.didCallDidFailToContinueUserActivity) == true
-            }
-          }
+  // MARK: - Completion-handler-based methods
 
-          describe("completion-handler-based methods") {
-            it("handleEventsForBackgroundURLSession") {
-              waitUntil { done in
-                ExpoAppDelegateSubscriberManager.application(
-                  UIApplication.shared,
-                  handleEventsForBackgroundURLSession: "test-session",
-                  completionHandler: {
-                    expect(subscriber.didCallHandleBackgroundURLSession) == true
-                    done()
-                  }
-                )
-              }
-            }
-
-            it("didReceiveRemoteNotification") {
-              waitUntil { done in
-                ExpoAppDelegateSubscriberManager.application(
-                  UIApplication.shared,
-                  didReceiveRemoteNotification: [:],
-                  fetchCompletionHandler: { _ in
-                    expect(subscriber.didCallDidReceiveRemoteNotification) == true
-                    done()
-                  }
-                )
-              }
-            }
-
-            it("continueUserActivity") {
-              waitUntil { done in
-                let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
-                let result = ExpoAppDelegateSubscriberManager.application(
-                  UIApplication.shared,
-                  continue: userActivity,
-                  restorationHandler: { _ in
-                    done()
-                  }
-                )
-                expect(result) == true
-              }
-            }
-
-            it("performActionForShortcut") {
-              waitUntil { done in
-                let shortcutItem = UIApplicationShortcutItem(type: "test", localizedTitle: "Test")
-                ExpoAppDelegateSubscriberManager.application(
-                  UIApplication.shared,
-                  performActionFor: shortcutItem,
-                  completionHandler: { _ in
-                    expect(subscriber.didCallPerformActionForShortcut) == true
-                    done()
-                  }
-                )
-              }
-            }
-
-            it("performFetch") {
-              waitUntil { done in
-                ExpoAppDelegateSubscriberManager.application(
-                  UIApplication.shared,
-                  performFetchWithCompletionHandler: { _ in
-                    expect(subscriber.didCallPerformFetch) == true
-                    done()
-                  }
-                )
-              }
-            }
-          }
+  @Test
+  func handleEventsForBackgroundURLSession() async {
+    await withCheckedContinuation { continuation in
+      ExpoAppDelegateSubscriberManager.application(
+        UIApplication.shared,
+        handleEventsForBackgroundURLSession: "test-session",
+        completionHandler: {
+          #expect(self.subscriber.didCallHandleBackgroundURLSession == true)
+          continuation.resume()
         }
-      }
+      )
+    }
+  }
+
+  @Test
+  func didReceiveRemoteNotification() async {
+    await withCheckedContinuation { continuation in
+      ExpoAppDelegateSubscriberManager.application(
+        UIApplication.shared,
+        didReceiveRemoteNotification: [:],
+        fetchCompletionHandler: { _ in
+          #expect(self.subscriber.didCallDidReceiveRemoteNotification == true)
+          continuation.resume()
+        }
+      )
+    }
+  }
+
+  @Test
+  func continueUserActivity() async {
+    await withCheckedContinuation { continuation in
+      let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
+      let result = ExpoAppDelegateSubscriberManager.application(
+        UIApplication.shared,
+        continue: userActivity,
+        restorationHandler: { _ in
+          continuation.resume()
+        }
+      )
+      #expect(result == true)
+    }
+  }
+
+  @Test
+  func performActionForShortcut() async {
+    await withCheckedContinuation { continuation in
+      let shortcutItem = UIApplicationShortcutItem(type: "test", localizedTitle: "Test")
+      ExpoAppDelegateSubscriberManager.application(
+        UIApplication.shared,
+        performActionFor: shortcutItem,
+        completionHandler: { _ in
+          #expect(self.subscriber.didCallPerformActionForShortcut == true)
+          continuation.resume()
+        }
+      )
+    }
+  }
+
+  @Test
+  func performFetch() async {
+    await withCheckedContinuation { continuation in
+      ExpoAppDelegateSubscriberManager.application(
+        UIApplication.shared,
+        performFetchWithCompletionHandler: { _ in
+          #expect(self.subscriber.didCallPerformFetch == true)
+          continuation.resume()
+        }
+      )
     }
   }
 }
