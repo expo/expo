@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
 
@@ -13,10 +13,6 @@ export type ProgressElementColors = {
 };
 
 export type CircularProgressProps = {
-  /**
-   * Custom styles for the progress component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -37,10 +33,6 @@ export type CircularProgressProps = {
 };
 
 export type LinearProgressProps = {
-  /**
-   * Custom styles for the progress component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
