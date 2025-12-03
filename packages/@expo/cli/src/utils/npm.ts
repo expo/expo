@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import slugify from 'slugify';
 import { PassThrough, Readable, Stream } from 'stream';
-import { extract as tarExtract, create as tarCreate, TarOptionsWithAliases } from 'tar';
+import { extract as tarExtract, TarOptionsWithAliases } from 'tar';
 import { promisify } from 'util';
 
 import { createEntryResolver } from './createFileTransform';
@@ -180,10 +180,20 @@ export async function extractNpmTarballAsync(
 }
 
 export async function packNpmTarballAsync(packageDir: string): Promise<string> {
-  const child = await spawnAsync('npm', ['pack', '--json', '--foreground-scripts=false'], {
-    env: { ...process.env },
-    cwd: packageDir,
-  });
-  const [json] = JSON.parse(child.stdout) as { filename: string }[];
-  return path.resolve(packageDir, json.filename);
+  const cmdArgs = ['pack', '--json', '--foreground-scripts=false'];
+  const results = (
+    await spawnAsync('npm', cmdArgs, {
+      env: { ...process.env },
+      cwd: packageDir,
+    })
+  ).stdout?.trim();
+  try {
+    const [json] = JSON.parse(results) as { filename: string }[];
+    return path.resolve(packageDir, json.filename);
+  } catch (error: any) {
+    const cmdString = `npm ${cmdArgs.join(' ')}`;
+    throw new Error(
+      `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
+    );
+  }
 }
