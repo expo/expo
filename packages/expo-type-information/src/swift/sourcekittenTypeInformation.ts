@@ -25,7 +25,7 @@ import {
   TypeKind,
   ViewDeclaration,
 } from '../typeInformation';
-import { FileType, Structure } from '../types';
+import { Attribute, FileType, Structure } from '../types';
 
 function isSwiftDictionary(type: string): boolean {
   return (
@@ -62,7 +62,8 @@ function isEnumStructure(structure: Structure): boolean {
 
 function isRecordStructure(structure: Structure): boolean {
   return (
-    structure['key.kind'] === 'source.lang.swift.decl.struct' &&
+    (structure['key.kind'] === 'source.lang.swift.decl.struct' ||
+      structure['key.kind'] === 'source.lang.swift.decl.class') &&
     structure['key.inheritedtypes'] &&
     structure['key.inheritedtypes'].find((type) => {
       return type['key.name'] === 'Record';
@@ -473,6 +474,22 @@ function parseModuleEventDeclaration(structure: Structure, file: FileType, event
   );
 }
 
+function hasFieldAttribute(attributes: Attribute[] | null, file: FileType): boolean {
+  if (!attributes) {
+    return false;
+  }
+  for (const attribute of attributes) {
+    const attributeString = file.content.substring(
+      attribute['key.offset'],
+      attribute['key.offset'] + attribute['key.length']
+    );
+    if (attributeString === '@Field') {
+      return true;
+    }
+  }
+  return false;
+}
+
 function parseRecordStructure(
   recordStructure: Structure,
   usedTypeIdentifiers: Set<string>,
@@ -482,14 +499,19 @@ function parseRecordStructure(
   const fields: Field[] = [];
 
   for (const substructure of recordStructure['key.substructure']) {
-    if (substructure['key.kind'] === 'source.lang.swift.decl.var.instance') {
-      const type: Type = extractDeclarationType(substructure, file);
-      fields.push({
-        name: substructure['key.name'],
-        type,
-      });
-      collectTypeIdentifiers(type, usedTypeIdentifiers, typeParametersCount);
+    if (
+      substructure['key.kind'] !== 'source.lang.swift.decl.var.instance' ||
+      !hasFieldAttribute(substructure['key.attributes'], file)
+    ) {
+      continue;
     }
+
+    const type: Type = extractDeclarationType(substructure, file);
+    fields.push({
+      name: substructure['key.name'],
+      type,
+    });
+    collectTypeIdentifiers(type, usedTypeIdentifiers, typeParametersCount);
   }
 
   return {

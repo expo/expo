@@ -1,7 +1,7 @@
 'use strict';
+import path from 'path';
 import prettier from 'prettier';
 import ts, { MethodDeclaration } from 'typescript';
-import path from 'path';
 
 import {
   Argument,
