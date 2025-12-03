@@ -11,7 +11,7 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:snapshots": "jest --updateSnapshot",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },

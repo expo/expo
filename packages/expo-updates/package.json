@@ -13,7 +13,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "test:e2e-cli": "pnpm run prepare && expo-module test --config e2e-cli/jest.config.js"
