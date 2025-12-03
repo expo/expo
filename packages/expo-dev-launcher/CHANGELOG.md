@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Restore config plugin `launchMode` support ([#41363](https://github.com/expo/expo/pull/41363) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 6.0.18 — 2025-11-17
