@@ -71,7 +71,7 @@ class SliderView(context: Context, appContext: AppContext) :
           activeTickColor = colors.activeTickColor.compose,
           inactiveTickColor = colors.inactiveTickColor.compose
         ),
-        modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+        modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
       )
     }
   }
