@@ -7,6 +7,7 @@ import expo.modules.contacts.next.ContactsNextModule
 import expo.modules.contacts.next.ContactsObserverException
 import expo.modules.contacts.next.ContentResolverNotObtainedException
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
 
 class ContactsObserverDelegate(appContext: AppContext, module: ContactsNextModule) {
@@ -17,8 +18,8 @@ class ContactsObserverDelegate(appContext: AppContext, module: ContactsNextModul
   private var contactsHandlerThread: HandlerThread? = null
   private var contactsHandler: Handler? = null
   private var observer: ContactsObserver? = null
-  private val weakAppContextRef = WeakReference(appContext)
-  private val weakModuleRef = WeakReference(module)
+  private val weakAppContextRef = appContext.weak()
+  private val weakModuleRef = module.weak()
 
   private val resolver = weakAppContextRef.get()
     ?.reactContext

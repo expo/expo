@@ -22,6 +22,5 @@ sealed class EventLabel {
 
   object Unknown : EventLabel() {
     override val type = ContactsContract.CommonDataKinds.Event.TYPE_CUSTOM
-    override val label = "unknown"
   }
 }

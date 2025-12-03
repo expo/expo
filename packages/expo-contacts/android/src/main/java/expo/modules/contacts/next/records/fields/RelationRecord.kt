@@ -19,9 +19,9 @@ sealed interface RelationRecord {
     @Field val name: String? = null
   ) : NewRecord
 
-  data class Patch(
-    @Required @Field override val id: String,
-    @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
+  class Patch() : PatchRecord {
+    @Required @Field override lateinit var id: String
+    @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
     @Field val name: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
-  ) : PatchRecord
+  }
 }

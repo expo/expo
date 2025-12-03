@@ -70,6 +70,7 @@ class QueryAggregator() {
       return extractor.extract(cursor)
     }
   }
+
   class ContactModelBuilder(val contactId: ContactId) {
     var displayName: DisplayName? = null
     var starred: Starred? = null
