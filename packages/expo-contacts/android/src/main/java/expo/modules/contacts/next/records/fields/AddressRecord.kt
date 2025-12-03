@@ -35,17 +35,17 @@ sealed interface AddressRecord {
     @Field val formattedAddress: String? = null
   ) : NewRecord
 
-  data class Patch(
-    @Required @Field override val id: String,
-    @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-    @Field val street: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-    @Field val city: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-    @Field val region: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-    @Field val postcode: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-    @Field val country: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-    @Field val state: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-    @Field val neighborhood: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-    @Field val poBox: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
+  class Patch() : PatchRecord {
+    @Required @Field override lateinit var id: String
+    @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+    @Field val street: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+    @Field val city: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+    @Field val region: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+    @Field val postcode: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+    @Field val country: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+    @Field val state: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+    @Field val neighborhood: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+    @Field val poBox: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
     @Field val formattedAddress: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
-  ) : PatchRecord
+  }
 }

@@ -4,11 +4,10 @@ import android.provider.ContactsContract.CommonDataKinds.Nickname
 
 sealed class NicknameLabel {
   abstract val type: Int
-  abstract val label: String?
+  open val label: String? = null
 
   object Default : NicknameLabel() {
     override val type = Nickname.TYPE_DEFAULT
-    override val label: String? = null
   }
 
   object OtherName : NicknameLabel() {

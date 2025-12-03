@@ -15,6 +15,7 @@ class ContactFactory(
   fun create(contactId: ContactId): Contact {
     return Contact(contactId, contactRepository, contactMapper, photoPropertyMapper, contactIntentDelegate)
   }
+
   fun create(contactIdString: String): Contact {
     return create(ContactId(contactIdString))
   }

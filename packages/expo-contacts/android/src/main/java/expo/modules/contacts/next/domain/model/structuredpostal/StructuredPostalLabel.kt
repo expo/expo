@@ -4,7 +4,7 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
 
 sealed class StructuredPostalLabel {
   abstract val type: Int
-  abstract val label: String?
+  abstract val label: String
 
   object Home : StructuredPostalLabel() {
     override val type = StructuredPostal.TYPE_HOME
