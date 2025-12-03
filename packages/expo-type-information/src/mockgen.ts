@@ -24,7 +24,7 @@ import {
 import {
   basicTypesIdentifiers,
   getEnumDeclaration,
-  getIdentifierAnyDeclaration,
+  getIdentifierUnknownDeclaration,
   getPropsTypeDeclaration,
   getRecordDeclaration,
   getTsClass,
@@ -228,7 +228,7 @@ function getMockForModule(
       getPrefix(),
       newlineIdentifier,
       [...undeclaredTypeIdentifiers].map((identifier) =>
-        getIdentifierAnyDeclaration(identifier, fileTypeInformation.typeParametersCount)
+        getIdentifierUnknownDeclaration(identifier, fileTypeInformation.typeParametersCount)
       ),
       newlineIdentifier,
       fileTypeInformation.records.flatMap(getRecordDeclaration),

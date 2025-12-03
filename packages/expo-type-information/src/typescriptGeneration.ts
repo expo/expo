@@ -1,6 +1,7 @@
 'use strict';
 import prettier from 'prettier';
 import ts, { MethodDeclaration } from 'typescript';
+import path from 'path';
 
 import {
   Argument,
@@ -32,6 +33,11 @@ and works out of the box with inline modules.
 
 function getPrefix() {
   return [ts.factory.createJSDocComment(prefix)];
+}
+
+function getUnresolvedTypesNamespaceNameForFile(filePath: string) {
+  const fileNameWithExtension = path.basename(filePath);
+  return fileNameWithExtension.slice(0, fileNameWithExtension.lastIndexOf('.')) + 'Types';
 }
 
 const newlineIdentifier = ts.factory.createIdentifier('\n\n') as any;
@@ -419,7 +425,7 @@ function getModuleDefaultValueExport(defaultValueTypename: string): ts.Node[] {
   );
 }
 
-function getNParameters(n: number): ts.TypeParameterDeclaration[] {
+function getNTypeParameterDeclaration(n: number): ts.TypeParameterDeclaration[] {
   const params: ts.TypeParameterDeclaration[] = [];
   for (let i = 0; i < n; i += 1) {
     params.push(ts.factory.createTypeParameterDeclaration(undefined, 'T' + i));
@@ -427,16 +433,35 @@ function getNParameters(n: number): ts.TypeParameterDeclaration[] {
   return params;
 }
 
-export function getIdentifierAnyDeclaration(
+function getNTypeNodes(n: number): ts.TypeNode[] {
+  const params: ts.TypeNode[] = [];
+  for (let i = 0; i < n; i += 1) {
+    params.push(ts.factory.createTypeReferenceNode('T' + i));
+  }
+  return params;
+}
+
+export function getIdentifierUnknownDeclaration(
   identifier: string,
   typeParametersCount: Map<string, number>
-): ts.Node {
-  const paramCount = typeParametersCount.get(identifier);
+): ts.Statement {
+  return getTypeAliasDeclaration(
+    identifier,
+    ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword),
+    typeParametersCount.get(identifier)
+  );
+}
+
+export function getTypeAliasDeclaration(
+  alias: string,
+  typeIdentifier: ts.TypeNode,
+  paramCount: number | undefined
+): ts.Statement {
   return ts.factory.createTypeAliasDeclaration(
     undefined,
-    identifier,
-    paramCount === undefined ? undefined : getNParameters(paramCount),
-    ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+    alias,
+    paramCount === undefined ? undefined : getNTypeParameterDeclaration(paramCount),
+    typeIdentifier
   );
 }
 
@@ -468,20 +493,58 @@ export function getEnumDeclaration(enumType: EnumType): ts.Node {
   );
 }
 
+function getUndeclaredIdentifiersDeclaration(
+  fileTypeInformation: FileTypeInformation,
+  undeclaredTypeIdentifiers: Set<string>,
+  unresolvedTypesNamespace: string
+): ts.Node[] {
+  return ([] as ts.Node[]).concat(
+    [
+      ts.factory.createModuleDeclaration(
+        [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+        ts.factory.createIdentifier(unresolvedTypesNamespace),
+        ts.factory.createModuleBlock(
+          [...undeclaredTypeIdentifiers].map((identifier) =>
+            getIdentifierUnknownDeclaration(identifier, fileTypeInformation.typeParametersCount)
+          )
+        ),
+        ts.NodeFlags.Namespace
+      ),
+    ],
+    [...undeclaredTypeIdentifiers].map((undeclaredTypeIdentifier) => {
+      const paramCount = fileTypeInformation.typeParametersCount.get(undeclaredTypeIdentifier);
+      return getTypeAliasDeclaration(
+        undeclaredTypeIdentifier,
+        ts.factory.createTypeReferenceNode(
+          ts.factory.createQualifiedName(
+            ts.factory.createIdentifier(unresolvedTypesNamespace),
+            undeclaredTypeIdentifier
+          ),
+          paramCount === undefined ? undefined : getNTypeNodes(paramCount)
+        ),
+        paramCount
+      );
+    })
+  );
+}
+
 function getModuleTypesDeclarationsForModule(
   moduleClassDeclaration: ModuleClassDeclaration,
   fileTypeInformation: FileTypeInformation,
   recordTypes: RecordType[],
   enumTypes: EnumType[],
-  undeclaredTypeIdentifiers: Set<string>
+  undeclaredTypeIdentifiers: Set<string>,
+  unresolvedTypesNamespace: string
 ): ts.Node[] {
   return ([] as ts.Node[]).concat(
     getPrefix(),
     newlineIdentifier,
     getOneNamedImport('NativeModule', 'expo'),
     newlineIdentifier,
-    [...undeclaredTypeIdentifiers].map((identifier) =>
-      getIdentifierAnyDeclaration(identifier, fileTypeInformation.typeParametersCount)
+    getUndeclaredIdentifiersDeclaration(
+      fileTypeInformation,
+      undeclaredTypeIdentifiers,
+      unresolvedTypesNamespace
     ),
     newlineIdentifier,
     recordTypes.flatMap(getRecordDeclaration),
@@ -535,7 +598,7 @@ function getViewTypesDeclarationsForModule(
     getOneNamedImport('ViewProps', 'react-native'),
     newlineIdentifier,
     [...undeclaredTypeIdentifiers].map((identifier) =>
-      getIdentifierAnyDeclaration(identifier, fileTypeInformation.typeParametersCount)
+      getIdentifierUnknownDeclaration(identifier, fileTypeInformation.typeParametersCount)
     ),
     newlineIdentifier,
     getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false),
@@ -613,7 +676,8 @@ export async function getGeneratedModuleTypesFileContent(
       fileTypeInformation.enums,
       fileTypeInformation.usedTypeIdentifiers
         .difference(fileTypeInformation.declaredTypeIdentifiers)
-        .difference(basicTypesIdentifiers())
+        .difference(basicTypesIdentifiers()),
+      getUnresolvedTypesNamespaceNameForFile(file)
     )
   );
 }
