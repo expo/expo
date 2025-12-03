@@ -1,6 +1,7 @@
 export * from './AlertDialog';
 export * from './Chip';
 export * from './Button';
+export * from './IconButton';
 export * from './ContextMenu';
 export * from './Host';
 export * from './DatePicker';
