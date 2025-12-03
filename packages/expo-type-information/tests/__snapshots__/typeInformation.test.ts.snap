@@ -10,7 +10,6 @@ exports[`Same generated mock file 1`] = `
 
 
 type SomeParametrizedType<T0, T1> = any;
-type UnresolvedType = any;
 type URL = any;
 
 
@@ -131,7 +130,6 @@ exports[`Same generated module file 1`] = `
 import { NativeModule } from 'expo';
 
 type SomeParametrizedType<T0, T1> = any;
-type UnresolvedType = any;
 type URL = any;
 
 type TestRecord = {
@@ -176,7 +174,7 @@ export declare class TestEmptyClass {}
 export declare class TestModule extends NativeModule {
   readonly StringConstant: number;
   readonly IntConstant: number;
-  readonly UntypedConstant: UnresolvedType /*The type couldn't be resolved automatically.*/;
+  readonly UntypedConstant: unknown /*The type couldn't be resolved automatically.*/;
   SimpleFunction(a: number, b: number): number;
   TestUntypedFunction(): string;
   TestUntypedFunction2(): TestEnum;
@@ -227,7 +225,6 @@ import { SharedObject } from 'expo';
 import { ViewProps } from 'react-native';
 
 type SomeParametrizedType<T0, T1> = any;
-type UnresolvedType = any;
 type URL = any;
 
 type ExpoWebViewProps = {
@@ -1042,7 +1039,6 @@ exports[`Same type information 1`] = `
     "TestRecord",
     "TestRecord2",
     "URL",
-    "UnresolvedType",
   ],
 }
 `;
