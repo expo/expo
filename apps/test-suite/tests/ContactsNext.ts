@@ -103,6 +103,7 @@ export async function test(t) {
       t.expect(fetchedDetails.urlAddresses.length).toBe(1);
       t.expect(fetchedDetails.urlAddresses[0].url).toBe(contactDetails.urlAddresses[0].url);
     });
+
     t.it('should create a contact with an image', async () => {
       const url = 'https://picsum.photos/200';
       const response = await fetch(url);
@@ -136,6 +137,7 @@ export async function test(t) {
       console.log(fetchedDetails);
       t.expect(fetchedDetails.isFavourite).toBe(true);
     });
+
     t.it('.getDetails(ContactField.GIVEN_NAME) should return given name correctly', async () => {
       const value = 'TestGivenName';
       const newContact = await Contact.create({ givenName: value });
@@ -370,6 +372,7 @@ export async function test(t) {
         }
       );
     }
+
     if (Platform.OS === 'ios') {
       t.it(
         '.getDetails(ContactField.SOCIAL_PROFILES) should return social profiles correctly',
@@ -1049,6 +1052,7 @@ export async function test(t) {
       t.expect(urls.length).toBe(0);
     });
   });
+
   t.describe('.update()', () => {
     t.it('.update({ isFavourite })', async () => {
       const contact = await Contact.create({
@@ -1079,6 +1083,7 @@ export async function test(t) {
         t.expect(isFavourite).toBeUndefined();
       }
     });
+
     t.it('.update({ givenName, familyName })', async () => {
       const contact = await Contact.create({
         givenName: 'InitialGiven',
@@ -1098,6 +1103,7 @@ export async function test(t) {
       t.expect(middleName).toBe(null);
       t.expect(familyName).toBe(null);
     });
+
     t.it('.update({ company, jobTitle })', async () => {
       const contact = await Contact.create({
         company: 'InitialCompany',
@@ -1119,6 +1125,7 @@ export async function test(t) {
       t.expect(department).toBe(null);
       t.expect(jobTitle).toBe(null);
     });
+
     t.it('.update(emails)', async () => {
       const contact = await Contact.create({
         givenName: 'Email',
@@ -1134,6 +1141,7 @@ export async function test(t) {
       t.expect(updatedEmails[0].label).toBe('personal');
       t.expect(updatedEmails[0].address).toBe('personal@example.com');
     });
+
     t.it('.update(phones)', async () => {
       const contact = await Contact.create({
         givenName: 'Phone',
@@ -1149,6 +1157,7 @@ export async function test(t) {
       t.expect(updatedPhones[0].label).toBe('personal');
       t.expect(updatedPhones[0].number).toBe('+48111222333');
     });
+
     t.it('.update(dates)', async () => {
       const contact = await Contact.create({
         givenName: 'Date',
@@ -1182,6 +1191,7 @@ export async function test(t) {
       t.expect(dates[0].date.month).toBe('06');
       t.expect(dates[0].date.day).toBe('15');
     });
+
     t.it('.update(allFields)', async () => {
       const contact = await Contact.create({
         givenName: 'All',
@@ -1254,6 +1264,7 @@ export async function test(t) {
       t.expect(details.emails[0].address).toBe('personal@example.com');
     });
   });
+
   t.describe('.patch()', () => {
     t.it('.patch({ isFavourite })', async () => {
       const contact = await Contact.create({
@@ -1278,6 +1289,7 @@ export async function test(t) {
         t.expect(isFavourite).toBeUndefined();
       }
     });
+
     t.it('.patch({ givenName, familyName })', async () => {
       const contact = await Contact.create({
         givenName: 'InitialGiven',
@@ -1931,6 +1943,7 @@ export async function test(t) {
           t.expect(sortedContactsAsc[2].id).toBe(contactF.id);
         }
       );
+
       t.it(
         '.getContacts(ContactsQueryOptions) with all the options should work correctly',
         async () => {
@@ -2007,6 +2020,7 @@ export async function test(t) {
         t.expect(allGroups.length).toBeGreaterThan(0);
       });
     });
+
     t.describe('Container management', () => {
       let createdContact: Contact;
       let createdGroup: Group;
