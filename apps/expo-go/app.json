@@ -39,3 +39,8 @@
     "runtimeVersion": "54.0.0"
   }
 }
+expo init ms-master-mobile
+cd ms-master-mobile
+(choose blank template)
+npm install @react-native-async-storage/async-storage react-native-webview @react-navigation/native @react-navigation/stack
+expo install react-native-gesture-handler react-native-reanimated react-native-screens react-native-safe-area-context @react-native-community/masked-view
