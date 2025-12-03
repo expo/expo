@@ -99,7 +99,7 @@
     "react-native-safe-area-context": ">= 5.4.0",
     "react-native-screens": "*",
     "react-native-web": "*",
-    "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1."
+    "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
   },
   "peerDependenciesMeta": {
     "@testing-library/react-native": {
