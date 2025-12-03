@@ -11,13 +11,13 @@ object PhotoField : ExtractableField.Data<ExistingPhoto> {
 
   override val projection = arrayOf(
     Photo._ID,
-    Photo.PHOTO,
+    Photo.PHOTO
   )
 
   override fun extract(cursor: Cursor): ExistingPhoto = with(cursor) {
     return@with ExistingPhoto(
       dataId = DataId(getString(getColumnIndexOrThrow(Photo._ID))),
-      photo = getBlob(getColumnIndexOrThrow(Photo.PHOTO)),
+      photo = getBlob(getColumnIndexOrThrow(Photo.PHOTO))
     )
   }
 }

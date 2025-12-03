@@ -9,7 +9,7 @@ import expo.modules.kotlin.types.ValueOrUndefined
 class PatchStarred(
   override val contactId: ContactId,
   starred: ValueOrUndefined<Boolean>
-): Updatable.Contacts {
+) : Updatable.Contacts {
   override val contentValues =
     ContentValues().apply {
       if (!starred.isUndefined) {

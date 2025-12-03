@@ -7,7 +7,7 @@ import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.kotlin.types.ValueOrUndefined
 
-object NoteMapper: MutableDataPropertyMapper<ExistingNote, String?> {
+object NoteMapper : MutableDataPropertyMapper<ExistingNote, String?> {
   override fun toDto(model: ExistingNote) = model.note
 
   override fun toUpdatable(dataId: DataId, newValue: String?) =

@@ -10,7 +10,7 @@ open class ContactsProperty<TDomain : Extractable, TDto>(
   protected val field: ExtractableField.Contacts<TDomain>,
   protected val readMapper: ContactsPropertyMapper<TDomain, TDto>,
   protected val contactId: ContactId,
-  protected val repository: ContactRepository,
+  protected val repository: ContactRepository
 ) {
   suspend fun get(): TDto? {
     val model = repository.getFieldFromContacts(field, contactId)
@@ -18,4 +18,3 @@ open class ContactsProperty<TDomain : Extractable, TDto>(
     return readMapper.toDto(model)
   }
 }
-

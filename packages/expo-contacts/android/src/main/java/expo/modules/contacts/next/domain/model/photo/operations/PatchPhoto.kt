@@ -9,7 +9,7 @@ import expo.modules.kotlin.types.ValueOrUndefined
 
 class PatchPhoto(
   override val dataId: DataId,
-  photo: ValueOrUndefined<ByteArray?> = ValueOrUndefined.Undefined(),
+  photo: ValueOrUndefined<ByteArray?> = ValueOrUndefined.Undefined()
 ) : PhotoModel(photo.optional), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!photo.isUndefined) {

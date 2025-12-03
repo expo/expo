@@ -40,7 +40,7 @@ import expo.modules.contacts.next.records.fields.*
 import expo.modules.contacts.next.services.ImageByteArrayConverter
 import expo.modules.kotlin.apifeatures.EitherType
 
-class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter){
+class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter) {
   val contactMapper = ContactMapper(imageByteArrayConverter)
 
   fun toRecord(existingContact: ExistingContact): GetContactDetailsRecord =
@@ -96,12 +96,12 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
         ContactField.PHONETIC_GIVEN_NAME,
         ContactField.PHONETIC_MIDDLE_NAME,
         ContactField.PHONETIC_FAMILY_NAME
-          -> StructuredNameField
+        -> StructuredNameField
         ContactField.COMPANY,
         ContactField.DEPARTMENT,
         ContactField.JOB_TITLE,
         ContactField.PHONETIC_COMPANY_NAME
-          -> OrganizationField
+        -> OrganizationField
         ContactField.EMAILS -> EmailField
         ContactField.PHONES -> PhoneField
         ContactField.ADDRESSES -> StructuredPostalField
@@ -119,7 +119,7 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
         ContactField.MAIDEN_NAME,
         ContactField.IM_ADDRESS,
         ContactField.SOCIAL_PROFILES
-          -> null
+        -> null
       }
     }
 
@@ -157,7 +157,7 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
   fun toUpdateContact(
     record: CreateContactRecord,
     contactId: ContactId,
-    rawContactId: RawContactId,
+    rawContactId: RawContactId
   ): UpdateContact {
     val modelsToAppend = buildList {
       add(contactMapper.toAppendableStructuredName(record, rawContactId))
@@ -166,11 +166,11 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
       add(contactMapper.toAppendablePhoto(record, rawContactId))
       record.emails?.let { addAll(it.map { email -> EmailMapper.toAppendable(email, rawContactId) }) }
       record.phones?.let { addAll(it.map { phone -> PhoneMapper.toAppendable(phone, rawContactId) }) }
-      record.dates?.let { addAll(it.map { date -> EventMapper.toAppendable(date, rawContactId)}) }
-      record.extraNames?.let { addAll(it.map { extraName -> NicknameMapper.toAppendable(extraName, rawContactId)}) }
-      record.addresses?.let { addAll(it.map { address -> StructuredPostalMapper.toAppendable(address, rawContactId)}) }
+      record.dates?.let { addAll(it.map { date -> EventMapper.toAppendable(date, rawContactId) }) }
+      record.extraNames?.let { addAll(it.map { extraName -> NicknameMapper.toAppendable(extraName, rawContactId) }) }
+      record.addresses?.let { addAll(it.map { address -> StructuredPostalMapper.toAppendable(address, rawContactId) }) }
       record.relations?.let { addAll(it.map { relation -> RelationMapper.toAppendable(relation, rawContactId) }) }
-      record.urlAddresses?.let { addAll(it.map { urlAddress -> WebsiteMapper.toAppendable(urlAddress, rawContactId)}) }
+      record.urlAddresses?.let { addAll(it.map { urlAddress -> WebsiteMapper.toAppendable(urlAddress, rawContactId) }) }
     }
     val existingStarred = ExistingStarred(contactId, record.isFavourite)
     return UpdateContact(rawContactId, existingStarred, modelsToAppend)

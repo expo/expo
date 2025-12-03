@@ -184,7 +184,7 @@ class ContactMapper(val imageByteArrayConverter: ImageByteArrayConverter) {
       }
     )
 
-  fun toNewPhoto(record: CreateContactRecord)=
+  fun toNewPhoto(record: CreateContactRecord) =
     NewPhoto(
       photo = record.image?.let {
         imageByteArrayConverter.toByteArray(it.toUri())

@@ -9,7 +9,7 @@ import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.mappers.domain.data.list.label.StructuredPostalLabelMapper
 import expo.modules.contacts.next.records.fields.AddressRecord
 
-object StructuredPostalMapper: ListDataPropertyMapper<ExistingStructuredPostal, AddressRecord.Existing, AddressRecord.New> {
+object StructuredPostalMapper : ListDataPropertyMapper<ExistingStructuredPostal, AddressRecord.Existing, AddressRecord.New> {
   fun toNew(record: AddressRecord.New): NewStructuredPostal =
     NewStructuredPostal(
       street = record.street,

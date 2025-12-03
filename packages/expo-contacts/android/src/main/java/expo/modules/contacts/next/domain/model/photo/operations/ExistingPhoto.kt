@@ -8,4 +8,4 @@ import expo.modules.contacts.next.domain.wrappers.DataId
 class ExistingPhoto(
   override val dataId: DataId,
   photo: ByteArray?
-): PhotoModel(photo), Extractable.Data, Updatable.Data
+) : PhotoModel(photo), Extractable.Data, Updatable.Data

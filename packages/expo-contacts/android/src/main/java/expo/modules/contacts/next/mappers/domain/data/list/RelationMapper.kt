@@ -9,7 +9,7 @@ import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.mappers.domain.data.list.label.RelationshipLabelMapper
 import expo.modules.contacts.next.records.fields.RelationRecord
 
-object RelationMapper: ListDataPropertyMapper<ExistingRelation, RelationRecord.Existing, RelationRecord.New> {
+object RelationMapper : ListDataPropertyMapper<ExistingRelation, RelationRecord.Existing, RelationRecord.New> {
   fun toNew(record: RelationRecord.New): NewRelation =
     NewRelation(
       name = record.name,

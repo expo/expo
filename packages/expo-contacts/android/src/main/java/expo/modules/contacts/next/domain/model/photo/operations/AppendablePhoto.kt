@@ -6,5 +6,5 @@ import expo.modules.contacts.next.domain.wrappers.RawContactId
 
 class AppendablePhoto(
   override val rawContactId: RawContactId,
-  photo: ByteArray?,
+  photo: ByteArray?
 ) : PhotoModel(photo), Appendable

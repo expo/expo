@@ -23,11 +23,16 @@ sealed interface PhoneRecord {
     @Field val digits: String? = null
   ) : NewRecord
 
-  class Patch(): PatchRecord {
-    @Required @Field override lateinit var id: String
+  class Patch() : PatchRecord {
+    @Required @Field
+    override lateinit var id: String
+
     @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val number: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val countryCode: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val digits: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
   }
 }

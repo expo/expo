@@ -350,7 +350,7 @@ class ContactsNextModule : Module() {
       }
 
       StaticAsyncFunction("getAllDetails") Coroutine { fields: List<ContactField>, contactQueryOptions: ContactQueryOptions? ->
-        Contact.getAllWithDetails(contactRepository, contactMapper, fields,  contactQueryOptions)
+        Contact.getAllWithDetails(contactRepository, contactMapper, fields, contactQueryOptions)
       }
 
       StaticAsyncFunction("getCount") Coroutine { ->

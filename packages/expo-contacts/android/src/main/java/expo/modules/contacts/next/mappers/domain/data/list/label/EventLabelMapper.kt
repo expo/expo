@@ -20,7 +20,7 @@ object EventLabelMapper {
 
   fun toDomain(label: ValueOrUndefined<String?>): ValueOrUndefined<EventLabel> {
     return label
-      .map { toDomain(it)}
+      .map { toDomain(it) }
   }
 
   fun toRecord(label: EventLabel): String? {

@@ -9,7 +9,7 @@ import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.mappers.domain.data.list.label.WebsiteLabelMapper
 import expo.modules.contacts.next.records.fields.UrlAddressRecord
 
-object WebsiteMapper: ListDataPropertyMapper<ExistingWebsite, UrlAddressRecord.Existing, UrlAddressRecord.New> {
+object WebsiteMapper : ListDataPropertyMapper<ExistingWebsite, UrlAddressRecord.Existing, UrlAddressRecord.New> {
   fun toNew(record: UrlAddressRecord.New) =
     NewWebsite(
       url = record.url,
