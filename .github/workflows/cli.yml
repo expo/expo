@@ -155,7 +155,7 @@ jobs:
         run: pnpm install --ignore-scripts --prefer-offline
 
       - name: 👷 Build Expo CLI
-        run: pnpm --filter @expo/cli prepare
+        run: pnpm --filter @expo/cli build
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -199,7 +199,7 @@ jobs:
         run: pnpm install --ignore-scripts --prefer-offline
 
       - name: 👷 Build Expo CLI
-        run: pnpm --filter @expo/cli prepare
+        run: pnpm --filter @expo/cli build
 
       - name: 🎭 Get Playwright information
         id: playwright-info
@@ -287,7 +287,7 @@ jobs:
         run: pnpm install --ignore-scripts --prefer-offline
 
       - name: 👷 Build Expo CLI
-        run: pnpm --filter @expo/cli prepare
+        run: pnpm --filter @expo/cli build
 
       - name: 🎭 Get Playwright information
         id: playwright-info
