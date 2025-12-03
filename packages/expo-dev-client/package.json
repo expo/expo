@@ -9,7 +9,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "e2e": "expo-test-runner run-test -t e2e",
