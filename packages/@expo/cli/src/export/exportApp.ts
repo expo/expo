@@ -247,8 +247,9 @@ export async function exportAppAsync(
                 });
 
               // Merge the assets from the DOM component into the output assets.
-              // @ts-expect-error: mutate assets
-              bundle.assets.push(...platformDomComponentsBundle.assets);
+              (bundle.assets as (typeof bundle.assets)[0][]).push(
+                ...platformDomComponentsBundle.assets
+              );
 
               transformNativeBundleForMd5Filename({
                 domComponentReference: filePath,
