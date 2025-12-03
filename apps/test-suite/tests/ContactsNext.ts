@@ -19,6 +19,7 @@ export async function test(t) {
     const permission = await Contact.requestPermissionsAsync();
     t.expect(permission.granted).toBe(true);
   });
+
   t.afterAll(async () => {
     for (const contact of contacts) {
       await contact.delete();
