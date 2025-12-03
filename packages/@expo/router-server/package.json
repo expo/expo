@@ -42,7 +42,7 @@
     "expo-font": "*",
     "expo-router": "*",
     "expo-server": "*",
-    "react-server-dom-webpack": ">= 19.0.0"
+    "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1."
   },
   "peerDependenciesMeta": {
     "react-dom": {
@@ -56,7 +56,7 @@
     }
   },
   "devDependencies": {
-    "react-server-dom-webpack": "~19.0.0",
+    "react-server-dom-webpack": "~19.0.1",
     "tsd": "^0.28.1"
   },
   "dependencies": {
