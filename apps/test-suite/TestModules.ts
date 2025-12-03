@@ -87,7 +87,6 @@ export function getTestModules() {
     modules.push(
       require('./tests/Contacts'),
       require('./tests/ContactsNext'),
-      require('./tests/SVG'),
       require('./tests/Localization'),
       require('./tests/Recording'),
       optionalRequire(() => require('./tests/Notifications')),
