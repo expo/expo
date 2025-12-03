@@ -33,7 +33,8 @@ function isEnumStructure(structure) {
     return structure['key.kind'] === 'source.lang.swift.decl.enum';
 }
 function isRecordStructure(structure) {
-    return (structure['key.kind'] === 'source.lang.swift.decl.struct' &&
+    return ((structure['key.kind'] === 'source.lang.swift.decl.struct' ||
+        structure['key.kind'] === 'source.lang.swift.decl.class') &&
         structure['key.inheritedtypes'] &&
         structure['key.inheritedtypes'].find((type) => {
             return type['key.name'] === 'Record';
@@ -377,17 +378,31 @@ function parseModuleEventDeclaration(structure, file, events) {
     }
     return structure['key.substructure'].forEach((substructure) => events.push(getIdentifierFromOffsetObject(substructure, file)));
 }
+function hasFieldAttribute(attributes, file) {
+    if (!attributes) {
+        return false;
+    }
+    for (const attribute of attributes) {
+        const attributeString = file.content.substring(attribute['key.offset'], attribute['key.offset'] + attribute['key.length']);
+        if (attributeString === '@Field') {
+            return true;
+        }
+    }
+    return false;
+}
 function parseRecordStructure(recordStructure, usedTypeIdentifiers, typeParametersCount, file) {
     const fields = [];
     for (const substructure of recordStructure['key.substructure']) {
-        if (substructure['key.kind'] === 'source.lang.swift.decl.var.instance') {
-            const type = extractDeclarationType(substructure, file);
-            fields.push({
-                name: substructure['key.name'],
-                type,
-            });
-            collectTypeIdentifiers(type, usedTypeIdentifiers, typeParametersCount);
+        if (substructure['key.kind'] !== 'source.lang.swift.decl.var.instance' ||
+            !hasFieldAttribute(substructure['key.attributes'], file)) {
+            continue;
         }
+        const type = extractDeclarationType(substructure, file);
+        fields.push({
+            name: substructure['key.name'],
+            type,
+        });
+        collectTypeIdentifiers(type, usedTypeIdentifiers, typeParametersCount);
     }
     return {
         name: recordStructure['key.name'],

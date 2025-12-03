@@ -24,9 +24,12 @@ type TestRecord = {
     recordInferred: TestRecord2;
     optionalInt?: number;
     letDoubleBinding: number;
-    fieldWithoutAnnotation: number;
 };
 type TestRecord2 = {
+    field1: number;
+    field2: string;
+};
+type TestRecordClass = {
     field1: number;
     field2: string;
 };
@@ -57,7 +60,7 @@ export function TestParametrizedTypes(a: SomeParametrizedType<number | string, M
 export function TestTypeCombinations(a: number[][][]): (string | {
     [key: number]: string;
 })[][] { return []; }
-export function TestFunctionReturningRecord(): TestRecord { return { basicString: "", basicStringInitialized: "", basicIntInferred: 0, basicDoubleInferred: 0, basicStringInferred: "", enumInferred: TestEnum.simpleCase, complexEnumInferred: TestEnum.simpleCase, recordInferred: { field1: 0, field2: "" }, optionalInt: 0, letDoubleBinding: 0, fieldWithoutAnnotation: 0 }; }
+export function TestFunctionReturningRecord(): TestRecord { return { basicString: "", basicStringInitialized: "", basicIntInferred: 0, basicDoubleInferred: 0, basicStringInferred: "", enumInferred: TestEnum.simpleCase, complexEnumInferred: TestEnum.simpleCase, recordInferred: { field1: 0, field2: "" }, optionalInt: 0, letDoubleBinding: 0 }; }
 export function TestFunctionReturningEnum(): TestEnum { return TestEnum.simpleCase; }
 export async function TestSimpleAsyncFunction(a: string, b: string): Promise<string> { return ""; }
 export class TestClassWithConstructor {
@@ -103,7 +106,7 @@ export function TestArrays(a) { return []; }
 export function TestDictionaries(a, b) { }
 export function TestParametrizedTypes(a) { return ""; }
 export function TestTypeCombinations(a) { return []; }
-export function TestFunctionReturningRecord() { return { basicString: "", basicStringInitialized: "", basicIntInferred: 0, basicDoubleInferred: 0, basicStringInferred: "", enumInferred: TestEnum.simpleCase, complexEnumInferred: TestEnum.simpleCase, recordInferred: { field1: 0, field2: "" }, optionalInt: 0, letDoubleBinding: 0, fieldWithoutAnnotation: 0 }; }
+export function TestFunctionReturningRecord() { return { basicString: "", basicStringInitialized: "", basicIntInferred: 0, basicDoubleInferred: 0, basicStringInferred: "", enumInferred: TestEnum.simpleCase, complexEnumInferred: TestEnum.simpleCase, recordInferred: { field1: 0, field2: "" }, optionalInt: 0, letDoubleBinding: 0 }; }
 export function TestFunctionReturningEnum() { return TestEnum.simpleCase; }
 export async function TestSimpleAsyncFunction(a, b) { return ""; }
 export class TestClassWithConstructor {
@@ -147,9 +150,12 @@ type TestRecord = {
   recordInferred: TestRecord2;
   optionalInt?: number;
   letDoubleBinding: number;
-  fieldWithoutAnnotation: number;
 };
 type TestRecord2 = {
+  field1: number;
+  field2: string;
+};
+type TestRecordClass = {
   field1: number;
   field2: string;
 };
@@ -253,6 +259,7 @@ exports[`Same type information 1`] = `
     "TestEnum",
     "TestRecord",
     "TestRecord2",
+    "TestRecordClass",
   ],
   "enums": [
     {
@@ -857,13 +864,6 @@ exports[`Same type information 1`] = `
             "type": 2,
           },
         },
-        {
-          "name": "fieldWithoutAnnotation",
-          "type": {
-            "kind": 0,
-            "type": 2,
-          },
-        },
       ],
       "name": "TestRecord",
     },
@@ -885,6 +885,25 @@ exports[`Same type information 1`] = `
         },
       ],
       "name": "TestRecord2",
+    },
+    {
+      "fields": [
+        {
+          "name": "field1",
+          "type": {
+            "kind": 0,
+            "type": 2,
+          },
+        },
+        {
+          "name": "field2",
+          "type": {
+            "kind": 0,
+            "type": 1,
+          },
+        },
+      ],
+      "name": "TestRecordClass",
     },
   ],
   "typeIdentifierDefinitionList": [
@@ -982,13 +1001,6 @@ exports[`Same type information 1`] = `
                 "type": 2,
               },
             },
-            {
-              "name": "fieldWithoutAnnotation",
-              "type": {
-                "kind": 0,
-                "type": 2,
-              },
-            },
           ],
           "name": "TestRecord",
         },
@@ -1016,6 +1028,31 @@ exports[`Same type information 1`] = `
             },
           ],
           "name": "TestRecord2",
+        },
+        "kind": 2,
+      },
+    ],
+    [
+      "TestRecordClass",
+      {
+        "definition": {
+          "fields": [
+            {
+              "name": "field1",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+            {
+              "name": "field2",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+          ],
+          "name": "TestRecordClass",
         },
         "kind": 2,
       },
