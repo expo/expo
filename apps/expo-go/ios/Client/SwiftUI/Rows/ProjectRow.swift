@@ -7,7 +7,9 @@ struct ProjectRow: View {
   let onTap: () -> Void
 
   var body: some View {
-    Button(action: onTap) {
+    Button {
+      onTap()
+    } label: {
       HStack {
         VStack(alignment: .leading, spacing: 2) {
           Text(project.name)

@@ -13,31 +13,31 @@ public struct HomeRootView: View {
 
   public var body: some View {
     TabView {
+      NavigationView {
         HomeTabView()
-          .tabItem {
-            Image(systemName: "house.fill")
-            Text("Home")
-          }
-          .navigationBarHidden(true)
+      }
+      .tabItem {
+        Image(systemName: "house.fill")
+        Text("Home")
+      }
+      .navigationBarHidden(true)
 
-        NavigationView {
-          DiagnosticsTabView()
-        }
-        .tabItem {
-          Image(systemName: "stethoscope")
-          Text("Diagnostics")
-        }
+      NavigationView {
+        DiagnosticsTabView()
+      }
+      .tabItem {
+        Image(systemName: "stethoscope")
+        Text("Diagnostics")
+      }
 
-        NavigationView {
-          SettingsTabView()
-        }
+      SettingsTabView()
         .tabItem {
           Image(systemName: "gearshape")
           Text("Settings")
         }
-      }
-      .environmentObject(viewModel)
-      .environmentObject(ExpoGoNavigation(showingUserProfile: $showingUserProfile))
+    }
+    .environmentObject(viewModel)
+    .environmentObject(ExpoGoNavigation(showingUserProfile: $showingUserProfile))
     .sheet(isPresented: $showingUserProfile) {
       AccountSheet()
         .environmentObject(viewModel)

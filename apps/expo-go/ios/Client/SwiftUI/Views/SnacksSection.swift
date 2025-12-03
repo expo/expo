@@ -11,25 +11,34 @@ struct SnacksSection: View {
 
       VStack(spacing: 6) {
         ForEach(viewModel.snacks.prefix(3)) { snack in
-          SnackRow(snack: snack) {
-            openSnack(snack)
-          }
+          SnackRowWithAction(snack: snack)
         }
 
         if viewModel.snacks.count > 3 {
-          Button("See all snacks") {
-            // TODO: Navigate to snacks list
+          NavigationLink(destination: SnacksListView(accountName: viewModel.selectedAccount?.name ?? "")) {
+            Text("See all snacks")
+              .frame(maxWidth: .infinity)
+              .padding()
+              .background(Color.expoSecondarySystemGroupedBackground)
+              .clipShape(RoundedRectangle(cornerRadius: 12))
           }
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(Color.expoSecondarySystemGroupedBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
         }
       }
     }
   }
+}
 
-  private func openSnack(_ snack: Snack) {
+struct SnackRowWithAction: View {
+  let snack: Snack
+  @EnvironmentObject var viewModel: HomeViewModel
+
+  var body: some View {
+    SnackRow(snack: snack) {
+      openSnack()
+    }
+  }
+
+  private func openSnack() {
     let supportedSDK = getSupportedSDKVersion()
     let snackSDKMajor = getSDKMajorVersion(snack.sdkVersion)
     let supportedSDKMajor = getSDKMajorVersion(supportedSDK)

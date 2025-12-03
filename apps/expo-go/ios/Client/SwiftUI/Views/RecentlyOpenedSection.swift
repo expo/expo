@@ -12,7 +12,7 @@ struct RecentlyOpenedSection: View {
           .font(.caption)
           .foregroundColor(.primary.opacity(0.6))
         Spacer()
-        Button("reset".uppercased()) {
+        Button("clear".uppercased()) {
           viewModel.clearRecentlyOpenedApps()
         }
         .font(.system(size: 12))
