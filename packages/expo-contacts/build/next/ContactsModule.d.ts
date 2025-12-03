@@ -1,15 +1,19 @@
 import { NativeModule } from 'expo-modules-core';
-import { Contact as ContactType } from './types/Contact.type';
+import { Contact as ContactType } from './types/Contact';
+import { Group as GroupType } from './types/Group';
+import { Container as ContainerType } from './types/Container';
 declare class ExpoContactsModule extends NativeModule {
     Contact: typeof ContactType;
+    Group: typeof GroupType;
+    Container: typeof ContainerType;
 }
 declare const expoContactsModule: ExpoContactsModule;
 export declare class Contact extends expoContactsModule.Contact {
 }
-declare const Group_base: any;
+declare const Group_base: typeof GroupType;
 export declare class Group extends Group_base {
 }
-declare const Container_base: any;
+declare const Container_base: typeof ContainerType;
 export declare class Container extends Container_base {
 }
 export {};

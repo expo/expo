@@ -1,4 +1,4 @@
-import { Contact } from './Contact.type';
+import { Contact } from './Contact';
 import { Group } from './Group.type';
 export type ContainerType = 'local' | 'exchange' | 'cardDAV' | 'unassigned' | 'unknown';
 export declare class Container {

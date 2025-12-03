@@ -1,7 +1,7 @@
 import { NativeModule, Platform, requireNativeModule } from 'expo-modules-core';
-import { Contact as ContactType } from './types/Contact.type';
-import { Group as GroupType, FallbackGroup } from './types/Group.type';
-import { Container as ContainerType, FallbackContainer } from './types/Container.type';
+import { Contact as ContactType } from './types/Contact';
+import { Group as GroupType, FallbackGroup } from './types/Group';
+import { Container as ContainerType, FallbackContainer } from './types/Container';
 
 declare class ExpoContactsModule extends NativeModule {
   Contact: typeof ContactType;
