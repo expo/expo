@@ -118,6 +118,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       tabBarMinimizeBehavior={minimizeBehavior}
       tabBarControllerMode={tabBarControllerMode}
       bottomAccessory={bottomAccessoryFn}
+      tabBarHidden={props.hidden}
       // #endregion
       onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
         props.onTabChange(tabKey);

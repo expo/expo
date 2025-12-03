@@ -577,4 +577,26 @@ describe('Misc', () => {
     if (!isValidElement(inlineRender)) throw new Error();
     expect(inlineRender.type === BottomAccessoryPlacementContext).toBe(true);
   });
+
+  it.each([
+    { hidden: true, expected: true },
+    { hidden: false, expected: false },
+    { hidden: undefined, expected: undefined },
+  ])('passes hidden=$hidden prop to BottomTabs', ({ hidden, expected }) => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs hidden={hidden}>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0].tabBarHidden).toBe(expected);
+  });
 });
