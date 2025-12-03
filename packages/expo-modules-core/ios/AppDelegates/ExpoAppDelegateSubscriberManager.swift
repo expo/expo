@@ -15,7 +15,7 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
       $0.responds(to: #selector(application(_:willFinishLaunchingWithOptions:)))
     }
 
-    // If we can't find a subscriber that implements `willFinishLaunchingWithOptions`, we will delegate the decision if we can handel the passed URL to
+    // If we can't find a subscriber that implements `willFinishLaunchingWithOptions`, we will delegate the decision if we can handle the passed URL to
     // the `didFinishLaunchingWithOptions` method by returning `true` here.
     //  You can read more about how iOS handles deep links here: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623112-application#discussion
     if parsedSubscribers.isEmpty {
