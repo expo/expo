@@ -9,8 +9,8 @@ exports[`Same generated mock file 1`] = `
  *  */
 
 
-type SomeParametrizedType<T0, T1> = any;
-type URL = any;
+type SomeParametrizedType<T0, T1> = unknown;
+type URL = unknown;
 
 
 type TestRecord = {
@@ -129,8 +129,12 @@ exports[`Same generated module file 1`] = `
 
 import { NativeModule } from 'expo';
 
-type SomeParametrizedType<T0, T1> = any;
-type URL = any;
+export namespace TestModuleTypes {
+  type SomeParametrizedType<T0, T1> = unknown;
+  type URL = unknown;
+}
+type SomeParametrizedType<T0, T1> = TestModuleTypes.SomeParametrizedType<T0, T1>;
+type URL = TestModuleTypes.URL;
 
 type TestRecord = {
   basicString: string;
@@ -224,8 +228,8 @@ import { SharedObject } from 'expo';
 
 import { ViewProps } from 'react-native';
 
-type SomeParametrizedType<T0, T1> = any;
-type URL = any;
+type SomeParametrizedType<T0, T1> = unknown;
+type URL = unknown;
 
 type ExpoWebViewProps = {
   testProp: URL;

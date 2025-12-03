@@ -7,7 +7,8 @@ export declare function getTsFunction(functionDeclaration: FunctionDeclaration, 
 export declare function mapTypeToTsTypeNode(type: Type): ts.TypeNode;
 export declare function getClassConstructorDeclaration(constructor: ConstructorDeclaration, declaration?: boolean): ts.ClassElement;
 export declare function getTsClass(classDeclaration: ClassDeclaration, fileTypeInformation: FileTypeInformation, exported: boolean, declaration: boolean, getFunctionReturnBlock: null | ((functionDeclaration: FunctionDeclaration, fileTypeInformation: FileTypeInformation) => ts.ReturnStatement[])): ts.ClassDeclaration;
-export declare function getIdentifierAnyDeclaration(identifier: string, typeParametersCount: Map<string, number>): ts.Node;
+export declare function getIdentifierUnknownDeclaration(identifier: string, typeParametersCount: Map<string, number>): ts.Statement;
+export declare function getTypeAliasDeclaration(alias: string, typeIdentifier: ts.TypeNode, paramCount: number | undefined): ts.Statement;
 export declare function getRecordDeclaration(recordType: RecordType): ts.Node;
 export declare function getEnumDeclaration(enumType: EnumType): ts.Node;
 export declare function getViewPropsTypeName(view: ViewDeclaration): string;
