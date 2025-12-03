@@ -26,7 +26,7 @@ class QueryAggregator() {
   companion object {
     fun aggregate(
       cursor: Cursor,
-      extractors: Set<ExtractableField<*>>,
+      extractors: Set<ExtractableField<*>>
     ): List<ExistingContact> {
       val contactsExtractors = mutableListOf<ExtractableField.Contacts<*>>()
       val dataExtractorsByMimeType = mutableMapOf<String, ExtractableField.Data<*>>()
@@ -126,5 +126,4 @@ class QueryAggregator() {
       websites = websites
     )
   }
-
 }

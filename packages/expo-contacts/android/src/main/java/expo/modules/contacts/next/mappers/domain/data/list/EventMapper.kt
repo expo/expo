@@ -11,7 +11,7 @@ import expo.modules.contacts.next.mappers.domain.data.list.label.EventLabelMappe
 import expo.modules.contacts.next.records.fields.DateRecord
 import expo.modules.kotlin.types.map
 
-object EventMapper: ListDataPropertyMapper<ExistingEvent, DateRecord.Existing, DateRecord.New>{
+object EventMapper : ListDataPropertyMapper<ExistingEvent, DateRecord.Existing, DateRecord.New> {
   fun toNew(record: DateRecord.New) =
     NewEvent(
       startDate = toDomain(record.date),

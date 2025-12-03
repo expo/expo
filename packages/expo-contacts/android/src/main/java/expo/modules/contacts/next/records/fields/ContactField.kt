@@ -27,6 +27,7 @@ enum class ContactField(val key: String) : Enumerable {
   RELATIONS("relations"),
   URL_ADDRESSES("urlAddresses"),
   EXTRA_NAMES("extraNames"),
+
   // iOS only:
   MAIDEN_NAME("maidenName"),
   NICKNAME("nickname"),

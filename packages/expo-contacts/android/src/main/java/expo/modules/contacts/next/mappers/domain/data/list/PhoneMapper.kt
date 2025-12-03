@@ -9,7 +9,7 @@ import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.mappers.domain.data.list.label.PhoneLabelMapper
 import expo.modules.contacts.next.records.fields.PhoneRecord
 
-object PhoneMapper: ListDataPropertyMapper<ExistingPhone, PhoneRecord.Existing, PhoneRecord.New>{
+object PhoneMapper : ListDataPropertyMapper<ExistingPhone, PhoneRecord.Existing, PhoneRecord.New> {
   fun toNew(record: PhoneRecord.New): NewPhone =
     NewPhone(
       number = record.number,

@@ -13,12 +13,12 @@ import expo.modules.contacts.next.records.NewRecord
 class ListDataProperty<
   TDomain : Extractable.Data,
   TExistingDto : ExistingRecord,
-  TNewDto : NewRecord,
+  TNewDto : NewRecord
   >(
   private val extractableField: ExtractableField.Data<TDomain>,
   private val mapper: ListDataPropertyMapper<TDomain, TExistingDto, TNewDto>,
   private val contactId: ContactId,
-  private val repository: ContactRepository,
+  private val repository: ContactRepository
 ) {
   suspend fun getAll(): List<TExistingDto> =
     repository.getFieldFromData(extractableField, contactId)

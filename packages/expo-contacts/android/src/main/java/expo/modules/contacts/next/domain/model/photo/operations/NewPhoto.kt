@@ -5,4 +5,4 @@ import expo.modules.contacts.next.domain.model.photo.PhotoModel
 
 class NewPhoto(
   photo: ByteArray?
-): PhotoModel(photo), Insertable
+) : PhotoModel(photo), Insertable

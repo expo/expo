@@ -9,7 +9,7 @@ import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.mappers.domain.data.list.label.EmailLabelMapper
 import expo.modules.contacts.next.records.fields.EmailRecord
 
-object EmailMapper: ListDataPropertyMapper<ExistingEmail, EmailRecord.Existing, EmailRecord.New> {
+object EmailMapper : ListDataPropertyMapper<ExistingEmail, EmailRecord.Existing, EmailRecord.New> {
   fun toNew(record: EmailRecord.New): NewEmail =
     NewEmail(
       address = record.address,

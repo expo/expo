@@ -6,23 +6,22 @@ import android.provider.ContactsContract
 import expo.modules.contacts.next.domain.wrappers.ContactId
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-
 sealed interface Updatable {
   val contentValues: ContentValues
   fun toUpdateOperation(): ContentProviderOperation
 
-  interface Contacts: Updatable {
+  interface Contacts : Updatable {
     val contactId: ContactId
 
     override fun toUpdateOperation() =
-      with(ContentProviderOperation.newUpdate(ContactsContract.Contacts.CONTENT_URI)){
+      with(ContentProviderOperation.newUpdate(ContactsContract.Contacts.CONTENT_URI)) {
         withSelection("${ContactsContract.Contacts._ID}=?", arrayOf(contactId.value))
         withValues(contentValues)
         build()
       }
   }
 
-  interface Data: Updatable {
+  interface Data : Updatable {
     val dataId: DataId
     val mimeType: String
 

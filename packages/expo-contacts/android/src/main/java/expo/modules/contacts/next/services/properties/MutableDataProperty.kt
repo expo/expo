@@ -22,12 +22,11 @@ class MutableDataProperty<TDomain : Extractable.Data, TDto>(
     if (dataId != null) {
       val patchable = mapper.toUpdatable(dataId, newValue)
       return repository.update(patchable)
-    } else {
-      val rawContactId = repository.getRawContactId(contactId)
-        ?: throw RawContactIdNotFoundException()
-      val appendable = mapper.toAppendable(newValue, rawContactId)
-      repository.append(appendable)
-      return true
     }
+    val rawContactId = repository.getRawContactId(contactId)
+      ?: throw RawContactIdNotFoundException()
+    val appendable = mapper.toAppendable(newValue, rawContactId)
+    repository.append(appendable)
+    return true
   }
 }

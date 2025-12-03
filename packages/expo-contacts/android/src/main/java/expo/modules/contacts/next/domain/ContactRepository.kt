@@ -92,7 +92,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
     limit: Int? = null,
     offset: Int? = null,
     searchedDisplayName: String? = null,
-    sortOrder: SortOrder? = SortOrder.UserDefault,
+    sortOrder: SortOrder? = SortOrder.UserDefault
   ): List<ContactId> = withContext(Dispatchers.IO) {
     contentResolver.safeQuery(
       uri = ContactsContract.Data.CONTENT_URI,
@@ -136,7 +136,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
     limit: Int? = null,
     offset: Int? = null,
     searchedDisplayName: String? = null,
-    sortOrder: SortOrder? = null,
+    sortOrder: SortOrder? = null
   ): Collection<ExistingContact> {
     // In this code we utilize two-step query
     // Since there is no way of getting limit and offset when fetching contact details
@@ -150,7 +150,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
 
   suspend fun getAll(
     extractableFields: Set<ExtractableField<*>>,
-    contactIds: Collection<ContactId>?,
+    contactIds: Collection<ContactId>?
   ): Collection<ExistingContact> = withContext(Dispatchers.IO) {
     val queryBuilder = QueryBuilder(extractableFields, contactIds)
     contentResolver.safeQuery(

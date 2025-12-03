@@ -9,7 +9,7 @@ import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.mappers.domain.data.list.label.NicknameLabelMapper
 import expo.modules.contacts.next.records.fields.ExtraNameRecord
 
-object NicknameMapper: ListDataPropertyMapper<ExistingNickname, ExtraNameRecord.Existing, ExtraNameRecord.New> {
+object NicknameMapper : ListDataPropertyMapper<ExistingNickname, ExtraNameRecord.Existing, ExtraNameRecord.New> {
   fun toNew(record: ExtraNameRecord.New) =
     NewNickname(
       name = record.name,

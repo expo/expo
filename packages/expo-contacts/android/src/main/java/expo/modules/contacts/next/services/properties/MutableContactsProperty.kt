@@ -10,7 +10,7 @@ class MutableContactsProperty<TDomain : Extractable, TDto>(
   field: ExtractableField.Contacts<TDomain>,
   private val mapper: MutableContactsPropertyMapper<TDomain, TDto>,
   contactId: ContactId,
-  repository: ContactRepository,
+  repository: ContactRepository
 ) : ContactsProperty<TDomain, TDto>(field, mapper, contactId, repository) {
   suspend fun set(value: TDto): Boolean {
     val updatable = mapper.toUpdatable(contactId, value)

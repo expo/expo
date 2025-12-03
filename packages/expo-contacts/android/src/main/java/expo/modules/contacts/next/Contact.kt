@@ -98,8 +98,8 @@ class Contact(
   }
 
   suspend fun patch(patchContactRecord: PatchContactRecord): Boolean {
-    // In order to patch a contact we have to get fields that can only occur once.
-    // That is because if they exist we want to patch and if do not we have to create new ones.
+    // To patch a contact, we first need to fetch singular fields.
+    // If a field exists, we patch it; otherwise, we create a new one.
     val existingContact = repository.getById(
       setOf(StructuredNameField, OrganizationField, NoteField, PhotoField),
       contactId
@@ -142,22 +142,22 @@ class Contact(
     return@withContext ContactsContract.Contacts.getLookupUri(contactId.value.toLong(), lookupKey)
   }
 
-  private fun <TDomain: Extractable.Data, TDto> mutableDataProperty(
+  private fun <TDomain : Extractable.Data, TDto> mutableDataProperty(
     field: ExtractableField.Data<TDomain>,
-    mapper: MutableDataPropertyMapper<TDomain, TDto>,
+    mapper: MutableDataPropertyMapper<TDomain, TDto>
   ) = MutableDataProperty(field, mapper, contactId, repository)
 
-  private fun <TDomain: Extractable.Data, TExistingDto: ExistingRecord, TNewDto: NewRecord> listDataProperty(
+  private fun <TDomain : Extractable.Data, TExistingDto : ExistingRecord, TNewDto : NewRecord> listDataProperty(
     field: ExtractableField.Data<TDomain>,
     mapper: ListDataPropertyMapper<TDomain, TExistingDto, TNewDto>
-  ) = ListDataProperty(field, mapper,  contactId, repository)
+  ) = ListDataProperty(field, mapper, contactId, repository)
 
-  private fun <TDomain: Extractable, TDto> contactsProperty(
+  private fun <TDomain : Extractable, TDto> contactsProperty(
     field: ExtractableField.Contacts<TDomain>,
     mapper: ContactsPropertyMapper<TDomain, TDto>
   ) = ContactsProperty(field, mapper, contactId, repository)
 
-  private fun <TDomain: Extractable, TDto> mutableContactsProperty(
+  private fun <TDomain : Extractable, TDto> mutableContactsProperty(
     field: ExtractableField.Contacts<TDomain>,
     mapper: MutableContactsPropertyMapper<TDomain, TDto>
   ) = MutableContactsProperty(field, mapper, contactId, repository)

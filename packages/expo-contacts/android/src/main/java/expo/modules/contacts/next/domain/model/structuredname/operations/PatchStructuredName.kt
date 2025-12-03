@@ -26,7 +26,8 @@ class PatchStructuredName(
   phoneticGivenName = phoneticGivenName.optional,
   phoneticMiddleName = phoneticMiddleName.optional,
   phoneticFamilyName = phoneticFamilyName.optional
-), Updatable.Data {
+),
+  Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!givenName.isUndefined) {
       put(StructuredName.GIVEN_NAME, givenName.optional)

@@ -9,7 +9,7 @@ import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.services.ImageByteArrayConverter
 
-class PhotoPropertyMapper(val imageByteArrayConverter: ImageByteArrayConverter): MutableDataPropertyMapper<ExistingPhoto, String?> {
+class PhotoPropertyMapper(val imageByteArrayConverter: ImageByteArrayConverter) : MutableDataPropertyMapper<ExistingPhoto, String?> {
   override fun toDto(model: ExistingPhoto) = model.photo?.toString(Charsets.UTF_8)
 
   override fun toUpdatable(dataId: DataId, newValue: String?): Updatable.Data {

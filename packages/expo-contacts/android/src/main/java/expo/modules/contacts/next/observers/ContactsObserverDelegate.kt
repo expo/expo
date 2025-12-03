@@ -7,7 +7,6 @@ import expo.modules.contacts.next.ContactsNextModule
 import expo.modules.contacts.next.ContactsObserverException
 import expo.modules.contacts.next.ContentResolverNotObtainedException
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.modules.Module
 import java.lang.ref.WeakReference
 
 class ContactsObserverDelegate(appContext: AppContext, module: ContactsNextModule) {
@@ -49,8 +48,12 @@ class ContactsObserverDelegate(appContext: AppContext, module: ContactsNextModul
     )
 
     urisToObserve.forEach { uri ->
-      resolver.registerContentObserver(uri, true, observer
-        ?: throw ContactsObserverException("Failed to register content observer"))
+      resolver.registerContentObserver(
+        uri,
+        true,
+        observer
+          ?: throw ContactsObserverException("Failed to register content observer")
+      )
     }
   }
 

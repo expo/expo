@@ -15,20 +15,20 @@ import expo.modules.contacts.next.domain.wrappers.DataId
 import kotlin.collections.setOf
 
 interface Extractable {
-  interface Data: Extractable {
+  interface Data : Extractable {
     val dataId: DataId
   }
 }
 
-sealed interface ExtractableField<T: Extractable> {
+sealed interface ExtractableField<T : Extractable> {
   val projection: Array<String>
   fun extract(cursor: Cursor): T
 
-  interface Data<T: Extractable.Data>: ExtractableField<T> {
+  interface Data<T : Extractable.Data> : ExtractableField<T> {
     val mimeType: String
   }
 
-  interface Contacts<T: Extractable>: ExtractableField<T>
+  interface Contacts<T : Extractable> : ExtractableField<T>
 
   companion object {
     fun getAll(): Set<ExtractableField<*>> = setOf(
@@ -41,8 +41,7 @@ sealed interface ExtractableField<T: Extractable> {
       EventField,
       RelationField,
       WebsiteField,
-      NicknameField,
+      NicknameField
     )
   }
 }
-

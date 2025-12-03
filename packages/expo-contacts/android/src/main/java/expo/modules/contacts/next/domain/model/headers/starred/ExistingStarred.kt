@@ -8,7 +8,7 @@ import expo.modules.contacts.next.domain.wrappers.ContactId
 class ExistingStarred(
   override val contactId: ContactId,
   starred: Boolean
-): Updatable.Contacts {
+) : Updatable.Contacts {
   override val contentValues =
     ContentValues().apply {
       put(ContactsContract.Contacts.STARRED, if (starred) 1 else 0)
