@@ -1,4 +1,10 @@
 import {
+  ContactField,
+  ContactQueryOptions,
+  FormOptions,
+  PartialContactDetails,
+} from './Contact.props';
+import {
   Email,
   Phone,
   Date,
@@ -13,13 +19,6 @@ import {
   ContactDate,
   NonGregorianBirthday,
 } from './Contact.types';
-
-import {
-  ContactField,
-  ContactQueryOptions,
-  FormOptions,
-  PartialContactDetails,
-} from './Contact.props';
 
 export declare class Contact {
   constructor(id: string);
