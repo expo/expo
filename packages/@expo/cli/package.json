@@ -130,6 +130,7 @@
     }
   },
   "devDependencies": {
+    "@expo/config-types": "workspace:*",
     "@expo/fingerprint": "workspace:*",
     "@expo/mcp-tunnel": "~0.2.1",
     "@expo/multipart-body-parser": "^1.0.0",

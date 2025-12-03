@@ -1510,6 +1510,9 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
+      '@expo/config-types':
+        specifier: workspace:*
+        version: link:../config-types
       '@expo/fingerprint':
         specifier: workspace:*
         version: link:../fingerprint
