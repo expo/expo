@@ -13,6 +13,7 @@ export * from './TextInput';
 export * from './Shape';
 export * from './BottomSheet';
 export * from './Carousel';
+export * from './NavigationDrawer';
 
 export * from './modifiers';
 export * from './layout';
