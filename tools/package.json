@@ -10,6 +10,7 @@
     "templates"
   ],
   "scripts": {
+    "prepare": "pnpm build",
     "build": "taskr release",
     "watch": "taskr",
     "clean": "rm -rf build cache",
