@@ -115,8 +115,7 @@ public final class FileSystemModule: Module {
       filePickingHandler.presentDocumentPicker(
         picker: createDirectoryPicker(initialUri: initialUri),
         isDirectory: true,
-        initialUri: initialUri,
-        mimeType: nil,
+        options: nil,
         promise: promise
       )
       #else
@@ -124,13 +123,12 @@ public final class FileSystemModule: Module {
       #endif
     }.runOnQueue(.main)
 
-    AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
+    AsyncFunction("pickFileAsync") { (options: FilePickerOptions, promise: Promise) in
       #if os(iOS)
       filePickingHandler.presentDocumentPicker(
-        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
+        picker: createFilePicker(options: options),
         isDirectory: false,
-        initialUri: initialUri,
-        mimeType: mimeType,
+        options: options,
         promise: promise
       )
       #else

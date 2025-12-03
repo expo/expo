@@ -44,3 +44,10 @@ enum WriteEncoding: String, Enumerable {
 struct WriteOptions: Record {
   @Field var encoding: WriteEncoding?
 }
+
+struct FilePickerOptions: Record {
+  @Field var initialUri: URL?
+  @Field var mimeType: String?
+  @Field var copyToCacheDirectory: Bool = true
+  @Field var multiple: Bool = false
+}

@@ -79,13 +79,13 @@ export async function test({ describe, expect, it, ...t }) {
           expect(file2.size).toBe(4);
           expect(safDirectory.size).toBe(8);
 
-          const result = await File.pickFileAsync(safDirectory.uri);
+          const result = await File.pickFileAsync({ initialUri: safDirectory.uri });
           const safFile = Array.isArray(result) ? result[0] : result;
           expect(safFile.textSync()).toBe('test');
         });
 
         it('allows picking files from cache directory', async () => {
-          const result = await File.pickFileAsync(Paths.cache.uri);
+          const result = await File.pickFileAsync({ initialUri: Paths.cache.uri });
           const safFile = Array.isArray(result) ? result[0] : result;
 
           expect(safFile.exists).toBe(true);
@@ -101,7 +101,7 @@ export async function test({ describe, expect, it, ...t }) {
         it('allows picking files', async () => {
           const file = new File(testDirectory, 'selectMe.txt');
           file.write('test');
-          const result = await File.pickFileAsync(testDirectory);
+          const result = await File.pickFileAsync({ initialUri: testDirectory });
           const safFile = Array.isArray(result) ? result[0] : result;
 
           expect(safFile.exists).toBe(true);
