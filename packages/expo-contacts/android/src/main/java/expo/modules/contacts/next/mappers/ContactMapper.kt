@@ -16,13 +16,13 @@ import expo.modules.contacts.next.domain.model.structuredname.operations.NewStru
 import expo.modules.contacts.next.domain.model.structuredname.operations.PatchStructuredName
 import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
-import expo.modules.contacts.next.mappers.model.EmailMapper
-import expo.modules.contacts.next.mappers.model.EventMapper
-import expo.modules.contacts.next.mappers.model.NicknameMapper
-import expo.modules.contacts.next.mappers.model.PhoneMapper
-import expo.modules.contacts.next.mappers.model.RelationMapper
-import expo.modules.contacts.next.mappers.model.StructuredPostalMapper
-import expo.modules.contacts.next.mappers.model.WebsiteMapper
+import expo.modules.contacts.next.mappers.domain.data.list.EmailMapper
+import expo.modules.contacts.next.mappers.domain.data.list.EventMapper
+import expo.modules.contacts.next.mappers.domain.data.list.NicknameMapper
+import expo.modules.contacts.next.mappers.domain.data.list.PhoneMapper
+import expo.modules.contacts.next.mappers.domain.data.list.RelationMapper
+import expo.modules.contacts.next.mappers.domain.data.list.StructuredPostalMapper
+import expo.modules.contacts.next.mappers.domain.data.list.WebsiteMapper
 import expo.modules.contacts.next.records.contact.CreateContactRecord
 import expo.modules.contacts.next.records.contact.GetContactDetailsRecord
 import expo.modules.contacts.next.records.contact.PatchContactRecord
@@ -46,13 +46,13 @@ class ContactMapper(val imageByteArrayConverter: ImageByteArrayConverter) {
       department = existingContact.organization?.department,
       jobTitle = existingContact.organization?.jobTitle,
       image = existingContact.photoUri?.value,
-      emails = existingContact.emails.map(EmailMapper::toRecord),
-      dates = existingContact.events.map(EventMapper::toRecord),
-      phones = existingContact.phones.map(PhoneMapper::toRecord),
-      addresses = existingContact.structuredPostals.map(StructuredPostalMapper::toRecord),
-      relations = existingContact.relations.map(RelationMapper::toRecord),
-      urlAddresses = existingContact.websites.map(WebsiteMapper::toRecord),
-      extraNames = existingContact.nicknames.map(NicknameMapper::toRecord)
+      emails = existingContact.emails.map(EmailMapper::toDto),
+      dates = existingContact.events.map(EventMapper::toDto),
+      phones = existingContact.phones.map(PhoneMapper::toDto),
+      addresses = existingContact.structuredPostals.map(StructuredPostalMapper::toDto),
+      relations = existingContact.relations.map(RelationMapper::toDto),
+      urlAddresses = existingContact.websites.map(WebsiteMapper::toDto),
+      extraNames = existingContact.nicknames.map(NicknameMapper::toDto)
     )
 
   fun toNewStructuredName(record: CreateContactRecord) =

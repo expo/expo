@@ -1,7 +1,6 @@
-package expo.modules.contacts.next.mappers.label
+package expo.modules.contacts.next.mappers.domain.data.list.label
 
 import EventLabel
-import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.types.ValueOrUndefined
 import expo.modules.kotlin.types.map
 

@@ -1,4 +1,4 @@
-package expo.modules.contacts.next.mappers.model
+package expo.modules.contacts.next.mappers.domain.data.list
 
 import expo.modules.contacts.next.domain.model.event.operations.AppendableEvent
 import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
@@ -7,39 +7,39 @@ import expo.modules.contacts.next.domain.model.event.operations.PatchEvent
 import expo.modules.contacts.next.domain.wrappers.ContactDate
 import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
-import expo.modules.contacts.next.mappers.label.EventLabelMapper
+import expo.modules.contacts.next.mappers.domain.data.list.label.EventLabelMapper
 import expo.modules.contacts.next.records.fields.DateRecord
 import expo.modules.kotlin.types.map
 
-object EventMapper {
-  fun toNew(record: DateRecord.New): NewEvent =
+object EventMapper: ListDataPropertyMapper<ExistingEvent, DateRecord.Existing, DateRecord.New>{
+  fun toNew(record: DateRecord.New) =
     NewEvent(
       startDate = toDomain(record.date),
       label = EventLabelMapper.toDomain(record.label)
     )
 
-  fun toAppendable(record: DateRecord.New, rawContactId: RawContactId): AppendableEvent =
+  override fun toAppendable(newValue: DateRecord.New, rawContactId: RawContactId) =
     AppendableEvent(
       rawContactId = rawContactId,
-      startDate = toDomain(record.date),
-      label = EventLabelMapper.toDomain(record.label)
+      startDate = toDomain(newValue.date),
+      label = EventLabelMapper.toDomain(newValue.label)
     )
 
-  fun toExisting(record: DateRecord.Existing): ExistingEvent =
+  override fun toUpdatable(newValue: DateRecord.Existing) =
     ExistingEvent(
-      dataId = DataId(record.id),
-      startDate = toDomain(record.date),
-      label = EventLabelMapper.toDomain(record.label)
+      dataId = DataId(newValue.id),
+      startDate = toDomain(newValue.date),
+      label = EventLabelMapper.toDomain(newValue.label)
     )
 
-  fun toPatch(record: DateRecord.Patch): PatchEvent =
+  fun toPatch(record: DateRecord.Patch) =
     PatchEvent(
       dataId = DataId(record.id),
       startDate = record.date.map { toDomain(it) },
       label = EventLabelMapper.toDomain(record.label)
     )
 
-  fun toRecord(model: ExistingEvent): DateRecord.Existing {
+  override fun toDto(model: ExistingEvent): DateRecord.Existing {
     val contactDateRecord = model.startDate?.let {
       DateRecord.ContactDateRecord(
         year = it.year,

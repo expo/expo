@@ -6,33 +6,33 @@ import expo.modules.contacts.next.domain.ContactRepository
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.wrappers.ContactId
 import expo.modules.contacts.next.domain.wrappers.DataId
-import expo.modules.contacts.next.mappers.ContactRecordDomainMapper
+import expo.modules.contacts.next.mappers.domain.data.list.ListDataPropertyMapper
 import expo.modules.contacts.next.records.ExistingRecord
 import expo.modules.contacts.next.records.NewRecord
 
 class ListDataProperty<
-  TExistingModel : Extractable.Data,
-  TNewRecord : NewRecord,
-  TExistingRecord : ExistingRecord
+  TDomain : Extractable.Data,
+  TExistingDto : ExistingRecord,
+  TNewDto : NewRecord,
   >(
-  private val extractableField: ExtractableField.Data<TExistingModel>,
+  private val extractableField: ExtractableField.Data<TDomain>,
+  private val mapper: ListDataPropertyMapper<TDomain, TExistingDto, TNewDto>,
   private val contactId: ContactId,
   private val repository: ContactRepository,
-  private val mapper: ContactRecordDomainMapper
 ) {
-  suspend fun getAll(): List<TExistingRecord> =
+  suspend fun getAll(): List<TExistingDto> =
     repository.getFieldFromData(extractableField, contactId)
-      .map { mapper.toRecord(it) }
+      .map { mapper.toDto(it) }
 
-  suspend fun add(record: TNewRecord): String {
+  suspend fun add(record: TNewDto): String {
     val rawContactId = repository.getRawContactId(contactId)
       ?: throw RawContactIdNotFoundException()
     return repository.append(mapper.toAppendable(record, rawContactId)).value
   }
 
-  suspend fun update(record: TExistingRecord) =
+  suspend fun update(record: TExistingDto) =
     repository.update(mapper.toUpdatable(record))
 
-  suspend fun delete(record: TExistingRecord) =
+  suspend fun delete(record: TExistingDto) =
     repository.deleteFieldEntry(DataId(record.id))
 }

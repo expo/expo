@@ -1,4 +1,4 @@
-package expo.modules.contacts.next.mappers.model
+package expo.modules.contacts.next.mappers.domain.data.list
 
 import expo.modules.contacts.next.domain.model.nickname.operations.AppendableNickname
 import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
@@ -6,38 +6,38 @@ import expo.modules.contacts.next.domain.model.nickname.operations.NewNickname
 import expo.modules.contacts.next.domain.model.nickname.operations.PatchNickname
 import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
-import expo.modules.contacts.next.mappers.label.NicknameLabelMapper
+import expo.modules.contacts.next.mappers.domain.data.list.label.NicknameLabelMapper
 import expo.modules.contacts.next.records.fields.ExtraNameRecord
 
-object NicknameMapper {
-  fun toNew(record: ExtraNameRecord.New): NewNickname =
+object NicknameMapper: ListDataPropertyMapper<ExistingNickname, ExtraNameRecord.Existing, ExtraNameRecord.New> {
+  fun toNew(record: ExtraNameRecord.New) =
     NewNickname(
       name = record.name,
       label = NicknameLabelMapper.toDomain(record.label)
     )
 
-  fun toAppendable(record: ExtraNameRecord.New, rawContactId: RawContactId): AppendableNickname =
+  override fun toAppendable(newValue: ExtraNameRecord.New, rawContactId: RawContactId) =
     AppendableNickname(
       rawContactId = rawContactId,
-      name = record.name,
-      label = NicknameLabelMapper.toDomain(record.label)
+      name = newValue.name,
+      label = NicknameLabelMapper.toDomain(newValue.label)
     )
 
-  fun toExisting(record: ExtraNameRecord.Existing): ExistingNickname =
+  override fun toUpdatable(newValue: ExtraNameRecord.Existing) =
     ExistingNickname(
-      dataId = DataId(record.id),
-      name = record.name,
-      label = NicknameLabelMapper.toDomain(record.label)
+      dataId = DataId(newValue.id),
+      name = newValue.name,
+      label = NicknameLabelMapper.toDomain(newValue.label)
     )
 
-  fun toPatch(record: ExtraNameRecord.Patch): PatchNickname =
+  fun toPatch(record: ExtraNameRecord.Patch) =
     PatchNickname(
       dataId = DataId(record.id),
       name = record.name,
       label = NicknameLabelMapper.toDomain(record.label)
     )
 
-  fun toRecord(model: ExistingNickname): ExtraNameRecord.Existing =
+  override fun toDto(model: ExistingNickname) =
     ExtraNameRecord.Existing(
       id = model.dataId.value,
       label = NicknameLabelMapper.toRecord(model.label),

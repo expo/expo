@@ -1,4 +1,4 @@
-package expo.modules.contacts.next.mappers.model
+package expo.modules.contacts.next.mappers.domain.data.list
 
 import expo.modules.contacts.next.domain.model.relationship.operations.AppendableRelation
 import expo.modules.contacts.next.domain.model.relationship.operations.ExistingRelation
@@ -6,28 +6,28 @@ import expo.modules.contacts.next.domain.model.relationship.operations.NewRelati
 import expo.modules.contacts.next.domain.model.relationship.operations.PatchRelation
 import expo.modules.contacts.next.domain.wrappers.DataId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
-import expo.modules.contacts.next.mappers.label.RelationshipLabelMapper
+import expo.modules.contacts.next.mappers.domain.data.list.label.RelationshipLabelMapper
 import expo.modules.contacts.next.records.fields.RelationRecord
 
-object RelationMapper {
+object RelationMapper: ListDataPropertyMapper<ExistingRelation, RelationRecord.Existing, RelationRecord.New> {
   fun toNew(record: RelationRecord.New): NewRelation =
     NewRelation(
       name = record.name,
       label = RelationshipLabelMapper.toDomain(record.label)
     )
 
-  fun toAppendable(record: RelationRecord.New, rawContactId: RawContactId): AppendableRelation =
+  override fun toAppendable(newValue: RelationRecord.New, rawContactId: RawContactId): AppendableRelation =
     AppendableRelation(
       rawContactId = rawContactId,
-      name = record.name,
-      label = RelationshipLabelMapper.toDomain(record.label)
+      name = newValue.name,
+      label = RelationshipLabelMapper.toDomain(newValue.label)
     )
 
-  fun toExisting(record: RelationRecord.Existing): ExistingRelation =
+  override fun toUpdatable(newValue: RelationRecord.Existing): ExistingRelation =
     ExistingRelation(
-      dataId = DataId(record.id),
-      name = record.name,
-      label = RelationshipLabelMapper.toDomain(record.label)
+      dataId = DataId(newValue.id),
+      name = newValue.name,
+      label = RelationshipLabelMapper.toDomain(newValue.label)
     )
 
   fun toPatch(record: RelationRecord.Patch): PatchRelation =
@@ -37,7 +37,7 @@ object RelationMapper {
       label = RelationshipLabelMapper.toDomain(record.label)
     )
 
-  fun toRecord(model: ExistingRelation): RelationRecord.Existing =
+  override fun toDto(model: ExistingRelation): RelationRecord.Existing =
     RelationRecord.Existing(
       id = model.dataId.value,
       name = model.name,
