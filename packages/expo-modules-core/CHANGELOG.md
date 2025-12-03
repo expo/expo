@@ -27,6 +27,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Universal links not working on cold start. ([#41185](https://github.com/expo/expo/pull/41185)) by [@jbaudanza](https://github.com/jbaudanza)
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
 - [core] [iOS] Addresses a potential crash where `[NSString UTF8String]` could return `nil` for certain string inputs (non-English), leading to an attempt to dereference a null pointer during `jsi::String` creation. ([#40639](https://github.com/expo/expo/pull/40639) by [@mohammadamin16](https://github.com/mohammadamin16))
