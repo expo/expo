@@ -163,6 +163,13 @@ struct TestRecord2: Record {
   var field2: String
 }
 
+class TestRecordClass: Record {
+  @Field
+  var field1: Int
+  @Field
+  var field2: String
+}
+
 enum TestEnum {
   case simpleCase
   case multipleCases1, multipleCases2
