@@ -231,11 +231,9 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   /**
-   Provides access to the utilities from legacy module registry.
+   Provides access to the utilities (such as looking up for the current view controller).
    */
-  public var utilities: EXUtilitiesInterface? {
-    return legacyModule(implementing: EXUtilitiesInterface.self)
-  }
+  public var utilities: Utilities? = Utilities()
 
   /**
    Provides an event emitter that is compatible with the legacy interface.
