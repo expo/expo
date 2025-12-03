@@ -12,7 +12,7 @@ class PatchPhone(
   override val dataId: DataId,
   number: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   label: ValueOrUndefined<PhoneLabel> = ValueOrUndefined.Undefined()
-) : PhoneModel(number.optional, label.optional ?: PhoneLabel.Unknown), Updatable.Data {
+) : PhoneModel(number.optional, label.optional ?: PhoneLabel.Custom("")), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!number.isUndefined) {
       put(Phone.NUMBER, number.optional)

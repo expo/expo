@@ -7,7 +7,7 @@ import expo.modules.kotlin.types.map
 object PhoneLabelMapper {
   fun toDomain(label: String?): PhoneLabel {
     if (label.isNullOrBlank()) {
-      return PhoneLabel.Unknown
+      return PhoneLabel.Custom("unknown")
     }
 
     return when (label.lowercase()) {
@@ -62,7 +62,6 @@ object PhoneLabelMapper {
       is PhoneLabel.Assistant -> "assistant"
       is PhoneLabel.Mms -> "mms"
       is PhoneLabel.Custom -> label.label
-      is PhoneLabel.Unknown -> "unknown"
     }
   }
 }

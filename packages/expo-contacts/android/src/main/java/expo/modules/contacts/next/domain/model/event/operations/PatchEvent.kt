@@ -1,6 +1,6 @@
 package expo.modules.contacts.next.domain.model.event.operations
 
-import EventLabel
+import expo.modules.contacts.next.domain.model.event.EventLabel
 import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.Event
 import expo.modules.contacts.next.domain.model.Updatable
@@ -13,7 +13,7 @@ class PatchEvent(
   override val dataId: DataId,
   startDate: ValueOrUndefined<ContactDate?> = ValueOrUndefined.Undefined(),
   label: ValueOrUndefined<EventLabel> = ValueOrUndefined.Undefined()
-) : EventModel(startDate.optional, label.optional ?: EventLabel.Unknown), Updatable.Data {
+) : EventModel(startDate.optional, label.optional ?: EventLabel.Custom("")), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!startDate.isUndefined) {
       put(Event.START_DATE, startDate.optional?.value)

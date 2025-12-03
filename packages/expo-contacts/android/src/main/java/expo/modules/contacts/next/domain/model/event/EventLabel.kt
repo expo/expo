@@ -1,3 +1,5 @@
+package expo.modules.contacts.next.domain.model.event
+
 import android.provider.ContactsContract
 
 sealed class EventLabel {
@@ -17,10 +19,6 @@ sealed class EventLabel {
   }
 
   data class Custom(override val label: String) : EventLabel() {
-    override val type = ContactsContract.CommonDataKinds.Event.TYPE_CUSTOM
-  }
-
-  object Unknown : EventLabel() {
     override val type = ContactsContract.CommonDataKinds.Event.TYPE_CUSTOM
   }
 }

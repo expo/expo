@@ -1,6 +1,6 @@
 package expo.modules.contacts.next.domain.model.website.operations
 
-import WebsiteLabel
+import expo.modules.contacts.next.domain.model.website.WebsiteLabel
 import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.Website
 import expo.modules.contacts.next.domain.model.Updatable
@@ -12,7 +12,7 @@ class PatchWebsite(
   override val dataId: DataId,
   url: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   label: ValueOrUndefined<WebsiteLabel> = ValueOrUndefined.Undefined()
-) : WebsiteModel(url.optional, label.optional ?: WebsiteLabel.Unknown), Updatable.Data {
+) : WebsiteModel(url.optional, label.optional ?: WebsiteLabel.Custom("")), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!url.isUndefined) {
       put(Website.URL, url.optional)

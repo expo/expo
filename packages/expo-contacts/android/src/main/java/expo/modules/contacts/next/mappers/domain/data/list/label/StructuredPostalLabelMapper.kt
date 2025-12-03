@@ -7,7 +7,7 @@ import expo.modules.kotlin.types.map
 object StructuredPostalLabelMapper {
   fun toDomain(label: String?): StructuredPostalLabel {
     if (label.isNullOrBlank()) {
-      return StructuredPostalLabel.Unknown
+      return StructuredPostalLabel.Custom("unknown")
     }
 
     return when (label.lowercase()) {
@@ -28,7 +28,6 @@ object StructuredPostalLabelMapper {
       is StructuredPostalLabel.Work -> "work"
       is StructuredPostalLabel.Other -> "other"
       is StructuredPostalLabel.Custom -> label.label
-      is StructuredPostalLabel.Unknown -> "unknown"
     }
   }
 }

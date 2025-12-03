@@ -38,10 +38,9 @@ object StructuredPostalField : ExtractableField.Data<ExistingStructuredPostal>, 
       StructuredPostal.TYPE_HOME -> StructuredPostalLabel.Home
       StructuredPostal.TYPE_WORK -> StructuredPostalLabel.Work
       StructuredPostal.TYPE_OTHER -> StructuredPostalLabel.Other
-      StructuredPostal.TYPE_CUSTOM -> {
+      else -> {
         val customLabel = getString(getColumnIndexOrThrow(StructuredPostal.LABEL))
         StructuredPostalLabel.Custom(customLabel)
       }
-      else -> StructuredPostalLabel.Unknown
     }
 }

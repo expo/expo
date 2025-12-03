@@ -1,50 +1,40 @@
-import android.provider.ContactsContract
+package expo.modules.contacts.next.domain.model.website
+
+import android.provider.ContactsContract.CommonDataKinds.Website
 
 sealed class WebsiteLabel {
   abstract val type: Int
-  abstract val label: String?
+  open val label: String? = null
 
   object Homepage : WebsiteLabel() {
-    override val type = ContactsContract.CommonDataKinds.Website.TYPE_HOMEPAGE
-    override val label: String = "homepage"
+    override val type = Website.TYPE_HOMEPAGE
   }
 
   object Blog : WebsiteLabel() {
-    override val type = ContactsContract.CommonDataKinds.Website.TYPE_BLOG
-    override val label: String = "blog"
+    override val type = Website.TYPE_BLOG
   }
 
   object Ftp : WebsiteLabel() {
-    override val type = ContactsContract.CommonDataKinds.Website.TYPE_FTP
-    override val label: String = "ftp"
+    override val type = Website.TYPE_FTP
   }
 
   object Home : WebsiteLabel() {
-    override val type = ContactsContract.CommonDataKinds.Website.TYPE_HOME
-    override val label: String = "home"
+    override val type = Website.TYPE_HOME
   }
 
   object Work : WebsiteLabel() {
-    override val type = ContactsContract.CommonDataKinds.Website.TYPE_WORK
-    override val label: String = "work"
+    override val type = Website.TYPE_WORK
   }
 
   object Other : WebsiteLabel() {
-    override val type = ContactsContract.CommonDataKinds.Website.TYPE_OTHER
-    override val label: String = "other"
+    override val type = Website.TYPE_OTHER
   }
 
   object Profile : WebsiteLabel() {
-    override val type = ContactsContract.CommonDataKinds.Website.TYPE_PROFILE
-    override val label: String = "profile"
+    override val type = Website.TYPE_PROFILE
   }
 
   data class Custom(override val label: String) : WebsiteLabel() {
-    override val type = ContactsContract.CommonDataKinds.Website.TYPE_CUSTOM
-  }
-
-  object Unknown : WebsiteLabel() {
-    override val type = ContactsContract.CommonDataKinds.Website.TYPE_CUSTOM
-    override val label: String = "unknown"
+    override val type = Website.TYPE_CUSTOM
   }
 }

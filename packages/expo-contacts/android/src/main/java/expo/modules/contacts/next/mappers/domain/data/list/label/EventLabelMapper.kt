@@ -1,13 +1,13 @@
 package expo.modules.contacts.next.mappers.domain.data.list.label
 
-import EventLabel
+import expo.modules.contacts.next.domain.model.event.EventLabel
 import expo.modules.kotlin.types.ValueOrUndefined
 import expo.modules.kotlin.types.map
 
 object EventLabelMapper {
   fun toDomain(label: String?): EventLabel {
     if (label.isNullOrBlank()) {
-      return EventLabel.Unknown
+      return EventLabel.Custom("unknown")
     }
 
     return when (label.lowercase()) {
@@ -29,7 +29,6 @@ object EventLabelMapper {
       is EventLabel.Birthday -> "birthday"
       is EventLabel.Other -> "other"
       is EventLabel.Custom -> label.label
-      is EventLabel.Unknown -> null
     }
   }
 }

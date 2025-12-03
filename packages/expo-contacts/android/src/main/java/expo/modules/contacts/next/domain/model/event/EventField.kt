@@ -1,6 +1,5 @@
 package expo.modules.contacts.next.domain.model.event
 
-import EventLabel
 import android.database.Cursor
 import android.provider.ContactsContract.CommonDataKinds.Event
 import expo.modules.contacts.next.domain.model.ClearableField
@@ -34,10 +33,9 @@ object EventField : ExtractableField.Data<ExistingEvent>, ClearableField {
       Event.TYPE_ANNIVERSARY -> EventLabel.Anniversary
       Event.TYPE_BIRTHDAY -> EventLabel.Birthday
       Event.TYPE_OTHER -> EventLabel.Other
-      Event.TYPE_CUSTOM -> {
+      else -> {
         val customLabel = getString(getColumnIndexOrThrow(Event.LABEL))
         EventLabel.Custom(customLabel)
       }
-      else -> EventLabel.Unknown
     }
 }
