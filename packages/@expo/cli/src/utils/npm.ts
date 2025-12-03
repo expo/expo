@@ -178,3 +178,12 @@ export async function extractNpmTarballAsync(
 
   return hash.digest('hex');
 }
+
+export async function packNpmTarballAsync(packageDir: string): Promise<string> {
+  const child = await spawnAsync('npm', ['pack', '--json', '--foreground-scripts=false'], {
+    env: { ...process.env },
+    cwd: packageDir,
+  });
+  const [json] = JSON.parse(child.stdout) as { filename: string }[];
+  return path.resolve(packageDir, json.filename);
+}

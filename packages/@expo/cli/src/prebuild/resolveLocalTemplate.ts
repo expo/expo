@@ -1,10 +1,9 @@
 import type { ExpoConfig } from '@expo/config';
-import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { extractNpmTarballAsync } from '../utils/npm';
+import { packNpmTarballAsync, extractNpmTarballAsync } from '../utils/npm';
 
 const debug = require('debug')('expo:prebuild:resolveLocalTemplate') as typeof console.log;
 
@@ -18,15 +17,6 @@ const getMonorepoTemplatePath = async () => {
     return null;
   }
 };
-
-async function packToTarballAsync(packageDir: string): Promise<string> {
-  const child = await spawnAsync('npm', ['pack', '--json', '--foreground-scripts=false'], {
-    env: { ...process.env },
-    cwd: packageDir,
-  });
-  const [json] = JSON.parse(child.stdout) as { filename: string }[];
-  return path.resolve(packageDir, json.filename);
-}
 
 export async function resolveLocalTemplateAsync({
   templateDirectory,
@@ -44,7 +34,7 @@ export async function resolveLocalTemplateAsync({
   if (monorepoTemplatePath) {
     debug('Packing local template from expo-template-bare-minimum path:', monorepoTemplatePath);
     try {
-      templatePath = await packToTarballAsync(monorepoTemplatePath);
+      templatePath = await packNpmTarballAsync(monorepoTemplatePath);
       debug('Using packed local template at:', templatePath);
     } catch (error) {
       // We're vocal here about an error, since we don't expect this to fail, and it's only for our monorepo
