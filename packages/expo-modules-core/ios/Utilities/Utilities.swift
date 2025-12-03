@@ -112,4 +112,20 @@ public struct Utilities {
   public static func urlFrom(string: String) -> URL? {
     return convertToUrl(string: string)
   }
+
+  nonisolated public func currentViewController() -> UIViewController? {
+    return MainActor.assumeIsolated {
+#if os(iOS) || os(tvOS)
+      var controller = UIApplication.shared.keyWindow?.rootViewController
+
+      while let presentedController = controller?.presentedViewController, !presentedController.isBeingDismissed {
+        controller = presentedController
+      }
+      return controller
+#elseif os(macOS)
+      // Even though the function's return type is `UIViewController`, react-native-macos will alias `NSViewController` to `UIViewController`.
+      return NSApplication.shared.keyWindow?.contentViewController
+#endif
+    }
+  }
 }
