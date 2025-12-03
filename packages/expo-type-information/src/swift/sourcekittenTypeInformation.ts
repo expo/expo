@@ -647,9 +647,9 @@ function collectTypeIdentifiers(
       }
       break;
     case TypeKind.BASIC:
-      if ((type.type as BasicType) === BasicType.UNRESOLVED) {
-        typeIdentiers.add('UnresolvedType');
-      }
+      // if ((type.type as BasicType) === BasicType.UNRESOLVED) {
+      //   typeIdentiers.add('UnresolvedType');
+      // }
       break;
     case TypeKind.IDENTIFIER:
       typeIdentiers.add(type.type as TypeIdentifier);
