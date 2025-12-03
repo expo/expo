@@ -7,6 +7,17 @@ import { copyNodeModuleAsync, extractNpmTarballAsync } from '../utils/npm';
 
 const debug = require('debug')('expo:prebuild:resolveLocalTemplate') as typeof console.log;
 
+/** Returns the `local-template` target path, only for the `expo/expo` monorepo */
+const getMonorepoTemplatePath = async () => {
+  const cliPath = path.dirname(require.resolve('@expo/cli/package.json'));
+  const localTemplateOriginPath = path.join(cliPath, 'local-template');
+  try {
+    return await fs.promises.realpath(localTemplateOriginPath);
+  } catch {
+    return null;
+  }
+};
+
 export async function resolveLocalTemplateAsync({
   templateDirectory,
   projectRoot,
@@ -16,17 +27,15 @@ export async function resolveLocalTemplateAsync({
   projectRoot: string;
   exp: Pick<ExpoConfig, 'name'>;
 }): Promise<string> {
-  try {
-    // In our monorepo, `expo/template.tgz` may not exist, or may be outdated, so we first check
-    // `expo-template-bare-minimum`, which is a dev-dependency in `@expo/cli` that's only fulfilled
-    // in our monorepo
-    const templateRawPath = path.dirname(require.resolve('expo-template-bare-minimum'));
-    debug('Using local template from expo-template-bare-minimum path:', templateRawPath);
-    return await copyNodeModuleAsync(templateRawPath, {
+  const monorepoTemplatePath = await getMonorepoTemplatePath();
+  if (monorepoTemplatePath) {
+    // NOTE: In the expo/expo monorepo only, we use `templates/expo-template-bare-minimum` directly
+    debug('Using local template from expo-template-bare-minimum path:', monorepoTemplatePath);
+    return await copyNodeModuleAsync(monorepoTemplatePath, {
       cwd: templateDirectory,
       name: exp.name,
     });
-  } catch (error) {
+  } else {
     // The default is to use `expo/template.tgz` which exists in all published versions of it
     const templatePath = resolveFrom(projectRoot, 'expo/template.tgz');
     debug('Using local template from Expo package:', templatePath);
