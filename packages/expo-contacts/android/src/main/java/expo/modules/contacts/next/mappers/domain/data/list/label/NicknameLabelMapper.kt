@@ -7,7 +7,7 @@ import expo.modules.kotlin.types.map
 object NicknameLabelMapper {
   fun toDomain(label: String?): NicknameLabel {
     if (label.isNullOrBlank()) {
-      return NicknameLabel.Custom("unknown")
+      return NicknameLabel.Custom("other")
     }
 
     return when (label.lowercase()) {

@@ -12,7 +12,7 @@ class PatchWebsite(
   override val dataId: DataId,
   url: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   label: ValueOrUndefined<WebsiteLabel> = ValueOrUndefined.Undefined()
-) : WebsiteModel(url.optional, label.optional ?: WebsiteLabel.Custom("")), Updatable.Data {
+) : WebsiteModel(url.optional, label.optional ?: WebsiteLabel.Custom("other")), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!url.isUndefined) {
       put(Website.URL, url.optional)

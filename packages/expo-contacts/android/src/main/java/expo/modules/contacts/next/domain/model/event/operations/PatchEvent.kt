@@ -13,7 +13,7 @@ class PatchEvent(
   override val dataId: DataId,
   startDate: ValueOrUndefined<ContactDate?> = ValueOrUndefined.Undefined(),
   label: ValueOrUndefined<EventLabel> = ValueOrUndefined.Undefined()
-) : EventModel(startDate.optional, label.optional ?: EventLabel.Custom("")), Updatable.Data {
+) : EventModel(startDate.optional, label.optional ?: EventLabel.Custom("other")), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!startDate.isUndefined) {
       put(Event.START_DATE, startDate.optional?.value)

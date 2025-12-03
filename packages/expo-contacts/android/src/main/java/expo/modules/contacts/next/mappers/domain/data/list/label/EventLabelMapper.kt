@@ -7,7 +7,7 @@ import expo.modules.kotlin.types.map
 object EventLabelMapper {
   fun toDomain(label: String?): EventLabel {
     if (label.isNullOrBlank()) {
-      return EventLabel.Custom("unknown")
+      return EventLabel.Custom("other")
     }
 
     return when (label.lowercase()) {

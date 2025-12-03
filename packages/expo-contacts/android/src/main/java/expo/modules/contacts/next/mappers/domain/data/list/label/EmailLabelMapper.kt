@@ -7,7 +7,7 @@ import expo.modules.kotlin.types.map
 object EmailLabelMapper {
   fun toDomain(label: String?): EmailLabel {
     if (label.isNullOrBlank()) {
-      return EmailLabel.Custom("unknown")
+      return EmailLabel.Custom("other")
     }
 
     return when (label.lowercase()) {
