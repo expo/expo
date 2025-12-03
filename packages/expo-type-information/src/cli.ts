@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import commander from 'commander';
 import fs from 'fs';
 
@@ -30,7 +31,7 @@ function typeInformationCommand(cli: commander.CommanderStatic) {
       const typeInfoSerialized = serializeTypeInformation(typeInfo);
       console.log(JSON.stringify(typeInfoSerialized, null, 2));
     } else {
-      console.log(`Provided file: ${filePath} couldn't be parsed for type infromation!`);
+      console.log(chalk.red(`Provided file: ${filePath} couldn't be parsed for type infromation!`));
     }
   });
 }
@@ -40,6 +41,8 @@ function generateModuleTypesCommand(cli: commander.CommanderStatic) {
     const typeInfo = getFileTypeInformation(filePath, true);
     if (typeInfo) {
       getGeneratedModuleTypesFileContent(fs.realpathSync(filePath), typeInfo).then(console.log);
+    } else {
+      console.log(chalk.red(`Provided file: ${filePath} couldn't be parsed for type infromation!`));
     }
   });
 }
@@ -49,6 +52,8 @@ function generateViewTypesCommand(cli: commander.CommanderStatic) {
     const typeInfo = getFileTypeInformation(filePath, true);
     if (typeInfo) {
       getGeneratedViewTypesFileContent(fs.realpathSync(filePath), typeInfo).then(console.log);
+    } else {
+      console.log(chalk.red(`Provided file: ${filePath} couldn't be parsed for type infromation!`));
     }
   });
 }
@@ -58,6 +63,8 @@ function generateMocksForFileCommand(cli: commander.CommanderStatic) {
     const typeInfo = getFileTypeInformation(filePath, true);
     if (typeInfo) {
       generateMocks([typeInfo], 'typescript');
+    } else {
+      console.log(chalk.red(`Provided file: ${filePath} couldn't be parsed for type infromation!`));
     }
   });
 }
