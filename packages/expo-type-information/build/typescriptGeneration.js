@@ -112,7 +112,7 @@ function getTsFunction(functionDeclaration, async, method, exported, declaration
 }
 function mapBasicTypeToTsNode(basicType) {
     if (basicType === typeInformation_1.BasicType.UNRESOLVED) {
-        return typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createTypeReferenceNode('UnresolvedType'), typescript_1.default.SyntaxKind.MultiLineCommentTrivia, "The type couldn't be resolved automatically.");
+        return typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.UnknownKeyword), typescript_1.default.SyntaxKind.MultiLineCommentTrivia, "The type couldn't be resolved automatically.");
     }
     return typescript_1.default.factory.createKeywordTypeNode((() => {
         switch (basicType) {
