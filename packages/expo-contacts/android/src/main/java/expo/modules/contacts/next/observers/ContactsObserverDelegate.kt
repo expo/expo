@@ -8,7 +8,6 @@ import expo.modules.contacts.next.ContactsObserverException
 import expo.modules.contacts.next.ContentResolverNotObtainedException
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.weak
-import java.lang.ref.WeakReference
 
 class ContactsObserverDelegate(appContext: AppContext, module: ContactsNextModule) {
   companion object {
