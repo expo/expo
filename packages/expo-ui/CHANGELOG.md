@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- [android] Add IconButton. ([#41232](https://github.com/expo/expo/pull/41232) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Add `presentationBackgroundInteraction` support to `BottomSheet`. ([#00000](https://github.com/expo/expo/pull/40932) by [@chollier](https://github.com/chollier))
 - [iOS] Add `menuActionDismissBehavior` modifier. ([#41087](https://github.com/expo/expo/pull/41087) by [@starsky-nev](https://github.com/starsky-nev))
 - [iOS] Added `submitLabel` modifier to change the label of the keyboard submit button ([#40975](https://github.com/expo/expo/pull/40975) by [@tmallet](https://github.com/tmallet))
