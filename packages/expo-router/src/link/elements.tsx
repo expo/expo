@@ -16,6 +16,7 @@ import { HrefPreview } from './preview/HrefPreview';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { NativeLinkPreviewAction, NativeLinkPreviewContent } from './preview/native';
 import { Slot } from '../ui/Slot';
+import { LinkAppleZoom } from './zoom/link-apple-zoom';
 
 export interface LinkMenuActionProps {
   /**
@@ -242,7 +243,18 @@ export function LinkPreview(props: LinkPreviewProps) {
   );
 }
 
-export type LinkTriggerProps = PropsWithChildren;
+export interface LinkTriggerProps extends PropsWithChildren {
+  /**
+   * A shorthand for enabling the Apple Zoom Transition on this link trigger.
+   *
+   * When set to `true`, the trigger will be wrapped with `Link.AppleZoom`.
+   * If another `Link.AppleZoom` is already used inside `Link.Trigger`, an error
+   * will be thrown.
+   *
+   * @platform ios 18+
+   */
+  withAppleZoom?: boolean;
+}
 
 /**
  * Serves as the trigger for a link.
@@ -263,7 +275,7 @@ export type LinkTriggerProps = PropsWithChildren;
  *
  * @platform ios
  */
-export function LinkTrigger(props: LinkTriggerProps) {
+export function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps) {
   if (React.Children.count(props.children) > 1 || !isValidElement(props.children)) {
     // If onPress is passed, this means that Link passed props to this component.
     // We can assume that asChild is used, so we throw an error, because link will not work in this case.
@@ -274,5 +286,9 @@ export function LinkTrigger(props: LinkTriggerProps) {
     }
     return props.children;
   }
-  return <Slot {...props} />;
+  const content = <Slot {...props} />;
+  if (withAppleZoom) {
+    return <LinkAppleZoom>{content}</LinkAppleZoom>;
+  }
+  return content;
 }
