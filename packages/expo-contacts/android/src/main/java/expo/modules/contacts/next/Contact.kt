@@ -4,14 +4,11 @@ import android.net.Uri
 import android.provider.ContactsContract
 import expo.modules.contacts.next.mappers.ContactRecordDomainMapper
 import expo.modules.contacts.next.domain.model.event.EventField
-import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
 import expo.modules.contacts.next.domain.model.email.EmailField
 import expo.modules.contacts.next.domain.model.phone.PhoneField
 import expo.modules.contacts.next.domain.model.relationship.RelationField
 import expo.modules.contacts.next.domain.model.nickname.NicknameField
-import expo.modules.contacts.next.domain.model.relationship.operations.ExistingRelation
 import expo.modules.contacts.next.domain.model.structuredpostal.StructuredPostalField
-import expo.modules.contacts.next.domain.model.website.operations.ExistingWebsite
 import expo.modules.contacts.next.domain.model.website.WebsiteField
 import expo.modules.contacts.next.domain.ContactRepository
 import expo.modules.contacts.next.domain.model.Extractable
@@ -20,7 +17,6 @@ import expo.modules.contacts.next.domain.model.headers.DisplayNameField
 import expo.modules.contacts.next.domain.model.headers.PhotoThumbnailUriField
 import expo.modules.contacts.next.domain.model.headers.PhotoUriField
 import expo.modules.contacts.next.domain.model.headers.starred.StarredField
-import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
 import expo.modules.contacts.next.domain.model.note.NoteField
 import expo.modules.contacts.next.domain.model.organization.OrganizationField
 import expo.modules.contacts.next.domain.model.photo.PhotoField
@@ -230,5 +226,11 @@ class Contact(
           contactFactory.create(contactIdString)
         }
     }
+
+    suspend fun hasAny(contactRepository: ContactRepository) =
+      contactRepository.getCount() > 0
+
+    suspend fun getCount(contactRepository: ContactRepository) =
+      contactRepository.getCount()
   }
 }
