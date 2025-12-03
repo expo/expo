@@ -7,7 +7,7 @@ import expo.modules.kotlin.types.map
 object WebsiteLabelMapper {
   fun toDomain(label: String?): WebsiteLabel {
     if (label.isNullOrBlank()) {
-      return WebsiteLabel.Custom("unknown")
+      return WebsiteLabel.Custom("other")
     }
 
     return when (label.lowercase()) {

@@ -7,7 +7,7 @@ import expo.modules.kotlin.types.map
 object RelationshipLabelMapper {
   fun toDomain(label: String?): RelationLabel {
     if (label.isNullOrBlank()) {
-      return RelationLabel.Custom("unknown")
+      return RelationLabel.Custom("other")
     }
 
     return when (label.lowercase()) {

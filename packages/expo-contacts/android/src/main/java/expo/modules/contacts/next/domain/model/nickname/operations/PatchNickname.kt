@@ -12,7 +12,7 @@ class PatchNickname(
   override val dataId: DataId,
   name: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   label: ValueOrUndefined<NicknameLabel> = ValueOrUndefined.Undefined()
-) : NicknameModel(name.optional, label.optional ?: NicknameLabel.Custom("")), Updatable.Data {
+) : NicknameModel(name.optional, label.optional ?: NicknameLabel.Custom("other")), Updatable.Data {
   override val contentValues = ContentValues().apply {
     if (!name.isUndefined) {
       put(Nickname.NAME, name.optional)

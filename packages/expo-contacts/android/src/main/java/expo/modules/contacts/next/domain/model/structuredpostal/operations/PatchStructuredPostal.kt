@@ -22,7 +22,7 @@ class PatchStructuredPostal(
   region = region.optional,
   postcode = postcode.optional,
   country = country.optional,
-  label = label.optional ?: StructuredPostalLabel.Custom("")
+  label = label.optional ?: StructuredPostalLabel.Custom("other")
 ),
   Updatable.Data {
   override val contentValues = ContentValues().apply {
