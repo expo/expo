@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+#if !os(macOS)
 
-import UIKit
 import React
 
 #if os(tvOS)
@@ -10,6 +10,7 @@ protocol PresentationControllerDelegate: AnyObject {
 protocol PresentationControllerDelegate: UISheetPresentationControllerDelegate {
 }
 #endif
+
 class DevMenuWindow: UIWindow, PresentationControllerDelegate {
   private let manager: DevMenuManager
   private let devMenuViewController: DevMenuViewController
@@ -143,3 +144,4 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
     manager.hideMenu()
   }
 }
+#endif
