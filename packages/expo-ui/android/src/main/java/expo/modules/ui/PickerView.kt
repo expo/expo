@@ -95,7 +95,7 @@ class PickerView(context: Context, appContext: AppContext) :
       DynamicTheme {
         AutoSizingComposable(shadowNodeProxy) {
           SingleChoiceSegmentedButtonRow(
-            modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+            modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
           ) {
             options.forEachIndexed { index, label ->
               SegmentedButton(
@@ -106,7 +106,7 @@ class PickerView(context: Context, appContext: AppContext) :
                 onClick = {
                   onOptionSelected(mapOf("index" to index, "label" to label))
                 },
-                modifier = Modifier.fromExpoModifiers(props.buttonModifiers.value),
+                modifier = Modifier.fromExpoModifiers(props.buttonModifiers.value, this@Content),
                 selected = index == selectedIndex,
                 label = { Text(label) },
                 colors = SegmentedButtonDefaults.colors(

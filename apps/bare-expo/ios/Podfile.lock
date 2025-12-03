@@ -3754,10 +3754,10 @@ SPEC CHECKSUMS:
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
   Expo: 9d61298dd8bbd625b62dcd082485fe1692084242
-  expo-dev-client: b0363ce1f16a248d7c9b67ceaee2dbee058c1e05
-  expo-dev-launcher: 35e9018d1b3ccb29565aea2a529a7e35dd7e238e
-  expo-dev-menu: 41ccfd1657e6943953d16628fceb3b97703717ed
-  expo-dev-menu-interface: 600df12ea01efecdd822daaf13cc0ac091775533
+  expo-dev-client: b8c16c699a35787e1ac38c6d44ef7552fe3f0334
+  expo-dev-launcher: 93ab1128548f72825f3fe290ff1c1690114e8def
+  expo-dev-menu: 184ccee9963a02fc75367e8ef95bd718bc703d75
+  expo-dev-menu-interface: 30d9aa2fbca275a1335ca7e076273dac1d42d40a
   ExpoAgeRange: 5203a372b2f4ef4e5510acf025373d52de60f8df
   ExpoAppIntegrity: 6efc2990e5b2859bfe3595f3d289a96c12c1dd77
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
@@ -3933,6 +3933,6 @@ SPEC CHECKSUMS:
   Yoga: 67d1653c9d28e838e7682451b47bed2d2b3fca9d
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 07ca240dc3c89dc461c221729e3f0a73e14e9ad8
+PODFILE CHECKSUM: 293433137ea62a126033703d9237390c4ab6c393
 
 COCOAPODS: 1.16.2

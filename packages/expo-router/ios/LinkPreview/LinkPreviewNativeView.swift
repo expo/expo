@@ -1,7 +1,8 @@
 import ExpoModulesCore
+import RNScreens
 
 class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
-  LinkPreviewModalDismissible, LinkPreviewMenuUpdatable {
+  RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable {
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
   private var directChild: UIView?
@@ -17,7 +18,9 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   }
   private var actions: [LinkPreviewNativeActionView] = []
 
-  private let linkPreviewNativeNavigation = LinkPreviewNativeNavigation()
+  private lazy var linkPreviewNativeNavigation: LinkPreviewNativeNavigation = {
+    return LinkPreviewNativeNavigation(logger: appContext?.jsLogger)
+  }()
 
   let onPreviewTapped = EventDispatcher()
   let onPreviewTappedAnimationCompleted = EventDispatcher()
