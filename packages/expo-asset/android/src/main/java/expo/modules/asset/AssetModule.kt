@@ -20,6 +20,9 @@ import java.security.MessageDigest
 internal class UnableToDownloadAssetException(url: String) :
   CodedException("Unable to download asset from url: $url")
 
+internal class UnableToReadAssetException(url: String) :
+  CodedException("Unable to read asset from url: $url")
+
 class AssetModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
@@ -42,6 +45,23 @@ class AssetModule : Module() {
     } catch (e: Exception) {
       e.printStackTrace()
       null
+    }
+  }
+
+  private suspend fun bytesAsset(appContext: AppContext, uri: URI): ByteArray {
+    return withContext(appContext.backgroundCoroutineScope.coroutineContext) {
+      try {
+        val inputStream = when {
+          uri.toString().contains(":").not() -> openAssetResourceStream(context, uri.toString())
+          uri.toString().startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE) -> openAndroidResStream(context, uri.toString())
+          else -> uri.toURL().openStream()
+        }
+        inputStream.use {
+          it.readBytes()
+        }
+      } catch (e: Exception) {
+        throw UnableToReadAssetException(uri.toString())
+      }
     }
   }
 
@@ -98,6 +118,10 @@ class AssetModule : Module() {
       }
 
       return@Coroutine downloadAsset(appContext, uri, localUrl)
+    }
+
+    AsyncFunction("bytes") Coroutine { uri: URI ->
+      return@Coroutine bytesAsset(appContext, uri)
     }
   }
 }
