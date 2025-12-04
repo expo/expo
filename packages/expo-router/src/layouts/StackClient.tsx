@@ -199,7 +199,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             const currentRoute = state.routes[state.index];
 
             // If the route matches the current one, then navigate to it
-            if (action.payload.name === currentRoute.name && !isPreviewAction(action)) {
+            if (action.payload.name === currentRoute.name) {
               route = currentRoute;
             } else if (action.payload.pop) {
               route = state.routes.findLast((route) => route.name === action.payload.name);

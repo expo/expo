@@ -24,6 +24,14 @@ export default function ParamScreen() {
         <Link.Trigger>Link.Preview: /one-more-param</Link.Trigger>
         <Link.Preview />
       </Link>
+      <Link href="/one-more-param?a=123">
+        <Link.Trigger>Link.Preview: /one-more-param?a=123</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Link href="/?param=one-more-param&a=123">
+        <Link.Trigger>Link.Preview: /?param=one-more-param&a=123</Link.Trigger>
+        <Link.Preview />
+      </Link>
     </ScrollView>
   );
 }

@@ -83,6 +83,6 @@ function removeInternalExpoRouterParams(params) {
     if (!params) {
         return undefined;
     }
-    return removeParams(params, [...internalExpoRouterParamNames, 'params']);
+    return removeParams(params, [...internalExpoRouterParamNames]);
 }
 //# sourceMappingURL=navigationParams.js.map

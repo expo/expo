@@ -3,6 +3,7 @@ import { useEffect, type ComponentType } from 'react';
 import { Text } from 'react-native';
 
 import { router, useNavigation, usePathname, useRouter } from '../exports';
+import { store } from '../global-state/router-store';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
@@ -264,6 +265,147 @@ describe('Stack render counts', () => {
     expect(layoutRender).toHaveBeenCalledTimes(1);
     expect(indexRender).toHaveBeenCalledTimes(1);
     expect(twoRender).not.toHaveBeenCalled();
+  });
+
+  it('screens are pushed when query params change with push', () => {
+    const layoutRender = jest.fn();
+    const indexRender = jest.fn();
+    const indexMount = jest.fn();
+
+    renderRouter({
+      _layout: function Layout() {
+        layoutRender();
+        return <TestStack />;
+      },
+      index: function Index() {
+        indexRender();
+        useEffect(() => {
+          indexMount();
+        }, []);
+        return <Text testID="index">Index</Text>;
+      },
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(indexMount).toHaveBeenCalledTimes(1);
+    expect(indexRender).toHaveBeenCalledTimes(1);
+
+    expect(store.state.routes.length).toBe(1);
+    expect(store.state.routes[0].name).toBe('__root');
+    expect(store.state.routes[0].state.routes.length).toBe(1);
+    expect(store.state.routes[0].state.routes[0].name).toBe('index');
+    expect(store.state.routes[0].state.routes[0].state).toBeUndefined();
+
+    jest.clearAllMocks();
+
+    act(() => router.push('/?a=1'));
+
+    expect(screen.getByTestId('index')).toBeVisible();
+
+    expect(store.state.routes.length).toBe(1);
+    expect(store.state.routes[0].name).toBe('__root');
+    expect(store.state.routes[0].state.routes.length).toBe(2);
+    expect(store.state.routes[0].state.routes[0].name).toBe('index');
+    expect(store.state.routes[0].state.routes[0].params).toBeUndefined();
+    expect(store.state.routes[0].state.routes[0].state).toBeUndefined();
+    expect(store.state.routes[0].state.routes[1].name).toBe('index');
+    expect(store.state.routes[0].state.routes[1].params).toStrictEqual({ a: '1' });
+    expect(store.state.routes[0].state.routes[1].state).toBeUndefined();
+
+    expect(layoutRender).not.toHaveBeenCalled();
+    expect(indexMount).toHaveBeenCalledTimes(1);
+    expect(indexRender).toHaveBeenCalledTimes(1);
+
+    jest.clearAllMocks();
+
+    act(() => router.push('/?a=2'));
+
+    expect(screen.getByTestId('index')).toBeVisible();
+
+    expect(store.state.routes.length).toBe(1);
+    expect(store.state.routes[0].name).toBe('__root');
+    expect(store.state.routes[0].state.routes.length).toBe(3);
+    expect(store.state.routes[0].state.routes[0].name).toBe('index');
+    expect(store.state.routes[0].state.routes[0].params).toBeUndefined();
+    expect(store.state.routes[0].state.routes[0].state).toBeUndefined();
+    expect(store.state.routes[0].state.routes[1].name).toBe('index');
+    expect(store.state.routes[0].state.routes[1].params).toStrictEqual({ a: '1' });
+    expect(store.state.routes[0].state.routes[1].state).toBeUndefined();
+    expect(store.state.routes[0].state.routes[2].name).toBe('index');
+    expect(store.state.routes[0].state.routes[2].params).toStrictEqual({ a: '2' });
+    expect(store.state.routes[0].state.routes[2].state).toBeUndefined();
+
+    expect(layoutRender).not.toHaveBeenCalled();
+    expect(indexMount).toHaveBeenCalledTimes(1);
+    expect(indexRender).toHaveBeenCalledTimes(1);
+  });
+
+  it('screens are rerendered when query params change with navigate', () => {
+    const layoutRender = jest.fn();
+    const indexRender = jest.fn();
+    const indexMount = jest.fn();
+
+    renderRouter({
+      _layout: function Layout() {
+        layoutRender();
+        return <TestStack />;
+      },
+      index: function Index() {
+        indexRender();
+        useEffect(() => {
+          indexMount();
+        }, []);
+        return <Text testID="index">Index</Text>;
+      },
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(indexMount).toHaveBeenCalledTimes(1);
+    expect(indexRender).toHaveBeenCalledTimes(1);
+
+    expect(store.state.routes.length).toBe(1);
+    expect(store.state.routes[0].name).toBe('__root');
+    expect(store.state.routes[0].state.routes.length).toBe(1);
+    expect(store.state.routes[0].state.routes[0].name).toBe('index');
+    expect(store.state.routes[0].state.routes[0].state).toBeUndefined();
+
+    jest.clearAllMocks();
+
+    act(() => router.navigate('/?a=1'));
+
+    expect(screen.getByTestId('index')).toBeVisible();
+
+    expect(store.state.routes.length).toBe(1);
+    expect(store.state.routes[0].name).toBe('__root');
+    expect(store.state.routes[0].state.routes.length).toBe(1);
+    expect(store.state.routes[0].state.routes[0].name).toBe('index');
+    expect(store.state.routes[0].state.routes[0].params).toStrictEqual({ a: '1' });
+    expect(store.state.routes[0].state.routes[0].state).toBeUndefined();
+
+    expect(layoutRender).not.toHaveBeenCalled();
+    expect(indexMount).not.toHaveBeenCalled();
+    expect(indexRender).toHaveBeenCalledTimes(1);
+
+    jest.clearAllMocks();
+
+    act(() => router.navigate('/?a=2'));
+
+    expect(screen.getByTestId('index')).toBeVisible();
+
+    expect(store.state.routes.length).toBe(1);
+    expect(store.state.routes[0].name).toBe('__root');
+    expect(store.state.routes[0].state.routes.length).toBe(1);
+    expect(store.state.routes[0].state.routes[0].name).toBe('index');
+    expect(store.state.routes[0].state.routes[0].params).toStrictEqual({ a: '2' });
+    expect(store.state.routes[0].state.routes[0].state).toBeUndefined();
+
+    expect(layoutRender).not.toHaveBeenCalled();
+    expect(indexMount).not.toHaveBeenCalled();
+    expect(indexRender).toHaveBeenCalledTimes(1);
   });
 });
 

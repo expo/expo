@@ -11,6 +11,7 @@ import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
+import { store } from '../global-state/router-store';
 import { getFirstChildOfType } from '../utils/children';
 import { shouldLinkExternally } from '../utils/url';
 
@@ -95,6 +96,15 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     return <BaseExpoRouterLink children={children} {...rest} />;
   }
 
+  const navigateUsingPreview = () => {
+    const info = store.getRouteInfo();
+    // If the href is the same and nextScreenId is not set, then we don't need to navigate
+    // The screen is already on top of the stack
+    if (hrefWithoutQuery !== info.pathname || nextScreenId) {
+      router.push(rest.href, { __internal__PreviewKey: nextScreenId });
+    }
+  };
+
   return (
     <NativeLinkPreview
       nextScreenId={isPad ? undefined : nextScreenId}
@@ -118,13 +128,13 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
       }}
       onPreviewDidClose={() => {
         if (hasPreview && isPreviewTapped.current && isPad) {
-          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+          navigateUsingPreview();
         }
       }}
       onPreviewTapped={() => {
         isPreviewTapped.current = true;
         if (!isPad) {
-          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+          navigateUsingPreview();
         }
       }}
       style={{ display: 'contents' }}
