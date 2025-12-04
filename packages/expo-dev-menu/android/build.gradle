@@ -15,6 +15,10 @@ group = 'host.exp.exponent'
 version = '7.0.11'
 
 def hasDevLauncher = findProject(":expo-dev-launcher") != null
+def configureInRelease = findProperty("expo.devmenu.configureInRelease") == "true"
+if (configureInRelease) {
+  println("expo-dev-menu will be enabled in release")
+}
 
 expoModule {
   canBePublished false
@@ -43,6 +47,16 @@ android {
     debugOptimized {
       setRoot 'src/debug'
     }
+
+    release {
+      if (configureInRelease) {
+        java.srcDir 'src/debug/java'
+        res.srcDir 'src/debug/res'
+      } else {
+        java.srcDir 'src/disableInRelease/java'
+        res.srcDir 'src/disableInRelease/res'
+      }
+    }
   }
 
   buildFeatures {
@@ -70,6 +84,11 @@ dependencies {
     debugImplementation notation
     //noinspection DependencyNotationArgument
     debugOptimizedImplementation notation
+
+    if (configureInRelease) {
+      //noinspection DependencyNotationArgument
+      releaseImplementation notation
+    }
   }
 
   def debugOnlyApi = { notation ->
@@ -77,6 +96,11 @@ dependencies {
     debugApi notation
     //noinspection DependencyNotationArgument
     debugOptimizedApi notation
+
+    if (configureInRelease) {
+      //noinspection DependencyNotationArgument
+      releaseApi notation
+    }
   }
 
   debugOnly project(":expo-manifests")
