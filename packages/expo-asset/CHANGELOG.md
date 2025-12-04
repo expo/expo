@@ -12,6 +12,10 @@
 
 - validate asset names with `isAndroidAssetNameValid` from `expo/config-plugins` ([#39883](https://github.com/expo/expo/pull/39883) by [@vonovak](https://github.com/vonovak))
 
+## 12.0.10 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
 ## 12.0.9 - 2025-09-18
 
 _This version does not introduce any user-facing changes._

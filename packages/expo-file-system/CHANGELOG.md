@@ -6,15 +6,25 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+
+## 19.0.19 - 2025-11-18
+
+### 🎉 New features
+
 - [Android] Add contentUri property. ([#40002](https://github.com/expo/expo/pull/40002) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
 - [iOS] Add missing `createFile` and `createDirectory` methods. ([#40314](https://github.com/expo/expo/pull/40314) by [@jakex7](https://github.com/jakex7))
 
-### 💡 Others
+## 19.0.18 - 2025-11-17
 
-- [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+_This version does not introduce any user-facing changes._
 
 ## 19.0.17 - 2025-10-09
 

@@ -19,7 +19,6 @@
 - [iOS] Fix port scanning on pysical devices. ([#40824](https://github.com/expo/expo/pull/40824) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix RCTDevMenuConfiguration in release builds ([#40870](https://github.com/expo/expo/pull/40870) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix Safe Area being ignored on physical devices ([#41119](https://github.com/expo/expo/pull/41119) by [@betomoedano](https://github.com/betomoedano))
-- Restore config plugin `launchMode` support ([#41363](https://github.com/expo/expo/pull/41363) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -28,6 +27,20 @@
 - [Android] Remove `ReactHostWrapper` ([#40295](https://github.com/expo/expo/pull/40295) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove custom `ReactNativeFactory`. ([#41084](https://github.com/expo/expo/pull/41084) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove unused reactNativeFactory. ([#41286](https://github.com/expo/expo/pull/41286) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.0.19 - 2025-12-04
+
+### 🐛 Bug fixes
+
+- Restore config plugin `launchMode` support ([#41363](https://github.com/expo/expo/pull/41363) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.0.18 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.17 - 2025-11-05
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.16 - 2025-10-21
 
