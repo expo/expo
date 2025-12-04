@@ -218,6 +218,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./GridScreen'));
     },
   },
+  {
+    name: 'Host Ignore Safe Area Keyboard',
+    route: 'ui/host-ignore-safe-area-keyboard',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostIgnoreSafeAreaKeyboardScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

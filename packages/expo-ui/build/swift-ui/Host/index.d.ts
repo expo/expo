@@ -35,6 +35,12 @@ export type HostProps = {
      * Defaults to the current locale direction from I18nManager.
      */
     layoutDirection?: 'leftToRight' | 'rightToLeft';
+    /**
+     * When `true`, the SwiftUI content will not perform keyboard avoidance behaviour when keyboard is shown.
+     * Can be only set once on mount.
+     * @default false
+     */
+    ignoreSafeAreaKeyboardInsets?: boolean;
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
 } & CommonViewModifierProps;
