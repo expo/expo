@@ -7,6 +7,7 @@
 #include "../JNIUtils.h"
 #include "ObjectDeallocator.h"
 #include "../javaclasses/Collections.h"
+#include "../JavaScriptArrayBuffer.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -314,6 +315,21 @@ public:
   ) {
     auto jsTypedArray = value->get();
     return {rt, *jsTypedArray};
+  }
+};
+
+template<>
+class JNIToJSIConverter<JavaScriptArrayBuffer *> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    JavaScriptArrayBuffer *value
+  ) {
+    auto jsArrayBuffer = value->jsiArrayBuffer();
+    return {rt, *jsArrayBuffer};
   }
 };
 
