@@ -34,7 +34,6 @@
 - activate animation on back navigation, when initial animation was disabled using internal param ([#41141](https://github.com/expo/expo/pull/41141) by [@Ubax](https://github.com/Ubax))
 - prevent `onPreviewTapped` from firing when `<Link.Preview />` is not configured ([#41160](https://github.com/expo/expo/pull/41160) by [@Ubax](https://github.com/Ubax))
 - fix Sitemap insets on Android ([#41280](https://github.com/expo/expo/pull/41280) by [@Ubax](https://github.com/Ubax))
-- Replace internal base URL for parsing pathnames with `file:` ([#41338](https://github.com/expo/expo/pull/41338) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -61,6 +60,20 @@
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
 - extract children utils to common file ([#41238](https://github.com/expo/expo/pull/41238) by [@Ubax](https://github.com/Ubax))
 - [iOS] replace LinkPreviewNativeNavigationObjC with direct swift calls ([#41331](https://github.com/expo/expo/pull/41331) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.16 - 2025-12-04
+
+### 🐛 Bug fixes
+
+- Replace internal base URL for parsing pathnames with `file:` ([#41338](https://github.com/expo/expo/pull/41338) by [@kitten](https://github.com/kitten))
+
+## 6.0.15 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.14 - 2025-10-28
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.13 - 2025-10-20
 
