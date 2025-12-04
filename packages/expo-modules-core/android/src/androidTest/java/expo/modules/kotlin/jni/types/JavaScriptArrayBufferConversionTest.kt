@@ -20,4 +20,39 @@ class JavaScriptArrayBufferConversionTest {
     map = {},
     jsAssertion = {}
   )
+
+  @Test
+  fun array_buffer_should_be_returned() = conversionTest<JavaScriptArrayBuffer, _>(
+    jsValue = "new Uint8Array([0x00, 0xff]).buffer",
+    nativeAssertion = { arrayBuffer ->
+      Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
+      Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
+      Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
+    },
+    map = { it },
+    jsAssertion = { jsValue ->
+      Truth.assertThat(jsValue.isArrayBuffer()).isTrue()
+
+      val arrayBuffer = jsValue.getArrayBuffer()
+      Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
+    }
+  )
+
+  @Test
+  fun array_buffer_can_be_modified() = conversionTest<JavaScriptArrayBuffer, _>(
+    jsValue = "new Uint8Array([0x00, 0xff]).buffer",
+    nativeAssertion = { arrayBuffer ->
+      Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
+
+      arrayBuffer.toDirectBuffer().apply {
+        rewind()
+        put(0x42.toByte())
+      }
+    },
+    map = { it },
+    jsAssertion = { jsValue ->
+      val firstByte = jsValue.getArrayBuffer().readByte(0)
+      Truth.assertThat(firstByte).isEqualTo(0x42.toByte())
+    }
+  )
 }
