@@ -317,6 +317,14 @@ async function createModuleFromTemplate(
     const template = await fs.promises.readFile(fromPath, 'utf8');
     const renderedContent = ejs.render(template, data);
 
+    //if the first non-empty line contains __SKIP_FILE__, skip writing this file
+    {
+      const firstNonEmptyLine = renderedContent.split(/\r?\n/).find((l) => l.trim().length > 0) || '';
+      if (firstNonEmptyLine.includes('__SKIP_FILE__')) {
+        continue;
+      }
+    }
+
     if (!fs.existsSync(path.dirname(toPath))) {
       await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
     }
