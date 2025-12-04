@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference
 
 class DevMenuPackage : Package {
   override fun createReactNativeHostHandlers(context: Context?): List<ReactNativeHostHandler?> {
-    if (!BuildConfig.DEBUG || !BuildConfig.AUTO_INITIALIZATION) {
+    if (!BuildConfig.AUTO_INITIALIZATION) {
       return emptyList()
     }
 
@@ -34,7 +34,7 @@ class DevMenuPackage : Package {
   }
 
   override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
-    if (!BuildConfig.DEBUG || !BuildConfig.AUTO_INITIALIZATION) {
+    if (!BuildConfig.AUTO_INITIALIZATION) {
       return emptyList()
     }
 
