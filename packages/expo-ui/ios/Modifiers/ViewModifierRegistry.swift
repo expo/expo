@@ -873,7 +873,6 @@ internal struct ListRowSeparator: ViewModifier, Record {
       } else {
         content.listRowSeparator(visibility.toVisibility())
       }
-    }
     #endif
   }
 }
