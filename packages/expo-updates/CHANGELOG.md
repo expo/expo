@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `downloadProgress` for update fetching on app startup. ([#41069](https://github.com/expo/expo/pull/41069) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
