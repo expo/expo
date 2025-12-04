@@ -129,7 +129,8 @@ const stackRouterOverride = (original) => {
                     else if (action.type === 'NAVIGATE') {
                         const currentRoute = state.routes[state.index];
                         // If the route matches the current one, then navigate to it
-                        if (action.payload.name === currentRoute.name && !isPreviewAction(action)) {
+                        if (action.payload.name === currentRoute.name &&
+                            (0, navigationParams_1.areParamsEqualDisregardingInternalExpoRouterParams)(action.payload.params, currentRoute.params)) {
                             route = currentRoute;
                         }
                         else if (action.payload.pop) {

@@ -11,7 +11,7 @@ import { findDivergentState, getPayloadFromStateRoute } from '../../global-state
 import { Href } from '../../types';
 import { resolveHref } from '../href';
 import { TabPath } from './native';
-import { removeInternalExpoRouterParams } from '../../navigationParams';
+import { areParamsEqualDisregardingInternalExpoRouterParams } from '../../navigationParams';
 
 export function getTabPathFromRootStateByHref(
   href: Href,
@@ -74,10 +74,7 @@ export function getPreloadedRouteFromRootStateByHref(
     const preloadedRoute = stackState.preloadedRoutes.find(
       (route) =>
         route.name === actionStateRoute.name &&
-        deepEqual(
-          removeInternalExpoRouterParams(route.params),
-          removeInternalExpoRouterParams(payload.params)
-        )
+        areParamsEqualDisregardingInternalExpoRouterParams(route.params, payload.params)
     );
 
     const activeRoute = stackState.routes[stackState.index];
@@ -85,11 +82,7 @@ export function getPreloadedRouteFromRootStateByHref(
     // then we should not navigate. It aligns with base link behavior.
     if (
       activeRoute.name === preloadedRoute?.name &&
-      deepEqual(
-        // using ?? {}, because from our perspective undefined === {}, as both mean no params
-        removeInternalExpoRouterParams(activeRoute.params ?? {}),
-        removeInternalExpoRouterParams(payload.params ?? {})
-      )
+      areParamsEqualDisregardingInternalExpoRouterParams(activeRoute.params, payload.params)
     ) {
       return undefined;
     }
@@ -98,21 +91,4 @@ export function getPreloadedRouteFromRootStateByHref(
   }
 
   return undefined;
-}
-
-export function deepEqual(
-  a: { [key: string]: any } | undefined,
-  b: { [key: string]: any } | undefined
-): boolean {
-  if (a === b) {
-    return true;
-  }
-  if (a == null || b == null) {
-    return false;
-  }
-  if (typeof a !== 'object' || typeof b !== 'object') {
-    return false;
-  }
-  const keys = Object.keys(a);
-  return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
 }

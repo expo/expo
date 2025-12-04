@@ -23,6 +23,7 @@ import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import {
+  areParamsEqualDisregardingInternalExpoRouterParams,
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
@@ -215,7 +216,13 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             const currentRoute = state.routes[state.index];
 
             // If the route matches the current one, then navigate to it
-            if (action.payload.name === currentRoute.name && !isPreviewAction(action)) {
+            if (
+              action.payload.name === currentRoute.name &&
+              areParamsEqualDisregardingInternalExpoRouterParams(
+                action.payload.params,
+                currentRoute.params
+              )
+            ) {
               route = currentRoute;
             } else if (action.payload.pop) {
               route = state.routes.findLast((route) => route.name === action.payload.name);

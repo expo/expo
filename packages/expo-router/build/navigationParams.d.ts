@@ -31,5 +31,6 @@ export declare function hasParam(params: unknown, paramName: string): boolean;
 export declare function removeParams(params: Record<string, unknown> | object | undefined, paramName: readonly string[]): Record<string, unknown> | object | undefined;
 export declare function removeInternalExpoRouterParams(params: Record<string, unknown> | object): Record<string, unknown> | object;
 export declare function removeInternalExpoRouterParams(params: Record<string, unknown> | object | undefined): Record<string, unknown> | object | undefined;
+export declare function areParamsEqualDisregardingInternalExpoRouterParams(paramsA: Record<string, unknown> | object | undefined, paramsB: Record<string, unknown> | object | undefined): boolean;
 export {};
 //# sourceMappingURL=navigationParams.d.ts.map
