@@ -81,7 +81,8 @@
     "expo-linking": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
-    "react-native-screens": "*"
+    "react-native-screens": "*",
+    "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
   },
   "peerDependenciesMeta": {
     "react-native-reanimated": {
@@ -92,6 +93,9 @@
     },
     "@testing-library/jest-native": {
       "optional": true
+    },
+    "react-server-dom-webpack": {
+      "optional": true
     }
   },
   "devDependencies": {
@@ -101,7 +105,7 @@
     "@testing-library/react-native": "^13.1.0",
     "@types/semver": "^7.7.0",
     "immer": "^10.1.1",
-    "react-server-dom-webpack": "~19.0.0",
+    "react-server-dom-webpack": "~19.0.1",
     "tsd": "^0.28.1"
   },
   "dependencies": {

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump and tighten `react-server-dom-webpack` peer range ([#41379](https://github.com/expo/expo/pull/41379) by [@kitten](https://github.com/kitten))
+
 ## 5.1.7 — 2025-09-22
 
 ### 🐛 Bug fixes

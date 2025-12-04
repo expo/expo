@@ -1,5 +1,4 @@
 import path from 'path';
-import { renderToReadableStream } from 'react-server-dom-webpack/server';
 
 export const streamToString = async (stream) => {
   const decoder = new TextDecoder();
@@ -38,6 +37,7 @@ export async function renderJsxToFlightStringAsync(jsx, throwOnError = true) {
 }
 
 export function renderJsxToReadableStream(jsx, { onError } = {}) {
+  const { renderToReadableStream } = require('react-server-dom-webpack/server');
   const clientBoundaries = [];
   const bundlerConfig = new Proxy(
     {},
