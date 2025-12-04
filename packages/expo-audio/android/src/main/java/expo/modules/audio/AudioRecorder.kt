@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import expo.modules.audio.service.AudioRecordingService
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.Job
@@ -43,6 +44,8 @@ class AudioRecorder(
   var isRecording = false
   var isPaused = false
   private var recordingTimerJob: Job? = null
+  var useForegroundService = false
+  private var isRegisteredWithService = false
 
   private fun currentFileUrl(): String? =
     filePath?.let(::File)?.toUri()?.toString()
@@ -95,6 +98,11 @@ class AudioRecorder(
     startTime = System.currentTimeMillis()
     isRecording = true
     isPaused = false
+
+    if (useForegroundService && !isRegisteredWithService) {
+      AudioRecordingService.startService(context, this)
+      isRegisteredWithService = true
+    }
   }
 
   fun recordWithOptions(atTimeSeconds: Double? = null, forDurationSeconds: Double? = null) {
@@ -136,6 +144,11 @@ class AudioRecorder(
   fun stopRecording(): Bundle {
     val url = currentFileUrl()
     var durationMillis: Long
+
+    if (useForegroundService && isRegisteredWithService) {
+      AudioRecordingService.getInstance()?.unregisterRecorder(this)
+      isRegisteredWithService = false
+    }
 
     try {
       recorder?.stop()
@@ -238,6 +251,10 @@ class AudioRecorder(
 
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
+    if (useForegroundService && isRegisteredWithService) {
+      AudioRecordingService.getInstance()?.unregisterRecorder(this)
+      isRegisteredWithService = false
+    }
     reset()
   }
 
@@ -332,7 +349,7 @@ class AudioRecorder(
         val type = availableDeviceInfo.type
         if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
           deviceInfo = availableDeviceInfo
-          recorder?.setPreferredDevice(deviceInfo)
+          recorder?.preferredDevice = deviceInfo
           break
         }
       }

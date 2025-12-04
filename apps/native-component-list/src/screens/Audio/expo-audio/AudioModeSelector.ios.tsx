@@ -16,6 +16,7 @@ export default function AudioModeSelector() {
       allowsRecording: false,
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
+      allowsBackgroundRecording: false,
     },
     current: {
       interruptionMode: 'mixWithOthers',
@@ -23,6 +24,7 @@ export default function AudioModeSelector() {
       allowsRecording: false,
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
+      allowsBackgroundRecording: false,
     },
   });
 
@@ -39,7 +41,8 @@ export default function AudioModeSelector() {
     modeA.interruptionMode === modeB.interruptionMode &&
     modeA.playsInSilentMode === modeB.playsInSilentMode &&
     modeA.allowsRecording === modeB.allowsRecording &&
-    modeA.shouldPlayInBackground === modeB.shouldPlayInBackground;
+    modeA.shouldPlayInBackground === modeB.shouldPlayInBackground &&
+    modeA.allowsBackgroundRecording === modeB.allowsBackgroundRecording;
 
   const setMode = (interruptionMode: AudioMode['interruptionMode']) => () =>
     setState((state) => ({ ...state, next: { ...state.next, interruptionMode } }));
@@ -111,6 +114,12 @@ export default function AudioModeSelector() {
         valueName: 'shouldPlayInBackground',
         disabled: !state.next.playsInSilentMode,
         value: !state.next.playsInSilentMode ? false : undefined,
+      })}
+      {renderToggle({
+        title: 'Allow background recording',
+        valueName: 'allowsBackgroundRecording',
+        disabled: !state.next.allowsRecording,
+        value: !state.next.allowsRecording ? false : undefined,
       })}
       {renderModeSelector({
         title: 'Mix with others',
