@@ -17,6 +17,10 @@ concurrency:
 
 jobs:
   ios-build:
+    strategy:
+      fail-fast: true
+      matrix:
+        build-type: [debug, release]
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
@@ -45,7 +49,17 @@ jobs:
         working-directory: ./apps/brownfield-tester
         run: |
           pod install --project-directory=ios
-          xcodebuild -workspace ios/BrownfieldTester.xcworkspace -scheme BrownfieldTester -configuration Release -sdk iphonesimulator -derivedDataPath "ios/build" | xcpretty
+          xcodebuild -workspace ios/BrownfieldTester.xcworkspace -scheme BrownfieldTester -configuration $CONFIGURATION -sdk iphonesimulator -derivedDataPath "ios/build" | xcpretty
+        shell: bash
+        env:
+          NODE_ENV: production
+          CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
+      - name: 📸 Upload builds
+        uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
+        with:
+          name: ios-builds-${{ matrix.build-type }}
+          path: ${{ runner.temp }}/brownfield-tester/ios/build/**/BrownfieldTester.app/
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
