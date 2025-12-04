@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix MapKit built-in buttons not responding ([#41151](https://github.com/expo/expo/pull/41151) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 0.12.9 — 2025-12-05
