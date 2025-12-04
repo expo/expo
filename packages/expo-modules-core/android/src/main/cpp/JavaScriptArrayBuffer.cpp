@@ -49,4 +49,8 @@ int JavaScriptArrayBuffer::size() {
   return (int) arrayBuffer->size(jsRuntime);
 }
 
+std::shared_ptr<jsi::ArrayBuffer> JavaScriptArrayBuffer::jsiArrayBuffer() {
+  return this->arrayBuffer;
+}
+
 }

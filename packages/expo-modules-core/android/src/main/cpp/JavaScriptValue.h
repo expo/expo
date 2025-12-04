@@ -5,6 +5,7 @@
 #include "JSIObjectWrapper.h"
 #include "WeakRuntimeHolder.h"
 #include "JavaScriptTypedArray.h"
+#include "JavaScriptArrayBuffer.h"
 #include "JNIDeallocator.h"
 
 #include <fbjni/fbjni.h>
@@ -21,6 +22,8 @@ class JavaScriptRuntime;
 class JavaScriptObject;
 
 class JavaScriptTypedArray;
+
+class JavaScriptArrayBuffer;
 
 class JavaScriptFunction;
 
@@ -75,6 +78,8 @@ public:
 
   bool isTypedArray();
 
+  bool isArrayBuffer();
+
   bool getBool();
 
   double getDouble();
@@ -86,6 +91,8 @@ public:
   jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> getArray();
 
   jni::local_ref<JavaScriptTypedArray::javaobject> getTypedArray();
+
+  jni::local_ref<JavaScriptArrayBuffer::javaobject> getArrayBuffer();
 
   jni::local_ref<jni::HybridClass<JavaScriptFunction, Destructible>::javaobject> jniGetFunction();
 
