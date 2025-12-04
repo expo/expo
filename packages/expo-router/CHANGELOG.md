@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Replace internal base URL for parsing pathnames with `file:` ([#41338](https://github.com/expo/expo/pull/41338) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 6.0.16 — 2025-12-04
+
+### 🐛 Bug fixes
+
+- Replace internal base URL for parsing pathnames with `file:` ([#41338](https://github.com/expo/expo/pull/41338) by [@kitten](https://github.com/kitten))
 
 ## 6.0.15 — 2025-11-17
 

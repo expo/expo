@@ -31,7 +31,38 @@ PODS:
   - EXNotifications/Tests (0.32.13):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.24):
+  - Expo (54.0.26):
+    - boost
+    - DoubleConversion
+    - ExpoModulesCore
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTAppDelegate
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactAppDependencyProvider
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - Expo/Tests (54.0.26):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -66,7 +97,7 @@ PODS:
     - ExpoModulesCore
   - ExpoAsset (12.0.10):
     - ExpoModulesCore
-  - ExpoAudio (1.0.14):
+  - ExpoAudio (1.0.16):
     - ExpoModulesCore
   - ExpoBackgroundFetch (14.0.8):
     - ExpoModulesCore
@@ -101,7 +132,7 @@ PODS:
     - ExpoModulesCore
   - ExpoDomWebView (0.2.7):
     - ExpoModulesCore
-  - ExpoFileSystem (19.0.18):
+  - ExpoFileSystem (19.0.19):
     - ExpoModulesCore
   - ExpoFont (14.0.9):
     - ExpoModulesCore
@@ -112,7 +143,7 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (15.0.7):
     - ExpoModulesCore
-  - ExpoHead (6.0.15):
+  - ExpoHead (6.0.16):
     - ExpoModulesCore
     - RNScreens
   - ExpoImage (3.0.10):
@@ -161,7 +192,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (0.4.7):
     - ExpoModulesCore
-  - ExpoModulesCore (3.0.26):
+  - ExpoModulesCore (3.0.27):
     - boost
     - DoubleConversion
     - fast_float
@@ -190,7 +221,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (3.0.26):
+  - ExpoModulesCore/Tests (3.0.27):
     - boost
     - DoubleConversion
     - ExpoModulesTestCore
@@ -220,7 +251,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesTestCore (1.0.0):
+  - ExpoModulesTestCore (1.0.1):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
@@ -291,7 +322,7 @@ PODS:
   - EXTaskManager (14.0.8):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (29.0.12):
+  - EXUpdates (29.0.14):
     - boost
     - DoubleConversion
     - EASClient
@@ -325,7 +356,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - EXUpdates/Tests (29.0.12):
+  - EXUpdates/Tests (29.0.14):
     - boost
     - DoubleConversion
     - EASClient
@@ -3725,6 +3756,7 @@ DEPENDENCIES:
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
+  - Expo/Tests (from `../../../packages/expo`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
@@ -4278,10 +4310,10 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: eaf327418721c4a7482576c579d215516d36319c
   EXNotifications: 5edf06b6b41a52d8b5b3eccf0e951dc8a880a50b
-  Expo: 4e47a81b4e95e0d0b7496b89eee2b378002731c3
+  Expo: 237751ba280665414ec4f5b58f12f8b87e8b8992
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
   ExpoAsset: ee515c16290e521de1870dcdee66d78173fbc533
-  ExpoAudio: 6d01b940fdc7043eb36de5e2486c30c14487c289
+  ExpoAudio: 55a8d667ad4765adffcef13ede84b8bac9449891
   ExpoBackgroundFetch: 273ad11f469a9f624ade76ee9230a2898093a9e6
   ExpoBackgroundTask: e0efb5999d30593cbc0a2c443db70cc9310ec51c
   ExpoBattery: da883ecca2a79507916edd00836ef6a50afecac2
@@ -4296,12 +4328,12 @@ SPEC CHECKSUMS:
   ExpoDevice: d85d332b903b658a596f166b01fee12ca1e443ff
   ExpoDocumentPicker: dbe4eeeb771891209fee044a6b0bafbd1fdcc4fa
   ExpoDomWebView: f8d74b970eede6e02ca2f215742812472f046817
-  ExpoFileSystem: 422372c0de76776f6a9f80386de3c2213d586de2
+  ExpoFileSystem: 73a9f3f2e0affc61eba5b9326153f64870438af1
   ExpoFont: b881d43057dceb7b31ff767b24f612609e80f60f
   ExpoGL: 39262a8c3d4c36d48a28bc412e3392c25c5391c9
   ExpoGlassEffect: 3d147d753d3bfe1a5d6b7920560e206e3e98c19e
   ExpoHaptics: b48d913e7e5f23816c6f130e525c9a6501b160b5
-  ExpoHead: 16bab3395d4328e88e4282a4f6ef4f44b1225c8d
+  ExpoHead: 4ad178d6b19c2bf786b0d1889a870ba3187c18ef
   ExpoImage: 6eb842cd07817402640545c41884dd7f5fbfbca5
   ExpoImageManipulator: dbf5b8fc805b55463811cb3da96ab60c532faae8
   ExpoImagePicker: bd0a5c81d7734548f6908a480609257e85d19ea8
@@ -4315,8 +4347,8 @@ SPEC CHECKSUMS:
   ExpoMailComposer: 8771121c8d5e6e0e194537fab79360d0f443f70d
   ExpoMediaLibrary: 648cee3f5dcba13410ec9cc8ac9a426e89a61a31
   ExpoMeshGradient: 763087d3b1e6e9a0974e9700ea24cb598816d93c
-  ExpoModulesCore: 9464d2650e5f20dc8a58ce31d0706e0290546987
-  ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
+  ExpoModulesCore: f02fda40d6987629623e229a5e5014604b4d42a7
+  ExpoModulesTestCore: 3065c8b630d254c308998dd021c7f940b45362fd
   ExpoNetwork: 97073786edfe405aba5d0987a544617ed0671ad1
   ExpoPrint: ad836bb90da10793509651c0ea1f39e120db001e
   ExpoScreenCapture: 0c785ab7e1fa38943f04b16060d54ae8f886544a
@@ -4336,7 +4368,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 35223474c19e261c0661ecc7caa513d054244ab5
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
   EXTaskManager: 53f87ed11659341c3f3f02c0041498ef293f5684
-  EXUpdates: 7c27f4811b489baf54fc004fb3bc696ea46f5b15
+  EXUpdates: 1938c585bb85b4d5519acc274bb2e4204fdec7ef
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 5beb8028d5a2e75dd9634917f23e23d3a061d2aa
@@ -4355,7 +4387,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 2edae2e4655735438fa60eb2869307fed67d5c1e
+  hermes-engine: b775e38aae65834cb803ca728aac4d16c7e31147
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Universal links not working on cold start. ([#41185](https://github.com/expo/expo/pull/41185)) by [@jbaudanza](https://github.com/jbaudanza)
-
 ### 💡 Others
+
+## 3.0.27 — 2025-12-04
+
+### 🐛 Bug fixes
+
+- [iOS] Universal links not working on cold start. ([#41185](https://github.com/expo/expo/pull/41185)) by [@jbaudanza](https://github.com/jbaudanza)
 
 ## 3.0.26 — 2025-11-17
 

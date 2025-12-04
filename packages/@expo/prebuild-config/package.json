@@ -37,12 +37,12 @@
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^5.0.8"
   },
   "dependencies": {
-    "@expo/config": "~12.0.10",
-    "@expo/config-plugins": "~54.0.2",
-    "@expo/config-types": "^54.0.8",
+    "@expo/config": "~12.0.11",
+    "@expo/config-plugins": "~54.0.3",
+    "@expo/config-types": "^54.0.9",
     "@expo/image-utils": "^0.8.7",
     "@expo/json-file": "^10.0.7",
     "@react-native/normalize-colors": "0.81.5",
