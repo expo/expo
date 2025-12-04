@@ -15,9 +15,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.AutoSizingComposable
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
-import expo.modules.kotlin.views.ComposableScope
 import java.io.Serializable
 
 open class ValueChangeEvent(
@@ -108,11 +108,9 @@ fun ThemedHybridSwitch(
   colors: SwitchColors,
   modifier: Modifier = Modifier
 ) {
-  DynamicTheme {
-    when (variant) {
-      "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier)
-      else -> CheckboxComposable(checked, onCheckedChange, colors, modifier)
-    }
+  when (variant) {
+    "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier)
+    else -> CheckboxComposable(checked, onCheckedChange, colors, modifier)
   }
 }
 
