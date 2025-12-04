@@ -200,7 +200,7 @@ class Contact(
     suspend fun getAllWithDetails(
       contactRepository: ContactRepository,
       contactMapper: ContactRecordDomainMapper,
-      fields: List<ContactField>,
+      fields: Set<ContactField>,
       contactQueryOptions: ContactQueryOptions?
     ): List<GetContactDetailsRecord> {
       val extractableFields = contactMapper.toExtractableFields(fields).toSet()

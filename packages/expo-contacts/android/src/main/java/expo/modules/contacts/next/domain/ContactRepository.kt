@@ -95,8 +95,8 @@ class ContactRepository(val contentResolver: ContentResolver) {
     sortOrder: SortOrder? = SortOrder.UserDefault
   ): List<ContactId> = withContext(Dispatchers.IO) {
     contentResolver.safeQuery(
-      uri = ContactsContract.Data.CONTENT_URI,
-      projection = arrayOf(ContactId.COLUMN_IN_DATA_TABLE),
+      uri = ContactsContract.Contacts.CONTENT_URI,
+      projection = arrayOf(ContactId.COLUMN_IN_CONTACTS_TABLE),
       selection = searchedDisplayName?.let { "${ContactsContract.Contacts.DISPLAY_NAME} LIKE ?" },
       selectionArgs = searchedDisplayName?.let { arrayOf("%$it%") },
       sortOrder = sortOrder?.toColumn()
@@ -106,7 +106,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
       cursor
         .asSequence()
         .take(limit ?: Int.MAX_VALUE)
-        .map { it.getString(it.getColumnIndexOrThrow(ContactId.COLUMN_IN_DATA_TABLE)) }
+        .map { it.getString(it.getColumnIndexOrThrow(ContactId.COLUMN_IN_CONTACTS_TABLE)) }
         .map { ContactId(it) }
         .toList()
     }
@@ -116,19 +116,33 @@ class ContactRepository(val contentResolver: ContentResolver) {
     extractableFields: Set<ExtractableField<*>>,
     contactId: ContactId
   ): ExistingContact? = withContext(Dispatchers.IO) {
-    val queryBuilder = QueryBuilder(extractableFields, listOf(contactId))
+    val queryAggregator = QueryAggregator(extractableFields)
+    val queryBuilder = QueryBuilder(extractableFields)
+
+    contentResolver.safeQuery(
+      uri = ContactsContract.Contacts.CONTENT_URI,
+      projection = queryBuilder.buildContactsProjection(),
+      selection = "${ContactId.COLUMN_IN_CONTACTS_TABLE} = ?",
+      selectionArgs = arrayOf(contactId.value)
+    ).use { cursor ->
+      cursor
+        .asSequence()
+        .forEach { _ -> queryAggregator.aggregateContactsRow(cursor) }
+    }
+
     contentResolver.safeQuery(
       uri = ContactsContract.Data.CONTENT_URI,
-      projection = queryBuilder.buildProjection(),
-      selection = queryBuilder.buildSelection(),
-      selectionArgs = queryBuilder.buildSelectionArgs()
+      projection = queryBuilder.buildDataProjection(),
+      selection = queryBuilder.buildSelection(listOf(contactId)),
+      selectionArgs = queryBuilder.buildSelectionArgs(listOf(contactId))
     ).use { cursor ->
       ensureActive()
-      if (cursor.count == 0) {
-        return@withContext null
-      }
-      QueryAggregator.aggregate(cursor, extractableFields)[0]
+      cursor
+        .asSequence()
+        .forEach { _ -> queryAggregator.aggregateDataRow(cursor) }
     }
+    val contacts = queryAggregator.buildContacts()
+    return@withContext if (contacts.isNotEmpty()) contacts[0] else null
   }
 
   suspend fun getAllPaginated(
@@ -137,31 +151,37 @@ class ContactRepository(val contentResolver: ContentResolver) {
     offset: Int? = null,
     searchedDisplayName: String? = null,
     sortOrder: SortOrder? = null
-  ): Collection<ExistingContact> {
-    // In this code we utilize two-step query
-    // Since there is no way of getting limit and offset when fetching contact details
-    // (because query returns one row for each mimeType)
-    // Firstly we query all ids with applying limit and offset, and then using those ids
-    // we execute another query with filtering by ids
-    // This tactic makes the query perfectly scales as the contacts database gets bigger
-    val contactIds = getAllIds(limit, offset, searchedDisplayName, sortOrder)
-    return getAll(extractableFields, contactIds)
-  }
-
-  suspend fun getAll(
-    extractableFields: Set<ExtractableField<*>>,
-    contactIds: Collection<ContactId>?
   ): Collection<ExistingContact> = withContext(Dispatchers.IO) {
-    val queryBuilder = QueryBuilder(extractableFields, contactIds)
+    val queryAggregator = QueryAggregator(extractableFields)
+    val queryBuilder = QueryBuilder(extractableFields)
     contentResolver.safeQuery(
-      uri = ContactsContract.Data.CONTENT_URI,
-      projection = queryBuilder.buildProjection(),
-      selection = queryBuilder.buildSelection(),
-      selectionArgs = queryBuilder.buildSelectionArgs()
+      uri = ContactsContract.Contacts.CONTENT_URI,
+      projection = queryBuilder.buildContactsProjection(),
+      selection = searchedDisplayName?.let { "${ContactsContract.Contacts.DISPLAY_NAME_PRIMARY} LIKE ?" },
+      selectionArgs = searchedDisplayName?.let { arrayOf("%$it%") },
+      sortOrder = sortOrder?.toColumn()
     ).use { cursor ->
       ensureActive()
-      QueryAggregator.aggregate(cursor, extractableFields)
+      cursor.moveToPosition((offset ?: 0) - 1)
+      cursor
+        .asSequence()
+        .take(limit ?: Int.MAX_VALUE)
+        .forEach { _ -> queryAggregator.aggregateContactsRow(cursor) }
     }
+
+    val contactIds = queryAggregator.getContactIdsFromBuilders()
+    contentResolver.safeQuery(
+      uri = ContactsContract.Data.CONTENT_URI,
+      projection = queryBuilder.buildDataProjection(),
+      selection = queryBuilder.buildSelection(contactIds),
+      selectionArgs = queryBuilder.buildSelectionArgs(contactIds)
+    ).use { cursor ->
+      ensureActive()
+      cursor
+        .asSequence()
+        .forEach { _ -> queryAggregator.aggregateDataRow(cursor) }
+    }
+    return@withContext queryAggregator.buildContacts()
   }
 
   suspend fun <T : Extractable.Data> getFieldFromData(

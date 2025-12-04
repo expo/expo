@@ -12,7 +12,7 @@ class ContactQueryOptions : Record {
 
   @Field val name: String? = null
 
-  @Field val sortOrder: SortOrder? = SortOrder.UserDefault
+  @Field val sortOrder: SortOrder? = null
 }
 
 enum class SortOrder(val value: String) : Enumerable {
@@ -23,8 +23,8 @@ enum class SortOrder(val value: String) : Enumerable {
 
   fun toColumn(): String? =
     when (this) {
-      GivenName -> ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME
-      FamilyName -> ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME
+      GivenName -> ContactsContract.Contacts.SORT_KEY_PRIMARY
+      FamilyName -> ContactsContract.Contacts.SORT_KEY_ALTERNATIVE
       None, UserDefault -> null
     }
 }
