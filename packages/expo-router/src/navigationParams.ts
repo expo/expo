@@ -1,4 +1,3 @@
-import { deepEqual } from './utils/deepEqual';
 
 export const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
 export const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME =
@@ -136,16 +135,5 @@ export function removeInternalExpoRouterParams(
   if (!params) {
     return undefined;
   }
-  return removeParams(params, [...internalExpoRouterParamNames, 'params']);
-}
-
-export function areParamsEqualDisregardingInternalExpoRouterParams(
-  paramsA: Record<string, unknown> | object | undefined,
-  paramsB: Record<string, unknown> | object | undefined
-) {
-  return deepEqual(
-    // using ?? {}, because from our perspective undefined === {}, as both mean no params
-    removeInternalExpoRouterParams(paramsA ?? {}),
-    removeInternalExpoRouterParams(paramsB ?? {})
-  );
+  return removeParams(params, [...internalExpoRouterParamNames]);
 }

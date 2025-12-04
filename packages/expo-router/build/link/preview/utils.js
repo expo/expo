@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTabPathFromRootStateByHref = getTabPathFromRootStateByHref;
 exports.getPreloadedRouteFromRootStateByHref = getPreloadedRouteFromRootStateByHref;
+exports.deepEqual = deepEqual;
 const router_store_1 = require("../../global-state/router-store");
 const routing_1 = require("../../global-state/routing");
 const href_1 = require("../href");
@@ -47,16 +48,31 @@ function getPreloadedRouteFromRootStateByHref(href, rootState) {
         const stackState = navigationState;
         const payload = (0, routing_1.getPayloadFromStateRoute)(actionStateRoute);
         const preloadedRoute = stackState.preloadedRoutes.find((route) => route.name === actionStateRoute.name &&
-            (0, navigationParams_1.areParamsEqualDisregardingInternalExpoRouterParams)(route.params, payload.params));
+            deepEqual((0, navigationParams_1.removeInternalExpoRouterParams)(route.params), (0, navigationParams_1.removeInternalExpoRouterParams)(payload.params)));
         const activeRoute = stackState.routes[stackState.index];
         // When the active route is the same as the preloaded route,
         // then we should not navigate. It aligns with base link behavior.
         if (activeRoute.name === preloadedRoute?.name &&
-            (0, navigationParams_1.areParamsEqualDisregardingInternalExpoRouterParams)(activeRoute.params, payload.params)) {
+            deepEqual(
+            // using ?? {}, because from our perspective undefined === {}, as both mean no params
+            (0, navigationParams_1.removeInternalExpoRouterParams)(activeRoute.params ?? {}), (0, navigationParams_1.removeInternalExpoRouterParams)(payload.params ?? {}))) {
             return undefined;
         }
         return preloadedRoute;
     }
     return undefined;
+}
+function deepEqual(a, b) {
+    if (a === b) {
+        return true;
+    }
+    if (a == null || b == null) {
+        return false;
+    }
+    if (typeof a !== 'object' || typeof b !== 'object') {
+        return false;
+    }
+    const keys = Object.keys(a);
+    return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
 }
 //# sourceMappingURL=utils.js.map
