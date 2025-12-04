@@ -9,7 +9,7 @@ export default function Index() {
   const { face } = useLocalSearchParams();
 
   const colors = useFaceColors();
-  const { color, name } = colors[Number(face)];
+  const { color, name } = colors[Number(face) % colors.length];
 
   if (shouldPerformHeavyComputation) {
     heavyComputation();
