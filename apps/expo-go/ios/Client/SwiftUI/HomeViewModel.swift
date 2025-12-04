@@ -19,21 +19,31 @@ class HomeViewModel: ObservableObject {
   @Published var showingNetworkError = false
   @Published var isNetworkAvailable = true
 
+  @Published var user: UserActor?
+  @Published var selectedAccountId: String?
+  @Published var isAuthenticating = false
+  @Published var isAuthenticated = false
+
+  @Published var developmentServers: [DevelopmentServer] = []
+  @Published var projects: [ExpoProject] = []
+  @Published var snacks: [Snack] = []
+  @Published var isLoadingData = false
+  @Published var dataError: APIError?
+
   private var cancellables = Set<AnyCancellable>()
   private let persistenceManager = PersistenceManager.shared
 
-  var user: UserActor? { authService.user }
-  var selectedAccountId: String? { authService.selectedAccountId }
-  var isAuthenticating: Bool { authService.isAuthenticating }
-  var isAuthenticated: Bool { authService.isAuthenticated }
-  var selectedAccount: Account? { authService.selectedAccount }
-  var isLoggedIn: Bool { authService.isLoggedIn }
+  var selectedAccount: Account? {
+    guard let userData = user,
+          let selectedAccountId = selectedAccountId else {
+      return nil
+    }
+    return userData.accounts.first { $0.id == selectedAccountId }
+  }
 
-  var developmentServers: [DevelopmentServer] { serverService.developmentServers }
-  var projects: [ExpoProject] { dataService.projects }
-  var snacks: [Snack] { dataService.snacks }
-  var isLoadingData: Bool { dataService.isLoadingData }
-  var dataError: APIError? { dataService.dataError }
+  var isLoggedIn: Bool {
+    return isAuthenticated && user != nil
+  }
 
   var shakeToShowDevMenu: Bool { settingsManager.shakeToShowDevMenu }
   var threeFingerLongPressEnabled: Bool { settingsManager.threeFingerLongPressEnabled }
@@ -254,22 +264,40 @@ class HomeViewModel: ObservableObject {
   }
 
   private func setupSubscriptions() {
-    authService.objectWillChange
-      .sink { [weak self] _ in
-        self?.objectWillChange.send()
-      }
+    authService.$user
+      .sink { [weak self] in self?.user = $0 }
       .store(in: &cancellables)
 
-    dataService.objectWillChange
-      .sink { [weak self] _ in
-        self?.objectWillChange.send()
-      }
+    authService.$selectedAccountId
+      .sink { [weak self] in self?.selectedAccountId = $0 }
       .store(in: &cancellables)
 
-    serverService.objectWillChange
-      .sink { [weak self] _ in
-        self?.objectWillChange.send()
-      }
+    authService.$isAuthenticating
+      .sink { [weak self] in self?.isAuthenticating = $0 }
+      .store(in: &cancellables)
+
+    authService.$isAuthenticated
+      .sink { [weak self] in self?.isAuthenticated = $0 }
+      .store(in: &cancellables)
+
+    dataService.$projects
+      .sink { [weak self] in self?.projects = $0 }
+      .store(in: &cancellables)
+
+    dataService.$snacks
+      .sink { [weak self] in self?.snacks = $0 }
+      .store(in: &cancellables)
+
+    dataService.$isLoadingData
+      .sink { [weak self] in self?.isLoadingData = $0 }
+      .store(in: &cancellables)
+
+    dataService.$dataError
+      .sink { [weak self] in self?.dataError = $0 }
+      .store(in: &cancellables)
+
+    serverService.$developmentServers
+      .sink { [weak self] in self?.developmentServers = $0 }
       .store(in: &cancellables)
 
     settingsManager.objectWillChange
@@ -281,10 +309,8 @@ class HomeViewModel: ObservableObject {
     authService.$user
       .combineLatest(authService.$selectedAccountId)
       .sink { [weak self] user, selectedAccountId in
-        guard let self = self,
-              let user = user,
-              let selectedAccountId = selectedAccountId,
-              let account = user.accounts.first(where: { $0.id == selectedAccountId }) else {
+        guard let self, let user, let selectedAccountId,
+          let account = user.accounts.first(where: { $0.id == selectedAccountId }) else {
           return
         }
         self.dataService.startPolling(accountName: account.name)
