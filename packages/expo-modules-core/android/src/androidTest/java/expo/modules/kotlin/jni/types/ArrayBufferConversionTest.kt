@@ -122,17 +122,17 @@ class ArrayBufferConversionTest {
   ) {
     val (original, copied) = evaluateScript(
       """
-                const originalBuffer = new Uint8Array([1, 2]).buffer;
-                const copiedBuffer = expo.modules.TestModule.conversionTest(originalBuffer);
-                [originalBuffer, copiedBuffer]
-              """.trimIndent()
+        const originalBuffer = new Uint8Array([1, 2]).buffer;
+        const copiedBuffer = expo.modules.TestModule.conversionTest(originalBuffer);
+        [originalBuffer, copiedBuffer]
+      """.trimIndent()
     ).getArray()
 
     Truth.assertThat(original.getObject().isArrayBuffer()).isTrue()
     Truth.assertThat(copied.getObject().isArrayBuffer()).isTrue()
 
-    val originalBuffer = original.getObject().getArrayBuffer();
-    val copiedBuffer = copied.getObject().getArrayBuffer();
+    val originalBuffer = original.getObject().getArrayBuffer()
+    val copiedBuffer = copied.getObject().getArrayBuffer()
 
     Truth.assertThat(originalBuffer.readByte(0)).isEqualTo(1.toByte())
     Truth.assertThat(copiedBuffer.readByte(0)).isEqualTo(0x42.toByte())

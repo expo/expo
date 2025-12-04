@@ -86,6 +86,5 @@ class NativeArrayBuffer : Destructible, ArrayBuffer {
       byteBuffer.rewind()
       return NativeArrayBuffer(newBuffer)
     }
-
   }
 }
