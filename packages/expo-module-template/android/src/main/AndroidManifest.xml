@@ -1,2 +1,3 @@
+<% if (!features.android) { %>// __SKIP_FILE__<% } %>
 <manifest>
 </manifest>

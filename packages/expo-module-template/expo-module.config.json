@@ -1,19 +1,22 @@
 {
-  <% 
+  <%
+    // Build list of platform identifiers
     const platforms = [];
     if (features.ios) platforms.push("\"apple\"");
     if (features.android) platforms.push("\"android\"");
     if (features.web) platforms.push("\"web\"");
+
+    // Collect all top-level props and join them to avoid manual comma juggling
+    const props = [];
+    props.push(`"platforms": [${platforms.join(', ')}]`);
+
+    if (features.ios) {
+      props.push(`"apple": {\n    "modules": ["${project.moduleName}"]\n  }`);
+    }
+
+    if (features.android) {
+      props.push(`"android": {\n    "modules": ["${project.package}.${project.moduleName}"]\n  }`);
+    }
   %>
-  "platforms": [<%- platforms.join(', ') %>],
-  <% if (features.ios) { %>
-  "apple": {
-    "modules": ["<%- project.moduleName %>"]
-  }<% if (features.android) { %>,<% } %>
-  <% } %>
-  <% if (features.android) { %>
-  "android": {
-    "modules": ["<%- project.package %>.<%- project.moduleName %>"]
-  }
-  <% } %>
+  <%- props.join(',\n  ') %>
 }
