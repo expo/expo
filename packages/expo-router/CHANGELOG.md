@@ -38,6 +38,7 @@
 - prevent `onPreviewTapped` from firing when `<Link.Preview />` is not configured ([#41160](https://github.com/expo/expo/pull/41160) by [@Ubax](https://github.com/Ubax))
 - fix Sitemap insets on Android ([#41280](https://github.com/expo/expo/pull/41280) by [@Ubax](https://github.com/Ubax))
 - fix preloaded routes navigation ([#41420](https://github.com/expo/expo/pull/41420) by [@Ubax](https://github.com/Ubax))
+- fix disabling animation on appear ([#41419](https://github.com/expo/expo/pull/41419) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
