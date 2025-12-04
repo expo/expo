@@ -2,39 +2,13 @@ package expo.modules.contacts.next.domain.model.website
 
 import android.provider.ContactsContract.CommonDataKinds.Website
 
-sealed class WebsiteLabel {
-  abstract val type: Int
-  open val label: String? = null
-
-  object Homepage : WebsiteLabel() {
-    override val type = Website.TYPE_HOMEPAGE
-  }
-
-  object Blog : WebsiteLabel() {
-    override val type = Website.TYPE_BLOG
-  }
-
-  object Ftp : WebsiteLabel() {
-    override val type = Website.TYPE_FTP
-  }
-
-  object Home : WebsiteLabel() {
-    override val type = Website.TYPE_HOME
-  }
-
-  object Work : WebsiteLabel() {
-    override val type = Website.TYPE_WORK
-  }
-
-  object Other : WebsiteLabel() {
-    override val type = Website.TYPE_OTHER
-  }
-
-  object Profile : WebsiteLabel() {
-    override val type = Website.TYPE_PROFILE
-  }
-
-  data class Custom(override val label: String) : WebsiteLabel() {
-    override val type = Website.TYPE_CUSTOM
-  }
+sealed class WebsiteLabel(val type: Int, val label: String? = null) {
+  object Homepage : WebsiteLabel(Website.TYPE_HOMEPAGE)
+  object Blog : WebsiteLabel(Website.TYPE_BLOG)
+  object Ftp : WebsiteLabel(Website.TYPE_FTP)
+  object Home : WebsiteLabel(Website.TYPE_HOME)
+  object Work : WebsiteLabel(Website.TYPE_WORK)
+  object Other : WebsiteLabel(Website.TYPE_OTHER)
+  object Profile : WebsiteLabel(Website.TYPE_PROFILE)
+  class Custom(label: String) : WebsiteLabel(Website.TYPE_CUSTOM, label)
 }
