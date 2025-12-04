@@ -189,13 +189,12 @@ jobject NativeArrayBufferFrontendConverter::convert(
   const jsi::Value &value
 ) const {
   JSIContext *jsiContext = getJSIContext(rt);
-
-  auto arrayBuffer = std::make_shared<jsi::ArrayBuffer>(value.asObject(rt).getArrayBuffer(rt));
-
+  auto arrayBuffer = value.asObject(rt).getArrayBuffer(rt);
   return NativeArrayBuffer::newInstance(
     jsiContext,
-    std::make_shared<expo::JSArrayBuffer>(rt, arrayBuffer)
-    ).release();
+    rt,
+    arrayBuffer
+  ).release();
 }
 
 bool NativeArrayBufferFrontendConverter::canConvert(
