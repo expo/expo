@@ -35,4 +35,11 @@ class JavaScriptArrayBuffer @DoNotStrip private constructor(@DoNotStrip private 
   override fun deallocate() {
     mHybridData.resetNative()
   }
+
+  /**
+   * Creates a native-owned copy of this ArrayBuffer.
+   */
+  fun copy(): NativeArrayBuffer {
+    return NativeArrayBuffer.copyOf(this)
+  }
 }
