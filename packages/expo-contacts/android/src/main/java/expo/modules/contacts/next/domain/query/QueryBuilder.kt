@@ -6,28 +6,41 @@ import expo.modules.contacts.next.domain.wrappers.ContactId
 import expo.modules.contacts.next.domain.wrappers.DataId
 
 class QueryBuilder(
-  val extractors: Set<ExtractableField<*>>,
-  val contactIds: Collection<ContactId>? = null
+  extractableFields: Collection<ExtractableField<*>>
 ) {
-  private val dataFields = extractors.filterIsInstance<ExtractableField.Data<*>>().toSet()
+  private val dataExtractableFields = extractableFields.filterIsInstance<ExtractableField.Data<*>>()
+  private val contactsExtractableFields = extractableFields.filterIsInstance<ExtractableField.Contacts<*>>()
 
-  fun buildProjection(): Array<String> {
+  fun buildContactsProjection(): Array<String> {
     val requiredColumns = listOf(
-      ContactId.COLUMN_IN_DATA_TABLE,
-      DataId.COLUMN_IN_DATA_TABLE,
-      ContactsContract.Data.MIMETYPE
+      ContactId.COLUMN_IN_CONTACTS_TABLE
     )
-    return extractors
+    return contactsExtractableFields
       .flatMap { it.projection.toList() }
       .toSet()
       .plus(requiredColumns)
       .toTypedArray()
   }
 
-  fun buildSelection(): String? {
+  fun buildDataProjection(): Array<String> {
+    val requiredColumns = listOf(
+      ContactId.COLUMN_IN_DATA_TABLE,
+      DataId.COLUMN_IN_DATA_TABLE,
+      ContactsContract.Data.MIMETYPE
+    )
+    return dataExtractableFields
+      .flatMap { it.projection.toList() }
+      .toSet()
+      .plus(requiredColumns)
+      .toTypedArray()
+  }
+
+  fun buildSelection(
+    contactIds: Collection<ContactId>? = null
+  ): String? {
     val selectionParts = mutableListOf<String>()
 
-    val mimeTypes = dataFields
+    val mimeTypes = dataExtractableFields
       .map { it.mimeType }
       .toSet()
 
@@ -36,7 +49,7 @@ class QueryBuilder(
       selectionParts.add("${ContactsContract.Data.MIMETYPE} IN ($mimePlaceholders)")
     }
 
-    if (!contactIds.isNullOrEmpty()) {
+    if (contactIds != null) {
       val idPlaceholders = contactIds.joinToString(separator = ", ") { "?" }
       selectionParts.add("${ContactId.COLUMN_IN_DATA_TABLE} IN ($idPlaceholders)")
     }
@@ -48,8 +61,12 @@ class QueryBuilder(
     return selectionParts.joinToString(separator = " AND ") { "($it)" }
   }
 
-  fun buildSelectionArgs(): Array<String> {
-    val mimeTypes = dataFields.map { it.mimeType }.toSet()
+  fun buildSelectionArgs(
+    contactIds: Collection<ContactId>? = null
+  ): Array<String> {
+    val mimeTypes = dataExtractableFields
+      .map { it.mimeType }
+      .toSet()
     val mimeArgs = mimeTypes.toTypedArray()
 
     if (contactIds.isNullOrEmpty()) {

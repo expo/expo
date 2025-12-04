@@ -22,41 +22,39 @@ import expo.modules.contacts.next.domain.model.structuredpostal.operations.Exist
 import expo.modules.contacts.next.domain.model.website.operations.ExistingWebsite
 import expo.modules.contacts.next.domain.wrappers.ContactId
 
-class QueryAggregator() {
-  companion object {
-    fun aggregate(
-      cursor: Cursor,
-      extractors: Set<ExtractableField<*>>
-    ): List<ExistingContact> {
-      val contactsExtractors = mutableListOf<ExtractableField.Contacts<*>>()
-      val dataExtractorsByMimeType = mutableMapOf<String, ExtractableField.Data<*>>()
+class QueryAggregator(extractableFields: Collection<ExtractableField<*>>) {
+  private val contactsExtractableFields = extractableFields.filterIsInstance<ExtractableField.Contacts<*>>()
+  private val dataExtractorsByMimeType = extractableFields
+    .filterIsInstance<ExtractableField.Data<*>>()
+    .associateBy { it.mimeType }
+  private val contactBuilders = mutableMapOf<String, ContactModelBuilder>()
 
-      extractors.forEach { field ->
-        when (field) {
-          is ExtractableField.Contacts -> contactsExtractors.add(field)
-          is ExtractableField.Data -> dataExtractorsByMimeType[field.mimeType] = field
-        }
-      }
+  fun getContactIdsFromBuilders() = contactBuilders.keys.map { ContactId(it) }
+  fun buildContacts(): List<ExistingContact> = contactBuilders.values.map { it.build() }
 
-      val contactBuildersByContactId = mutableMapOf<String, ContactModelBuilder>()
-      while (cursor.moveToNext()) {
-        val contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactId.COLUMN_IN_DATA_TABLE))
-        val mime = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE))
-        val builder = contactBuildersByContactId.getOrPut(contactId) {
-          val newBuilder = ContactModelBuilder(ContactId(contactId))
-          contactsExtractors.forEach {
-            newBuilder.addModel(it.extract(cursor))
-          }
-          newBuilder
-        }
-        val model = dataExtractorsByMimeType[mime]?.extract(cursor)
-        model?.let {
-          builder.addModel(model)
-        }
-      }
-      return contactBuildersByContactId.values.map { it.build() }
+  fun aggregateDataRow(cursor: Cursor) {
+    val contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactId.COLUMN_IN_DATA_TABLE))
+    val mime = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE))
+    val builder = contactBuilders.getOrPut(contactId) {
+      ContactModelBuilder(ContactId(contactId))
     }
+    val model = dataExtractorsByMimeType[mime]?.extract(cursor)
+    model?.let {
+      builder.addModel(model)
+    }
+  }
 
+  fun aggregateContactsRow(cursor: Cursor) {
+    val contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactId.COLUMN_IN_CONTACTS_TABLE))
+    val builder = contactBuilders.getOrPut(contactId) {
+      ContactModelBuilder(ContactId(contactId))
+    }
+    contactsExtractableFields.forEach {
+      builder.addModel(it.extract(cursor))
+    }
+  }
+
+  companion object {
     fun <T : Extractable.Data> aggregateOneField(cursor: Cursor, extractor: ExtractableField.Data<T>) = buildList {
       while (cursor.moveToNext()) {
         add(extractor.extract(cursor))
@@ -70,61 +68,60 @@ class QueryAggregator() {
       return extractor.extract(cursor)
     }
   }
+}
+class ContactModelBuilder(val contactId: ContactId) {
+  var displayName: DisplayName? = null
+  var starred: Starred? = null
+  var photoUri: PhotoUri? = null
+  var photoThumbnailUri: PhotoThumbnailUri? = null
+  var structuredName: ExistingStructuredName? = null
+  var organization: ExistingOrganization? = null
+  var note: ExistingNote? = null
+  var photo: ExistingPhoto? = null
+  val emails = mutableListOf<ExistingEmail>()
+  val events = mutableListOf<ExistingEvent>()
+  val nicknames = mutableListOf<ExistingNickname>()
+  val phones = mutableListOf<ExistingPhone>()
+  val relations = mutableListOf<ExistingRelation>()
+  val structuredPostals = mutableListOf<ExistingStructuredPostal>()
+  val websites = mutableListOf<ExistingWebsite>()
 
-  class ContactModelBuilder(val contactId: ContactId) {
-    var displayName: DisplayName? = null
-    var starred: Starred? = null
-    var photoUri: PhotoUri? = null
-    var photoThumbnailUri: PhotoThumbnailUri? = null
-    var structuredName: ExistingStructuredName? = null
-    var organization: ExistingOrganization? = null
-    var note: ExistingNote? = null
-    var photo: ExistingPhoto? = null
-    val emails = mutableListOf<ExistingEmail>()
-    val events = mutableListOf<ExistingEvent>()
-    val nicknames = mutableListOf<ExistingNickname>()
-    val phones = mutableListOf<ExistingPhone>()
-    val relations = mutableListOf<ExistingRelation>()
-    val structuredPostals = mutableListOf<ExistingStructuredPostal>()
-    val websites = mutableListOf<ExistingWebsite>()
-
-    fun addModel(extractable: Extractable?) {
-      when (extractable) {
-        is Starred -> starred = extractable
-        is DisplayName -> displayName = extractable
-        is PhotoUri -> photoUri = extractable
-        is PhotoThumbnailUri -> photoThumbnailUri = extractable
-        is ExistingStructuredName -> structuredName = extractable
-        is ExistingOrganization -> organization = extractable
-        is ExistingNote -> note = extractable
-        is ExistingPhoto -> photo = extractable
-        is ExistingEmail -> emails.add(extractable)
-        is ExistingEvent -> events.add(extractable)
-        is ExistingNickname -> nicknames.add(extractable)
-        is ExistingPhone -> phones.add(extractable)
-        is ExistingRelation -> relations.add(extractable)
-        is ExistingStructuredPostal -> structuredPostals.add(extractable)
-        is ExistingWebsite -> websites.add(extractable)
-      }
+  fun addModel(extractable: Extractable?) {
+    when (extractable) {
+      is Starred -> starred = extractable
+      is DisplayName -> displayName = extractable
+      is PhotoUri -> photoUri = extractable
+      is PhotoThumbnailUri -> photoThumbnailUri = extractable
+      is ExistingStructuredName -> structuredName = extractable
+      is ExistingOrganization -> organization = extractable
+      is ExistingNote -> note = extractable
+      is ExistingPhoto -> photo = extractable
+      is ExistingEmail -> emails.add(extractable)
+      is ExistingEvent -> events.add(extractable)
+      is ExistingNickname -> nicknames.add(extractable)
+      is ExistingPhone -> phones.add(extractable)
+      is ExistingRelation -> relations.add(extractable)
+      is ExistingStructuredPostal -> structuredPostals.add(extractable)
+      is ExistingWebsite -> websites.add(extractable)
     }
-
-    fun build() = ExistingContact(
-      contactId = contactId,
-      displayName = displayName,
-      starred = starred,
-      photoUri = photoUri,
-      photoThumbnailUri = photoThumbnailUri,
-      structuredName = structuredName,
-      organization = organization,
-      note = note,
-      photo = photo,
-      emails = emails,
-      events = events,
-      nicknames = nicknames,
-      phones = phones,
-      relations = relations,
-      structuredPostals = structuredPostals,
-      websites = websites
-    )
   }
+
+  fun build() = ExistingContact(
+    contactId = contactId,
+    displayName = displayName,
+    starred = starred,
+    photoUri = photoUri,
+    photoThumbnailUri = photoThumbnailUri,
+    structuredName = structuredName,
+    organization = organization,
+    note = note,
+    photo = photo,
+    emails = emails,
+    events = events,
+    nicknames = nicknames,
+    phones = phones,
+    relations = relations,
+    structuredPostals = structuredPostals,
+    websites = websites
+  )
 }

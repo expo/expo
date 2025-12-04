@@ -135,9 +135,36 @@ export async function test(t) {
       const newContact = await Contact.create({ givenName: 'FavTest', isFavourite: true });
       contacts.push(newContact);
       const fetchedDetails = await newContact.getDetails([ContactField.IS_FAVOURITE]);
-      console.log(fetchedDetails);
       t.expect(fetchedDetails.isFavourite).toBe(true);
     });
+
+    t.it('.getDetails(ContactField.FULL_NAME) should return full name correctly', async () => {
+      const valueGiven = 'TestFull';
+      const newContact = await Contact.create({
+        givenName: valueGiven,
+        familyName: 'TestFullFamilyName',
+      });
+      contacts.push(newContact);
+      const fetchedDetails = await newContact.getDetails([ContactField.FULL_NAME]);
+      t.expect(fetchedDetails.fullName).toContain(valueGiven);
+    });
+
+    t.it(
+      '.getDetails(ContactField.FULL_NAME, ContactField.PHONES) should return full name correctly if phones are not present',
+      async () => {
+        const valueGiven = 'TestFull';
+        const newContact = await Contact.create({
+          givenName: valueGiven,
+          familyName: 'TestFullFamilyName',
+        });
+        contacts.push(newContact);
+        const fetchedDetails = await newContact.getDetails([
+          ContactField.FULL_NAME,
+          ContactField.PHONES,
+        ]);
+        t.expect(fetchedDetails.fullName).toContain(valueGiven);
+      }
+    );
 
     t.it('.getDetails(ContactField.GIVEN_NAME) should return given name correctly', async () => {
       const value = 'TestGivenName';
@@ -637,6 +664,90 @@ export async function test(t) {
       t.expect(fetchedContact2.relations.length).toBe(1);
       t.expect(fetchedContact2.emails.length).toBe(0);
       t.expect(fetchedContact2.relations[0].name).toBe(contactDetails2.relations[0].name);
+    });
+  });
+
+  t.describe('.getAllDetails()', () => {
+    t.it('.getAllDetails() should fetch specific fields', async () => {
+      const result = await Contact.getAllDetails([
+        ContactField.GIVEN_NAME,
+        ContactField.FAMILY_NAME,
+      ]);
+      t.expect(Array.isArray(result)).toBe(true);
+    });
+
+    t.it('.getAllDetails({name}) should filter contacts', async () => {
+      const tag = `Filter_${Date.now()}`;
+      contacts.push(await Contact.create({ givenName: tag, familyName: 'Test' }));
+
+      const result = await Contact.getAllDetails([ContactField.GIVEN_NAME], { name: tag });
+
+      t.expect(result.length).toBeGreaterThan(0);
+      result.forEach((c) => t.expect(c.givenName).toContain(tag));
+    });
+
+    t.it('.getAllDetails({limit}) should respect limit', async () => {
+      contacts.push(await Contact.create({ givenName: 'L1', familyName: 'T' }));
+      contacts.push(await Contact.create({ givenName: 'L2', familyName: 'T' }));
+
+      const limit = 1;
+      const result = await Contact.getAllDetails([ContactField.FAMILY_NAME], { limit });
+
+      t.expect(result.length).toBeLessThanOrEqual(limit);
+    });
+
+    t.it('.getAllDetails({offset}) should skip contacts', async () => {
+      for (let i = 0; i < 4; i++) {
+        contacts.push(await Contact.create({ givenName: `Off_${i}`, familyName: 'T' }));
+      }
+
+      const base = await Contact.getAllDetails([ContactField.FAMILY_NAME], {
+        limit: 5,
+        sortOrder: ContactsSortOrder.GivenName,
+      });
+
+      if (base.length >= 3) {
+        const offsetResult = await Contact.getAllDetails([ContactField.FAMILY_NAME], {
+          offset: 2,
+          sortOrder: ContactsSortOrder.GivenName,
+        });
+        t.expect(offsetResult[0].familyName).toBe(base[2].familyName);
+      }
+    });
+
+    t.it('.getAllDetails({sortOrder: FamilyName}) should sort ascending', async () => {
+      contacts.push(await Contact.create({ givenName: 'A', familyName: 'A_Fam' }));
+      contacts.push(await Contact.create({ givenName: 'B', familyName: 'Z_Fam' }));
+
+      const result = await Contact.getAllDetails([ContactField.FAMILY_NAME], {
+        limit: 2,
+        sortOrder: ContactsSortOrder.FamilyName,
+      });
+
+      for (let i = 0; i < result.length - 1; i++) {
+        const current = result[i].familyName;
+        const next = result[i + 1].familyName;
+        t.expect(current.toLowerCase().localeCompare(next.toLowerCase())).toBeLessThanOrEqual(0);
+      }
+    });
+
+    t.it('.getAllDetails({sortOrder: GivenName}) should sort ascending', async () => {
+      contacts.push(await Contact.create({ givenName: 'A_Giv', familyName: 'T' }));
+      contacts.push(await Contact.create({ givenName: 'Z_Giv', familyName: 'T' }));
+
+      const result = await Contact.getAllDetails([ContactField.GIVEN_NAME], {
+        limit: 2,
+        sortOrder: ContactsSortOrder.GivenName,
+      });
+
+      for (let i = 0; i < result.length - 1; i++) {
+        const current = result[i].givenName;
+        const next = result[i + 1].givenName;
+        if (!current || !next) {
+          continue;
+        }
+        t.expect(current.toLowerCase().localeCompare(next.toLowerCase())).toBeLessThanOrEqual(0);
+      }
     });
   });
 

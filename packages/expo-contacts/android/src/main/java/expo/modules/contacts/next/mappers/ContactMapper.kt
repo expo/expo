@@ -33,6 +33,7 @@ class ContactMapper(val imageByteArrayConverter: ImageByteArrayConverter) {
   fun toRecord(existingContact: ExistingContact) =
     GetContactDetailsRecord(
       id = existingContact.contactId.value,
+      fullName = existingContact.displayName?.value,
       isFavourite = existingContact.starred?.let { it.value == 1 },
       givenName = existingContact.structuredName?.givenName,
       middleName = existingContact.structuredName?.middleName,
@@ -45,7 +46,10 @@ class ContactMapper(val imageByteArrayConverter: ImageByteArrayConverter) {
       company = existingContact.organization?.company,
       department = existingContact.organization?.department,
       jobTitle = existingContact.organization?.jobTitle,
+      phoneticCompanyName = existingContact.organization?.phoneticName,
+      note = existingContact.note?.note,
       image = existingContact.photoUri?.value,
+      thumbnail = existingContact.photoThumbnailUri?.value,
       emails = existingContact.emails.map(EmailMapper::toDto),
       dates = existingContact.events.map(EventMapper::toDto),
       phones = existingContact.phones.map(PhoneMapper::toDto),
