@@ -43,6 +43,7 @@ const HomeIndex = () => {
         </View>
         <CaseLink href="/protected" text="Protected" />
         <CaseLink href="/test" text="test" />
+        <CaseLink href="/timer" text="Timer with preload" prefetch />
         {Array.from({ length: 20 }).map((_, i) => (
           <CaseLink key={i} href={`/${i}`} text={`Go to ${i}`} />
         ))}
@@ -105,9 +106,9 @@ const HomeIndex = () => {
   );
 };
 
-function CaseLink({ href, text }: { href: Href; text: string }) {
+function CaseLink({ href, text, prefetch }: { href: Href; text: string; prefetch?: boolean }) {
   return (
-    <Link href={href} asChild>
+    <Link href={href} asChild prefetch={prefetch}>
       <Pressable style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
         <Text style={{ color: '#fff' }}>{text}</Text>
       </Pressable>
