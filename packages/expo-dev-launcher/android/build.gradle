@@ -15,6 +15,12 @@ apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 apply plugin: 'com.apollographql.apollo'
 
+def configureInRelease = findProperty("expo.devlauncher.configureInRelease") == "true"
+if (configureInRelease) {
+  println("expo-dev-launcher will be enabled in release")
+}
+
+
 expoModule {
   canBePublished false
 }
@@ -44,6 +50,17 @@ android {
     debugOptimized {
       setRoot 'src/debug'
     }
+
+
+    release {
+      if (configureInRelease) {
+        java.srcDir 'src/debug/java'
+        res.srcDir 'src/debug/res'
+      } else {
+        java.srcDir 'src/disableInRelease/java'
+        res.srcDir 'src/disableInRelease/res'
+      }
+    }
   }
 
   buildFeatures {
@@ -66,6 +83,10 @@ apollo {
     outputDirConnection {
       connectToKotlinSourceSet("debug")
       connectToKotlinSourceSet("debugOptimized")
+
+      if (configureInRelease) {
+        connectToKotlinSourceSet("release")
+      }
     }
   }
 }
@@ -92,6 +113,11 @@ dependencies {
     debugOptimizedImplementation notation
     //noinspection DependencyNotationArgument
     testImplementation notation
+
+    if (configureInRelease) {
+      //noinspection DependencyNotationArgument
+      releaseImplementation notation
+    }
   }
 
   implementation 'com.facebook.react:react-android'
