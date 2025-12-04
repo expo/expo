@@ -1,4 +1,4 @@
-<% if (!features.view) { %>// __SKIP_FILE__<% } %>
+<% if (!features.view || !features.web) { %>// __SKIP_FILE__<% } %>
 import * as React from 'react';
 
 import { <%- project.viewName %>Props } from './<%- project.name %>.types';
