@@ -65,46 +65,55 @@ repositories {
 }
 
 dependencies {
-  implementation project(":expo-manifests")
+  def debugOnly = { notation ->
+    //noinspection DependencyNotationArgument
+    debugImplementation notation
+    //noinspection DependencyNotationArgument
+    debugOptimizedImplementation notation
+  }
 
-  implementation 'androidx.coordinatorlayout:coordinatorlayout:1.3.0'
+  def debugOnlyApi = { notation ->
+    //noinspection DependencyNotationArgument
+    debugApi notation
+    //noinspection DependencyNotationArgument
+    debugOptimizedApi notation
+  }
 
-  implementation project(":expo-dev-menu-interface")
+  debugOnly project(":expo-manifests")
 
-  implementation 'com.squareup.okhttp3:okhttp:4.9.2'
-  implementation 'com.google.code.gson:gson:2.13.2'
+  debugOnly 'androidx.coordinatorlayout:coordinatorlayout:1.3.0'
 
-  implementation 'com.facebook.react:react-android'
-  implementation 'com.facebook.soloader:soloader:0.11.0'
+  debugOnly project(":expo-dev-menu-interface")
 
-  api "androidx.appcompat:appcompat:1.7.1"
-  api "androidx.lifecycle:lifecycle-extensions:2.2.0"
+  debugOnly 'com.squareup.okhttp3:okhttp:4.9.2'
+  debugOnly 'com.google.code.gson:gson:2.13.2'
+
+  debugOnly 'com.facebook.react:react-android'
+  debugOnly 'com.facebook.soloader:soloader:0.11.0'
+
+  debugOnlyApi "androidx.appcompat:appcompat:1.7.1"
+  debugOnlyApi "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
   def fragmentVersion = "1.8.9"
 
-  implementation "androidx.fragment:fragment:$fragmentVersion"
-  implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
+  debugOnly "androidx.fragment:fragment:$fragmentVersion"
+  debugOnly "androidx.fragment:fragment-ktx:$fragmentVersion"
 
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+  debugOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
+  debugOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
 
   def composeVersion = "1.9.0"
 
-  implementation "androidx.compose.foundation:foundation-android:$composeVersion"
-  implementation "androidx.compose.ui:ui:$composeVersion"
-  implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+  // it's needed by the compose compiler plugin, but it won't leak to the app module
+  releaseCompileOnly "androidx.compose.foundation:foundation-android:$composeVersion"
+  debugOnly "androidx.compose.foundation:foundation-android:$composeVersion"
 
-  implementation("com.composables:core:1.46.1")
+  debugOnly "androidx.compose.ui:ui:$composeVersion"
+  debugOnly "androidx.compose.ui:ui-tooling:$composeVersion"
 
-  api 'io.github.lukmccall:radix-ui-colors:1.0.1'
+  debugOnly("com.composables:core:1.46.1")
 
-  // Needed by gesture handler
-  implementation "androidx.core:core-ktx:1.17.0"
+  debugOnlyApi 'io.github.lukmccall:radix-ui-colors:1.0.1'
 
-  api "androidx.browser:browser:1.9.0"
-
-  testImplementation "com.google.truth:truth:1.4.5"
-  testImplementation "org.robolectric:robolectric:4.16"
-  testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.2'
-  testImplementation 'androidx.test:core:1.7.0'
+  debugOnlyApi "androidx.browser:browser:1.9.0"
 }
