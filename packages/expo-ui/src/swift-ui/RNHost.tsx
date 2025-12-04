@@ -19,7 +19,8 @@ export function RNHost(props: RNHostProps) {
   return (
     <RNHostNativeView
       {...props}
-      // matchContents should only be used once on mount
+      // `matchContents` can only be used once on mount
+      // So we force unmount when it changes to prevent unexpected layout
       key={props.matchContents ? 'matchContents' : 'noMatchContents'}
     />
   );
