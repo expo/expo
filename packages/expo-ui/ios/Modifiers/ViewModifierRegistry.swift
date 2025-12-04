@@ -868,15 +868,12 @@ internal struct ListRowSeparator: ViewModifier, Record {
     #if os(tvOS)
       content
     #else
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, *) {
-        if let edges {
-          content.listRowSeparator(visibility.toVisibility(), edges: edges.toVerticalEdges())
-        } else {
-          content.listRowSeparator(visibility.toVisibility())
-        }
+      if let edges {
+        content.listRowSeparator(visibility.toVisibility(), edges: edges.toVerticalEdges())
       } else {
-        content
+        content.listRowSeparator(visibility.toVisibility())
       }
+    }
     #endif
   }
 }
