@@ -28,6 +28,10 @@ export type SubstitutionData = {
   };
   features: {
     view: boolean;
+    platforms: string[];
+    ios: boolean;
+    android: boolean;
+    web: boolean;
   };
   author: string;
   license: string;
@@ -45,6 +49,10 @@ export type LocalSubstitutionData = {
   };
   features: {
     view: boolean;
+    platforms: string[];
+    ios: boolean;
+    android: boolean;
+    web: boolean;
   };
   type: 'local';
 };

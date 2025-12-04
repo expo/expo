@@ -1,9 +1,19 @@
 {
-  "platforms": ["apple", "android", "web"],
+  <% 
+    const platforms = [];
+    if (features.ios) platforms.push("\"apple\"");
+    if (features.android) platforms.push("\"android\"");
+    if (features.web) platforms.push("\"web\"");
+  %>
+  "platforms": [<%- platforms.join(', ') %>],
+  <% if (features.ios) { %>
   "apple": {
     "modules": ["<%- project.moduleName %>"]
-  },
+  }<% if (features.android) { %>,<% } %>
+  <% } %>
+  <% if (features.android) { %>
   "android": {
     "modules": ["<%- project.package %>.<%- project.moduleName %>"]
   }
+  <% } %>
 }

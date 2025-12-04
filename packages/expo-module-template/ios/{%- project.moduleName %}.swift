@@ -1,3 +1,4 @@
+<% if (!features.ios) { %>// __SKIP_FILE__<% } %>
 import ExpoModulesCore
 
 public class <%- project.moduleName %>: Module {

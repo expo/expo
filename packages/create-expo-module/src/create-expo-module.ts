@@ -407,6 +407,11 @@ async function askForSubstitutionDataAsync(
     includeView,
   } = await prompts(promptQueries, { onCancel });
 
+  const selectedPlatforms: string[] = Array.isArray(platform) ? platform : platform ? [platform] : [];
+  const ios = selectedPlatforms.includes('ios');
+  const android = selectedPlatforms.includes('android');
+  const web = selectedPlatforms.includes('web');
+
   if (isLocal) {
     return {
       project: {
@@ -418,6 +423,10 @@ async function askForSubstitutionDataAsync(
       },
       features: {
         view: !!includeView,
+        platforms: selectedPlatforms,
+        ios,
+        android,
+        web,
       },
       type: 'local',
     };
@@ -441,6 +450,10 @@ async function askForSubstitutionDataAsync(
     },
     features: {
       view: !!includeView,
+      platforms: selectedPlatforms,
+      ios,
+      android,
+      web,
     },
     author,
     license: 'MIT',
