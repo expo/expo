@@ -207,10 +207,12 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           }
 
           // START FORK
+          let isPreloadedRoute = false;
           if (isPreviewAction(action) && !route) {
             route = state.preloadedRoutes.find(
               (route) => route.name === action.payload.name && id === route.key
             );
+            isPreloadedRoute = !!route;
           }
           // END FORK
 
@@ -219,6 +221,9 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
+            // START FORK
+            isPreloadedRoute = !!route;
+            // END FORK
           }
 
           let params;
@@ -285,8 +290,9 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 
               // If the routes length is the same as the state routes length, then we are navigating to a new route.
               // Otherwise we are replacing an existing route.
+              // For preloaded route, we want to use the same key, so that preloaded screen is used.
               const key =
-                routes.length === state.routes.length && !isPreviewAction(action)
+                routes.length === state.routes.length && !isPreloadedRoute
                   ? `${action.payload.name}-${nanoid()}`
                   : route.key;
 

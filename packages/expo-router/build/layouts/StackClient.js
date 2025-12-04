@@ -126,12 +126,17 @@ const stackRouterOverride = (original) => {
                         }
                     }
                     // START FORK
+                    let isPreloadedRoute = false;
                     if (isPreviewAction(action) && !route) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === route.key);
+                        isPreloadedRoute = !!route;
                     }
                     // END FORK
                     if (!route) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
+                        // START FORK
+                        isPreloadedRoute = !!route;
+                        // END FORK
                     }
                     let params;
                     if (action.type === 'NAVIGATE' && action.payload.merge && route) {
@@ -194,7 +199,8 @@ const stackRouterOverride = (original) => {
                             }
                             // If the routes length is the same as the state routes length, then we are navigating to a new route.
                             // Otherwise we are replacing an existing route.
-                            const key = routes.length === state.routes.length && !isPreviewAction(action)
+                            // For preloaded route, we want to use the same key, so that preloaded screen is used.
+                            const key = routes.length === state.routes.length && !isPreloadedRoute
                                 ? `${action.payload.name}-${(0, non_secure_1.nanoid)()}`
                                 : route.key;
                             routes.push({
