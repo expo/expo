@@ -23,7 +23,6 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
   external fun isFunction(): Boolean
   external fun isArray(): Boolean
   external fun isTypedArray(): Boolean
-  external fun isArrayBuffer(): Boolean
   external fun isObject(): Boolean
 
   external fun getBool(): Boolean
@@ -32,7 +31,6 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
   external fun getObject(): JavaScriptObject
   external fun getArray(): Array<JavaScriptValue>
   external fun getTypedArray(): JavaScriptTypedArray
-  external fun getArrayBuffer(): JavaScriptArrayBuffer
 
   private external fun <T : Any?> jniGetFunction(): JavaScriptFunction<T>
 

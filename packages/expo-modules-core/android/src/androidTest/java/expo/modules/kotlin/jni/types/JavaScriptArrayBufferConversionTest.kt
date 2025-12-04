@@ -31,9 +31,9 @@ class JavaScriptArrayBufferConversionTest {
     },
     map = { it },
     jsAssertion = { jsValue ->
-      Truth.assertThat(jsValue.isArrayBuffer()).isTrue()
+      Truth.assertThat(jsValue.getObject().isArrayBuffer()).isTrue()
 
-      val arrayBuffer = jsValue.getArrayBuffer()
+      val arrayBuffer = jsValue.getObject().getArrayBuffer()
       Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
     }
   )
@@ -51,8 +51,8 @@ class JavaScriptArrayBufferConversionTest {
     },
     map = { it },
     jsAssertion = { jsValue ->
-      val firstByte = jsValue.getArrayBuffer().readByte(0)
-      Truth.assertThat(firstByte).isEqualTo(0x42.toByte())
+      val arrayBuffer = jsValue.getObject().getArrayBuffer()
+      Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x42.toByte())
     }
   )
 }

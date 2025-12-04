@@ -24,7 +24,6 @@ void JavaScriptValue::registerNatives() {
                    makeNativeMethod("isFunction", JavaScriptValue::isFunction),
                    makeNativeMethod("isArray", JavaScriptValue::isArray),
                    makeNativeMethod("isTypedArray", JavaScriptValue::isTypedArray),
-                   makeNativeMethod("isArrayBuffer", JavaScriptValue::isArrayBuffer),
                    makeNativeMethod("isObject", JavaScriptValue::isObject),
                    makeNativeMethod("getBool", JavaScriptValue::getBool),
                    makeNativeMethod("getDouble", JavaScriptValue::getDouble),
@@ -32,7 +31,6 @@ void JavaScriptValue::registerNatives() {
                    makeNativeMethod("getObject", JavaScriptValue::getObject),
                    makeNativeMethod("getArray", JavaScriptValue::getArray),
                    makeNativeMethod("getTypedArray", JavaScriptValue::getTypedArray),
-                   makeNativeMethod("getArrayBuffer", JavaScriptValue::getArrayBuffer),
                    makeNativeMethod("jniGetFunction", JavaScriptValue::jniGetFunction),
                  });
 }
@@ -143,14 +141,6 @@ bool JavaScriptValue::isTypedArray() {
   return false;
 }
 
-bool JavaScriptValue::isArrayBuffer() {
-  if (jsValue->isObject()) {
-    jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
-    return jsValue->getObject(jsRuntime).isArrayBuffer(jsRuntime);
-  }
-  return false;
-}
-
 bool JavaScriptValue::getBool() {
   return jsValue->getBool();
 }
@@ -224,18 +214,6 @@ jni::local_ref<JavaScriptTypedArray::javaobject> JavaScriptValue::getTypedArray(
     runtimeHolder.getJSIContext(),
     runtimeHolder,
     jsObject
-  );
-}
-
-jni::local_ref<JavaScriptArrayBuffer::javaobject> JavaScriptValue::getArrayBuffer() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  auto jsArrayBuffer = std::make_shared<jsi::ArrayBuffer>(
-    jsValue->getObject(jsRuntime).getArrayBuffer(jsRuntime)
-  );
-  return JavaScriptArrayBuffer::newInstance(
-    runtimeHolder.getJSIContext(),
-    runtimeHolder,
-    jsArrayBuffer
   );
 }
 
