@@ -46,6 +46,8 @@ public:
 
   [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer();
 
+  [[nodiscard]] std::shared_ptr<jsi::ArrayBuffer> jsiArrayBuffer();
+
   template<class T>
   T read(int position) {
     return *reinterpret_cast<T *>(this->data() + position);
