@@ -1,24 +1,10 @@
 package expo.modules.contacts.next.domain.model.event
 
-import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.Event
 
-sealed class EventLabel {
-  abstract val type: Int
-  open val label: String? = null
-
-  object Anniversary : EventLabel() {
-    override val type = ContactsContract.CommonDataKinds.Event.TYPE_ANNIVERSARY
-  }
-
-  object Birthday : EventLabel() {
-    override val type = ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY
-  }
-
-  object Other : EventLabel() {
-    override val type = ContactsContract.CommonDataKinds.Event.TYPE_OTHER
-  }
-
-  data class Custom(override val label: String) : EventLabel() {
-    override val type = ContactsContract.CommonDataKinds.Event.TYPE_CUSTOM
-  }
+sealed class EventLabel(val type: Int, val label: String? = null) {
+  object Anniversary : EventLabel(Event.TYPE_ANNIVERSARY)
+  object Birthday : EventLabel(Event.TYPE_BIRTHDAY)
+  object Other : EventLabel(Event.TYPE_OTHER)
+  class Custom(label: String) : EventLabel(Event.TYPE_CUSTOM, label)
 }
