@@ -48,13 +48,21 @@
     "jest-watch-typeahead": "2.2.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
-    "react-server-dom-webpack": "~19.0.0",
     "react-test-renderer": "19.1.0",
     "server-only": "^0.0.1",
     "stacktrace-js": "^2.0.2"
   },
   "peerDependencies": {
     "expo": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
+  },
+  "peerDependenciesMeta": {
+    "react-server-dom-webpack": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "react-server-dom-webpack": "~19.0.1"
   }
 }
