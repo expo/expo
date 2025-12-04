@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Binder
@@ -59,9 +60,11 @@ class AudioControlsService : MediaSessionService() {
       ACTION_TOGGLE -> withPlayerOnAppThread { player ->
         if (player.isPlaying) player.pause() else player.play()
       }
+
       ACTION_SEEK_FORWARD -> withPlayerOnAppThread { player ->
         player.seekTo(player.currentPosition + SEEK_INTERVAL_MS)
       }
+
       ACTION_SEEK_BACKWARD -> withPlayerOnAppThread { player ->
         player.seekTo(player.currentPosition - SEEK_INTERVAL_MS)
       }
@@ -88,7 +91,13 @@ class AudioControlsService : MediaSessionService() {
     val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
-        notificationManager.createNotificationChannel(NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_LOW))
+        notificationManager.createNotificationChannel(
+          NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_ID,
+            NotificationManager.IMPORTANCE_LOW
+          )
+        )
       }
     }
   }
@@ -166,7 +175,15 @@ class AudioControlsService : MediaSessionService() {
     val notification = buildNotification() ?: return
 
     if (startInForeground) {
-      startForeground(notificationId, notification)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        startForeground(
+          notificationId,
+          notification,
+          ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+        )
+      } else {
+        startForeground(notificationId, notification)
+      }
     } else {
       notificationManager.notify(notificationId, notification)
     }
@@ -177,7 +194,11 @@ class AudioControlsService : MediaSessionService() {
     postOrStartForegroundNotification(startInForegroundRequired)
   }
 
-  private fun setActivePlayerInternal(player: AudioPlayer?, metadata: Metadata? = null, options: AudioLockScreenOptions? = null) {
+  private fun setActivePlayerInternal(
+    player: AudioPlayer?,
+    metadata: Metadata? = null,
+    options: AudioLockScreenOptions? = null
+  ) {
     // Detach listener from previous player, clear active flag and hide
     playbackListener?.let { listener ->
       currentPlayer?.ref?.removeListener(listener)
@@ -293,7 +314,8 @@ class AudioControlsService : MediaSessionService() {
   }
 
   private fun hideNotification() {
-    val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val notificationManager: NotificationManager =
+      getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancel(notificationId)
   }
 
@@ -329,7 +351,12 @@ class AudioControlsService : MediaSessionService() {
 
     fun getInstance(): AudioControlsService? = instance
 
-    fun setActivePlayer(context: Context, player: AudioPlayer?, metadata: Metadata? = null, options: AudioLockScreenOptions? = null) {
+    fun setActivePlayer(
+      context: Context,
+      player: AudioPlayer?,
+      metadata: Metadata? = null,
+      options: AudioLockScreenOptions? = null
+    ) {
       val service = getInstance()
       if (service != null) {
         service.setActivePlayerInternal(player, metadata, options)

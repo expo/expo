@@ -41,6 +41,7 @@
     "exec-async": "^2.2.0"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "^5.0.7"
   },
   "publishConfig": {

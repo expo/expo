@@ -28,4 +28,3 @@ export {
   type StackHeaderTitleProps,
 };
 export { StackScreen, appendScreenStackPropsToOptions, type StackScreenProps } from './StackScreen';
-export { isChildOfType } from './utils';

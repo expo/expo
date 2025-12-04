@@ -3,6 +3,28 @@
 import SwiftUI
 import ExpoModulesCore
 
+internal enum PresentationBackgroundInteractionType: String, Enumerable {
+  case automatic
+  case enabled
+  case disabled
+  case enabledUpThrough
+}
+
+internal enum PresentationDetentPreset: String, Enumerable {
+  case medium
+  case large
+}
+
+internal struct PresentationBackgroundInteractionDetentProps: Record {
+  @Field var preset: PresentationDetentPreset?
+  @Field var fraction: Double?
+}
+
+internal struct PresentationBackgroundInteractionProps: Record {
+  @Field var type: PresentationBackgroundInteractionType = .automatic
+  @Field var detent: PresentationBackgroundInteractionDetentProps?
+}
+
 internal enum PresentationDragIndicatorVisibility: String, Enumerable {
   case automatic
   case visible
@@ -25,6 +47,7 @@ final class BottomSheetProps: UIBaseViewProps {
   // Accepts `medium`, `large`, and `fraction` like 0.4
   @Field var presentationDetents: [Any]?
   @Field var presentationDragIndicator: PresentationDragIndicatorVisibility = .automatic
+  @Field var presentationBackgroundInteraction: PresentationBackgroundInteractionProps?
   var onIsOpenedChange = EventDispatcher()
   @Field var interactiveDismissDisabled: Bool = false
 }
@@ -88,28 +111,74 @@ struct BottomSheetView: ExpoSwiftUI.View {
   }
 
   @available(iOS 16.0, tvOS 16.0, *)
-  private func getDetents() -> Set<PresentationDetent> {
-    var result: Set<PresentationDetent> = []
+  private func detent(from value: Any) -> PresentationDetent? {
+    if let str = value as? String {
+      switch str {
+      case "medium":
+        return .medium
+      case "large":
+        return .large
+      default:
+        return nil
+      }
+    } else if let value = value as? Double {
+      return .fraction(CGFloat(value))
+    }
 
-    if let detentArray = props.presentationDetents {
-      for detent in detentArray {
-        if let str = detent as? String {
-          switch str {
-          case "medium":
-            result.insert(.medium)
-          case "large":
-            result.insert(.large)
-          default:
-            break
-          }
-        } else if let value = detent as? Double {
-          result.insert(.fraction(CGFloat(value)))
-        }
+    return nil
+  }
+
+  @available(iOS 16.0, tvOS 16.0, *)
+  private func detent(
+    from detentProps: PresentationBackgroundInteractionDetentProps?
+  ) -> PresentationDetent? {
+    guard let detentProps else {
+      return nil
+    }
+
+    if let preset = detentProps.preset {
+      switch preset {
+      case .medium:
+        return .medium
+      case .large:
+        return .large
       }
     }
 
-    // fallback to children height if no detents were added
-    return result.isEmpty ? [.height(childrenSize.height)] : result
+    if let fraction = detentProps.fraction {
+      return .fraction(CGFloat(fraction))
+    }
+
+    return nil
+  }
+
+  @available(iOS 16.0, tvOS 16.0, *)
+  private func getDetents() -> Set<PresentationDetent> {
+    guard let detentArray = props.presentationDetents, !detentArray.isEmpty else {
+      return [.height(childrenSize.height)]
+    }
+    let result = detentArray.compactMap { detent(from: $0) }
+    return result.isEmpty ? [.height(childrenSize.height)] : Set(result)
+  }
+
+ @available(iOS 16.4, tvOS 16.4, *)
+  private func getPresentationBackgroundInteraction() -> PresentationBackgroundInteraction {
+    guard let interaction = props.presentationBackgroundInteraction else {
+      return .automatic
+    }
+    switch interaction.type {
+    case .automatic:
+      return .automatic
+    case .enabled:
+      return .enabled
+    case .disabled:
+      return .disabled
+    case .enabledUpThrough:
+      guard let detent = detent(from: interaction.detent) else {
+        return .enabled
+      }
+      return .enabled(upThrough: detent)
+    }
   }
 
   private func handleChildrenSizeChange(_ size: CGSize) {
@@ -118,55 +187,43 @@ struct BottomSheetView: ExpoSwiftUI.View {
     childrenSize = size
   }
 
-  var body: some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      Rectangle().hidden()
-        .sheet(isPresented: $isOpened) {
-          BottomSheetSizeReader(
-            children: Children(),
-            onChildrenSizeChange: handleChildrenSizeChange
-          )
-          .presentationDetents(getDetents())
-          .interactiveDismissDisabled(props.interactiveDismissDisabled)
-          .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
-        }
-        .onChange(of: isOpened, perform: { newIsOpened in
-          if props.isOpened == newIsOpened {
-            return
-          }
-          props.onIsOpenedChange([
-            "isOpened": newIsOpened
-          ])
-        })
-        .onChange(of: props.isOpened) { newValue in
-          isOpened = newValue
-        }
-        .onAppear {
-          isOpened = props.isOpened
-        }
+  @ViewBuilder
+  private var sheetContent: some View {
+    let content = BottomSheetSizeReader(
+      children: Children(),
+      onChildrenSizeChange: handleChildrenSizeChange
+    ).interactiveDismissDisabled(props.interactiveDismissDisabled)
+
+    if #available(iOS 16.4, tvOS 16.4, *) {
+      content
+        .presentationDetents(getDetents())
+        .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
+        .presentationBackgroundInteraction(getPresentationBackgroundInteraction())
+    } else if #available(iOS 16.0, tvOS 16.0, *) {
+      content
+        .presentationDetents(getDetents())
+        .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
     } else {
-      Rectangle().hidden()
-        .sheet(isPresented: $isOpened) {
-          BottomSheetSizeReader(
-            children: Children(),
-            onChildrenSizeChange: handleChildrenSizeChange
-          )
-        }
-        .interactiveDismissDisabled(props.interactiveDismissDisabled)
-        .onChange(of: isOpened, perform: { newIsOpened in
-          if props.isOpened == newIsOpened {
-            return
-          }
-          props.onIsOpenedChange([
-            "isOpened": newIsOpened
-          ])
-        })
-        .onChange(of: props.isOpened) { newValue in
-          isOpened = newValue
-        }
-        .onAppear {
-          isOpened = props.isOpened
-        }
+      content
     }
+  }
+
+  var body: some View {
+    Rectangle().hidden()
+      .sheet(isPresented: $isOpened) { sheetContent }
+      .onChange(of: isOpened, perform: { newIsOpened in
+        if props.isOpened == newIsOpened {
+          return
+        }
+        props.onIsOpenedChange([
+          "isOpened": newIsOpened
+        ])
+      })
+      .onChange(of: props.isOpened) { newValue in
+        isOpened = newValue
+      }
+      .onAppear {
+        isOpened = props.isOpened
+      }
   }
 }

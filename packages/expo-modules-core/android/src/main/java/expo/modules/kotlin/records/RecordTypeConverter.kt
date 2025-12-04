@@ -47,7 +47,7 @@ class RecordTypeConverter<T : Record>(
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): T =
     exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
       val jsMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
-      return convertFromReadableMap(jsMap, context, forceConversion)
+      return@exceptionDecorator convertFromReadableMap(jsMap, context, forceConversion)
     }
 
   override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): T {

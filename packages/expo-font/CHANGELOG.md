@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- add support for line-height ([#41094](https://github.com/expo/expo/pull/41094) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- update ExpoFontUtils mock, to align with new API ([#40964](https://github.com/expo/expo/pull/40964) by [@Ubax](https://github.com/Ubax))
 
 ## 14.0.9 - 2025-10-09
 

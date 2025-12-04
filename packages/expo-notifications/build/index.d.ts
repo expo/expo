@@ -24,7 +24,7 @@ export { default as deleteNotificationCategoryAsync } from './deleteNotification
 export { default as getNextTriggerDateAsync } from './getNextTriggerDateAsync';
 export { default as useLastNotificationResponse } from './useLastNotificationResponse';
 export { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
-export { default as registerTaskAsync } from './registerTaskAsync';
+export { registerTaskAsync, BackgroundNotificationTaskResult } from './registerTaskAsync';
 export { default as unregisterTaskAsync } from './unregisterTaskAsync';
 export * from './TokenEmitter';
 export * from './NotificationsEmitter';

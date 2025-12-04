@@ -11,6 +11,7 @@ import {
 import {
   appendInternalExpoRouterParams,
   getInternalExpoRouterParams,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
 
@@ -45,7 +46,7 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
               );
 
               if (route.params && 'screen' in route.params) {
-                expoParams['__internal_expo_router_no_animation'] = true;
+                expoParams[INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME] = true;
               }
 
               const params = appendInternalExpoRouterParams(route.params, expoParams);

@@ -5,17 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.facebook.react.ReactHost
 import expo.modules.devmenu.DevMenuDevSettings
-import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.DevMenuPreferencesHandle
+import expo.modules.devmenu.DevMenuPreferences
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
 
 class DevMenuViewModel(
-  val reactHostHolder: WeakReference<ReactHost>
+  val reactHostHolder: WeakReference<ReactHost>,
+  val menuPreferences: DevMenuPreferences,
+  val goHomeAction: (() -> Unit)? = null
 ) : ViewModel() {
-  private val menuPreferences = DevMenuPreferencesHandle
   private val reactHost
     get() = reactHostHolder.get()
 
@@ -27,7 +27,9 @@ class DevMenuViewModel(
 
   private val _state = mutableStateOf(
     DevMenuState(
-      devToolsSettings = devSettings
+      devToolsSettings = devSettings,
+      showFab = menuPreferences.showFab,
+      hasGoHomeAction = goHomeAction != null
     )
   )
 
@@ -112,7 +114,7 @@ class DevMenuViewModel(
       DevMenuAction.Close -> closeMenu()
       DevMenuAction.Toggle -> toggleMenu()
       DevMenuAction.Reload -> devToolsDelegate?.reload()
-      DevMenuAction.GoHome -> DevMenuManager.goToHome()
+      DevMenuAction.GoHome -> goHomeAction?.invoke()
       DevMenuAction.TogglePerformanceMonitor -> devToolsDelegate?.togglePerformanceMonitor()
       DevMenuAction.OpenJSDebugger -> devToolsDelegate?.openJSInspector()
       DevMenuAction.OpenReactNativeDevMenu -> reactHost?.devSupportManager?.showDevOptionsDialog()
@@ -124,10 +126,18 @@ class DevMenuViewModel(
     }
   }
 
-  class Factory(private val reactHostHolder: WeakReference<ReactHost>) : ViewModelProvider.Factory {
+  class Factory(
+    private val reactHostHolder: WeakReference<ReactHost>,
+    private val menuPreferences: DevMenuPreferences,
+    private val goHomeAction: (() -> Unit)?
+  ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       @Suppress("UNCHECKED_CAST")
-      return DevMenuViewModel(reactHostHolder) as T
+      return DevMenuViewModel(
+        reactHostHolder,
+        menuPreferences,
+        goHomeAction
+      ) as T
     }
   }
 }

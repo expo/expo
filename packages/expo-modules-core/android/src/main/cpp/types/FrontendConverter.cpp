@@ -30,9 +30,12 @@ jobject IntegerFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .i = static_cast<int>(value.asNumber())
+  };
+
   auto &integerClass = JCacheHolder::get().jInteger;
-  return env->NewObject(integerClass.clazz, integerClass.constructor,
-                        static_cast<int>(value.asNumber()));
+  return env->NewObjectA(integerClass.clazz, integerClass.constructor, &jValue);
 }
 
 bool IntegerFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -44,9 +47,12 @@ jobject LongFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .j = static_cast<jlong>(value.asNumber())
+  };
+
   auto &longClass = JCacheHolder::get().jLong;
-  return env->NewObject(longClass.clazz, longClass.constructor,
-                        static_cast<jlong>(value.asNumber()));
+  return env->NewObjectA(longClass.clazz, longClass.constructor, &jValue);
 }
 
 bool LongFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -58,9 +64,12 @@ jobject FloatFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .f = static_cast<float>(value.asNumber())
+  };
+
   auto &floatClass = JCacheHolder::get().jFloat;
-  return env->NewObject(floatClass.clazz, floatClass.constructor,
-                        static_cast<float>(value.asNumber()));
+  return env->NewObjectA(floatClass.clazz, floatClass.constructor, &jValue);
 }
 
 bool FloatFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -72,8 +81,12 @@ jobject BooleanFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .z = value.asBool()
+  };
+
   auto &booleanClass = JCacheHolder::get().jBoolean;
-  return env->NewObject(booleanClass.clazz, booleanClass.constructor, value.asBool());
+  return env->NewObjectA(booleanClass.clazz, booleanClass.constructor, &jValue);
 }
 
 bool BooleanFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -85,8 +98,12 @@ jobject DoubleFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .d = value.asNumber()
+  };
+
   auto &doubleClass = JCacheHolder::get().jDouble;
-  return env->NewObject(doubleClass.clazz, doubleClass.constructor, value.asNumber());
+  return env->NewObjectA(doubleClass.clazz, doubleClass.constructor, &jValue);
 }
 
 bool DoubleFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {

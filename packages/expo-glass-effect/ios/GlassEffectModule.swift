@@ -20,6 +20,19 @@ public final class GlassEffectModule: Module {
       return false
     }
 
+    Constant("isGlassEffectAPIAvailable") {
+      #if compiler(>=6.2)
+      if #available(iOS 26.0, *) {
+        guard let glassEffectClass = NSClassFromString("UIGlassEffect") as? NSObject.Type else {
+          return false
+        }
+        let respondsToSelector = glassEffectClass.responds(to: Selector(("effectWithStyle:")))
+        return respondsToSelector
+      }
+      #endif
+      return false
+    }
+
     View(GlassView.self) {
       Prop("glassEffectStyle", .regular) { (view, style: GlassStyle) in
         view.setGlassStyle(style)

@@ -1,0 +1,18 @@
+extends: substitution
+message: "Use American English spelling '%s' instead of British English '%s'."
+level: warning
+ignorecase: true
+action:
+  name: replace
+swap:
+  '\b(?:amongst)\b': among
+  '\b(?:analyse)\b': analyze
+  '\b(?:authorise)\b': authorize
+  '\b(?:behaviour)\b': behavior
+  '\b(?:customise)\b': customize
+  '\b(?:emphasise)\b': emphasize
+  '\b(?:grey)\b': gray
+  '\b(?:licence)\b': license
+  '\b(?:organise)\b': organize
+  '\b(?:realise)\b': realize
+  '\b(?:towards)\b': toward

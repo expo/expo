@@ -1,6 +1,13 @@
 'use client';
 
-import React, { isValidElement, use, type PropsWithChildren, type ReactElement } from 'react';
+import { nanoid } from 'nanoid/non-secure';
+import React, {
+  isValidElement,
+  use,
+  useMemo,
+  type PropsWithChildren,
+  type ReactElement,
+} from 'react';
 import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -56,6 +63,7 @@ export interface LinkMenuActionProps {
  * @platform ios
  */
 export function LinkMenuAction(props: LinkMenuActionProps) {
+  const identifier = useMemo(() => nanoid(), []);
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
@@ -65,6 +73,7 @@ export function LinkMenuAction(props: LinkMenuActionProps) {
       {...rest}
       onSelected={onPress}
       keepPresented={unstable_keepPresented}
+      identifier={identifier}
     />
   );
 }
@@ -84,12 +93,20 @@ export interface LinkMenuProps {
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
    */
+  palette?: boolean;
+  /**
+   * @deprecated Use `palette` prop instead.
+   */
   displayAsPalette?: boolean;
   /**
    * If `true`, the menu will be displayed inline.
    * This means that the menu will not be collapsed
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
+   */
+  inline?: boolean;
+  /**
+   * @deprecated Use `inline` prop instead.
    */
   displayInline?: boolean;
   /**
@@ -120,18 +137,24 @@ export interface LinkMenuProps {
  * @platform ios
  */
 export const LinkMenu: React.FC<LinkMenuProps> = (props) => {
+  const identifier = useMemo(() => nanoid(), []);
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
   const children = React.Children.toArray(props.children).filter(
     (child) => isValidElement(child) && (child.type === LinkMenuAction || child.type === LinkMenu)
   );
+  const displayAsPalette = props.palette ?? props.displayAsPalette;
+  const displayInline = props.inline ?? props.displayInline;
   return (
     <NativeLinkPreviewAction
       {...props}
+      displayAsPalette={displayAsPalette}
+      displayInline={displayInline}
       title={props.title ?? ''}
       onSelected={() => {}}
       children={children}
+      identifier={identifier}
     />
   );
 };

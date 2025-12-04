@@ -10,7 +10,7 @@ import ReactAppDependencyProvider
  Keep functions and markers in sync with https://developer.apple.com/documentation/uikit/uiapplicationdelegate
  */
 @objc(EXExpoAppDelegate)
-open class ExpoAppDelegate: NSObject, UIApplicationDelegate {
+open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Initializing the App
 #if os(iOS) || os(tvOS)
 

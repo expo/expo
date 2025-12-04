@@ -1,5 +1,13 @@
 import { Button, Host, HStack, Image, Picker, Popover, Text, VStack } from '@expo/ui/swift-ui';
-import { background, clipShape, frame, onTapGesture, padding } from '@expo/ui/swift-ui/modifiers';
+import {
+  background,
+  clipShape,
+  frame,
+  onTapGesture,
+  padding,
+  pickerStyle,
+  tag,
+} from '@expo/ui/swift-ui/modifiers';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Image as ExpoImage } from 'expo-image';
 import React from 'react';
@@ -23,22 +31,30 @@ export default function PopoverScreen() {
         <VStack spacing={20}>
           <Text>Attachment Anchor</Text>
           <Picker
-            options={[...attachmentAnchorOptions]}
-            selectedIndex={attachmentAnchor}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setAttachmentAnchor(index);
-            }}
-            variant="segmented"
-          />
+            modifiers={[pickerStyle('segmented')]}
+            selection={attachmentAnchor}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setAttachmentAnchor(selection as number);
+            }}>
+            {attachmentAnchorOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
           <Text>Arrow edge</Text>
           <Picker
-            options={[...arrowEdgeOptions]}
-            selectedIndex={arrowEdge}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setArrowEdge(index);
-            }}
-            variant="segmented"
-          />
+            modifiers={[pickerStyle('segmented')]}
+            selection={arrowEdge}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setArrowEdge(selection as number);
+            }}>
+            {arrowEdgeOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
         </VStack>
 
         <VStack alignment="center">

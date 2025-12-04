@@ -12,5 +12,6 @@ export function getConnectionInfo(): Omit<ConnectionInfo, 'pluginName'> {
     protocolVersion: PROTOCOL_VERSION,
     sender: 'browser',
     devServer: devServerQuery || host,
+    useWss: window.location.protocol === 'https:',
   };
 }

@@ -125,13 +125,15 @@ The following walkthrough describes the steps required to modify an Expo project
 
 In **package.json**, modify the `react-native` dependency to use the TV repo, and exclude this dependency from [`npx expo install` version validation](/more/expo-cli/#configuring-dependency-validation).
 
+> **Warning** The `react-native-tvos` version should match the Expo SDK you are using. For example, Expo SDK 54 uses React Native 0.81, so you should use `react-native-tvos@0.81-stable` (the latest 0.81 version) as shown below. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use for older SDKs.
+
 {/* prettier-ignore */}
 ```json package.json
 {
   /* @hide ... */ /* @end */
   "dependencies": {
     /* @hide ... */ /* @end */
-    "react-native": "npm:react-native-tvos",
+    "react-native": "npm:react-native-tvos@0.81-stable",
     /* @hide ... */ /* @end */
   },
   "expo": {

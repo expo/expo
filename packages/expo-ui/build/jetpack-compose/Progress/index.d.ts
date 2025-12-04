@@ -1,4 +1,4 @@
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue } from 'react-native';
 import { ExpoModifier } from '../../types';
 export type ProgressElementColors = {
     /**
@@ -9,10 +9,6 @@ export type ProgressElementColors = {
     trackColor?: ColorValue;
 };
 export type CircularProgressProps = {
-    /**
-     * Custom styles for the progress component.
-     */
-    style?: StyleProp<ViewStyle>;
     /**
      * The current progress value of the slider. This is a number between `0` and `1`.
      */
@@ -32,10 +28,6 @@ export type CircularProgressProps = {
     modifiers?: ExpoModifier[];
 };
 export type LinearProgressProps = {
-    /**
-     * Custom styles for the progress component.
-     */
-    style?: StyleProp<ViewStyle>;
     /**
      * The current progress value of the slider. This is a number between `0` and `1`.
      */
@@ -62,4 +54,12 @@ export declare function CircularProgress(props: CircularProgressProps): import("
  * Renders a `LinearProgress` component.
  */
 export declare function LinearProgress(props: LinearProgressProps): import("react").JSX.Element;
+/**
+ * Renders a `CircularWavyProgress` component with wavy animation.
+ */
+export declare function CircularWavyProgress(props: CircularProgressProps): import("react").JSX.Element;
+/**
+ * Renders a `LinearWavyProgress` component with wavy animation.
+ */
+export declare function LinearWavyProgress(props: LinearProgressProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

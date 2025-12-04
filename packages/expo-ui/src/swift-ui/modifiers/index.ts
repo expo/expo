@@ -444,6 +444,14 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Sets the text field style for text field views.
+ * @param style - The text field style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textfieldstyle(_:)).
+ */
+export const textFieldStyle = (style: 'automatic' | 'plain' | 'roundedBorder') =>
+  createModifier('textFieldStyle', { style });
+
+/**
  * Controls how the keyboard is dismissed when scrolling.
  * @param mode - The keyboard dismiss mode.
  * @platform ios 16.0+
@@ -453,6 +461,16 @@ export const buttonStyle = (
 export const scrollDismissesKeyboard = (
   mode: 'automatic' | 'never' | 'interactively' | 'immediately'
 ) => createModifier('scrollDismissesKeyboard', { mode });
+
+/**
+ * Controls the dismissal behavior of menu actions.
+ * @param behavior - The menu action dismiss behavior.
+ * @platform ios 16.4+
+ * @platform tvos 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menuactiondismissbehavior(_:)).
+ */
+export const menuActionDismissBehavior = (behavior: 'automatic' | 'disabled' | 'enabled') =>
+  createModifier('menuActionDismissBehavior', { behavior });
 
 /**
  * Sets accessibility label for the view.
@@ -778,6 +796,24 @@ export const gridCellAnchor = (
       }
     | { type: 'custom'; points: { x: number; y: number } }
 ) => createModifier('gridCellAnchor', anchor);
+/**
+ * Specifies the label to display in the keyboard's return key. For example, `'done'`.
+ * @param submitLabel - The label to display in the keyboard's return key.
+ * @returns A view that uses the specified submit label.
+ * @platform iOS 15+
+ *
+ * @example
+ * ```tsx
+ * <TextField
+ *   modifiers={[
+ *     submitLabel('search'),
+ *   ]}
+ * />
+ * ```
+ */
+export const submitLabel = (
+  submitLabel: 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send'
+) => createModifier('submitLabel', { submitLabel });
 
 // =============================================================================
 // Type Definitions
@@ -821,6 +857,8 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof textFieldStyle>
+  | ReturnType<typeof menuActionDismissBehavior>
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
@@ -901,3 +939,5 @@ export * from './containerShape';
 export * from './shapes/index';
 export * from './background';
 export type * from './types';
+export * from './tag';
+export * from './pickerStyle';

@@ -28,6 +28,14 @@ class Asset: SharedObject {
     return phAsset.pixelWidth
   }
 
+  func getShape() async throws -> Shape? {
+    let phAsset = try await requirePHAsset()
+    guard phAsset.pixelWidth > 0 && phAsset.pixelHeight > 0 else {
+      return nil
+    }
+    return Shape(width: phAsset.pixelWidth, height: phAsset.pixelHeight)
+  }
+
   func getDuration() async throws -> Int? {
     let phAsset = try await requirePHAsset()
     return phAsset.duration > 0 ? Int(phAsset.duration * 1000) : nil
@@ -88,6 +96,20 @@ class Asset: SharedObject {
   func getUri() async throws -> String {
     let phAsset = try await requirePHAsset()
     return try await UriExtractor.extract(from: phAsset).absoluteString
+  }
+
+  func getInfo() async throws -> AssetInfo {
+    return await AssetInfo(
+      id: id,
+      creationTime: try getCreationTime(),
+      duration: try getDuration(),
+      uri: try getUri(),
+      filename: try getFilename(),
+      height: try getHeight(),
+      width: try getWidth(),
+      mediaType: try getMediaType(),
+      modificationTime: try getModificationTime()
+    )
   }
 
   func delete() async throws {

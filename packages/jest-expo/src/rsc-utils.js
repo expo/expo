@@ -1,6 +1,8 @@
 import path from 'path';
 import { renderToReadableStream } from 'react-server-dom-webpack/server';
 
+import { toPosixPath } from './filePath';
+
 export const streamToString = async (stream) => {
   const decoder = new TextDecoder();
   const reader = stream.getReader();
@@ -48,9 +50,11 @@ export function renderJsxToReadableStream(jsx, { onError } = {}) {
         return {
           // HACK: To keep tests somewhat agnostic to the runtime environment, we'll make them relative to
           // the current working directory. It'd be better to have a stable value to test against though.
-          id: path.relative(
-            process.cwd(),
-            file.startsWith('file://') ? decodeURI(file.slice(7)) : file
+          id: toPosixPath(
+            path.relative(
+              process.cwd(),
+              file.startsWith('file://') ? decodeURI(file.slice(7)) : file
+            )
           ),
           chunks: [],
           name,

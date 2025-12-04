@@ -150,6 +150,8 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Playback: '/versions/latest/sdk/av/#playback',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  PromiseLike:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   PromptMethod: '/versions/latest/sdk/auth-session/#promptmethodoptions',
   PureComponent: 'https://react.dev/reference/react/PureComponent',
   PushTokenListener: '/versions/latest/sdk/notifications/#pushtokenlistenertoken',

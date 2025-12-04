@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isChildOfType = exports.appendScreenStackPropsToOptions = exports.StackScreen = exports.StackHeaderTitle = exports.StackHeaderSearchBar = exports.StackHeaderRight = exports.StackHeaderLeft = exports.StackHeaderComponent = exports.StackHeaderBackButton = exports.StackHeader = void 0;
+exports.appendScreenStackPropsToOptions = exports.StackScreen = exports.StackHeaderTitle = exports.StackHeaderSearchBar = exports.StackHeaderRight = exports.StackHeaderLeft = exports.StackHeaderComponent = exports.StackHeaderBackButton = exports.StackHeader = void 0;
 const StackHeaderBackButton_1 = require("./StackHeaderBackButton");
 Object.defineProperty(exports, "StackHeaderBackButton", { enumerable: true, get: function () { return StackHeaderBackButton_1.StackHeaderBackButton; } });
 const StackHeaderComponent_1 = require("./StackHeaderComponent");
@@ -23,6 +23,4 @@ exports.StackHeader = Object.assign(StackHeaderComponent_1.StackHeaderComponent,
 var StackScreen_1 = require("./StackScreen");
 Object.defineProperty(exports, "StackScreen", { enumerable: true, get: function () { return StackScreen_1.StackScreen; } });
 Object.defineProperty(exports, "appendScreenStackPropsToOptions", { enumerable: true, get: function () { return StackScreen_1.appendScreenStackPropsToOptions; } });
-var utils_1 = require("./utils");
-Object.defineProperty(exports, "isChildOfType", { enumerable: true, get: function () { return utils_1.isChildOfType; } });
 //# sourceMappingURL=index.js.map

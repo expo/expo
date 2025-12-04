@@ -25,6 +25,7 @@ fun DevMenuScreen(
   customItems: List<DevMenuState.CustomItem> = emptyList(),
   shouldShowOnboarding: Boolean = false,
   showFab: Boolean = false,
+  hasGoHomeAction: Boolean = false,
   onAction: DevMenuActionHandler = {}
 ) {
   if (shouldShowOnboarding) {
@@ -52,12 +53,14 @@ fun DevMenuScreen(
         onClick = { onAction(DevMenuAction.Reload) }
       )
 
-      QuickAction(
-        label = "Go home",
-        icon = { MenuIcons.Home(size = 20.dp, tint = NewAppTheme.colors.icon.default) },
-        modifier = Modifier.weight(1f),
-        onClick = { onAction(DevMenuAction.GoHome) }
-      )
+      if (hasGoHomeAction) {
+        QuickAction(
+          label = "Go home",
+          icon = { MenuIcons.Home(size = 20.dp, tint = NewAppTheme.colors.icon.default) },
+          modifier = Modifier.weight(1f),
+          onClick = { onAction(DevMenuAction.GoHome) }
+        )
+      }
     }
 
     Spacer(NewAppTheme.spacing.`5`)
@@ -83,6 +86,7 @@ fun DevMenuScreen(
 
     SystemSection(
       appInfo.appVersion,
+      appInfo.sdkVersion,
       appInfo.runtimeVersion,
       fullDataProvider = { appInfo.toJson() }
     )

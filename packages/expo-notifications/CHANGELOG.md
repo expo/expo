@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- expose `BackgroundNotificationTaskResult` ([#41291](https://github.com/expo/expo/pull/41291) by [@vonovak](https://github.com/vonovak))
 - throw instead of logging when attempting to use push notifications on Android with Expo Go ([#39459](https://github.com/expo/expo/pull/39459) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
@@ -12,8 +13,13 @@
 
 ### 💡 Others
 
+- remove token listener on module destroy ([#41275](https://github.com/expo/expo/pull/41275) by [@vonovak](https://github.com/vonovak))
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 - [ios] migrate notification serializer to swift ([#38633](https://github.com/expo/expo/pull/38633) by [@vonovak](https://github.com/vonovak))
+
+## 0.32.13 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
 
 ## 0.32.12 - 2025-10-01
 

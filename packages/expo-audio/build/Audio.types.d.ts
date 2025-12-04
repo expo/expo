@@ -305,7 +305,7 @@ export type RecordingOptions = {
      * Recording options for the Web platform.
      * @platform web
      */
-    web?: RecordingOptionsWeb;
+    web: RecordingOptionsWeb;
 };
 /**
  * Recording options for the web.
@@ -397,11 +397,11 @@ export type RecordingOptionsAndroid = {
      */
     sampleRate?: number;
     /**
-     * The desired file format. See the [`AndroidOutputFormat`](#androidoutputformat) enum for all valid values.
+     * The desired file format. See the [`AndroidOutputFormat`](#androidoutputformat) type for all valid values.
      */
     outputFormat: AndroidOutputFormat;
     /**
-     * The desired audio encoder. See the [`AndroidAudioEncoder`](#androidaudioencoder) enum for all valid values.
+     * The desired audio encoder. See the [`AndroidAudioEncoder`](#androidaudioencoder) type for all valid values.
      */
     audioEncoder: AndroidAudioEncoder;
     /**
@@ -413,7 +413,7 @@ export type RecordingOptionsAndroid = {
      */
     maxFileSize?: number;
     /**
-     * The desired audio Source. See the [`AndroidAudioSource`](#androidaudiosource) enum for all valid values.
+     * The desired audio Source. See the [`RecordingSource`](#recordingsource) type for all valid values.
      */
     audioSource?: RecordingSource;
 };
@@ -453,6 +453,14 @@ export type AudioMode = {
      * @platform android
      */
     shouldRouteThroughEarpiece: boolean;
+    /**
+     * Whether audio recording should continue when the app moves to the background.
+     *
+     * @default false
+     * @platform ios
+     * @platform android
+     */
+    allowsBackgroundRecording?: boolean;
 };
 /**
  * Audio interruption behavior modes for iOS.

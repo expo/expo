@@ -399,7 +399,7 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     "onFullscreenExit",
     "onFirstFrameRender"
   )
-  Prop("player") { view: T, player: VideoPlayer ->
+  Prop("player") { view: T, player: VideoPlayer? ->
     view.videoPlayer = player
   }
   Prop("nativeControls") { view: T, useNativeControls: Boolean ->

@@ -1,6 +1,6 @@
 import { useTheme } from '@react-navigation/native';
-import { Link } from 'expo-router';
-import { use } from 'react';
+import { Link, useNavigation } from 'expo-router';
+import { use, useEffect } from 'react';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 
 import { Post } from '../components/Post';
@@ -12,10 +12,16 @@ const availableTabs = ['tab-1', 'tab-2', 'tab-3', 'tab-4', 'tab-5', 'tab-6'];
 export default function Index() {
   const { colors } = useTheme();
   const { activeTabs, setActiveTabs } = use(ActiveTabsContext);
+  const navigation = useNavigation();
+  useEffect(() => {
+    // @ts-expect-error: tabPress is only available on tab navigators. This is react-navigation types issue.
+    return navigation.addListener('tabPress', () => {
+      console.log('Tab Pressed - index tab');
+    });
+  }, [navigation]);
   return (
     <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={{ flex: 1 }}
       contentContainerStyle={{
         justifyContent: 'center',
         // alignItems: 'center',

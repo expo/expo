@@ -40,6 +40,8 @@
     "fetch.d.ts",
     "fingerprint.js",
     "fingerprint.d.ts",
+    "local-build-cache-provider.js",
+    "local-build-cache-provider.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
     "tsconfig.base.json",
@@ -80,6 +82,7 @@
     "@expo/config-plugins": "~54.0.1",
     "@expo/devtools": "0.1.7",
     "@expo/fingerprint": "0.15.1",
+    "@expo/local-build-cache-provider": "0.0.1",
     "@expo/metro": "~54.1.0",
     "@expo/metro-config": "54.0.3",
     "@expo/vector-icons": "^15.0.2",
@@ -98,13 +101,15 @@
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
+    "@expo/dom-webview": "0.2.7",
+    "@expo/metro-runtime": "^6.1.2",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "@types/react-test-renderer": "~19.1.0",
     "expo-module-scripts": "^5.0.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-native": "0.83.0-nightly-20251104-502efe1cc",
+    "react-native": "0.83.0-rc.3",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {

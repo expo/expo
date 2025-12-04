@@ -61,7 +61,7 @@ export type PackageDependency = {
 /**
  * Union with possible platform names.
  */
-type Platform = 'ios' | 'android' | 'web';
+type Platform = 'ios' | 'android' | 'web' | 'apple';
 
 /**
  * Type representing `expo-modules.config.json` structure.
@@ -221,7 +221,12 @@ export class Package {
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
     if (this.expoModuleConfig && !fs.existsSync(path.join(this.path, 'react-native.config.js'))) {
       // check platform support from expo autolinking but not rn-cli linking which is not platform aware
-      return this.expoModuleConfig.platforms?.includes(platform) ?? false;
+      const platforms = this.expoModuleConfig.platforms ?? [];
+      if (platform === 'ios') {
+        return platforms.includes(platform) || platforms.includes('apple');
+      } else {
+        return platforms.includes(platform);
+      }
     } else if (platform === 'android') {
       return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
     } else if (platform === 'ios') {

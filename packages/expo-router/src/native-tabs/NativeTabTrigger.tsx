@@ -2,12 +2,10 @@
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { isValidElement, type ReactElement, type ReactNode } from 'react';
-import { type ImageSourcePropType } from 'react-native';
+import { StyleSheet, type ImageSourcePropType } from 'react-native';
 
 import type { NativeTabOptions, NativeTabTriggerProps } from './types';
-import { filterAllowedChildrenElements, isChildOfType } from './utils';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
-import type { VectorIconProps } from '../primitives';
 import { useSafeLayoutEffect } from '../views/useSafeLayoutEffect';
 import {
   NativeTabsTriggerIcon,
@@ -17,8 +15,11 @@ import {
   type NativeTabsTriggerBadgeProps,
   type NativeTabsTriggerLabelProps,
   type NativeTabsTriggerIconProps,
-  type SourceIconCombination,
+  type SrcIcon,
 } from './common/elements';
+import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
+import { convertComponentSrcToImageSource } from './utils/icon';
+import { convertMaterialIconNameToImageSource } from './utils/materialIconConverter';
 
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -99,6 +100,8 @@ export function convertTabPropsToOptions(
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
+    disableAutomaticContentInsets,
+    contentStyle,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
@@ -114,8 +117,10 @@ export function convertTabPropsToOptions(
             scrollToTop: !disableScrollToTop,
           },
         },
+        contentStyle,
         role,
         nativeProps: unstable_nativeProps,
+        disableAutomaticContentInsets,
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     NativeTabsTriggerBadge,
@@ -155,17 +160,13 @@ function appendLabelOptions(options: NativeTabOptions, props: NativeTabsTriggerL
   } else {
     options.title = props.children;
     if (props.selectedStyle) {
-      options.selectedLabelStyle = props.selectedStyle;
+      options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle);
     }
   }
 }
 
 export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
-  if ('src' in props && props.src) {
-    const icon = convertIconSrcToIconOption(props);
-    options.icon = icon?.icon;
-    options.selectedIcon = icon?.selectedIcon;
-  } else if ('sf' in props && process.env.EXPO_OS === 'ios') {
+  if ('sf' in props && props.sf && process.env.EXPO_OS === 'ios') {
     if (typeof props.sf === 'string') {
       options.icon = props.sf
         ? {
@@ -185,13 +186,27 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
           }
         : undefined;
     }
-  } else if ('androidSrc' in props && process.env.EXPO_OS === 'android') {
-    const icon = convertIconSrcToIconOption({ src: props.androidSrc });
-    options.icon = icon?.icon;
-    options.selectedIcon = icon?.selectedIcon;
-  } else if ('drawable' in props && process.env.EXPO_OS === 'android') {
+  } else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
+    if ('md' in props) {
+      console.warn(
+        'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+      );
+    }
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
+  } else if ('md' in props && props.md && process.env.EXPO_OS === 'android') {
+    if (process.env.NODE_ENV !== 'production') {
+      if ('drawable' in props) {
+        console.warn(
+          'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+        );
+      }
+    }
+    options.icon = convertMaterialIconNameToImageSource(props.md);
+  } else if ('src' in props && props.src) {
+    const icon = convertIconSrcToIconOption(props);
+    options.icon = icon?.icon;
+    options.selectedIcon = icon?.selectedIcon;
   }
   if (props.selectedColor) {
     options.selectedIconColor = props.selectedColor;
@@ -199,7 +214,7 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
 }
 
 function convertIconSrcToIconOption(
-  icon: SourceIconCombination | undefined
+  icon: SrcIcon | undefined
 ): Pick<NativeTabOptions, 'icon' | 'selectedIcon'> | undefined {
   if (icon && icon.src) {
     const { defaultIcon, selected } =
@@ -219,12 +234,7 @@ function convertIconSrcToIconOption(
 function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
   if (src) {
     if (isValidElement(src)) {
-      if (src.type === NativeTabsTriggerVectorIcon) {
-        const props = src.props as VectorIconProps<string>;
-        return { src: props.family.getImageSource(props.name, 24, 'white') };
-      } else {
-        console.warn('Only VectorIcon is supported as a React element in Icon.src');
-      }
+      return convertComponentSrcToImageSource(src);
     } else {
       return { src };
     }

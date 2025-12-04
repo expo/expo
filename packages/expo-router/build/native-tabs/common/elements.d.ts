@@ -1,4 +1,5 @@
-import type { ColorValue, ImageSourcePropType } from 'react-native';
+import type { AndroidSymbol } from 'expo-symbols';
+import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { VectorIcon } from '../../primitives';
 import type { NativeTabsLabelStyle } from '../types';
@@ -7,7 +8,7 @@ export interface NativeTabsTriggerLabelProps {
      * The text to display as the label for the tab.
      */
     children?: string;
-    selectedStyle?: NativeTabsLabelStyle;
+    selectedStyle?: StyleProp<NativeTabsLabelStyle>;
     /**
      * If true, the label will be hidden.
      * @default false
@@ -15,9 +16,13 @@ export interface NativeTabsTriggerLabelProps {
     hidden?: boolean;
 }
 export declare const NativeTabsTriggerLabel: React.FC<NativeTabsTriggerLabelProps>;
-export interface SourceIconCombination {
+export interface SrcIcon {
     /**
      * The image source to use as an icon.
+     *
+     * When `sf` prop is used it will override this prop on iOS.
+     *
+     * When `drawable` or `material` prop is used it will override this prop on Android.
      *
      * The value can be provided in two ways:
      * - As an image source
@@ -40,11 +45,8 @@ export interface SourceIconCombination {
         default?: ImageSourcePropType | React.ReactElement;
         selected: ImageSourcePropType | React.ReactElement;
     };
-    drawable?: never;
-    sf?: never;
-    androidSrc?: never;
 }
-export interface NamedIconCombination {
+export interface SFSymbolIcon {
     /**
      * The name of the SF Symbol to use as an icon.
      *
@@ -68,75 +70,31 @@ export interface NamedIconCombination {
         default?: SFSymbol;
         selected: SFSymbol;
     };
+}
+export interface DrawableIcon {
     /**
      * The name of the drawable resource to use as an icon.
      * @platform android
      */
     drawable?: string;
-    src?: never;
-    androidSrc?: never;
 }
-export interface CrossPlatformIconCombination {
-    /**
-     * The name of the SF Symbol to use as an icon on iOS.
-     *
-     * The value can be provided in two ways:
-     * - As a string with the SF Symbol name
-     * - As an object specifying the default and selected states
-     *
-     * @example
-     * ```tsx
-     * <Icon sf="magnifyingglass" androidSrc={require('./search.png')} />
-     * ```
-     *
-     * @example
-     * ```tsx
-     * <Icon
-     *   sf={{ default: "house", selected: "house.fill" }}
-     *   androidSrc={{ default: require('./home.png'), selected: require('./home-filled.png') }}
-     * />
-     * ```
-     *
-     * @platform iOS
-     */
-    sf?: SFSymbol | {
-        default?: SFSymbol;
-        selected: SFSymbol;
-    };
-    /**
-     * The image source to use as an icon on Android.
-     *
-     * The value can be provided in two ways:
-     * - As an image source
-     * - As an object specifying the default and selected states
-     *
-     * @example
-     * ```tsx
-     * <Icon sf="magnifyingglass" androidSrc={require('./search.png')} />
-     * ```
-     *
-     * @example
-     * ```tsx
-     * <Icon
-     *   sf={{ default: "house", selected: "house.fill" }}
-     *   androidSrc={{ default: require('./icon.png'), selected: require('./icon-selected.png') }}
-     * />
-     * ```
-     *
-     * @platform Android
-     */
-    androidSrc?: ImageSourcePropType | React.ReactElement | {
-        default?: ImageSourcePropType | React.ReactElement;
-        selected: ImageSourcePropType | React.ReactElement;
-    };
-    src?: never;
-    drawable?: never;
+export interface MaterialIcon {
+    md: AndroidSymbol;
 }
-export type NativeTabsTriggerIconProps = {
+export type BaseNativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
-} & (NamedIconCombination | SourceIconCombination | CrossPlatformIconCombination);
+};
+export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
 /**
  * Renders an icon for the tab.
+ *
+ * Accepts various icon sources such as SF Symbols, drawable resources, material icons, or image sources.
+ *
+ * Acceptable props combinations:
+ * - `sf` and `drawable` - `sf` will be used for iOS icon, `drawable` for Android icon
+ * - `sf` and `src` - `sf` will be used for iOS icon, `src` for Android icon
+ * - `src` and `drawable` - `src` will be used for iOS icon, `drawable` for Android icon
+ * - `src` only - `src` will be used for both iOS and Android icons
  *
  * @platform ios
  * @platform android
@@ -162,6 +120,10 @@ export declare const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps>
  * ```
  */
 export declare const NativeTabsTriggerVectorIcon: typeof VectorIcon;
+export interface NativeTabsTriggerPromiseIconProps {
+    loader: () => Promise<ImageSourcePropType | null>;
+}
+export declare const NativeTabsTriggerPromiseIcon: (props: NativeTabsTriggerPromiseIconProps) => null;
 export interface NativeTabsTriggerBadgeProps {
     /**
      * The text to display as the badge for the tab.
@@ -176,4 +138,29 @@ export interface NativeTabsTriggerBadgeProps {
     selectedBackgroundColor?: ColorValue;
 }
 export declare const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps>;
+export interface NativeTabsBottomAccessoryProps {
+    children?: React.ReactNode;
+}
+/**
+ * A [bottom accessory](https://developer.apple.com/documentation/uikit/uitabbarcontroller/bottomaccessory) for `NativeTabs` on iOS 26 and above.
+ *
+ * @example
+ * ```tsx
+ * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ *
+ * export default Layout(){
+ *   return (
+ *     <NativeTabs>
+ *       <NativeTabs.BottomAccessory>
+ *         <YourAccessoryComponent />
+ *       </NativeTabs.BottomAccessory>
+ *       <NativeTabs.Trigger name="index" />
+ *     </NativeTabs>
+ *   );
+ * }
+ * ```
+ *
+ * @platform iOS 26+
+ */
+export declare const NativeTabsBottomAccessory: React.FC<NativeTabsBottomAccessoryProps>;
 //# sourceMappingURL=elements.d.ts.map

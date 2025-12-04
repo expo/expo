@@ -41,6 +41,10 @@ You can pass the following parameters into the `params` list:
 | profile   | string | Optional. The build profile to use. Defaults to `production`.                                                 |
 | message   | string | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`. |
 
+#### Environment variables
+
+If you need certain environment variables during the build process, you can include them in your [eas.json](/eas/json/#environment), for your specified build `profile`. They will be pulled from [EAS environment variables](/eas/environment-variables/).
+
 #### Outputs
 
 You can reference the following outputs in subsequent jobs:
@@ -198,6 +202,19 @@ You can pass the following parameters into the `params` list:
 | alias     | string  | Optional. The [alias](/eas/hosting/deployments-and-aliases/#aliases) to deploy to. |
 | prod      | boolean | Optional. Whether to deploy to production.                                         |
 
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                | Type   | Description                                                                                                                                      |
+| --------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| deploy_json           | string | JSON object containing the deployment details (output of `npx eas-cli deploy --json`).                                                           |
+| deploy_url            | string | URL to the deployment. It uses production URL if this was a production deployment. Otherwise, it uses the first alias URL or the deployment URL. |
+| deploy_alias_url      | string | Alias URL to the deployment (for example, `https://account-project--alias.expo.app`).                                                            |
+| deploy_deployment_url | string | Unique URL to the deployment (for example, `https://account-project--uniqueid.expo.app`).                                                        |
+| deploy_identifier     | string | Identifier of the deployment.                                                                                                                    |
+| deploy_dashboard_url  | string | URL to the deployment dashboard (for example, `https://expo.dev/projects/[project]/hosting/deployments`).                                        |
+
 ### Examples
 
 Here are some practical examples of using the deploy job:
@@ -272,8 +289,14 @@ Calculates a fingerprint of your project.
 jobs:
   fingerprint:
     type: fingerprint
-    environment: production # Should match your build profile
+    environment: production | preview | development # optional, defaults to production
+    env: # optional list of environment variables
+      ENV_VAR_NAME: value
 ```
+
+#### Environment variables
+
+You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
 
 #### Outputs
 
@@ -668,6 +691,9 @@ To publish update previews and to send over-the-air updates, you'll need to run 
 jobs:
   publish_update:
     type: update
+    environment: production | preview | development # optional, defaults to production
+    env: # optional list of environment variables
+      ENV_VAR_NAME: value
     runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       message: string # optional
@@ -677,6 +703,10 @@ jobs:
       private_key_path: string # optional
       upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
 ```
+
+#### Environment variables
+
+You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
 
 #### Parameters
 
@@ -1551,7 +1581,24 @@ jobs:
       profile: string # optional
       embed_bundle_assets: boolean # optional
       message: string # optional
+      repack_version: string # optional
 ```
+
+### Common questions
+
+<Collapsible summary="When to use and when not to use repack?">
+
+Repack job is suitable for the following use cases:
+
+- Reducing CI build times by reusing existing builds
+- Trigging full native builds when required
+- Delivering faster feedback loops to your team
+
+Repack job is not suitable for the following use cases:
+
+- Production builds that require builds to go through the complete pipeline for correct symbolication and app signing
+
+</Collapsible>
 
 #### Parameters
 
@@ -1563,6 +1610,7 @@ You can pass the following parameters into the `params` list:
 | profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
 | embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
 | message             | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                               |
+| repack_version      | string  | Optional. The version of the `@expo/repack-app` to use. Defaults to the latest version.                                                     |
 
 ### Examples
 

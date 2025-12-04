@@ -44,6 +44,7 @@ private extension View {
   @ViewBuilder
   func applyDatePickerStyle(for style: PickerStyle) -> some View {
     switch style {
+ 
     case .wheel:
       self.datePickerStyle(.wheel)
     case .graphical:

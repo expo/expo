@@ -21,5 +21,8 @@ export declare function useAwaitedScreensIcon(icon: NativeTabOptions['icon']): {
 export declare function convertOptionsIconToRNScreensPropsIcon(icon: AwaitedIcon | undefined): BottomTabsScreenProps['icon'];
 export declare function convertOptionsIconToIOSPropsIcon(icon: AwaitedIcon | undefined): PlatformIconIOS | undefined;
 export declare function convertOptionsIconToAndroidPropsIcon(icon: AwaitedIcon): PlatformIconAndroid | undefined;
+export declare function convertComponentSrcToImageSource(src: React.ReactElement): {
+    src: Promise<ImageSourcePropType | null>;
+} | undefined;
 export {};
 //# sourceMappingURL=icon.d.ts.map

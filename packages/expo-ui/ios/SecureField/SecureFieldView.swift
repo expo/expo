@@ -11,7 +11,7 @@ final class SecureFieldProps: UIBaseViewProps {
   var onSubmit = EventDispatcher()
 }
 
-struct SecureFieldView: ExpoSwiftUI.View {
+struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   @ObservedObject var props: SecureFieldProps
   @ObservedObject var textManager: TextFieldManager = TextFieldManager()
   @FocusState private var isFocused: Bool
@@ -30,6 +30,15 @@ struct SecureFieldView: ExpoSwiftUI.View {
 
   func blur() {
     textManager.isFocused = false
+  }
+  
+  func forceResignFirstResponder() {
+    if textManager.isFocused {
+      UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
+    textManager.isFocused = false
+    isFocused = false
   }
 
   var body: some View {

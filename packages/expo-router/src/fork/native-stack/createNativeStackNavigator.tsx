@@ -63,10 +63,19 @@ function NativeStackNavigator({
           if (state.index > 0 && isFocused && !(e as EventArg<'tabPress', true>).defaultPrevented) {
             // When user taps on already focused tab and we're inside the tab,
             // reset the stack to replicate native behaviour
-            navigation.dispatch({
-              ...StackActions.popToTop(),
-              target: state.key,
-            });
+            // START FORK
+            // navigation.dispatch({
+            //   ...StackActions.popToTop(),
+            //   target: state.key,
+            // });
+            // The popToTop will be automatically triggered on native side for native tabs
+            if (e.data?.__internalTabsType !== 'native') {
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: state.key,
+              });
+            }
+            // END FORK
           }
         });
       }),

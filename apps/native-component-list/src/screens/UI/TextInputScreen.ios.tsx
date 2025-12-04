@@ -8,13 +8,33 @@ import {
   Section,
   Text,
   HStack,
+  Picker,
 } from '@expo/ui/swift-ui';
-import { listSectionSpacing, scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
+import {
+  listSectionSpacing,
+  pickerStyle,
+  scrollDismissesKeyboard,
+  submitLabel,
+  tag,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function TextInputScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
   const secureRef = React.useRef<TextFieldRef>(null);
+  const submitLabelOptions = [
+    'continue',
+    'done',
+    'go',
+    'join',
+    'next',
+    'return',
+    'route',
+    'search',
+    'send',
+  ] as const;
+  const [selectedSubmitLabel, setSelectedSubmitLabel] =
+    React.useState<(typeof submitLabelOptions)[number]>('continue');
   const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
 
   return (
@@ -100,6 +120,27 @@ export default function TextInputScreen() {
             allowNewlines
             autocorrection={false}
             defaultValue="hey there"
+          />
+        </Section>
+        <Section title="Submit Label">
+          <Picker
+            label="Submit label"
+            modifiers={[pickerStyle('menu')]}
+            onSelectionChange={({ nativeEvent: { selection } }) => {
+              setSelectedSubmitLabel(selection as (typeof submitLabelOptions)[number]);
+            }}>
+            {submitLabelOptions.map((option) => (
+              <Text key={option} modifiers={[tag(option)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
+          <TextField
+            modifiers={[submitLabel(selectedSubmitLabel)]}
+            defaultValue="hey there"
+            onChangeText={(value) => {
+              console.log('value', value);
+            }}
           />
         </Section>
         <Section title="Secure Text Input">

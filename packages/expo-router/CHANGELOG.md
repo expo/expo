@@ -16,10 +16,24 @@
 - Add split view layout support ([#39563](https://github.com/expo/expo/pull/39563) by [@Ubax](https://github.com/Ubax))
 - Add support for server data loaders in static export mode ([#40130](https://github.com/expo/expo/pull/40130) by [@hassankhan](https://github.com/hassankhan))
 - components API for setting header options ([#40600](https://github.com/expo/expo/pull/40600) by [@Ubax](https://github.com/Ubax))
+- [iOS] add sidebar adaptable prop ([#40957](https://github.com/expo/expo/pull/40957) by [@Ubax](https://github.com/Ubax))
+- add Color utility ([#40904](https://github.com/expo/expo/pull/40904) by [@Ubax](https://github.com/Ubax))
+- wrap NativeTabs style properties with StyleProp ([#41013](https://github.com/expo/expo/pull/41013) by [@Ubax](https://github.com/Ubax))
+- [android] add md prop to native tabs icon ([#40966](https://github.com/expo/expo/pull/40966) by [@Ubax](https://github.com/Ubax))
+- emit tabPress on tab change ([#41159](https://github.com/expo/expo/pull/41159) by [@Ubax](https://github.com/Ubax))
+- add disableAutomaticContentInsets prop to NativeTabs.Trigger ([#41293](https://github.com/expo/expo/pull/41293) by [@Ubax](https://github.com/Ubax))
+- add safe area view to native tabs on Android ([#41295](https://github.com/expo/expo/pull/41295) by [@Ubax](https://github.com/Ubax))
+- [iOS] add bottom accessory support ([#41239](https://github.com/expo/expo/pull/41239) by [@Ubax](https://github.com/Ubax))
+- apply react-navigation background color to NativeTabsView ([#41068](https://github.com/expo/expo/pull/41068) by [@Ubax](https://github.com/Ubax))
+- [iOS] bottom toolbar ([#41106](https://github.com/expo/expo/pull/41106) by [@Ubax](https://github.com/Ubax))
+- [iOS] rename displayInline and displayAsPalette in Link.Menu ([#41317](https://github.com/expo/expo/pull/41317) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
 - Fix dynamic updates of headless tabs ([#40352](https://github.com/expo/expo/pull/40352) by [@Ubax](https://github.com/Ubax))
+- activate animation on back navigation, when initial animation was disabled using internal param ([#41141](https://github.com/expo/expo/pull/41141) by [@Ubax](https://github.com/Ubax))
+- prevent `onPreviewTapped` from firing when `<Link.Preview />` is not configured ([#41160](https://github.com/expo/expo/pull/41160) by [@Ubax](https://github.com/Ubax))
+- fix Sitemap insets on Android ([#41280](https://github.com/expo/expo/pull/41280) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
@@ -36,6 +50,30 @@
 - Remove `node/getExpoConstantsManifest.js` ([#40663](https://github.com/expo/expo/pull/40663) by [@hassankhan](https://github.com/hassankhan))
 - Upgrade react-native-screens and react-navigation versions ([#40804](https://github.com/expo/expo/pull/40804) by [@Ubax](https://github.com/Ubax))
 - extract common elements to primitives ([#40841](https://github.com/expo/expo/pull/40841) by [@Ubax](https://github.com/Ubax))
+- remove redundant convertTabPropsToOptions call ([#40967](https://github.com/expo/expo/pull/40967) by [@Ubax](https://github.com/Ubax))
+- refactor NativeTabs Icon logic to simplify types and API ([#40965](https://github.com/expo/expo/pull/40965) by [@Ubax](https://github.com/Ubax))
+- [iOS] rename ExpoHead to ExpoRouter podspec ([#40941](https://github.com/expo/expo/pull/40941) by [@Ubax](https://github.com/Ubax))
+- remove redundant comments from NativeOption ([#41067](https://github.com/expo/expo/pull/41067) by [@Ubax](https://github.com/Ubax))
+- use constants instead of magic strings for internal param names ([#41082](https://github.com/expo/expo/pull/41082) by [@Ubax](https://github.com/Ubax))
+- add local-maven-repo to files in package.json ([#41130](https://github.com/expo/expo/pull/41130) by [@Ubax](https://github.com/Ubax))
+- add removeParams function ([#41140](https://github.com/expo/expo/pull/41140) by [@Ubax](https://github.com/Ubax))
+- Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+- extract children utils to common file ([#41238](https://github.com/expo/expo/pull/41238) by [@Ubax](https://github.com/Ubax))
+- [iOS] replace LinkPreviewNativeNavigationObjC with direct swift calls ([#41331](https://github.com/expo/expo/pull/41331) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.16 - 2025-12-04
+
+### 🐛 Bug fixes
+
+- Replace internal base URL for parsing pathnames with `file:` ([#41338](https://github.com/expo/expo/pull/41338) by [@kitten](https://github.com/kitten))
+
+## 6.0.15 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.14 - 2025-10-28
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.13 - 2025-10-20
 

@@ -3,15 +3,14 @@
  * while the dev server is running.
  */
 import { test, expect } from '@playwright/test';
+import path from 'node:path';
 import { platform } from 'node:process';
 
-import { setupTestProjectWithOptionsAsync } from '../../__tests__/utils';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
+import { setupTestProjectWithOptionsAsync } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
-import { pageCollectErrors } from '../page';
-
-import path from 'node:path';
 import { mutateFile, openPageAndEagerlyLoadJS } from '../../utils/hmr';
+import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -36,9 +35,15 @@ test.describe('router-e2e with spaces', () => {
       // created project. This is required to be able to execute the SSR bundle
       // outside the Expo monorepo module
       {
-        linkExpoPackages: ['expo'],
+        linkExpoPackages: ['expo', '@expo/local-build-cache-provider'],
         // TODO(@hassankhan): remove @expo/router-server after publishing
-        linkExpoPackagesDev: ['@expo/cli', '@expo/router-server', 'babel-preset-expo', '@expo/metro-config', 'expo-server'],
+        linkExpoPackagesDev: [
+          '@expo/cli',
+          '@expo/router-server',
+          'babel-preset-expo',
+          '@expo/metro-config',
+          'expo-server',
+        ],
       }
     );
 

@@ -8,8 +8,7 @@
     "sourceMap": true,
     "typeRoots": [
       "ts-declarations",
-      "../../expo-module-scripts/ts-declarations",
-      "../../../node_modules/@types"
+      "../../expo-module-scripts/ts-declarations"
     ]
   },
 }

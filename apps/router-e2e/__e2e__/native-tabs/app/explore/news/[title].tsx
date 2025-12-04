@@ -7,8 +7,7 @@ export default function Index() {
   const { colors } = useTheme();
   return (
     <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={{ flex: 1 }}
       contentContainerStyle={{
         padding: 32,
         gap: 16,

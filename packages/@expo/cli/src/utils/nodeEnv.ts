@@ -1,5 +1,11 @@
 import * as env from '@expo/env';
 
+// TODO(@kitten): We assign this here to run server-side code bundled by metro
+// It's not isolated into a worker thread yet
+declare namespace globalThis {
+  let __DEV__: boolean | undefined;
+}
+
 /**
  * Set the environment to production or development
  * lots of tools use this to determine if they should run in a dev mode.
@@ -7,8 +13,6 @@ import * as env from '@expo/env';
 export function setNodeEnv(mode: 'development' | 'production') {
   process.env.NODE_ENV = process.env.NODE_ENV || mode;
   process.env.BABEL_ENV = process.env.BABEL_ENV || process.env.NODE_ENV;
-
-  // @ts-expect-error: Add support for external React libraries being loaded in the same process.
   globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
 }
 
