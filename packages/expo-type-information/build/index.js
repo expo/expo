@@ -14,7 +14,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getAllExpoModulesInWorkingDirectory = exports.generateMocks = void 0;
 __exportStar(require("./typeInformation"), exports);
-__exportStar(require("./typescriptGeneration"), exports);
-__exportStar(require("./mockgen"), exports);
+var mockgen_1 = require("./mockgen");
+Object.defineProperty(exports, "generateMocks", { enumerable: true, get: function () { return mockgen_1.generateMocks; } });
+Object.defineProperty(exports, "getAllExpoModulesInWorkingDirectory", { enumerable: true, get: function () { return mockgen_1.getAllExpoModulesInWorkingDirectory; } });
 //# sourceMappingURL=index.js.map
