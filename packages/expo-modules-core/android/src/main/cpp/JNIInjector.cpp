@@ -9,6 +9,7 @@
 #include "JavaScriptFunction.h"
 #include "JavaScriptArrayBuffer.h"
 #include "JavaScriptTypedArray.h"
+#include "NativeArrayBuffer.h"
 #include "JavaReferencesCache.h"
 #include "JavaCallback.h"
 #include "JNIUtils.h"
@@ -41,6 +42,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptFunction::registerNatives();
     expo::JavaScriptArrayBuffer::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
+    expo::NativeArrayBuffer::registerNatives();
     expo::JavaCallback::registerNatives();
     expo::JNIUtils::registerNatives();
 
