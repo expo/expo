@@ -2,6 +2,19 @@ import { getConfig } from '@expo/config';
 
 import * as Log from '../log';
 
+function parsePackageName(pkg: string): string {
+  // Package can be in the most complex form of: @scope/name@version
+  // We only want to extract the @scope/name part.
+  const splittedName = pkg.split('@');
+  if (splittedName[0] === '') {
+    // Scoped package e.g. @scope/name
+    return `@${splittedName[1]}`;
+  } else {
+    // Regular package e.g. react or lodash
+    return splittedName[0];
+  }
+}
+
 /**
  * A convenience feature for automatically applying Expo Config Plugins to the `app.json` after installing them.
  * This should be dropped in favor of autolinking in the future.
@@ -16,8 +29,7 @@ export async function applyPluginsAsync(projectRoot: string, packages: string[])
     await autoAddConfigPluginsAsync(
       projectRoot,
       exp,
-      // Split any possible NPM tags. i.e. `expo@latest` -> `expo`
-      packages.map((pkg) => pkg.split('@')[0]).filter(Boolean)
+      packages.map((pkg) => parsePackageName(pkg)).filter(Boolean)
     );
   } catch (error: any) {
     // If we fail to apply plugins, the log a warning and continue.
