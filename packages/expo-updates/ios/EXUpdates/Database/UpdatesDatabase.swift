@@ -112,7 +112,7 @@ public final class UpdatesDatabase: NSObject {
 
   public func addUpdate(_ update: Update, config: UpdatesConfig) throws {
     let sql = """
-      INSERT INTO "updates" ("id", "scope_key", "commit_time", "runtime_version", "manifest", "status" , "keep", "last_accessed", "successful_launch_count", "failed_launch_count", "url", "headers")
+      INSERT OR REPLACE INTO "updates" ("id", "scope_key", "commit_time", "runtime_version", "manifest", "status" , "keep", "last_accessed", "successful_launch_count", "failed_launch_count", "url", "headers")
       VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9, ?10, ?11);
     """
     _ = try execute(
