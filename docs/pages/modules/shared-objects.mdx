@@ -258,7 +258,7 @@ export async function pickImageAsync() {
 }
 ```
 
-In the above example, `ImagePicker` doesn't need to know about shared objects. It returns what it should, which is a file path. Your native module is responsible for transforming that path into a shared object that other modules (whether custom or Expo modules) can work with, such as `Image` from `expo-image`.
+In the above example, `ImagePicker` doesn't need to know about shared objects. It returns what it should, which is a file path. Your native module is responsible for transforming that path into a shared object that other Expo modules can work with, such as `Image` from `expo-image`.
 
 ## Expo libraries that use shared objects
 
