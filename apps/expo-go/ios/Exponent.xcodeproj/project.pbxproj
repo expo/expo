@@ -162,7 +162,7 @@
 		79BD00FD2E4A254B0019F3FF /* Exceptions for "Notifications" folder in "ExpoNotificationServiceExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				EXScopedNotificationsUtils.swift,
+				Core/Modules/Notifications/EXScopedNotificationsUtils.swift,
 			);
 			target = FCF6D36C25B34BC200808BF5 /* ExpoNotificationServiceExtension */;
 		};
@@ -186,6 +186,7 @@
 		XXEXPOKERNEL389VERSIONED = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				79BD00FD2E4A254B0019F3FF
 			);
 			path = Versioned;
 			sourceTree = "<group>";
