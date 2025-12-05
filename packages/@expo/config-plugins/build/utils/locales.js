@@ -28,6 +28,7 @@ function _warnings() {
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 async function getResolvedLocalesAsync(projectRoot, input, forPlatform) {
   const locales = {};
+  const localizableStrings = {};
   for (const [lang, localeJsonPath] of Object.entries(input)) {
     let locale = null;
     if (typeof localeJsonPath === 'string') {
@@ -53,9 +54,16 @@ async function getResolvedLocalesAsync(projectRoot, input, forPlatform) {
         ...locale
       };
       if (forPlatform === 'ios') {
+        const {
+          localizableStrings: localStrings,
+          ...iosRest
+        } = ios;
+        if (localStrings) {
+          localizableStrings[lang] = localStrings;
+        }
         locales[lang] = {
           ...rest,
-          ...ios
+          ...iosRest
         };
       } else {
         locales[lang] = {
@@ -65,6 +73,13 @@ async function getResolvedLocalesAsync(projectRoot, input, forPlatform) {
       }
     }
   }
-  return locales;
+  if (forPlatform === 'ios') {
+    return {
+      locales,
+      localizableStrings
+    };
+  } else {
+    return locales;
+  }
 }
 //# sourceMappingURL=locales.js.map
