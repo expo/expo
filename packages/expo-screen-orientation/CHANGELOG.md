@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [web] fix undeclared `listener` reference ([#41441](https://github.com/expo/expo/pull/41441) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+## 9.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 9.0.7 — 2025-09-11
 

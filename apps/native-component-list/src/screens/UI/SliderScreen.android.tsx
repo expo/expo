@@ -10,7 +10,6 @@ export default function SliderScreen() {
       <Section title="Regular slider">
         <Host>
           <Slider
-            style={{ minHeight: 60 }}
             value={value}
             onValueChange={(value) => {
               setValue(value);
@@ -21,7 +20,6 @@ export default function SliderScreen() {
       <Section title="Stepped slider">
         <Host>
           <Slider
-            style={{ minHeight: 60 }}
             value={value}
             steps={5}
             onValueChange={(value) => {
@@ -33,7 +31,6 @@ export default function SliderScreen() {
       <Section title="Colorful slider">
         <Host>
           <Slider
-            style={{ minHeight: 60 }}
             value={value}
             min={-1}
             max={5}

@@ -588,6 +588,17 @@ export const scrollContentBackground = (visible: 'automatic' | 'visible' | 'hidd
 export const listRowBackground = (color: Color) => createModifier('listRowBackground', { color });
 
 /**
+ * Controls the visibility of the separator for a list row.
+ * @param visibility - The visibility to apply.
+ * @param edges - The edges where the separator visibility applies.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowseparator(_:edges:)).
+ */
+export const listRowSeparator = (
+  visibility: 'automatic' | 'visible' | 'hidden',
+  edges?: 'all' | 'top' | 'bottom'
+) => createModifier('listRowSeparator', { visibility, edges });
+
+/**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
  * @param mode - The truncation mode that specifies where to truncate the text within the text view, if needed.
  * You can truncate at the beginning, middle, or end of the text view.
@@ -874,6 +885,7 @@ export type BuiltInModifier =
   | ReturnType<typeof containerShape>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof listRowBackground>
+  | ReturnType<typeof listRowSeparator>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>
   | ReturnType<typeof kerning>

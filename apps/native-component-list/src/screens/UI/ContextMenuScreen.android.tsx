@@ -32,7 +32,6 @@ export default function ContextMenuScreen() {
             <ContextMenu.Trigger>
               <Button
                 elementColors={{ containerColor: 'transparent', contentColor: 'blue' }}
-                style={{ width: 130 }}
                 trailingIcon="filled.ArrowDropDown">
                 {selectedTheme}
               </Button>
@@ -75,9 +74,7 @@ export default function ContextMenuScreen() {
       <Section title="Colorful Context Menu">
         <ContextMenu color="#e3b7ff">
           <ContextMenu.Trigger>
-            <Button variant="bordered" style={{ width: 200, height: 50 }}>
-              Show Colorful Menu
-            </Button>
+            <Button variant="bordered">Show Colorful Menu</Button>
           </ContextMenu.Trigger>
           <ContextMenu.Items>
             <Button variant="bordered" color="#ff0000" leadingIcon="filled.Favorite">
@@ -120,9 +117,7 @@ export default function ContextMenuScreen() {
       <Section title="Context Menu with Submenu">
         <ContextMenu>
           <ContextMenu.Trigger>
-            <Button variant="outlined" style={{ width: 200 }}>
-              Show Menu with Submenu
-            </Button>
+            <Button variant="outlined">Show Menu with Submenu</Button>
           </ContextMenu.Trigger>
           <ContextMenu.Items>
             <Button leadingIcon="filled.Home" onPress={() => console.log('Home pressed')}>

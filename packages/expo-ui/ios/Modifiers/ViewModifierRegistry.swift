@@ -826,6 +826,57 @@ internal struct ListRowBackground: ViewModifier, Record {
   }
 }
 
+internal enum ListRowSeparatorVisibility: String, Enumerable {
+  case automatic
+  case visible
+  case hidden
+
+  func toVisibility() -> Visibility {
+    switch self {
+    case .visible:
+      return .visible
+    case .hidden:
+      return .hidden
+    default:
+      return .automatic
+    }
+  }
+}
+
+internal enum VerticalEdgeOptions: String, Enumerable {
+  case all
+  case top
+  case bottom
+
+  func toVerticalEdges() -> VerticalEdge.Set {
+    switch self {
+    case .all:
+      return .all
+    case .top:
+      return .top
+    case .bottom:
+      return .bottom
+    }
+  }
+}
+
+internal struct ListRowSeparator: ViewModifier, Record {
+  @Field var visibility: ListRowSeparatorVisibility = .automatic
+  @Field var edges: VerticalEdgeOptions?
+
+  func body(content: Content) -> some View {
+    #if os(tvOS)
+      content
+    #else
+      if let edges {
+        content.listRowSeparator(visibility.toVisibility(), edges: edges.toVerticalEdges())
+      } else {
+        content.listRowSeparator(visibility.toVisibility())
+      }
+    #endif
+  }
+}
+
 internal enum TextTruncationModeTypes: String, Enumerable {
   case head
   case middle
@@ -1586,6 +1637,11 @@ extension ViewModifierRegistry {
     register("listRowBackground") { params, appContext, _ in
       return try ListRowBackground(from: params, appContext: appContext)
     }
+
+    register("listRowSeparator") { params, appContext, _ in
+      return try ListRowSeparator(from: params, appContext: appContext)
+    }
+
     register("truncationMode") { params, appContext, _ in
       return try TextTruncationMode(from: params, appContext: appContext)
     }

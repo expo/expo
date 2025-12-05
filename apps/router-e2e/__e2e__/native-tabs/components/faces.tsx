@@ -66,7 +66,7 @@ export function Faces(props: { numberOfFaces: number }) {
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
       {faces.map((face) => (
-        <Link key={face.id} href={`/faces/${face.id}`} asChild>
+        <Link key={face.id} href={`/faces/${face.id}`} asChild unstable_transition="zoom">
           <Link.Trigger>
             <Pressable style={{ borderRadius: 16, overflow: 'hidden' }}>
               <View style={{ backgroundColor: face.color, width: 100, height: 100 }} />

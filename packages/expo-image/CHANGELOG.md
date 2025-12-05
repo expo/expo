@@ -20,6 +20,10 @@
 
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 
+## 3.0.11 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.10 - 2025-10-20
 
 _This version does not introduce any user-facing changes._

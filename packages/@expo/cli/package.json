@@ -45,7 +45,7 @@
     "@expo/code-signing-certificates": "^0.0.5",
     "@expo/config": "~12.0.9",
     "@expo/config-plugins": "~54.0.1",
-    "@expo/devcert": "^1.1.2",
+    "@expo/devcert": "^1.2.1",
     "@expo/env": "~2.0.7",
     "@expo/image-utils": "^0.8.7",
     "@expo/json-file": "^10.0.7",

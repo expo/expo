@@ -2,7 +2,7 @@ import type { NativeModule } from 'expo';
 import { SharedRef } from 'expo-modules-core/types';
 
 import type { ImageManipulatorContext } from './ImageManipulatorContext';
-import ImageRef from './ImageRef';
+import type { ImageRef } from './ImageRef';
 
 // @needsAudit
 export type ImageResult = {
@@ -134,7 +134,7 @@ export declare class ImageManipulator extends NativeModule {
   /**
    * @hidden
    */
-  Image: typeof ImageRef;
+  Image: ImageRef;
 
   /**
    * Loads an image from the given URI and creates a new image manipulation context.

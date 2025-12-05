@@ -71,6 +71,7 @@ jsi::Value convert(
   CAST_AND_RETURN(JavaScriptModuleObject::javaobject, cache.jJavaScriptModuleObject)
   CAST_AND_RETURN(JSharedObject::javaobject, cache.jSharedObject)
   CAST_AND_RETURN(JavaScriptTypedArray::javaobject, cache.jJavaScriptTypedArray)
+  CAST_AND_RETURN(JavaScriptArrayBuffer::javaobject, cache.jJavaScriptArrayBuffer)
 
   CAST_AND_RETURN(jni::JMap<jstring COMMA jobject>, cache.jMap)
   CAST_AND_RETURN(jni::JCollection<jobject>, cache.jCollection)

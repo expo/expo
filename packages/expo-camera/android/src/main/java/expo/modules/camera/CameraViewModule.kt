@@ -413,9 +413,7 @@ class CameraViewModule : Module() {
       }
 
       OnViewDidUpdateProps { view ->
-        moduleScope.launch {
-          view.createCamera()
-        }
+        view.recreateCamera()
       }
 
       OnViewDestroys { view ->

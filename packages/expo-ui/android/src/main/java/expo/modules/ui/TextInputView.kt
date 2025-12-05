@@ -93,7 +93,7 @@ class TextInputView(context: Context, appContext: AppContext) :
           autoCorrectEnabled = props.autocorrection.value,
           capitalization = props.autoCapitalize.value.autoCapitalize()
         ),
-        modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+        modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope = this@Content)
       )
     }
   }

@@ -5,6 +5,7 @@
 #include "JavaScriptRuntime.h"
 #include "JavaScriptObject.h"
 #include "JavaScriptTypedArray.h"
+#include "JavaScriptArrayBuffer.h"
 #include "JavaScriptFunction.h"
 #include "TypedArray.h"
 #include "Exceptions.h"

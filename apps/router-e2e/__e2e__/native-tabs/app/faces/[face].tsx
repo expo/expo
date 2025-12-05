@@ -1,4 +1,4 @@
-import { Link, Stack, useLocalSearchParams } from 'expo-router';
+import { Link, Stack, useIsPreview, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
 
@@ -7,16 +7,17 @@ import { useFaceColors } from '../../components/faces';
 export default function Index() {
   const [shouldPerformHeavyComputation, setShouldPerformHeavyComputation] = useState(false);
   const { face } = useLocalSearchParams();
+  const isPreview = useIsPreview();
 
   const colors = useFaceColors();
-  const { color, name } = colors[Number(face)];
+  const { color, name } = colors[Number(face) % colors.length];
 
   if (shouldPerformHeavyComputation) {
     heavyComputation();
   }
   return (
     <>
-      <Stack.Screen options={{ title: name }} />
+      {!isPreview && <Stack.Screen options={{ title: name }} />}
       <ScrollView
         style={{
           flex: 1,

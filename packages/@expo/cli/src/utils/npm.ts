@@ -3,6 +3,7 @@ import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import crypto from 'crypto';
 import fs from 'fs';
+import path from 'path';
 import slugify from 'slugify';
 import { PassThrough, Readable, Stream } from 'stream';
 import { extract as tarExtract, TarOptionsWithAliases } from 'tar';
@@ -176,4 +177,23 @@ export async function extractNpmTarballAsync(
   );
 
   return hash.digest('hex');
+}
+
+export async function packNpmTarballAsync(packageDir: string): Promise<string> {
+  const cmdArgs = ['pack', '--json', '--foreground-scripts=false'];
+  const results = (
+    await spawnAsync('npm', cmdArgs, {
+      env: { ...process.env },
+      cwd: packageDir,
+    })
+  ).stdout?.trim();
+  try {
+    const [json] = JSON.parse(results) as { filename: string }[];
+    return path.resolve(packageDir, json.filename);
+  } catch (error: any) {
+    const cmdString = `npm ${cmdArgs.join(' ')}`;
+    throw new Error(
+      `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
+    );
+  }
 }

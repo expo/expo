@@ -12,6 +12,10 @@
 
 - [Android] Removed unused `androidx.legacy:legacy-support` dependency. ([#39762](https://github.com/expo/expo/pull/39762) by [@lukmccall](https://github.com/lukmccall))
 
+## 8.0.10 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 8.0.9 - 2025-10-01
 
 _This version does not introduce any user-facing changes._

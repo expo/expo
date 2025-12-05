@@ -5,6 +5,7 @@
 #include "JSIObjectWrapper.h"
 #include "WeakRuntimeHolder.h"
 #include "JavaScriptTypedArray.h"
+#include "JavaScriptArrayBuffer.h"
 #include "JNIDeallocator.h"
 
 #include <fbjni/fbjni.h>
@@ -21,6 +22,8 @@ class JavaScriptRuntime;
 class JavaScriptObject;
 
 class JavaScriptTypedArray;
+
+class JavaScriptArrayBuffer;
 
 class JavaScriptFunction;
 

@@ -1,4 +1,3 @@
-import { StyleProp, ViewStyle } from 'react-native';
 import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
 import { ShapeJSXElement, ShapeProps } from '../Shape';
@@ -42,10 +41,6 @@ export type ButtonProps = {
      * The button variant.
      */
     variant?: ButtonVariant;
-    /**
-     * Additional styles to apply to the button.
-     */
-    style?: StyleProp<ViewStyle>;
     /**
      * The text to display inside the button.
      */

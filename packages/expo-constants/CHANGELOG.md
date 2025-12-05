@@ -16,6 +16,10 @@
 
 - [Android] Removed unused native dependencies. ([#39763](https://github.com/expo/expo/pull/39763) by [@lukmccall](https://github.com/lukmccall))
 
+## 18.0.11 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 18.0.10 - 2025-10-21
 
 _This version does not introduce any user-facing changes._

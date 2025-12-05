@@ -17,7 +17,8 @@ private class DevLauncherWrapperView: UIView {
       return
     }
 
-    if devLauncherViewController.parent != rootViewController {
+    let isSwiftUIController = NSStringFromClass(type(of: rootViewController)).contains("UIHostingController")
+    if !isSwiftUIController && devLauncherViewController.parent != rootViewController {
       rootViewController.addChild(devLauncherViewController)
       devLauncherViewController.didMove(toParent: rootViewController)
       devLauncherViewController.view.setNeedsLayout()
