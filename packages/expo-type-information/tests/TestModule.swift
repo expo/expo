@@ -61,6 +61,10 @@ public class TestModule: Module {
       return a + b
     }
 
+    AsyncFunction("TestUnderscore") { (url: URL, _: [BarcodeType], promise: Promise) in
+    }
+
+
     Class(TestClassWithConstructor.self) { 
       Constructor { (a: Int) in
         TestClass(a)

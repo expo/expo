@@ -19,7 +19,7 @@ export type ParametrizedType = {
   types: Type[];
 };
 
-export type Argument = { name: string; type: Type };
+export type Argument = { name: string | undefined; type: Type };
 export type Field = Argument;
 
 export type RecordType = {
