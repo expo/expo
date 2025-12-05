@@ -42,6 +42,10 @@ const HomeIndex = () => {
           <Switch value={shouldUseCustomXButton} onValueChange={setShouldUseCustomXButton} />
         </View>
         <CaseLink href="/protected" text="Protected" />
+        <CaseLink
+          href={{ pathname: '/test', params: { __internal_expo_router_no_animation: 1 } }}
+          text="/test with animation disabled"
+        />
         <CaseLink href="/test" text="test" />
         <CaseLink href="/timer" text="Timer with preload" prefetch />
         {Array.from({ length: 20 }).map((_, i) => (
