@@ -1,5 +1,8 @@
 import { useEvent } from 'expo';
-import <%- project.name %>, { <%- project.viewName %> } from '<%- project.slug %>';
+import <%- project.name %> from '<%- project.slug %>';
+<% if (features.view) { %>
+import { <%- project.viewName %> } from '<%- project.slug %>';
+<% } %>
 import { Button, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 export default function App() {
@@ -26,6 +29,7 @@ export default function App() {
         <Group name="Events">
           <Text>{onChangePayload?.value}</Text>
         </Group>
+        <% if (features.view) { %>
         <Group name="Views">
           <<%- project.viewName %>
             url="https://www.example.com"
@@ -33,6 +37,7 @@ export default function App() {
             style={styles.view}
           />
         </Group>
+        <% } %>
       </ScrollView>
     </SafeAreaView>
   );
