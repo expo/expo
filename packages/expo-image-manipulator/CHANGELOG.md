@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - [Android] Removed unused `androidx.annotation:annotation` dependency ([#39764](https://github.com/expo/expo/pull/39764) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Removed dependency on `expo-image-loader` on iOS. ([#41395](https://github.com/expo/expo/pull/41395) by [@tsapeta](https://github.com/tsapeta))
 
 ## 14.0.8 - 2025-12-05
 
