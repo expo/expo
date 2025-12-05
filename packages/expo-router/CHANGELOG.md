@@ -30,6 +30,7 @@
 - [iOS] add zoom transition support ([#41083](https://github.com/expo/expo/pull/41083) by [@Ubax](https://github.com/Ubax))
 - add hidden prop to native tabs ([#41375](https://github.com/expo/expo/pull/41375) by [@Ubax](https://github.com/Ubax))
 - [iOS] add withAppleZoom prop to Link.Trigger ([#41371](https://github.com/expo/expo/pull/41371) by [@Ubax](https://github.com/Ubax))
+- [iOS] prevent dismissal for zoom transition, when gestureEnabled is false ([#41356](https://github.com/expo/expo/pull/41356) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -38,6 +39,7 @@
 - prevent `onPreviewTapped` from firing when `<Link.Preview />` is not configured ([#41160](https://github.com/expo/expo/pull/41160) by [@Ubax](https://github.com/Ubax))
 - fix Sitemap insets on Android ([#41280](https://github.com/expo/expo/pull/41280) by [@Ubax](https://github.com/Ubax))
 - fix preloaded routes navigation ([#41420](https://github.com/expo/expo/pull/41420) by [@Ubax](https://github.com/Ubax))
+- fix disabling animation on appear ([#41419](https://github.com/expo/expo/pull/41419) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 

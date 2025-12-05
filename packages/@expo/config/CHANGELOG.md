@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Export sub-types from `@expo/config-types` ([#41453](https://github.com/expo/expo/pull/41453) by [@kitten](https://github.com/kitten))
+
 ## 12.0.11 - 2025-12-04
 
 ### 💡 Others

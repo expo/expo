@@ -8,6 +8,7 @@ import {
   type RouteProp,
   type ScreenListeners,
 } from '@react-navigation/native';
+import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
@@ -273,13 +274,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       () =>
         navigation.addListener('focus', () => {
           const state = navigation.getState();
-          // When navigating to a screen, remove the no animation param to re-enable animations
-          // Otherwise the navigation back would also have no animation
-          if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
-            navigation.replaceParams(
-              removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])
-            );
-          }
           const isLeaf = !('state' in state.routes[state.index]);
           // Because setFocusedState caches the route info, this call will only trigger rerenders
           // if the component itself didn’t rerender and the route info changed.
@@ -289,6 +283,23 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         }),
       [navigation]
     );
+
+    useEffect(() => {
+      return navigation.addListener(
+        'transitionEnd',
+        (e?: NativeStackNavigationEventMap['transitionEnd']) => {
+          if (!e?.data?.closing) {
+            // When navigating to a screen, remove the no animation param to re-enable animations
+            // Otherwise the navigation back would also have no animation
+            if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+              navigation.replaceParams(
+                removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])
+              );
+            }
+          }
+        }
+      );
+    }, [navigation]);
 
     return (
       <Route node={value} route={route}>
