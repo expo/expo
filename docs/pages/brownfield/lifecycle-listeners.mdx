@@ -46,20 +46,10 @@ class MainApplication : Application() {
 
 ### iOS
 
-To integrate `AppDelegate` subscribers on iOS, update your `AppDelegate` to inherit from `ExpoAppDelegate`, which you can import from the Expo module:
+To integrate `AppDelegate` subscribers on iOS, forward the relevant calls to `ExpoAppDelegateSubscriberManager` in your existing `AppDelegate` implementation so that subscribers can respond to them:
 
 ```diff AppDelegate.swift
 +import Expo
-
-@main
--public class AppDelegate: NSObject, UIApplicationDelegate {
-+public class AppDelegate: ExpoAppDelegate {
-```
-
-If you cannot extend `ExpoAppDelegate` directly (for example, if you already extend another class), you can forward the calls manually by invoking `ExpoAppDelegateSubscriberManager` methods in your existing `AppDelegate` implementation:
-
-```diff AppDelegate.swift
-+ import Expo
 
 public class AppDelegate: UIApplicationDelegate {
 
@@ -79,6 +69,16 @@ public class AppDelegate: UIApplicationDelegate {
 
   ...
 }
+```
+
+Alternatively, if your `AppDelegate` doesn't already extend another class, you can simplify the setup by inheriting from `ExpoAppDelegate`, which handles the forwarding automatically:
+
+```diff AppDelegate.swift
++import Expo
+
+@main
+-public class AppDelegate: NSObject, UIApplicationDelegate {
++public class AppDelegate: ExpoAppDelegate {
 ```
 
 > **Note:** Not all `UIApplicationDelegate` methods that could cause significant side effects are supported. See the Expo source (**ExpoAppDelegate.swift**) for the full list of forwarded methods if you need to rely on a specific delegate.
