@@ -48,7 +48,7 @@ The example creates a simple image manipulation module that loads an image from 
 
 ### Android implementation
 
-In Android, you create a shared object from `SharedObject` class provided by `expo.modules.kotlin.sharedobjects.SharedObject`. This class manages the decoded bitmap and exposes methods to manipulate it. The implementation keeps track of both the original image and the current state after any transformation, allowing you to reset to the original image if needed:
+In Android, you create a shared object from `SharedObject` class provided by `expo.modules.kotlin.sharedobjects.SharedObject`. This class manages the decoded bitmap and exposes methods to manipulate it. The implementation keeps track of both the original image and the current state after any transformation while reusing the initial bitmap. This allows you to reset the original image if needed:
 
 ```kotlin
 import android.graphics.Bitmap
@@ -64,16 +64,14 @@ class SimpleImageContext(
   runtimeContext: RuntimeContext,
   private val original: Bitmap
 ) : SharedObject(runtimeContext) {
-  private var current = original.copy(original.config, true)
+  private var current: Bitmap = original
 
   fun rotate(degrees: Float) = apply {
     val matrix = Matrix().apply { postRotate(degrees) }
     current = Bitmap.createBitmap(current, 0, 0, current.width, current.height, matrix, true)
   }
 
-  fun render(): ImageRef {
-    return ImageRef(current.copy(current.config, true), runtimeContext)
-  }
+  fun render(): ImageRef = ImageRef(current, runtimeContext)
 
   override fun sharedObjectDidRelease() {
     if (!current.isRecycled) current.recycle()
