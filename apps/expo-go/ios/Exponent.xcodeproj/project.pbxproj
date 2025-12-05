@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0349B76C6320565D0B2E851A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 41AAB6FC8982ACA48EAD8CCE /* PrivacyInfo.xcprivacy */; };
 		24C3B781E40BA87F7702303B /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D607CBE135ED3708B0B19DD3 /* libPods-ExponentIntegrationTests.a */; };
 		4A62800A2E69DBF000D916B0 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4A6280092E69DBF000D916B0 /* AppIcon.icon */; };
 		ABE005EBFA92123617D22216 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */; };
@@ -76,6 +77,7 @@
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
+		41AAB6FC8982ACA48EAD8CCE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		45675DFC5DFCA8A77C135D1D /* Pods-Expo Go (main)-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Expo Go/Pods-Expo Go (main)-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
 		4A6280092E69DBF000D916B0 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -139,16 +141,6 @@
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		42FD87C92C7AD5EB00792537 /* Exceptions for "Exponent" folder in "Copy Bundle Resources" phase from "Expo Go" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 78CEE2BE1ACD07D70095B124 /* Resources */;
-			membershipExceptions = (
-				Base.lproj/LaunchScreen.storyboard,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		XXEXPOCLIENTXXXXXXXXXXXX /* Client */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -159,7 +151,6 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				B5E49B5A1D1346FA00AA6437 /* Exceptions for "Exponent" folder in "Expo Go" target */,
-				42FD87C92C7AD5EB00792537 /* Exceptions for "Exponent" folder in "Copy Bundle Resources" phase from "Expo Go" target */,
 				79BD00FD2E4A254B0019F3FF /* Exceptions for "Exponent" folder in "ExpoNotificationServiceExtension" target */,
 			);
 			path = Exponent;
@@ -247,6 +238,7 @@
 				78CEE2C11ACD07D70095B124 /* Products */,
 				B505BA0F20CAF77A0046ACFB /* Tests */,
 				994130004C859A4758AD583C /* ExpoModulesProviders */,
+				41AAB6FC8982ACA48EAD8CCE /* PrivacyInfo.xcprivacy */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -549,6 +541,7 @@
 				B287BB2427DD909C008DA282 /* expo-root.pem in Resources */,
 				4A62800A2E69DBF000D916B0 /* AppIcon.icon in Resources */,
 				F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */,
+				0349B76C6320565D0B2E851A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
