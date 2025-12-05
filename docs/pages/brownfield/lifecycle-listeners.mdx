@@ -102,3 +102,15 @@ React.useEffect(() => {
   return listener.remove;
 }, []);
 ```
+
+And run the following command to open a deep link to your app:
+
+<Terminal
+  cmd={[
+    '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+    '$ npx uri-scheme open com.example.app://somepath/details --android',
+    '',
+    '# If you have a `scheme` defined in your app.json',
+    '$ npx uri-scheme open myapp://somepath/details --ios',
+  ]}
+/>
