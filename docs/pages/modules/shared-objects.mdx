@@ -24,7 +24,7 @@ Shared objects solve this by keeping a single native instance alive in memory wh
 
 ## Example: Image manipulation without disk I/O
 
-To understand shared objects, consider an example where you need to rotate an image picked by the app user and then display that image in your app after manipulating it.
+To understand shared objects, consider an example where you need to rotate and flip an image picked by the app user and then display that image in your app after manipulating it.
 
 ### Without shared objects
 
@@ -44,11 +44,11 @@ The performance gains are significant. By eliminating redundant disk I/O and dec
 
 Now that you understand why shared objects are useful, let's look into a minimal implementation that demonstrates the core concepts of the previous example.
 
-The example creates a simple image manipulation module that loads an image from a file path, rotates it in memory, and exposes a shared reference that other modules can consume.
+The example creates a simple image manipulation module that loads an image from a file path, applies transforms (rotate and flip) in memory, and exposes a shared reference that other modules can consume.
 
 ### Android implementation
 
-In Android, you create a shared object from `SharedObject` class provided by `expo.modules.kotlin.sharedobjects.SharedObject`. This class manages the decoded bitmap and exposes methods to manipulate it. The implementation keeps track of both the original image and the current state after any transformation while reusing the initial bitmap. This allows you to reset the original image if needed:
+In Android, you create a shared object from `SharedObject` class provided by `expo.modules.kotlin.sharedobjects.SharedObject`. This class manages the decoded bitmap and exposes methods to manipulate it. The implementation keeps only the current image in memory and applies transforms in place, so you allocate a new bitmap only when a transformation like rotation or flip produces one:
 
 ```kotlin
 import android.graphics.Bitmap
@@ -68,6 +68,11 @@ class SimpleImageContext(
 
   fun rotate(degrees: Float) = apply {
     val matrix = Matrix().apply { postRotate(degrees) }
+    current = Bitmap.createBitmap(current, 0, 0, current.width, current.height, matrix, true)
+  }
+
+  fun flipX() = apply {
+    val matrix = Matrix().apply { preScale(-1f, 1f) }
     current = Bitmap.createBitmap(current, 0, 0, current.width, current.height, matrix, true)
   }
 
@@ -103,18 +108,18 @@ class SimpleImageModule : Module() {
 
     Class<SimpleImageContext>("Context") {
       Function("rotate") { ctx: SimpleImageContext, degrees: Float -> ctx.rotate(degrees) }
+      Function("flipX") { ctx: SimpleImageContext -> ctx.flipX() }
       AsyncFunction("renderAsync") Coroutine { ctx: SimpleImageContext -> ctx.render() }
-      Function("reset") { ctx: SimpleImageContext -> ctx.apply { rotate(0f) } }
     }
   }
 }
 ```
 
-In the above example, `createContextAsync` function decodes the bitmap from the file path and returns a new `SimpleImageContext` instance. Once the context exists, the `rotate` function runs synchronously because it only manipulates in memory. The `renderAsync` function is marked async to signal that it might involve copying or preparing the bitmap for consumption by other modules.
+In the above example, `createContextAsync` function decodes the bitmap from the file path and returns a new `SimpleImageContext` instance. Once the context exists, the `rotate` and `flipX` functions run synchronously because they only manipulate in memory. The `renderAsync` function is marked async to signal that it might involve copying or preparing the bitmap for consumption by other modules.
 
 ### iOS implementation
 
-In iOS, you create a shared object by inheriting from `SharedObject` class provided by `ExpoModulesCore`. This class manages the decoded bitmap and exposes methods to manipulate it. The implementation keeps track of both the original image and the current state after any transformation, allowing you to reset to the original image if needed:
+In iOS, you create a shared object by inheriting from `SharedObject` class provided by `ExpoModulesCore`. This class manages the decoded bitmap and exposes methods to manipulate it. The implementation keeps only the current image in memory and applies transforms in place:
 
 ```swift
 import ExpoModulesCore
@@ -123,7 +128,6 @@ import UIKit
 final class ImageRef: SharedRef<UIImage> {}
 
 final class SimpleImageContext: SharedObject {
-  private let original: UIImage
   private var current: UIImage
 
   init(path: String) throws {
@@ -131,7 +135,6 @@ final class SimpleImageContext: SharedObject {
           let image = UIImage(data: data) else {
       throw Exceptions.InvalidArgument()
     }
-    self.original = image
     self.current = image
     super.init()
   }
@@ -140,17 +143,17 @@ final class SimpleImageContext: SharedObject {
     current = current.rotated(degrees: degrees)
   }
 
-  func render() -> ImageRef {
-    return ImageRef(current)
+  func flipX() {
+    current = current.withHorizontallyFlippedOrientation()
   }
 
-  func reset() {
-    current = original
+  func render() -> ImageRef {
+    return ImageRef(current)
   }
 }
 ```
 
-In the above example, `SimpleImageContext` class reads an image file and stores both the original and current versions. The `rotate` method mutates the current image in memory without touching the disk.
+In the above example, `SimpleImageContext` reads an image file and keeps a single `UIImage` in memory. The `rotate` and `flipX` methods mutate the current image in memory without touching the disk.
 
 When the result of this class is passed to another module, the `render` method returns an `ImageRef`, which is a specialized `SharedRef<UIImage>` type that `expo-image` and other image-aware modules already understand.
 
@@ -171,23 +174,24 @@ public final class SimpleImageModule: Module {
         return ctx
       }
 
-      AsyncFunction("renderAsync") { (ctx: SimpleImageContext) -> ImageRef in
-        return ctx.render()
+      Function("flipX") { (ctx: SimpleImageContext) -> SimpleImageContext in
+        ctx.flipX()
+        return ctx
       }
 
-      Function("reset") { (ctx: SimpleImageContext) in
-        ctx.reset()
+      AsyncFunction("renderAsync") { (ctx: SimpleImageContext) -> ImageRef in
+        return ctx.render()
       }
     }
   }
 }
 ```
 
-In the above example, the `createContextAsync` is an asynchronous function because loading and decoding an image from disk is an I/O operation. Once the context exists, the `rotate` runs synchronously because it only manipulates in memory. The `renderAsync` function is marked async to signal that it might involve copying or preparing the bitmap for consumption by other modules, though in this simple example, it returns immediately.
+In the above example, the `createContextAsync` is an asynchronous function because loading and decoding an image from disk is an I/O operation. Once the context exists, the `rotate` and `flipX` functions run synchronously because they only manipulate in memory. The `renderAsync` function is marked async to signal that it might involve copying or preparing the bitmap for consumption by other modules, though in this simple example, it returns immediately.
 
 ### Using a shared object in your app
 
-You can now use the shared object in your app's JavaScript/TypeScript code to load the image from the path, create a context of the loaded image, rotate it, render it to get a shared reference, and then pass that reference to an `Image` component:
+You can now use the shared object in your app's JavaScript/TypeScript code to load the image from the path, create a context of the loaded image, chain in-memory transforms, render to get a shared reference, and then pass that reference to an `Image` component:
 
 ```tsx
 import { useState } from 'react';
@@ -214,26 +218,25 @@ export function SharedImageExample() {
     setResult(await ctx.renderAsync());
   };
 
-  const rotate = async () => {
+  const rotateAndFlip = async () => {
     if (!context) {
       return;
     }
 
-    context.rotate(90);
-    setResult(await context.renderAsync());
+    setResult(await context.rotate(90).flipX().renderAsync());
   };
 
   return (
     <>
       <Button title="Pick image" onPress={load} />
-      <Button title="Rotate 90°" onPress={rotate} disabled={!context} />
+      <Button title="Rotate 90° + flip X" onPress={rotateAndFlip} disabled={!context} />
       {result && <Image source={result} style={{ width: 200, height: 200 }} />}
     </>
   );
 }
 ```
 
-In the above example, the React component only consumes the native image transformed by the image manipulator context, which is already in memory and referenced by the shared object (`ImageRef`). As a result, the image view can display the image immediately on the next frame.
+In the above example, the React component only consumes the native image transformed by the image manipulator context, which is already in memory and referenced by the shared object (`ImageRef`). As a result, the image view can display the image immediately on the next frame, and chained transforms never touch the file system.
 
 The JavaScript API picks an image using `ImagePicker`, which returns a standard file URI. This URI is handed to a custom native module to create a shared object in `SharedImageExample()`:
 
