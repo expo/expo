@@ -40,6 +40,8 @@ Finally, the shared object is passed to the `Image` component and this time the 
 
 The performance gains are significant. By eliminating redundant disk I/O and decode operations, you keep only a single bitmap in memory instead of multiple copies. This reduces CPU usage, which helps preserve battery life, and lowers the risk of crashes from memory pressure.
 
+Shared objects also unlock a more convenient, object-oriented API shape. You can expose methods on a long-lived instance (for example, `rotate()`, `flipX()`, `renderAsync()`) and let callers chain operations on that stateful object, instead of exposing a flat set of stateless functions.
+
 ### Implementation with shared objects
 
 Now that you understand why shared objects are useful, let's look into a minimal implementation that demonstrates the core concepts of the previous example.
@@ -62,9 +64,9 @@ class ImageRef : SharedRef<Bitmap>()
 
 class SimpleImageContext(
   runtimeContext: RuntimeContext,
-  private val original: Bitmap
+  bitmap: Bitmap
 ) : SharedObject(runtimeContext) {
-  private var current: Bitmap = original
+  private var current: Bitmap = bitmap
 
   fun rotate(degrees: Float) = apply {
     val matrix = Matrix().apply { postRotate(degrees) }
