@@ -1,4 +1,13 @@
 import type { Manifest, MiddlewareInfo, Route } from '../../manifest';
+export interface RenderOptions {
+    loader?: {
+        data: unknown;
+    };
+}
+export interface AssetManifest {
+    js: string[];
+    css: string[];
+}
 interface EnvironmentInput {
     readText(request: string): Promise<string | null>;
     readJson(request: string): Promise<unknown>;
@@ -6,7 +15,7 @@ interface EnvironmentInput {
 }
 export declare function createEnvironment(input: EnvironmentInput): {
     getRoutesManifest(): Promise<Manifest>;
-    getHtml(_request: Request, route: Route): Promise<string | Response | null>;
+    getHtml(request: Request, route: Route): Promise<string | Response | null>;
     getApiRoute(route: Route): Promise<unknown>;
     getMiddleware(middleware: MiddlewareInfo): Promise<any>;
 };
