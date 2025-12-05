@@ -215,7 +215,10 @@ function getExportedClassDeclaration(classDeclaration, fileTypeInformation) {
     return getTsClass(classDeclaration, fileTypeInformation, true, true, null);
 }
 function getModuleDefaultValueExport(defaultValueTypename) {
-    return [].concat(typescript_1.default.factory.createParameterDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ConstKeyword)], undefined, '_default', undefined, typescript_1.default.factory.createTypeReferenceNode(defaultValueTypename), undefined), typescript_1.default.factory.createExportDefault(typescript_1.default.factory.createIdentifier('_default')));
+    return [].concat(typescript_1.default.factory.createParameterDeclaration([
+        typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword),
+        typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ConstKeyword),
+    ], undefined, '_default', undefined, typescript_1.default.factory.createTypeReferenceNode(defaultValueTypename), undefined), typescript_1.default.factory.createExportDefault(typescript_1.default.factory.createIdentifier('_default')));
 }
 function getNTypeParameterDeclaration(n) {
     const params = [];
@@ -249,7 +252,7 @@ function getEnumDeclaration(enumType) {
 }
 function getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers, unresolvedTypesNamespace) {
     return [].concat([
-        typescript_1.default.factory.createModuleDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword)], typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), typescript_1.default.factory.createModuleBlock([...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, false, fileTypeInformation.typeParametersCount))), typescript_1.default.NodeFlags.Namespace),
+        typescript_1.default.factory.createModuleDeclaration(getExportDeclareModifiers(), typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), typescript_1.default.factory.createModuleBlock([...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.typeParametersCount))), typescript_1.default.NodeFlags.Namespace),
     ], [...undeclaredTypeIdentifiers].map((undeclaredTypeIdentifier) => {
         const paramCount = fileTypeInformation.typeParametersCount.get(undeclaredTypeIdentifier);
         return getTypeAliasDeclaration(undeclaredTypeIdentifier, typescript_1.default.factory.createTypeReferenceNode(typescript_1.default.factory.createQualifiedName(typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), undeclaredTypeIdentifier), paramCount === undefined ? undefined : getNTypeNodes(paramCount)), true, paramCount);
@@ -259,7 +262,10 @@ function getModuleTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInf
     return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('NativeModule', 'expo'), newlineIdentifier, getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers, unresolvedTypesNamespace), newlineIdentifier, recordTypes.flatMap(getRecordDeclaration), newlineIdentifier, enumTypes.flatMap(getEnumDeclaration), newlineIdentifier, moduleClassDeclaration.classes.map((c) => getExportedClassDeclaration(c, fileTypeInformation)), newlineIdentifier, getExportedModuleDeclaration(moduleClassDeclaration), newlineIdentifier, getModuleDefaultValueExport(moduleClassDeclaration.name));
 }
 function getViewDefaultValueExport(view) {
-    return [].concat(typescript_1.default.factory.createParameterDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ConstKeyword)], undefined, '_default', undefined, typescript_1.default.factory.createTypeReferenceNode('React.JSXElementConstructor', [
+    return [].concat(typescript_1.default.factory.createParameterDeclaration([
+        typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword),
+        typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ConstKeyword),
+    ], undefined, '_default', undefined, typescript_1.default.factory.createTypeReferenceNode('React.JSXElementConstructor', [
         typescript_1.default.factory.createTypeReferenceNode(getViewPropsTypeName(view)),
     ]), undefined), typescript_1.default.factory.createExportDefault(typescript_1.default.factory.createIdentifier('_default')));
 }
