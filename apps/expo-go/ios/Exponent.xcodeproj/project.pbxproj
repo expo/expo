@@ -33,6 +33,11 @@
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
 		402B73292CC90F7100FA17BC /* LocalNetworkAccessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402B73282CC90F7100FA17BC /* LocalNetworkAccessManager.swift */; };
 		402EB0AE2DAE561500A2B4A0 /* EXProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 402EB0AD2DAE561500A2B4A0 /* EXProgressHUD.m */; };
+		403636EC2EB0DE1E00EC9A43 /* EXPerfMonitorDataSource.mm in Sources */ = {isa = PBXBuildFile; fileRef = 403636EA2EB0DE1E00EC9A43 /* EXPerfMonitorDataSource.mm */; };
+		403636FC2EB0DEBC00EC9A43 /* PerfMonitorModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 403636FA2EB0DEBC00EC9A43 /* PerfMonitorModels.swift */; };
+		403636FD2EB0DEBC00EC9A43 /* PerfMonitorHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 403636F92EB0DEBC00EC9A43 /* PerfMonitorHostingController.swift */; };
+		403636FE2EB0DEBC00EC9A43 /* PerfMonitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 403636FB2EB0DEBC00EC9A43 /* PerfMonitorView.swift */; };
+		403637012EB0E96E00EC9A43 /* EXExpoPerfMonitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 403637002EB0E96E00EC9A43 /* EXExpoPerfMonitor.mm */; };
 		40482BA92D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40482BA82D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm */; };
 		4072128D2DAA98E100D02522 /* ManagedSplashscreenViewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4072128C2DAA98E100D02522 /* ManagedSplashscreenViewProvider.swift */; };
 		4072128F2DAA998300D02522 /* ManagedAppSplashScreenConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4072128E2DAA998300D02522 /* ManagedAppSplashScreenConfiguration.swift */; };
@@ -229,6 +234,13 @@
 		402B73282CC90F7100FA17BC /* LocalNetworkAccessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNetworkAccessManager.swift; sourceTree = "<group>"; };
 		402EB0AC2DAE561500A2B4A0 /* EXProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXProgressHUD.h; sourceTree = "<group>"; };
 		402EB0AD2DAE561500A2B4A0 /* EXProgressHUD.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXProgressHUD.m; sourceTree = "<group>"; };
+		403636E92EB0DE1E00EC9A43 /* EXPerfMonitorDataSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPerfMonitorDataSource.h; sourceTree = "<group>"; };
+		403636EA2EB0DE1E00EC9A43 /* EXPerfMonitorDataSource.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXPerfMonitorDataSource.mm; sourceTree = "<group>"; };
+		403636F92EB0DEBC00EC9A43 /* PerfMonitorHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfMonitorHostingController.swift; sourceTree = "<group>"; };
+		403636FA2EB0DEBC00EC9A43 /* PerfMonitorModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfMonitorModels.swift; sourceTree = "<group>"; };
+		403636FB2EB0DEBC00EC9A43 /* PerfMonitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfMonitorView.swift; sourceTree = "<group>"; };
+		403636FF2EB0E96E00EC9A43 /* EXExpoPerfMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXExpoPerfMonitor.h; sourceTree = "<group>"; };
+		403637002EB0E96E00EC9A43 /* EXExpoPerfMonitor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXExpoPerfMonitor.mm; sourceTree = "<group>"; };
 		40482BA82D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoGoReactNativeFactory.mm; sourceTree = "<group>"; };
 		40482BAA2D6CB91700ACAFBB /* ExpoGoReactNativeFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoGoReactNativeFactory.h; sourceTree = "<group>"; };
 		4072128C2DAA98E100D02522 /* ManagedSplashscreenViewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedSplashscreenViewProvider.swift; sourceTree = "<group>"; };
@@ -530,6 +542,20 @@
 				B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */,
 			);
 			path = UniversalModules;
+			sourceTree = "<group>";
+		};
+		403636EB2EB0DE1E00EC9A43 /* PerfMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				403636FF2EB0E96E00EC9A43 /* EXExpoPerfMonitor.h */,
+				403637002EB0E96E00EC9A43 /* EXExpoPerfMonitor.mm */,
+				403636F92EB0DEBC00EC9A43 /* PerfMonitorHostingController.swift */,
+				403636FA2EB0DEBC00EC9A43 /* PerfMonitorModels.swift */,
+				403636FB2EB0DEBC00EC9A43 /* PerfMonitorView.swift */,
+				403636E92EB0DE1E00EC9A43 /* EXPerfMonitorDataSource.h */,
+				403636EA2EB0DE1E00EC9A43 /* EXPerfMonitorDataSource.mm */,
+			);
+			path = PerfMonitor;
 			sourceTree = "<group>";
 		};
 		40CB1D742CD2A0C200CB3717 /* EXSplashScreen */ = {
@@ -977,6 +1003,7 @@
 		B5FB73FE1FF6DADB001C764B /* DevSupport */ = {
 			isa = PBXGroup;
 			children = (
+				403636EB2EB0DE1E00EC9A43 /* PerfMonitor */,
 				B5FB73FF1FF6DADB001C764B /* EXDevSettings.h */,
 				B5FB74001FF6DADB001C764B /* EXDevSettings.m */,
 				B5FB74011FF6DADB001C764B /* EXDevSettingsDataSource.h */,
@@ -1540,6 +1567,10 @@
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
 				407212932DAAA55100D02522 /* SplashScreenViewProvider.swift in Sources */,
 				407212A12DAD14C000D02522 /* SplashScreenViewNativeProvider.swift in Sources */,
+				403636FC2EB0DEBC00EC9A43 /* PerfMonitorModels.swift in Sources */,
+				403636FD2EB0DEBC00EC9A43 /* PerfMonitorHostingController.swift in Sources */,
+				403636FE2EB0DEBC00EC9A43 /* PerfMonitorView.swift in Sources */,
+				403637012EB0E96E00EC9A43 /* EXExpoPerfMonitor.mm in Sources */,
 				0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */,
 				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.mm in Sources */,
 				B5A473DA204A66F70035C61C /* EXAppViewController.mm in Sources */,
@@ -1587,6 +1618,7 @@
 				402B73292CC90F7100FA17BC /* LocalNetworkAccessManager.swift in Sources */,
 				B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */,
 				31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */,
+				403636EC2EB0DE1E00EC9A43 /* EXPerfMonitorDataSource.mm in Sources */,
 				B248B8842AD8888C003C9C10 /* UpdatesBinding.swift in Sources */,
 				B5FB74DE1FF6DADC001C764B /* EXVersionManagerObjC.mm in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
