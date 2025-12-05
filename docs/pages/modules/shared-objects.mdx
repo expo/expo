@@ -14,7 +14,7 @@ In this guide, let's understand what a shared object is and how they are impleme
 
 ## What is a shared object?
 
-A shared object is a custom class that bridges a native instance from Android and/or iOS to your app's JavaScript/TypeScript code through an Expo module. On the native side in Kotlin and Swift, you declare the class by inheriting from `SharedObject` and expose it in your module definition using `Class()`. The Expo Modules API handles reference counting, lifecycle management, and cleanup automatically.
+A shared object is a custom class that bridges a native instance from Android and/or iOS to your app's JavaScript/TypeScript code through an Expo module. On the native side in Kotlin and Swift, you declare the class by inheriting from `SharedObject` and expose it in your module definition using `Class()`. A shared object is deallocated automatically once neither JavaScript nor native holds a reference.
 
 ## Why use shared objects?
 
@@ -30,11 +30,11 @@ To understand shared objects, consider an example where you need to rotate and f
 
 Historically, native modules were often written in a _stateless_ way, where each function operated independently without maintaining state between calls. If you wanted to perform two separate operations on the same object (such as an image file), you would load it from disk in both places and repeat the I/O operation each time.
 
-Without shared objects, `ImagePicker` returns a file URI such as `"file:///path/to/image.jpg"`. The image manipulator module then reads the URI and decodes the image from the disk into memory. When the app user calls `rotate()` method to rotate the image, the module saves the rotated image to a new file. Finally, when the new URI is passed to the `Image` component, it decodes the image from disk again to render the image. This workflow results in two or more decode and disk read operations.
+Without shared objects, `ImagePicker` reads from a file URI such as `"file:///path/to/image.jpg"` and decodes the image into memory. The image manipulator module then reads the same URI and decodes the image into memory again. When the app user calls a transform method (for example, `rotate()`) to rotate the image, the module saves the rotated image to a new file. Finally, when the new URI is passed to the `Image` component, it decodes the image from disk again to render the image. This workflow results in two or more decode and disk read operations.
 
 ### With shared objects
 
-The same scenario becomes much more efficient with shared objects. `ImagePicker` reads the URI and decodes the image once into a shared object. When the app user calls `rotate()`, the module manipulates the in-memory bitmap without writing to the disk.
+The same scenario becomes much more efficient with shared objects. `ImagePicker` reads the URI and decodes the image once into a shared object. When the app user calls a transform method (for example, `rotate()`), the module manipulates the in-memory bitmap without writing to the disk. If you need a file output, call an explicit save function (for example, `saveAsync` in an image manipulator), otherwise the transforms stay in memory only.
 
 Finally, the shared object is passed to the `Image` component and this time the image is rendered from memory. The entire workflow requires just one disk read and one decode operation, with all transformations happening in memory.
 
