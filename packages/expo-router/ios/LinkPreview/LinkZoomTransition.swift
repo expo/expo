@@ -148,6 +148,7 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
 
 class LinkZoomTransitionEnabler: LinkZoomExpoView {
   var zoomTransitionSourceIdentifier: String = ""
+  var isPreventingInteractiveDismissal: Bool = false
 
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
@@ -172,6 +173,9 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
           let sourceInfo = self.repository?.getSource(
             identifier: self.zoomTransitionSourceIdentifier)
           return sourceInfo?.alignment
+        }
+        options.interactiveDismissShouldBegin = { _ in
+          !self.isPreventingInteractiveDismissal
         }
         controller.preferredTransition = .zoom(options: options) { _ in
           let sourceInfo = self.repository?.getSource(

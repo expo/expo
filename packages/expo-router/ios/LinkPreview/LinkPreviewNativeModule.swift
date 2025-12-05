@@ -111,6 +111,10 @@ public class LinkPreviewNativeModule: Module {
       Prop("disableForceFlatten") { (_: LinkZoomTransitionEnabler, _: Bool) in
         // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }
+
+      Prop("preventInteractiveDismissal") { (view: LinkZoomTransitionEnabler, prevent: Bool) in
+        view.isPreventingInteractiveDismissal = prevent
+      }
     }
   }
 }
