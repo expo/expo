@@ -1,0 +1,33 @@
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+- openLink: bareexpo://apis/contacts@next/intents
+- tapOn: 'Contact.presentAccessPicker()'
+# The following two steps are workaround because Maestro cannot interact with AccessPicker
+- assertNotVisible: 'Contact.presentAccessPicker()'
+# Tap to dismiss the access picker if it appears
+# 88% is the alignment of Battery indicator on iOS
+- repeat:
+    times: 3
+    commands:
+      - tapOn:
+          point: 88%, 15%
+
+- tapOn: 'Contact.presentCreateForm()'
+- tapOn: 'Edit'
+- tapOn: 'Done'
+- tapOn: 'Contact.presentPicker()'
+
+# This is a workaround because Maestro does not see contacts in the picker
+# Select the first contact in the list
+- repeat:
+    times: 3
+    commands:
+      - tapOn:
+          point: 50%, 22%
+
+- assertNotVisible: 'No contact selected'
+
+- tapOn: 'selectedContact.presentEditForm()'
+- tapOn: 'Edit'
+- tapOn: 'Cancel'
