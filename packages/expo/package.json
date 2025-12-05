@@ -34,6 +34,8 @@
     "config",
     "config-plugins.js",
     "config-plugins.d.ts",
+    "modules-core.js",
+    "modules-core.d.ts",
     "devtools.js",
     "devtools.d.ts",
     "fetch.js",
