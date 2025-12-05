@@ -34,9 +34,9 @@ Without shared objects, `ImagePicker` returns a file URI such as `"file:///path/
 
 ### With shared objects
 
-The same scenario becomes much more efficient with shared objects. `ImagePicker` returns a file URI, but the image manipulator module reads the URI and decodes the image once into a shared object. When the app user calls `rotate()`, the module manipulates the in-memory bitmap without writing to the disk.
+The same scenario becomes much more efficient with shared objects. `ImagePicker` reads the URI and decodes the image once into a shared object. When the app user calls `rotate()`, the module manipulates the in-memory bitmap without writing to the disk.
 
-Finally, the new URI is passed to the `Image` component and this time the image is rendered from memory. The entire workflow requires just one disk read and one decode operation, with all transformations happening in memory.
+Finally, the shared object is passed to the `Image` component and this time the image is rendered from memory. The entire workflow requires just one disk read and one decode operation, with all transformations happening in memory.
 
 The performance gains are significant. By eliminating redundant disk I/O and decode operations, you keep only a single bitmap in memory instead of multiple copies. This reduces CPU usage, which helps preserve battery life, and lowers the risk of crashes from memory pressure.
 
@@ -58,7 +58,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedObject
 
-class ImageRef(bitmap: Bitmap, runtimeContext: RuntimeContext) : SharedRef<Bitmap>(bitmap, runtimeContext)
+class ImageRef : SharedRef<Bitmap>()
 
 class SimpleImageContext(
   runtimeContext: RuntimeContext,
@@ -122,11 +122,7 @@ In iOS, you create a shared object by inheriting from `SharedObject` class provi
 import ExpoModulesCore
 import UIKit
 
-final class ImageRef: SharedRef<UIImage> {
-  init(_ image: UIImage) {
-    super.init(object: image)
-  }
-}
+final class ImageRef: SharedRef<UIImage> {}
 
 final class SimpleImageContext: SharedObject {
   private let original: UIImage
