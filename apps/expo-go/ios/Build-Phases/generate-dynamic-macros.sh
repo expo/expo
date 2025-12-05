@@ -15,8 +15,10 @@ fi
 
 export PATH="${SRCROOT}/../../../bin:$PATH"
 
+ET_BIN="$PODS_ROOT/../../../../bin/et"
+
 if [ "${APP_OWNER}" == "Expo" ]; then
-  et ios-generate-dynamic-macros --configuration ${CONFIGURATION}
+  $NODE_BINARY $ET_BIN ios-generate-dynamic-macros --configuration ${CONFIGURATION}
 else
-  et ios-generate-dynamic-macros --configuration ${CONFIGURATION} --skip-template=GoogleService-Info.plist
+  $NODE_BINARY $ET_BIN ios-generate-dynamic-macros --configuration ${CONFIGURATION} --skip-template=GoogleService-Info.plist
 fi
