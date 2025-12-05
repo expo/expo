@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix app destroying all Activities on initial launch when using `experimentalLauncherActivity`.
+
 ### 💡 Others
 
 ## 15.0.10 - 2025-12-05

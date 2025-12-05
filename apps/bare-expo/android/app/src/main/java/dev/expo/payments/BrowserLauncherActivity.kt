@@ -8,7 +8,9 @@ class BrowserLauncherActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     val application = application as MainApplication
-    if (!application.isActivityInBackStack(MainActivity::class.java)) {
+    val isLeavingDevLauncher = intent.extras?.getBoolean("isLeavingDevLauncher") ?: false
+
+    if (!application.isActivityInBackStack(MainActivity::class.java) || isLeavingDevLauncher) {
       val intent = Intent(this, MainActivity::class.java)
       startActivity(intent)
     }
