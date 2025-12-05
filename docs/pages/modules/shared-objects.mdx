@@ -233,7 +233,7 @@ export function SharedImageExample() {
 }
 ```
 
-In the above example, the React component never receives raw pixels or deals with file paths after the initial load. It only manages a context object and a shared reference.
+In the above example, the React component only consumes the native image transformed by the image manipulator context, which is already in memory and referenced by the shared object (`ImageRef`). As a result, the image view can display the image immediately on the next frame.
 
 The JavaScript API picks an image using `ImagePicker`, which returns a standard file URI. This URI is handed to a custom native module to create a shared object in `SharedImageExample()`:
 
@@ -264,6 +264,8 @@ Some examples of [Expo SDK libraries](/versions/latest/) that use shared objects
 
 - `expo-image` library uses `SharedObject` to keep a decoded operation alive and the view component accepts `SharedRef<Bitmap>` on Android and `SharedRef<UIImage>` on iOS. This design allows images to be passed between modules without decoding it again. To explore more, see `expo-image` library's source code for [Android](https://github.com/expo/expo/tree/main/packages/expo-image/android/src/main/java/expo/modules/image) and [iOS](https://github.com/expo/expo/tree/main/packages/expo-image/ios).
 - `expo-image-manipulator` library demonstrates handling asynchronous operations, queuing multiple operations, and exposing a clean JavaScript API. To explore more, see `expo-image-manipulator` library's source code for [Android](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/android/src/main/java/expo/modules/imagemanipulator) and [iOS](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios).
+- `expo-sqlite` library uses shared objects to keep database, session, and statement handles across calls while coordinating access to the underlying database. To explore more, see `expo-sqlite` library's source code for [Android](https://github.com/expo/expo/tree/main/packages/expo-sqlite/android/src/main/java/expo/modules/sqlite) and [iOS](https://github.com/expo/expo/tree/main/packages/expo-sqlite/ios).
+- `expo/fetch` library uses shared objects to keep request and response lifecycles alive for streaming, cancellation, and redirect handling while presenting a JavaScript fetch-compatible API. To explore more, see `expo/fetch` library's source code for [Android](https://github.com/expo/expo/tree/main/packages/expo/android/src/main/java/expo/modules/fetch) and [iOS](https://github.com/expo/expo/tree/main/packages/expo/ios/Fetch).
 
 ## Performance benefits of shared objects
 
