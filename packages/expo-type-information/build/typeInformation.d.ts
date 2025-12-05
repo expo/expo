@@ -9,7 +9,7 @@ export type ParametrizedType = {
     types: Type[];
 };
 export type Argument = {
-    name: string;
+    name: string | undefined;
     type: Type;
 };
 export type Field = Argument;

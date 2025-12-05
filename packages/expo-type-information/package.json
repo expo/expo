@@ -6,6 +6,8 @@
     "expo",
     "expo-modules"
   ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
