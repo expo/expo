@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix TS build issue ([#41448](https://github.com/expo/expo/pull/41448) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 - [Android] Removed unused `androidx.annotation:annotation` dependency ([#39764](https://github.com/expo/expo/pull/39764) by [@lukmccall](https://github.com/lukmccall))
