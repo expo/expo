@@ -33,6 +33,7 @@ import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync } from '../publicFolder';
 import { BundleAssetWithFileHashes, ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
+import { startModuleGenerationAsync } from '../../inlineModules/generation';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 import { resolveRealEntryFilePath } from '../../utils/filePath';
 
@@ -373,6 +374,12 @@ export async function createMetroServerAndBundleRequestAsync(
   const server = new Server(config, {
     watch: false,
   });
+
+  // This is needed for the CI, as it runs `Executing expo-updates Pods/EXUpdates » [CP-User] Generate updates resources for expo-updates`
+  // Which in turn leads to this function.
+  if (exp.experiments?.inlineModules === true) {
+    await startModuleGenerationAsync({ projectRoot, metro: server });
+  }
 
   return { server, bundleRequest };
 }
