@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.0.28 — 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.27 — 2025-12-04
 
 ### 🐛 Bug fixes

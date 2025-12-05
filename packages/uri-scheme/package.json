@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@expo/config-plugins": "~54.0.3",
-    "@expo/plist": "^0.4.7",
+    "@expo/plist": "^0.4.8",
     "@expo/spawn-async": "^1.7.2",
     "@types/prompts": "^2.0.6",
     "chalk": "^4.0.0",

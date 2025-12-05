@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 19.0.20 — 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 19.0.19 — 2025-11-18
 
 ### 🎉 New features

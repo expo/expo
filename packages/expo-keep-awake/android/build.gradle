@@ -4,12 +4,12 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '15.0.7'
+version = '15.0.8'
 
 android {
   namespace "expo.modules.keepawake"
   defaultConfig {
     versionCode 16
-    versionName "15.0.7"
+    versionName "15.0.8"
   }
 }

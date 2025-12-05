@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.27 — 2025-12-05
+
+### 💡 Others
+
 - Add recommended `react-server-dom-webpack` version to `bundledNativeModules.json` ([#41417](https://github.com/expo/expo/pull/41417) by [@kitten](https://github.com/kitten))
 
 ## 54.0.26 — 2025-12-04

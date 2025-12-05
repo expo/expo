@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 54.0.18 — 2025-12-05
+
 ### 📚 3rd party library updates
 
 - Bumped `@expo/devcert@1.2.1`. ([#41438](https://github.com/expo/expo/pull/41438) by [@kudo](https://github.com/kudo))

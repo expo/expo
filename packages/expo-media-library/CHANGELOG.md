@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 18.2.1 — 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 18.2.0 — 2025-09-16
 
 ### 🎉 New features

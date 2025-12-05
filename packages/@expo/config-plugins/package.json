@@ -56,8 +56,8 @@
   ],
   "dependencies": {
     "@expo/config-types": "^54.0.9",
-    "@expo/json-file": "~10.0.7",
-    "@expo/plist": "^0.4.7",
+    "@expo/json-file": "~10.0.8",
+    "@expo/plist": "^0.4.8",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
