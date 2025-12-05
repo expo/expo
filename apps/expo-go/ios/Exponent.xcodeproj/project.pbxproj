@@ -40,6 +40,13 @@
 			remoteGlobalIDString = 78CEE2BF1ACD07D70095B124;
 			remoteInfo = Exponent;
 		};
+		B51333451CE649FE00E9FC9E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 78CEE2B81ACD07D70095B124 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 78CEE2BF1ACD07D70095B124;
+			remoteInfo = Exponent;
+		};
 		FCF6D37225B34BC200808BF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 78CEE2B81ACD07D70095B124 /* Project object */;
@@ -435,7 +442,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				B505BA1420CAF77A0046ACFB /* PBXTargetDependency */,
+				B51333461CE649FE00E9FC9E /* PBXTargetDependency */,
 			);
 			name = ExponentIntegrationTests;
 			productName = ExponentIntegrationTests;
@@ -898,6 +905,11 @@
 			isa = PBXTargetDependency;
 			target = 78CEE2BF1ACD07D70095B124 /* Expo Go */;
 			targetProxy = B505BA1320CAF77A0046ACFB /* PBXContainerItemProxy */;
+		};
+		B51333461CE649FE00E9FC9E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 78CEE2BF1ACD07D70095B124 /* Expo Go */;
+			targetProxy = B51333451CE649FE00E9FC9E /* PBXContainerItemProxy */;
 		};
 		FCF6D37325B34BC200808BF5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
