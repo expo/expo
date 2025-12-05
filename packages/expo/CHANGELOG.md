@@ -19,6 +19,7 @@
 - [iOS] `Class` definition for shared objects is now optional. ([#40708](https://github.com/expo/expo/pull/40708) by [@tsapeta](https://github.com/tsapeta))
 - Split out JSI layer from the modules core. ([#40755](https://github.com/expo/expo/pull/40755) by [@tsapeta](https://github.com/tsapeta))
 - Add `@expo/local-build-cache-provider` package ([#41270](https://github.com/expo/expo/pull/41270) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Added `appDelegateWillBeginInitialization` function to AppDelegate subscribers. ([#41456](https://github.com/expo/expo/pull/41456) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
