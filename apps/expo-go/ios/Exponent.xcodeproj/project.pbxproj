@@ -129,7 +129,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		79BD00FD2E4A254B0019F3FF /* Exceptions for "Notifications" folder in "ExpoNotificationServiceExtension" target */ = {
+		79BD00FD2E4A254B0019F3FF /* Exceptions for "Versioned" folder in "ExpoNotificationServiceExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Core/Modules/Notifications/EXScopedNotificationsUtils.swift,
@@ -140,43 +140,13 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				Exponent-Prefix.pch,
+				"Exponent-Prefix.pch",
 			);
 			target = 78CEE2BF1ACD07D70095B124 /* Expo Go */;
 		};
-
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		XXEXPOC92D9B38910007E94A = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			path = ExpoKit;
-			sourceTree = "<group>";
-		};
-		XXEXPOKERNEL38910007E94A = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			path = Kernel;
-			sourceTree = "<group>";
-		};
-		XXEXPOKERNEL389VERSIONED = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				79BD00FD2E4A254B0019F3FF
-			);
-			path = Versioned;
-			sourceTree = "<group>";
-		};
-		XXEXPOCLIENTXXXXXXXXXXXX = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			path = Client;
-			sourceTree = "<group>";
-		};
 		B5E49B521D1346FA00AA6436 /* Supporting */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -185,7 +155,35 @@
 			path = Supporting;
 			sourceTree = "<group>";
 		};
-
+		XXEXPOC92D9B38910007E94A /* ExpoKit */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			path = ExpoKit;
+			sourceTree = "<group>";
+		};
+		XXEXPOCLIENTXXXXXXXXXXXX /* Client */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			path = Client;
+			sourceTree = "<group>";
+		};
+		XXEXPOKERNEL38910007E94A /* Kernel */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			path = Kernel;
+			sourceTree = "<group>";
+		};
+		XXEXPOKERNEL389VERSIONED /* Versioned */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				79BD00FD2E4A254B0019F3FF /* Exceptions for "Versioned" folder in "ExpoNotificationServiceExtension" target */,
+			);
+			path = Versioned;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -258,7 +256,7 @@
 				4A6280092E69DBF000D916B0 /* AppIcon.icon */,
 				B287BB2327DD909B008DA282 /* expo-root.pem */,
 				F12A1AB722ABD461008542C6 /* Build-Phases */,
-				XXEXPOCLIENTXXXXXXXXXXXX,
+				XXEXPOCLIENTXXXXXXXXXXXX /* Client */,
 				78CEE2C21ACD07D70095B124 /* Exponent */,
 				F1F7433C24ABECD400EA5023 /* Exponent-Bridging-Header.h */,
 				B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */,
@@ -287,10 +285,10 @@
 		78CEE2C21ACD07D70095B124 /* Exponent */ = {
 			isa = PBXGroup;
 			children = (
-				XXEXPOC92D9B38910007E94A,
-				XXEXPOKERNEL38910007E94A,
-				B5E49B521D1346FA00AA6436,
-				XXEXPOKERNEL389VERSIONED,
+				XXEXPOC92D9B38910007E94A /* ExpoKit */,
+				XXEXPOKERNEL38910007E94A /* Kernel */,
+				B5E49B521D1346FA00AA6436 /* Supporting */,
+				XXEXPOKERNEL389VERSIONED /* Versioned */,
 				78CEE2D01ACD07D70095B124 /* Images.xcassets */,
 				8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */,
 				CBB185772BE29F7A00E5067C /* PrivacyInfo.xcprivacy */,
@@ -434,11 +432,11 @@
 				FCF6D37325B34BC200808BF5 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				XXEXPOC92D9B38910007E94A,
-				XXEXPOKERNEL38910007E94A,
-				XXEXPOKERNEL389VERSIONED,
-				XXEXPOCLIENTXXXXXXXXXXXX,
-				B5E49B521D1346FA00AA6436,
+				XXEXPOC92D9B38910007E94A /* ExpoKit */,
+				XXEXPOKERNEL38910007E94A /* Kernel */,
+				XXEXPOKERNEL389VERSIONED /* Versioned */,
+				XXEXPOCLIENTXXXXXXXXXXXX /* Client */,
+				B5E49B521D1346FA00AA6436 /* Supporting */,
 			);
 			name = "Expo Go";
 			productName = Exponent;
