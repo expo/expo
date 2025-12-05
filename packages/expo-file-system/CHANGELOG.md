@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed getting content uri for external files on Android. ([#23739](https://github.com/expo/expo/pull/23739) by [@G-Ray](https://github.com/G-Ray))
+
 ### 💡 Others
 
 - [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
