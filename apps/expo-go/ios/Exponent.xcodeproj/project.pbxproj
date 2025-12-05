@@ -148,7 +148,7 @@
 			path = Client;
 			sourceTree = "<group>";
 		};
-		XXEXPOKERNXXXXXXEXPONENT /* Exponent */ = {
+		XXEXPONENTXXXXXXXXXXXXXX /* Exponent */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				B5E49B5A1D1346FA00AA6437 /* Exceptions for "Exponent" folder in "Expo Go" target */,
@@ -231,7 +231,7 @@
 				B287BB2327DD909B008DA282 /* expo-root.pem */,
 				F12A1AB722ABD461008542C6 /* Build-Phases */,
 				XXEXPOCLIENTXXXXXXXXXXXX /* Client */,
-				XXEXPOKERNXXXXXXEXPONENT /* Exponent */,
+				XXEXPONENTXXXXXXXXXXXXXX /* Exponent */,
 				F1F7433C24ABECD400EA5023 /* Exponent-Bridging-Header.h */,
 				B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */,
 				FCF6D36E25B34BC200808BF5 /* ExpoNotificationServiceExtension */,
@@ -393,7 +393,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				XXEXPOCLIENTXXXXXXXXXXXX /* Client */,
-				XXEXPOKERNXXXXXXEXPONENT /* Exponent */,
+				XXEXPONENTXXXXXXXXXXXXXX /* Exponent */,
 			);
 			name = "Expo Go";
 			productName = Exponent;
