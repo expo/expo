@@ -47,6 +47,10 @@
 - [iOS] Moved the implementation of the constants provider (`EXConstantsService`) from `expo-constants`. ([#41339](https://github.com/expo/expo/pull/41339) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Replaced `appContext.fileSystem`, `appContext.utilities` and `appContext.imageLoader` with the core implementations. ([#41350](https://github.com/expo/expo/pull/41350), [#41370](https://github.com/expo/expo/pull/41370), [#41396](https://github.com/expo/expo/pull/41396) by [@tsapeta](https://github.com/tsapeta))
 
+## 3.0.28 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.27 - 2025-12-04
 
 ### 🐛 Bug fixes

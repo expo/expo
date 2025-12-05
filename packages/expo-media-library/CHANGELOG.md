@@ -27,6 +27,10 @@
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 - [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
 
+## 18.2.1 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 18.2.0 — 2025-09-16
 
 ### 🎉 New features

@@ -12,6 +12,10 @@
 
 - [Android] Removed unused `androidx.annotation:annotation` dependency ([#39764](https://github.com/expo/expo/pull/39764) by [@lukmccall](https://github.com/lukmccall))
 
+## 14.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 14.0.7 — 2025-09-10
 
 ### 💡 Others
