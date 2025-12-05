@@ -7,97 +7,17 @@ import {
   size,
   TextInput,
   weight,
-  NavigationDrawer,
-  Text,
-  Box,
-  fillMaxWidth,
-  NavigationDrawerItem,
 } from '@expo/ui/jetpack-compose';
-import {
-
-} from '@expo/ui/jetpack-compose/drawer';
-import { Drawer } from 'expo-router/drawer';
-import { SymbolView } from 'expo-symbols';
-import { View } from 'react-native';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { DrawerNavigationState, ParamListBase } from '@react-navigation/native';
-
-import { withLayoutContext } from 'expo-router';
 import {
   createDrawerNavigator,
   DrawerNavigationEventMap,
   DrawerNavigationOptions,
-} from '../drawer/src';
-
-function RNDrawer() {
-  const insets = useSafeAreaInsets();
-
-  return (
-    <Drawer>
-      <Drawer.Screen
-        name="index" // This is the name of the page and must match the url from root
-        options={{
-          drawerLabel: 'Home',
-          headerTransparent: true,
-          header: (props) => (
-            <Host
-              style={{
-                flex: 1,
-                flexBasis: 0,
-                height: 60,
-                marginTop: insets.top,
-                backgroundColor: '#FBF8FB',
-              }}>
-              <Row
-                modifiers={[padding(0, 0, 16, 0)]}
-                horizontalArrangement="spaceBetween"
-                verticalAlignment="center">
-                <IconButton
-                  modifiers={[size(52, 52), padding(0, 0, 0, 0)]}
-                  onPress={props.navigation.openDrawer}
-                  //   color={Color.android.system_accent1_10.toString()}
-                  shape={Shape.Circle({ radius: 1 })}>
-                  {/* figure out host */}
-                  <View
-                    style={{
-                      width: 52,
-                      height: 52,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      pointerEvents: 'none',
-                    }}>
-                    <SymbolView size={24} tintColor="#333" name={{ android: 'menu' }} />
-                  </View>
-                </IconButton>
-                {/* Add variant for textinput */}
-                <TextInput defaultValue="Test" onChangeText={() => {}} modifiers={[weight(1)]} />
-                <IconButton
-                  variant="bordered"
-                  modifiers={[size(40, 40), padding(8, 0, 0, 0)]}
-                  onPress={console.log}
-                  //   color={Color.android.system_accent1_10.toString()}
-                  shape={Shape.Circle({ radius: 1 })}>
-                  {/* figure out host */}
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      pointerEvents: 'none',
-                    }}>
-                    <SymbolView size={24} tintColor="#777" name={{ android: 'shuffle' }} />
-                  </View>
-                </IconButton>
-              </Row>
-            </Host>
-          ),
-        }}
-      />
-    </Drawer>
-  );
-}
+} from '@expo/ui/jetpack-compose/drawer';
+import { DrawerNavigationState, ParamListBase } from '@react-navigation/native';
+import { withLayoutContext } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
+import { View } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DrawerNavigator = createDrawerNavigator().Navigator;
 
@@ -126,9 +46,7 @@ function NativeDrawer() {
           //     </Text>
           //   </Row>
           // ),
-          drawerLabel: ({focused}) => {
-            
-          }
+          // drawerLabel: ({ focused }) => {},
           headerTransparent: true,
           header: (props) => (
             <Host
