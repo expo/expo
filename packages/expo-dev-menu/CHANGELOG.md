@@ -13,9 +13,8 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix React Native dev menu not showing up in 0.83.x ([#40819](https://github.com/expo/expo/pull/40819) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [iOS] Fix broken hotkeys after reload. ([#40829](https://github.com/expo/expo/pull/40829) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] don't trigger double reload on r key press ([#41355](https://github.com/expo/expo/pull/41355) by [@vonovak](https://github.com/vonovak))
 - Hide Action button in PiP mode to prevent crash ([#40792](https://github.com/expo/expo/pull/40792) by [@kosmydel](https://github.com/kosmydel))
+- [Android] Prevent some debug only artifacts from being included in release builds. ([#41378](https://github.com/expo/expo/pull/41378) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
@@ -28,6 +27,22 @@
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 7.0.18 - 2025-12-04
+
+### 🐛 Bug fixes
+
+- [iOS] don't trigger double reload on r key press ([#41355](https://github.com/expo/expo/pull/41355) by [@vonovak](https://github.com/vonovak))
+
+## 7.0.17 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.16 - 2025-11-05
+
+### 🐛 Bug fixes
+
+- [iOS] Fix broken hotkeys after reload. ([#40829](https://github.com/expo/expo/pull/40829) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 7.0.15 - 2025-10-21
 
