@@ -1,0 +1,23 @@
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+- openLink: bareexpo://apis/contacts@next/intents
+- tapOn:
+    text: 'Contact.presentCreateForm()'
+
+- assertVisible: 'PresentCreateForm'
+
+- tapOn:
+    text: 'Save'
+    optional: true
+
+- tapOn:
+    text: 'Contact.presentPicker()'
+
+- tapOn:
+    text: 'PresentCreateForm'
+
+- tapOn:
+    text: 'selectedContact.presentEditForm()'
+
+- assertVisible: 'PresentCreateForm'

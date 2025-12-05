@@ -12,6 +12,7 @@ import { BlobScreens } from '../screens/Blob/BlobScreen';
 import { CalendarsNextScreens } from '../screens/CalendarsNextScreen';
 import { CalendarsScreens } from '../screens/CalendarsScreen';
 import { apiScreensToListElements } from '../screens/ComponentListScreen';
+import { ContactsNextScreens } from '../screens/Contacts@Next/ContactsNextScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
@@ -221,6 +222,13 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
     },
     name: 'Contacts',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/Contacts@Next/ContactsNextScreen'));
+    },
+    name: 'Contacts@Next',
+    options: { title: 'Contacts@Next' },
   },
   {
     getComponent() {
@@ -472,6 +480,7 @@ export const Screens: ScreenConfig[] = [
   ...AudioScreens,
   ...BlobScreens,
   ...ContactsScreens,
+  ...ContactsNextScreens,
   ...CalendarsScreens,
   ...CalendarsNextScreens,
 ];
