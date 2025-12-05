@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Web] Add `loading` prop for lazy loading images. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@anthropics](https://github.com/anthropics))
 - [Android] Upgrades Glide to `5.0.5`. ([#39713](https://github.com/expo/expo/pull/39713) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added support for HDR images ([#40242](https://github.com/expo/expo/pull/40242) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Adopted Swift 6 ([#40369](https://github.com/expo/expo/pull/40369) by [@tsapeta](https://github.com/tsapeta))
