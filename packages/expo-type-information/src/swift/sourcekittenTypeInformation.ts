@@ -300,9 +300,12 @@ function getTypeOfByteOffsetVariable(byteOffset: number, file: FileType): string
   return null;
 }
 
-function mapSourcekittenParameterToType(parameter: { name: string; typename: string }): Argument {
+function mapSourcekittenParameterToType(parameter: {
+  name: string | undefined;
+  typename: string;
+}): Argument {
   return {
-    name: parameter.name,
+    name: parameter.name ?? undefined,
     type: mapSwiftTypeToTsType(parameter.typename),
   };
 }
@@ -323,7 +326,10 @@ function parseClosureTypes(
   }
   const parameters = closure['key.substructure']
     ?.filter((s) => s['key.kind'] === 'source.lang.swift.decl.var.parameter')
-    .map((p) => ({ name: p['key.name'], typename: p['key.typename'] }));
+    .map((p) => ({
+      name: p['key.name'] ?? undefined,
+      typename: p['key.typename'],
+    }));
 
   const returnType = closure?.['key.typename'] ?? findReturnType(structure, file);
   return { parameters, returnType };

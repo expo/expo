@@ -16,4 +16,5 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./typeInformation"), exports);
 __exportStar(require("./typescriptGeneration"), exports);
+__exportStar(require("./mockgen"), exports);
 //# sourceMappingURL=index.js.map
