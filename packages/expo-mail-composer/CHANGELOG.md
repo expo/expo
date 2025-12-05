@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix mail composer not suggesting an e-mail client on some devices. ([#41274](https://github.com/expo/expo/pull/41274) by [@behenate](https://github.com/behenate))
+- [web] Fix mail composer not encoding content correctly. All spaces would appear in the content as "+".
 
 ### 💡 Others
 
