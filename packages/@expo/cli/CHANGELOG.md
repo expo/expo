@@ -19,6 +19,7 @@
 
 - refactor launching Expo Go on Android ([#40020](https://github.com/expo/expo/pull/40020) by [@vonovak](https://github.com/vonovak))
 - only skip dependency validation for `EXPO_NO_DEPENDENCY_VALIDATION=1` ([#40043](https://github.com/expo/expo/pull/40043) by [@kitten](https://github.com/kitten))
+- Fix parsing of package names when applying config plugins after installing ([#41463](https://github.com/expo/expo/pull/41463) by [@radoslawrolka](https://github.com/radoslawrolka))
 
 ### 💡 Others
 
