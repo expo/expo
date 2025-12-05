@@ -423,7 +423,10 @@ function getExportedClassDeclaration(
 function getModuleDefaultValueExport(defaultValueTypename: string): ts.Node[] {
   return ([] as ts.Node[]).concat(
     ts.factory.createParameterDeclaration(
-      [ts.factory.createModifier(ts.SyntaxKind.ConstKeyword)],
+      [
+        ts.factory.createModifier(ts.SyntaxKind.ExportKeyword),
+        ts.factory.createModifier(ts.SyntaxKind.ConstKeyword),
+      ],
       undefined,
       '_default',
       undefined,
@@ -513,13 +516,13 @@ function getUndeclaredIdentifiersDeclaration(
   return ([] as ts.Node[]).concat(
     [
       ts.factory.createModuleDeclaration(
-        [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+        getExportDeclareModifiers(),
         ts.factory.createIdentifier(unresolvedTypesNamespace),
         ts.factory.createModuleBlock(
           [...undeclaredTypeIdentifiers].map((identifier) =>
             getIdentifierUnknownDeclaration(
               identifier,
-              false,
+              true,
               fileTypeInformation.typeParametersCount
             )
           )
@@ -579,7 +582,10 @@ function getModuleTypesDeclarationsForModule(
 function getViewDefaultValueExport(view: ViewDeclaration): ts.Node[] {
   return ([] as ts.Node[]).concat(
     ts.factory.createParameterDeclaration(
-      [ts.factory.createModifier(ts.SyntaxKind.ConstKeyword)],
+      [
+        ts.factory.createModifier(ts.SyntaxKind.ExportKeyword),
+        ts.factory.createModifier(ts.SyntaxKind.ConstKeyword),
+      ],
       undefined,
       '_default',
       undefined,
