@@ -8,13 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		24C3B781E40BA87F7702303B /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D607CBE135ED3708B0B19DD3 /* libPods-ExponentIntegrationTests.a */; };
-		B832D3668B2FFD1CED2DDE12 /* libPods-Expo Go-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9003E4BAC9D7FD870EE69703 /* libPods-Expo Go-Tests.a */; };
-		EC8D7E182E36030D45964678 /* libPods-Expo Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8ABD4D495DA97B3FFF6F8A3 /* libPods-Expo Go.a */; };
-		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4A62800A2E69DBF000D916B0 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4A6280092E69DBF000D916B0 /* AppIcon.icon */; };
 		ABE005EBFA92123617D22216 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */; };
-		E49A0BB45440D0306F0ADCDE /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */; };
-		FB4B49E32E5D99D79400A124 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */; };
 		B287BB2427DD909C008DA282 /* expo-root.pem in Resources */ = {isa = PBXBuildFile; fileRef = B287BB2327DD909B008DA282 /* expo-root.pem */; };
 		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
 		B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */; };
@@ -27,9 +22,14 @@
 		B5FABDF220DD91D500642528 /* EXAppLoaderConfigurationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */; };
 		B5FABDF620DD926E00642528 /* EXFileDownloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */; };
 		B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */; };
+		B832D3668B2FFD1CED2DDE12 /* libPods-Expo Go-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9003E4BAC9D7FD870EE69703 /* libPods-Expo Go-Tests.a */; };
+		E49A0BB45440D0306F0ADCDE /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */; };
+		EC8D7E182E36030D45964678 /* libPods-Expo Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8ABD4D495DA97B3FFF6F8A3 /* libPods-Expo Go.a */; };
 		F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */; };
-		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
+		FB4B49E32E5D99D79400A124 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */; };
+		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
+		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,26 +116,24 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		79BD00FD2E4A254B0019F3FF /* Exceptions for "Versioned" folder in "ExpoNotificationServiceExtension" target */ = {
+		79BD00FD2E4A254B0019F3FF /* Exceptions for "Exponent" folder in "ExpoNotificationServiceExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"Versioned/Core/Modules/Notifications/EXScopedNotificationsUtils.swift",
+				Versioned/Core/Modules/Notifications/EXScopedNotificationsUtils.swift,
 			);
 			target = FCF6D36C25B34BC200808BF5 /* ExpoNotificationServiceExtension */;
 		};
-		B5E49B5A1D1346FA00AA6437 /* Exceptions for "Supporting" folder in "Expo Go" target */ = {
+		B5E49B5A1D1346FA00AA6437 /* Exceptions for "Exponent" folder in "Expo Go" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"Supporting/Info.plist",
-				"Supporting/Exponent-Prefix.pch",
+				Supporting/Info.plist,
 			);
 			target = 78CEE2BF1ACD07D70095B124 /* Expo Go */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
-
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		42FD87C92C7AD5EB00792537 /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+		42FD87C92C7AD5EB00792537 /* Exceptions for "Exponent" folder in "Copy Bundle Resources" phase from "Expo Go" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 78CEE2BE1ACD07D70095B124 /* Resources */;
 			membershipExceptions = (
@@ -144,21 +142,18 @@
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		XXEXPOCLIENTXXXXXXXXXXXX /* Client */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = Client;
 			sourceTree = "<group>";
 		};
 		XXEXPOKERNXXXXXXEXPONENT /* Exponent */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				79BD00FD2E4A254B0019F3FF /* Exceptions for "Versioned" folder in "ExpoNotificationServiceExtension" target */,
-				B5E49B5A1D1346FA00AA6437,
-				42FD87C92C7AD5EB00792537,
+				B5E49B5A1D1346FA00AA6437 /* Exceptions for "Exponent" folder in "Expo Go" target */,
+				42FD87C92C7AD5EB00792537 /* Exceptions for "Exponent" folder in "Copy Bundle Resources" phase from "Expo Go" target */,
+				79BD00FD2E4A254B0019F3FF /* Exceptions for "Exponent" folder in "ExpoNotificationServiceExtension" target */,
 			);
 			path = Exponent;
 			sourceTree = "<group>";
@@ -259,13 +254,6 @@
 				FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		78CEE2C21ACD07D70095B124 /* Exponent */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Exponent;
 			sourceTree = "<group>";
 		};
 		994130004C859A4758AD583C /* ExpoModulesProviders */ = {
@@ -405,7 +393,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				XXEXPOCLIENTXXXXXXXXXXXX /* Client */,
-				XXEXPOKERNXXXXXXEXPONENT,
+				XXEXPOKERNXXXXXXEXPONENT /* Exponent */,
 			);
 			name = "Expo Go";
 			productName = Exponent;
@@ -653,9 +641,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -685,9 +677,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -725,9 +721,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -811,9 +811,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -966,10 +970,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -1035,10 +1036,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
