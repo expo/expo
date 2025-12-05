@@ -31,6 +31,11 @@ and works out of the box with inline modules.
 function getPrefix() {
     return [typescript_1.default.factory.createJSDocComment(prefix)];
 }
+let freeId = 0;
+function getNextFreeId() {
+    freeId += 1;
+    return freeId;
+}
 function getUnresolvedTypesNamespaceNameForFile(filePath) {
     const fileNameWithExtension = path_1.default.basename(filePath);
     return fileNameWithExtension.slice(0, fileNameWithExtension.lastIndexOf('.')) + 'Types';
@@ -88,9 +93,12 @@ function getExportedModuleDeclaration(moduleClassDeclaration) {
     ];
 }
 function getArgumentDeclaration(arg) {
-    const optional = arg.type.kind === typeInformation_1.TypeKind.OPTIONAL;
-    const argType = optional ? arg.type.type : arg.type;
-    return typescript_1.default.factory.createParameterDeclaration(undefined, undefined, arg.name, optional ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.QuestionToken) : undefined, mapTypeToTsTypeNode(argType), undefined);
+    // const optional = arg.type.kind === TypeKind.OPTIONAL;
+    // const argType = optional ? (arg.type.type as Type) : arg.type;
+    return typescript_1.default.factory.createParameterDeclaration(undefined, undefined, arg.name ?? '_' + getNextFreeId(), undefined, mapTypeToTsTypeNode(arg.type), 
+    // optional ? ts.factory.createToken(ts.SyntaxKind.QuestionToken) : undefined,
+    // mapTypeToTsTypeNode(argType),
+    undefined);
 }
 function getAsyncMethodDeclaration(functionDeclaration) {
     return getTsFunction(functionDeclaration, true, true, false, true);
@@ -223,28 +231,28 @@ function getNTypeNodes(n) {
     }
     return params;
 }
-function getIdentifierUnknownDeclaration(identifier, typeParametersCount) {
-    return getTypeAliasDeclaration(identifier, typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.UnknownKeyword), typeParametersCount.get(identifier));
+function getIdentifierUnknownDeclaration(identifier, exported, typeParametersCount) {
+    return getTypeAliasDeclaration(identifier, typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.UnknownKeyword), exported, typeParametersCount.get(identifier));
 }
-function getTypeAliasDeclaration(alias, typeIdentifier, paramCount) {
-    return typescript_1.default.factory.createTypeAliasDeclaration(undefined, alias, paramCount === undefined ? undefined : getNTypeParameterDeclaration(paramCount), typeIdentifier);
+function getTypeAliasDeclaration(alias, typeIdentifier, exported, paramCount) {
+    return typescript_1.default.factory.createTypeAliasDeclaration(exported ? [typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword)] : undefined, alias, paramCount === undefined ? undefined : getNTypeParameterDeclaration(paramCount), typeIdentifier);
 }
 function getRecordDeclaration(recordType) {
-    return typescript_1.default.factory.createTypeAliasDeclaration(undefined, recordType.name, undefined, typescript_1.default.factory.createTypeLiteralNode(recordType.fields.map((field) => {
+    return typescript_1.default.factory.createTypeAliasDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword)], recordType.name, undefined, typescript_1.default.factory.createTypeLiteralNode(recordType.fields.map((field) => {
         const optional = field.type.kind === typeInformation_1.TypeKind.OPTIONAL;
         const argType = optional ? field.type.type : field.type;
-        return typescript_1.default.factory.createPropertySignature(undefined, field.name, optional ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.QuestionToken) : undefined, mapTypeToTsTypeNode(argType));
+        return typescript_1.default.factory.createPropertySignature(undefined, field.name ?? '_' + getNextFreeId(), optional ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.QuestionToken) : undefined, mapTypeToTsTypeNode(argType));
     })));
 }
 function getEnumDeclaration(enumType) {
-    return typescript_1.default.factory.createEnumDeclaration(undefined, enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase)));
+    return typescript_1.default.factory.createEnumDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword)], enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase)));
 }
 function getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers, unresolvedTypesNamespace) {
     return [].concat([
-        typescript_1.default.factory.createModuleDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword)], typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), typescript_1.default.factory.createModuleBlock([...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, fileTypeInformation.typeParametersCount))), typescript_1.default.NodeFlags.Namespace),
+        typescript_1.default.factory.createModuleDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword)], typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), typescript_1.default.factory.createModuleBlock([...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, false, fileTypeInformation.typeParametersCount))), typescript_1.default.NodeFlags.Namespace),
     ], [...undeclaredTypeIdentifiers].map((undeclaredTypeIdentifier) => {
         const paramCount = fileTypeInformation.typeParametersCount.get(undeclaredTypeIdentifier);
-        return getTypeAliasDeclaration(undeclaredTypeIdentifier, typescript_1.default.factory.createTypeReferenceNode(typescript_1.default.factory.createQualifiedName(typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), undeclaredTypeIdentifier), paramCount === undefined ? undefined : getNTypeNodes(paramCount)), paramCount);
+        return getTypeAliasDeclaration(undeclaredTypeIdentifier, typescript_1.default.factory.createTypeReferenceNode(typescript_1.default.factory.createQualifiedName(typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), undeclaredTypeIdentifier), paramCount === undefined ? undefined : getNTypeNodes(paramCount)), true, paramCount);
     }));
 }
 function getModuleTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, recordTypes, enumTypes, undeclaredTypeIdentifiers, unresolvedTypesNamespace) {
@@ -266,7 +274,7 @@ function getViewTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInfor
     const undeclaredTypeIdentifiers = fileTypeInformation.usedTypeIdentifiers
         .difference(fileTypeInformation.declaredTypeIdentifiers)
         .difference(basicTypesIdentifiers());
-    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('SharedObject', 'expo'), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, fileTypeInformation.typeParametersCount)), newlineIdentifier, getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false), newlineIdentifier, getViewDefaultValueExport(moduleClassDeclaration.views[0]));
+    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('SharedObject', 'expo'), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.typeParametersCount)), newlineIdentifier, getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false), newlineIdentifier, getViewDefaultValueExport(moduleClassDeclaration.views[0]));
 }
 async function prettifyCode(text, parser = 'babel') {
     return await prettier_1.default.format(text, {
@@ -285,7 +293,7 @@ async function prettyPrintTSNodesToString(file, elements) {
     return await prettifyCode(printedTs, 'typescript');
 }
 function basicTypesIdentifiers() {
-    return new Set(['any', 'number', 'string', 'undefined', 'null', 'Map', 'Set']);
+    return new Set(['any', 'number', 'string', 'undefined', 'null', 'Map', 'Set', 'Promise']);
 }
 async function getGeneratedViewTypesFileContent(file, fileTypeInformation) {
     const outputModuleDefinition = fileTypeInformation.moduleClasses[0];

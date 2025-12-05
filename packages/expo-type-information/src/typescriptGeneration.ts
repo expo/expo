@@ -35,6 +35,13 @@ function getPrefix() {
   return [ts.factory.createJSDocComment(prefix)];
 }
 
+let freeId = 0;
+
+function getNextFreeId() {
+  freeId += 1;
+  return freeId;
+}
+
 function getUnresolvedTypesNamespaceNameForFile(filePath: string) {
   const fileNameWithExtension = path.basename(filePath);
   return fileNameWithExtension.slice(0, fileNameWithExtension.lastIndexOf('.')) + 'Types';
@@ -176,15 +183,17 @@ function getExportedModuleDeclaration(moduleClassDeclaration: ModuleClassDeclara
 }
 
 export function getArgumentDeclaration(arg: Argument): ts.ParameterDeclaration {
-  const optional = arg.type.kind === TypeKind.OPTIONAL;
-  const argType = optional ? (arg.type.type as Type) : arg.type;
+  // const optional = arg.type.kind === TypeKind.OPTIONAL;
+  // const argType = optional ? (arg.type.type as Type) : arg.type;
 
   return ts.factory.createParameterDeclaration(
     undefined,
     undefined,
-    arg.name,
-    optional ? ts.factory.createToken(ts.SyntaxKind.QuestionToken) : undefined,
-    mapTypeToTsTypeNode(argType),
+    arg.name ?? '_' + getNextFreeId(),
+    undefined,
+    mapTypeToTsTypeNode(arg.type),
+    // optional ? ts.factory.createToken(ts.SyntaxKind.QuestionToken) : undefined,
+    // mapTypeToTsTypeNode(argType),
     undefined
   );
 }
@@ -443,11 +452,13 @@ function getNTypeNodes(n: number): ts.TypeNode[] {
 
 export function getIdentifierUnknownDeclaration(
   identifier: string,
+  exported: boolean,
   typeParametersCount: Map<string, number>
 ): ts.Statement {
   return getTypeAliasDeclaration(
     identifier,
     ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword),
+    exported,
     typeParametersCount.get(identifier)
   );
 }
@@ -455,10 +466,11 @@ export function getIdentifierUnknownDeclaration(
 export function getTypeAliasDeclaration(
   alias: string,
   typeIdentifier: ts.TypeNode,
+  exported: boolean,
   paramCount: number | undefined
 ): ts.Statement {
   return ts.factory.createTypeAliasDeclaration(
-    undefined,
+    exported ? [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)] : undefined,
     alias,
     paramCount === undefined ? undefined : getNTypeParameterDeclaration(paramCount),
     typeIdentifier
@@ -467,7 +479,7 @@ export function getTypeAliasDeclaration(
 
 export function getRecordDeclaration(recordType: RecordType): ts.Node {
   return ts.factory.createTypeAliasDeclaration(
-    undefined,
+    [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     recordType.name,
     undefined,
     ts.factory.createTypeLiteralNode(
@@ -476,7 +488,7 @@ export function getRecordDeclaration(recordType: RecordType): ts.Node {
         const argType = optional ? (field.type.type as Type) : field.type;
         return ts.factory.createPropertySignature(
           undefined,
-          field.name,
+          field.name ?? '_' + getNextFreeId(),
           optional ? ts.factory.createToken(ts.SyntaxKind.QuestionToken) : undefined,
           mapTypeToTsTypeNode(argType)
         );
@@ -487,7 +499,7 @@ export function getRecordDeclaration(recordType: RecordType): ts.Node {
 
 export function getEnumDeclaration(enumType: EnumType): ts.Node {
   return ts.factory.createEnumDeclaration(
-    undefined,
+    [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     enumType.name,
     enumType.cases.map((enumcase) => ts.factory.createEnumMember(enumcase))
   );
@@ -505,7 +517,11 @@ function getUndeclaredIdentifiersDeclaration(
         ts.factory.createIdentifier(unresolvedTypesNamespace),
         ts.factory.createModuleBlock(
           [...undeclaredTypeIdentifiers].map((identifier) =>
-            getIdentifierUnknownDeclaration(identifier, fileTypeInformation.typeParametersCount)
+            getIdentifierUnknownDeclaration(
+              identifier,
+              false,
+              fileTypeInformation.typeParametersCount
+            )
           )
         ),
         ts.NodeFlags.Namespace
@@ -522,6 +538,7 @@ function getUndeclaredIdentifiersDeclaration(
           ),
           paramCount === undefined ? undefined : getNTypeNodes(paramCount)
         ),
+        true,
         paramCount
       );
     })
@@ -598,7 +615,7 @@ function getViewTypesDeclarationsForModule(
     getOneNamedImport('ViewProps', 'react-native'),
     newlineIdentifier,
     [...undeclaredTypeIdentifiers].map((identifier) =>
-      getIdentifierUnknownDeclaration(identifier, fileTypeInformation.typeParametersCount)
+      getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.typeParametersCount)
     ),
     newlineIdentifier,
     getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false),
@@ -636,7 +653,7 @@ async function prettyPrintTSNodesToString(file: string, elements: ts.Node[]): Pr
 }
 
 export function basicTypesIdentifiers(): Set<string> {
-  return new Set<string>(['any', 'number', 'string', 'undefined', 'null', 'Map', 'Set']);
+  return new Set<string>(['any', 'number', 'string', 'undefined', 'null', 'Map', 'Set', 'Promise']);
 }
 
 export async function getGeneratedViewTypesFileContent(
