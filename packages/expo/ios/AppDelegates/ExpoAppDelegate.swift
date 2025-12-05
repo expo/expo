@@ -21,6 +21,12 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     super.init()
   }
 
+#if os(macOS)
+  required public init?(coder: NSCoder) {
+    super.init(coder: coder)
+  }
+#endif
+
   // MARK: - Initializing the App
 #if os(iOS) || os(tvOS)
 
