@@ -41,6 +41,7 @@ export default function Layout() {
           // badgeBackgroundColor="green"
           // tintColor="orange"
           // iconColor={Platform.OS === 'android' ? '#888' : { selected: 'purple' }}
+          // hidden
           // iOS only
           // blurEffect="systemChromeMaterial"
           minimizeBehavior="onScrollDown"
