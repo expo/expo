@@ -4,6 +4,9 @@
     "modules": ["ContactsModule", "ContactAccessButtonModule"]
   },
   "android": {
-    "modules": ["expo.modules.contacts.ContactsModule"]
+    "modules": [
+      "expo.modules.contacts.ContactsModule",
+      "expo.modules.contacts.next.ContactsNextModule"
+    ]
   }
 }

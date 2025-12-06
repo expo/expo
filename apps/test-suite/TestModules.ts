@@ -84,6 +84,7 @@ export function getTestModules() {
   if (Platform.OS === 'web') {
     modules.push(
       require('./tests/Contacts'),
+      require('./tests/ContactsNext'),
       require('./tests/Localization'),
       require('./tests/Recording'),
       optionalRequire(() => require('./tests/Notifications')),
@@ -126,6 +127,7 @@ export function getTestModules() {
     modules.push(require('./tests/SMS'));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Contacts')));
+    modules.push(optionalRequire(() => require('./tests/ContactsNext')));
     modules.push(optionalRequire(() => require('./tests/Calendar')));
     modules.push(optionalRequire(() => require('./tests/CalendarReminders')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
