@@ -21,6 +21,10 @@ export type TextInputProps = {
      */
     onChangeText: (value: string) => void;
     /**
+     * The optional label to be displayed with this text field.
+     */
+    label?: string;
+    /**
      * If true, the text input can be multiple lines.
      * While the content will wrap, there's no keyboard button to insert a new line.
      */
