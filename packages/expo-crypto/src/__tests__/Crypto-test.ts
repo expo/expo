@@ -8,6 +8,8 @@ jest.mock('../ExpoCrypto', () => ({
   digestString: jest.fn(async () => 0),
 }));
 
+jest.mock('../aes', () => ({}));
+
 jest.mock('base64-js', () => ({ toByteArray: jest.fn(() => {}) }));
 
 it(`asserts invalid algorithm errors`, async () => {

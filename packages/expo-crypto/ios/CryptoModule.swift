@@ -44,7 +44,7 @@ private func digestString(algorithm: DigestAlgorithm, str: String, options: Dige
   var digest = [UInt8](repeating: 0, count: length)
 
   data.withUnsafeBytes { bytes in
-    let _ = algorithm.digest(bytes.baseAddress, UInt32(data.count), &digest)
+    _ = algorithm.digest(bytes.baseAddress, UInt32(data.count), &digest)
   }
 
   switch options.encoding {
