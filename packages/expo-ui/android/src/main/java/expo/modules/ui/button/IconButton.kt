@@ -1,32 +1,24 @@
 package expo.modules.ui.button
 
 import android.content.Context
-import android.graphics.Color
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-
 import androidx.compose.material3.ButtonDefaults
-
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedIconButton
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
-import expo.modules.ui.DynamicTheme
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.ui.ExpoModifier
 import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
@@ -121,21 +113,19 @@ class IconButton(context: Context, appContext: AppContext) :
         val (colors) = props.elementColors
         val (disabled) = props.disabled
 
-        DynamicTheme {
-            StyledIconButton(
-                variant ?: IconButtonVariant.DEFAULT,
-                colors,
-                disabled ?: false,
-                onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
-                modifier = Modifier.fromExpoModifiers(
-                    props.modifiers.value,
-                    composableScope = this@Content
-                ),
-                shape = shapeFromShapeRecord(props.shape.value)
-            ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Children(this@Content)
-                }
+        StyledIconButton(
+            variant ?: IconButtonVariant.DEFAULT,
+            colors,
+            disabled ?: false,
+            onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
+            modifier = Modifier.fromExpoModifiers(
+                props.modifiers.value,
+                composableScope = this@Content
+            ),
+            shape = shapeFromShapeRecord(props.shape.value)
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Children(this@Content)
             }
         }
     }
