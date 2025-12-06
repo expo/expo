@@ -43,33 +43,41 @@ export function safelyDecodeURIComponent(str: string) {
   }
 }
 
+interface UrlWithReactNavigationConcessions {
+  path: string;
+  nonstandardPathname: string;
+  hash: string;
+  pathWithoutGroups: string;
+}
+
 export function getUrlWithReactNavigationConcessions(
   path: string,
   baseUrl: string | undefined = process.env.EXPO_BASE_URL
-) {
-  let parsed: URL;
-  try {
-    parsed = new URL(path, 'https://phony.example');
-  } catch {
-    // Do nothing with invalid URLs.
-    return {
-      path,
-      cleanUrl: '',
-      nonstandardPathname: '',
-      url: new URL('https://phony.example'),
-    };
-  }
-
-  const pathname = parsed.pathname;
-  const withoutBaseUrl = stripBaseUrl(pathname, baseUrl);
+): UrlWithReactNavigationConcessions {
   const pathWithoutGroups = stripGroupSegmentsFromPath(stripBaseUrl(path, baseUrl));
 
-  // Make sure there is a trailing slash
+  let pathname = '';
+  let hash = '';
+  try {
+    // NOTE(@kitten): This used to use a dummy base URL for parsing (phony [.] example)
+    // However, this seems to get flagged since it's preserved 1:1 in the output bytecode by certain scanners
+    // Instead, we use an empty `file:` URL. This will still perform `pathname` normalization, search parameter parsing
+    // encoding, and all other logic, except the logic that applies to hostnames and protocols, and also not leave a
+    // dummy URL in the output bytecode
+    const parsed = new URL(path, 'file:');
+    pathname = parsed.pathname;
+    hash = parsed.hash;
+  } catch {
+    // Do nothing with invalid URLs.
+  }
+
+  const withoutBaseUrl = stripBaseUrl(pathname, baseUrl);
   return {
-    // The slashes are at the end, not the beginning
     path,
+    // Make sure there is a trailing slash
+    // The slashes are at the end, not the beginning
     nonstandardPathname: withoutBaseUrl.replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
-    url: parsed,
+    hash,
     pathWithoutGroups,
   };
 }

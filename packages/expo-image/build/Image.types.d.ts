@@ -322,6 +322,21 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
      * @platform ios
      */
     enforceEarlyResizing?: boolean;
+    /**
+     * Controls whether the image view can leverage the extended dynamic range (EDR). Use this prop if you want to support high dynamic range (HDR) images,
+     * otherwise all images are rendered as standard dynamic range (SDR).
+     *
+     * @default false
+     * @platform ios 17.0+
+     * @platform tvos 17.0+
+     */
+    preferHighDynamicRange?: boolean;
+    /**
+     * Whether the `img` element is draggable on web.
+     * @default undefined
+     * @platform web
+     */
+    draggable?: boolean;
 }
 /**
  * It narrows down some props to types expected by the native/web side.
@@ -495,6 +510,16 @@ export declare class ImageRef extends SharedRef<'image'> {
 export declare class ImageNativeModule extends NativeModule {
     Image: typeof ImageRef;
     loadAsync(source: ImageSource, options?: ImageLoadOptions): Promise<ImageRef>;
+    prefetch(urls: string[], cachePolicy: ImagePrefetchOptions['cachePolicy'], headers?: Record<string, string>): Promise<boolean>;
+    clearMemoryCache(): Promise<boolean>;
+    clearDiskCache(): Promise<boolean>;
+    configureCache(config: ImageCacheConfig): void;
+    getCachePathAsync(cacheKey: string): Promise<string | null>;
+    generateBlurhashAsync(source: string | ImageRef, numberOfComponents: [number, number] | {
+        width: number;
+        height: number;
+    }): Promise<string | null>;
+    generateThumbhashAsync(source: string | ImageRef): Promise<string>;
 }
 /**
  * An object with options for the [`useImage`](#useimage) hook.
@@ -502,18 +527,39 @@ export declare class ImageNativeModule extends NativeModule {
 export type ImageLoadOptions = {
     /**
      * If provided, the image will be automatically resized to not exceed this width in pixels, preserving its aspect ratio.
-     * @platform ios
      */
     maxWidth?: number;
     /**
      * If provided, the image will be automatically resized to not exceed this height in pixels, preserving its aspect ratio.
-     * @platform ios
      */
     maxHeight?: number;
     /**
      * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
      */
     onError?(error: Error, retry: () => void): void;
+};
+/**
+ * An object containing options for the [`configureCache`](#configurecacheconfig) function.
+ * See [`SDImageCacheConfig`](https://sdwebimage.github.io/documentation/sdwebimage/sdimagecacheconfig) for more information.
+ * @platform ios
+ */
+export type ImageCacheConfig = {
+    /**
+     * The maximum size of the disk cache, in bytes.
+     * Defaults to 0, which means there is no cache size limit.
+     */
+    maxDiskSize?: number;
+    /**
+     * The maximum "total cost" of the in-memory image cache. The cost function is the bytes size held in memory,
+     * not simply the pixel count. For example, a typical ARGB8888 image uses 4 bytes (32 bits) per pixel.
+     * Defaults to 0, which means there is no memory cost limit.
+     */
+    maxMemoryCost?: number;
+    /**
+     * The maximum number of objects the in-memory image cache should hold.
+     * Defaults to 0, which means there is no memory count limit.
+     */
+    maxMemoryCount?: number;
 };
 export {};
 //# sourceMappingURL=Image.types.d.ts.map

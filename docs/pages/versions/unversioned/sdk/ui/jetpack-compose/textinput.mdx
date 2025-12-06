@@ -1,0 +1,44 @@
+---
+title: TextInput
+description: A Jetpack Compose TextInput component for text input.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A text input component that allows users to enter and edit text using native Android text fields.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="TextInput component on Android."
+      src="/static/images/expo-ui/textinput/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { TextInput } from '@expo/ui/jetpack-compose';
+
+    <TextInput autocorrection={false} defaultValue="A single line text input" onChangeText={setValue} />
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [Official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/text/user-input) for more information.
+
+## API
+
+<APISection packageName="expo-ui/jetpack-compose/textinput" apiName="TextInput" />

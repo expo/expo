@@ -35,7 +35,7 @@ There are a lot of good options to display rich text:
   </TextInput>
   ```
 
-- You can also use [Expo Modules](/modules/overview/) to write a custom renderer component with native platform primitives using third-party libraries such as [Markwon](https://github.com/noties/Markwon) on Android and `AttributedString` on iOS.
+- You can also use [Expo Modules API](/modules/overview/) to write a custom renderer component with native platform primitives using third-party libraries such as [Markwon](https://github.com/noties/Markwon) on Android and `AttributedString` on iOS.
 
 ## Approaches to edit rich text
 
@@ -73,7 +73,7 @@ In this section, let's discuss if it is possible to have a feature complete rich
 
 React Native allows nested `<Text>` components and allows them to be used as children of `<TextInput>` to render and edit styled text. It is synchronous with the new React Native architecture (the `onChange` event fires immediately after a new character is typed into the text input field).
 
-Unfortunately, the `<TextInput>` component is built towards working with regular text, and it only returns a string in it's `onTextChange` callback. This is a significant limitation.
+Unfortunately, the `<TextInput>` component is built toward working with regular text, and it only returns a string in it's `onTextChange` callback. This is a significant limitation.
 
 Here is a quick example. Let's start by rendering a text input with the following bold text:
 
@@ -107,7 +107,7 @@ You can use a native Android or iOS rich text editor wrapped into a React Native
 - [`react-native-live-markdown`](https://github.com/Expensify/react-native-live-markdown)
 - [`react-native-enriched`](https://github.com/software-mansion-labs/react-native-enriched)
 
-You can also wrap any native rich text editor using [Expo Modules](/modules/overview/), but if you use different ones on each platform, you need to unify their APIs and input formats.
+You can also wrap any native rich text editor using [Expo Modules API](/modules/overview/), but if you use different ones on each platform, you need to unify their APIs and input formats.
 
 > Rich text is usually represented using [abstract syntax trees](https://en.wikipedia.org/wiki/Abstract_syntax_tree). For example, a bullet list can be a node of type `bulleted-list` with several children of type `list-item`. You can convert both HTML and markdown to a suitable AST format.
 

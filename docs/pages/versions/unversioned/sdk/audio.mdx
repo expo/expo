@@ -9,7 +9,11 @@ platforms: ['android', 'ios', 'web', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import {
+  ConfigPluginExample,
+  ConfigPluginProperties,
+  ConfigReactNative,
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
@@ -23,7 +27,7 @@ Note that audio automatically stops if headphones/bluetooth audio devices are di
 
 ## Configuration in app config
 
-You can configure `expo-audio` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use EAS Build, then you'll need to manually configure the package.
+You can configure `expo-audio` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
 <ConfigPluginExample>
 
@@ -49,8 +53,22 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
     {
       name: 'microphonePermission',
       platform: 'ios',
-      description: 'A string to set the `NSMicrophoneUsageDescription` permission message.',
+      description:
+        'A string to set the `NSMicrophoneUsageDescription` permission message. Setting it to `false` will disable the permission.',
       default: '"Allow $(PRODUCT_NAME) to access your microphone"',
+    },
+    {
+      name: 'recordAudioAndroid',
+      platform: 'android',
+      description:
+        'A boolean that determines whether to enable the `RECORD_AUDIO` permission on Android.',
+      default: 'true',
+    },
+    {
+      name: 'enableBackgroundRecording',
+      description:
+        'A boolean that determines whether to enable background audio recording. On Android, this adds foreground service permissions and displays a persistent notification during recording. On iOS, this adds the `audio` background mode. **Note:** Background recording can significantly impact battery life.',
+      default: 'false',
     },
   ]}
 />
@@ -101,8 +119,6 @@ const styles = StyleSheet.create({
 ```
 
 </SnackInline>
-
-> **Info** **Note:** If you're migrating from [`expo-av`](av.mdx), you'll notice that `expo-audio` doesn't automatically reset the playback position when audio finishes. After [`play()`](#play), the player stays paused at the end of the sound. To play it again, call [`seekTo(seconds)`](#seektoseconds) to reset the position — as shown in the example above.
 
 ### Recording sounds
 
@@ -169,7 +185,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-### Playing or recording audio in background&ensp;<PlatformTags platforms={['ios']} />
+### Playing audio in background&ensp;<PlatformTags platforms={['ios']} />
 
 On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration.
 On iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file.
@@ -193,6 +209,86 @@ See an example of **app.json** that enables audio playback in background:
   }
 }
 ```
+
+### Recording audio in background
+
+> **warning** Background recording can significantly impact battery life. Only enable it when necessary for your app's functionality.
+
+Background audio recording allows your app to continue recording when it moves to the background or when the device screen locks.
+
+To enable background recording, use the config plugin in your [app config](/workflow/configuration/):
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to record audio.",
+          "enableBackgroundRecording": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+The above configuration automatically configures the required native settings:
+
+- <PlatformTags platforms={['android']} /> Adds `FOREGROUND_SERVICE_MICROPHONE` and
+  `POST_NOTIFICATIONS` permissions
+- <PlatformTags platforms={['ios']} /> Adds the `audio` `UIBackgroundMode` capability
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
+
+- For Android, add to **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml android/app/src/main/AndroidManifest.xml
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+  ```
+
+- For iOS, add to **ios/YourApp/Info.plist**:
+
+  ```xml ios/YourApp/Info.plist
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>audio</string>
+  </array>
+  ```
+
+</ConfigReactNative>
+
+#### Usage
+
+After configuring your app, enable background recording at runtime using [`setAudioModeAsync`](#audiosetaudiomodeasyncmode):
+
+```jsx
+import { setAudioModeAsync, useAudioRecorder, RecordingPresets } from 'expo-audio';
+
+await setAudioModeAsync({
+  playsInSilentMode: true,
+  allowsRecording: true,
+  allowsBackgroundRecording: true,
+});
+
+const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+await recorder.prepareToRecordAsync();
+await recorder.record();
+
+// Recording continues in background
+```
+
+<PlatformTags platforms={['android']} />
+
+On Android, background recording requires a foreground service, which displays a persistent notification with the text "Recording audio" and a stop button. This notification cannot be dismissed while recording is active and automatically disappears when recording stops.
+
+<PlatformTags platforms={['ios']} />
+
+On iOS, background recording continues seamlessly when the app is in the background or the screen locks. No additional notifications or indicators are shown to the app user beyond the system status bar.
 
 ### Using the AudioPlayer directly
 

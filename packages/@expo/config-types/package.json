@@ -38,7 +38,7 @@
   ],
   "devDependencies": {
     "expo-module-scripts": "^5.0.7",
-    "json-schema-to-typescript": "^14.0.5"
+    "json-schema-to-typescript": "^15.0.0"
   },
   "publishConfig": {
     "access": "public"

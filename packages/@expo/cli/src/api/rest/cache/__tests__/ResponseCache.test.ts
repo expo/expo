@@ -8,7 +8,14 @@ describe(getResponseInfo, () => {
   it('returns json serializable response info', async () => {
     const scope = nock('http://example.com')
       .get('/test')
-      .reply(200, { test: true }, { 'Content-Type': 'application/json' });
+      .reply(200, { test: true }, [
+        'content-type',
+        'application/json',
+        'set-cookie',
+        'test=123',
+        'set-cookie',
+        'test2=456',
+      ]);
 
     const response = await fetch('http://example.com/test');
 

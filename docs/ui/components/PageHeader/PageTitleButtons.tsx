@@ -1,8 +1,8 @@
 import { Button } from '@expo/styleguide';
-import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { NpmIcon } from '@expo/styleguide-icons/custom/NpmIcon';
+import { ClockRefreshIcon } from '@expo/styleguide-icons/outline/ClockRefreshIcon';
 import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
-import { Tag03Icon } from '@expo/styleguide-icons/outline/Tag03Icon';
 import { useRouter } from 'next/compat/router';
 
 import { githubUrl } from '~/ui/components/Footer/utils';
@@ -17,9 +17,11 @@ type Props = {
 
 export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
   const router = useRouter();
+  const showEditButton = !sourceCodeUrl && !packageName && router?.pathname;
+
   return (
     <>
-      {!sourceCodeUrl && !packageName && router?.pathname && (
+      {showEditButton && (
         <Button
           theme="quaternary"
           className="justify-center pl-2.5 pr-2"
@@ -29,34 +31,50 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           <div className="flex flex-row items-center gap-2">
             <Edit05Icon className="icon-sm text-icon-secondary" />
             <FOOTNOTE crawlable={false} theme="secondary">
-              Edit this page
+              Edit page
             </FOOTNOTE>
           </div>
         </Button>
       )}
-      {sourceCodeUrl && (
-        <SdkPackageButton
-          label="GitHub"
-          Icon={GithubIcon}
-          href={sourceCodeUrl}
-          tooltip="View source code on GitHub"
-        />
-      )}
-      {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
-        <SdkPackageButton
-          label="Changelog"
-          Icon={Tag03Icon}
-          href={`${sourceCodeUrl}/CHANGELOG.md`}
-          tooltip="View package changelog on GitHub"
-        />
-      )}
-      {packageName && (
-        <SdkPackageButton
-          label="npm"
-          Icon={BuildIcon}
-          href={`https://www.npmjs.com/package/${packageName}`}
-          tooltip="View package in npm registry"
-        />
+      {(sourceCodeUrl ||
+        sourceCodeUrl?.startsWith('https://github.com/expo/expo') ||
+        packageName) && (
+        <span className="flex items-center gap-1">
+          {sourceCodeUrl && (
+            <>
+              <SdkPackageButton
+                label="GitHub"
+                Icon={GithubIcon}
+                href={sourceCodeUrl}
+                tooltip="View source code on GitHub"
+              />
+              {(packageName || sourceCodeUrl?.startsWith('https://github.com/expo/expo')) && (
+                <div className="max-sm:hidden bg-secondary h-5 w-px" />
+              )}
+            </>
+          )}
+          {packageName && (
+            <>
+              <SdkPackageButton
+                label="npm"
+                Icon={NpmIcon}
+                href={`https://www.npmjs.com/package/${packageName}`}
+                tooltip="View library in npm registry"
+              />
+              {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
+                <div className="max-sm:hidden bg-secondary h-5 w-px" />
+              )}
+            </>
+          )}
+          {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
+            <SdkPackageButton
+              label="Changelog"
+              Icon={ClockRefreshIcon}
+              href={`${sourceCodeUrl}/CHANGELOG.md`}
+              tooltip="View library changelog on GitHub"
+            />
+          )}
+        </span>
       )}
     </>
   );

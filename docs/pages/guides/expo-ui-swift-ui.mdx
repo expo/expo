@@ -3,6 +3,7 @@ title: Building SwiftUI apps with Expo UI
 sidebar_title: Expo UI and SwiftUI
 description: Learn how to use Expo UI to integrate SwiftUI into your Expo apps.
 platforms: ['ios', 'macos', 'tvos']
+hasVideoLink: true
 ---
 
 import { DocsLogo } from '@expo/styleguide';
@@ -14,12 +15,19 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-> **info** Available in **SDK 54 and above**.
+> **info** Available in **SDK 54 and later**.
 
 Expo UI brings SwiftUI to React Native. You can use modern SwiftUI primitives to build your apps.
 
 This guide covers the basics of using Expo UI to integrate SwiftUI into your Expo apps.
+
+<VideoBoxLink
+  videoId="2wXYLWz3YEQ"
+  title="Expo UI iOS Liquid Glass Tutorial"
+  description="Learn how to build real SwiftUI views in your React Native app with the new Expo UI."
+/>
 
 ## Features
 
@@ -35,7 +43,7 @@ You'll need to install the `@expo/ui` package in your Expo project. Run the foll
 
 ## Usage
 
-Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`<Host>`](/versions/latest/sdk/ui/#host) component. The [`<Host>`](/versions/latest/sdk/ui/#host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
+Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`Host`](/versions/latest/sdk/ui/#host) component. The [`Host`](/versions/latest/sdk/ui/#host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
 
 ### Basic usage with `Host`
 
@@ -255,13 +263,13 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
 
 <Collapsible summary="Can I use flexbox or other styles in SwiftUI components?">
 
-Flexbox styles can be applied to the `<Host>` component itself. Once you're inside the SwiftUI context, however, [`Yoga`](https://www.yogalayout.dev/) is not available &mdash; layouts should be defined using `<HStack>` and `<VStack>` instead.
+Flexbox styles can be applied to the `Host` component itself. Once you're inside the SwiftUI context, however, [`Yoga`](https://www.yogalayout.dev/) is not available &mdash; layouts should be defined using `<HStack>` and `<VStack>` instead.
 
 </Collapsible>
 
 <Collapsible summary={<>What's the <CODE>Host</CODE> component?</>}>
 
-`<Host>` is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
+`Host` is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
 
 </Collapsible>
 
@@ -282,9 +290,9 @@ The first milestone for Expo UI is achieving a 1-to-1 mapping from SwiftUI to Ex
 Yes, you can place React Native components as JSX children of Expo UI components. Expo UI automatically creates a [`UIViewRepresentable`](https://developer.apple.com/documentation/swiftui/uiviewrepresentable) wrapper for you.
 However, keep in mind that the SwiftUI layout system works differently from UIKit and has some limitations. According to Apple's documentation:
 
-> **Warning** SwiftUI fully controls the layout of the UIKit view's [`center`](https://developer.apple.com/documentation/UIKit/UIView/center), [`bounds`](https://developer.apple.com/documentation/UIKit/UIView/bounds), [`frame`](https://developer.apple.com/documentation/UIKit/UIView/frame), and [`transform`](https://developer.apple.com/documentation/UIKit/UIView/transform) properties. Don't directly set these layout-related properties on the view managed by a [`UIViewRepresentable`](https://developer.apple.com/documentation/swiftui/uiviewrepresentable) instance from your own code because that conflicts with SwiftUI and results in undefined behavior.
+> **Warning** SwiftUI fully controls the layout of the UIKit view's [`center`](https://developer.apple.com/documentation/UIKit/UIView/center), [`bounds`](https://developer.apple.com/documentation/UIKit/UIView/bounds), [`frame`](https://developer.apple.com/documentation/UIKit/UIView/frame), and [`transform`](https://developer.apple.com/documentation/UIKit/UIView/transform) properties. Don't directly set these layout-related properties on the view managed by a [`UIViewRepresentable`](https://developer.apple.com/documentation/swiftui/uiviewrepresentable) instance from your own code because that conflicts with SwiftUI and results in undefined behavior.
 
-Also note that once you render React Native components, you're leaving the SwiftUI context. If you want to add Expo UI components again, you'll need to reintroduce a `<Host>` wrapper.
+Also note that once you render React Native components, you're leaving the SwiftUI context. If you want to add Expo UI components again, you'll need to reintroduce a `Host` wrapper.
 
 We recommend keeping SwiftUI layouts self-contained. Interop is possible, but it works best when boundaries are clearly defined.
 

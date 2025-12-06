@@ -5,7 +5,7 @@ exports[`auto runtime (default) compiles for Metro ios in dev 1`] = `
 var _reactNative = require("react-native");var _jsxDevRuntime = require("react/jsx-dev-runtime");var _jsxFileName = "/unknown";
 function App() {
   return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(_reactNative.View, {}, void 0, false, { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 }, this);
-}"
+}_c = App;var _c;$RefreshReg$(_c, "App");"
 `;
 
 exports[`auto runtime (default) compiles for Metro ios in prod 1`] = `
@@ -21,7 +21,7 @@ exports[`auto runtime (default) compiles for Metro web in dev 1`] = `
 
 function App() {
   return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(_View.default, {}, void 0, false, { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 }, this);
-}"
+}_c = App;var _c;$RefreshReg$(_c, "App");"
 `;
 
 exports[`auto runtime (default) compiles for Metro web in prod 1`] = `
@@ -37,7 +37,7 @@ exports[`classic runtime compiles for Metro ios in dev 1`] = `
 var _reactNative = require("react-native");var _jsxFileName = "/unknown";
 function App() {
   return /*#__PURE__*/React.createElement(_reactNative.View, { __self: this, __source: { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 } });
-}"
+}_c = App;var _c;$RefreshReg$(_c, "App");"
 `;
 
 exports[`classic runtime compiles for Metro ios in prod 1`] = `
@@ -53,7 +53,7 @@ exports[`classic runtime compiles for Metro web in dev 1`] = `
 
 function App() {
   return /*#__PURE__*/React.createElement(_View.default, { __self: this, __source: { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 } });
-}"
+}_c = App;var _c;$RefreshReg$(_c, "App");"
 `;
 
 exports[`classic runtime compiles for Metro web in prod 1`] = `

@@ -15,11 +15,9 @@ android {
 }
 
 dependencies {
-  implementation 'androidx.annotation:annotation:1.1.0'
-
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
   }
-  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation "org.robolectric:robolectric:4.16"
   testImplementation 'junit:junit:4.13.2'
 }

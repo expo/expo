@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+import ExpoModulesCore
 
 // swiftlint:disable:next line_length
 private let selectedGesturesInfoMessage = "Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools."
@@ -14,7 +15,7 @@ struct SettingsTabView: View {
   private func createBuildInfoJSON() -> String {
     let buildInfoDict: [String: Any] = [
       "runtimeVersion": viewModel.buildInfo["runtimeVersion"] as? String ?? "",
-      "sdkVersion": "53.0.0",
+      "sdkVersion": viewModel.structuredBuildInfo.sdkVersion ?? "",
       "appName": viewModel.buildInfo["appName"] as? String ?? "",
       "appVersion": viewModel.buildInfo["appVersion"] as? String ?? ""
     ]
@@ -56,7 +57,12 @@ struct SettingsTabView: View {
       .padding()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    #if os(tvOS)
+    .background()
+    #endif
+    #if !os(macOS)
     .navigationBarHidden(true)
+    #endif
   }
 
   private var showMenuAtLaunch: some View {
@@ -139,7 +145,6 @@ struct SettingsTabView: View {
         let buildInfoJSON = createBuildInfoJSON()
         let clipboard = UIPasteboard.general
         clipboard.string = buildInfoJSON
-
         showCopiedMessage = true
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {

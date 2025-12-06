@@ -405,5 +405,75 @@ final class DynamicTypeSpec: ExpoSpec {
         }
       }
     }
+
+    // MARK: - DynamicEncodableType
+
+    describe("DynamicEncodableType") {
+      struct TestEncodable: Encodable {
+        let string: String
+        let number: Int
+        let bool: Bool
+        var object: TestEncodableChild? = nil
+        var array: [Int]? = nil
+      }
+      struct TestEncodableChild: Encodable {
+        let name: String
+      }
+
+      it("is created") {
+        expect(~TestEncodable.self).to(beAKindOf(DynamicEncodableType.self))
+      }
+      it("casts to JS object") {
+        let encodable = TestEncodable(string: "test", number: -5, bool: true)
+        let result = try (~TestEncodable.self).castToJS(encodable, appContext: appContext)
+
+        expect(result.kind) == .object
+      }
+      it("has proper property names") {
+        let encodable = TestEncodable(string: "test", number: -5, bool: true)
+        let result = try (~TestEncodable.self).castToJS(encodable, appContext: appContext)
+        let propertyNames = result.getObject().getPropertyNames()
+
+        expect(propertyNames.count) == 3
+        expect(propertyNames).to(contain(["string", "number", "bool"]))
+      }
+      it("has correct values") {
+        let encodable = TestEncodable(string: "test", number: -5, bool: true)
+        let result = try (~TestEncodable.self).castToJS(encodable, appContext: appContext)
+        let object = result.getObject()
+
+        expect(try object.getProperty("string").asString()) == encodable.string
+        expect(try object.getProperty("number").asInt()) == encodable.number
+        expect(try object.getProperty("bool").asBool()) == encodable.bool
+        expect(object.getProperty("object").isUndefined()) == true
+        expect(object.getProperty("array").isUndefined()) == true
+      }
+      it("casts nested objects") {
+        let encodable = TestEncodable(
+          string: "test",
+          number: -5,
+          bool: true,
+          object: TestEncodableChild(name: "expo")
+        )
+        let result = try (~TestEncodable.self).castToJS(encodable, appContext: appContext)
+        let nestedValue = result.getObject().getProperty("object")
+
+        expect(nestedValue.kind) == .object
+        expect(try nestedValue.getObject().getProperty("name").asString()) == encodable.object?.name
+      }
+      it("casts arrays") {
+        let encodable = TestEncodable(
+          string: "test",
+          number: -5,
+          bool: true,
+          array: [1, 2, 3]
+        )
+        let result = try (~TestEncodable.self).castToJS(encodable, appContext: appContext)
+        let array = result.getObject().getProperty("array").getArray()
+
+        expect(array.count) == encodable.array?.count
+        expect(array.map({ $0.getInt() })) == encodable.array
+      }
+    }
   }
 }

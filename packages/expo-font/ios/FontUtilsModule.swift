@@ -8,20 +8,30 @@ public final class FontUtilsModule: Module {
 
 #if !os(macOS)
     AsyncFunction("renderToImageAsync") { (glyphs: String, options: RenderToImageOptions, promise: Promise) throws in
-      let font: UIFont
-      if let fontName = UIFont.fontNames(forFamilyName: options.fontFamily).first,
+      let font = if let fontName = UIFont.fontNames(forFamilyName: options.fontFamily).first,
         let uiFont = UIFont(name: fontName, size: options.size) {
-        font = uiFont
+        uiFont
       } else {
-        font = UIFont.systemFont(ofSize: options.size)
+        UIFont.systemFont(ofSize: options.size)
       }
 
+      var attributes: [NSAttributedString.Key: Any] = [
+        .font: font,
+        .foregroundColor: UIColor(options.color)
+      ]
+
+      if let lineHeight = options.lineHeight {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.minimumLineHeight = lineHeight
+        paragraphStyle.maximumLineHeight = lineHeight
+        attributes[.paragraphStyle] = paragraphStyle
+        // Adding baseline offset to vertically center the text within the specified line height
+        attributes[.baselineOffset] = (lineHeight - font.lineHeight) / 2
+      }
+      
       let attributedString = NSAttributedString(
         string: glyphs,
-        attributes: [
-          .font: font,
-          .foregroundColor: UIColor(options.color)
-        ]
+        attributes: attributes
       )
 
       let renderer = UIGraphicsImageRenderer(size: attributedString.size())
@@ -41,7 +51,8 @@ public final class FontUtilsModule: Module {
         promise.resolve([
           "uri": outputURL.absoluteString,
           "width": image.size.width,
-          "height": image.size.height
+          "height": image.size.height,
+          "scale": UIScreen.main.scale
         ])
       } catch {
         promise.reject(SaveImageException(outputURL.absoluteString))

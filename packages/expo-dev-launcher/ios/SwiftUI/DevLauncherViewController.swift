@@ -1,5 +1,5 @@
-import UIKit
 import SwiftUI
+import ExpoModulesCore
 
 @objc public class DevLauncherViewController: UIViewController {
   private var hostingController: UIHostingController<DevLauncherRootView>?
@@ -7,7 +7,7 @@ import SwiftUI
 
   @objc public override init(nibName: String?, bundle: Bundle?) {
     super.init(nibName: nibName, bundle: bundle)
-    setupViewController()
+    addHostingController()
   }
 
   @objc public convenience init() {
@@ -16,7 +16,7 @@ import SwiftUI
 
   required init?(coder: NSCoder) {
     super.init(coder: coder)
-    setupViewController()
+    addHostingController()
   }
 
   private func setupViewController() {
@@ -25,11 +25,18 @@ import SwiftUI
     let rootView = DevLauncherRootView(viewModel: viewModel)
     hostingController = UIHostingController(rootView: rootView)
     hostingController?.view.backgroundColor = UIColor.clear
+#if os(macOS)
+    hostingController?.view.appearance = NSAppearance(named: .aqua)
+#endif
   }
 
-  public override func viewDidLoad() {
-    super.viewDidLoad()
+  @objc public func resetHostingController() {
+    hostingController = nil
+    view = UIView()
+    addHostingController()
+  }
 
+  private func addHostingController() {
     if hostingController == nil {
       setupViewController()
     }
@@ -41,15 +48,28 @@ import SwiftUI
     addChild(hostingController)
     view.addSubview(hostingController.view)
 
+#if !os(macOS)
     hostingController.view.frame = view.bounds
     hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
     hostingController.didMove(toParent: self)
     navigationController?.setNavigationBarHidden(true, animated: false)
+#else
+    hostingController.view.frame = view.frame
+    hostingController.view.autoresizingMask = [.width, .height]
+#endif
+    
   }
 
+#if os(iOS) || os(tvOS)
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     hostingController?.view.frame = view.bounds
   }
+
+#else
+  public override func viewDidLayout() {
+    super.viewDidLayout()
+    hostingController?.view.frame = view.bounds
+  }
+#endif
 }

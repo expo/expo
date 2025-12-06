@@ -13,6 +13,7 @@ extension ExpoSwiftUI {
 
     #if os(macOS)
     func makeNSView(context: Context) -> NSView {
+      context.coordinator.originalAutoresizingMask = view.autoresizingMask
       return view
     }
 
@@ -22,6 +23,7 @@ extension ExpoSwiftUI {
     #endif
 
     func makeUIView(context: Context) -> UIView {
+      context.coordinator.originalAutoresizingMask = view.autoresizingMask
       return view
     }
 
@@ -29,14 +31,68 @@ extension ExpoSwiftUI {
       // Nothing to do here
     }
 
+    static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
+      // https://github.com/expo/expo/issues/40604
+      // UIViewRepresentable attaches autoresizingMask w+h to the hosted UIView
+      // This causes issues for RN views when they are recycled.
+      // So we restore the original autoresizingMask to avoid issues.
+      uiView.autoresizingMask = coordinator.originalAutoresizingMask
+    }
+
+    func makeCoordinator() -> Coordinator {
+      Coordinator()
+    }
+
+    class Coordinator {
+      var originalAutoresizingMask: UIView.AutoresizingMask = []
+    }
+
     // MARK: - AnyChild implementations
 
     var childView: some SwiftUI.View {
-      self
+      ViewSizeWrapper(viewHost: self)
     }
 
     var id: ObjectIdentifier {
       ObjectIdentifier(view)
     }
+  }
+}
+
+// ViewSizeWrapper attaches an observer to the view's bounds and updates the frame modifier of the view host.
+// This allows us to respect RN layout styling in SwiftUI realm
+// .e.g. <View style={{ width: 100, height: 100 }} />
+private struct ViewSizeWrapper: View {
+  let viewHost: ExpoSwiftUI.UIViewHost
+  @StateObject private var viewSizeModel: ViewSizeModel
+
+  init(viewHost: ExpoSwiftUI.UIViewHost) {
+    self.viewHost = viewHost
+    _viewSizeModel = StateObject(wrappedValue: ViewSizeModel(viewHost: viewHost))
+  }
+
+  var body: some View {
+      viewHost
+        .frame(width: viewSizeModel.viewFrame.width, height: viewSizeModel.viewFrame.height)
+  }
+}
+
+@MainActor
+private class ViewSizeModel: ObservableObject {
+  @Published var viewFrame: CGSize
+  private var observer: NSKeyValueObservation?
+
+  init(viewHost: ExpoSwiftUI.UIViewHost) {
+    let view = viewHost.view
+    self.viewFrame = view.bounds.size
+    observer = view.observe(\.bounds) { [weak self] view, _ in
+      MainActor.assumeIsolated {
+        self?.viewFrame = view.bounds.size
+      }
+    }
+  }
+
+  deinit {
+    observer?.invalidate()
   }
 }

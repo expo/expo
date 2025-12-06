@@ -328,6 +328,22 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       return try serializeContactPayload(payload: payload, keys: keysToFetch, options: options)
     }
 
+    AsyncFunction("hasContactsAsync") { (promise: Promise) in
+      let keysToFetch = [CNContactIdentifierKey]
+      let fetchRequest = CNContactFetchRequest(keysToFetch: getDescriptors(for: keysToFetch))
+      
+      do {
+        var hasAnyContact = false
+        try contactStore.enumerateContacts(with: fetchRequest) { _, stop in
+          hasAnyContact = true
+          stop.pointee = true
+        }
+        promise.resolve(hasAnyContact)
+      } catch {
+        promise.reject(ContactsCheckFailedException())
+      }
+    }
+
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         ContactsPermissionRequester.self,
@@ -412,13 +428,15 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   }
 
   private func serializeContactPayload(payload: [String: Any], keys: [String], options: ContactsQuery) throws -> [String: Any]? {
-    if payload["error"] != nil {
-      return nil
+    if let error = payload["error"] {
+      let errorMessage = String(describing: error)
+      throw ContactSerializationException(errorMessage)
     }
     var mutablePayload = payload
     var response = [[String: Any]]()
     guard let contacts = payload["data"] as? [CNContact] else {
-      return nil
+      mutablePayload["data"] = response
+      return mutablePayload
     }
 
     let directory = appContext?.config.cacheDirectory?.appendingPathComponent("Contacts")

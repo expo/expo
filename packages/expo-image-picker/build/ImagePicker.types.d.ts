@@ -518,6 +518,17 @@ export type ImagePickerOptions = {
      * @default false
      */
     legacy?: boolean;
+    /**
+     * When enabled, allows the picker to access and download media from iCloud or other remote sources
+     * if the asset is not stored locally on the device.
+     *
+     * For videos, this option applies only when [`videoExportPreset`](#videoexportpreset) is set to `Passthrough`.
+     * In all other cases, the video will be downloaded from iCloud automatically.
+     *
+     * @platform ios
+     * @default false
+     */
+    shouldDownloadFromNetwork?: boolean;
 };
 /**
  * @hidden

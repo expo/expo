@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
+- [iOS] Added support for all‑day reminders ([#39028](https://github.com/expo/expo/pull/39028)) by [@dominik-miskovic](https://github.com/dominik-miskovic)
+- [next] Implement `ExpoCalendar@next`  ([#39108](https://github.com/expo/expo/pull/39108) by [@kosmydel](https://github.com/kosmydel) and [@arturgesiarz](https://github.com/arturgesiarz))
+
 ### 🐛 Bug fixes
 
+- [Android] Fixed retrieving recurrence rules information. ([#40549](https://github.com/expo/expo/pull/40549) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
+
+- [Android] Refactored module native code. ([#40548](https://github.com/expo/expo/pull/40548) by [@barthap](https://github.com/barthap))
+
+## 15.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 15.0.7 — 2025-09-11
 

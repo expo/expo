@@ -4,6 +4,8 @@ import React
 
 public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
+
+  @MainActor
   private lazy var reactDelegate: ExpoReactDelegate = {
     ExpoReactDelegate(
       handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers,
@@ -118,19 +120,38 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFacto
 
     let rootView: UIView
     if let factory = self.rootViewFactory as? ExpoReactRootViewFactory {
+      // RCTDevMenuConfiguration is only available in react-native 0.83+
+#if os(iOS)
       // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
       // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
       rootView = factory.superView(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
+        launchOptions: launchOptions ?? [:],
+        devMenuConfiguration: self.devMenuConfiguration
+      )
+#else
+      rootView = factory.superView(
+        withModuleName: moduleName ?? defaultModuleName,
+        initialProperties: initialProps,
         launchOptions: launchOptions ?? [:]
       )
+#endif
     } else {
+#if os(iOS)
+      rootView = rootViewFactory.view(
+        withModuleName: moduleName ?? defaultModuleName,
+        initialProperties: initialProps,
+        launchOptions: launchOptions,
+        devMenuConfiguration: self.devMenuConfiguration
+      )
+#else
       rootView = rootViewFactory.view(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions
       )
+#endif
     }
 
     return rootView

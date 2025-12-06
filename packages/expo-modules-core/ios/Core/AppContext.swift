@@ -1,10 +1,10 @@
-import React
+@preconcurrency import React
 
 /**
  The app context is an interface to a single Expo app.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject {
+public final class AppContext: NSObject, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
@@ -43,15 +43,7 @@ public final class AppContext: NSObject {
    The legacy module registry with modules written in the old-fashioned way.
    */
   @objc
-  public weak var legacyModuleRegistry: EXModuleRegistry? {
-    didSet {
-      if let registry = legacyModuleRegistry,
-        let legacyModule = registry.getModuleImplementingProtocol(EXFileSystemInterface.self) as? EXFileSystemInterface,
-        let fileSystemLegacyModule = legacyModule as? FileSystemLegacyUtilities {
-        fileSystemLegacyModule.maybeInitAppGroupSharedDirectories(self.config.appGroupSharedDirectories)
-      }
-    }
-  }
+  public weak var legacyModuleRegistry: EXModuleRegistry?
 
   @objc
   public weak var legacyModulesProxy: LegacyNativeModulesProxy?
@@ -124,7 +116,7 @@ public final class AppContext: NSObject {
   /**
    The module holder for the core module.
    */
-  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule)
+  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule, name: nil)
 
   internal private(set) lazy var converter = MainValueConverter(appContext: self)
 
@@ -136,7 +128,7 @@ public final class AppContext: NSObject {
 
     super.init()
 
-    self.moduleRegistry.register(module: JSLoggerModule(appContext: self))
+    self.moduleRegistry.register(module: JSLoggerModule(appContext: self), name: nil)
     listenToClientAppNotifications()
   }
 
@@ -195,8 +187,7 @@ public final class AppContext: NSObject {
    */
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
     guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
-      // TODO: Define a JS class for SharedRef in the CoreModule and then use it here instead of a raw object (?)
-      return try runtime.createObject()
+      throw JavaScriptClassNotFoundException()
     }
     let prototype = try jsClass.getProperty("prototype").asObject()
     let object = try runtime.createObject(withPrototype: prototype)
@@ -214,18 +205,16 @@ public final class AppContext: NSObject {
   }
 
   /**
-   Provides access to app's constants from legacy module registry.
+   Provides access to app's constants.
    */
-  public var constants: EXConstantsInterface? {
-    return legacyModule(implementing: EXConstantsInterface.self)
-  }
+  public lazy var constants: EXConstantsInterface? = ConstantsProvider.shared
 
   /**
-   Provides access to the file system manager from legacy module registry.
+   Provides access to the file system utilities. Can be overridden if the app should use different different directories or file permissions.
+   For instance, Expo Go uses sandboxed environment per project where the cache and document directories must be scoped.
+   It's an optional type for historical reasons, for now let's keep it like this for backwards compatibility.
    */
-  public var fileSystem: EXFileSystemInterface? {
-    return legacyModule(implementing: EXFileSystemInterface.self)
-  }
+  public lazy var fileSystem: FileSystemManager? = FileSystemManager(appGroupSharedDirectories: self.config.appGroupSharedDirectories)
 
   /**
    Provides access to the permissions manager from legacy module registry.
@@ -238,15 +227,18 @@ public final class AppContext: NSObject {
    Provides access to the image loader from legacy module registry.
    */
   public var imageLoader: EXImageLoaderInterface? {
-    return legacyModule(implementing: EXImageLoaderInterface.self)
+    guard let bridge = reactBridge else {
+      // TODO: Find a way to do this without a bridge
+      log.warn("Unable to get the image loader because the bridge is not available.")
+      return nil
+    }
+    return ImageLoader(bridge: bridge)
   }
 
   /**
-   Provides access to the utilities from legacy module registry.
+   Provides access to the utilities (such as looking up for the current view controller).
    */
-  public var utilities: EXUtilitiesInterface? {
-    return legacyModule(implementing: EXUtilitiesInterface.self)
-  }
+  public var utilities: Utilities? = Utilities()
 
   /**
    Provides an event emitter that is compatible with the legacy interface.
@@ -512,6 +504,12 @@ public final class AppContext: NSObject {
 }
 
 // MARK: - Public exceptions
+
+public class JavaScriptClassNotFoundException: Exception, @unchecked Sendable {
+  public override var reason: String {
+    "Unable to find a JavaScript class in the class registry"
+  }
+}
 
 // Deprecated since v1.0.0
 @available(*, deprecated, renamed: "Exceptions.AppContextLost")

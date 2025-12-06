@@ -17,5 +17,4 @@ android {
 
 dependencies {
   api 'com.google.android.gms:play-services-location:21.0.1'
-  implementation 'androidx.annotation:annotation:1.7.1'
 }

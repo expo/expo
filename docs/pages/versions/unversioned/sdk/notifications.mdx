@@ -488,7 +488,7 @@ Then send a push notification which:
 
 ### Background notification configuration&ensp;<PlatformTags platforms={["ios"]} />
 
-To be able to use background push notifications on iOS, the `remote-notification` value needs to be present in the `UIBackgroundModes` array in your app's **Info.plist** file.
+To be able to use headless (background) notifications push notifications on iOS, the `remote-notification` value needs to be present in the `UIBackgroundModes` array in your app's **Info.plist** file.
 
 **If you're using [CNG](/workflow/continuous-native-generation/)**, set the [`enableBackgroundRemoteNotifications` property](#configurable-properties) of the config plugin to true, and the correct configuration will be applied automatically by prebuild.
 
@@ -643,7 +643,7 @@ We encourage you to always ensure appropriate channels with informative names ar
 
 ### Custom notification icon and colors&ensp;<PlatformTags platforms={['android']} />
 
-You can configure the [`notification.icon`](../config/app/#notification) and [`notification.color`](../config/app/#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#configurable-properties). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
+You can configure the `icon` and `color` keys for notification in the project by using the [`expo-notifications` config plugin](#configurable-properties) with [Expo Prebuild](/workflow/prebuild). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles)
 (the icon must be all white with a transparent background) or else it may not be displayed as intended.

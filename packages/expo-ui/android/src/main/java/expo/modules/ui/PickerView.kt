@@ -29,6 +29,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ComposableScope
 
 class PickerColors : Record {
   @Field
@@ -78,12 +79,12 @@ data class PickerProps(
 ) : ComposeProps
 
 class PickerView(context: Context, appContext: AppContext) :
-  ExpoComposeView<PickerProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<PickerProps>(context, appContext) {
   override val props = PickerProps()
   private val onOptionSelected by EventDispatcher()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun ComposableScope.Content() {
     val (selectedIndex) = props.selectedIndex
     val (options) = props.options
     val (colors) = props.elementColors
@@ -94,7 +95,7 @@ class PickerView(context: Context, appContext: AppContext) :
       DynamicTheme {
         AutoSizingComposable(shadowNodeProxy) {
           SingleChoiceSegmentedButtonRow(
-            modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+            modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
           ) {
             options.forEachIndexed { index, label ->
               SegmentedButton(
@@ -105,7 +106,7 @@ class PickerView(context: Context, appContext: AppContext) :
                 onClick = {
                   onOptionSelected(mapOf("index" to index, "label" to label))
                 },
-                modifier = Modifier.fromExpoModifiers(props.buttonModifiers.value),
+                modifier = Modifier.fromExpoModifiers(props.buttonModifiers.value, this@Content),
                 selected = index == selectedIndex,
                 label = { Text(label) },
                 colors = SegmentedButtonDefaults.colors(

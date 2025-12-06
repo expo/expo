@@ -77,9 +77,7 @@ export class MetroTerminalReporter extends TerminalReporter {
           break;
         }
 
-        const mode = event.mode === 'NOBRIDGE' || event.mode === 'BRIDGE' ? '' : (event.mode ?? '');
-        // @ts-expect-error
-        if (level === 'warn' || level === 'error') {
+        if (level === 'warn' || (level as string) === 'error') {
           let hasStack = false;
           const parsed = event.data.map((msg) => {
             // Quick check to see if an unsymbolicated stack is being logged.
@@ -124,14 +122,14 @@ export class MetroTerminalReporter extends TerminalReporter {
                   ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
                   : symbolicated;
 
-              logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...filtered);
+              logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...filtered);
             })();
             return;
           }
         }
 
         // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-        logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
+        logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...event.data);
         return;
       }
     }
@@ -269,6 +267,15 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
 
     attachImportStackToRootMessage(error);
+
+    // NOTE(@kitten): Metro drops the stack forcefully when it finds a `SyntaxError`. However,
+    // this is really unhelpful, since it prevents debugging Babel plugins or reporting bugs
+    // in Babel plugins or a transformer entirely
+    if (error.snippet == null && error.stack != null && error instanceof SyntaxError) {
+      error.message = error.stack;
+      delete error.stack;
+    }
+
     return super._logBundlingError(error);
   }
 }

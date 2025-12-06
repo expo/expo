@@ -8,6 +8,10 @@ import Combine
 private func sanitizeUrlString(_ urlString: String) -> String? {
   var sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
 
+  if let decodedUrl = sanitizedUrl.removingPercentEncoding {
+    sanitizedUrl = decodedUrl
+  }
+
   if !sanitizedUrl.contains("://") {
     sanitizedUrl = "http://" + sanitizedUrl
   }
@@ -25,6 +29,19 @@ struct DevServersView: View {
   @State private var showingURLInput = false
   @State private var urlText = ""
   @State private var cancellables = Set<AnyCancellable>()
+
+  private func connectToURL() {
+    if !urlText.isEmpty {
+      let sanitizedURL = sanitizeUrlString(urlText)
+      if let validURL = sanitizedURL {
+        viewModel.openApp(url: validURL)
+        withAnimation(.easeInOut(duration: 0.3)) {
+          showingURLInput = false
+        }
+        urlText = ""
+      }
+    }
+  }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
@@ -77,11 +94,14 @@ struct DevServersView: View {
 
       if showingURLInput {
         TextField("http://10.0.0.25:8081", text: $urlText)
+        #if !os(macOS)
           .autocapitalization(.none)
+        #endif
           .disableAutocorrection(true)
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
-          .foregroundColor(.black)
+          .foregroundColor(.primary)
+          .onSubmit(connectToURL)
         #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
@@ -114,6 +134,7 @@ struct DevServersView: View {
       } label: {
         Text("info".uppercased())
           #if os(tvOS)
+          .foregroundColor(.primary)
           .font(.system(size: 24))
           #else
           .font(.system(size: 12))
@@ -124,18 +145,7 @@ struct DevServersView: View {
   }
 
   private var connectButton: some View {
-    Button {
-      if !urlText.isEmpty {
-        let sanitizedURL = sanitizeUrlString(urlText)
-        if let validURL = sanitizedURL {
-          viewModel.openApp(url: validURL)
-          withAnimation(.easeInOut(duration: 0.3)) {
-            showingURLInput = false
-          }
-          urlText = ""
-        }
-      }
-    } label: {
+    Button(action: connectToURL) {
       Text("Connect")
         .font(.headline)
         .foregroundColor(.white)
@@ -160,6 +170,7 @@ struct DevServersView: View {
 }
 
 struct DevServerRow: View {
+  @EnvironmentObject var viewModel: DevLauncherViewModel
   let server: DevServer
   let onTap: () -> Void
 
@@ -177,9 +188,14 @@ struct DevServerRow: View {
           .foregroundColor(.primary)
 
         Spacer()
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
+
+        if viewModel.isLoadingServer {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

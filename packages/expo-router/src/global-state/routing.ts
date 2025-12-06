@@ -23,7 +23,12 @@ import { ResultState } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
-import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
+import {
+  appendInternalExpoRouterParams,
+  INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  type InternalExpoRouterParams,
+} from '../navigationParams';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
@@ -36,8 +41,16 @@ function assertIsReady() {
   }
 }
 
+interface LinkAction {
+  type: 'ROUTER_LINK';
+  payload: {
+    options: LinkToOptions;
+    href: string;
+  };
+}
+
 export const routingQueue = {
-  queue: [] as NavigationAction[],
+  queue: [] as (NavigationAction | LinkAction)[],
   subscribers: new Set<() => void>(),
   subscribe(callback: () => void) {
     routingQueue.subscribers.add(callback);
@@ -48,7 +61,7 @@ export const routingQueue = {
   snapshot() {
     return routingQueue.queue;
   },
-  add(action: NavigationAction) {
+  add(action: NavigationAction | LinkAction) {
     routingQueue.queue.push(action);
     for (const callback of routingQueue.subscribers) {
       callback();
@@ -58,10 +71,28 @@ export const routingQueue = {
     // Reset the identity of the queue.
     const events = routingQueue.queue;
     routingQueue.queue = [];
-    let action: NavigationAction | undefined;
+    let action: NavigationAction | LinkAction | undefined;
     while ((action = events.shift())) {
       if (ref.current) {
-        ref.current.dispatch(action);
+        if (action.type === 'ROUTER_LINK') {
+          const {
+            payload: { href, options },
+          } = action as LinkAction;
+
+          action = getNavigateAction(
+            href,
+            options,
+            options.event,
+            options.withAnchor,
+            options.dangerouslySingular,
+            !!options.__internal__PreviewKey
+          );
+          if (action) {
+            ref.current.dispatch(action);
+          }
+        } else {
+          ref.current.dispatch(action);
+        }
       }
     }
   },
@@ -206,6 +237,44 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
     return;
   }
 
+  if (href === '..' || href === '../') {
+    assertIsReady();
+    const navigationRef = store.navigationRef.current;
+
+    if (navigationRef == null) {
+      throw new Error(
+        "Couldn't find a navigation object. Is your component inside NavigationContainer?"
+      );
+    }
+
+    if (!store.linking) {
+      throw new Error('Attempted to link to route when no routes are present');
+    }
+
+    navigationRef.goBack();
+    return;
+  }
+
+  const linkAction: LinkAction = {
+    type: 'ROUTER_LINK',
+    payload: {
+      href,
+      options,
+    },
+  };
+
+  routingQueue.add(linkAction);
+}
+
+function getNavigateAction(
+  baseHref: string,
+  options: LinkToOptions,
+  type = 'NAVIGATE',
+  withAnchor?: boolean,
+  singular?: SingularOptions,
+  isPreviewNavigation?: boolean
+) {
+  let href: string | undefined = baseHref;
   assertIsReady();
   const navigationRef = store.navigationRef.current;
 
@@ -214,20 +283,13 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
       "Couldn't find a navigation object. Is your component inside NavigationContainer?"
     );
   }
-
   if (!store.linking) {
     throw new Error('Attempted to link to route when no routes are present');
   }
-
-  if (href === '..' || href === '../') {
-    navigationRef.goBack();
-    return;
-  }
-
   const rootState = navigationRef.getRootState();
 
   href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
-  href = applyRedirects(href, store.redirects);
+  href = applyRedirects(href, store.redirects) ?? undefined;
 
   // If the href is undefined, it means that the redirect has already been handled the navigation
   if (!href) {
@@ -240,27 +302,6 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);
     return;
   }
-
-  routingQueue.add(
-    getNavigateAction(
-      state,
-      rootState,
-      options.event,
-      options.withAnchor,
-      options.dangerouslySingular,
-      !!options.__internal__PreviewKey
-    )
-  );
-}
-
-function getNavigateAction(
-  _actionState: ResultState,
-  _navigationState: NavigationState,
-  type = 'NAVIGATE',
-  withAnchor?: boolean,
-  singular?: SingularOptions,
-  isPreviewNavigation?: boolean
-) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
    * lowest navigator is the target.
@@ -277,8 +318,8 @@ function getNavigateAction(
    */
 
   const { actionStateRoute, navigationState } = findDivergentState(
-    _actionState,
-    _navigationState,
+    state,
+    rootState,
     type === 'PRELOAD'
   );
 
@@ -316,8 +357,8 @@ function getNavigateAction(
 
   const expoParams: InternalExpoRouterParams = isPreviewNavigation
     ? {
-        __internal__expo_router_is_preview_navigation: true,
-        __internal_expo_router_no_animation: true,
+        [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+        [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
       }
     : {};
   const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);

@@ -37,11 +37,7 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallback(
     std::move(rejectFunction)
   );
 
-#if REACT_NATIVE_TARGET_VERSION >= 75
   facebook::react::LongLivedObjectCollection::get(rt).add(callbackContext);
-#else
-  facebook::react::LongLivedObjectCollection::get().add(callbackContext);
-#endif
 
   return JavaCallback::newInstance(jsiContext, std::move(callbackContext));
 }

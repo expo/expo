@@ -1,4 +1,4 @@
-import { convertRequest, RequestHandler, respond } from '@expo/server/adapter/http';
+import { convertRequest, RequestHandler, respond } from 'expo-server/adapter/http';
 
 import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
@@ -38,7 +38,7 @@ export function createRequestHandler(
       const request = convertRequest(req, res);
       const response = await handleRequest(request);
       return await respond(res, response);
-    } catch (error: unknown) {
+    } catch (error: any) {
       if (error instanceof Error) {
         return await respond(
           res,
@@ -54,7 +54,6 @@ export function createRequestHandler(
       }
       // http doesn't support async functions, so we have to pass along the
       // error manually using next().
-      // @ts-expect-error
       next(error);
     }
   };

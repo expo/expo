@@ -40,6 +40,7 @@ Pod::Spec.new do |s|
     :osx => '11.0',
     :tvos => '15.1'
   }
+  s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
   s.header_dir     = 'Expo'
@@ -104,6 +105,11 @@ Pod::Spec.new do |s|
   install_modules_dependencies(s)
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
+  s.exclude_files = 'ios/Tests'
   s.compiler_flags = compiler_flags
   s.private_header_files = ['ios/**/Swift.h']
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'ios/Tests'
+  end
 end

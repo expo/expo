@@ -12,11 +12,15 @@ public protocol Convertible: AnyArgument {
    Throws an error when given value cannot be converted.
    */
   static func convert(from value: Any?, appContext: AppContext) throws -> Self
+  static func convertResult(_ result: Any, appContext: AppContext) throws -> Any
 }
 
 extension Convertible {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicConvertibleType(innerType: Self.self)
+  }
+  public static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
+    return result
   }
 }
 

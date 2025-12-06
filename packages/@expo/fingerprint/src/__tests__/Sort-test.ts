@@ -53,4 +53,20 @@ describe(sortSources, () => {
     expect(sortSources(sources)).toEqual(sources);
     expect(sortSources(fingerprintSources)).toEqual(fingerprintSources);
   });
+
+  it('should sort sources by override hash key', () => {
+    const sources: HashSource[] = [
+      { type: 'file', filePath: '/app/app.json', reasons: ['expoConfig'] },
+      { type: 'file', filePath: '/app/eas.json', reasons: ['easBuild'], overrideHashKey: '_first' },
+      { type: 'dir', filePath: '/app/android', reasons: ['bareNativeDir'] },
+      { type: 'dir', filePath: '/app/ios', reasons: ['bareNativeDir'], overrideHashKey: '_first' },
+    ];
+
+    expect(sortSources(sources)).toEqual([
+      { type: 'file', filePath: '/app/eas.json', reasons: ['easBuild'], overrideHashKey: '_first' },
+      { type: 'file', filePath: '/app/app.json', reasons: ['expoConfig'] },
+      { type: 'dir', filePath: '/app/ios', reasons: ['bareNativeDir'], overrideHashKey: '_first' },
+      { type: 'dir', filePath: '/app/android', reasons: ['bareNativeDir'] },
+    ]);
+  });
 });

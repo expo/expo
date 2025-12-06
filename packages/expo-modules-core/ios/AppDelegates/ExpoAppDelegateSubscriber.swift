@@ -24,6 +24,24 @@ open class BaseExpoAppDelegateSubscriber: UIResponder {
 @objc(EXAppDelegateSubscriberProtocol)
 public protocol ExpoAppDelegateSubscriberProtocol: UIApplicationDelegate {
   @objc optional func customizeRootView(_ rootView: UIView)
+
+  /**
+   Function that is called automatically by the `ExpoAppDelegate` once the subscriber is successfully registered.
+   If the subscriber is loaded from the modules provider, it is executed just before the main code of the app,
+   thus even before any other `UIApplicationDelegate` function. Use it if your subscriber needs to run some code as early as possible,
+   but keep in mind that this affects the application loading time.
+   */
+  @objc
+  @MainActor
+  optional func subscriberDidRegister()
+
+  /**
+   Function that is called at the beginning of the `AppDelegate` initialization,
+   i.e. during the `main` function and before the application starts launching.
+   */
+  @objc
+  @MainActor
+  optional func appDelegateWillBeginInitialization()
 }
 
 /**

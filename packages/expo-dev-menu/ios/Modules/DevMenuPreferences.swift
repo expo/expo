@@ -43,13 +43,20 @@ public class DevMenuPreferences: Module {
     ])
     #endif
 
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(toggleMenu),
+      name: Notification.Name("RCTShowDevMenuNotification"),
+      object: nil
+    )
+
     /*
      We don't want to uninstall `DevMenuMotionInterceptor`, because otherwise, the app on shake gesture will bring up the dev-menu from the RN.
      So we added `isEnabled` to disable it, but not uninstall.
      */
-    DevMenuMotionInterceptor.isInstalled = true
-    DevMenuMotionInterceptor.isEnabled = DevMenuPreferences.motionGestureEnabled
+#if !os(macOS)
     DevMenuTouchInterceptor.isInstalled = DevMenuPreferences.touchGestureEnabled
+#endif
     DevMenuKeyCommandsInterceptor.isInstalled = DevMenuPreferences.keyCommandsEnabled
   }
 
@@ -62,7 +69,6 @@ public class DevMenuPreferences: Module {
     }
     set {
       setBool(newValue, forKey: motionGestureEnabledKey)
-      DevMenuMotionInterceptor.isEnabled = newValue
     }
   }
 
@@ -75,7 +81,9 @@ public class DevMenuPreferences: Module {
     }
     set {
       setBool(newValue, forKey: touchGestureEnabledKey)
+#if !os(macOS)
       DevMenuTouchInterceptor.isInstalled = newValue
+#endif
     }
   }
 
@@ -88,7 +96,9 @@ public class DevMenuPreferences: Module {
     }
     set {
       setBool(newValue, forKey: keyCommandsEnabledKey)
+#if !os(macOS)
       DevMenuKeyCommandsInterceptor.isInstalled = newValue
+#endif
     }
   }
 
@@ -145,6 +155,16 @@ public class DevMenuPreferences: Module {
     if let showsAtLaunch = settings["showsAtLaunch"] as? Bool {
       DevMenuPreferences.showsAtLaunch = showsAtLaunch
     }
+  }
+
+  @objc static func toggleMenu() {
+    if DevMenuPreferences.motionGestureEnabled {
+      DevMenuManager.shared.toggleMenu()
+    }
+  }
+
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
 }
 

@@ -6,9 +6,41 @@
 
 ### 🎉 New features
 
+- [Android][iOS] Add `seek tolerance` and `scrubbingModeOptions` properties to the player. ([#40203](https://github.com/expo/expo/pull/40203) by [@behenate](https://github.com/behenate))
+- Allow assigning `null` value to the `player` prop of the `VideoView` ([#40860](https://github.com/expo/expo/pull/40860) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
+- [Android] Emit `onFirstFrameRender` when player is moved to a new `VideoView` and renders a frame. ([#40854](https://github.com/expo/expo/pull/40854) by [@behenate](https://github.com/behenate))
+- [Android] Fix media controls (e.g. bluetooth) not working when `ExpoVideoPlaybackService` is not registered. ([#40728](https://github.com/expo/expo/pull/40728) by [@behenate](https://github.com/behenate))
+- [Web] Fix crash on older versions of Safari. ([#41101](https://github.com/expo/expo/pull/41101) by [@CamWass](https://github.com/CamWass))
+- [Web] Fix video pausing when entering fullscreen in electron apps. ([#40989](https://github.com/expo/expo/pull/40989) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
+
+- [Android] Remove @UnstableReactNativeAPI annotations. ([#39921](https://github.com/expo/expo/pull/39921) by [@jakex7](https://github.com/jakex7))
+- [iOS] Load track information for events in asynchronous context. ([#40355](https://github.com/expo/expo/pull/40355) by [@behenate](https://github.com/behenate))
+
+## 3.0.15 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.14 - 2025-11-05
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.13 - 2025-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.12 - 2025-10-28
+
+### 🐛 Bug fixes
+
+- Fix `FOREGROUND_SERVICE_MEDIA_PLAYBACK` being always present in the manifest. ([#40074](https://github.com/expo/expo/pull/40074) by [@behenate](https://github.com/behenate))
+- [iOS] Fix crashes when rapidly replacing HLS sources. ([#40265](https://github.com/expo/expo/pull/40265) by [@behenate](https://github.com/behenate))
+- [Android] Fix the `player` prop of the `VideoView` not working when a player is re-assigned after being replaced by a different player earlier. ([#40709](https://github.com/expo/expo/pull/40709) by [@behenate](https://github.com/behenate))
+- [Android] Fix surface view not showing when changing the `player` prop. ([#40817](https://github.com/expo/expo/pull/40817) by [@behenate](https://github.com/behenate))
 
 ## 3.0.11 — 2025-09-10
 

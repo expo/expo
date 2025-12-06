@@ -6,9 +6,9 @@
 
 #include <memory>
 
-namespace expo {
-
 namespace jsi = facebook::jsi;
+
+namespace expo {
 
 class JavaScriptRuntime;
 
@@ -31,7 +31,7 @@ public:
   /**
    * @return an reference to the jsi::Runtime.
    */
-  jsi::Runtime &getJSRuntime();
+  jsi::Runtime &getJSRuntime() const;
 
   JSIContext *getJSIContext();
 

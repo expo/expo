@@ -65,7 +65,7 @@ export class VideoView extends PureComponent<VideoViewProps> {
 
   render(): ReactNode {
     const { player, ...props } = this.props;
-    const playerId = getPlayerId(player);
+    const playerId = player ? getPlayerId(player) : null;
 
     if (props.allowsFullscreen !== undefined) {
       console.warn(

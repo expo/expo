@@ -10,6 +10,7 @@ import {
   RecorderState,
   RecordingInput,
   RecordingOptions,
+  RecordingOptionsWeb,
   RecordingStartOptions,
 } from './Audio.types';
 import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
@@ -92,7 +93,7 @@ function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
     didJustFinish: media.ended,
     isBuffering: false,
     playbackRate: media.playbackRate,
-    shouldCorrectPitch: false,
+    shouldCorrectPitch: true,
     mute: media.muted,
     loop: media.loop,
   };
@@ -234,7 +235,11 @@ export class AudioPlayerWeb
     getStatusFromMedia(this.media, this.id);
   }
 
-  _createMediaElement() {
+  setActiveForLockScreen(active: boolean, metadata: Record<string, any>): void {}
+  updateLockScreenMetadata(metadata: Record<string, any>): void {}
+  clearLockScreenControls(): void {}
+
+  _createMediaElement(): HTMLAudioElement {
     const newSource = getSourceUri(this.src);
     const media = new Audio(newSource);
     if (this.crossOrigin !== undefined) {
@@ -452,7 +457,9 @@ export class AudioRecorderWeb
     this.timeoutIds.forEach((id) => clearTimeout(id));
   }
 
-  private async createMediaRecorder(options: Partial<RecordingOptions>): Promise<MediaRecorder> {
+  private async createMediaRecorder(
+    options: Partial<RecordingOptions> & Partial<RecordingOptionsWeb>
+  ): Promise<MediaRecorder> {
     if (typeof navigator !== 'undefined' && !navigator.mediaDevices) {
       throw new Error('No media devices available');
     }
@@ -462,10 +469,23 @@ export class AudioRecorderWeb
 
     const stream = await getUserMedia({ audio: true });
 
-    const mediaRecorder = new (window as any).MediaRecorder(
-      stream,
-      options?.web || RecordingPresets.HIGH_QUALITY.web
-    );
+    const defaults = RecordingPresets.HIGH_QUALITY.web;
+    const mediaRecorderOptions: MediaRecorderOptions = {};
+
+    const mimeType = options.mimeType ?? defaults.mimeType;
+    if (mimeType && MediaRecorder.isTypeSupported(mimeType)) {
+      mediaRecorderOptions.mimeType = mimeType;
+    }
+
+    if (options.bitsPerSecond) {
+      mediaRecorderOptions.bitsPerSecond = options.bitsPerSecond;
+    } else if (options.bitRate) {
+      mediaRecorderOptions.audioBitsPerSecond = options.bitRate;
+    } else {
+      mediaRecorderOptions.bitsPerSecond = defaults.bitsPerSecond;
+    }
+
+    const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions);
 
     mediaRecorder.addEventListener('pause', () => {
       this.currentTime = this.getAudioRecorderDurationMillis();

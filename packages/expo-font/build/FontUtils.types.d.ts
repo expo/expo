@@ -14,6 +14,10 @@ export interface RenderToImageOptions {
      * @default 'black'
      */
     color?: string;
+    /**
+     * Line height of the text. Accepts number in dp units.
+     */
+    lineHeight?: number;
 }
 export interface RenderToImageResult {
     /**
@@ -21,12 +25,16 @@ export interface RenderToImageResult {
      */
     uri: string;
     /**
-     * Image width.
+     * Image width in dp.
      */
     width: number;
     /**
-     * Image height.
+     * Image height in dp.
      */
     height: number;
+    /**
+     * Scale factor of the image. Multiply the dp dimensions by this value to get the dimensions in pixels.
+     * */
+    scale: number;
 }
 //# sourceMappingURL=FontUtils.types.d.ts.map

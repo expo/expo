@@ -19,7 +19,7 @@ import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
 import { isVersionedPath } from '~/common/routes';
 import { prefersReducedMotion } from '~/common/window';
 import { HeadingManagerProps, HeadingsContext } from '~/common/withHeadingManager';
-import { ScrollContainer } from '~/components/ScrollContainer';
+import { type ScrollContainerHandle } from '~/components/ScrollContainer';
 import { CALLOUT } from '~/ui/components/Text';
 
 import { TableOfContentsLink } from './TableOfContentsLink';
@@ -30,8 +30,8 @@ const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
 
 export type TableOfContentsProps = PropsWithChildren<{
   maxNestingDepth?: number;
-  selfRef?: RefObject<ScrollContainer | null>;
-  contentRef?: RefObject<ScrollContainer | null>;
+  selfRef?: RefObject<ScrollContainerHandle | null>;
+  contentRef?: RefObject<ScrollContainerHandle | null>;
 }>;
 
 export type TableOfContentsHandles = {
@@ -74,19 +74,51 @@ export const TableOfContents = forwardRef<
   useImperativeHandle(ref, () => ({ handleContentScroll }), []);
 
   function handleContentScroll(contentScrollPosition: number) {
+    const showScrollTopValue = contentScrollPosition > 120;
+
+    if (showScrollTopValue !== showScrollTop) {
+      setShowScrollTop(showScrollTopValue);
+    }
+
+    const viewportMiddle = contentScrollPosition + window.innerHeight / 2;
+    const viewportActiveOffset =
+      contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR;
+
+    if (slugScrollingTo.current) {
+      const targetHeading = headings.find(h => h.slug === slugScrollingTo.current);
+      const targetTop = targetHeading?.ref?.current?.offsetTop;
+
+      if (targetTop != null) {
+        const targetInView = targetTop >= viewportActiveOffset && targetTop <= viewportMiddle;
+
+        if (!targetInView) {
+          return;
+        }
+      } else {
+        slugScrollingTo.current = null;
+      }
+
+      slugScrollingTo.current = null;
+    }
+
     for (const { ref, slug, level } of headings) {
       if (!ref?.current) {
         continue;
       }
 
-      setShowScrollTop(contentScrollPosition > 120);
+      const headingTop = ref.current.offsetTop;
 
-      const isInView =
-        ref.current.offsetTop >=
-          contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR &&
-        ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2;
+      if (headingTop > viewportMiddle) {
+        break;
+      }
+
+      const isInView = headingTop >= viewportActiveOffset && headingTop <= viewportMiddle;
 
       if (isInView) {
+        if (slug === activeSlug) {
+          return;
+        }
+
         if (level > BASE_HEADING_LEVEL + 1 && isVersioned) {
           const currentIndex = headings.findIndex(h => h.slug === slug);
           for (let i = currentIndex; i >= 0; i--) {
@@ -99,14 +131,10 @@ export const TableOfContents = forwardRef<
             }
           }
         }
-        if (slug !== activeSlug) {
-          if (slug === slugScrollingTo.current) {
-            slugScrollingTo.current = null;
-          }
-          setActiveParentSlug(null);
-          setActiveSlug(slug);
-          updateSelfScroll();
-        }
+
+        setActiveParentSlug(null);
+        setActiveSlug(slug);
+        updateSelfScroll();
         return;
       }
     }
@@ -137,6 +165,60 @@ export const TableOfContents = forwardRef<
     }
   }
 
+  function focusHeadingElement(ref?: Heading['ref']) {
+    if (!ref?.current || typeof window === 'undefined') {
+      return;
+    }
+
+    const element = ref.current;
+
+    if (!(element instanceof HTMLElement)) {
+      return;
+    }
+
+    const headingElement = element.closest('[data-heading]');
+    const focusTarget = headingElement instanceof HTMLElement ? headingElement : element;
+
+    const hadTabIndex = focusTarget.hasAttribute('tabindex');
+
+    if (!hadTabIndex) {
+      focusTarget.setAttribute('tabindex', '-1');
+    }
+
+    try {
+      focusTarget.focus({ preventScroll: true });
+    } catch {
+      focusTarget.focus();
+    }
+
+    if (!hadTabIndex) {
+      const removeTabIndex = () => {
+        focusTarget.removeAttribute('tabindex');
+        focusTarget.removeEventListener('blur', removeTabIndex);
+      };
+      focusTarget.addEventListener('blur', removeTabIndex);
+    }
+  }
+
+  function queueHeadingFocus(ref?: Heading['ref']) {
+    if (!ref?.current || typeof window === 'undefined') {
+      return;
+    }
+
+    const applyFocus = () => {
+      focusHeadingElement(ref);
+    };
+
+    if (typeof window.requestAnimationFrame === 'function') {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(applyFocus);
+      });
+      return;
+    }
+
+    setTimeout(applyFocus, 0);
+  }
+
   function handleLinkClick(event: MouseEvent, { slug, ref, type }: Heading) {
     event.preventDefault();
 
@@ -152,6 +234,8 @@ export const TableOfContents = forwardRef<
     if (history?.replaceState) {
       history.replaceState(history.state, '', '#' + slug);
     }
+
+    queueHeadingFocus(ref);
   }
 
   function handleTopClick(event: MouseEvent) {
@@ -165,6 +249,8 @@ export const TableOfContents = forwardRef<
     if (history?.replaceState) {
       history.replaceState(history.state, '', ' ');
     }
+
+    queueHeadingFocus(headings[0]?.ref);
   }
 
   const toggleH3 = (slug: string, event: SyntheticEvent) => {

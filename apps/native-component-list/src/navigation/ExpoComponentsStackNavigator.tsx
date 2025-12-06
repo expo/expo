@@ -8,7 +8,9 @@ import { optionalRequire } from './routeBuilder';
 import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
+import { BlurScreens } from '../screens/BlurView/BlurViewScreen';
 import { CameraScreens } from '../screens/Camera/CameraScreen';
+import { componentScreensToListElements } from '../screens/ComponentListScreen';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { MapsScreens } from '../screens/ExpoMaps/MapsScreen';
 import { GLScreens } from '../screens/GL/GLScreen';
@@ -16,7 +18,7 @@ import { ImageScreens } from '../screens/Image/ImageScreen';
 import { SVGScreens } from '../screens/SVG/SVGScreen';
 import { UIScreens } from '../screens/UI/UIScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
-import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
+import { type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createNativeStackNavigator();
 
@@ -51,6 +53,7 @@ const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/BlurView/BlurViewScreen'));
     },
     name: 'BlurView',
+    route: 'blur',
   },
   {
     getComponent() {
@@ -226,17 +229,9 @@ const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Audio/AV/VideoScreen'));
-    },
-    name: 'Video (expo-av)',
-    route: 'video-expo-av',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/Video/VideoScreen'));
     },
     name: 'Video (expo-video)',
-    route: 'video-expo-video',
   },
   {
     getComponent() {
@@ -304,6 +299,7 @@ const ScreensList: ScreenConfig[] = [
 export const Screens: ScreenConfig[] = [
   ...ScreensList,
 
+  ...BlurScreens,
   ...GLScreens,
   ...CameraScreens,
   ...ImageScreens,
@@ -313,11 +309,7 @@ export const Screens: ScreenConfig[] = [
   ...MapsScreens,
 ];
 
-export const screenApiItems: ScreenApiItem[] = ScreensList.map(({ name, route }) => ({
-  name,
-  route: '/components/' + (route ?? name.toLowerCase()),
-  isAvailable: true,
-}));
+export const screenApiItems = componentScreensToListElements(ScreensList);
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
   const { theme } = useTheme();

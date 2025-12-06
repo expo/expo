@@ -4,20 +4,20 @@
   "description": "Test suite for the Expo SDK",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@expo/html-elements": "^0.13.7",
     "@expo/styleguide-base": "^1.0.1",
-    "@react-navigation/native": "^7.1.8",
-    "@react-navigation/stack": "^7.4.7",
+    "@react-navigation/native": "^7.1.21",
+    "@react-navigation/stack": "^7.6.7",
     "async-retry": "^1.1.4",
     "expo": "~54.0.8",
     "expo-application": "~7.0.7",
     "expo-asset": "~12.0.8",
-    "expo-av": "~16.0.7",
     "expo-background-fetch": "~14.0.7",
     "expo-blob": "~0.1.6",
     "expo-brightness": "~14.0.7",
@@ -50,8 +50,8 @@
     "immutable": "^4.0.0",
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.19",
-    "react": "19.1.0",
-    "react-native": "0.81.4",
+    "react": "19.2.0",
+    "react-native": "0.83.0-rc.3",
     "react-native-gesture-handler": "~2.28.0",
     "sinon": "^7.1.1"
   },

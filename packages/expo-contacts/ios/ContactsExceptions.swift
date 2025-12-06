@@ -126,3 +126,15 @@ internal final class RemoteImageUriException: Exception {
     "Only file:// URIs are supported for contact images. Provided URI: '\(providedUri)'. Download the image first using File.downloadFileAsync from expo-file-system and provide a local file URI."
   }
 }
+
+internal final class ContactSerializationException: GenericException<String> {
+  override var reason: String {
+    "Failed to serialize contact data: \(param)"
+  }
+}
+
+internal final class ContactsCheckFailedException: Exception {
+  override var reason: String {
+    "Couldn't check if there are any contacts"
+  }
+}

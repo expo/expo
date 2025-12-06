@@ -10,6 +10,7 @@ const inline_env_vars_1 = require("./inline-env-vars");
 const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
 const server_actions_plugin_1 = require("./server-actions-plugin");
+const server_data_loaders_plugin_1 = require("./server-data-loaders-plugin");
 const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
@@ -79,9 +80,6 @@ function babelPresetExpo(api, options = {}) {
         !isServerEnv &&
         // Give users the ability to opt-out of the feature, per-platform.
         platformOptions['react-compiler'] !== false) {
-        if (!(0, common_1.hasModule)('babel-plugin-react-compiler')) {
-            throw new Error('The `babel-plugin-react-compiler` must be installed before you can use React Compiler.');
-        }
         extraPlugins.push([
             require('babel-plugin-react-compiler'),
             {
@@ -165,6 +163,10 @@ function babelPresetExpo(api, options = {}) {
     }
     if ((0, common_1.hasModule)('expo-router')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
+        // Strip loader() functions from client bundles
+        if (!isServerEnv) {
+            extraPlugins.push(server_data_loaders_plugin_1.serverDataLoadersPlugin);
+        }
     }
     extraPlugins.push(client_module_proxy_plugin_1.reactClientReferencesPlugin);
     // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
@@ -179,12 +181,13 @@ function babelPresetExpo(api, options = {}) {
     }
     // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
     extraPlugins.push(environment_restricted_imports_1.environmentRestrictedImportsPlugin);
-    if (isFastRefreshEnabled) {
+    if (platformOptions.enableReactFastRefresh ||
+        (isFastRefreshEnabled && platformOptions.enableReactFastRefresh !== false)) {
         extraPlugins.push([
             require('react-refresh/babel'),
             {
-                // We perform the env check to enable `isFastRefreshEnabled`.
-                skipEnvCheck: true,
+                // We perform the env check to enable `isFastRefreshEnabled`, unless the plugin is force-enabled
+                skipEnvCheck: platformOptions.enableReactFastRefresh !== true,
             },
         ]);
     }

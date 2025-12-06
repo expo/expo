@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
 export const VideoScreens = [
   {
@@ -26,6 +26,14 @@ export const VideoScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./VideoCacheScreen'));
+    },
+  },
+  {
+    name: 'Changing VideoPlayer output view',
+    route: 'video/player_prop',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoChangePlayerOutputScreen'));
     },
   },
   {
@@ -117,6 +125,14 @@ export const VideoScreens = [
       return optionalRequire(() => require('./VideoThumbnailsScreen'));
     },
   },
+  {
+    name: 'Video scrubbing options',
+    route: 'video/scrubbing',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoScrubbingScreen'));
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {
@@ -143,12 +159,6 @@ if (Platform.OS === 'android') {
 }
 
 export default function VideoScreen() {
-  const apis: ListElement[] = VideoScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/components/${screen.route}`,
-    };
-  });
+  const apis = componentScreensToListElements(VideoScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

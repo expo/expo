@@ -3,15 +3,13 @@
 import ExpoModulesCore
 
 public class ExpoDevLauncherAppDelegateSubscriber: ExpoAppDelegateSubscriber {
-  public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    guard let window = UIApplication.shared.delegate?.window ?? UIApplication.shared.windows.filter { $0.isKeyWindow }.first else {
-      fatalError("Cannot find the keyWindow. Make sure to call `window.makeKeyAndVisible()`.")
-    }
-    EXDevLauncherController.sharedInstance().autoSetupStart(window)
-    return false
-  }
-
+  #if !os(macOS)
   public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
     return EXDevLauncherController.sharedInstance().onDeepLink(url, options: options)
   }
+  #else
+  public func application(_ app: NSApplication, open urls: [URL]) {
+    EXDevLauncherController.sharedInstance().onDeepLink(urls[0], options: [:])
+  }
+  #endif
 }

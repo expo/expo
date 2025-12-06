@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix network state race condition by delaying callback ([#40705](https://github.com/expo/expo/pull/40705) by [@kosmydel](https://github.com/kosmydel))
+
 ### 💡 Others
+
+## 8.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 8.0.7 — 2025-09-11
 

@@ -11,20 +11,16 @@ export declare class Asset extends ExpoMediaLibraryNext.Asset {
 export declare class Album extends ExpoMediaLibraryNext.Album {
     static create(name: string, assetsRefs: string[] | Asset[], moveAssets?: boolean): Promise<Album>;
     static delete(albums: Album[], deleteAssets?: boolean): Promise<void>;
-    /**
-     * Retrieves an album with the given title.
-     * If multiple albums share the same title only one will be returned.
-     * @param title - The title of the album to retrieve.
-     * @returns A promise resolving to the `Album` if found, or `null` if no album with the given title exists.
-     * @example
-     * ```ts
-     * const album = await Album.get("Camera");
-     * if (album) {
-     *   console.log(`Found album with ID: ${album.id}`);
-     * }
-     * ```
-     */
     static get(title: string): Promise<Album | null>;
 }
+/**
+ * Asks the user to grant permissions for accessing media in user's media library.
+ * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
+ * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ *
+ * > When using granular permissions with a custom config plugin configuration, make sure that all the requested permissions are included in the plugin.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
+ */
 export declare function requestPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
 //# sourceMappingURL=index.d.ts.map

@@ -37,6 +37,7 @@ exports.createNativeStackNavigator = createNativeStackNavigator;
 const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
 const React = __importStar(require("react"));
+const descriptors_context_1 = require("./descriptors-context");
 const LinkPreviewContext_1 = require("../../link/preview/LinkPreviewContext");
 function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
     const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
@@ -59,10 +60,19 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
             if (state.index > 0 && isFocused && !e.defaultPrevented) {
                 // When user taps on already focused tab and we're inside the tab,
                 // reset the stack to replicate native behaviour
-                navigation.dispatch({
-                    ...native_1.StackActions.popToTop(),
-                    target: state.key,
-                });
+                // START FORK
+                // navigation.dispatch({
+                //   ...StackActions.popToTop(),
+                //   target: state.key,
+                // });
+                // The popToTop will be automatically triggered on native side for native tabs
+                if (e.data?.__internalTabsType !== 'native') {
+                    navigation.dispatch({
+                        ...native_1.StackActions.popToTop(),
+                        target: state.key,
+                    });
+                }
+                // END FORK
             }
         });
     }), [navigation, state.index, state.key]);
@@ -137,8 +147,12 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
         };
     }, [state, previewTransitioningScreenId, describe, descriptors]);
     // END FORK
-    return (<NavigationContent>
-      <native_stack_1.NativeStackView {...rest} 
+    return (
+    // START FORK
+    <descriptors_context_1.DescriptorsContext value={descriptors}>
+      {/* END FORK */}
+      <NavigationContent>
+        <native_stack_1.NativeStackView {...rest} 
     // START FORK
     state={computedState} navigation={navigationWrapper} descriptors={computedDescriptors} 
     // state={state}
@@ -146,7 +160,11 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
     // descriptors={descriptors}
     // END FORK
     describe={describe}/>
-    </NavigationContent>);
+      </NavigationContent>
+      {/* START FORK */}
+    </descriptors_context_1.DescriptorsContext>
+    // END FORK
+    );
 }
 function createNativeStackNavigator(config) {
     return (0, native_1.createNavigatorFactory)(NativeStackNavigator)(config);

@@ -9,7 +9,7 @@ import type {
   Module,
   ReadOnlyGraph,
   Options as GraphOptions,
-} from '@expo/metro/metro/DeltaBundler/types.flow';
+} from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
 import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
 import chalk from 'chalk';
@@ -143,7 +143,7 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 
 export function createStableModuleIdFactory(
   root: string
-): (path: string, context?: { platform: string; environment?: string }) => number {
+): (path: string, context?: { platform: string; environment?: string | null }) => number {
   const getModulePath = (modulePath: string, scope: string) => {
     // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
     if (modulePath == null) {
@@ -162,7 +162,10 @@ export function createStableModuleIdFactory(
 
   // This is an absolute file path.
   // TODO: We may want a hashed version for production builds in the future.
-  return (modulePath: string, context?: { platform: string; environment?: string }): number => {
+  return (
+    modulePath: string,
+    context?: { platform: string; environment?: string | null }
+  ): number => {
     const env = context?.environment ?? 'client';
 
     if (env === 'client') {
@@ -307,6 +310,11 @@ export function getDefaultConfig(
         .filter((assetExt: string) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
+      blockList: [
+        // .expo/types contains generated declaration files which are not and should not be processed by Metro.
+        // This prevents unwanted fast refresh on the declaration files changes.
+        /\.expo[\\/]types/,
+      ].concat(metroDefaultValues.resolver.blockList ?? []),
     },
     cacheStores: [cacheStore],
     watcher: {
@@ -395,8 +403,11 @@ export function getDefaultConfig(
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
-      // TODO: The absolute path invalidates caching across devices. To account for this, we remove the `asyncRequireModulePath` from the cache key but that means any changes to the file will not invalidate the cache.
-      asyncRequireModulePath: require.resolve('./async-require'),
+      // Only apply expo internal asyncRequireModulePath when `expo` is installed
+      // This must be a module request, rather than an absolute path to keep the cache clean
+      asyncRequireModulePath: getExpoOptional(projectRoot, 'internal/async-require-module')
+        ? 'expo/internal/async-require-module'
+        : metroDefaultValues.transformer.asyncRequireModulePath,
       assetRegistryPath: '@react-native/assets-registry/registry',
       // Determines the minimum version of `@babel/runtime`, so we default it to the project's installed version of `@babel/runtime`
       enableBabelRuntime: babelRuntimeVersion ?? undefined,
@@ -451,19 +462,25 @@ function findUpPackageJson(cwd: string): string | null {
   return findUpPackageJson(path.dirname(cwd));
 }
 
+function getExpoOptional(projectRoot: string, subModule = 'package.json'): string | undefined {
+  return resolveFrom.silent(projectRoot, `expo/${subModule}`);
+}
+
 function getExpoMetroRuntimeOptional(projectRoot: string): string | undefined {
   const EXPO_METRO_RUNTIME = '@expo/metro-runtime';
-  let metroRuntime = resolveFrom.silent(projectRoot, EXPO_METRO_RUNTIME);
-  if (!metroRuntime) {
-    // NOTE(@kitten): While `@expo/metro-runtime` is a peer, auto-installing this peer is valid and expected
-    // When it's auto-installed it may not be hoisted or not accessible from the project root, so we need to
-    // try to also resolve it via `expo-router`, where it's a required peer
-    const baseExpoRouter = resolveFrom.silent(projectRoot, 'expo-router/package.json');
-    // When expo-router isn't installed, however, we instead try to resolve it from `expo`, where it's an
-    // optional peer dependency
-    metroRuntime = baseExpoRouter
-      ? resolveFrom.silent(baseExpoRouter, EXPO_METRO_RUNTIME)
-      : resolveFrom.silent(require.resolve('expo/package.json'), EXPO_METRO_RUNTIME);
+  const metroRuntime = resolveFrom.silent(projectRoot, EXPO_METRO_RUNTIME);
+  if (metroRuntime) {
+    return metroRuntime;
   }
-  return metroRuntime;
+  // NOTE(@kitten): While `@expo/metro-runtime` is a peer, auto-installing this peer is valid and expected
+  // When it's auto-installed it may not be hoisted or not accessible from the project root, so we need to
+  // try to also resolve it via `expo-router`, where it's a required peer
+  const baseExpoRouter = resolveFrom.silent(projectRoot, 'expo-router/package.json');
+  if (baseExpoRouter) {
+    return resolveFrom.silent(baseExpoRouter, EXPO_METRO_RUNTIME);
+  }
+  // When expo-router isn't installed, however, we instead try to resolve it from `expo`, where it's an
+  // optional peer dependency
+  const baseExpo = getExpoOptional(projectRoot);
+  return baseExpo ? resolveFrom.silent(baseExpo, EXPO_METRO_RUNTIME) : undefined;
 }

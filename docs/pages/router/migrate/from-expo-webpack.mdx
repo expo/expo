@@ -17,7 +17,7 @@ Both React Navigation and Expo Router are Expo frameworks for routing and naviga
 
 > **warning** `@expo/webpack-config` is deprecated and not receiving any new feature updates.
 
-Expo Router supports [static rendering on web](/router/reference/static-rendering), which enables search engine optimization (SEO), social media previews, and faster loading times, unlike Expo Webpack. Along with the benefits of React Navigation, it enables automatic deep linking, [type safety](/router/reference/typed-routes), [deferred bundling](/router/reference/async-routes), [modular HTML templates](/router/reference/static-rendering#root-html), [static rendering on web](/router/reference/static-rendering), and more.
+Expo Router supports [static rendering on web](/router/web/static-rendering), which enables search engine optimization (SEO), social media previews, and faster loading times, unlike Expo Webpack. Along with the benefits of React Navigation, it enables automatic deep linking, [type safety](/router/reference/typed-routes), [deferred bundling](/router/web/async-routes), [modular HTML templates](/router/web/static-rendering#root-html), [static rendering on web](/router/web/static-rendering), and more.
 
 Expo Router is also designed to fix the main cross-platform issue with Expo Webpack by sharing navigation between web and native without compromising functionality or performance.
 
@@ -59,7 +59,7 @@ In `@expo/webpack-config` all routes shared a single HTML file. This file was ba
 
 In Expo Router, there are two different rendering patterns:
 
-- **Recommended**: `web.output: "static"` which outputs a new HTML file for each route in the app. This approach lets you [dynamically generate the entire HTML template using the **app/+html.js** file](/router/reference/static-rendering#root-html).
+- **Recommended**: `web.output: "static"` which outputs a new HTML file for each route in the app. This approach lets you [dynamically generate the entire HTML template using the **app/+html.js** file](/router/web/static-rendering#root-html).
 - **Not recommended**: `web.output: "single"` which outputs a single-page application. This approach lets you use `public/index.html` as the template HTML file.
 
 ## Static resources

@@ -100,7 +100,6 @@ module.exports = {
             argumentsCount: 0,
             key: 'setSystemBrightnessModeAsync',
           },
-          { name: 'useSystemBrightnessAsync', argumentsCount: 0, key: 'useSystemBrightnessAsync' },
         ],
         ExpoCalendar: [
           {
@@ -436,7 +435,7 @@ module.exports = {
           { name: 'uploadTaskStartAsync', argumentsCount: 4, key: 'uploadTaskStartAsync' },
           { name: 'writeAsStringAsync', argumentsCount: 3, key: 'writeAsStringAsync' },
         ],
-        ExponentGLView: [],
+        ExpoGL: [],
         ExponentGyroscope: [
           { name: 'isAvailableAsync', argumentsCount: 0, key: 'isAvailableAsync' },
           { name: 'setUpdateInterval', argumentsCount: 1, key: 'setUpdateInterval' },
@@ -569,6 +568,7 @@ module.exports = {
           },
         ],
         ExpoRouterNativeLinkPreview: [],
+        ExpoRouter: [],
         ExpoScreenCapture: [
           { name: 'allowScreenCapture', argumentsCount: 0, key: 'allowScreenCapture' },
           {
@@ -1112,7 +1112,7 @@ module.exports = {
           uploadTaskStartAsync: { type: 'function' },
           writeAsStringAsync: { type: 'function' },
         },
-        ExponentGLView: {
+        ExpoGL: {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
         },
@@ -1211,6 +1211,10 @@ module.exports = {
           getDevicePushTokenAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           unregisterForNotificationsAsync: { type: 'function' },
+        },
+        ExpoRouter: {
+          Material3Color: { type: 'function' },
+          Material3DynamicColor: { type: 'function' },
         },
         ExpoRouterNativeLinkPreview: {
           addListener: { type: 'function' },
@@ -1450,7 +1454,7 @@ module.exports = {
         ExpoLivePhoto: {
           propNames: ['contentFit', 'isMuted', 'source', 'useDefaultGestureRecognizer'],
         },
-        ExponentGLView: { propNames: ['enableExperimentalWorkletSupport', 'msaaSamples'] },
+        ExpoGL: { propNames: ['enableExperimentalWorkletSupport', 'msaaSamples'] },
         ExpoRouterNativeLinkPreview: {
           propNames: [
             'destructive',

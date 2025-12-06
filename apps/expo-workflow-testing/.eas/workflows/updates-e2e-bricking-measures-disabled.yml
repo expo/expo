@@ -21,6 +21,10 @@ on:
   schedule:
     - cron: '0 18 * * SUN' # 18:00 UTC every Sunday
 
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
 defaults:
   tools:
     node: 22.14.0
@@ -37,10 +41,10 @@ jobs:
       - uses: eas/install_node_modules
       - name: Set up Updates E2E bricking measures disabled project
         id: setup
-        working_directory: ../..        
+        working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-bricking-measures-disabled-eas-project.ts
           ls -la ../updates-e2e
@@ -57,7 +61,7 @@ jobs:
           yarn maestro:ios:release:build
       - uses: eas/start_ios_simulator
         with:
-          device_identifier: iPhone 16
+          device_identifier: iPhone 17
       - name: Run Maestro tests (release)
         id: testrelease
         working_directory: ../../../updates-e2e
@@ -73,10 +77,10 @@ jobs:
       - uses: eas/install_node_modules
       - name: Set up Updates E2E bricking measures disabled project
         id: setup
-        working_directory: ../..        
+        working_directory: ../..
         env:
           UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          UPDATES_PORT: '4747'
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-bricking-measures-disabled-eas-project.ts
           ls -la ../updates-e2e
@@ -98,4 +102,3 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-bricking-measures-disabled.yml android release
-

@@ -11,6 +11,25 @@ export type FileCreateOptions = {
   overwrite?: boolean;
 };
 
+export enum EncodingType {
+  /**
+   * Standard encoding format.
+   */
+  UTF8 = 'utf8',
+  /**
+   * Binary, radix-64 representation.
+   */
+  Base64 = 'base64',
+}
+
+export type FileWriteOptions = {
+  /**
+   * The encoding format to use when writing the file.
+   * @default FileSystem.EncodingType.UTF8
+   */
+  encoding?: EncodingType | 'utf8' | 'base64';
+};
+
 export type DirectoryCreateOptions = {
   /**
    * Whether to create intermediate directories if they do not exist.
@@ -138,6 +157,16 @@ export type DownloadOptions = {
   headers?: {
     [key: string]: string;
   };
+  /**
+   * This flag controls whether the `download` operation is idempotent
+   * (safe to call multiple times without error).
+   *
+   * If `true`, downloading a file that already exists overwrites the previous one.
+   * If `false`, an error is thrown when the target file already exists.
+   *
+   * @default false
+   */
+  idempotent?: boolean;
 };
 
 /**
@@ -178,7 +207,7 @@ export declare class File {
    * Retrieves content of the file as base64.
    * @returns A promise that resolves with the contents of the file as a base64 string.
    */
-  base64(): string;
+  base64(): Promise<string>;
 
   /**
    * Retrieves content of the file as base64.
@@ -188,13 +217,13 @@ export declare class File {
 
   /**
    * Retrieves byte content of the entire file.
-   * @returns A promise that resolves with the contents of the file as a Uint8Array.
+   * @returns A promise that resolves with the contents of the file as a `Uint8Array`.
    */
   bytes(): Promise<Uint8Array<ArrayBuffer>>;
 
   /**
    * Retrieves byte content of the entire file.
-   * @returns A promise that resolves with the contents of the file as a Uint8Array.
+   * @returns The contents of the file as a `Uint8Array`.
    */
   bytesSync(): Uint8Array;
 
@@ -202,7 +231,7 @@ export declare class File {
    * Writes content to the file.
    * @param content The content to write into the file.
    */
-  write(content: string | Uint8Array): void;
+  write(content: string | Uint8Array, options?: FileWriteOptions): void;
 
   /**
    * Deletes a file.
@@ -255,10 +284,18 @@ export declare class File {
   /**
    * A static method that downloads a file from the network.
    *
+   * On Android, the response body streams directly into the target file. If the download fails after
+   * it starts, a partially written file may remain at the destination. On iOS, the download first
+   * completes in a temporary location and the file is moved into place only after success, so no
+   * file is left behind when the request fails.
+   *
    * @param url - The URL of the file to download.
    * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
+   * @param options - Download options. When the destination already contains a file, the promise rejects with a `DestinationAlreadyExists` error unless `options.idempotent` is set to `true`. With `idempotent: true`, the download overwrites the existing file instead of failing.
    *
-   * @returns A promise that resolves to the downloaded file.
+   * @returns A promise that resolves to the downloaded file. When the server responds with
+   * a non-2xx HTTP status, the promise rejects with an `UnableToDownload` error whose
+   * message includes the status code. No file is created in that scenario.
    *
    * @example
    * ```ts
@@ -278,7 +315,7 @@ export declare class File {
    *
    * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
    * @param mimeType A mime type that is used to filter out files that can be picked out.
-   * @returns a `File` instance or an array of `File` instances.
+   * @returns A `File` instance or an array of `File` instances.
    */
   static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
 
@@ -306,6 +343,11 @@ export declare class File {
    * A mime type of the file. An empty string if the file does not exist, or it cannot be read.
    */
   type: string;
+  /**
+   * A content URI to the file that can be shared to external applications.
+   * @platform android
+   */
+  contentUri: string;
 }
 
 export declare class FileHandle {

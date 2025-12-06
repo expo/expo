@@ -1,6 +1,14 @@
-import { Chip, ChipTextStyle, Slider } from '@expo/ui/jetpack-compose';
+import { Chip as JetpackChip, ChipTextStyle, Host, Slider } from '@expo/ui/jetpack-compose';
 import React, { useState } from 'react';
 import { View, Text, Alert, ScrollView, StyleSheet, Pressable } from 'react-native';
+
+function Chip(props: React.ComponentProps<typeof JetpackChip>) {
+  return (
+    <Host>
+      <JetpackChip {...props} />
+    </Host>
+  );
+}
 
 export default function ChipScreen() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>(['All']);
@@ -64,7 +72,6 @@ export default function ChipScreen() {
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Assist', 'Opening flight booking...')}
-            style={styles.shortChipWithIcon}
           />
           <Chip
             variant="assist"
@@ -74,7 +81,6 @@ export default function ChipScreen() {
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Assist', 'Adding to calendar...')}
-            style={styles.largeChipWithIcon}
           />
           <Chip
             variant="assist"
@@ -83,7 +89,6 @@ export default function ChipScreen() {
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Assist', 'Sharing location...')}
-            style={styles.shortChipWithIcon}
           />
           <Chip
             variant="assist"
@@ -92,7 +97,6 @@ export default function ChipScreen() {
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Assist', 'Calling support...')}
-            style={styles.shortChipWithIcon}
           />
           <Chip
             variant="assist"
@@ -102,7 +106,6 @@ export default function ChipScreen() {
             textStyle={textStyle}
             enabled={false}
             onPress={() => Alert.alert('This should not appear')}
-            style={styles.mediumChipWithIcon}
           />
         </View>
       </View>
@@ -217,7 +220,6 @@ export default function ChipScreen() {
             leadingIcon="filled.Star"
             iconSize={iconSize}
             textStyle={textStyle}
-            style={styles.largeChipWithIcon}
             onPress={() => Alert.alert('Suggestion', 'Showing weather...')}
           />
         </View>
@@ -230,13 +232,7 @@ export default function ChipScreen() {
         </Text>
         <View style={styles.sliderContainer}>
           <Text style={styles.sliderLabel}>10dp</Text>
-          <Slider
-            value={iconSize}
-            min={10}
-            max={30}
-            onValueChange={setIconSize}
-            style={styles.slider}
-          />
+          <Slider value={iconSize} min={10} max={30} onValueChange={setIconSize} />
           <Text style={styles.sliderLabel}>30dp</Text>
         </View>
       </View>
@@ -364,11 +360,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  slider: {
-    width: 200,
-    minHeight: 60,
-    marginHorizontal: 10,
-  },
+
   buttonRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',

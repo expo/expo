@@ -89,7 +89,16 @@ exports.routingQueue = {
         let action;
         while ((action = events.shift())) {
             if (ref.current) {
-                ref.current.dispatch(action);
+                if (action.type === 'ROUTER_LINK') {
+                    const { payload: { href, options }, } = action;
+                    action = getNavigateAction(href, options, options.event, options.withAnchor, options.dangerouslySingular, !!options.__internal__PreviewKey);
+                    if (action) {
+                        ref.current.dispatch(action);
+                    }
+                }
+                else {
+                    ref.current.dispatch(action);
+                }
             }
         }
     },
@@ -182,6 +191,29 @@ function linkTo(originalHref, options = {}) {
         Linking.openURL(href);
         return;
     }
+    if (href === '..' || href === '../') {
+        assertIsReady();
+        const navigationRef = router_store_1.store.navigationRef.current;
+        if (navigationRef == null) {
+            throw new Error("Couldn't find a navigation object. Is your component inside NavigationContainer?");
+        }
+        if (!router_store_1.store.linking) {
+            throw new Error('Attempted to link to route when no routes are present');
+        }
+        navigationRef.goBack();
+        return;
+    }
+    const linkAction = {
+        type: 'ROUTER_LINK',
+        payload: {
+            href,
+            options,
+        },
+    };
+    exports.routingQueue.add(linkAction);
+}
+function getNavigateAction(baseHref, options, type = 'NAVIGATE', withAnchor, singular, isPreviewNavigation) {
+    let href = baseHref;
     assertIsReady();
     const navigationRef = router_store_1.store.navigationRef.current;
     if (navigationRef == null) {
@@ -190,13 +222,9 @@ function linkTo(originalHref, options = {}) {
     if (!router_store_1.store.linking) {
         throw new Error('Attempted to link to route when no routes are present');
     }
-    if (href === '..' || href === '../') {
-        navigationRef.goBack();
-        return;
-    }
     const rootState = navigationRef.getRootState();
     href = (0, href_1.resolveHrefStringWithSegments)(href, router_store_1.store.getRouteInfo(), options);
-    href = (0, getRoutesRedirects_1.applyRedirects)(href, router_store_1.store.redirects);
+    href = (0, getRoutesRedirects_1.applyRedirects)(href, router_store_1.store.redirects) ?? undefined;
     // If the href is undefined, it means that the redirect has already been handled the navigation
     if (!href) {
         return;
@@ -206,9 +234,6 @@ function linkTo(originalHref, options = {}) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    exports.routingQueue.add(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular, !!options.__internal__PreviewKey));
-}
-function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', withAnchor, singular, isPreviewNavigation) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -223,7 +248,7 @@ function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', wi
      *
      * Other parameters such as search params and hash are not evaluated.
      */
-    const { actionStateRoute, navigationState } = findDivergentState(_actionState, _navigationState, type === 'PRELOAD');
+    const { actionStateRoute, navigationState } = findDivergentState(state, rootState, type === 'PRELOAD');
     /*
      * We found the target navigator, but the payload is in the incorrect format
      * We need to convert the action state to a payload that can be dispatched
@@ -257,8 +282,8 @@ function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', wi
     }
     const expoParams = isPreviewNavigation
         ? {
-            __internal__expo_router_is_preview_navigation: true,
-            __internal_expo_router_no_animation: true,
+            [navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+            [navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
         }
         : {};
     const params = (0, navigationParams_1.appendInternalExpoRouterParams)(rootPayload.params, expoParams);

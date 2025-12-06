@@ -10,6 +10,50 @@
 
 ### 💡 Others
 
+- [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+
+## 19.0.20 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.19 - 2025-11-18
+
+### 🎉 New features
+
+- [Android] Add contentUri property. ([#40002](https://github.com/expo/expo/pull/40002) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- [iOS] Add missing `createFile` and `createDirectory` methods. ([#40314](https://github.com/expo/expo/pull/40314) by [@jakex7](https://github.com/jakex7))
+
+## 19.0.18 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.17 - 2025-10-09
+
+### 🐛 Bug fixes
+
+- [Android] Fix recursive file deletion. ([#40248](https://github.com/expo/expo/pull/40248) by [@aleqsio](https://github.com/aleqsio))
+
+## 19.0.16 - 2025-10-01
+
+### 🎉 New features
+
+- Add write options for base64 encoded bytes. ([#39963](https://github.com/expo/expo/pull/39963) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add file sharing config options ([#39286](https://github.com/expo/expo/pull/39286) by [@kosmydel](https://github.com/kosmydel))
+
+### 🐛 Bug fixes
+
+- Fix typedoc in the File class. ([#40064](https://github.com/expo/expo/pull/40064) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Fix getContentUri. ([#40001](https://github.com/expo/expo/pull/40001) by [@aleqsio](https://github.com/aleqsio))
+
+## 19.0.15 - 2025-09-22
+
+### 🎉 New features
+
+- add `idempotent` option to `downloadFileAsync` ([#39681](https://github.com/expo/expo/pull/39681) by [@vonovak](https://github.com/vonovak))
+
 ## 19.0.14 — 2025-09-13
 
 _This version does not introduce any user-facing changes._

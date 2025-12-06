@@ -4,13 +4,138 @@
 
 ### 🛠 Breaking changes
 
+- Change `reset` props to `resetOnFocus` in headless tabs ([#40349](https://github.com/expo/expo/pull/40349) by [@Ubax](https://github.com/Ubax))
+- replace NativeTabs.Trigger `options` with `unstable_nativeProps` ([#40702](https://github.com/expo/expo/pull/40702) by [@Ubax](https://github.com/Ubax))
+- remove NativeTabs.Trigger.TabBar component ([#40725](https://github.com/expo/expo/pull/40725) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
+
+- Add support for server data loaders in development ([#39570](https://github.com/expo/expo/pull/39570) by [@hassankhan](https://github.com/hassankhan))
+- Add environmental variable to enable experimental web modal implementation ([#40231](https://github.com/expo/expo/pull/40231) by [@Ubax](https://github.com/Ubax))
+- Use the new error overlay UI from `@expo/log-box` ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Add split view layout support ([#39563](https://github.com/expo/expo/pull/39563) by [@Ubax](https://github.com/Ubax))
+- Add support for server data loaders in static export mode ([#40130](https://github.com/expo/expo/pull/40130) by [@hassankhan](https://github.com/hassankhan))
+- components API for setting header options ([#40600](https://github.com/expo/expo/pull/40600) by [@Ubax](https://github.com/Ubax))
+- [iOS] add sidebar adaptable prop ([#40957](https://github.com/expo/expo/pull/40957) by [@Ubax](https://github.com/Ubax))
+- add Color utility ([#40904](https://github.com/expo/expo/pull/40904) by [@Ubax](https://github.com/Ubax))
+- wrap NativeTabs style properties with StyleProp ([#41013](https://github.com/expo/expo/pull/41013) by [@Ubax](https://github.com/Ubax))
+- [android] add md prop to native tabs icon ([#40966](https://github.com/expo/expo/pull/40966) by [@Ubax](https://github.com/Ubax))
+- emit tabPress on tab change ([#41159](https://github.com/expo/expo/pull/41159) by [@Ubax](https://github.com/Ubax))
+- add disableAutomaticContentInsets prop to NativeTabs.Trigger ([#41293](https://github.com/expo/expo/pull/41293) by [@Ubax](https://github.com/Ubax))
+- add safe area view to native tabs on Android ([#41295](https://github.com/expo/expo/pull/41295) by [@Ubax](https://github.com/Ubax))
+- [iOS] add bottom accessory support ([#41239](https://github.com/expo/expo/pull/41239) by [@Ubax](https://github.com/Ubax))
+- apply react-navigation background color to NativeTabsView ([#41068](https://github.com/expo/expo/pull/41068) by [@Ubax](https://github.com/Ubax))
+- [iOS] bottom toolbar ([#41106](https://github.com/expo/expo/pull/41106) by [@Ubax](https://github.com/Ubax))
+- [iOS] rename displayInline and displayAsPalette in Link.Menu ([#41317](https://github.com/expo/expo/pull/41317) by [@Ubax](https://github.com/Ubax))
+- [iOS] add zoom transition support ([#41083](https://github.com/expo/expo/pull/41083) by [@Ubax](https://github.com/Ubax))
+- add hidden prop to native tabs ([#41375](https://github.com/expo/expo/pull/41375) by [@Ubax](https://github.com/Ubax))
+- [iOS] prevent dismissal for zoom transition, when gestureEnabled is false ([#41356](https://github.com/expo/expo/pull/41356) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Fix dynamic updates of headless tabs ([#40352](https://github.com/expo/expo/pull/40352) by [@Ubax](https://github.com/Ubax))
+- activate animation on back navigation, when initial animation was disabled using internal param ([#41141](https://github.com/expo/expo/pull/41141) by [@Ubax](https://github.com/Ubax))
+- prevent `onPreviewTapped` from firing when `<Link.Preview />` is not configured ([#41160](https://github.com/expo/expo/pull/41160) by [@Ubax](https://github.com/Ubax))
+- fix Sitemap insets on Android ([#41280](https://github.com/expo/expo/pull/41280) by [@Ubax](https://github.com/Ubax))
+- fix preloaded routes navigation ([#41420](https://github.com/expo/expo/pull/41420) by [@Ubax](https://github.com/Ubax))
+- fix disabling animation on appear ([#41419](https://github.com/expo/expo/pull/41419) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Move state update logic from addListener to onStateChange ([#40261](https://github.com/expo/expo/pull/40261) by [@Ubax](https://github.com/Ubax))
+- Modify navigation action to compute target on action dispatch ([#39682](https://github.com/expo/expo/pull/39682) by [@Ubax](https://github.com/Ubax))
+- Migrate static rendering logic from `expo-router` to `@expo/router-server` ([#39374](https://github.com/expo/expo/pull/39374) by [@hassankhan](https://github.com/hassankhan))
+- Migrate RSC logic from `expo-router` to `@expo/router-server` ([#40484](https://github.com/expo/expo/pull/40484) by [@hassankhan](https://github.com/hassankhan))
+- Migrate UI code back to `expo-router` ([#40510](https://github.com/expo/expo/pull/40510) by [@hassankhan](https://github.com/hassankhan))
+- [docs] Update redirectSystemPath to include information about null return ([#40555](https://github.com/expo/expo/pull/40555) by [@Ubax](https://github.com/Ubax))
+- Expose internal API for use in `@expo/router-server` ([#40545](https://github.com/expo/expo/pull/40545) by [@hassankhan](https://github.com/hassankhan))
+- Migrate typed routes logic from `expo-router` to `@expo/router-server` ([#40576](https://github.com/expo/expo/pull/40576) by [@hassankhan](https://github.com/hassankhan))
+- refactor native-tabs to unify navigation logic between platforms ([#40699](https://github.com/expo/expo/pull/40699) by [@Ubax](https://github.com/Ubax))
+- [refactor] remove redundant nesting in native-tabs directory structure ([#40700](https://github.com/expo/expo/pull/40700) by [@Ubax](https://github.com/Ubax))
+- Remove `node/getExpoConstantsManifest.js` ([#40663](https://github.com/expo/expo/pull/40663) by [@hassankhan](https://github.com/hassankhan))
+- Upgrade react-native-screens and react-navigation versions ([#40804](https://github.com/expo/expo/pull/40804) by [@Ubax](https://github.com/Ubax))
+- extract common elements to primitives ([#40841](https://github.com/expo/expo/pull/40841) by [@Ubax](https://github.com/Ubax))
+- remove redundant convertTabPropsToOptions call ([#40967](https://github.com/expo/expo/pull/40967) by [@Ubax](https://github.com/Ubax))
+- refactor NativeTabs Icon logic to simplify types and API ([#40965](https://github.com/expo/expo/pull/40965) by [@Ubax](https://github.com/Ubax))
+- [iOS] rename ExpoHead to ExpoRouter podspec ([#40941](https://github.com/expo/expo/pull/40941) by [@Ubax](https://github.com/Ubax))
+- remove redundant comments from NativeOption ([#41067](https://github.com/expo/expo/pull/41067) by [@Ubax](https://github.com/Ubax))
+- use constants instead of magic strings for internal param names ([#41082](https://github.com/expo/expo/pull/41082) by [@Ubax](https://github.com/Ubax))
+- add local-maven-repo to files in package.json ([#41130](https://github.com/expo/expo/pull/41130) by [@Ubax](https://github.com/Ubax))
+- add removeParams function ([#41140](https://github.com/expo/expo/pull/41140) by [@Ubax](https://github.com/Ubax))
+- Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+- extract children utils to common file ([#41238](https://github.com/expo/expo/pull/41238) by [@Ubax](https://github.com/Ubax))
+- [iOS] replace LinkPreviewNativeNavigationObjC with direct swift calls ([#41331](https://github.com/expo/expo/pull/41331) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.17 - 2025-12-05
+
+### 💡 Others
+
+- Bump and tighten `react-server-dom-webpack` peer range ([#41379](https://github.com/expo/expo/pull/41379) by [@kitten](https://github.com/kitten))
+
+## 6.0.16 - 2025-12-04
+
+### 🐛 Bug fixes
+
+- Replace internal base URL for parsing pathnames with `file:` ([#41338](https://github.com/expo/expo/pull/41338) by [@kitten](https://github.com/kitten))
+
+## 6.0.15 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.14 - 2025-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.13 - 2025-10-20
+
+### 🎉 New features
+
+- Add selected option to labelStyle and iconColor in NativeTabs container ([#40155](https://github.com/expo/expo/pull/40155) by [@Ubax](https://github.com/Ubax)
+
+## 6.0.12 - 2025-10-10
+
+### 🐛 Bug fixes
+
+- Fix options not being passed on when creating build-time server manifest (Fixes [#40173](https://github.com/expo/expo/pull/40173)) ([#40326](https://github.com/expo/expo/pull/40326) by [@kitten](https://github.com/kitten)) ([#40173](https://github.com/expo/expo/pull/40173), [#40326](https://github.com/expo/expo/pull/40326) by [@kitten](https://github.com/kitten))
+
+## 6.0.11 - 2025-10-09
+
+### 🎉 New features
+
+- Allow specifying user-defined headers for all routes ([#40173](https://github.com/expo/expo/pull/40173) by [@hassankhan](https://github.com/hassankhan))
+- Add support for customizing icon and title of search tab  ([#40139](https://github.com/expo/expo/pull/40139) by [@Ubax](https://github.com/Ubax))
+- Add icon component to declare sf and androidSrc at the same time ([#40151](https://github.com/expo/expo/pull/40151) by [@Ubax](https://github.com/Ubax))
+- popToTop when tapping active bottom tab on web ([#40174](https://github.com/expo/expo/pull/40174) by [@juliesaia](https://github.com/juliesaia))
+
+### 🐛 Bug fixes
+
+- support usePreventRemove in web modal ([#40262](https://github.com/expo/expo/pull/40262) by [@Ubax](https://github.com/Ubax))
+- Fix tab index out of bounds issue ([#40175](https://github.com/expo/expo/pull/40175) by [@Ubax](https://github.com/Ubax))
+- Wrap native tabs navigator with NavigationContent ([#40229](https://github.com/expo/expo/pull/40229) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Remove unnecessary ModalContextProvider ([#40179](https://github.com/expo/expo/pull/40179) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.9 - 2025-10-01
+
+### 🐛 Bug fixes
+
+- Fix `expo-router/server` exports ([#40071](https://github.com/expo/expo/pull/40071) by [@kitten](https://github.com/kitten))
+
+## 6.0.8 - 2025-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] fix icons in context menu not being removed with `undefined` ([#39845](https://github.com/expo/expo/pull/39845) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] fix optional context menu props not being unset with `undefined` ([#39853](https://github.com/expo/expo/pull/39853) by [@hassankhan](https://github.com/hassankhan))
+
+## 6.0.7 - 2025-09-18
 
 ### 🐛 Bug fixes
 
 - fix VectorIcon types ([#39747](https://github.com/expo/expo/pull/39747) by [@Ubax](https://github.com/Ubax))
-
-### 💡 Others
+- Rename to `@expo/server` to `expo-server` ([#40087](https://github.com/expo/expo/pull/40087) by [@kitten](https://github.com/kitten))
 
 ## 6.0.6 — 2025-09-16
 

@@ -7,7 +7,6 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.util.UnstableApi
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.functions.Coroutine
@@ -23,6 +22,8 @@ import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.AudioTrack
+import expo.modules.video.records.ScrubbingModeOptions
+import expo.modules.video.records.SeekTolerance
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
@@ -33,7 +34,6 @@ import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
-@UnstableReactNativeAPI
 @androidx.annotation.OptIn(UnstableApi::class)
 class VideoModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -300,6 +300,22 @@ class VideoModule : Module() {
           ref.keepScreenOnWhilePlaying = value ?: true
         }
 
+      Property("seekTolerance")
+        .get { ref: VideoPlayer ->
+          ref.seekTolerance
+        }
+        .set { ref: VideoPlayer, tolerance: SeekTolerance? ->
+          ref.seekTolerance = tolerance ?: SeekTolerance()
+        }
+
+      Property("scrubbingModeOptions")
+        .get { ref: VideoPlayer ->
+          ref.scrubbingModeOptions
+        }
+        .set { ref: VideoPlayer, options: ScrubbingModeOptions? ->
+          ref.scrubbingModeOptions = options ?: ScrubbingModeOptions()
+        }
+
       Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->
         replaceImpl(ref, source)
       }
@@ -383,7 +399,7 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     "onFullscreenExit",
     "onFirstFrameRender"
   )
-  Prop("player") { view: T, player: VideoPlayer ->
+  Prop("player") { view: T, player: VideoPlayer? ->
     view.videoPlayer = player
   }
   Prop("nativeControls") { view: T, useNativeControls: Boolean ->

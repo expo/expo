@@ -11,7 +11,7 @@ public protocol Record: Convertible {
   /**
    The default initializer. It enforces the structs not to have any uninitialized properties.
    */
-  init()
+  nonisolated init()
 
   /**
    Initializes a record from given dictionary. Only members wrapped by `@Field` will be set in the object.
@@ -66,14 +66,34 @@ public extension Record {
       }
     }
   }
+
+  static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
+    if let value = result as? Record {
+      return value.toDictionary(appContext: appContext)
+    }
+    return result
+  }
+}
+
+/**
+ Recursively collects all children from a Mirror, including inherited properties from superclasses.
+ */
+internal func allMirrorChildren(_ mirror: Mirror) -> [Mirror.Child] {
+  var children: [Mirror.Child] = Array(mirror.children)
+  if let superclassMirror = mirror.superclassMirror {
+    children.append(contentsOf: allMirrorChildren(superclassMirror))
+  }
+  return children
 }
 
 /**
  Returns an array of fields found in record's mirror. If the field is missing the `key`,
  it gets assigned to the property label, so after all it's safe to enforce unwrapping it (using `key!`).
+ This function now supports inheritance by recursively traversing the superclass hierarchy.
  */
 internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
-  return Mirror(reflecting: record).children.compactMap { (label: String?, value: Any) in
+  let mirror = Mirror(reflecting: record)
+  return allMirrorChildren(mirror).compactMap { (label: String?, value: Any) in
     guard var field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
       return nil
     }

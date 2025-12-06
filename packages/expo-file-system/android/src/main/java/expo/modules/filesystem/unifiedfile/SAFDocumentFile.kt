@@ -3,6 +3,7 @@ package expo.modules.filesystem.unifiedfile
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import expo.modules.kotlin.AppContext
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -45,6 +46,8 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
 
   override fun delete(): Boolean = documentFile?.delete() == true
 
+  override fun deleteRecursively(): Boolean = documentFile?.deleteRecursively() == true
+
   override fun listFilesAsUnified(): List<UnifiedFileInterface> =
     documentFile?.listFiles()?.map { SAFDocumentFile(context, it.uri) } ?: emptyList()
 
@@ -57,6 +60,10 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
 
   override val fileName: String?
     get() = documentFile?.name
+
+  override fun getContentUri(appContext: AppContext): Uri {
+    return uri
+  }
 
   override val creationTime: Long? get() {
     // It seems there's no way to get this
@@ -87,4 +94,11 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
       }
     }
   }
+}
+
+fun DocumentFile.deleteRecursively(): Boolean {
+  if (isDirectory) {
+    listFiles().forEach { it.deleteRecursively() }
+  }
+  return delete()
 }

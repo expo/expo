@@ -3,13 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class ZStackViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+internal final class ZStackViewProps: UIBaseViewProps {
   @Field var useTapGesture: Bool?
   @Field var alignment: AlignmentOptions?
   @Field var backgroundColor: Color?
@@ -23,7 +17,6 @@ internal struct ZStackView: ExpoSwiftUI.View {
     ZStack(alignment: props.alignment?.toAlignment() ?? .center) {
       Children()
     }
-    .modifier(CommonViewModifiers(props: props))
     .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
   }
 }

@@ -2,7 +2,7 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.net.Uri
-import expo.interfaces.devmenu.ReactHostWrapper
+import com.facebook.react.ReactHost
 import expo.modules.devlauncher.helpers.injectReactInterceptor
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.manifests.core.Manifest
@@ -13,7 +13,7 @@ import expo.modules.manifests.core.Manifest
  */
 class DevLauncherLocalAppLoader(
   private val manifest: Manifest,
-  private val appHost: ReactHostWrapper,
+  private val appHost: ReactHost,
   private val context: Context,
   controller: DevLauncherControllerInterface
 ) : DevLauncherExpoAppLoader(manifest, appHost, context, controller) {

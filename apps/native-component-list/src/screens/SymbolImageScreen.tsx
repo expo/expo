@@ -1,7 +1,26 @@
-import { SymbolView, SymbolViewProps, SFSymbol } from 'expo-symbols';
-import { PlatformColor, Text, View, StyleSheet, ScrollView, Platform } from 'react-native';
+import { Image } from 'expo-image';
+import {
+  SymbolView,
+  SymbolViewProps,
+  SFSymbol,
+  AndroidSymbol,
+  unstable_getMaterialSymbolSourceAsync,
+} from 'expo-symbols';
+import bold from 'expo-symbols/androidWeights/bold';
+import regular from 'expo-symbols/androidWeights/regular';
+import thin from 'expo-symbols/androidWeights/thin';
+import { useEffect, useState } from 'react';
+import {
+  PlatformColor,
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  Platform,
+  type ImageSourcePropType,
+} from 'react-native';
 
-import { Symbols } from '../constants';
+import { Symbols, AndroidSymbols } from '../constants';
 
 type RowProps = { title?: string } & Partial<SymbolViewProps>;
 
@@ -12,15 +31,21 @@ function getRandomRow(data: string[], count: number = 8) {
   });
 }
 
+const randomRow = getRandomRow(Platform.OS === 'ios' ? Symbols : AndroidSymbols);
+
 function SymbolRow({ title, ...props }: RowProps) {
   return (
     <View style={{ gap: 5 }}>
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
-        {getRandomRow(Symbols).map((symbol, index) => (
+        {randomRow.map((symbol, index) => (
           <SymbolView
             {...props}
-            name={symbol as SFSymbol}
+            name={{
+              ios: symbol as SFSymbol,
+              android: symbol as AndroidSymbol,
+              web: symbol as AndroidSymbol,
+            }}
             key={index}
             style={styles.symbol}
             resizeMode="scaleAspectFit"
@@ -33,32 +58,25 @@ function SymbolRow({ title, ...props }: RowProps) {
 
 function SymbolWeights({ title, ...props }: RowProps) {
   const weights: SymbolViewProps['weight'][] = [
-    'black',
-    'bold',
-    'heavy',
-    'medium',
-    'light',
-    'thin',
-    'ultraLight',
-    'unspecified',
+    { ios: 'black', android: bold },
+    { ios: 'light', android: thin },
+    { ios: 'regular', android: regular },
   ];
 
   return (
     <View style={{ gap: 5 }}>
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
-        {getRandomRow(Symbols).map((symbol, index) => {
+        {randomRow.map((symbol, index) => {
           const weight = weights[index % weights.length];
           return (
             <View key={index} style={{ alignItems: 'center' }}>
               <SymbolView
                 {...props}
-                name={symbol as SFSymbol}
+                name={{ ios: symbol as SFSymbol, android: symbol as AndroidSymbol }}
                 style={styles.symbol}
-                type="hierarchical"
                 weight={weight}
               />
-              <Text style={{ color: 'white', fontSize: 8 }}>{weight}</Text>
             </View>
           );
         })}
@@ -74,7 +92,7 @@ function SymbolScales({ title, ...props }: RowProps) {
     <View style={{ gap: 5 }}>
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
-        {getRandomRow(Symbols).map((symbol, index) => {
+        {randomRow.map((symbol, index) => {
           const scale = scales[index % scales.length];
           return (
             <View key={index} style={{ alignItems: 'center' }}>
@@ -93,26 +111,51 @@ function SymbolScales({ title, ...props }: RowProps) {
   );
 }
 
-export default function SymbolImageScreen() {
-  if (Platform.OS !== 'ios') {
-    return (
-      <View style={[styles.screen, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={styles.title}>Expo Symbols are not supported on {Platform.OS}</Text>
-      </View>
-    );
-  }
+function MaterialImageSourceExample({ name }: { name: AndroidSymbol }) {
+  const [source, setSource] = useState<ImageSourcePropType | null>(null);
+  useEffect(() => {
+    unstable_getMaterialSymbolSourceAsync(name, 24, 'red').then((img) => {
+      setSource(img);
+    });
+  }, []);
+  return <Image source={source} style={{ width: 24, height: 24 }} />;
+}
 
+export default function SymbolImageScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: 10, gap: 10 }}>
       <Text style={styles.title}>Use component directly</Text>
-      <SymbolView name="pencil.tip.crop.circle.badge.plus" style={styles.symbol} />
-      <SymbolRow title="Monochrome (default)" type="monochrome" />
-      <SymbolRow
-        title="Hierarchical"
-        type="hierarchical"
-        tintColor={PlatformColor('systemPurple')}
+      <SymbolView
+        name={{
+          ios: 'pencil.tip.crop.circle.badge.plus',
+          android: 'home_and_garden',
+          web: 'home_and_garden',
+        }}
+        style={styles.symbol}
       />
-      <SymbolRow title="Palette" colors={['red', 'green', 'blue']} type="palette" />
+      <Text style={styles.title}>Use fallback</Text>
+      <SymbolView
+        style={styles.symbol}
+        name={{}}
+        fallback={<View style={{ backgroundColor: 'red', width: 20, height: 20 }} />}
+      />
+      {process.env.EXPO_OS === 'android' && (
+        <>
+          <Text style={styles.title}>unstable_getMaterialSymbolSourceAsync</Text>
+          <MaterialImageSourceExample name="home_and_garden" />
+        </>
+      )}
+      <SymbolRow title="Monochrome (default)" type="monochrome" />
+      {Platform.OS === 'ios' && (
+        <>
+          <SymbolRow
+            title="Hierarchical"
+            type="hierarchical"
+            tintColor={PlatformColor('systemPurple')}
+          />
+          <SymbolRow title="Palette" colors={['red', 'green', 'blue']} type="palette" />
+        </>
+      )}
       <SymbolRow
         title="Palette RGB"
         colors={['rgb(40, 186, 54)', 'rgb(21, 186, 212)', 'rgb(184, 10, 44)']}

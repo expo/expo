@@ -24,6 +24,8 @@ namespace expo
 
     jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value);
 
+    jsi::String convertNSURLToJSIString(jsi::Runtime &runtime, NSURL *value);
+
     jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value);
 
     jsi::Array convertNSArrayToJSIArray(jsi::Runtime &runtime, NSArray *value);
@@ -41,6 +43,8 @@ namespace expo
     NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker);
 
     id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
+
+    id convertJSIValueToObjCObjectAsDictValue(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
 
     RCTResponseSenderBlock convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker);
 

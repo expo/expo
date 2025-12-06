@@ -9,7 +9,11 @@ import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
 import { loadConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
-import { getDefaultConfig, type LoadOptions } from '@expo/metro-config';
+import {
+  createStableModuleIdFactory,
+  getDefaultConfig,
+  type LoadOptions,
+} from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import path from 'path';
@@ -30,10 +34,29 @@ import { createJsInspectorMiddleware } from '../middleware/inspector/createJsIns
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
 
+// NOTE(@kitten): We pass a custom createStableModuleIdFactory function into the Metro module ID factory sometimes
+interface MetroServerWithModuleIdMod extends MetroServer {
+  _createModuleId: ReturnType<typeof createStableModuleIdFactory> & ((path: string) => number);
+}
+interface MetroHmrServerWithModuleIdMod extends MetroHmrServer<MetroHmrClient> {
+  _createModuleId: ReturnType<typeof createStableModuleIdFactory> & ((path: string) => number);
+}
+
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
+
+// TODO(@kitten): We assign this here to run server-side code bundled by metro
+// It's not isolated into a worker thread yet
+// Check `metro-require/require.ts` for how this setting is used
+declare namespace globalThis {
+  let __requireCycleIgnorePatterns: readonly RegExp[] | undefined;
+}
+
+function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
+  return input;
+}
 
 // Wrap terminal and polyfill console.log so we can log during bundling without breaking the indicator.
 class LogRespectingTerminal extends Terminal {
@@ -85,11 +108,9 @@ export async function loadMetroConfigAsync(
     process.env.EXPO_USE_METRO_REQUIRE = '1';
   }
 
-  const isReactCanaryEnabled =
-    (exp.experiments?.reactServerComponentRoutes ||
-      serverActionsEnabled ||
-      exp.experiments?.reactCanary) ??
-    false;
+  if (exp.experiments?.reactCanary) {
+    Log.warn(`React 19 is enabled by default. Remove unused experiments.reactCanary flag.`);
+  }
 
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
@@ -111,18 +132,15 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  // @ts-expect-error: Set the global require cycle ignore patterns for SSR bundles. This won't work with custom global prefixes, but we don't use those.
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 
   if (isExporting) {
     // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-    // @ts-expect-error: typed as readonly.
-    config.transformer.publicPath = `/assets?export_path=${
+    asWritable(config.transformer).publicPath = `/assets?export_path=${
       (exp.experiments?.baseUrl ?? '') + '/assets'
     }`;
   } else {
-    // @ts-expect-error: typed as readonly
-    config.transformer.publicPath = '/assets/?unstable_path=.';
+    asWritable(config.transformer).publicPath = '/assets/?unstable_path=.';
   }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
@@ -137,14 +155,14 @@ export async function loadMetroConfigAsync(
     );
   }
 
-  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
-    Log.warn(`Experimental fast resolver is enabled.`);
-  }
   if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
   }
   if (env.EXPO_UNSTABLE_TREE_SHAKING) {
     Log.warn(`Experimental tree shaking is enabled.`);
+  }
+  if (env.EXPO_UNSTABLE_LOG_BOX) {
+    Log.warn(`Experimental Expo LogBox is enabled.`);
   }
   if (autolinkingModuleResolutionEnabled) {
     Log.warn(`Experimental Expo Autolinking module resolver is enabled.`);
@@ -162,9 +180,7 @@ export async function loadMetroConfigAsync(
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
-    isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
@@ -229,8 +245,10 @@ export async function instantiateMetroAsync(
     // See: https://github.com/facebook/metro/commit/22e85fde85ec454792a1b70eba4253747a2587a9
     // See: https://github.com/facebook/metro/commit/d0d554381f119bb80ab09dbd6a1d310b54737e52
     const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
-    // @ts-expect-error: can't mutate readonly config
-    metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: MetroServer) => {
+    asWritable(metroConfig.server).enhanceMiddleware = (
+      metroMiddleware: any,
+      server: MetroServer
+    ) => {
       if (customEnhanceMiddleware) {
         metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
       }
@@ -278,6 +296,7 @@ export async function instantiateMetroAsync(
     return originalTransformFile(
       filePath,
       pruneCustomTransformOptions(
+        projectRoot,
         filePath,
         // Clone the options so we don't mutate the original.
         {
@@ -296,21 +315,20 @@ export async function instantiateMetroAsync(
 
   // This function ensures that modules in source maps are sorted in the same
   // order as in a plain JS bundle.
-  metro._getSortedModules = function (this: MetroServer, graph: ReadOnlyGraph) {
+  metro._getSortedModules = function (this: MetroServerWithModuleIdMod, graph: ReadOnlyGraph) {
     const modules = [...graph.dependencies.values()];
 
     const ctx = {
-      platform: graph.transformOptions.platform,
+      // TODO(@kitten): Increase type-safety here
+      platform: graph.transformOptions.platform!,
       environment: graph.transformOptions.customTransformOptions?.environment,
     };
     // Assign IDs to modules in a consistent order
     for (const module of modules) {
-      // @ts-expect-error
       this._createModuleId(module.path, ctx);
     }
     // Sort by IDs
     return modules.sort(
-      // @ts-expect-error
       (a, b) => this._createModuleId(a.path, ctx) - this._createModuleId(b.path, ctx)
     );
   };
@@ -330,7 +348,7 @@ export async function instantiateMetroAsync(
 
     // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs and add support for serializing HMR updates the same as all other bundles.
     hmrServer._prepareMessage = async function (
-      this: MetroHmrServer<MetroHmrClient>,
+      this: MetroHmrServerWithModuleIdMod,
       group,
       options,
       changeEvent
@@ -361,14 +379,14 @@ export async function instantiateMetroAsync(
         logger?.point('serialize_start');
         // NOTE(EvanBacon): This is the patch
         const moduleIdContext = {
-          platform: revision.graph.transformOptions.platform,
+          // TODO(@kitten): Increase type-safety here
+          platform: revision.graph.transformOptions.platform!,
           environment: revision.graph.transformOptions.customTransformOptions?.environment,
         };
         const hmrUpdate = hmrJSBundle(delta, revision.graph, {
           clientUrl: group.clientUrl,
           // NOTE(EvanBacon): This is also the patch
           createModuleId: (moduleId: string) => {
-            // @ts-expect-error
             return this._createModuleId(moduleId, moduleIdContext);
           },
           includeAsyncPaths: group.graphOptions.lazy,
@@ -409,6 +427,7 @@ export async function instantiateMetroAsync(
 
 // TODO: Fork the entire transform function so we can simply regex the file contents for keywords instead.
 function pruneCustomTransformOptions(
+  projectRoot: string,
   filePath: string,
   transformOptions: TransformOptions
 ): TransformOptions {
@@ -425,13 +444,20 @@ function pruneCustomTransformOptions(
     transformOptions.customTransformOptions.dom = 'true';
   }
 
-  if (
-    transformOptions.customTransformOptions?.routerRoot &&
+  const routerRoot = transformOptions.customTransformOptions?.routerRoot;
+  if (typeof routerRoot === 'string') {
+    const isRouterEntry = /\/expo-router\/_ctx/.test(filePath);
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
-    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
-  ) {
-    // Set to the default value.
-    transformOptions.customTransformOptions.routerRoot = 'app';
+    const isRouterModule = /\/expo-router\/build\//.test(filePath);
+    // Any page/router inside the expo-router app folder may access the `routerRoot` option to determine whether it's in the app folder
+    const isRouterRoute =
+      path.isAbsolute(filePath) && filePath.startsWith(path.resolve(projectRoot, routerRoot));
+
+    // In any other file than the above, we enforce that we mustn't use `routerRoot`, and set it to an arbitrary value here (the default)
+    // to ensure that the cache never invalidates when this value is changed
+    if (!isRouterEntry && !isRouterModule && !isRouterRoute) {
+      transformOptions.customTransformOptions!.routerRoot = 'app';
+    }
   }
 
   if (

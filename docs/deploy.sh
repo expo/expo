@@ -366,6 +366,17 @@ redirects[regulatory-compliance/privacy-shield]=regulatory-compliance/data-and-p
 # After changing brownfield docs
 redirects[brownfield/installing-expo-modules]=brownfield/get-started
 
+# After removing Navigation section from Home and adding a Navigation page
+redirects[develop/file-based-routing]=develop/app-navigation
+redirects[develop/dynamic-routes]=develop/app-navigation
+redirects[develop/next-steps]=develop/app-navigation
+
+# After moving server-focused Expo Router docs under /router/web/**
+redirects[router/reference/api-routes]=router/web/api-routes
+redirects[router/reference/middleware]=router/web/middleware
+redirects[router/reference/static-rendering]=router/web/static-rendering
+redirects[router/reference/async-routes]=router/web/async-routes
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

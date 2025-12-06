@@ -30,6 +30,21 @@ describe(normalizeParams, () => {
     ]);
   });
 
+  it('should convert boolean params to 0/1', () => {
+    expect(normalizeParams(true)).toStrictEqual([{ 0: 1 }, {}, true]);
+    expect(normalizeParams(false)).toStrictEqual([{ 0: 0 }, {}, true]);
+
+    expect(normalizeParams('hello', true)).toStrictEqual([{ 0: 'hello', 1: 1 }, {}, true]);
+    expect(normalizeParams('hello', false)).toStrictEqual([{ 0: 'hello', 1: 0 }, {}, true]);
+
+    expect(normalizeParams([true, false])).toStrictEqual([{ 0: 1, 1: 0 }, {}, true]);
+    expect(normalizeParams({ foo: true, bar: false })).toStrictEqual([
+      { foo: 1, bar: 0 },
+      {},
+      false,
+    ]);
+  });
+
   it('should support blob params', () => {
     const blob = new Uint8Array([0x00]);
     const blob2 = new Uint8Array([0x01]);

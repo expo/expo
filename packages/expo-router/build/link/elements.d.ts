@@ -61,12 +61,20 @@ export interface LinkMenuProps {
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
      */
+    palette?: boolean;
+    /**
+     * @deprecated Use `palette` prop instead.
+     */
     displayAsPalette?: boolean;
     /**
      * If `true`, the menu will be displayed inline.
      * This means that the menu will not be collapsed
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
+     */
+    inline?: boolean;
+    /**
+     * @deprecated Use `inline` prop instead.
      */
     displayInline?: boolean;
     /**

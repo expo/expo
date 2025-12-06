@@ -77,3 +77,9 @@ internal final class PredicateBuilderException: GenericException<String> {
     "Failed to build a predicate: \(param)"
   }
 }
+
+internal final class FailedToExtractUri: GenericException<String> {
+  override var reason: String {
+    "Failed to extract an uri: \(param)"
+  }
+}

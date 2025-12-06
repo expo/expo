@@ -55,7 +55,7 @@ export class VideoView extends PureComponent {
     }
     render() {
         const { player, ...props } = this.props;
-        const playerId = getPlayerId(player);
+        const playerId = player ? getPlayerId(player) : null;
         if (props.allowsFullscreen !== undefined) {
             console.warn('The `allowsFullscreen` prop is deprecated and will be removed in a future release. Use `fullscreenOptions` prop instead.');
         }

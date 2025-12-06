@@ -1,5 +1,5 @@
 import type { Reporter } from '@expo/metro/metro';
-import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
 import { INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 export interface LoadOptions {
@@ -33,7 +33,7 @@ export interface DefaultConfigOptions {
 }
 export declare function createStableModuleIdFactory(root: string): (path: string, context?: {
     platform: string;
-    environment?: string;
+    environment?: string | null;
 }) => number;
 export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins }?: DefaultConfigOptions): InputConfigT;
 /** Use to access the Expo Metro transformer path */

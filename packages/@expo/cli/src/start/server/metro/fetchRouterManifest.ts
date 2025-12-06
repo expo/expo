@@ -4,54 +4,39 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import type { Options as RoutesManifestOptions } from '@expo/router-server/build/routes-manifest';
+import { type MiddlewareInfo, type RouteInfo, type RoutesManifest } from 'expo-server/private';
 import resolveFrom from 'resolve-from';
 
 import { getRoutePaths } from './router';
 
-export type ExpoRouterServerManifestV1Route<TRegex = string> = {
-  file: string;
-  page: string;
-  routeKeys: Record<string, string>;
-  namedRegex: TRegex;
-  generated?: boolean;
-};
-
-export type ExpoRouterServerManifestV1Middleware = {
-  /**
-   * Path to the module that contains the middleware function as a default export.
-   *
-   * @example _expo/functions/+middleware.js
-   */
-  file: string;
-};
-
-export type ExpoRouterServerManifestV1<TRegex = string> = {
-  middleware?: ExpoRouterServerManifestV1Middleware;
-  apiRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
-  htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
-  notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
-  redirects: ExpoRouterServerManifestV1Route<TRegex>[];
-  rewrites: ExpoRouterServerManifestV1Route<TRegex>[];
-};
-
 function getExpoRouteManifestBuilderAsync(projectRoot: string) {
-  return require(resolveFrom(projectRoot, 'expo-router/build/routes-manifest'))
-    .createRoutesManifest as typeof import('expo-router/build/routes-manifest').createRoutesManifest;
+  return require(resolveFrom(projectRoot, '@expo/router-server/build/routes-manifest'))
+    .createRoutesManifest as typeof import('@expo/router-server/build/routes-manifest').createRoutesManifest;
+}
+
+interface FetchManifestOptions extends RoutesManifestOptions {
+  asJson?: boolean;
+  appDir: string;
 }
 
 // TODO: Simplify this now that we use Node.js directly, no need for the Metro bundler caching layer.
-export async function fetchManifest<TRegex = string>(
+async function fetchManifest(
   projectRoot: string,
-  options: {
-    asJson?: boolean;
-    appDir: string;
-  } & import('expo-router/build/routes-manifest').Options
-): Promise<ExpoRouterServerManifestV1<TRegex> | null> {
+  options: FetchManifestOptions & { asJson: true }
+): Promise<RoutesManifest<string> | null>;
+async function fetchManifest(
+  projectRoot: string,
+  options: FetchManifestOptions & { asJson?: false | undefined }
+): Promise<RoutesManifest<RegExp> | null>;
+async function fetchManifest(
+  projectRoot: string,
+  options: FetchManifestOptions
+): Promise<RoutesManifest | null> {
   const getManifest = getExpoRouteManifestBuilderAsync(projectRoot);
   const paths = getRoutePaths(options.appDir);
   // Get the serialized manifest
   const jsonManifest = getManifest(paths, options);
-
   if (!jsonManifest) {
     return null;
   }
@@ -61,17 +46,16 @@ export async function fetchManifest<TRegex = string>(
   }
 
   if (!options.asJson) {
-    // @ts-expect-error
     return inflateManifest(jsonManifest);
+  } else {
+    return jsonManifest;
   }
-  // @ts-expect-error
-  return jsonManifest;
 }
 
+export { fetchManifest };
+
 // Convert the serialized manifest to a usable format
-export function inflateManifest(
-  json: ExpoRouterServerManifestV1<string>
-): ExpoRouterServerManifestV1<RegExp> {
+export function inflateManifest(json: RoutesManifest<string>): RoutesManifest<RegExp> {
   return {
     ...json,
     middleware: json.middleware,

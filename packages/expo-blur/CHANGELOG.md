@@ -4,11 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- [Android] The `dimezisBlurView` experimental blur method will no longer work without creating a related `BlurTargetView`. ([#39990](https://github.com/expo/expo/pull/39990) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
+
+- [Android] Introduce new, more performant Blur API for Android. ([#39990](https://github.com/expo/expo/pull/39990) by [@behenate](https://github.com/behenate))
+- [Android] Introduce `dimezisBlurViewSdk31Plus` blur method. ([#39998](https://github.com/expo/expo/pull/39998) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Rename the `experimentalBlurMethod` prop to `blurMethod`. ([#39996](https://github.com/expo/expo/pull/39996) by [@behenate](https://github.com/behenate))
+- Add missing type exports. ([#39999](https://github.com/expo/expo/pull/39999) by [@behenate](https://github.com/behenate))
+
+## 15.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 15.0.7 — 2025-09-11
 

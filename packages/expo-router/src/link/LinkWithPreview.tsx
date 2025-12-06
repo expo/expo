@@ -1,33 +1,33 @@
 'use client';
 
-import React, {
-  isValidElement,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactElement,
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { useRouter } from '../hooks';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
 import { LinkMenu, LinkPreview, LinkTrigger } from './elements';
+import { resolveHref } from './href';
+import type { Href } from '../types';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
+import { getFirstChildOfType } from '../utils/children';
 import { shouldLinkExternally } from '../utils/url';
 
 const isPad = Platform.OS === 'ios' && Platform.isPad;
 
-export function LinkWithPreview({ children, ...rest }: LinkProps) {
+interface LinkWithPreviewProps extends LinkProps {
+  hrefForPreviewNavigation: Href;
+}
+
+export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
   const router = useRouter();
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = useState(false);
 
-  const hrefWithoutQuery = String(rest.href).split('?')[0];
+  const hrefWithoutQuery = resolveHref(rest.hrefForPreviewNavigation).split('?')[0];
   const prevHrefWithoutQuery = useRef(hrefWithoutQuery);
 
   useEffect(() => {
@@ -108,7 +108,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
       onWillPreviewOpen={() => {
         if (hasPreview) {
           isPreviewTapped.current = false;
-          prefetch(rest.href);
+          prefetch(rest.hrefForPreviewNavigation);
           setIsCurrenPreviewOpen(true);
         }
       }}
@@ -124,31 +124,23 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
       }}
       onPreviewDidClose={() => {
         if (hasPreview && isPreviewTapped.current && isPad) {
-          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+          router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
         }
       }}
       onPreviewTapped={() => {
         isPreviewTapped.current = true;
         if (!isPad) {
-          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+          router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
         }
       }}
       style={{ display: 'contents' }}
       disableForceFlatten>
-      <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
+      <InternalLinkPreviewContext
+        value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
         <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
         {preview}
         {menuElement}
       </InternalLinkPreviewContext>
     </NativeLinkPreview>
-  );
-}
-
-function getFirstChildOfType<PropsT>(
-  children: React.ReactNode | React.ReactNode[],
-  type: (props: PropsT) => unknown
-) {
-  return React.Children.toArray(children).find(
-    (child): child is ReactElement<PropsT> => isValidElement(child) && child.type === type
   );
 }

@@ -33,7 +33,9 @@ type SourceFileImportRef = {
   isTypeOnly?: boolean;
 };
 
-const IGNORED_PACKAGES: string[] = [];
+const IGNORED_PACKAGES: string[] = [
+  'sqlite-inspector-webui', // This is prebuilt devtools plugin webui. It's not a user depended package.
+];
 
 const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | void> = {
   'expo-dev-menu': {
@@ -92,6 +94,8 @@ const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
   // See: https://github.com/expo/expo/blob/d63143c/packages/%40expo/cli/src/start/server/metro/withMetroMultiPlatform.ts#L603-L622
   '@react-native/assets-registry/registry': 'ignore-dev',
 };
+
+const REGEXP_REPLACE_SLASHES = /\\/g;
 
 /**
  * Checks whether the package has valid dependency chains for each (external) import.
@@ -227,6 +231,7 @@ async function getSourceFilesAsync(pkg: Package, type: PackageCheckType): Promis
 
   return files
     .filter((filePath) => !filePath.endsWith('.d.ts'))
+    .map((filePath) => toPosixPath(filePath))
     .map((filePath) =>
       filePath.includes('/__tests__/') || filePath.includes('/__mocks__/')
         ? { path: filePath, type: 'test' }
@@ -319,7 +324,7 @@ function createTypescriptImportRef(
   importText: string,
   importTypeOnly = false
 ): SourceFileImportRef {
-  const importValue = importText.replace(/['"]/g, '');
+  const importValue = importText.replace(/['"]/g, '').trim();
 
   if (isBuiltin(importValue)) {
     return { type: 'builtIn', importValue, packageName: importValue, isTypeOnly: importTypeOnly };
@@ -372,4 +377,11 @@ function createTypescriptCompiler() {
   }
 
   return compiler;
+}
+
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+function toPosixPath(filePath: string): string {
+  return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
 }

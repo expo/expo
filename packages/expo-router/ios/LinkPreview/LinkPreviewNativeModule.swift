@@ -1,8 +1,11 @@
 import ExpoModulesCore
 
 public class LinkPreviewNativeModule: Module {
+  static let moduleName: String = "ExpoRouterNativeLinkPreview"
+  lazy var zoomSourceRepository = LinkZoomTransitionsSourceRepository()
+
   public func definition() -> ModuleDefinition {
-    Name("ExpoRouterNativeLinkPreview")
+    Name(LinkPreviewNativeModule.moduleName)
 
     View(NativeLinkPreviewView.self) {
       Prop("nextScreenId") { (view: NativeLinkPreviewView, nextScreenId: String) in
@@ -48,13 +51,16 @@ public class LinkPreviewNativeModule: Module {
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
-      Prop("icon") { (view: LinkPreviewNativeActionView, icon: String) in
+      Prop("identifier") { (view: LinkPreviewNativeActionView, identifier: String) in
+        view.identifier = identifier
+      }
+      Prop("icon") { (view: LinkPreviewNativeActionView, icon: String?) in
         view.icon = icon
       }
-      Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool) in
+      Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool?) in
         view.disabled = disabled
       }
-      Prop("destructive") { (view: LinkPreviewNativeActionView, destructive: Bool) in
+      Prop("destructive") { (view: LinkPreviewNativeActionView, destructive: Bool?) in
         view.destructive = destructive
       }
       Prop("singleSelection") { (view: LinkPreviewNativeActionView, singleSelection: Bool) in
@@ -63,10 +69,10 @@ public class LinkPreviewNativeModule: Module {
       Prop("displayAsPalette") { (view: LinkPreviewNativeActionView, displayAsPalette: Bool) in
         view.displayAsPalette = displayAsPalette
       }
-      Prop("isOn") { (view: LinkPreviewNativeActionView, isOn: Bool) in
+      Prop("isOn") { (view: LinkPreviewNativeActionView, isOn: Bool?) in
         view.isOn = isOn
       }
-      Prop("keepPresented") { (view: LinkPreviewNativeActionView, keepPresented: Bool) in
+      Prop("keepPresented") { (view: LinkPreviewNativeActionView, keepPresented: Bool?) in
         view.keepPresented = keepPresented
       }
       Prop("displayInline") { (view: LinkPreviewNativeActionView, displayInline: Bool) in
@@ -74,6 +80,41 @@ public class LinkPreviewNativeModule: Module {
       }
 
       Events("onSelected")
+    }
+
+    View(LinkZoomTransitionSource.self) {
+      Prop("disableForceFlatten") { (_: LinkZoomTransitionSource, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
+      }
+      Prop("identifier") { (view: LinkZoomTransitionSource, identifier: String) in
+        view.identifier = identifier
+      }
+      Prop("alignment") { (view: LinkZoomTransitionSource, alignment: LinkSourceAlignmentRect?) in
+        if let alignment = alignment {
+          view.alignment = CGRect(
+            x: alignment.x,
+            y: alignment.y,
+            width: alignment.width,
+            height: alignment.height
+          )
+        } else {
+          view.alignment = nil
+        }
+      }
+    }
+
+    View(LinkZoomTransitionEnabler.self) {
+      Prop("zoomTransitionSourceIdentifier") {
+        (view: LinkZoomTransitionEnabler, identifier: String) in
+        view.zoomTransitionSourceIdentifier = identifier
+      }
+      Prop("disableForceFlatten") { (_: LinkZoomTransitionEnabler, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
+      }
+
+      Prop("preventInteractiveDismissal") { (view: LinkZoomTransitionEnabler, prevent: Bool) in
+        view.isPreventingInteractiveDismissal = prevent
+      }
     }
   }
 }
@@ -85,4 +126,11 @@ struct TabPathPayload: Record {
 struct TabStatePath: Record {
   @Field var oldTabKey: String
   @Field var newTabKey: String
+}
+
+struct LinkSourceAlignmentRect: Record {
+  @Field var x: Double
+  @Field var y: Double
+  @Field var width: Double
+  @Field var height: Double
 }

@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
 import path from 'path';
 
-import { scanDependenciesRecursively, scanDevDependenciesShallowly } from '../resolution';
+import { scanDependenciesRecursively } from '../resolution';
 
 function mockedNodeModule(
   name: string,
@@ -213,6 +213,39 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
+  it('discovers dependencies on nameless package.json', async () => {
+    vol.fromNestedJSON(
+      {
+        'package.json': JSON.stringify({
+          // Missing name
+          dependencies: { 'react-native-third-party': '*' },
+        }),
+        node_modules: {
+          'react-native-third-party': {
+            'package.json': '{}', // Missing name
+          },
+        },
+      },
+      projectRoot
+    );
+
+    const result = await scanDependenciesRecursively(projectRoot);
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "react-native-third-party": {
+          "depth": 0,
+          "duplicates": null,
+          "name": "react-native-third-party",
+          "originPath": "/fake/project/node_modules/react-native-third-party",
+          "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
+          "version": "",
+        },
+      }
+    `);
+  });
+
   it('ignores transitive, hoisted dependencies without dependents', async () => {
     vol.fromNestedJSON(
       {
@@ -334,7 +367,7 @@ describe(scanDependenciesRecursively, () => {
               "name": "react-native-dependency",
               "originPath": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
               "path": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
-              "version": "",
+              "version": "0.0.1",
             },
           ],
           "name": "react-native-dependency",
@@ -471,42 +504,6 @@ describe(scanDependenciesRecursively, () => {
           "path": "/fake/project/node_modules/react-native-third-party",
           "source": 0,
           "version": "0.0.1",
-        },
-      }
-    `);
-  });
-});
-
-describe(scanDevDependenciesShallowly, () => {
-  afterEach(() => {
-    vol.reset();
-  });
-
-  it('discovers flat dev dependencies', async () => {
-    vol.fromNestedJSON(
-      {
-        ...mockedNodeModule('root', {
-          pkgDevDependencies: { 'expo-atlas': '*' },
-        }),
-        node_modules: {
-          'expo-atlas': mockedNodeModule('expo-atlas'),
-        },
-      },
-      projectRoot
-    );
-
-    const result = await scanDevDependenciesShallowly(projectRoot);
-
-    expect(result).toMatchInlineSnapshot(`
-      {
-        "expo-atlas": {
-          "depth": 0,
-          "duplicates": null,
-          "name": "expo-atlas",
-          "originPath": "/fake/project/node_modules/expo-atlas",
-          "path": "/fake/project/node_modules/expo-atlas",
-          "source": 0,
-          "version": "",
         },
       }
     `);

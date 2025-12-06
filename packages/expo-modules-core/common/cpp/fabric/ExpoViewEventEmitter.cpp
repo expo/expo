@@ -2,12 +2,14 @@
 
 #include "ExpoViewEventEmitter.h"
 
+#include <utility>
+
 using namespace facebook;
 
 namespace expo {
 
-void ExpoViewEventEmitter::dispatch(std::string eventName, react::ValueFactory payloadFactory) const {
-  dispatchEvent(eventName, payloadFactory);
+void ExpoViewEventEmitter::dispatch(std::string eventName, const react::ValueFactory& payloadFactory) const {
+  dispatchEvent(std::move(eventName), payloadFactory);
 }
 
 } // namespace expo

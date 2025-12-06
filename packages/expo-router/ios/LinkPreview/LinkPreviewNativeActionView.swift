@@ -2,6 +2,7 @@ import ExpoModulesCore
 import WebKit
 
 class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
+  var identifier: String = ""
   // MARK: - Shared props
   var title: String = "" {
     didSet {
@@ -19,7 +20,7 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
       }
     }
   }
-  var destructive: Bool = false {
+  var destructive: Bool? {
     didSet {
       updateUiAction()
       if isMenuAction {
@@ -29,17 +30,17 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
   }
 
   // MARK: - Action only props
-  var disabled: Bool = false {
+  var disabled: Bool? {
     didSet {
       updateUiAction()
     }
   }
-  var isOn: Bool = false {
+  var isOn: Bool? {
     didSet {
       updateUiAction()
     }
   }
-  var keepPresented: Bool = false {
+  var keepPresented: Bool? {
     didSet {
       updateUiAction()
     }
@@ -114,7 +115,7 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
     if displayInline {
       options.insert(.displayInline)
     }
-    if destructive {
+    if destructive == true {
       options.insert(.destructive)
     }
 
@@ -130,17 +131,17 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
 
   private func updateUiAction() {
     var attributes: UIMenuElement.Attributes = []
-    if destructive { attributes.insert(.destructive) }
-    if disabled { attributes.insert(.disabled) }
+    if destructive == true { attributes.insert(.destructive) }
+    if disabled == true { attributes.insert(.disabled) }
 
     if #available(iOS 16.0, *) {
-      if keepPresented { attributes.insert(.keepsMenuPresented) }
+      if keepPresented == true { attributes.insert(.keepsMenuPresented) }
     }
 
     baseUiAction.title = title
     baseUiAction.image = icon.flatMap { UIImage(systemName: $0) }
     baseUiAction.attributes = attributes
-    baseUiAction.state = isOn ? .on : .off
+    baseUiAction.state = isOn == true ? .on : .off
 
     parentMenuUpdatable?.updateMenu()
   }

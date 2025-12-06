@@ -174,9 +174,11 @@ function setNotificationSounds(projectRoot, sounds) {
  * there isn't already an existing file under that name.
  */
 function writeNotificationSoundFile(soundFileRelativePath, projectRoot) {
-    const rawResourcesPath = (0, path_1.resolve)(projectRoot, exports.ANDROID_RES_PATH, 'raw');
     const inputFilename = (0, path_1.basename)(soundFileRelativePath);
     if (inputFilename) {
+        const nameWithoutExt = (0, path_1.parse)(inputFilename).name;
+        (0, config_plugins_1.assertValidAndroidAssetName)(nameWithoutExt, 'expo-notifications');
+        const rawResourcesPath = (0, path_1.resolve)(projectRoot, exports.ANDROID_RES_PATH, 'raw');
         try {
             const sourceFilepath = (0, path_1.resolve)(projectRoot, soundFileRelativePath);
             const destinationFilepath = (0, path_1.resolve)(rawResourcesPath, inputFilename);

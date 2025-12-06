@@ -6,6 +6,8 @@ import { type CommonViewModifierProps } from '../types';
  */
 export type SecureFieldRef = {
     setText: (newText: string) => Promise<void>;
+    focus: () => Promise<void>;
+    blur: () => Promise<void>;
 };
 export type SecureFieldProps = {
     ref?: Ref<SecureFieldRef>;
@@ -20,8 +22,21 @@ export type SecureFieldProps = {
     /**
      * A callback triggered when user types in text into the SecureField.
      */
-    onChangeText: (value: string) => void;
+    onChangeText?: (value: string) => void;
+    /**
+     * A callback triggered when user submits the TextField by pressing the return key.
+     */
+    onSubmit?: (value: string) => void;
+    /**
+     * A callback triggered when user focuses or blurs the SecureField.
+     */
+    onChangeFocus?: (focused: boolean) => void;
     keyboardType?: TextFieldKeyboardType;
+    /**
+     * If true, the text input will be focused automatically when the component is mounted.
+     * @default false
+     */
+    autoFocus?: boolean;
 } & CommonViewModifierProps;
 /**
  * Renders a `SecureField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.

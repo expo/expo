@@ -4,8 +4,8 @@
 /// <reference types="@expo/metro/metro-babel-transformer" />
 /// <reference types="@expo/metro/metro-source-map" />
 
-import * as __metroDeltaBundlerTypes from '@expo/metro/metro/DeltaBundler/types.flow';
-declare module '@expo/metro/metro/DeltaBundler/types.flow' {
+import * as __metroDeltaBundlerTypes from '@expo/metro/metro/DeltaBundler/types';
+declare module '@expo/metro/metro/DeltaBundler/types' {
   const enum _AsyncDependencyType {
     /** @privateRemarks Augmentation adds `asyncType: 'worker'` to possible values for worker chunk splitting */
     worker = 'worker'
@@ -28,6 +28,8 @@ declare module '@expo/metro/metro-babel-transformer' {
     expoDomComponentReference?: string;
     /** @privateRemarks Augmentation used in babel-preset-expo/src/detect-dynamic-exports.ts */
     hasCjsExports?: boolean;
+    /** @privateRemarks Augmentation used in babel-preset-expo/src/server-data-loaders-plugin.ts */
+    performConstantFolding?: boolean;
   }
 }
 
@@ -46,4 +48,3 @@ declare module '@expo/metro/metro-source-map/source-map' {
   /** @privateRemarks Augmented to switch argument type to `BabelSourceMapSegment` */
   export function toSegmentTuple(mapping: BabelSourceMapSegment): MetroSourceMapSegmentTuple;
 }
-

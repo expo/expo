@@ -6,9 +6,43 @@
 
 ### 🎉 New features
 
+- Add initial macOS support ([#41330](https://github.com/expo/expo/pull/41330) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.0.20 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.19 - 2025-12-04
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.18 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.17 - 2025-11-05
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.16 - 2025-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.15 - 2025-10-10
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.14 - 2025-10-09
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.13 - 2025-10-01
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.12 — 2025-09-11
 

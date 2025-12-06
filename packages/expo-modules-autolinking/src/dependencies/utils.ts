@@ -1,7 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { DependencyResolution, ResolutionResult } from './types';
+import { memoize } from '../utils';
+import {
+  DependencyResolutionSource,
+  type DependencyResolution,
+  type ResolutionResult,
+} from './types';
 
 const NODE_MODULES_PATTERN = `${path.sep}node_modules${path.sep}`;
 
@@ -13,7 +18,10 @@ export function defaultShouldIncludeDependency(dependencyName: string): boolean 
     scopeName === 'babel' ||
     scopeName === 'types' ||
     scopeName === 'eslint' ||
-    scopeName === 'typescript-eslint'
+    scopeName === 'typescript-eslint' ||
+    scopeName === 'testing-library' ||
+    scopeName === 'aws-crypto' ||
+    scopeName === 'aws-sdk'
   ) {
     return false;
   }
@@ -23,11 +31,20 @@ export function defaultShouldIncludeDependency(dependencyName: string): boolean 
     case '@expo/metro-config':
     case '@expo/package-manager':
     case '@expo/prebuild-config':
+    case '@expo/webpack-config':
     case '@expo/env':
     case '@react-native/codegen':
+    case '@react-native/community-cli-plugin':
     case 'eslint':
     case 'eslint-config-expo':
     case 'eslint-plugin-expo':
+    case 'eslint-plugin-import':
+    case 'jest-expo':
+    case 'jest':
+    case 'metro':
+    case 'ts-node':
+    case 'typescript':
+    case 'webpack':
       return false;
     default:
       return true;
@@ -48,22 +65,22 @@ export const maybeRealpath = async (target: string): Promise<string | null> => {
   }
 };
 
-export type PackageJson = Record<string, unknown> & { name: string; version?: string };
+export type PackageJson = Record<string, unknown> & { version?: string };
 
-export async function loadPackageJson(jsonPath: string): Promise<PackageJson | null> {
+export const loadPackageJson = memoize(async function loadPackageJson(
+  jsonPath: string
+): Promise<PackageJson | null> {
   try {
     const packageJsonText = await fs.promises.readFile(jsonPath, 'utf8');
     const json = JSON.parse(packageJsonText);
     if (typeof json !== 'object' || json == null) {
-      return null;
-    } else if (typeof json.name !== 'string' || !json.name) {
       return null;
     }
     return json;
   } catch {
     return null;
   }
-}
+});
 
 export function mergeWithDuplicate(
   a: DependencyResolution,
@@ -94,12 +111,16 @@ export function mergeWithDuplicate(
   }
   const duplicates = target.duplicates || (target.duplicates = []);
   if (target.path !== duplicate.path) {
-    duplicates.push({
-      name: duplicate.name,
-      version: duplicate.version,
-      path: duplicate.path,
-      originPath: duplicate.originPath,
-    });
+    if (duplicates.every((parent) => parent.path !== duplicate.path)) {
+      duplicates.push({
+        name: duplicate.name,
+        version: duplicate.version,
+        path: duplicate.path,
+        originPath: duplicate.originPath,
+      });
+    }
+  } else if (!target.version && duplicate.version) {
+    target.version = duplicate.version;
   }
   if (duplicate.duplicates?.length) {
     duplicates.push(
@@ -118,7 +139,19 @@ export async function filterMapResolutionResult<T extends { name: string }>(
   const resolutions = await Promise.all(
     Object.keys(results).map(async (key) => {
       const resolution = results[key];
-      return resolution ? await filterMap(resolution) : null;
+      const result = resolution ? await filterMap(resolution) : null;
+      // If we failed to find a matching resolution from `searchPaths`, also try the other duplicates
+      // to see if the `searchPaths` result is not a module but another is
+      if (resolution?.source === DependencyResolutionSource.SEARCH_PATH && !result) {
+        for (let idx = 0; resolution.duplicates && idx < resolution.duplicates.length; idx++) {
+          const duplicate = resolution.duplicates[idx];
+          const duplicateResult = await filterMap({ ...resolution, ...duplicate });
+          if (duplicateResult != null) {
+            return duplicateResult;
+          }
+        }
+      }
+      return result;
     })
   );
   const output: Record<string, T> = Object.create(null);
@@ -131,11 +164,14 @@ export async function filterMapResolutionResult<T extends { name: string }>(
   return output;
 }
 
-export function mergeResolutionResults(results: ResolutionResult[]) {
-  if (results.length === 1) {
+export function mergeResolutionResults(
+  results: ResolutionResult[],
+  base?: ResolutionResult
+): ResolutionResult {
+  if (base == null && results.length === 1) {
     return results[0];
   }
-  const output: ResolutionResult = Object.create(null);
+  const output: ResolutionResult = base == null ? Object.create(null) : base;
   for (let idx = 0; idx < results.length; idx++) {
     for (const key in results[idx]) {
       const resolution = results[idx][key]!;

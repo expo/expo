@@ -20,8 +20,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 16.4
-        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+      - name: 🔨 Switch to Xcode 26.0
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby
@@ -46,13 +46,9 @@ jobs:
           pod install --project-directory=ios
           xcodebuild -workspace ios/BareExpo.xcworkspace -scheme BareExpo -configuration Release -sdk iphonesimulator -derivedDataPath "ios/build" | xcpretty
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
+          webhook: ${{ secrets.slack_webhook_ios }}
           channel: '#expo-ios'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
-          author_name: Static Frameworks iOS Test (paper-tester)
+          author_name: Static Frameworks iOS Test (minimal-tester)

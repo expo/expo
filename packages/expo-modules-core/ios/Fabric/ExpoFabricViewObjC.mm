@@ -3,14 +3,15 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 
 #import <objc/runtime.h>
-#import <ExpoModulesCore/ExpoFabricViewObjC.h>
+#import <string.h>
 
-#import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
-#import <ExpoModulesCore/EXJSIConversions.h>
+#import <ExpoModulesCore/ExpoFabricViewObjC.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/Swift.h>
 
-#import <string.h>
+#import <ExpoModulesJSI/EXJSIConversions.h>
+
+#import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 
 using namespace expo;
 
@@ -177,6 +178,20 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 {
   // Implemented in `ExpoFabricView.swift`
   return NO;
+}
+
+- (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height
+{
+  if (_state) {
+    float widthValue = width ? [width floatValue] : std::numeric_limits<float>::quiet_NaN();
+    float heightValue = height ? [height floatValue] : std::numeric_limits<float>::quiet_NaN();
+#if REACT_NATIVE_TARGET_VERSION >= 82
+    // synchronous update is only available in React Native 0.82 and above
+    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), EventQueue::UpdateMode::unstable_Immediate);
+#else
+    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
+#endif
+  }
 }
 
 @end
