@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Report stack traces on unexpected `TransformerError`s and `SyntaxError`s from Metro ([#41468](https://github.com/expo/expo/pull/41468) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 54.0.18 — 2025-12-05
