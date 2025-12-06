@@ -93,12 +93,15 @@ struct AudioUtils {
         url
       }
 
-      var options: [String: Any]?
+      var options: [String: Any] = [:]
       if let headers = source.headers {
-        options = ["AVURLAssetHTTPHeaderFieldsKey": headers]
+        options["AVURLAssetHTTPHeaderFieldsKey"] = headers
+      }
+      if let mimeType = source.mimeType {
+        options["AVURLAssetOutOfBandMIMETypeKey"] = mimeType
       }
 
-      let asset = AVURLAsset(url: finalUrl, options: options)
+      let asset = AVURLAsset(url: finalUrl, options: options.isEmpty ? nil : options)
       let item = AVPlayerItem(asset: asset)
       return AVPlayer(playerItem: item)
     }
@@ -115,12 +118,15 @@ struct AudioUtils {
       url
     }
 
-    var options: [String: Any]?
+    var options: [String: Any] = [:]
     if let headers = source.headers {
-      options = ["AVURLAssetHTTPHeaderFieldsKey": headers]
+      options["AVURLAssetHTTPHeaderFieldsKey"] = headers
+    }
+    if let mimeType = source.mimeType {
+      options["AVURLAssetOutOfBandMIMETypeKey"] = mimeType
     }
 
-    let asset = AVURLAsset(url: finalUrl, options: options)
+    let asset = AVURLAsset(url: finalUrl, options: options.isEmpty ? nil : options)
     return AVPlayerItem(asset: asset)
   }
 

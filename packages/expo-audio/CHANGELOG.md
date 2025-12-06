@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add `mimeType` option to `AudioSource` to handle audio files with missing or incorrect file extensions. ([#XXXXX](https://github.com/expo/expo/pull/41469) [#41469](https://github.com/expo/expo/pull/41469) by [@mohammadamin16](https://github.com/mohammadamin16))
 - [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
