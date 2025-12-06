@@ -21,6 +21,13 @@ export type AudioSource =
        * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
        */
       headers?: Record<string, string>;
+      /**
+       * The MIME type of the audio file. Use this when the file extension
+       * is missing or incorrect. Example: 'audio/ogg', 'audio/mpeg'.
+       * > **Note:** iOS only. Uses AVURLAssetOutOfBandMIMETypeKey.
+       * @platform ios
+       */
+      mimeType?: string;
     };
 
 /**
