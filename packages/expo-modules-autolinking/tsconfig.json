@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "types": [],
     "typeRoots": ["./ts-declarations", "node_modules/@types"],
+    "target": "esnext",
     "sourceMap": true,
     "declaration": true,
     "inlineSources": true,

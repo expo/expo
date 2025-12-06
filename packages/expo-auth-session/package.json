@@ -42,7 +42,9 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "@types/react": "~19.2.0",
+    "@types/invariant": "^2.2.33",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "react": "*",

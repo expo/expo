@@ -1,0 +1,26 @@
+packages:
+  - apps/*
+  - packages/*
+  - packages/@expo/*
+
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+  - core-js
+  - esbuild
+  - fmerge
+  - protobufjs
+
+linkWorkspacePackages: deep
+
+onlyBuiltDependencies:
+  - better-sqlite3
+  - fsevents
+  - sharp
+  - workerd
+
+patchedDependencies:
+  react-server-dom-webpack: patches/react-server-dom-webpack.patch
+
+preferWorkspacePackages: true
+ignoreWorkspaceCycles: true

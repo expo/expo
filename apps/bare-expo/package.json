@@ -64,7 +64,7 @@
     "expo-router": "~6.0.6",
     "expo-splash-screen": "~31.0.10",
     "lottie-react-native": "^7.3.4",
-    "native-component-list": "*",
+    "native-component-list": "workspace:*",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.0-rc.3",
@@ -79,7 +79,7 @@
     "react-native-view-shot": "4.0.3",
     "react-native-webview": "13.15.0",
     "react-native-worklets": "0.6.1",
-    "test-suite": "*"
+    "test-suite": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

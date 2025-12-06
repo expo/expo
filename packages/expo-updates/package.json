@@ -16,7 +16,7 @@
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "test:e2e-cli": "yarn run prepare && expo-module test --config e2e-cli/jest.config.js"
+    "test:e2e-cli": "pnpm run prepare && expo-module test --config e2e-cli/jest.config.js"
   },
   "keywords": [
     "react-native",
@@ -54,12 +54,16 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
+    "@expo/metro-config": "workspace:*",
+    "@types/debug": "^4.1.7",
+    "@types/getenv": "^1.0.0",
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/node-forge": "^1.0.0",
     "@types/picomatch": "^4.0.0",
+    "@types/react": "~19.2.0",
     "@vercel/ncc": "^0.38.3",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
     "memfs": "^3.2.0",

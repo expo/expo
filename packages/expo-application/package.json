@@ -31,7 +31,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/application/",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

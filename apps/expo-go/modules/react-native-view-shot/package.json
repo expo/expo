@@ -23,8 +23,8 @@
     "html2canvas": "^1.4.1"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "react": "workspace:*",
+    "react-native": "workspace:*"
   },
   "devDependencies": {
     "flow-bin": "^0.246.0",

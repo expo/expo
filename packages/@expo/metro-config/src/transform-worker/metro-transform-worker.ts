@@ -847,10 +847,7 @@ const disabledDependencyTransformer: DependencyTransformer = {
   transformIllegalDynamicRequire: () => {},
 };
 
-export function collectDependenciesForShaking(
-  ast: ParseResult,
-  options: CollectDependenciesOptions
-) {
+export function collectDependenciesForShaking(ast: t.File, options: CollectDependenciesOptions) {
   const collectDependenciesOptions = {
     ...options,
 

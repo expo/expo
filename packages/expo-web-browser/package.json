@@ -36,7 +36,9 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "@types/node": "^22.14.0",
+    "@expo/config-types": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
