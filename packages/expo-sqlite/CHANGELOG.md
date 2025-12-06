@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix corrupted JSON in synchronous operations (length header encoding). ([#39785](https://github.com/expo/expo/pull/39785) by [@Xample](https://github.com/Xample))
+
 ### 💡 Others
 
 ## 16.0.8 — 2025-09-10
