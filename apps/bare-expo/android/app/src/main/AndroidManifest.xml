@@ -52,12 +52,15 @@
         <data android:scheme="dev.expo.payments"/>
         <data android:scheme="exp+bare-expo"/>
       </intent-filter>
-    </activity>
-    <activity android:name=".BrowserLauncherActivity" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
+
+    </activity>
+    <activity android:name=".BrowserLauncherActivity" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+
     </activity>
   </application>
 </manifest>
