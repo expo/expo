@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.UiModeManager
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Rect
 import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
@@ -17,6 +18,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
 import kotlin.math.pow
 import kotlin.math.sqrt
+
 
 class DeviceModule : Module() {
   // Keep this enum in sync with JavaScript
@@ -159,6 +161,109 @@ class DeviceModule : Module() {
 
     AsyncFunction("hasPlatformFeatureAsync") { feature: String ->
       return@AsyncFunction context.applicationContext.packageManager.hasSystemFeature(feature)
+    }
+
+    /**
+     * getCameraCutoutInfoAsync
+     *
+     * Returns camera-cutout-only information (focused on camera notch / cutout geometry).
+     *
+     * {
+     *   hasCameraCutout: Boolean,
+     *   cameraRects: [ { x, y, width, height, radius? } ],
+     *   safeInsets: { top, bottom, left, right }
+     * }
+     *
+     * Implementation notes:
+     * - For API 28+ we get bounding rects and safe insets from DisplayCutout.
+     * - We heuristically filter rects that appear at/near the top safe inset (these are likely camera cutouts).
+     * - radius is left null (Android does not expose corner radius on DisplayCutout).
+     */
+    AsyncFunction("getCameraCutoutInfoAsync") {
+      val activity = appContext.currentActivity
+
+      // If no activity, return safe default
+      if (activity == null) {
+        return@AsyncFunction mapOf(
+          "hasCameraCutout" to false,
+          "cameraRects" to emptyList<Map<String, Any?>>(),
+          "safeInsets" to mapOf("top" to 0, "bottom" to 0, "left" to 0, "right" to 0)
+        )
+      }
+
+      // API 28+ - use DisplayCutout
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        try {
+          val window = activity.window
+          val rootInsets = window?.decorView?.rootWindowInsets
+          if (rootInsets != null) {
+            val displayCutout = rootInsets.displayCutout
+
+            val safeTop = displayCutout?.safeInsetTop ?: rootInsets.systemWindowInsetTop
+            val safeBottom = displayCutout?.safeInsetBottom ?: rootInsets.systemWindowInsetBottom
+            val safeLeft = displayCutout?.safeInsetLeft ?: rootInsets.systemWindowInsetLeft
+            val safeRight = displayCutout?.safeInsetRight ?: rootInsets.systemWindowInsetRight
+
+            val safeInsetsMap = mapOf(
+              "top" to safeTop,
+              "bottom" to safeBottom,
+              "left" to safeLeft,
+              "right" to safeRight
+            )
+
+            val cameraRectsList = mutableListOf<Map<String, Any?>>()
+
+            if (displayCutout != null) {
+              val rects = displayCutout.boundingRects
+              if (rects != null && rects.isNotEmpty()) {
+                // Heuristic: camera cutouts usually appear at the top of the screen.
+                // We consider a rect to be a camera cutout when its top is within the top safe inset region.
+                // This avoids including side cutouts or other irregular cutouts.
+                rects.forEach { rect: Rect ->
+                  // if the rect is near the top area (inside or touching the top safe inset),
+                  // treat it as camera cutout.
+                  val isTopRect = rect.top <= safeTop && rect.bottom <= (safeTop + rect.height() * 2)
+                  val topProximity = rect.top <= safeTop + 4 // allow small tolerance (px)
+                  if (isTopRect || topProximity) {
+                    cameraRectsList.add(
+                      mapOf(
+                        "x" to rect.left,
+                        "y" to rect.top,
+                        "width" to rect.width(),
+                        "height" to rect.height(),
+                        "radius" to null // Android doesn't provide radius here
+                      )
+                    )
+                  }
+                }
+              }
+            }
+
+            val hasCameraCutout = cameraRectsList.isNotEmpty()
+            return@AsyncFunction mapOf(
+              "hasCameraCutout" to hasCameraCutout,
+              "cameraRects" to cameraRectsList,
+              "safeInsets" to safeInsetsMap
+            )
+          }
+        } catch (e: Exception) {
+          // swallow and fallback below
+        }
+      }
+
+      // Fallback for < API 28 or when insets are unavailable:
+      // estimate via resources (status/navigation bar heights) — but no camera cutout info.
+      val resources = context.resources
+      val statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android")
+      val statusBarHeight = if (statusBarId > 0) resources.getDimensionPixelSize(statusBarId) else 0
+      val navBarId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+      val navBarHeight = if (navBarId > 0) resources.getDimensionPixelSize(navBarId) else 0
+
+      return@AsyncFunction mapOf(
+        "hasCameraCutout" to false,
+        "cameraRects" to emptyList<Map<String, Any?>>(),
+        "safeInsets" to mapOf("top" to statusBarHeight, "bottom" to navBarHeight, "left" to 0, "right" to 0)
+      )
     }
   }
 
