@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DevMenuMainView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
+  @State private var isEcho = true
 
   var body: some View {
     ScrollView {
@@ -20,6 +21,30 @@ struct DevMenuMainView: View {
             onReload: viewModel.reload,
             onGoHome: viewModel.goHome
           )
+        }
+
+        if isEcho {
+          // Chat message input UI
+          VStack(alignment: .leading, spacing: 8) {
+            Text("AI")
+              .font(.caption)
+              .foregroundColor(.primary.opacity(0.6))
+
+            HStack(spacing: 12) {
+              TextField("Generate code...", text: .constant(""))
+                .textFieldStyle(.plain)
+
+              Button(action: {}) {
+                Image(systemName: "arrow.up.circle.fill")
+                  .font(.system(size: 24))
+                  .foregroundColor(.blue)
+              }
+              .buttonStyle(.plain)
+            }
+            .padding()
+            .background(Color.expoSecondarySystemBackground)
+            .cornerRadius(20)
+          }
         }
 
         if !viewModel.registeredCallbacks.isEmpty {
