@@ -1,4 +1,4 @@
-import commander from 'commander';
+import commander, { command } from 'commander';
 
 import {
   AutolinkingCommonArguments,
@@ -18,7 +18,9 @@ interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
 
 /** Generates a source file listing all packages to link in the runtime */
 export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
-  return registerAutolinkingArguments(cli.command('generate-modules-provider [searchPaths...]'))
+  return registerAutolinkingArguments(
+    cli.command('generate-modules-provider <watchedDirectoriesSerialized> [searchPaths...]')
+  )
     .option(
       '-t, --target <path>',
       'Path to the target file, where the package list should be written to.'
@@ -30,7 +32,11 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
     )
     .option('--app-root <path>', 'Path to the app root directory.')
     .action(
-      async (searchPaths: string[] | null, commandArguments: GenerateModulesProviderArguments) => {
+      async (
+        watchedDirectoriesSerialized: string,
+        searchPaths: string[] | null,
+        commandArguments: GenerateModulesProviderArguments
+      ) => {
         const platform = commandArguments.platform ?? 'apple';
         const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
           ...commandArguments,
@@ -51,12 +57,16 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         const filteredModules = expoModulesResolveResults.filter((module) =>
           includeModules.has(module.packageName)
         );
-
-        await generateModulesProviderAsync(filteredModules, {
-          platform,
-          targetPath: commandArguments.target,
-          entitlementPath: commandArguments.entitlement ?? null,
-        });
+        const watchedDirectories = JSON.parse(watchedDirectoriesSerialized);
+        await generateModulesProviderAsync(
+          filteredModules,
+          {
+            platform,
+            targetPath: commandArguments.target,
+            entitlementPath: commandArguments.entitlement ?? null,
+          },
+          watchedDirectories
+        );
       }
     );
 }
