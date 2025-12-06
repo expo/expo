@@ -23,4 +23,32 @@ export declare enum DeviceType {
      */
     TV = 4
 }
+/**
+ * Represents a rectangle describing a camera cutout.
+ * @platform android
+ * @platform ios
+ */
+export interface CameraRect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    radius?: number | null;
+}
+/**
+ * Represents the camera cutout information.
+ * @platform android
+ * @platform ios
+ */
+export interface CameraCutoutInfo {
+    hasCameraCutout: boolean;
+    cameraRects: CameraRect[];
+    safeInsets: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+    };
+    type?: 'hole' | 'pill' | 'wide' | 'unknown';
+}
 //# sourceMappingURL=Device.types.d.ts.map

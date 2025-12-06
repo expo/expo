@@ -316,6 +316,29 @@ export async function getPlatformFeaturesAsync() {
     return await ExpoDevice.getPlatformFeaturesAsync();
 }
 /**
+ * Gets the camera cutout information.
+ * This is useful for adjusting your UI to avoid overlapping with the camera cutout (notch) on devices that have one.
+ * You can also use this to create interactive UI elements around the cutout, similar to the Dynamic Island on iOS.
+ *
+ * @example
+ * ```js
+ * const info = await Device.getCameraCutoutInfoAsync();
+ * if (info.hasCameraCutout) {
+ *   console.log(info.cameraRects, info.safeInsets);
+ * }
+ * ```
+ * @platform android
+ * @platform ios
+ * @returns A promise that resolves to `CameraCutoutInfo` object containing the camera cutout information.
+ */
+export async function getCameraCutoutInfoAsync() {
+    if (!ExpoDevice.getCameraCutoutInfoAsync) {
+        throw new UnavailabilityError('expo-device', 'getCameraCutoutInfoAsync');
+    }
+    // The native module returns numbers in physical pixels (consistent with native impl).
+    return await ExpoDevice.getCameraCutoutInfoAsync();
+}
+/**
  * Tells if the device has a specific system feature.
  * @param feature The platform-specific name of the feature to check for on the device. You can get all available system features with `Device.getSystemFeatureAsync()`.
  * See [Android documentation](<https://developer.android.com/reference/android/content/pm/PackageManager#hasSystemFeature(java.lang.String)>) to view acceptable feature strings.
