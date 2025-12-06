@@ -138,6 +138,9 @@ export function getTestModules() {
     modules.push(TaskManagerTestScreen);
     // Audio tests are flaky in CI due to asynchronous fetching of resources
     modules.push(optionalRequire(() => require('./tests/Audio')));
+
+    // Same as Audio
+    modules.push(optionalRequire(() => require('./tests/Video')));
   }
 
   modules.push(optionalRequire(() => require('./tests/Cellular')));
