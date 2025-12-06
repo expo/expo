@@ -174,7 +174,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
-  private async exportServerRoute({
+  private async exportServerRouteAsync({
     contents,
     artifactFilename,
     files,
@@ -225,7 +225,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files.set(artifactFilename, fileData);
   }
 
-  private async exportMiddleware({
+  private async exportMiddlewareAsync({
     manifest,
     appDir,
     outputDir,
@@ -250,7 +250,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       path.join(outputDir, path.relative(appDir, middlewareFilePath.replace(/\.[tj]sx?$/, '.js')))
     );
 
-    await this.exportServerRoute({
+    await this.exportServerRouteAsync({
       contents,
       artifactFilename,
       files,
@@ -308,7 +308,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     }
 
-    await this.exportMiddleware({
+    await this.exportMiddlewareAsync({
       manifest,
       appDir,
       outputDir,
@@ -329,7 +329,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               path.join(outputDir, path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js')))
             );
 
-      await this.exportServerRoute({
+      await this.exportServerRouteAsync({
         contents,
         artifactFilename,
         files,

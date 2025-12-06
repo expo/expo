@@ -181,7 +181,7 @@ export function createRouteHandlerMiddleware(
           };
         }
 
-        // TODO(@kitten): Unify with MetroBundlerDevServer#exportMiddleware
+        // TODO(@kitten): Unify with MetroBundlerDevServer#exportMiddlewareAsync
         const resolvedFunctionPath = path.isAbsolute(route.file)
           ? route.file
           : path.join(options.appDir, route.file);
