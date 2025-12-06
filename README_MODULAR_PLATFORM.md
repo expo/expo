@@ -347,7 +347,7 @@ All documentation files are located in the repository root:
 ---
 
 **Last Updated:** 2025-12-06  
-**Repository:** Coatvision/expo  
+**Repository:** expo/expo  
 **Purpose:** Guide for LyxBot AI Platform and modular architecture
 
 Happy coding! 🚀
