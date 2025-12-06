@@ -8,8 +8,8 @@
 
 #import <jsi/jsi.h>
 #import <hermes/hermes.h>
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <ReactCommon/SchedulerPriority.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
@@ -46,13 +46,14 @@
   return self;
 }
 
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
-                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
 {
-  return [self initWithRuntime:runtime callInvoker:callInvoker runtimeScheduler:nullptr];
+  auto runtimeScheduler = expo::runtimeSchedulerFromRuntime(runtime);
+  auto callInvoker = std::make_shared<RuntimeSchedulerCallInvoker>(runtimeScheduler);
+  return [self initWithRuntime:runtime callInvoker:callInvoker runtimeScheduler:runtimeScheduler];
 }
 
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
                        runtimeScheduler:(std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeScheduler
 {
@@ -60,7 +61,7 @@
     // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
     // In this code flow, the runtime should be owned by something else like the RCTBridge.
     // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
-    _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
+    _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), &runtime);
     _jsCallInvoker = callInvoker;
     _runtimeScheduler = runtimeScheduler;
   }

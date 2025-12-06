@@ -11,6 +11,7 @@
 #import <ExpoModulesCore/NativeModule.h>
 #import <ExpoModulesCore/Swift.h>
 #import <ExpoModulesCore/EXRuntime.h>
+#import <ExpoModulesJSI/EXJSIUtils.h>
 
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
@@ -36,17 +37,6 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 
 @implementation EXJavaScriptRuntimeManager
 
-+ (std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeSchedulerFromRuntime:(jsi::Runtime *)jsiRuntime
-{
-  if (jsiRuntime == nullptr) {
-    return nullptr;
-  }
-  if (auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(*jsiRuntime)) {
-    return binding->getRuntimeScheduler();
-  }
-  return nullptr;
-}
-
 + (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
 {
   jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(bridge.runtime);
@@ -54,9 +44,9 @@ static NSString *modulesHostObjectPropertyName = @"modules";
     return nil;
   }
 
-  return [[EXRuntime alloc] initWithRuntime:jsiRuntime
+  return [[EXRuntime alloc] initWithRuntime:*jsiRuntime
                                 callInvoker:bridge.jsCallInvoker
-                           runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
+                           runtimeScheduler:expo::runtimeSchedulerFromRuntime(*jsiRuntime)];
 }
 
 #if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)

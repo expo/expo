@@ -2,7 +2,7 @@
 
 import React
 
-public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFactoryProtocol {
+public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
 
   @MainActor
