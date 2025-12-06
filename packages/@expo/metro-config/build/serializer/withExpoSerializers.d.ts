@@ -24,8 +24,8 @@ export type SerializerConfigOptions = {
     }) => Module[])[];
 };
 export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters | Promise<SerializerParameters>;
-export declare function withExpoSerializers(config: InputConfigT, options?: SerializerConfigOptions): InputConfigT;
-export declare function withSerializerPlugins(config: InputConfigT, processors: SerializerPlugin[], options?: SerializerConfigOptions): InputConfigT;
+export declare function withExpoSerializers<Config extends InputConfigT = InputConfigT>(config: Config, options?: SerializerConfigOptions): Config;
+export declare function withSerializerPlugins<Config extends InputConfigT = InputConfigT>(config: Config, processors: SerializerPlugin[], options?: SerializerConfigOptions): Config;
 export declare function createDefaultExportCustomSerializer(config: Partial<MetroConfig>, configOptions?: SerializerConfigOptions): Serializer;
 export declare function createSerializerFromSerialProcessors(config: MetroConfig, processors: (SerializerPlugin | undefined)[], originalSerializer: Serializer | null, options?: SerializerConfigOptions): Serializer;
 export { SerialAsset };

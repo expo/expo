@@ -47,10 +47,10 @@ export type SerializerPlugin = (
   ...props: SerializerParameters
 ) => SerializerParameters | Promise<SerializerParameters>;
 
-export function withExpoSerializers(
-  config: InputConfigT,
+export function withExpoSerializers<Config extends InputConfigT = InputConfigT>(
+  config: Config,
   options: SerializerConfigOptions = {}
-): InputConfigT {
+): Config {
   const processors: SerializerPlugin[] = [];
   processors.push(serverPreludeSerializerPlugin);
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
@@ -68,11 +68,11 @@ export function withExpoSerializers(
 
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
-export function withSerializerPlugins(
-  config: InputConfigT,
+export function withSerializerPlugins<Config extends InputConfigT = InputConfigT>(
+  config: Config,
   processors: SerializerPlugin[],
   options: SerializerConfigOptions = {}
-): InputConfigT {
+): Config {
   const expoSerializer = createSerializerFromSerialProcessors(
     config,
     processors,
