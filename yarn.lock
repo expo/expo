@@ -1585,10 +1585,9 @@
     zod "^3.25.76"
     zod-to-json-schema "^3.24.6"
 
-"@expo/metro@~54.1.0":
-  version "54.1.0"
-  resolved "https://registry.yarnpkg.com/@expo/metro/-/metro-54.1.0.tgz#27765ef2c342c39086a2f5c9f932a375dc2ccad3"
-  integrity sha512-MgdeRNT/LH0v1wcO0TZp9Qn8zEF0X2ACI0wliPtv5kXVbXWI+yK9GyrstwLAiTXlULKVIg3HVSCCvmLu0M3tnw==
+"@expo/metro@file:./tarballs/expo-metro-v54.1.0-canary.7b030f7.tgz", "@expo/metro@~54.1.0":
+  version "54.1.0-canary.7b030f7"
+  resolved "file:./tarballs/expo-metro-v54.1.0-canary.7b030f7.tgz#d9dad5c91cd79f473ddbf41b7b5dc1f0ed412306"
   dependencies:
     metro "0.83.2"
     metro-babel-transformer "0.83.2"
@@ -1597,9 +1596,11 @@
     metro-config "0.83.2"
     metro-core "0.83.2"
     metro-file-map "0.83.2"
+    metro-minify-terser "0.83.2"
     metro-resolver "0.83.2"
     metro-runtime "0.83.2"
     metro-source-map "0.83.2"
+    metro-symbolicate "0.83.2"
     metro-transform-plugins "0.83.2"
     metro-transform-worker "0.83.2"
 

@@ -20,7 +20,7 @@
     ]
   },
   "resolutions": {
-    "@expo/metro": "~54.1.0",
+    "@expo/metro": "file:./tarballs/expo-metro-v54.1.0-canary.7b030f7.tgz",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "@types/babel__core": "^7.20.5",
@@ -38,6 +38,7 @@
     "**/util": "~0.12.4"
   },
   "dependencies": {
+    "@expo/metro": "file:./tarballs/expo-metro-v54.1.0-canary.7b030f7.tgz",
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
     "patch-package": "^8.0.1",
