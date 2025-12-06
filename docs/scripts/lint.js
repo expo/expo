@@ -1,5 +1,12 @@
 import { spawnSync } from 'node:child_process';
 
+/**
+ * todo: this code is not working on windows:
+ * - ENOENT it doesnt calls eslint
+ * - status is null
+ * - stderr is undefined which fails stderr.byteLength
+ */
+
 const isDev = process.env.NODE_ENV !== 'production';
 const scriptArgs = process.argv.slice(2);
 
