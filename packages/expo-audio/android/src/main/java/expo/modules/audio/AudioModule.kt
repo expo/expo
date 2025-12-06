@@ -18,6 +18,7 @@ import androidx.media3.common.C.CONTENT_TYPE_HLS
 import androidx.media3.common.C.CONTENT_TYPE_OTHER
 import androidx.media3.common.C.CONTENT_TYPE_SS
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DataSource
@@ -1129,7 +1130,23 @@ class AudioModule : Module() {
 
   private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uriString ->
     val uri = uriString.toUri()
-    val mediaItem = MediaItem.fromUri(resolveSourceUri(uriString))
+    val mimeType = source.mimeType
+      ?.substringBefore(';')
+      ?.trim()
+      ?.takeIf { it.isNotEmpty() }
+      ?.let(MimeTypes::normalizeMimeType)
+      ?.let { type ->
+        when (type) {
+          "application/vnd.apple.mpegurl",
+          "audio/mpegurl",
+          "audio/x-mpegurl" -> MimeTypes.APPLICATION_M3U8
+          else -> type
+        }
+      }
+    val mediaItem = MediaItem.Builder()
+      .setUri(resolveSourceUri(uriString))
+      .setMimeType(mimeType)
+      .build()
 
     val preloadedBytes = AudioPreloadManager.get(uriString)
     val factory: DataSource.Factory = if (preloadedBytes != null) {
@@ -1198,14 +1215,12 @@ class AudioModule : Module() {
     audioManager.setSpeakerphoneOn(!playThroughEarpiece)
   }
 
-  private fun retrieveStreamType(uri: Uri): Int = Util.inferContentType(uri)
-
   private fun buildMediaSourceFactory(
     factory: DataSource.Factory,
     mediaItem: MediaItem
   ): MediaSource {
-    val uri = mediaItem.localConfiguration?.uri
-    return when (val type = uri?.let { retrieveStreamType(it) }) {
+    val config = requireNotNull(mediaItem.localConfiguration)
+    return when (val type = Util.inferContentTypeForUriAndMimeType(config.uri, config.mimeType)) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
