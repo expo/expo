@@ -149,16 +149,14 @@ const HomeIndex = () => {
           width: '100%',
         }}>
         <Link href="/zoom-dest" asChild>
-          <Link.Trigger>
-            <Link.AppleZoom>
-              <Pressable style={{ flex: 5, aspectRatio: width / height }}>
-                <Image
-                  source={require('../../../assets/frog.jpg')}
-                  resizeMode="cover"
-                  style={{ width: '100%', height: '100%' }}
-                />
-              </Pressable>
-            </Link.AppleZoom>
+          <Link.Trigger withAppleZoom>
+            <Pressable style={{ flex: 5, aspectRatio: width / height }}>
+              <Image
+                source={require('../../../assets/frog.jpg')}
+                resizeMode="cover"
+                style={{ width: '100%', height: '100%' }}
+              />
+            </Pressable>
           </Link.Trigger>
         </Link>
         <Link href="/zoom-dest" asChild>
@@ -185,16 +183,14 @@ const HomeIndex = () => {
       <Spacer />
       <Text>Zoom with preview:</Text>
       <Link href="/zoom-dest" asChild>
-        <Link.Trigger>
-          <Link.AppleZoom>
-            <Pressable style={{ flex: 1, width: '33%', aspectRatio: width / height }}>
-              <Image
-                source={require('../../../assets/frog.jpg')}
-                resizeMode="cover"
-                style={{ width: '100%', height: '100%' }}
-              />
-            </Pressable>
-          </Link.AppleZoom>
+        <Link.Trigger withAppleZoom>
+          <Pressable style={{ flex: 1, width: '33%', aspectRatio: width / height }}>
+            <Image
+              source={require('../../../assets/frog.jpg')}
+              resizeMode="cover"
+              style={{ width: '100%', height: '100%' }}
+            />
+          </Pressable>
         </Link.Trigger>
         <Link.Preview />
       </Link>
