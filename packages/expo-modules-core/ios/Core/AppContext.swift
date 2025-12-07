@@ -217,11 +217,9 @@ public final class AppContext: NSObject, @unchecked Sendable {
   public lazy var fileSystem: FileSystemManager? = FileSystemManager(appGroupSharedDirectories: self.config.appGroupSharedDirectories)
 
   /**
-   Provides access to the permissions manager from legacy module registry.
+   Provides access to the permissions manager.
    */
-  public var permissions: EXPermissionsInterface? {
-    return legacyModule(implementing: EXPermissionsInterface.self)
-  }
+  public lazy var permissions: EXPermissionsService? = EXPermissionsService()
 
   /**
    Provides access to the image loader from legacy module registry.

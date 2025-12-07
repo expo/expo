@@ -148,7 +148,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
-    permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
+    permissionsManager = appContext?.permissions
 
     sessionManager = CameraSessionManager(delegate: self)
     photoCapture = CameraPhotoCapture(delegate: self)
