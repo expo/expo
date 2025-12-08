@@ -13,7 +13,7 @@
     "lint-links": "remark -u validate-links ./pages",
     "lint-prose": "yarn vale --glob='!pages/versions/latest/**' .",
     "watch": "tsc --noEmit -w",
-    "test": "yarn generate-static-resources && yarn node --experimental-vm-modules $(yarn bin jest)",
+    "test": "yarn generate-static-resources && yarn node --experimental-vm-modules \"$(yarn bin jest)\"",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "copy-latest": "node ./scripts/copy-latest.js",
     "generate-llms": "node ./scripts/generate-llms/index.js",

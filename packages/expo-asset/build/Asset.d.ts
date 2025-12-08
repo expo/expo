@@ -105,5 +105,51 @@ export declare class Asset {
      * @return Returns a Promise which fulfills with an `Asset` instance.
      */
     downloadAsync(): Promise<this>;
+    /**
+     * Returns content of asset as `Uint8Array` from the given URL.
+     *
+     * @platform android
+     * @platform web
+     *
+     * @returns Returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+     */
+    bytes(): Promise<Uint8Array<ArrayBuffer>>;
+    /**
+     * Returns content of asset as `ArrayBuffer` from the given URL.
+     *
+     * @platform android
+     * @platform web
+     *
+     * @returns Returns a `Promise` that resolves with the contents of the asset as a `ArrayBuffer`.
+     */
+    arrayBuffer(): Promise<ArrayBuffer>;
+    /**
+     * A helper that wraps [`Asset.fromModule().bytes()`](#frommodulevirtualassetmodule) for convenience.
+     *
+     * @platform android
+     * @platform web
+     *
+     * @param moduleId Value of `require('path/to/file')` or external network URLs
+     * @returns Returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+     * @example
+     * ```ts
+     * const uint8Array = await Asset.content(require('./assets/snack-icon.png'));
+     * ```
+     */
+    static content(moduleId: number | string): Promise<Uint8Array<ArrayBuffer>>;
+    /**
+     * A helper that wraps [`Asset.fromModule().arrayBuffer()`](#frommodulevirtualassetmodule) for convenience.
+     *
+     * @platform android
+     * @platform web
+     *
+     * @param moduleId Value of `require('path/to/file')` or external network URLs
+     * @returns Returns a `Promise` that resolves with the contents of the asset as a `ArrayBuffer`.
+     * @example
+     * ```ts
+     * const arrayBuffer = await Asset.contentArrayBuffer(require('./assets/snack-icon.png'));
+     * ```
+     */
+    static contentArrayBuffer(moduleId: number | string): Promise<ArrayBuffer>;
 }
 //# sourceMappingURL=Asset.d.ts.map
