@@ -1,7 +1,6 @@
 package expo.modules.webbrowser
 
 import expo.modules.core.errors.CurrentActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.browser.customtabs.CustomTabColorSchemeParams
