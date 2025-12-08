@@ -48,6 +48,9 @@ appId: ${appId}
 jsEngine: graaljs
 ---
 - clearState
+- launchApp:
+    permissions:
+      all: allow
 `,
   ];
   if (confirmFirstRunPromptIOS) {

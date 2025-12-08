@@ -21,6 +21,7 @@ const TESTS = [
   // 'Audio',
   'FileSystem',
   'Fetch',
+  'MediaLibraryNext',
 ];
 
 module.exports = { TESTS };
