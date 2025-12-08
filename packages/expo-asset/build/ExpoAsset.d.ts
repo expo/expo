@@ -8,4 +8,8 @@
  * `md5Hash` parameter of this function is provided.
  */
 export declare function downloadAsync(url: string, md5Hash: string | null, type: string): Promise<string>;
+/**
+ * Returns content of asset as `Uint8Array` from the given URL.
+ */
+export declare function bytes(url: string): Promise<Uint8Array<ArrayBuffer>>;
 //# sourceMappingURL=ExpoAsset.d.ts.map

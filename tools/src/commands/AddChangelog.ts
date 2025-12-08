@@ -22,20 +22,23 @@ type ActionOptions = {
 
 async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptions> {
   const lengthValidator = (x: { length: number }) => x.length !== 0;
-  const stringValidator = {
-    filter: (s: string) => s.trim(),
-    validate: lengthValidator,
-  };
 
   const questions: QuestionCollection[] = [];
+
   if (options.packageNames.length === 0) {
     questions.push({
       type: 'input',
-      name: 'package',
-      message: 'What are the packages that you want to add a changelog entry?',
-      ...stringValidator,
-      transformer(input) {
-        return input.split(/\s+/g);
+      name: 'packageNames',
+      message:
+        'What are the packages that you want to add a changelog entry (separate by space or comma)?',
+      filter: (packageNames) =>
+        packageNames
+          .split(/[, ]/g)
+          .map((packageName) => packageName.trim())
+          .filter(Boolean),
+      validate: lengthValidator,
+      transformer(input, answers, { isFinal }) {
+        return isFinal ? input : input.split(/\s+/g);
       },
     });
   }
@@ -73,7 +76,8 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
       type: 'input',
       name: 'entry',
       message: 'What is the changelog message?',
-      ...stringValidator,
+      filter: (s: string) => s.trim(),
+      validate: lengthValidator,
     });
   }
 
