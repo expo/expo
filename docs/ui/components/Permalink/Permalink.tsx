@@ -40,9 +40,14 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
   );
 
   const isDeepNested = props.nestingLevel >= 3;
+  const scrollMarginClass =
+    props.additionalProps?.sidebarType === 'text' ? 'scroll-m-5' : 'scroll-m-8';
 
   return (
-    <PermalinkBase component={component} className="group flex gap-1">
+    <PermalinkBase
+      component={component}
+      className={mergeClasses('group flex gap-1', scrollMarginClass)}
+      id={heading.slug}>
       {hasMultipleChildren ? <span>{children}</span> : children}
       <Button
         theme="quaternary"
@@ -50,12 +55,10 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
           'relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default',
           'invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100',
           isDeepNested && 'size-[22px] min-w-[22px]',
-          props.additionalProps?.sidebarType === 'text' ? 'scroll-m-5' : 'scroll-m-8',
           props.additionalProps?.className
         )}
         href={'#' + heading.slug}
-        ref={heading.ref}
-        id={heading.slug}>
+        ref={heading.ref}>
         <PermalinkIcon className={mergeClasses('icon-sm shrink-0', isDeepNested && 'icon-xs')} />
       </Button>
     </PermalinkBase>

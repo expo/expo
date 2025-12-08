@@ -165,9 +165,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    Runs a code block on the JavaScript thread.
+   - Warning: This is deprecated, use `appContext.runtime.schedule` instead.
    */
-  public func executeOnJavaScriptThread(runBlock: @escaping (() -> Void)) {
-    reactBridge?.dispatchBlock(runBlock, queue: RCTJSThread)
+  @available(*, deprecated, renamed: "runtime.schedule")
+  public func executeOnJavaScriptThread(_ closure: @escaping () -> Void) {
+    _runtime?.schedule(closure)
   }
 
   // MARK: - Classes
@@ -217,25 +219,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
   public lazy var fileSystem: FileSystemManager? = FileSystemManager(appGroupSharedDirectories: self.config.appGroupSharedDirectories)
 
   /**
-   Provides access to the permissions manager from legacy module registry.
+   Provides access to the permissions manager.
    */
-  public var permissions: EXPermissionsInterface? {
-    return legacyModule(implementing: EXPermissionsInterface.self)
-  }
+  public lazy var permissions: EXPermissionsService? = EXPermissionsService()
 
   /**
    Provides access to the image loader from legacy module registry.
    */
   public var imageLoader: EXImageLoaderInterface? {
-    return legacyModule(implementing: EXImageLoaderInterface.self)
+    guard let bridge = reactBridge else {
+      // TODO: Find a way to do this without a bridge
+      log.warn("Unable to get the image loader because the bridge is not available.")
+      return nil
+    }
+    return ImageLoader(bridge: bridge)
   }
 
   /**
-   Provides access to the utilities from legacy module registry.
+   Provides access to the utilities (such as looking up for the current view controller).
    */
-  public var utilities: EXUtilitiesInterface? {
-    return legacyModule(implementing: EXUtilitiesInterface.self)
-  }
+  public var utilities: Utilities? = Utilities()
 
   /**
    Provides an event emitter that is compatible with the legacy interface.

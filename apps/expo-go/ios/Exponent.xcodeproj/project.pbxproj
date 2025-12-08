@@ -93,17 +93,11 @@
 		B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */; };
 		B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ADEE941F7DB4E000C88D2F /* EXBuildConstants.m */; };
 		B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */; };
-		B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */; };
 		B5D0D65C204F152D00DDFC99 /* EXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D65B204F152D00DDFC99 /* EXViewController.m */; };
 		B5D0D65F204F4BF500DDFC99 /* EXLog.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D65D204F4BF400DDFC99 /* EXLog.m */; };
 		B5D0D677204F4C0400DDFC99 /* EXFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66B204F4C0400DDFC99 /* EXFileDownloader.m */; };
 		B5D0D679204F4C0400DDFC99 /* EXReactAppManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.mm */; };
 		B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */; };
-		B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
-		B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B741D134F0700AA6436 /* kernel.ios.bundle */; };
-		B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5E628FD1E32F05A00629A55 /* kernel-manifest.json */; };
-		B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826C1F55B8F100FC7424 /* launch_background_image.png */; };
-		B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826D1F55B8F100FC7424 /* launch_icon.png */; };
 		B5FABDF020DD8E6800642528 /* EXAppLoaderRequestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */; };
 		B5FABDF220DD91D500642528 /* EXAppLoaderConfigurationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */; };
 		B5FABDF620DD926E00642528 /* EXFileDownloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */; };
@@ -337,7 +331,6 @@
 		B5ADEE941F7DB4E000C88D2F /* EXBuildConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBuildConstants.m; sourceTree = "<group>"; };
 		B5C2740A1EC24AE1003355CE /* EXKernelLinkingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelLinkingManager.h; sourceTree = "<group>"; };
 		B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelLinkingManager.m; sourceTree = "<group>"; };
-		B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXBuildConstants.plist; sourceTree = "<group>"; };
 		B5D0D65A204F152D00DDFC99 /* EXViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXViewController.h; sourceTree = "<group>"; };
 		B5D0D65B204F152D00DDFC99 /* EXViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXViewController.m; sourceTree = "<group>"; };
 		B5D0D65D204F4BF400DDFC99 /* EXLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLog.m; sourceTree = "<group>"; };
@@ -350,13 +343,6 @@
 		B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppExceptionHandler.m; sourceTree = "<group>"; };
 		B5D0D672204F4C0400DDFC99 /* EXReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppManager.h; sourceTree = "<group>"; };
 		B5E458EC204B59B300DC2B2E /* EXAppBrowserController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppBrowserController.h; sourceTree = "<group>"; };
-		B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Exponent-Prefix.pch"; sourceTree = "<group>"; };
-		B5E49B551D1346FA00AA6436 /* Exponent.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Exponent.entitlements; sourceTree = "<group>"; };
-		B5E49B561D1346FA00AA6436 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B5E49B741D134F0700AA6436 /* kernel.ios.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = kernel.ios.bundle; sourceTree = "<group>"; };
-		B5E628FD1E32F05A00629A55 /* kernel-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kernel-manifest.json"; sourceTree = "<group>"; };
-		B5EF826C1F55B8F100FC7424 /* launch_background_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_background_image.png; sourceTree = "<group>"; };
-		B5EF826D1F55B8F100FC7424 /* launch_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_icon.png; sourceTree = "<group>"; };
 		B5FABDEE20DD8E6800642528 /* EXAppLoaderRequestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderRequestExpectation.h; sourceTree = "<group>"; };
 		B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderRequestExpectation.m; sourceTree = "<group>"; };
 		B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderConfigurationTests.m; sourceTree = "<group>"; };
@@ -425,6 +411,14 @@
 			);
 			target = FCF6D36C25B34BC200808BF5 /* ExpoNotificationServiceExtension */;
 		};
+		B5E49B5A1D1346FA00AA6437 /* Exceptions for "Supporting" folder in "Expo Go" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				Exponent-Prefix.pch,
+			);
+			target = 78CEE2BF1ACD07D70095B124 /* Expo Go */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -434,6 +428,14 @@
 				79BD00FD2E4A254B0019F3FF /* Exceptions for "Notifications" folder in "ExpoNotificationServiceExtension" target */,
 			);
 			path = Notifications;
+			sourceTree = "<group>";
+		};
+		B5E49B521D1346FA00AA6436 /* Supporting */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B5E49B5A1D1346FA00AA6437 /* Exceptions for "Supporting" folder in "Expo Go" target */,
+			);
+			path = Supporting;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -914,21 +916,6 @@
 			path = ReactAppManager;
 			sourceTree = "<group>";
 		};
-		B5E49B521D1346FA00AA6436 /* Supporting */ = {
-			isa = PBXGroup;
-			children = (
-				B5EF826C1F55B8F100FC7424 /* launch_background_image.png */,
-				B5EF826D1F55B8F100FC7424 /* launch_icon.png */,
-				B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */,
-				B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */,
-				B5E49B551D1346FA00AA6436 /* Exponent.entitlements */,
-				B5E49B561D1346FA00AA6436 /* Info.plist */,
-				B5E628FD1E32F05A00629A55 /* kernel-manifest.json */,
-				B5E49B741D134F0700AA6436 /* kernel.ios.bundle */,
-			);
-			path = Supporting;
-			sourceTree = "<group>";
-		};
 		B5FB72701FF6DADB001C764B /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -1074,6 +1061,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				2D1A6CC92D9B38910007E94A /* Notifications */,
+				B5E49B521D1346FA00AA6436 /* Supporting */,
 			);
 			name = "Expo Go";
 			productName = Exponent;
@@ -1221,17 +1209,11 @@
 			files = (
 				B287BB2427DD909C008DA282 /* expo-root.pem in Resources */,
 				4A62800A2E69DBF000D916B0 /* AppIcon.icon in Resources */,
-				B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */,
 				CBB185782BE29F7A00E5067C /* PrivacyInfo.xcprivacy in Resources */,
 				F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */,
 				78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */,
 				84713BFB28584A0100E86B56 /* EXErrorView.xib in Resources */,
-				B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */,
-				B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */,
-				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
-				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
 				8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */,
-				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

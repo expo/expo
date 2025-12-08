@@ -131,7 +131,7 @@ class SwitchView(context: Context, appContext: AppContext) :
     }
 
     AutoSizingComposable(shadowNodeProxy) {
-      ThemedHybridSwitch(variant, checked, onCheckedChange, colors, Modifier.fromExpoModifiers(props.modifiers.value))
+      ThemedHybridSwitch(variant, checked, onCheckedChange, colors, Modifier.fromExpoModifiers(props.modifiers.value, this@Content))
     }
   }
 }

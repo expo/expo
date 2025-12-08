@@ -31,9 +31,6 @@ PODS:
     - ExpoModulesCore
   - EXConstants (18.0.9):
     - ExpoModulesCore
-  - EXImageLoader (6.0.0):
-    - ExpoModulesCore
-    - React-Core
   - EXJSONUtils (0.15.0)
   - EXJSONUtils/Tests (0.15.0)
   - EXManifests (1.0.8):
@@ -402,7 +399,6 @@ PODS:
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImageManipulator (14.0.7):
-    - EXImageLoader
     - ExpoModulesCore
     - SDWebImageWebPCoder
   - ExpoImagePicker (17.0.8):
@@ -2923,7 +2919,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - RNScreens (4.19.0-nightly-20251123-253b82666):
+  - RNScreens (4.19.0-nightly-20251203-1746a584e):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2945,9 +2941,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNScreens/common (= 4.19.0-nightly-20251123-253b82666)
+    - RNScreens/common (= 4.19.0-nightly-20251203-1746a584e)
     - Yoga
-  - RNScreens/common (4.19.0-nightly-20251123-253b82666):
+  - RNScreens/common (4.19.0-nightly-20251203-1746a584e):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3111,7 +3107,6 @@ DEPENDENCIES:
   - EASClient/Tests (from `../../../packages/expo-eas-client/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
-  - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
@@ -3326,9 +3321,6 @@ EXTERNAL SOURCES:
   EXConstants:
     inhibit_warnings: false
     :path: "../../../packages/expo-constants/ios"
-  EXImageLoader:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-image-loader/ios"
   EXJSONUtils:
     inhibit_warnings: false
     :path: "../../../packages/expo-json-utils/ios"
@@ -3749,15 +3741,14 @@ SPEC CHECKSUMS:
   EASClient: de38c20c1dd9af7ff435afdc8b2c9b7c20d46767
   EXApplication: a9d1c46d473d36f61302a9a81db2379441f3f094
   EXConstants: 59d46d25b89f88cc38291a56dbce4d550758f72d
-  EXImageLoader: e501c001bc40b8326605e82e6e80363c80fe06b5
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
   Expo: 9d61298dd8bbd625b62dcd082485fe1692084242
-  expo-dev-client: b0363ce1f16a248d7c9b67ceaee2dbee058c1e05
-  expo-dev-launcher: 35e9018d1b3ccb29565aea2a529a7e35dd7e238e
-  expo-dev-menu: 41ccfd1657e6943953d16628fceb3b97703717ed
-  expo-dev-menu-interface: 600df12ea01efecdd822daaf13cc0ac091775533
+  expo-dev-client: b8c16c699a35787e1ac38c6d44ef7552fe3f0334
+  expo-dev-launcher: 93ab1128548f72825f3fe290ff1c1690114e8def
+  expo-dev-menu: 184ccee9963a02fc75367e8ef95bd718bc703d75
+  expo-dev-menu-interface: 30d9aa2fbca275a1335ca7e076273dac1d42d40a
   ExpoAgeRange: 5203a372b2f4ef4e5510acf025373d52de60f8df
   ExpoAppIntegrity: 6efc2990e5b2859bfe3595f3d289a96c12c1dd77
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
@@ -3784,7 +3775,7 @@ SPEC CHECKSUMS:
   ExpoGlassEffect: 02d9577dfe05a6b6c9856fd71514120e96792052
   ExpoHaptics: b48d913e7e5f23816c6f130e525c9a6501b160b5
   ExpoImage: 0fc185a4a4e462fedfe877ae66204a7c541dfee0
-  ExpoImageManipulator: dbf5b8fc805b55463811cb3da96ab60c532faae8
+  ExpoImageManipulator: d6ebf77518412c40d9837d72bf043fd95edec643
   ExpoImagePicker: bd0a5c81d7734548f6908a480609257e85d19ea8
   ExpoInsights: fa66f3e1c5b612e08641eae42140a9d42af385ed
   ExpoKeepAwake: 3f5e3ac53627849174f3603271df8e08f174ed4a
@@ -3922,7 +3913,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 6fdd63f5d1e0f21faf4cc8674957c52958a7efae
   RNGestureHandler: 72efe2ab9d5d1b1d25b96f3ad3d174992f3bad87
   RNReanimated: a8df76e5dd2315dfd8711d7937ec3e0e09800c74
-  RNScreens: a783ad69553533bf2d7f034fa21777150773b486
+  RNScreens: 23072e49d81e27f08b9451f63ac81fa33237c48f
   RNSVG: 595d31b6cd45e92424c6b623bd93e1e9b6aa8b79
   RNWorklets: c181ebc224265a35743abc490e54a5cf66eb2add
   SDWebImage: f29024626962457f3470184232766516dee8dfea
@@ -3933,6 +3924,6 @@ SPEC CHECKSUMS:
   Yoga: 67d1653c9d28e838e7682451b47bed2d2b3fca9d
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 07ca240dc3c89dc461c221729e3f0a73e14e9ad8
+PODFILE CHECKSUM: 293433137ea62a126033703d9237390c4ab6c393
 
 COCOAPODS: 1.16.2
