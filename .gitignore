@@ -12,6 +12,18 @@ node_modules
 npm-debug.log
 yarn-error.log
 
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+
 # Ruby
 .direnv
 
@@ -104,6 +116,7 @@ shellAppWorkspaces
 /client-builds
 
 # Expo web env
+.env
 .env.local
 .env.development.local
 .env.test.local
