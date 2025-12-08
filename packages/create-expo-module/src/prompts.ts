@@ -23,9 +23,6 @@ function sanitizeNamespaceFromSlug(slug: string): string {
   return namespace;
 }
 
-// Java/Android package validation: lowercase letters and digits, segments separated by dots, each starting with a letter.
-const ANDROID_PACKAGE_REGEX = /^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$/;
-
 function getInitialName(customTargetPath?: string | null): string {
   const targetBasename = customTargetPath && path.basename(customTargetPath);
   return targetBasename && validateNpmPackage(targetBasename).validForNewPackages
@@ -99,21 +96,6 @@ export async function getSubstitutionDataPrompts(
       message: 'Do you want the module to include a native View component?',
       initial: false, // todo revert to true
     },
-    {
-      type: 'text',
-      name: 'package',
-      message: 'What is the Android package name?',
-      initial: () => {
-        const namespace = sanitizeNamespaceFromSlug(slug);
-        return `expo.modules.${namespace}`;
-      },
-      validate: (input) => {
-        if (!input) return 'The Android package name cannot be empty';
-        return ANDROID_PACKAGE_REGEX.test(input)
-          ? true
-          : 'Must be like com.example.name (lowercase, dot-separated, each segment starts with a letter)';
-      },
-    },
   ];
 
   if (includeGhConfig) {
@@ -183,21 +165,6 @@ export async function getLocalSubstitutionDataPrompts(
       name: 'includeView',
       message: 'Do you want the module to include a native View component?',
       initial: false, // todo revert to true
-    },
-    {
-      type: 'text',
-      name: 'package',
-      message: 'What is the Android package name?',
-      initial: () => {
-        const namespace = sanitizeNamespaceFromSlug(slug);
-        return `expo.modules.${namespace}`;
-      },
-      validate: (input) => {
-        if (!input) return 'The Android package name cannot be empty';
-        return ANDROID_PACKAGE_REGEX.test(input)
-          ? true
-          : 'Must be like com.example.name (lowercase, dot-separated, each segment starts with a letter)';
-      },
     },
   ];
 }

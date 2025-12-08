@@ -47,6 +47,18 @@ const DOCS_URL = 'https://docs.expo.dev/modules';
 
 const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
 
+function deriveBaseIdentifierFromSlug(slug: string): string {
+  // Take the last segment after scope if present
+  const base = slug.replace(/^@/, '').split('/').pop() || slug;
+  // Remove non-alphanumeric, strip reserved prefixes, lowercase
+  let namespace = base.replace(/[^a-zA-Z0-9]/g, '').replace(/^(expo|reactnative)/i, '').toLowerCase();
+  if (!/^[a-z]/.test(namespace)) {
+    namespace = `m${namespace}`;
+  }
+  if (!namespace) namespace = 'module';
+  return `expo.modules.${namespace}`;
+}
+
 async function getCorrectLocalDirectory(targetOrSlug: string) {
   let packageJsonPath: string | null = null;
   for (let dir = CWD; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
@@ -384,11 +396,9 @@ async function askForSubstitutionDataAsync(
   isLocal = false,
   includeGhConfig = false
 ): Promise<SubstitutionData | LocalSubstitutionData> {
-  const getPromptQueries = isLocal
-    ? getLocalSubstitutionDataPrompts
-    : (slugArg: string) => getSubstitutionDataPrompts(slugArg, includeGhConfig);
-
-  const promptQueries = await getPromptQueries(slug);
+  const promptQueries = isLocal
+    ? await getLocalSubstitutionDataPrompts(slug)
+    : await getSubstitutionDataPrompts(slug, includeGhConfig);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
@@ -398,14 +408,16 @@ async function askForSubstitutionDataAsync(
   const {
     name,
     description,
-    package: projectPackage,
     authorName,
     authorEmail,
     authorUrl,
     repo,
     platform,
     includeView,
-  } = await prompts(promptQueries, { onCancel });
+  } = await prompts(promptQueries, { onCancel});
+
+  // Derive reverse-DNS base identifier (Android package / iOS bundle id base) from slug
+  const projectPackage = deriveBaseIdentifierFromSlug(slug);
 
   const selectedPlatforms: string[] = Array.isArray(platform) ? platform : platform ? [platform] : [];
   const ios = selectedPlatforms.includes('ios');
