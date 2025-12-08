@@ -256,10 +256,6 @@ export class GLView extends React.Component<GLViewWebProps> {
     return await GLView.takeSnapshotAsync(gl, options);
   }
 
-  public async startARSessionAsync(): Promise<void> {
-    throw new UnavailabilityError('GLView', 'startARSessionAsync');
-  }
-
   public async createCameraTextureAsync(): Promise<void> {
     throw new UnavailabilityError('GLView', 'createCameraTextureAsync');
   }
