@@ -35,6 +35,7 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix dynamic route params becoming query params in getPathFromState. ([#41488](https://github.com/expo/expo/pull/41488) by [@erickreutz](https://github.com/erickreutz))
 - [web] Fix incorrect import path for native-tabs CSS module by [@kimchi-developer](https://github.com/kimchi-developer)) ([#41479](https://github.com/expo/expo/pull/41479) by [@kimchi-developer](https://github.com/kimchi-developer))
 - Fix dynamic updates of headless tabs ([#40352](https://github.com/expo/expo/pull/40352) by [@Ubax](https://github.com/Ubax))
 - activate animation on back navigation, when initial animation was disabled using internal param ([#41141](https://github.com/expo/expo/pull/41141) by [@Ubax](https://github.com/Ubax))
