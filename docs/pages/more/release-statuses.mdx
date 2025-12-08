@@ -1,13 +1,13 @@
 ---
 title: Release statuses
-description: Learn about early access, preview, and stable release statuses and how they affect feature stability.
+description: Learn about alpha, beta, and stable release statuses and how they affect feature stability.
 ---
 
 Expo uses different release statuses to indicate the stability and readiness of its tools and services. Understanding these statuses can help you make informed decisions about which features and versions to use in your projects.
 
-## Early access
+## Alpha
 
-Early access features are available for early testing but may have significant limitations. These features are in the earliest stage of development and are shared with the community to gather feedback and shape their direction.
+Alpha features are available for early testing but may have significant limitations. These features are in the earliest stage of development and are shared with the community to gather feedback and shape their direction.
 
 **What to expect:**
 
@@ -16,11 +16,11 @@ Early access features are available for early testing but may have significant l
 - May have known bugs or performance issues
 - Not recommended for production apps
 
-Early access features are opportunities to influence the future of Expo. We encourage you to test these features in development environments and [provide feedback](https://expo.dev/contact) to help us refine them before they reach a wider audience.
+Alpha features are opportunities to influence the future of Expo. We encourage you to test these features in development environments and [provide feedback](https://expo.dev/contact) to help us refine them before they reach a wider audience.
 
-## Preview
+## Beta
 
-Preview features are feature-complete and undergoing final validation. These features have core functionality implemented and are being prepared for stable release.
+Beta features are feature-complete and undergoing final validation. These features have core functionality implemented and are being prepared for stable release.
 
 **What to expect:**
 
@@ -29,7 +29,7 @@ Preview features are feature-complete and undergoing final validation. These fea
 - Breaking changes are possible but unlikely unless critical issues are found
 - Can be used in production with thorough testing
 
-Preview features are ready for real-world testing. While we don't expect major changes, we recommend testing thoroughly if you plan to use them in production. [Your feedback](https://expo.dev/contact) during this stage helps us catch any remaining issues before the stable release.
+Beta features are ready for real-world testing. While we don't expect major changes, we recommend testing thoroughly if you plan to use them in production. [Your feedback](https://expo.dev/contact) during this stage helps us catch any remaining issues before the stable release.
 
 ## Stable
 
@@ -43,3 +43,15 @@ Features without any status badge are considered stable and are fully released f
 - Documentation and examples available
 
 Stable features are ready for use in any application. You can rely on them following semantic versioning principles, meaning breaking changes will only occur in major version updates.
+
+## Deprecated
+
+Deprecated features are those that are no longer recommended for use and will be removed in future releases. We provide deprecation warnings to give developers time to transition away from these features.
+
+**What to expect:**
+
+- Warnings in documentation and code when using deprecated features
+- No new features or improvements will be made
+- Removal in future major releases
+
+When you encounter a deprecated feature, we recommend planning to migrate to the suggested alternatives as soon as possible to ensure your projects remain up-to-date and maintainable.
