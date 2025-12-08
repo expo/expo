@@ -2,12 +2,8 @@
 
 #import <ReactCommon/RCTTurboModule.h>
 #import <ExpoModulesCore/ExpoBridgeModule.h>
+#import <ExpoModulesCore/EXRuntime.h>
 #import <ExpoModulesCore/Swift.h>
-
-// The runtime executor is included as of React Native 0.74 in bridgeless mode.
-#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
-#import <ReactCommon/RCTRuntimeExecutor.h>
-#endif // React Native >=0.74
 
 @implementation ExpoBridgeModule
 
@@ -39,23 +35,28 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  // As of React Native 0.74 with the New Architecture enabled,
-  // it's actually an instance of `RCTBridgeProxy` that provides backwards compatibility.
-  // Also, hold on with initializing the runtime until `setRuntimeExecutor` is called.
   _bridge = bridge;
-  _appContext.reactBridge = bridge;
-
-#if !__has_include(<ReactCommon/RCTRuntimeExecutor.h>)
-  _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:bridge];
-#endif // React Native <0.74
+  [self maybeSetupAppContext];
 }
 
-#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
-- (void)setRuntimeExecutor:(RCTRuntimeExecutor *)runtimeExecutor
+- (void)maybeSetupAppContext
 {
-  _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge withExecutor:runtimeExecutor];
+  if (!_bridge) {
+    return;
+  }
+  EXRuntime *runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge];
+
+  // If `global.expo` is defined, the app context has already been initialized from `ExpoReactNativeFactory`.
+  // The factory was introduced in SDK 55 and requires migration in bare workflow projects.
+  // We keep this as an alternative way during the transitional period.
+  if (runtime && ![[runtime global] hasProperty:@"expo"]) {
+    NSLog(@"Expo is being initialized from the deprecated ExpoBridgeModule, make sure to migrate to ExpoReactNativeFactory in your project");
+
+    _appContext.reactBridge = _bridge;
+    _appContext._runtime = runtime;
+    [_appContext useModulesProvider:@"ExpoModulesProvider"];
+  }
 }
-#endif // React Native >=0.74
 
 /**
  This should be called inside `[EXNativeModulesProxy setBridge:]`.
@@ -65,10 +66,6 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 {
   _appContext.legacyModulesProxy = moduleProxy;
   _appContext.legacyModuleRegistry = moduleRegistry;
-
-  // We need to register all the modules after the legacy module registry is set
-  // otherwise legacy modules (e.g. permissions) won't be available in OnCreate { }
-  [_appContext useModulesProvider:@"ExpoModulesProvider"];
 }
 
 /**
@@ -78,9 +75,8 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installModules)
 {
   if (_bridge && !_appContext._runtime) {
-    // TODO: Keep this condition until we remove the other way of installing modules.
-    // See `setBridge` method above.
-    _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge];
+    // If `setBridge:` was called but the runtime was not found, we try again here.
+    [self maybeSetupAppContext];
   }
   return nil;
 }
