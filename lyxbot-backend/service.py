@@ -2,7 +2,7 @@
 Service layer for OpenAI API interactions
 """
 from openai import OpenAI
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from models import ChatMessage
 from config import settings
 
@@ -27,7 +27,7 @@ class LyxBotService:
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None
-    ) -> tuple[str, int]:
+    ) -> Tuple[str, int]:
         """
         Send a chat message and get AI response
         

@@ -2,7 +2,7 @@
 API routes for LyxBot
 """
 from fastapi import APIRouter, HTTPException, status
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict
 
 from models import (
@@ -70,7 +70,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
         return ChatResponse(
             message=response_message,
             model=request.model or settings.default_model,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
             tokens_used=tokens_used
         )
         
@@ -153,7 +153,7 @@ async def health_check() -> HealthResponse:
     return HealthResponse(
         status="healthy",
         version="1.0.0",
-        timestamp=datetime.utcnow().isoformat() + "Z",
+        timestamp=datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
         openai_configured=lyxbot_service.is_configured()
     )
 
