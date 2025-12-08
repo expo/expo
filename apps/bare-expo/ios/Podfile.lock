@@ -598,7 +598,7 @@ PODS:
   - EXTaskManager (14.0.9):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (29.0.14):
+  - EXUpdates (29.0.15):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -626,7 +626,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - EXUpdates/Tests (29.0.14):
+  - EXUpdates/Tests (29.0.15):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -3651,7 +3651,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 88b116cd378d9609c776c0903fe4070fca461588
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
   EXTaskManager: cdd7aa16ffc6b4b68e065ffb3795f26ad4fa6695
-  EXUpdates: f1b61b404648c4dd1d9cda6aa67ab4e5b2a8ab9b
+  EXUpdates: 2cf71deb2a9c69a4e95f2e891cd105bca955c1c8
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   FBLazyVector: e95a291ad2dadb88e42b06e0c5fb8262de53ec12
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172
