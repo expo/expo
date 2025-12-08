@@ -8,6 +8,14 @@ The runnable projects are located in the `__e2e__` directory. We use scripts in 
 
 To run the E2E tests, navigate to `packages/@expo/cli` and run `yarn test:e2e <NAME_OF_RUNNABLE_PROJECT>`, or `yarn test:playwright <NAME_OF_RUNNABLE_PROJECT>`
 
+### Maestro E2E Tests
+
+To run the tests for native navigation, in the `apps/router-e2e` directory, run:
+
+```bash
+maestro test __e2e__/native-navigation/__tests__/
+```
+
 ### Native
 
 - Run `yarn prebuild` to create the ios and android directories using the latest `expo-template-bare-minimum` template.

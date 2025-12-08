@@ -34,8 +34,13 @@ export default function Index() {
             onValueChange={setShouldPerformHeavyComputation}
           />
         </View>
+        <Text
+          testID="face-id"
+          style={{ color: '#fff', fontSize: 32, fontWeight: 'bold', marginTop: 16 }}>
+          Face {face}
+        </Text>
         <Link href="/404" style={{ color: '#fff', fontSize: 18, marginTop: 16 }}>
-          Try and go to 404
+          Go to 404
         </Link>
       </ScrollView>
     </>

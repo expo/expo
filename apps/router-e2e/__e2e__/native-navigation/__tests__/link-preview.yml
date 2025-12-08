@@ -1,0 +1,14 @@
+appId: com.expo.routere2e
+name: Link preview
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://faces
+- runFlow: close-warning.yml
+- assertVisible: "Face Gallery"
+- longPressOn:
+    id: "link-face-0"
+- assertVisible: "Face 0"
+- tapOn: "Face 0"
+- assertVisible: "systemBlue"
+- assertVisible:
+    id: "BackButton"

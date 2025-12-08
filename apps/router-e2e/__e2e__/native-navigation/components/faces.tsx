@@ -1,6 +1,6 @@
 import { Link, Color } from 'expo-router';
 import { useMemo } from 'react';
-import { Platform, Pressable, useColorScheme, View } from 'react-native';
+import { Platform, Pressable, Text, useColorScheme, View } from 'react-native';
 
 const defaultColors = [
   { color: '#1e3a8a', name: '1e3a8a' },
@@ -66,14 +66,52 @@ export function Faces(props: { numberOfFaces: number }) {
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
       {faces.map((face) => (
-        <Link key={face.id} href={`/faces/${face.id}`} asChild unstable_transition="zoom">
-          <Link.Trigger>
-            <Pressable style={{ borderRadius: 16, overflow: 'hidden' }}>
-              <View style={{ backgroundColor: face.color, width: 100, height: 100 }} />
-            </Pressable>
-          </Link.Trigger>
-          <Link.Preview />
-        </Link>
+        <View key={face.id} testID={`link-face-${face.id}`}>
+          <Link href={`/faces/${face.id}`} asChild>
+            <Link.Trigger>
+              <Pressable style={{ borderRadius: 16, overflow: 'hidden' }}>
+                <View
+                  style={{
+                    backgroundColor: face.color,
+                    width: 100,
+                    height: 100,
+                  }}
+                />
+              </Pressable>
+            </Link.Trigger>
+            <Link.Preview />
+          </Link>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+export function StaticFaces(props: { numberOfFaces: number; size?: number }) {
+  const colors = useFaceColors();
+  const faces = useMemo(
+    () =>
+      Array.from({ length: props.numberOfFaces }, (_, i) => ({
+        id: i,
+        color: colors[i % colors.length].color,
+      })),
+    [props.numberOfFaces, colors]
+  );
+  return (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+      {faces.map((face) => (
+        <View
+          key={face.id}
+          style={{
+            backgroundColor: face.color,
+            width: props.size ?? 100,
+            height: props.size ?? 100,
+            borderRadius: 16,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text>F{face.id}</Text>
+        </View>
       ))}
     </View>
   );

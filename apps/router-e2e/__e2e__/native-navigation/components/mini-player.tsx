@@ -52,11 +52,13 @@ export function MiniPlayer({ isPlaying, setIsPlaying }: MiniPlayerProps) {
             </Text>
           </View>
         </View>
-        <Pressable onPress={() => setIsPlaying(!isPlaying)}>
+        <Pressable
+          testID={isPlaying ? 'pause-button' : 'play-button'}
+          onPress={() => setIsPlaying(!isPlaying)}>
           <FontAwesomeIcons name={isPlaying ? 'pause' : 'play'} size={18} color={textColor} />
         </Pressable>
         {placement === 'regular' && (
-          <Pressable onPress={() => console.log('forward pressed')}>
+          <Pressable testID="forward-button" onPress={() => console.log('forward pressed')}>
             <FontAwesomeIcons name="forward" size={24} color={textColor} />
           </Pressable>
         )}

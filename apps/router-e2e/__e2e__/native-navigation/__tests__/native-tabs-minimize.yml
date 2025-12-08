@@ -1,0 +1,65 @@
+appId: com.expo.routere2e
+name: Native tabs minimize behavior
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://
+- runFlow: close-warning.yml
+# Base tabs
+- assertVisible: "Index screen"
+- runFlow: assert-all-tabs-visible.yml
+- runFlow: assert-accessory-visible.yml
+# Ensuring that accessory is in expanded state
+- assertVisible:
+    id: "forward-button"
+# Changing play state
+- assertVisible:
+    id: "play-button"
+- tapOn:
+    id: "play-button"
+- assertNotVisible:
+    id: "play-button"
+- assertVisible:
+    id: "pause-button"
+
+# Scroll down to minimize
+- scrollUntilVisible:
+    element:
+      text: "Item 25"
+    direction: "DOWN"
+- runFlow: assert-accessory-visible.yml
+- assertVisible:
+    id: "pause-button"
+# Inline state
+- assertNotVisible:
+    id: "forward-button"
+- assertVisible: "applewatch.side.right"
+- assertNotVisible: "lock.applewatch"
+- assertNotVisible: "faces"
+- assertNotVisible: "figure.disc.sports"
+- assertNotVisible: "Dynamic"
+# Scroll up to maximize
+- scrollUntilVisible:
+    element:
+      text: "Index screen"
+    direction: "UP"
+# ensuring that the scroll view is fully scrolled to top
+# we need to scroll down and up again. Otherwise the bottom accessory state might persist
+- swipe:
+    start: 50%,60%
+    end: 50%,40%
+    duration: 200
+- swipe:
+    start: 50%,10%
+    end: 50%,60%
+    duration: 200
+- assertVisible: "Index screen"
+- assertVisible:
+    id: "pause-button"
+- assertVisible:
+    id: "forward-button"
+- assertVisible: "applewatch.side.right"
+- assertVisible: "Index tab"
+- assertVisible: "lock.applewatch"
+- assertVisible: "faces"
+- assertVisible: "figure.disc.sports"
+- assertVisible: "Dynamic"

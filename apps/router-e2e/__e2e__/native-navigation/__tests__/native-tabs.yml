@@ -1,0 +1,28 @@
+appId: com.expo.routere2e
+name: Native tabs
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://
+- runFlow: close-warning.yml
+- assertVisible: "Index screen"
+- runFlow: assert-all-tabs-visible.yml
+- runFlow: assert-accessory-visible.yml
+
+# Navigate to Faces tab
+- tapOn: "lock.applewatch"
+- assertVisible: "Face Gallery"
+
+# Open Face Detail
+- tapOn:
+    id: "link-face-0"
+- assertVisible: "systemBlue"
+
+# Navigate back to Index tab
+- tapOn: "applewatch.side.right"
+- assertVisible: "Index screen"
+
+# Navigate back to Faces tab
+- tapOn:
+    id: "lock.applewatch"
+- assertVisible: "systemBlue"
+

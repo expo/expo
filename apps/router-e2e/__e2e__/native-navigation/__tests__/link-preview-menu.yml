@@ -1,0 +1,30 @@
+appId: com.expo.routere2e
+name: Link preview menu
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://
+- runFlow: close-warning.yml
+- assertVisible: "Index screen"
+
+- scrollUntilVisible:
+    element:
+      id: "index-link-menu"
+    direction: "DOWN"
+- assertVisible: "Last menu action pressed: none"
+- longPressOn:
+    id: "index-link-menu"
+- assertVisible: "0.circle"
+- assertVisible: "Action 1"
+- assertVisible: "1.circle"
+- assertVisible: "Action 2"
+- assertVisible: "2.circle"
+- assertVisible: "Action 3"
+- assertNotVisible: "3.circle"
+- assertVisible: "Submenu"
+- tapOn: "Submenu"
+- assertVisible: "3.circle"
+- tapOn: "Action 4"
+- assertVisible: "Last menu action pressed: Action 4"
+
+
+
