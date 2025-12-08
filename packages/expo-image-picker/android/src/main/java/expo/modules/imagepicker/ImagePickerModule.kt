@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.OperationCanceledException
@@ -17,6 +16,7 @@ import expo.modules.imagepicker.contracts.CropImageContractOptions
 import expo.modules.imagepicker.contracts.ImageLibraryContract
 import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.imagepicker.contracts.ImagePickerContractResult
+import expo.modules.imagepicker.contracts.MediaList
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
 import expo.modules.interfaces.permissions.PermissionsResponseListener
@@ -302,6 +302,6 @@ class ImagePickerModule : Module() {
  * Simple data structure to hold the data that has to be preserved after the Activity is destroyed.
  */
 internal data class PendingMediaPickingResult(
-  val data: List<Pair<MediaType, Uri>>,
+  val data: MediaList,
   val options: ImagePickerOptions
 )
