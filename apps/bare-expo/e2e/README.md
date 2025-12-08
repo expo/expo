@@ -9,6 +9,9 @@
 - use the following command to generate the Android emulator:
 
 ```bash
+# Install the system image:
+sdkmanager "system-images;android-36;google_apis;x86_64"
+# Create the emulator:
 avdmanager create avd --force -n pixel_7_pro --package 'system-images;android-36;google_apis;x86_64' --device pixel_7_pro
 ```
 
