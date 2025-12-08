@@ -118,21 +118,21 @@ describe('exports middleware', () => {
     });
 
     it('has expected files', async () => {
-      const files = findProjectFiles(server.outputDir);
+      const files = findProjectFiles(path.join(server.outputDir, 'server'));
 
-      // The wrapper should not be included as a route.
-      expect(files).not.toContain('+html.html');
-      expect(files).not.toContain('_layout.html');
+      // In SSR mode, no HTML files are pre-rendered - they're rendered at request time
+      const serverHtmlFiles = files.filter((f) => f.endsWith('.html'));
+      expect(serverHtmlFiles.length).toEqual(0);
 
-      // In server mode, HTML files are in the server directory
-      expect(files).toContain('server/_sitemap.html');
-      expect(files).toContain('server/+not-found.html');
-      expect(files).toContain('server/index.html');
+      // SSR-specific files should exist
+      expect(files).toContain('_expo/server/render.js');
+      expect(files).toContain('_expo/assets.json');
+      expect(files).toContain('_expo/routes.json');
 
       // Middleware should be bundled and referenced in routes.json
-      expect(files).toContain('server/_expo/functions/+middleware.js');
+      expect(files).toContain('_expo/functions/+middleware.js');
       const routesJson = JSON.parse(
-        fs.readFileSync(path.join(server.outputDir, 'server/_expo/routes.json'), 'utf8')
+        fs.readFileSync(path.join(server.outputDir, 'server', '_expo/routes.json'), 'utf8')
       );
       expect(routesJson.middleware).toBeDefined();
       expect(routesJson.middleware.file).toBe('_expo/functions/+middleware.js');
