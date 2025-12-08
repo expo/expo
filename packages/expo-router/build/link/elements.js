@@ -45,6 +45,7 @@ const HrefPreview_1 = require("./preview/HrefPreview");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
 const native_1 = require("./preview/native");
 const Slot_1 = require("../ui/Slot");
+const link_apple_zoom_1 = require("./zoom/link-apple-zoom");
 /**
  * This component renders a context menu action for a link.
  * It should only be used as a child of `Link.Menu` or `LinkMenu`.
@@ -161,7 +162,7 @@ function LinkPreview(props) {
  *
  * @platform ios
  */
-function LinkTrigger(props) {
+function LinkTrigger({ withAppleZoom, ...props }) {
     if (react_1.default.Children.count(props.children) > 1 || !(0, react_1.isValidElement)(props.children)) {
         // If onPress is passed, this means that Link passed props to this component.
         // We can assume that asChild is used, so we throw an error, because link will not work in this case.
@@ -170,6 +171,10 @@ function LinkTrigger(props) {
         }
         return props.children;
     }
-    return <Slot_1.Slot {...props}/>;
+    const content = <Slot_1.Slot {...props}/>;
+    if (withAppleZoom) {
+        return <link_apple_zoom_1.LinkAppleZoom>{content}</link_apple_zoom_1.LinkAppleZoom>;
+    }
+    return content;
 }
 //# sourceMappingURL=elements.js.map
