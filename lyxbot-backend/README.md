@@ -2,6 +2,8 @@
 
 A modern FastAPI-based backend for the LyxBot AI platform, providing seamless integration with OpenAI's GPT models for the Expo/React Native frontend.
 
+> **Security Note:** This implementation uses FastAPI 0.109.1, which includes a security patch for CVE-2024-24762 (Content-Type Header ReDoS vulnerability).
+
 ## 🌟 Features
 
 - **FastAPI Framework**: High-performance, modern Python web framework
