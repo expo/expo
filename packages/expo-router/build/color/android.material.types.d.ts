@@ -2,11 +2,11 @@ import type { ColorValue } from 'react-native';
 /**
  * [Android Static Material Colors](https://m3.material.io/styles/color/static/baseline)
  *
- * You can find out more about color roles @link https://m3.material.io/styles/color/roles
+ * You can find out more about color roles [here](https://m3.material.io/styles/color/roles)
  *
- * You can read about about difference between dynamic and static colors @link https://m3.material.io/styles/color/choosing-a-scheme
+ * You can read about about difference between dynamic and static colors [here](https://m3.material.io/styles/color/choosing-a-scheme)
  *
- * For detailed definition of each color role, see @link https://github.com/material-components/material-components-android/blob/master/docs/theming/Color.md
+ * For detailed definition of each color role, see [material components color documentation](https://github.com/material-components/material-components-android/blob/master/docs/theming/Color.md)
  */
 export interface AndroidStaticMaterialColorType {
     /**
