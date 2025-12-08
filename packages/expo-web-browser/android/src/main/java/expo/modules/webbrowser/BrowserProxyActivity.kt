@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
+import java.lang.ref.WeakReference
 
 /**
  * Trampoline Activity that serves as a proxy to launch Custom Tabs in a separate task.
@@ -14,6 +15,8 @@ class BrowserProxyActivity : Activity() {
   companion object {
     const val EXTRA_URL = "expo.modules.webbrowser.EXTRA_URL"
     const val EXTRA_CUSTOM_TABS_INTENT_DATA = "expo.modules.webbrowser.EXTRA_CUSTOM_TABS_INTENT_DATA"
+
+    var instance: WeakReference<BrowserProxyActivity> = WeakReference(null)
   }
 
   private var hasLaunchedCustomTab = false
@@ -45,6 +48,8 @@ class BrowserProxyActivity : Activity() {
     customTabsIntentData.`package`?.let { customTabsIntent.intent.`package` = it }
 
     customTabsIntent.launchUrl(this, url.toUri())
+
+    instance = WeakReference(this)
     hasLaunchedCustomTab = true
   }
 
