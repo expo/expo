@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix dynamic route params becoming query params in getPathFromState. ([#41488](https://github.com/expo/expo/pull/41488) by [@erickreutz](https://github.com/erickreutz))
+
 ### 💡 Others
 
 ## 6.0.19 — 2025-12-12
