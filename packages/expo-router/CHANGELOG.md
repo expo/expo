@@ -31,6 +31,7 @@
 - add hidden prop to native tabs ([#41375](https://github.com/expo/expo/pull/41375) by [@Ubax](https://github.com/Ubax))
 - [iOS] add withAppleZoom prop to Link.Trigger ([#41371](https://github.com/expo/expo/pull/41371) by [@Ubax](https://github.com/Ubax))
 - [iOS] prevent dismissal for zoom transition, when gestureEnabled is false ([#41356](https://github.com/expo/expo/pull/41356) by [@Ubax](https://github.com/Ubax))
+- [iOS] add Link.AppleZoomTarget ([#41352](https://github.com/expo/expo/pull/41352) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

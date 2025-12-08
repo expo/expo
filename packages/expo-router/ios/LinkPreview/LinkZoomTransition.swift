@@ -6,7 +6,7 @@ class LinkSourceInfo {
   let alignment: CGRect?
   weak var view: UIView?
 
-  init(alignment: CGRect?, view: UIView) {
+  init(view: UIView, alignment: CGRect?) {
     self.alignment = alignment
     self.view = view
   }
@@ -68,9 +68,52 @@ class LinkZoomTransitionsSourceRepository {
     defer { lock.unlock() }
     if let source = sources[identifier], let view = source.view, !identifier.isEmpty {
       sources[identifier] = LinkSourceInfo(
+        view: view,
         alignment: alignment,
-        view: view
       )
+    }
+  }
+}
+
+class LinkZoomTransitionsAlignmentViewRepository {
+  private var alignmentViews: [String: WeakUIView] = [:]
+  private let lock = NSLock()
+
+  init() {}
+
+  func addIfNotExists(
+    identifier: String,
+    alignmentView: UIView
+  ) {
+    lock.lock()
+    defer { lock.unlock() }
+    if alignmentViews[identifier] == nil && !identifier.isEmpty {
+      alignmentViews[identifier] = WeakUIView(view: alignmentView)
+    }
+  }
+
+  func removeIfSame(
+    identifier: String,
+    alignmentView: UIView
+  ) {
+    lock.lock()
+    defer { lock.unlock() }
+    if let existing = alignmentViews[identifier], existing.view === alignmentView {
+      alignmentViews.removeValue(forKey: identifier)
+    }
+  }
+
+  func get(identifier: String) -> UIView? {
+    lock.lock()
+    defer { lock.unlock() }
+    return alignmentViews[identifier]?.view
+  }
+
+  private class WeakUIView {
+    weak var view: UIView?
+
+    init(view: UIView) {
+      self.view = view
     }
   }
 }
@@ -84,9 +127,9 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
 
   var alignment: CGRect? {
     didSet {
-      // Update alignment info in the repository
+      // Update alignment info in the sourceRepository
       if child != nil {
-        repository?.updateAlignment(
+        sourceRepository?.updateAlignment(
           identifier: identifier,
           alignment: alignment
         )
@@ -99,18 +142,18 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
       guard identifier != oldValue else { return }
       if let child {
         if oldValue.isEmpty {
-          repository?.registerSource(
+          sourceRepository?.registerSource(
             identifier: identifier,
-            source: LinkSourceInfo(alignment: alignment, view: child)
+            source: LinkSourceInfo(view: child, alignment: alignment)
           )
         } else {
-          repository?.updateIdentifier(
+          sourceRepository?.updateIdentifier(
             oldIdentifier: oldValue,
             newIdentifier: identifier
           )
         }
       } else {
-        repository?.unregisterSource(
+        sourceRepository?.unregisterSource(
           identifier: oldValue
         )
       }
@@ -128,9 +171,9 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
       return
     }
     child = childComponentView
-    repository?.registerSource(
+    sourceRepository?.registerSource(
       identifier: identifier,
-      source: LinkSourceInfo(alignment: alignment, view: childComponentView)
+      source: LinkSourceInfo(view: childComponentView, alignment: alignment)
     )
     super.mountChildComponentView(childComponentView, index: index)
   }
@@ -138,8 +181,60 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
   override func unmountChildComponentView(_ child: UIView, index: Int) {
     if child == self.child {
       self.child = nil
-      repository?.unregisterSource(
+      sourceRepository?.unregisterSource(
         identifier: identifier
+      )
+    }
+    super.unmountChildComponentView(child, index: index)
+  }
+}
+
+class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
+  private var child: UIView?
+
+  var identifier: String = "" {
+    didSet {
+      if oldValue != identifier && !oldValue.isEmpty {
+        print(
+          "[expo-router] LinkZoomTransitionAlignmentRectDetector does not support changing the identifier after it has been set."
+        )
+        return
+      }
+      if let child = child {
+        alignmentViewRepository?.addIfNotExists(
+          identifier: identifier,
+          alignmentView: child
+        )
+      }
+    }
+  }
+
+  override func mountChildComponentView(
+    _ childComponentView: UIView,
+    index: Int
+  ) {
+    if child != nil {
+      print(
+        "[expo-router] LinkZoomTransitionAlignmentRectDetector can only have one child view."
+      )
+      return
+    }
+    if !identifier.isEmpty {
+      alignmentViewRepository?.addIfNotExists(
+        identifier: identifier,
+        alignmentView: childComponentView
+      )
+    }
+    self.child = childComponentView
+    super.mountChildComponentView(childComponentView, index: index)
+  }
+
+  override func unmountChildComponentView(_ child: UIView, index: Int) {
+    if child == self.child {
+      self.child = nil
+      alignmentViewRepository?.removeIfSame(
+        identifier: identifier,
+        alignmentView: child
       )
     }
     super.unmountChildComponentView(child, index: index)
@@ -169,16 +264,24 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
       if #available(iOS 18.0, *) {
         let options = UIViewController.Transition.ZoomOptions()
 
-        options.alignmentRectProvider = { _ in
-          let sourceInfo = self.repository?.getSource(
+        options.alignmentRectProvider = { context in
+          let sourceInfo = self.sourceRepository?.getSource(
             identifier: self.zoomTransitionSourceIdentifier)
+          let alignmentView = self.alignmentViewRepository?.get(
+            identifier: self.zoomTransitionSourceIdentifier)
+          if let alignmentView = alignmentView {
+            return alignmentView.convert(
+              alignmentView.bounds,
+              to: context.zoomedViewController.view
+            )
+          }
           return sourceInfo?.alignment
         }
         options.interactiveDismissShouldBegin = { _ in
           !self.isPreventingInteractiveDismissal
         }
         controller.preferredTransition = .zoom(options: options) { _ in
-          let sourceInfo = self.repository?.getSource(
+          let sourceInfo = self.sourceRepository?.getSource(
             identifier: self.zoomTransitionSourceIdentifier)
           var view: UIView? = sourceInfo?.view
           if let linkPreviewView = view as? NativeLinkPreviewView {
@@ -217,11 +320,19 @@ class LinkZoomExpoView: ExpoView {
       as? LinkPreviewNativeModule
   }
 
-  var repository: LinkZoomTransitionsSourceRepository? {
+  var sourceRepository: LinkZoomTransitionsSourceRepository? {
     guard let module else {
       print("[expo-router] LinkPreviewNativeModule not loaded")
       return nil
     }
     return module.zoomSourceRepository
+  }
+
+  var alignmentViewRepository: LinkZoomTransitionsAlignmentViewRepository? {
+    guard let module else {
+      print("[expo-router] LinkPreviewNativeModule not loaded")
+      return nil
+    }
+    return module.zoomAlignmentViewRepository
   }
 }

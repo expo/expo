@@ -5,6 +5,7 @@ const ExpoLink_1 = require("./ExpoLink");
 const elements_1 = require("./elements");
 const href_1 = require("./href");
 const link_apple_zoom_1 = require("./zoom/link-apple-zoom");
+const link_apple_zoom_target_1 = require("./zoom/link-apple-zoom-target");
 exports.Link = Object.assign(
 /**
  * Component that renders a link using [`href`](#href) to another route.
@@ -42,6 +43,7 @@ function Link(props) {
     Preview: elements_1.LinkPreview,
     MenuAction: elements_1.LinkMenuAction,
     AppleZoom: link_apple_zoom_1.LinkAppleZoom,
+    AppleZoomTarget: link_apple_zoom_target_1.LinkAppleZoomTarget,
 });
 var Redirect_1 = require("./Redirect");
 Object.defineProperty(exports, "Redirect", { enumerable: true, get: function () { return Redirect_1.Redirect; } });
