@@ -33,6 +33,7 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix incorrect import path for native-tabs CSS module by [@kimchi-developer](https://github.com/kimchi-developer))
 - Fix dynamic updates of headless tabs ([#40352](https://github.com/expo/expo/pull/40352) by [@Ubax](https://github.com/Ubax))
 - activate animation on back navigation, when initial animation was disabled using internal param ([#41141](https://github.com/expo/expo/pull/41141) by [@Ubax](https://github.com/Ubax))
 - prevent `onPreviewTapped` from firing when `<Link.Preview />` is not configured ([#41160](https://github.com/expo/expo/pull/41160) by [@Ubax](https://github.com/Ubax))
