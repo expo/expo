@@ -102,6 +102,9 @@ public class LinkPreviewNativeModule: Module {
           view.alignment = nil
         }
       }
+      Prop("animateAspectRatioChange") { (view: LinkZoomTransitionSource, value: Bool?) in
+        view.animateAspectRatioChange = value ?? false
+      }
     }
 
     View(LinkZoomTransitionEnabler.self) {

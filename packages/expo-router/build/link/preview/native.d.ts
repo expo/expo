@@ -50,10 +50,12 @@ interface LinkSourceAlignmentRect {
     width: number;
     height: number;
 }
-export declare function LinkZoomTransitionSource(props: PropsWithChildren<{
+interface LinkZoomTransitionSourceProps extends PropsWithChildren {
     identifier: string;
     alignment?: LinkSourceAlignmentRect;
-}>): import("react").JSX.Element | null;
+    animateAspectRatioChange?: boolean;
+}
+export declare function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps): import("react").JSX.Element | null;
 export declare function LinkZoomTransitionAlignmentRectDetector(props: {
     identifier: string;
     children: React.ReactNode;
