@@ -4197,11 +4197,6 @@
   dependencies:
     "@babel/types" "^7.28.2"
 
-"@types/base64-js@^1.2.5":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@types/base64-js/-/base64-js-1.3.2.tgz#9e94abe3c521f4127f2e6a8b537b63bbc04d0956"
-  integrity sha512-Q2Xn2/vQHRGLRXhQ5+BSLwhHkR3JVflxVKywH0Q6fVoAiUE8fFYL2pE5/l2ZiOiBDfA8qUqRnSxln4G/NFz1Sg==
-
 "@types/better-sqlite3@^7.6.6":
   version "7.6.6"
   resolved "https://registry.yarnpkg.com/@types/better-sqlite3/-/better-sqlite3-7.6.6.tgz#d4c21613df0518be58d56ae4d58576121a6f56fa"
@@ -5810,7 +5805,7 @@ base64-arraybuffer@^1.0.2:
   resolved "https://registry.yarnpkg.com/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz#1c37589a7c4b0746e34bd1feb951da2df01c1bdc"
   integrity sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==
 
-base64-js@^1.2.3, base64-js@^1.3.0, base64-js@^1.3.1, base64-js@^1.5.1:
+base64-js@^1.2.3, base64-js@^1.3.1, base64-js@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
