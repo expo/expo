@@ -94,7 +94,9 @@ struct DevServersView: View {
 
       if showingURLInput {
         TextField("http://10.0.0.25:8081", text: $urlText)
+        #if !os(macOS)
           .autocapitalization(.none)
+        #endif
           .disableAutocorrection(true)
           .padding(.horizontal, 16)
           .padding(.vertical, 12)

@@ -53,8 +53,13 @@ static SEL whenInUseAuthorizationSelector;
       break;
     }
   }
-  
-  return @{ @"status": @(status), @"scope": @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none") };
+  NSString* scope = @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none");
+  return @{ @"status": @(status),
+            @"ios": @{
+              @"scope": scope
+            },
+            @"scope": scope, // Incorrect according to https://docs.expo.dev/versions/latest/sdk/location/#locationpermissionresponse but long-present. TODO remove for SDK 56 or later
+         };
 }
 
 @end

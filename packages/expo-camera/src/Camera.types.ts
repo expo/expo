@@ -645,4 +645,7 @@ export declare class CameraNativeModule extends NativeModule<CameraEvents> {
   readonly getMicrophonePermissionsAsync: () => Promise<PermissionResponse>;
   readonly requestMicrophonePermissionsAsync: () => Promise<PermissionResponse>;
   readonly getAvailableVideoCodecsAsync: () => Promise<VideoCodec[]>;
+
+  readonly Type: Record<keyof CameraType, CameraNativeProps['facing']>;
+  readonly FlashMode: Record<keyof FlashMode, CameraNativeProps['flashMode']>;
 }

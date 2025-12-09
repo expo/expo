@@ -33,7 +33,7 @@ export interface DefaultConfigOptions {
 }
 export declare function createStableModuleIdFactory(root: string): (path: string, context?: {
     platform: string;
-    environment?: string;
+    environment?: string | null;
 }) => number;
 export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins }?: DefaultConfigOptions): InputConfigT;
 /** Use to access the Expo Metro transformer path */

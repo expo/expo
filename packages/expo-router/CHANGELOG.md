@@ -23,14 +23,28 @@
 - emit tabPress on tab change ([#41159](https://github.com/expo/expo/pull/41159) by [@Ubax](https://github.com/Ubax))
 - add disableAutomaticContentInsets prop to NativeTabs.Trigger ([#41293](https://github.com/expo/expo/pull/41293) by [@Ubax](https://github.com/Ubax))
 - add safe area view to native tabs on Android ([#41295](https://github.com/expo/expo/pull/41295) by [@Ubax](https://github.com/Ubax))
+- [iOS] add bottom accessory support ([#41239](https://github.com/expo/expo/pull/41239) by [@Ubax](https://github.com/Ubax))
+- apply react-navigation background color to NativeTabsView ([#41068](https://github.com/expo/expo/pull/41068) by [@Ubax](https://github.com/Ubax))
+- [iOS] bottom toolbar ([#41106](https://github.com/expo/expo/pull/41106) by [@Ubax](https://github.com/Ubax))
+- [iOS] rename displayInline and displayAsPalette in Link.Menu ([#41317](https://github.com/expo/expo/pull/41317) by [@Ubax](https://github.com/Ubax))
+- [iOS] add zoom transition support ([#41083](https://github.com/expo/expo/pull/41083) by [@Ubax](https://github.com/Ubax))
+- add hidden prop to native tabs ([#41375](https://github.com/expo/expo/pull/41375) by [@Ubax](https://github.com/Ubax))
+- [iOS] add withAppleZoom prop to Link.Trigger ([#41371](https://github.com/expo/expo/pull/41371) by [@Ubax](https://github.com/Ubax))
+- [iOS] prevent dismissal for zoom transition, when gestureEnabled is false ([#41356](https://github.com/expo/expo/pull/41356) by [@Ubax](https://github.com/Ubax))
+- [iOS] add Link.AppleZoomTarget ([#41352](https://github.com/expo/expo/pull/41352) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
+- [web] Fix dynamic route params becoming query params in getPathFromState. ([#41488](https://github.com/expo/expo/pull/41488) by [@erickreutz](https://github.com/erickreutz))
+- [web] Fix incorrect import path for native-tabs CSS module by [@kimchi-developer](https://github.com/kimchi-developer)) ([#41479](https://github.com/expo/expo/pull/41479) by [@kimchi-developer](https://github.com/kimchi-developer))
 - Fix dynamic updates of headless tabs ([#40352](https://github.com/expo/expo/pull/40352) by [@Ubax](https://github.com/Ubax))
 - activate animation on back navigation, when initial animation was disabled using internal param ([#41141](https://github.com/expo/expo/pull/41141) by [@Ubax](https://github.com/Ubax))
 - prevent `onPreviewTapped` from firing when `<Link.Preview />` is not configured ([#41160](https://github.com/expo/expo/pull/41160) by [@Ubax](https://github.com/Ubax))
 - fix Sitemap insets on Android ([#41280](https://github.com/expo/expo/pull/41280) by [@Ubax](https://github.com/Ubax))
 - Fix search params types inference for routes without route params ([#41301](https://github.com/expo/expo/pull/41301) by [@AmauryLiet](https://github.com/AmauryLiet))
+- fix preloaded routes navigation ([#41420](https://github.com/expo/expo/pull/41420) by [@Ubax](https://github.com/Ubax))
+- fix disabling animation on appear ([#41419](https://github.com/expo/expo/pull/41419) by [@Ubax](https://github.com/Ubax))
+- fix setting dynamic options using NativeTabs.Trigger ([#41481](https://github.com/expo/expo/pull/41481) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
@@ -56,6 +70,28 @@
 - add removeParams function ([#41140](https://github.com/expo/expo/pull/41140) by [@Ubax](https://github.com/Ubax))
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
 - extract children utils to common file ([#41238](https://github.com/expo/expo/pull/41238) by [@Ubax](https://github.com/Ubax))
+- [iOS] replace LinkPreviewNativeNavigationObjC with direct swift calls ([#41331](https://github.com/expo/expo/pull/41331) by [@Ubax](https://github.com/Ubax))
+- add utility function parseUrlUsingCustomBase ([#41506](https://github.com/expo/expo/pull/41506) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.17 - 2025-12-05
+
+### 💡 Others
+
+- Bump and tighten `react-server-dom-webpack` peer range ([#41379](https://github.com/expo/expo/pull/41379) by [@kitten](https://github.com/kitten))
+
+## 6.0.16 - 2025-12-04
+
+### 🐛 Bug fixes
+
+- Replace internal base URL for parsing pathnames with `file:` ([#41338](https://github.com/expo/expo/pull/41338) by [@kitten](https://github.com/kitten))
+
+## 6.0.15 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.14 - 2025-10-28
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.13 - 2025-10-20
 

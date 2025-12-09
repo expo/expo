@@ -144,6 +144,7 @@ it('when no options are passed, default ones are used', () => {
     badgeTextColor: undefined,
     nativeProps: undefined,
     disableAutomaticContentInsets: undefined,
+    contentStyle: undefined,
   } as NativeTabOptions);
 });
 

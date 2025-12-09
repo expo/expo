@@ -179,7 +179,7 @@ class Button(context: Context, appContext: AppContext) :
         colors,
         disabled ?: false,
         onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
-        modifier = Modifier.fromExpoModifiers(props.modifiers.value),
+        modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope = this@Content),
         shape = shapeFromShapeRecord(props.shape.value)
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

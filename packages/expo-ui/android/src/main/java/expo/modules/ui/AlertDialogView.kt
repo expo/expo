@@ -46,7 +46,7 @@ class AlertDialogView(context: Context, appContext: AppContext) :
     }
 
     AlertDialog(
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value),
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
       confirmButton = {
         confirmButtonText?.let {
           TextButton(onClick = { onConfirmPressed.invoke(AlertDialogButtonPressedEvent()) }) {

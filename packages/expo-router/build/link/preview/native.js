@@ -4,7 +4,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeLinkPreviewAction = NativeLinkPreviewAction;
 exports.NativeLinkPreview = NativeLinkPreview;
 exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
+exports.LinkZoomTransitionEnabler = LinkZoomTransitionEnabler;
+exports.LinkZoomTransitionSource = LinkZoomTransitionSource;
+exports.LinkZoomTransitionAlignmentRectDetector = LinkZoomTransitionAlignmentRectDetector;
 const expo_1 = require("expo");
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && !react_native_1.Platform.isTV && global.RN$Bridgeless === true;
 const LinkPreviewNativeActionView = areNativeViewsAvailable
@@ -41,6 +45,35 @@ function NativeLinkPreviewContent(props) {
         },
     ]);
     return <NativeLinkPreviewContentView {...props} style={style}/>;
+}
+// #endregion
+// #region Zoom transition
+const LinkZoomTransitionEnablerNativeView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
+    : null;
+function LinkZoomTransitionEnabler(props) {
+    if (!LinkZoomTransitionEnablerNativeView) {
+        return null;
+    }
+    return (<LinkZoomTransitionEnablerNativeView {...props} disableForceFlatten style={{ display: 'contents' }}/>);
+}
+const LinkZoomTransitionSourceNativeView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
+    : null;
+function LinkZoomTransitionSource(props) {
+    if (!LinkZoomTransitionSourceNativeView) {
+        return null;
+    }
+    return (<LinkZoomTransitionSourceNativeView {...props} disableForceFlatten style={{ display: 'contents' }}/>);
+}
+const LinkZoomTransitionAlignmentRectDetectorNative = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionAlignmentRectDetector')
+    : react_1.Fragment;
+function LinkZoomTransitionAlignmentRectDetector(props) {
+    if (!LinkZoomTransitionAlignmentRectDetectorNative) {
+        return null;
+    }
+    return (<LinkZoomTransitionAlignmentRectDetectorNative {...props} disableForceFlatten style={{ display: 'contents' }}/>);
 }
 // #endregion
 //# sourceMappingURL=native.js.map

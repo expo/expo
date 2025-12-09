@@ -11,15 +11,36 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added the new ExpoModulesJSI to the forceStaticLinking default values ([#41298](https://github.com/expo/expo/pull/41298) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fix passing exclude options. ([#40014](https://github.com/expo/expo/pull/40014) by [@jakex7](https://github.com/jakex7))
-- Sort results from file discovery to keep fingerprint stable ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 - Fix [#40601](https://github.com/expo/expo/pull/40601) assuming case-insensitive path for default derived podspec path in `react-native-config` resolution ([#40894](https://github.com/expo/expo/pull/40894) by [@kitten](https://github.com/kitten)) ([#40931](https://github.com/expo/expo/pull/40931) by [@kitten](https://github.com/kitten))
-- Fix [#40651](https://github.com/expo/expo/pull/40651) causing already read versions to be lost depending on traversal order ([#40912](https://github.com/expo/expo/pull/40912) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
 - [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
+- [Android] Align `expo-gradle-plugin`'s CLI command to align with iOS invocation of `expo-modules-autolinking` ([#41264](https://github.com/expo/expo/pull/41264) by [@kitten](https://github.com/kitten))
+
+## 3.0.23 - 2025-12-04
+
+### 💡 Others
+
+- Fallback to resolving modules from list of duplicates, if a search path module is invalid or fails to resolve ([#41309](https://github.com/expo/expo/pull/41309) by [@kitten](https://github.com/kitten))
+
+## 3.0.22 - 2025-11-17
+
+### 🐛 Bug fixes
+
+- Fix [#40651](https://github.com/expo/expo/pull/40651) causing already read versions to be lost depending on traversal order ([#40912](https://github.com/expo/expo/pull/40912) by [@kitten](https://github.com/kitten)) ([#40651](https://github.com/expo/expo/pull/40651), [#40912](https://github.com/expo/expo/pull/40912) by [@kitten](https://github.com/kitten))
+
+## 3.0.20 - 2025-11-03
+
+### 🐛 Bug fixes
+
+- Sort results from file discovery to keep fingerprint stable ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
 - Refactor test suite and file discovery implementation to drop `glob` ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 - Improve recursive dependency resolution performance ([#40651](https://github.com/expo/expo/pull/40651) by [@kitten](https://github.com/kitten))
 
