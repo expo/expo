@@ -1,0 +1,13 @@
+# Tests whether the fullscreen opens, and if appropriate events were sent
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+- openLink: bareexpo://components/video/video-view-surface-type
+
+- tapOn: "e2e setup"
+- runFlow:
+    file: ../_nested-flows/viewshot-comparison.yaml
+    env:
+      screenshotOutputPath: 'expo-video/screenshots/surface-type-1'
+      testID: 'surface-type-test'
+      mode: 'keep-originals'

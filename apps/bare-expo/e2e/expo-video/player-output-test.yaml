@@ -1,0 +1,49 @@
+# Tests whether the fullscreen opens, and if appropriate events were sent
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+- openLink: bareexpo://components/video/player_prop
+
+- tapOn:
+    text: 'Open'
+    optional: true
+- tapOn: "Prepare for e2e"
+- tapOn: "Move player 1 to the next video view"
+- runFlow:
+      file: ../_nested-flows/viewshot-comparison.yaml
+      env:
+          screenshotOutputPath: 'expo-video/screenshots/player-output-1'
+          testID: 'view-player-output'
+          mode: 'keep-originals'
+- tapOn:
+    text: "Move player 2 to the next video view"
+    repeat: 2
+- tapOn: "Move player 1 to the next video view"
+- runFlow:
+      file: ../_nested-flows/viewshot-comparison.yaml
+      env:
+        screenshotOutputPath: 'expo-video/screenshots/player-output-2'
+        testID: 'view-player-output'
+        mode: 'keep-originals'
+- tapOn: "Move player 1 to first video view"
+- tapOn: "Move player 2 to first video view"
+- runFlow:
+    file: ../_nested-flows/viewshot-comparison.yaml
+    env:
+      screenshotOutputPath: 'expo-video/screenshots/player-output-3'
+      testID: 'view-player-output'
+      mode: 'keep-originals'
+- tapOn:
+    id: switch-1
+- tapOn:
+    text: "Move player 2 to the next video view"
+    repeat: 3
+- tapOn:
+    text: "Move player 1 to the next video view"
+    repeat: 2
+- runFlow:
+    file: ../_nested-flows/viewshot-comparison.yaml
+    env:
+      screenshotOutputPath: 'expo-video/screenshots/player-output-4'
+      testID: 'view-player-output'
+      mode: 'keep-originals'

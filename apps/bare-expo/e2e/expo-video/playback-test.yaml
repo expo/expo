@@ -32,7 +32,7 @@ jsEngine: graaljs
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:
-      screenshotOutputPath: 'expo-video'
+      screenshotOutputPath: 'expo-video/screenshots/playback-test-1'
       testID: 'video-view'
       mode: 'keep-originals'
 

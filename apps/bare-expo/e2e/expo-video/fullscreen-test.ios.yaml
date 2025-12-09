@@ -1,0 +1,19 @@
+# Tests whether the fullscreen opens, and if appropriate events were sent
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+- openLink: bareexpo://components/video/fullscreen
+- tapOn:
+    text: 'Open'
+    optional: true
+
+- tapOn: "Enter Fullscreen"
+- assertVisible: "Video"
+# Not testing with a view shot, since the fullscreen view is displayed in a native view, which we can't wrap in the E2EViewShotContainer
+- assertNotVisible: "Enter Fullscreen"
+- tapOn:
+    point: "11%,10%"
+    repeat: 2
+- assertVisible: "Enter Fullscreen"
+- assertVisible: '0 = onFullscreenEnter'
+- assertVisible: '1 = onFullscreenExit'

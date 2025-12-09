@@ -1,0 +1,20 @@
+# Tests whether the fullscreen opens, and if appropriate events were sent
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+- openLink: bareexpo://components/video/fullscreen
+- tapOn: "Enter Fullscreen"
+# Dismiss the android system fullscreen instruction popup that shows up on the first launch
+- tapOn:
+    text: "Got it"
+    optional: true
+- assertVisible:
+    id: "dev.expo.payments:id/exo_content_frame"
+- assertNotVisible: "Enter Fullscreen"
+- tapOn:
+    point: "50%,50%"
+- tapOn:
+    id: "dev.expo.payments:id/exo_fullscreen"
+- assertVisible: "Enter Fullscreen"
+- assertVisible: "0 = onFullscreenEnter"
+- assertVisible: "1 = onFullscreenExit"
