@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `experiments.assetPrefix` config option to serve static assets from a CDN while keeping the app URL unchanged. ([#41520](https://github.com/expo/expo/pull/41520) by [@jtomaszewski](https://github.com/jtomaszewski))
 - Add `toString()` to image assets on web (excluding RSC) for easier asset resolution. ([#40895](https://github.com/expo/expo/pull/40895) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
 

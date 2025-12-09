@@ -111,6 +111,57 @@ it('serializes development export static html with correct baseUrl and script sr
   );
 });
 
+it('uses assetPrefix for static assets when provided', () => {
+  const res = serializeHtmlWithAssets({
+    resources: [
+      {
+        filename: '_expo/static/js/web/entry-abc123.js',
+        originFilename: 'entry.js',
+        type: 'js',
+        metadata: { isAsync: false, requires: [], modulePaths: [] },
+        source: '',
+      },
+      {
+        filename: '_expo/static/css/styles-def456.css',
+        originFilename: 'styles.css',
+        type: 'css',
+        metadata: { hmrId: 'styles' },
+        source: '.test { color: red; }',
+      },
+    ],
+    template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
+    baseUrl: '/app',
+    assetPrefix: 'https://cdn.example.com',
+    isExporting: true,
+  });
+  expect(res).toMatchSnapshot();
+  // JS should use assetPrefix
+  expect(res).toMatch(/<script src="https:\/\/cdn\.example\.com\/_expo\/static\/js\/web\/entry-abc123\.js" defer>/);
+  // CSS should use assetPrefix
+  expect(res).toMatch(/<link rel="stylesheet" href="https:\/\/cdn\.example\.com\/_expo\/static\/css\/styles-def456\.css">/);
+});
+
+it('falls back to baseUrl when assetPrefix is not provided', () => {
+  const res = serializeHtmlWithAssets({
+    resources: [
+      {
+        filename: '_expo/static/js/web/entry-abc123.js',
+        originFilename: 'entry.js',
+        type: 'js',
+        metadata: { isAsync: false, requires: [], modulePaths: [] },
+        source: '',
+      },
+    ],
+    template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
+    baseUrl: '/app',
+    // No assetPrefix provided
+    isExporting: true,
+  });
+  expect(res).toMatchSnapshot();
+  // JS should use baseUrl
+  expect(res).toMatch(/<script src="\/app\/_expo\/static\/js\/web\/entry-abc123\.js" defer>/);
+});
+
 it('sorts assets based on requires tree', () => {
   const assets: SerialAsset[] = [
     {

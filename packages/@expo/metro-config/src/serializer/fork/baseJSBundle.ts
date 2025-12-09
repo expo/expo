@@ -85,6 +85,21 @@ export function getBaseUrlOption(
   return '/';
 }
 
+export function getAssetPrefixOption(
+  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
+  options: Pick<ExpoSerializerOptions, 'serializerOptions'>
+): string | null {
+  const assetPrefix = graph.transformOptions?.customTransformOptions?.assetPrefix;
+  if (typeof assetPrefix === 'string') {
+    // This tells us that the value came over a URL and may be encoded.
+    const mayBeEncoded = options.serializerOptions == null;
+    const option = mayBeEncoded ? decodeURIComponent(assetPrefix) : assetPrefix;
+
+    return option.replace(/\/+$/, '');
+  }
+  return null;
+}
+
 export function baseJSBundle(
   entryPoint: string,
   preModules: readonly Module[],

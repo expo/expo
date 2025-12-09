@@ -281,6 +281,10 @@ export interface ExpoConfig {
      */
     baseUrl?: string;
     /**
+     * URL prefix for static assets (JS, CSS, fonts, images). Use this to serve assets from a CDN while keeping the app URL unchanged. Similar to Next.js assetPrefix. Example: 'https://cdn.example.com'. If not specified, defaults to the value of `baseUrl`.
+     */
+    assetPrefix?: string;
+    /**
      * @deprecated This field is not longer marked as experimental and will be removed in a future release, use the `buildCacheProvider` field instead.
      */
     buildCacheProvider?:

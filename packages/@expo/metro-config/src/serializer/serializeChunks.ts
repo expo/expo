@@ -24,6 +24,7 @@ import { getExportPathForDependencyWithOptions } from './exportPath';
 import {
   ExpoSerializerOptions,
   baseJSBundleWithDependencies,
+  getAssetPrefixOption,
   getBaseUrlOption,
   getPlatformOption,
 } from './fork/baseJSBundle';
@@ -182,7 +183,8 @@ export async function graphToSerialAssetsAsync(
   // TODO: Can this be anything besides true?
   const isExporting = true;
   const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
-  const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
+  const assetPrefix = getAssetPrefixOption(graph, { serializerOptions: serializeChunkOptions });
+  const assetPublicUrl = ((assetPrefix ?? baseUrl.replace(/\/+$/, '')) ?? '') + '/assets';
   const platform = getPlatformOption(graph, options) ?? 'web';
   const isHosted =
     platform === 'web' || (graph.transformOptions?.customTransformOptions?.hosted && isExporting);
