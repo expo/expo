@@ -5,6 +5,7 @@ import ejs from 'ejs';
 import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
+import type { PromptObject } from 'prompts';
 
 import { createExampleApp } from './createExampleApp';
 import {
@@ -405,6 +406,8 @@ async function askForSubstitutionDataAsync(
     process.exit(0);
   };
 
+  const baseAnswers = await prompts(promptQueries, { onCancel });
+
   const {
     name,
     description,
@@ -414,8 +417,39 @@ async function askForSubstitutionDataAsync(
     repo,
     platform,
     includeView,
-    viewName,
-  } = await prompts(promptQueries, { onCancel});
+  } = baseAnswers;
+
+  // we need to ask separately to validate against previous answers
+  let viewName: string | undefined = undefined;
+
+  if (includeView) {
+    const viewPrompt: PromptObject<string> = {
+      type: 'text',
+      name: 'viewName',
+      message: 'What is the native View name?',
+      initial: () => {
+        const base = name || '';
+        let suggestion = base.endsWith('View') ? base : `${base}View`;
+        const moduleName = base.endsWith('Module') ? base : `${base}Module`;
+        if (suggestion === moduleName) {
+          suggestion = `${base}NativeView`;
+        }
+        return suggestion;
+      },
+      validate: (input: string) => {
+        if (!input) return 'The native View name cannot be empty';
+        const base = name || '';
+        const prospectiveModuleName = base.endsWith('Module') ? base : `${base}Module`;
+        if (input === prospectiveModuleName) {
+          return 'View name must differ from the module name (try removing "Module" or adding "View").';
+        }
+        return true;
+      },
+    };
+
+    const { viewName: answeredViewName } = await prompts(viewPrompt, { onCancel });
+    viewName = answeredViewName;
+  }
 
   // Derive reverse-DNS base identifier (Android package / iOS bundle id base) from slug
   const projectPackage = deriveBaseIdentifierFromSlug(slug);
