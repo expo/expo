@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-public final class RNHostView: ExpoView, ExpoSwiftUI.RNHostProtocol {
+public final class RNHostView: ExpoView, ExpoSwiftUI.RNHostViewProtocol {
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: self)
