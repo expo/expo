@@ -43,18 +43,35 @@ function LinkAppleZoomImpl({ children, alignmentRect, ...rest }: LinkAppleZoomIm
   if (!value) {
     throw new Error('[expo-router] Link.ZoomTransitionSource must be used within a Link');
   }
-  const { identifier, addSource, removeSource } = value;
+  const { canAddSource, reason, identifier, addSource, removeSource } = value;
 
   useEffect(() => {
-    addSource();
+    if (!canAddSource && reason) {
+      console.warn(`[expo-router] Zoom transition source cannot be added: ${reason}`);
+    }
+  }, [canAddSource, reason]);
+
+  useEffect(() => {
+    addSource?.();
     return removeSource;
   }, [addSource, removeSource]);
 
-  if (Children.count(children) > 1) {
-    console.warn(
-      '[expo-router] Link.ZoomTransitionSource only accepts a single child component. Please wrap multiple children in a View or another container component.'
-    );
+  const hasTooManyChildren = Children.count(children) > 1;
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && hasTooManyChildren) {
+      console.warn(
+        '[expo-router] Link.ZoomTransitionSource only accepts a single child component. Please wrap multiple children in a View or another container component.'
+      );
+    }
+  }, [hasTooManyChildren]);
+
+  if (hasTooManyChildren) {
     return null;
+  }
+
+  if (!canAddSource) {
+    return <Slot {...rest}>{children}</Slot>;
   }
 
   return (

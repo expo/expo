@@ -1,11 +1,7 @@
 import { LinkProps } from '../useLinkHooks';
+import type { ZoomTransitionSourceContextValueType } from './zoom-transition-context';
 export declare function useZoomTransitionPrimitives({ href, asChild }: LinkProps): {
-    zoomTransitionSourceContextValue: {
-        identifier: string;
-        addSource: () => void;
-        removeSource: () => void;
-        canAddSource: boolean;
-    } | undefined;
+    zoomTransitionSourceContextValue: ZoomTransitionSourceContextValueType;
     href: string | import("../..").HrefObject;
 };
 //# sourceMappingURL=useZoomTransitionPrimitives.ios.d.ts.map

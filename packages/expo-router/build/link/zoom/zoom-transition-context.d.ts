@@ -1,8 +1,10 @@
 import { type PropsWithChildren } from 'react';
 export type ZoomTransitionSourceContextValueType = {
+    canAddSource: boolean;
     identifier: string;
     addSource: () => void;
     removeSource: () => void;
+    reason: string | undefined;
 } | undefined;
 export declare const ZoomTransitionSourceContext: import("react").Context<ZoomTransitionSourceContextValueType>;
 export declare const ZoomTransitionTargetContext: import("react").Context<{

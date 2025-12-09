@@ -14,15 +14,19 @@ jest.mock('../../preview/PreviewRouteContext');
 describe('useZoomTransitionPrimitives', () => {
   const mockIsZoomTransitionEnabled = isZoomTransitionEnabled as jest.Mock;
   const mockUseIsPreview = useIsPreview as jest.Mock;
+  let consoleWarnSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseIsPreview.mockReturnValue(false);
     mockIsZoomTransitionEnabled.mockReturnValue(true);
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
+  });
+  afterAll(() => {
     jest.restoreAllMocks();
   });
 
@@ -32,28 +36,47 @@ describe('useZoomTransitionPrimitives', () => {
     );
 
     expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
+    expect(result.current.zoomTransitionSourceContextValue.canAddSource).toBe(true);
+    // A check to satisfy TypeScript
+    if (result.current.zoomTransitionSourceContextValue.canAddSource !== true) {
+      throw new Error('');
+    }
     expect(result.current.zoomTransitionSourceContextValue?.identifier).toBeTruthy();
     expect(typeof result.current.zoomTransitionSourceContextValue?.identifier).toBe('string');
   });
 
-  test('returns undefined zoomTransitionId when preview is active', () => {
+  test('returns canAddSource false and reason undefined when preview is active', () => {
     mockUseIsPreview.mockReturnValue(true);
 
     const { result } = renderHook(() =>
       useZoomTransitionPrimitives({ href: '/test', asChild: true })
     );
 
-    expect(result.current.zoomTransitionSourceContextValue).toBeUndefined();
+    expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
+    expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(false);
+    // A check to satisfy TypeScript
+    if (result.current.zoomTransitionSourceContextValue?.canAddSource !== false) {
+      throw new Error('');
+    }
+    expect(result.current.zoomTransitionSourceContextValue?.reason).toBeUndefined();
   });
 
-  test('returns undefined zoomTransitionId when zoom transition is disabled', () => {
+  test('returns canAddSource false and correct reason when zoom transition is disabled', () => {
     mockIsZoomTransitionEnabled.mockReturnValue(false);
 
     const { result } = renderHook(() =>
       useZoomTransitionPrimitives({ href: '/test', asChild: true })
     );
 
-    expect(result.current.zoomTransitionSourceContextValue).toBeUndefined();
+    expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
+    expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(false);
+    // A check to satisfy TypeScript
+    if (result.current.zoomTransitionSourceContextValue?.canAddSource !== false) {
+      throw new Error('');
+    }
+    expect(result.current.zoomTransitionSourceContextValue?.reason).toBe(
+      'Zoom transitions are not enabled.'
+    );
   });
 
   test('adds and removes sources correctly', () => {
@@ -61,19 +84,23 @@ describe('useZoomTransitionPrimitives', () => {
       useZoomTransitionPrimitives({ href: '/test', asChild: true })
     );
 
+    expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
     expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(true);
+    expect(result.current.zoomTransitionSourceContextValue?.reason).toBeUndefined();
 
     act(() => {
       result.current.zoomTransitionSourceContextValue?.addSource();
     });
 
-    expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(false);
+    expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(true);
+    expect(result.current.zoomTransitionSourceContextValue?.reason).toBeUndefined();
 
     act(() => {
       result.current.zoomTransitionSourceContextValue?.removeSource();
     });
 
     expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(true);
+    expect(result.current.zoomTransitionSourceContextValue?.reason).toBeUndefined();
   });
 
   test('retains transition id between rerenders', () => {
@@ -81,6 +108,12 @@ describe('useZoomTransitionPrimitives', () => {
       useZoomTransitionPrimitives({ href: '/test', asChild: true })
     );
 
+    expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
+    expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(true);
+    // A check to satisfy TypeScript
+    if (result.current.zoomTransitionSourceContextValue?.canAddSource !== true) {
+      throw new Error('');
+    }
     const initialId = result.current.zoomTransitionSourceContextValue?.identifier;
 
     expect(initialId).toBeDefined();
@@ -104,8 +137,14 @@ describe('useZoomTransitionPrimitives', () => {
       useZoomTransitionPrimitives({ href: '/test', asChild: true })
     );
 
+    expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
+    expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(true);
     expect(() => {
       act(() => {
+        // A check to satisfy TypeScript
+        if (result.current.zoomTransitionSourceContextValue?.canAddSource !== true) {
+          throw new Error('');
+        }
         result.current.zoomTransitionSourceContextValue?.addSource();
         result.current.zoomTransitionSourceContextValue?.addSource();
       });
@@ -114,17 +153,19 @@ describe('useZoomTransitionPrimitives', () => {
     );
   });
 
-  test('warns when using zoom transition without asChild', () => {
+  test('returns canAddSource false with correct reason when asChild is false', () => {
     const { result } = renderHook(() =>
       useZoomTransitionPrimitives({ href: '/test', asChild: false })
     );
 
-    act(() => {
-      result.current.zoomTransitionSourceContextValue?.addSource();
-    });
-
-    expect(console.warn).toHaveBeenCalledWith(
-      '[expo-router] Using zoom transition links without `asChild` prop may lead to unexpected behavior. Please ensure to set `asChild` when using zoom transitions.'
+    expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
+    expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(false);
+    // A check to satisfy TypeScript
+    if (result.current.zoomTransitionSourceContextValue?.canAddSource !== false) {
+      throw new Error('');
+    }
+    expect(result.current.zoomTransitionSourceContextValue?.reason).toBe(
+      'Link must be used with `asChild` prop to enable zoom transitions.'
     );
   });
 
@@ -160,9 +201,20 @@ describe('useZoomTransitionPrimitives', () => {
   ])('computes href with zoom transition id for string href $href', ({ href, expected }) => {
     const { result } = renderHook(() => useZoomTransitionPrimitives({ href, asChild: true }));
 
+    expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
+    expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(true);
+    // A check to satisfy TypeScript
+    if (result.current.zoomTransitionSourceContextValue?.canAddSource !== true) {
+      throw new Error('');
+    }
+
     const initialId = result.current.zoomTransitionSourceContextValue?.identifier;
 
     act(() => {
+      // A check to satisfy TypeScript
+      if (result.current.zoomTransitionSourceContextValue?.canAddSource !== true) {
+        throw new Error('');
+      }
       result.current.zoomTransitionSourceContextValue?.addSource();
     });
 
@@ -212,9 +264,20 @@ describe('useZoomTransitionPrimitives', () => {
         })
       );
 
+      expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
+      expect(result.current.zoomTransitionSourceContextValue?.canAddSource).toBe(true);
+      // A check to satisfy TypeScript
+      if (result.current.zoomTransitionSourceContextValue?.canAddSource !== true) {
+        throw new Error('');
+      }
+
       const initialId = result.current.zoomTransitionSourceContextValue?.identifier;
 
       act(() => {
+        // A check to satisfy TypeScript
+        if (result.current.zoomTransitionSourceContextValue?.canAddSource !== true) {
+          throw new Error('');
+        }
         result.current.zoomTransitionSourceContextValue?.addSource();
       });
 
@@ -234,5 +297,43 @@ describe('useZoomTransitionPrimitives', () => {
     );
 
     expect(result.current.href).toBe('/test');
+  });
+
+  test.each([
+    { href: 'https://example.com' },
+    { href: 'mailto:test@example.com' },
+    { href: 'tel:+1234567890' },
+    { href: 'file://path/to/file' },
+    {
+      href: {
+        pathname: 'https://example.com',
+        params: {},
+      },
+    },
+    {
+      href: {
+        pathname: 'https://example.com',
+        params: {
+          test: 'value',
+        },
+      },
+    },
+  ])('when non relative href $href is provided, zoom transition is not enabled', ({ href }) => {
+    const { result } = renderHook(() => useZoomTransitionPrimitives({ href, asChild: true }));
+
+    expect(result.current.zoomTransitionSourceContextValue).toBeDefined();
+    // A check to satisfy TypeScript
+    if (!result.current.zoomTransitionSourceContextValue) {
+      throw new Error('');
+    }
+    expect(result.current.zoomTransitionSourceContextValue.canAddSource).toBe(false);
+    // A check to satisfy TypeScript
+    if (result.current.zoomTransitionSourceContextValue.canAddSource !== false) {
+      throw new Error('');
+    }
+    expect(result.current.zoomTransitionSourceContextValue.reason).toBe(
+      'Zoom transitions can only be used with internal links.'
+    );
+    expect(result.current.href).toBe(href);
   });
 });

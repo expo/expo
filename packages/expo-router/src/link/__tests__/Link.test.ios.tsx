@@ -10,6 +10,7 @@ import { useNavigation } from '../../useNavigation';
 import { Slot } from '../../views/Navigator';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
+import { HrefPreview } from '../preview/HrefPreview';
 import { LinkPreviewContextProvider } from '../preview/LinkPreviewContext';
 import {
   type NativeLinkPreviewActionProps,
@@ -39,7 +40,26 @@ jest.mock('../preview/native', () => {
         {children}
       </View>
     )),
+    LinkZoomTransitionSource: jest.fn(({ children }) => (
+      <View testID="link-zoom-transition-source" children={children} />
+    )),
+    LinkZoomTransitionAlignmentRectDetector: jest.fn(({ children }) => (
+      <View testID="link-zoom-transition-alignment-rect-detector" children={children} />
+    )),
+    LinkZoomTransitionEnabler: jest.fn(({ children }) => (
+      <View testID="link-zoom-transition-enabler" children={children} />
+    )),
     __EVENTS__: handlerMap,
+  };
+});
+
+jest.mock('../zoom/ZoomTransitionEnabler', () => {
+  const originalModule = jest.requireActual(
+    '../zoom/ZoomTransitionEnabler'
+  ) as typeof import('../zoom/ZoomTransitionEnabler');
+  return {
+    ...originalModule,
+    isZoomTransitionEnabled: () => true,
   };
 });
 
@@ -1294,5 +1314,156 @@ describe('Link.Trigger', () => {
     ).toThrow(
       'When using Link.Trigger in an asChild Link, you must pass a single child element that will emit onPress event.'
     );
+  });
+});
+
+describe('Link with zoom transition', () => {
+  let consoleWarnMock: jest.SpyInstance;
+  beforeEach(() => {
+    consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    consoleWarnMock.mockRestore();
+  });
+  it('When Link.AppleZoom is used without asChild a warning is shown', () => {
+    renderRouter({
+      index: () => (
+        <View testID="index-page">
+          <Link href="/test">
+            <Link.AppleZoom>Test</Link.AppleZoom>
+          </Link>
+        </View>
+      ),
+      test: () => <View testID="test-page" />,
+    });
+    expect(screen.getByTestId('index-page')).toBeVisible();
+    expect(consoleWarnMock).toHaveBeenCalledTimes(1);
+    expect(consoleWarnMock).toHaveBeenCalledWith(
+      '[expo-router] Zoom transition source cannot be added: Link must be used with `asChild` prop to enable zoom transitions.'
+    );
+  });
+  it('When multiple children are passed to Link.AppleZoom a warning is shown', () => {
+    renderRouter({
+      index: () => (
+        <View testID="index-page">
+          <Link href="/test" asChild>
+            <Link.AppleZoom>
+              <Pressable />
+              <Pressable />
+            </Link.AppleZoom>
+          </Link>
+        </View>
+      ),
+      test: () => <View testID="test-page" />,
+    });
+    expect(screen.getByTestId('index-page')).toBeVisible();
+    expect(consoleWarnMock).toHaveBeenCalledTimes(1);
+    expect(consoleWarnMock).toHaveBeenCalledWith(
+      '[expo-router] Link.ZoomTransitionSource only accepts a single child component. Please wrap multiple children in a View or another container component.'
+    );
+  });
+  it('When external link is used with Link.AppleZoom, a warning is shown', () => {
+    renderRouter({
+      index: () => (
+        <View testID="index-page">
+          <Link href="http://example.com" asChild>
+            <Link.AppleZoom>
+              <Pressable />
+            </Link.AppleZoom>
+          </Link>
+        </View>
+      ),
+      test: () => <View testID="test-page" />,
+    });
+    expect(screen.getByTestId('index-page')).toBeVisible();
+    expect(consoleWarnMock).toHaveBeenCalledTimes(1);
+    expect(consoleWarnMock).toHaveBeenCalledWith(
+      '[expo-router] Zoom transition source cannot be added: Zoom transitions can only be used with internal links.'
+    );
+  });
+
+  it('When multiple nested Link.AppleZoom components are used within same link an error is thrown', () => {
+    expect(() =>
+      renderRouter({
+        index: () => (
+          <View testID="index-page">
+            <Link href="http://example.com" asChild>
+              <Link.AppleZoom>
+                <Link.AppleZoom>
+                  <Pressable />
+                </Link.AppleZoom>
+              </Link.AppleZoom>
+            </Link>
+          </View>
+        ),
+        test: () => <View testID="test-page" />,
+      })
+    ).toThrow(
+      '[expo-router] Only one Link.ZoomTransitionSource can be used within a single Link component.'
+    );
+  });
+
+  it('When multiple Link.AppleZoom components are used within same link an error is thrown', () => {
+    expect(() =>
+      renderRouter({
+        index: () => (
+          <View testID="index-page">
+            <Link href="http://example.com" asChild>
+              <Pressable>
+                <Link.AppleZoom>
+                  <Text>Test</Text>
+                </Link.AppleZoom>
+                <Link.AppleZoom>
+                  <Text>Test 2</Text>
+                </Link.AppleZoom>
+              </Pressable>
+            </Link>
+          </View>
+        ),
+        test: () => <View testID="test-page" />,
+      })
+    ).toThrow(
+      '[expo-router] Only one Link.ZoomTransitionSource can be used within a single Link component.'
+    );
+  });
+
+  it('can use Link.AppleZoom', () => {
+    renderRouter({
+      index: () => (
+        <Link href="/test" asChild>
+          <Link.AppleZoom>
+            <Text>Test</Text>
+          </Link.AppleZoom>
+        </Link>
+      ),
+      test: () => <View testID="test-page" />,
+    });
+    expect(screen.getByText('Test')).toBeVisible();
+    const linkTrigger = screen.getByText('Test');
+    act(() => fireEvent.press(linkTrigger));
+    expect(screen.getByTestId('test-page')).toBeVisible();
+    expect(consoleWarnMock).not.toHaveBeenCalled();
+  });
+
+  it('can render Link.AppleZoom in preview', () => {
+    renderRouter({
+      index: () => (
+        <View testID="index-page">
+          <HrefPreview href="/test" />
+        </View>
+      ),
+      test: () => (
+        <View testID="test-page">
+          <Link href="/" asChild>
+            <Link.AppleZoom>
+              <Text>Index</Text>
+            </Link.AppleZoom>
+          </Link>
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index-page')).toBeVisible();
+    expect(screen.getByTestId('test-page')).toBeVisible();
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 });

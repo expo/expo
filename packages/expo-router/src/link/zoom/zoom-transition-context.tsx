@@ -12,9 +12,11 @@ import { useIsPreview } from '../preview/PreviewRouteContext';
 
 export type ZoomTransitionSourceContextValueType =
   | {
+      canAddSource: boolean;
       identifier: string;
       addSource: () => void;
       removeSource: () => void;
+      reason: string | undefined;
     }
   | undefined;
 

@@ -5,19 +5,40 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
 import { INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME } from '../../navigationParams';
-import { parseUrlUsingCustomBase } from '../../utils/url';
+import { parseUrlUsingCustomBase, shouldLinkExternally } from '../../utils/url';
 import { useIsPreview } from '../preview/PreviewRouteContext';
 import { LinkProps } from '../useLinkHooks';
+import type { ZoomTransitionSourceContextValueType } from './zoom-transition-context';
 
 export function useZoomTransitionPrimitives({ href, asChild }: LinkProps) {
   const isPreview = useIsPreview();
-  const zoomTransitionId = useMemo(
-    () =>
-      !isPreview && process.env.EXPO_OS === 'ios' && isZoomTransitionEnabled()
-        ? nanoid()
-        : undefined,
-    []
-  );
+  const isExternalHref =
+    typeof href === 'string' ? shouldLinkExternally(href) : shouldLinkExternally(href.pathname);
+
+  const isZoomTransitionConfigValid =
+    process.env.EXPO_OS === 'ios' &&
+    !isPreview &&
+    !!isZoomTransitionEnabled() &&
+    !!asChild &&
+    !isExternalHref;
+
+  const reason = useMemo(() => {
+    if (process.env.EXPO_OS !== 'ios' || isPreview) {
+      return undefined;
+    }
+    if (!isZoomTransitionEnabled()) {
+      return 'Zoom transitions are not enabled.';
+    }
+    if (!asChild) {
+      return 'Link must be used with `asChild` prop to enable zoom transitions.';
+    }
+    if (isExternalHref) {
+      return 'Zoom transitions can only be used with internal links.';
+    }
+    return undefined;
+  }, [asChild, isExternalHref]);
+
+  const zoomTransitionId = useMemo(nanoid, []);
 
   const [numberOfSources, setNumberOfSources] = useState(0);
   const addSource = useCallback(() => {
@@ -37,25 +58,16 @@ export function useZoomTransitionPrimitives({ href, asChild }: LinkProps) {
     }
   }, [numberOfSources]);
 
-  useEffect(() => {
-    if (hasZoomSource && !asChild) {
-      console.warn(
-        '[expo-router] Using zoom transition links without `asChild` prop may lead to unexpected behavior. Please ensure to set `asChild` when using zoom transitions.'
-      );
-    }
-  }, [hasZoomSource, asChild]);
-
-  const zoomTransitionSourceContextValue = useMemo(() => {
-    if (!zoomTransitionId) {
-      return undefined;
-    }
-    return {
+  const zoomTransitionSourceContextValue = useMemo<ZoomTransitionSourceContextValueType>(
+    () => ({
+      canAddSource: isZoomTransitionConfigValid,
       identifier: zoomTransitionId,
       addSource,
       removeSource,
-      canAddSource: !hasZoomSource,
-    };
-  }, [zoomTransitionId, addSource, removeSource, hasZoomSource]);
+      reason,
+    }),
+    [zoomTransitionId, addSource, removeSource, hasZoomSource, reason, isZoomTransitionConfigValid]
+  );
 
   const computedHref = useMemo(() => {
     if (!hasZoomSource || !zoomTransitionId) {
