@@ -334,7 +334,7 @@ function renderFileTreeAscii(structure) {
 
   renderNodes(structure, '');
 
-  return lines.map(line => line.replace(/^(├── |└── )/, ''));
+  return lines;
 }
 
 function generateItemMarkdown(item) {
