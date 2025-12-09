@@ -9,7 +9,7 @@ import { ReactLogo } from './ReactLogo';
 
 export function StateOfRNBanner() {
   const router = useRouter();
-  const stateOfRNEndDate = new Date('2025-01-08');
+  const stateOfRNEndDate = new Date('2026-01-08');
   const showShoutout = isBefore(new Date(), stateOfRNEndDate);
   const isHomePage = router?.pathname === '/';
 
@@ -32,7 +32,7 @@ export function StateOfRNBanner() {
         </div>
         <div className="relative grid grid-cols-1 gap-1">
           <HEADLINE className="text-[#001a72] dark:text-[#b1dfd0]">
-            State of React Native 2024
+            State of React Native 2025
           </HEADLINE>
           <CALLOUT className="text-[#001a72] dark:text-[#b1dfd0]">
             Have a few minutes and want to shape the future of React Native?
