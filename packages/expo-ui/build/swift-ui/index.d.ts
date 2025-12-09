@@ -31,5 +31,5 @@ export * from './GlassEffectContainer';
 export * from './Shapes';
 export * from './Popover';
 export * from './Grid';
-export * from './RNHost';
+export * from './RNHostView';
 //# sourceMappingURL=index.d.ts.map

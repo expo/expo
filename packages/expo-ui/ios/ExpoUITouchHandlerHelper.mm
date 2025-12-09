@@ -1,9 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "RCTTouchHandlerHelper.h"
+#import "ExpoUITouchHandlerHelper.h"
 #import <React/RCTSurfaceTouchHandler.h>
 
-@implementation RCTTouchHandlerHelper
+@implementation ExpoUITouchHandlerHelper
 
 + (nullable UIGestureRecognizer *)createAndAttachTouchHandlerForView:(UIView *)view {
   for (UIGestureRecognizer *recognizer in [view.gestureRecognizers copy]) {

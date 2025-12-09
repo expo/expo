@@ -2,10 +2,10 @@
 
 import ExpoModulesCore
 
-public final class RNHost: ExpoView, ExpoSwiftUI.RNHostProtocol {
+public final class RNHostView: ExpoView, ExpoSwiftUI.RNHostProtocol {
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
-    RCTTouchHandlerHelper.createAndAttachTouchHandler(for: self)
+    ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: self)
   }
 
   public var matchContents: Bool = false

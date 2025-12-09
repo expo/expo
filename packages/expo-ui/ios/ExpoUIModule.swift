@@ -6,7 +6,7 @@ public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
-    View(RNHost.self) {
+    View(RNHostView.self) {
       Prop("matchContents") { (view, matchContents: Bool) in
         view.matchContents = matchContents
       }
