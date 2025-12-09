@@ -11,6 +11,8 @@
   EXAppContext *_appContext;
 }
 
+// TODO: Remove check when react-native-macos 0.81 is released (this init was not available before)
+#if !TARGET_OS_OSX
 - (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate releaseLevel:(RCTReleaseLevel)releaseLevel
 {
   if (self = [super initWithDelegate:delegate releaseLevel:releaseLevel]) {
@@ -18,6 +20,7 @@
   }
   return self;
 }
+#endif
 
 #pragma mark - RCTHostDelegate
 
