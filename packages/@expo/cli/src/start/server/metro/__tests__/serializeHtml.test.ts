@@ -154,6 +154,57 @@ it('serializes HTML with async chunks in correct order for dynamic routes', () =
   );
 });
 
+it('uses assetPrefix for static assets when provided', () => {
+  const res = serializeHtmlWithAssets({
+    resources: [
+      {
+        filename: '_expo/static/js/web/entry-abc123.js',
+        originFilename: 'entry.js',
+        type: 'js',
+        metadata: { isAsync: false, requires: [], modulePaths: [] },
+        source: '',
+      },
+      {
+        filename: '_expo/static/css/styles-def456.css',
+        originFilename: 'styles.css',
+        type: 'css',
+        metadata: { hmrId: 'styles' },
+        source: '.test { color: red; }',
+      },
+    ],
+    template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
+    baseUrl: '/app',
+    assetPrefix: 'https://cdn.example.com',
+    isExporting: true,
+  });
+  expect(res).toMatchSnapshot();
+  expect(res).toMatch(
+    /<script src="https:\/\/cdn\.example\.com\/_expo\/static\/js\/web\/entry-abc123\.js" defer>/
+  );
+  expect(res).toMatch(
+    /<link rel="stylesheet" href="https:\/\/cdn\.example\.com\/_expo\/static\/css\/styles-def456\.css">/
+  );
+});
+
+it('falls back to baseUrl when assetPrefix is not provided', () => {
+  const res = serializeHtmlWithAssets({
+    resources: [
+      {
+        filename: '_expo/static/js/web/entry-abc123.js',
+        originFilename: 'entry.js',
+        type: 'js',
+        metadata: { isAsync: false, requires: [], modulePaths: [] },
+        source: '',
+      },
+    ],
+    template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
+    baseUrl: '/app',
+    isExporting: true,
+  });
+  expect(res).toMatchSnapshot();
+  expect(res).toMatch(/<script src="\/app\/_expo\/static\/js\/web\/entry-abc123\.js" defer>/);
+});
+
 it('sorts assets based on requires tree', () => {
   const assets: SerialAsset[] = [
     {

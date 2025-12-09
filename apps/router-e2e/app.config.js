@@ -31,6 +31,7 @@ module.exports = {
   experiments: {
     autolinkingModuleResolution: true,
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
+    assetPrefix: process.env.EXPO_E2E_ASSET_PREFIX || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
     typedRoutes: true,
     reactCompiler: process.env.E2E_ROUTER_COMPILER,
