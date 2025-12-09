@@ -5,7 +5,6 @@ import ejs from 'ejs';
 import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
-import type { PromptObject } from 'prompts';
 
 import { createExampleApp } from './createExampleApp';
 import {

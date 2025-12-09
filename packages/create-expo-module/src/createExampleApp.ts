@@ -73,15 +73,19 @@ export async function createExampleApp(
     step.succeed('Configured the example app');
   });
 
-  await prebuildExampleApp(appTargetPath);
+  await prebuildExampleApp(appTargetPath, data);
 
   await modifyPackageJson(appTargetPath);
 
   await newStep('Installing dependencies in the example app', async (step) => {
     await installDependencies(packageManager, appTargetPath);
-    if (os.platform() === 'darwin') {
+    if (os.platform() === 'darwin' && data.features.ios) {
       await podInstall(appTargetPath);
       step.succeed('Installed dependencies in the example app');
+    } else if (os.platform() === 'darwin') {
+      step.succeed(
+        'Installed dependencies in the example app (skipped installing CocoaPods – no iOS example selected)'
+      );
     } else {
       step.succeed('Installed dependencies in the example app (skipped installing CocoaPods)');
     }
@@ -178,9 +182,24 @@ async function modifyPackageJson(appPath: string): Promise<void> {
 /**
  * Runs `npx expo prebuild` in the example app.
  */
-async function prebuildExampleApp(exampleAppPath: string): Promise<void> {
+async function prebuildExampleApp(exampleAppPath: string, data: SubstitutionData): Promise<void> {
+  const platforms: Array<'ios' | 'android'> = [];
+  if (data.features.ios) {
+    platforms.push('ios');
+  }
+  if (data.features.android) {
+    platforms.push('android');
+  }
+
+  // If no native platforms are selected, skip prebuild entirely.
+  if (platforms.length === 0) {
+    return;
+  }
+
+  const platformArg = platforms.length === 2 ? 'all' : platforms[0];
+
   await newStep('Prebuilding the example app', async (step) => {
-    await spawnAsync('npx', ['expo', 'prebuild', '--no-install'], {
+    await spawnAsync('npx', ['expo', 'prebuild', '--no-install', '--platform', platformArg], {
       cwd: exampleAppPath,
       stdio: ['ignore', 'ignore', 'pipe'],
     });
