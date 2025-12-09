@@ -230,12 +230,51 @@ export function cleanContent(content) {
 }
 
 function parseFileTreeFilesLiteral(literal) {
-  try {
+  const parse = value => {
     // eslint-disable-next-line no-new-func
-    return new Function(`return (${literal})`)();
+    return new Function(`return (${value})`)();
+  };
+
+  const sanitizeFileTreeFilesLiteral = value => {
+    const stripTags = text =>
+      text
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const toJSONString = text => JSON.stringify(stripTags(text));
+
+    let sanitized = value;
+
+    sanitized = sanitized.replace(/<code>([\S\s]*?)<\/code>/gi, (_, inner) => toJSONString(inner));
+    sanitized = sanitized.replace(/<a[^>]*>([\S\s]*?)<\/a>/gi, (_, inner) => toJSONString(inner));
+    sanitized = sanitized.replace(/<span[^>]*>([\S\s]*?)<\/span>/gi, (_, inner) =>
+      toJSONString(inner)
+    );
+    sanitized = sanitized.replace(/<callout[^>]*>([\S\s]*?)<\/callout>/gi, (_, inner) =>
+      toJSONString(inner)
+    );
+    sanitized = sanitized.replace(/<strong[^>]*>([\S\s]*?)<\/strong>/gi, (_, inner) =>
+      toJSONString(inner)
+    );
+    sanitized = sanitized.replace(/<b[^>]*>([\S\s]*?)<\/b>/gi, (_, inner) => toJSONString(inner));
+
+    sanitized = sanitized.replace(/<>\s*([\S\s]*?)\s*<\/>/g, (_, inner) => toJSONString(inner));
+    sanitized = sanitized.replace(/<[^>]+\/>/g, '');
+    sanitized = sanitized.replace(/<[^>]+>/g, '');
+
+    return sanitized;
+  };
+
+  try {
+    return parse(literal);
   } catch (error) {
-    console.warn('Unable to parse FileTree files literal:', error);
-    return [];
+    try {
+      return parse(sanitizeFileTreeFilesLiteral(literal));
+    } catch (sanitizedError) {
+      console.warn('Unable to parse FileTree files literal:', sanitizedError);
+      return [];
+    }
   }
 }
 
