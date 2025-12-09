@@ -11,6 +11,14 @@
   EXAppContext *_appContext;
 }
 
+- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate releaseLevel:(RCTReleaseLevel)releaseLevel
+{
+  if (self = [super initWithDelegate:delegate releaseLevel:releaseLevel]) {
+    _appContext = [[EXAppContext alloc] init];
+  }
+  return self;
+}
+
 #pragma mark - RCTHostDelegate
 
 // [main thread]
@@ -29,13 +37,10 @@
 // [JS thread]
 - (void)host:(nonnull RCTHost *)host didInitializeRuntime:(jsi::Runtime &)runtime
 {
-  _appContext = [[EXAppContext alloc] init];
-
   // Inject and decorate the `global.expo` object
   _appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
 
-  // Load modules
-  [_appContext useModulesProvider:@"ExpoModulesProvider"];
+  [_appContext registerNativeModules];
 }
 
 @end

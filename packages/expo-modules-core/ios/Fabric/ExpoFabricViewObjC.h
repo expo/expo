@@ -59,4 +59,11 @@
  */
 - (void)unmountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index;
 
+#pragma mark - Component registration
+
+/**
+ Registers given view module in the global `RCTComponentViewFactory`.
+ */
++ (void)registerComponent:(nonnull EXViewModuleWrapper *)viewModule appContext:(nonnull EXAppContext *)appContext;
+
 @end

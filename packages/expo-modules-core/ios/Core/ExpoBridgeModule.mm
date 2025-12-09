@@ -54,7 +54,7 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 
     _appContext.reactBridge = _bridge;
     _appContext._runtime = runtime;
-    [_appContext useModulesProvider:@"ExpoModulesProvider"];
+    [_appContext registerNativeModules];
   }
 }
 
