@@ -3,14 +3,14 @@
 exports[`APISection expo-apple-authentication 1`] = `
 <div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="component"
   >
     Component
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#component"
-      id="component"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -49,8 +49,9 @@ exports[`APISection expo-apple-authentication 1`] = `
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationbutton"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -59,9 +60,8 @@ exports[`APISection expo-apple-authentication 1`] = `
           AppleAuthenticationButton
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationbutton"
-          id="appleauthenticationbutton"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -303,14 +303,14 @@ for more details.
         data-text="true"
       >
         <span
-          class="leading-[1.6154] text-inherit items-center group flex gap-1"
+          class="leading-[1.6154] text-inherit items-center group flex gap-1 scroll-m-5"
           data-text="true"
+          id="appleauthenticationbuttonprops"
         >
           AppleAuthenticationButtonProps
           <a
-            class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
+            class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
             href="#appleauthenticationbuttonprops"
-            id="appleauthenticationbuttonprops"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -354,8 +354,9 @@ for more details.
           class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
-            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
+            id="buttonstyle"
           >
             <code
               class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -364,9 +365,8 @@ for more details.
               buttonStyle
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#buttonstyle"
-              id="buttonstyle"
             >
               <span
                 class="flex self-center text-inherit leading-none select-none"
@@ -434,8 +434,9 @@ for more details.
           class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
-            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
+            id="buttontype"
           >
             <code
               class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -444,9 +445,8 @@ for more details.
               buttonType
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#buttontype"
-              id="buttontype"
             >
               <span
                 class="flex self-center text-inherit leading-none select-none"
@@ -514,8 +514,9 @@ for more details.
           class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
-            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
+            id="cornerradius"
           >
             <code
               class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -524,9 +525,8 @@ for more details.
               cornerRadius
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#cornerradius"
-              id="cornerradius"
             >
               <span
                 class="flex self-center text-inherit leading-none select-none"
@@ -598,8 +598,9 @@ for more details.
           class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
-            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
+            id="onpress"
           >
             <code
               class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -608,9 +609,8 @@ for more details.
               onPress
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#onpress"
-              id="onpress"
             >
               <span
                 class="flex self-center text-inherit leading-none select-none"
@@ -697,8 +697,9 @@ in here.
           class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
-            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
+            id="style"
           >
             <code
               class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -707,9 +708,8 @@ in here.
               style
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#style"
-              id="style"
             >
               <span
                 class="flex self-center text-inherit leading-none select-none"
@@ -843,14 +843,14 @@ properties.
         class="border-t border-palette-gray4 px-4 py-3"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="inherited-props"
         >
           Inherited Props
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#inherited-props"
-            id="inherited-props"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -908,14 +908,14 @@ properties.
     </div>
   </div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="methods"
   >
     Methods
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#methods"
-      id="methods"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -954,8 +954,9 @@ properties.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="formatfullnamefullname-formatstyle"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -964,9 +965,8 @@ properties.
           formatFullName(fullName, formatStyle)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#formatfullnamefullname-formatstyle"
-          id="formatfullnamefullname-formatstyle"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -1194,8 +1194,9 @@ properties.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="getcredentialstateasyncuser"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -1204,9 +1205,8 @@ properties.
           getCredentialStateAsync(user)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#getcredentialstateasyncuser"
-          id="getcredentialstateasyncuser"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -1484,8 +1484,9 @@ value depending on the state of the credential.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="isavailableasync"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -1494,9 +1495,8 @@ value depending on the state of the credential.
           isAvailableAsync()
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#isavailableasync"
-          id="isavailableasync"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -1633,8 +1633,9 @@ value depending on the state of the credential.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="refreshasyncoptions"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -1643,9 +1644,8 @@ value depending on the state of the credential.
           refreshAsync(options)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#refreshasyncoptions"
-          id="refreshasyncoptions"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -1884,8 +1884,9 @@ refresh operation.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="signinasyncoptions"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -1894,9 +1895,8 @@ refresh operation.
           signInAsync(options)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#signinasyncoptions"
-          id="signinasyncoptions"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -2181,8 +2181,9 @@ sign-in operation.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="signoutasyncoptions"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -2191,9 +2192,8 @@ sign-in operation.
           signOutAsync(options)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#signoutasyncoptions"
-          id="signoutasyncoptions"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -2460,14 +2460,14 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="event-subscriptions"
   >
     Event Subscriptions
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#event-subscriptions"
-      id="event-subscriptions"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -2506,8 +2506,9 @@ sign-out operation.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="addrevokelistenerlistener"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -2516,9 +2517,8 @@ sign-out operation.
           addRevokeListener(listener)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#addrevokelistenerlistener"
-          id="addrevokelistenerlistener"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -2654,14 +2654,14 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="interfaces"
   >
     Interfaces
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#interfaces"
-      id="interfaces"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -2700,8 +2700,9 @@ sign-out operation.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="subscription"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -2710,9 +2711,8 @@ sign-out operation.
           Subscription
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#subscription"
-          id="subscription"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -2760,14 +2760,14 @@ sign-out operation.
       data-text="true"
     >
       <span
-        class="leading-[1.6154] text-inherit items-center group flex gap-1"
+        class="leading-[1.6154] text-inherit items-center group flex gap-1 scroll-m-5"
         data-text="true"
+        id="subscription-methods"
       >
         Subscription Methods
         <a
-          class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
+          class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
           href="#subscription-methods"
-          id="subscription-methods"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -2807,8 +2807,9 @@ sign-out operation.
         class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
       >
         <h3
-          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
           data-heading="true"
+          id="remove"
         >
           <code
             class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -2817,9 +2818,8 @@ sign-out operation.
             remove()
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#remove"
-            id="remove"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -2904,14 +2904,14 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="types"
   >
     Types
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#types"
-      id="types"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -2950,8 +2950,9 @@ After calling this function, the listener will no longer receive any events from
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationcredential"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -2960,9 +2961,8 @@ After calling this function, the listener will no longer receive any events from
           AppleAuthenticationCredential
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationcredential"
-          id="appleauthenticationcredential"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -3538,8 +3538,9 @@ developers.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationfullname"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -3548,9 +3549,8 @@ developers.
           AppleAuthenticationFullName
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationfullname"
-          id="appleauthenticationfullname"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -3903,8 +3903,9 @@ may be
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationfullnameformatstyle"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -3913,9 +3914,8 @@ may be
           AppleAuthenticationFullNameFormatStyle
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationfullnameformatstyle"
-          id="appleauthenticationfullnameformatstyle"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -4096,8 +4096,9 @@ for more details.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationrefreshoptions"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -4106,9 +4107,8 @@ for more details.
           AppleAuthenticationRefreshOptions
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationrefreshoptions"
-          id="appleauthenticationrefreshoptions"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -4427,8 +4427,9 @@ OAuth 2.0 protocol
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationsigninoptions"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -4437,9 +4438,8 @@ OAuth 2.0 protocol
           AppleAuthenticationSignInOptions
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationsigninoptions"
-          id="appleauthenticationsigninoptions"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -4778,8 +4778,9 @@ OAuth 2.0 protocol
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationsignoutoptions"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -4788,9 +4789,8 @@ OAuth 2.0 protocol
           AppleAuthenticationSignOutOptions
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationsignoutoptions"
-          id="appleauthenticationsignoutoptions"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -5029,14 +5029,14 @@ OAuth 2.0 protocol
     </div>
   </div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="enums"
   >
     Enums
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#enums"
-      id="enums"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -5075,8 +5075,9 @@ OAuth 2.0 protocol
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationbuttonstyle"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -5085,9 +5086,8 @@ OAuth 2.0 protocol
           AppleAuthenticationButtonStyle
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationbuttonstyle"
-          id="appleauthenticationbuttonstyle"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -5149,8 +5149,9 @@ OAuth 2.0 protocol
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="white"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -5159,9 +5160,8 @@ OAuth 2.0 protocol
             WHITE
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#white"
-            id="white"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -5218,8 +5218,9 @@ OAuth 2.0 protocol
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="white_outline"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -5228,9 +5229,8 @@ OAuth 2.0 protocol
             WHITE_OUTLINE
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#white_outline"
-            id="white_outline"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -5287,8 +5287,9 @@ OAuth 2.0 protocol
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="black"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -5297,9 +5298,8 @@ OAuth 2.0 protocol
             BLACK
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#black"
-            id="black"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -5357,8 +5357,9 @@ OAuth 2.0 protocol
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationbuttontype"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -5367,9 +5368,8 @@ OAuth 2.0 protocol
           AppleAuthenticationButtonType
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationbuttontype"
-          id="appleauthenticationbuttontype"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -5431,8 +5431,9 @@ OAuth 2.0 protocol
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="sign_in"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -5441,9 +5442,8 @@ OAuth 2.0 protocol
             SIGN_IN
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#sign_in"
-            id="sign_in"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -5500,8 +5500,9 @@ OAuth 2.0 protocol
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="continue"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -5510,9 +5511,8 @@ OAuth 2.0 protocol
             CONTINUE
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#continue"
-            id="continue"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -5569,8 +5569,9 @@ OAuth 2.0 protocol
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="sign_up"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -5579,9 +5580,8 @@ OAuth 2.0 protocol
             SIGN_UP
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#sign_up"
-            id="sign_up"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -5673,8 +5673,9 @@ OAuth 2.0 protocol
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationcredentialstate"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -5683,9 +5684,8 @@ OAuth 2.0 protocol
           AppleAuthenticationCredentialState
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationcredentialstate"
-          id="appleauthenticationcredentialstate"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -5804,8 +5804,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="revoked"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -5814,9 +5815,8 @@ for more details.
             REVOKED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#revoked"
-            id="revoked"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -5866,8 +5866,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="authorized"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -5876,9 +5877,8 @@ for more details.
             AUTHORIZED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#authorized"
-            id="authorized"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -5928,8 +5928,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="not_found"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -5938,9 +5939,8 @@ for more details.
             NOT_FOUND
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#not_found"
-            id="not_found"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -5990,8 +5990,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="transferred"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6000,9 +6001,8 @@ for more details.
             TRANSFERRED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#transferred"
-            id="transferred"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6053,8 +6053,9 @@ for more details.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationoperation"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -6063,9 +6064,8 @@ for more details.
           AppleAuthenticationOperation
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationoperation"
-          id="appleauthenticationoperation"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -6108,8 +6108,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="implicit"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6118,9 +6119,8 @@ for more details.
             IMPLICIT
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#implicit"
-            id="implicit"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6177,8 +6177,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="login"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6187,9 +6188,8 @@ for more details.
             LOGIN
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#login"
-            id="login"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6239,8 +6239,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="refresh"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6249,9 +6250,8 @@ for more details.
             REFRESH
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#refresh"
-            id="refresh"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6301,8 +6301,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="logout"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6311,9 +6312,8 @@ for more details.
             LOGOUT
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#logout"
-            id="logout"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6364,8 +6364,9 @@ for more details.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationscope"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -6374,9 +6375,8 @@ for more details.
           AppleAuthenticationScope
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationscope"
-          id="appleauthenticationscope"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -6542,8 +6542,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="full_name"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6552,9 +6553,8 @@ for more details.
             FULL_NAME
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#full_name"
-            id="full_name"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6604,8 +6604,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="email"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6614,9 +6615,8 @@ for more details.
             EMAIL
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#email"
-            id="email"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6667,8 +6667,9 @@ for more details.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="appleauthenticationuserdetectionstatus"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -6677,9 +6678,8 @@ for more details.
           AppleAuthenticationUserDetectionStatus
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationuserdetectionstatus"
-          id="appleauthenticationuserdetectionstatus"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -6786,8 +6786,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="unsupported"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6796,9 +6797,8 @@ for more details.
             UNSUPPORTED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#unsupported"
-            id="unsupported"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6855,8 +6855,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="unknown"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6865,9 +6866,8 @@ for more details.
             UNKNOWN
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#unknown"
-            id="unknown"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6924,8 +6924,9 @@ for more details.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="likely_real"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -6934,9 +6935,8 @@ for more details.
             LIKELY_REAL
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#likely_real"
-            id="likely_real"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -6993,14 +6993,14 @@ for more details.
 exports[`APISection expo-pedometer 1`] = `
 <div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="methods"
   >
     Methods
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#methods"
-      id="methods"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -7039,8 +7039,9 @@ exports[`APISection expo-pedometer 1`] = `
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="getpermissionsasync"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -7049,9 +7050,8 @@ exports[`APISection expo-pedometer 1`] = `
           getPermissionsAsync()
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#getpermissionsasync"
-          id="getpermissionsasync"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -7160,8 +7160,9 @@ exports[`APISection expo-pedometer 1`] = `
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="getstepcountasyncstart-end"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -7170,9 +7171,8 @@ exports[`APISection expo-pedometer 1`] = `
           getStepCountAsync(start, end)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#getstepcountasyncstart-end"
-          id="getstepcountasyncstart-end"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -7534,8 +7534,9 @@ a start date that is more than seven days in the past returns only the available
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="isavailableasync"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -7544,9 +7545,8 @@ a start date that is more than seven days in the past returns only the available
           isAvailableAsync()
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#isavailableasync"
-          id="isavailableasync"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -7677,8 +7677,9 @@ available on this device.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="requestpermissionsasync"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -7687,9 +7688,8 @@ available on this device.
           requestPermissionsAsync()
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#requestpermissionsasync"
-          id="requestpermissionsasync"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -7798,8 +7798,9 @@ available on this device.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="watchstepcountcallback"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -7808,9 +7809,8 @@ available on this device.
           watchStepCount(callback)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#watchstepcountcallback"
-          id="watchstepcountcallback"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -8086,14 +8086,14 @@ On iOS, the
     </div>
   </div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="interfaces"
   >
     Interfaces
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#interfaces"
-      id="interfaces"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -8132,8 +8132,9 @@ On iOS, the
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="subscription"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -8142,9 +8143,8 @@ On iOS, the
           Subscription
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#subscription"
-          id="subscription"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -8192,14 +8192,14 @@ On iOS, the
       data-text="true"
     >
       <span
-        class="leading-[1.6154] text-inherit items-center group flex gap-1"
+        class="leading-[1.6154] text-inherit items-center group flex gap-1 scroll-m-5"
         data-text="true"
+        id="subscription-methods"
       >
         Subscription Methods
         <a
-          class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
+          class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
           href="#subscription-methods"
-          id="subscription-methods"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -8239,8 +8239,9 @@ On iOS, the
         class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
       >
         <h3
-          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
           data-heading="true"
+          id="remove"
         >
           <code
             class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -8249,9 +8250,8 @@ On iOS, the
             remove()
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#remove"
-            id="remove"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -8336,14 +8336,14 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="types"
   >
     Types
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#types"
-      id="types"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -8382,8 +8382,9 @@ After calling this function, the listener will no longer receive any events from
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="pedometerresult"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -8392,9 +8393,8 @@ After calling this function, the listener will no longer receive any events from
           PedometerResult
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#pedometerresult"
-          id="pedometerresult"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -8512,8 +8512,9 @@ After calling this function, the listener will no longer receive any events from
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="pedometerupdatecallbackresult"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -8522,9 +8523,8 @@ After calling this function, the listener will no longer receive any events from
           PedometerUpdateCallback(result)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#pedometerupdatecallbackresult"
-          id="pedometerupdatecallbackresult"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -8680,8 +8680,9 @@ After calling this function, the listener will no longer receive any events from
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="permissionexpiration"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -8690,9 +8691,8 @@ After calling this function, the listener will no longer receive any events from
           PermissionExpiration
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#permissionexpiration"
-          id="permissionexpiration"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -8783,8 +8783,9 @@ After calling this function, the listener will no longer receive any events from
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="permissionresponse"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -8793,9 +8794,8 @@ After calling this function, the listener will no longer receive any events from
           PermissionResponse
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#permissionresponse"
-          id="permissionresponse"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -9040,14 +9040,14 @@ in order to enable/disable the permission.
     </div>
   </div>
   <h2
-    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
+    id="enums"
   >
     Enums
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#enums"
-      id="enums"
     >
       <span
         class="flex self-center text-inherit leading-none select-none"
@@ -9086,8 +9086,9 @@ in order to enable/disable the permission.
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="permissionstatus"
       >
         <code
           class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
@@ -9096,9 +9097,8 @@ in order to enable/disable the permission.
           PermissionStatus
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#permissionstatus"
-          id="permissionstatus"
         >
           <span
             class="flex self-center text-inherit leading-none select-none"
@@ -9141,8 +9141,9 @@ in order to enable/disable the permission.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="denied"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -9151,9 +9152,8 @@ in order to enable/disable the permission.
             DENIED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#denied"
-            id="denied"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -9210,8 +9210,9 @@ in order to enable/disable the permission.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="granted"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -9220,9 +9221,8 @@ in order to enable/disable the permission.
             GRANTED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#granted"
-            id="granted"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"
@@ -9279,8 +9279,9 @@ in order to enable/disable the permission.
         class="flex flex-wrap justify-between max-md-gutters:flex-col"
       >
         <h4
-          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1"
+          class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
           data-heading="true"
+          id="undetermined"
         >
           <code
             class="leading-[1.6154] text-default !wrap-anywhere !text-sm !font-medium"
@@ -9289,9 +9290,8 @@ in order to enable/disable the permission.
             UNDETERMINED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] !font-medium"
             href="#undetermined"
-            id="undetermined"
           >
             <span
               class="flex self-center text-inherit leading-none select-none"

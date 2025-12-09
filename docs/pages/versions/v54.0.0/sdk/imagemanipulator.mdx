@@ -29,31 +29,50 @@ files={{
 dependencies={['expo-asset', 'expo-image-manipulator']}>
 
 ```jsx
-import { useState } from 'react';
-import { Button, Image, StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Button, Image, StyleSheet, Text, View } from 'react-native';
 import { Asset } from 'expo-asset';
 import { FlipType, SaveFormat, useImageManipulator } from 'expo-image-manipulator';
 
 const IMAGE = Asset.fromModule(require('./assets/snack-icon.png'));
 
 export default function App() {
-  const [image, setImage] = useState(IMAGE);
-  const context = useImageManipulator(IMAGE.uri);
+  const [imageUri, setImageUri] = useState(IMAGE.uri);
+  const [isReady, setIsReady] = useState(false);
+  const context = useImageManipulator(imageUri);
+
+  const loadImageAsync = async () => {
+    await IMAGE.downloadAsync();
+    setImageUri(IMAGE.localUri ?? IMAGE.uri);
+    setIsReady(true);
+  };
+
+  useEffect(() => {
+    loadImageAsync();
+  }, []);
 
   const rotate90andFlip = async () => {
     context.rotate(90).flip(FlipType.Vertical);
-    const image = await context.renderAsync();
-    const result = await image.saveAsync({
+    const renderedImage = await context.renderAsync();
+    const result = await renderedImage.saveAsync({
       format: SaveFormat.PNG,
     });
 
-    setImage(result);
+    setImageUri(result.uri);
   };
+
+  if (!isReady) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading image...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: image.localUri || image.uri }} style={styles.image} />
+        <Image source={{ uri: imageUri }} style={styles.image} />
       </View>
       <Button title="Rotate and Flip" onPress={rotate90andFlip} />
     </View>

@@ -80,7 +80,7 @@ function NativeTabsView(props) {
     tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
     // #endregion
     // #region iOS props
-    tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} tabBarControllerMode={tabBarControllerMode} bottomAccessory={bottomAccessoryFn} 
+    tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} tabBarControllerMode={tabBarControllerMode} bottomAccessory={bottomAccessoryFn} tabBarHidden={props.hidden} 
     // #endregion
     onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
             props.onTabChange(tabKey);

@@ -98,7 +98,7 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       }
 
       // Go back to the JS thread to execute the callback
-      appContext.executeOnJavaScriptThread {
+      try appContext.runtime.schedule {
         callback(result)
       }
     }

@@ -21,6 +21,10 @@
 - [Android] Remove @UnstableReactNativeAPI annotations. ([#39921](https://github.com/expo/expo/pull/39921) by [@jakex7](https://github.com/jakex7))
 - [iOS] Load track information for events in asynchronous context. ([#40355](https://github.com/expo/expo/pull/40355) by [@behenate](https://github.com/behenate))
 
+## 3.0.15 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.14 - 2025-11-05
 
 _This version does not introduce any user-facing changes._

@@ -42,7 +42,12 @@ const HomeIndex = () => {
           <Switch value={shouldUseCustomXButton} onValueChange={setShouldUseCustomXButton} />
         </View>
         <CaseLink href="/protected" text="Protected" />
+        <CaseLink
+          href={{ pathname: '/test', params: { __internal_expo_router_no_animation: 1 } }}
+          text="/test with animation disabled"
+        />
         <CaseLink href="/test" text="test" />
+        <CaseLink href="/timer" text="Timer with preload" prefetch />
         {Array.from({ length: 20 }).map((_, i) => (
           <CaseLink key={i} href={`/${i}`} text={`Go to ${i}`} />
         ))}
@@ -105,9 +110,9 @@ const HomeIndex = () => {
   );
 };
 
-function CaseLink({ href, text }: { href: Href; text: string }) {
+function CaseLink({ href, text, prefetch }: { href: Href; text: string; prefetch?: boolean }) {
   return (
-    <Link href={href} asChild>
+    <Link href={href} asChild prefetch={prefetch}>
       <Pressable style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
         <Text style={{ color: '#fff' }}>{text}</Text>
       </Pressable>
