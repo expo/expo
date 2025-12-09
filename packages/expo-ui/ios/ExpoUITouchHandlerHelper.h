@@ -1,10 +1,10 @@
-// Copyright 2024-present 650 Industries. All rights reserved.
+// Copyright 2025-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import <ExpoModulesCore/Platform.h>
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTTouchHandlerHelper : NSObject
+@interface ExpoUITouchHandlerHelper : NSObject
 
 + (nullable UIGestureRecognizer *)createAndAttachTouchHandlerForView:(UIView *)view;
 

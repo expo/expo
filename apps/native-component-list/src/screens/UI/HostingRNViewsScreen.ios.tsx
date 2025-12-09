@@ -5,7 +5,7 @@ import {
   HStack,
   List,
   Section,
-  RNHost,
+  RNHostView,
 } from '@expo/ui/swift-ui';
 import { frame, padding } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ export default function HostingRNViewsScreen() {
         <Section title="Mixing RN Components with SwiftUI">
           <VStack spacing={12} modifiers={[padding({ all: 12 })]}>
             <HStack spacing={24}>
-              <RNHost matchContents>
+              <RNHostView matchContents>
                 <Pressable
                   onPress={() => setCounter((prev) => prev - 1)}
                   style={{
@@ -40,9 +40,9 @@ export default function HostingRNViewsScreen() {
                     -
                   </RNText>
                 </Pressable>
-              </RNHost>
+              </RNHostView>
               <SwiftUIText modifiers={[frame({ width: 50 })]}>{counter}</SwiftUIText>
-              <RNHost matchContents>
+              <RNHostView matchContents>
                 <Pressable
                   onPress={() => setCounter((prev) => prev + 1)}
                   style={{
@@ -55,14 +55,14 @@ export default function HostingRNViewsScreen() {
                   }}>
                   <RNText style={{ color: 'white', fontSize: 24 }}>+</RNText>
                 </Pressable>
-              </RNHost>
+              </RNHostView>
             </HStack>
           </VStack>
         </Section>
         <Section title="Dynamically increasing size">
           <VStack spacing={12} modifiers={[padding({ all: 12 })]}>
             <HStack spacing={24}>
-              <RNHost matchContents>
+              <RNHostView matchContents>
                 <Pressable
                   onPress={() => setBoxSize((prev) => prev + 10)}
                   style={{
@@ -78,14 +78,14 @@ export default function HostingRNViewsScreen() {
                   <View style={{ height: 1, width: '100%', backgroundColor: 'white' }} />
                   <RNText style={{ color: 'white' }}>Long press to reset size</RNText>
                 </Pressable>
-              </RNHost>
+              </RNHostView>
             </HStack>
           </VStack>
         </Section>
         <Section title="RN components without explicit size">
           <VStack>
             <HStack spacing={20} modifiers={[padding({ all: 12 })]}>
-              <RNHost matchContents>
+              <RNHostView matchContents>
                 <View
                   style={{
                     padding: 20,
@@ -94,8 +94,8 @@ export default function HostingRNViewsScreen() {
                     alignSelf: 'flex-start',
                   }}
                 />
-              </RNHost>
-              <RNHost matchContents>
+              </RNHostView>
+              <RNHostView matchContents>
                 <View
                   style={{
                     padding: 20,
@@ -104,13 +104,13 @@ export default function HostingRNViewsScreen() {
                     alignSelf: 'flex-start',
                   }}
                 />
-              </RNHost>
+              </RNHostView>
             </HStack>
-            <RNHost matchContents>
+            <RNHostView matchContents>
               <RNText style={{ textAlign: 'center' }}>
                 RN component boxes separated by SwiftUI HStack
               </RNText>
-            </RNHost>
+            </RNHostView>
           </VStack>
         </Section>
       </List>

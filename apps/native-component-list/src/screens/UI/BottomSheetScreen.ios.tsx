@@ -6,7 +6,7 @@ import {
   List,
   VStack,
   Rectangle,
-  RNHost,
+  RNHostView,
   Section,
   Switch,
   PresentationDragIndicatorVisibility,
@@ -182,14 +182,14 @@ const BottomSheetWithReactNativeContent = (props: {
       presentationDetents={props.enableDetent ? ['medium', 'large', 0.2] : undefined}
       interactiveDismissDisabled={props.interactiveDismissDisabled}
       presentationBackgroundInteraction={props.presentationBackgroundInteraction}>
-      <RNHost matchContents>
+      <RNHostView matchContents>
         <Pressable
           style={{ backgroundColor: 'red', width: 100, height }}
           onPress={() => {
             setHeight(height + 10);
           }}
         />
-      </RNHost>
+      </RNHostView>
       <Button
         variant="default"
         onPress={() => {
@@ -216,9 +216,9 @@ const BottomSheetWithReactNativeContentFullHeight = (props: {
       presentationDetents={['large']}
       interactiveDismissDisabled={props.interactiveDismissDisabled}
       presentationBackgroundInteraction={props.presentationBackgroundInteraction}>
-      <RNHost>
+      <RNHostView>
         <Pressable style={{ backgroundColor: 'pink', flex: 1 }} />
-      </RNHost>
+      </RNHostView>
     </BottomSheet>
   );
 };
