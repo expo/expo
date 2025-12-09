@@ -92,6 +92,14 @@
       ],
       "./plugins/withAndroidNetworkSecurityConfig",
       "./plugins/withBenchmarkModules"
-    ]
+    ],
+    "experiments": {
+      "inlineModules": true
+    },
+    "inlineModules": {
+      "watchedDirectories": [
+        "../native-component-list/src/screens/inlineModules/inlineModulesExamples"
+      ]
+    }
   }
 }

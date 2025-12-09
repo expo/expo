@@ -1,5 +1,5 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
-import { getPackageJson } from '@expo/config';
+import { getConfig, getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import JsonFile from '@expo/json-file';
 import type { Reporter } from '@expo/metro/metro';
@@ -12,7 +12,9 @@ import type {
 } from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
 import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
+import { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver/types';
 import chalk from 'chalk';
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -141,6 +143,73 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
   }) as T;
 }
 
+function findUpPackageJsonDirectory(
+  cwd: string,
+  directoryToPackage: Map<string, string>
+): string | undefined {
+  if (['.', path.sep].includes(cwd)) return undefined;
+  if (directoryToPackage.has(cwd)) return directoryToPackage.get(cwd);
+
+  const packageFound = fs.existsSync(path.resolve(cwd, './package.json'));
+  if (packageFound) {
+    directoryToPackage.set(cwd, cwd);
+    return cwd;
+  }
+  const packageRoot = findUpPackageJsonDirectory(path.dirname(cwd), directoryToPackage);
+  if (packageRoot) {
+    directoryToPackage.set(cwd, packageRoot);
+  }
+  return packageRoot;
+}
+
+function resolveInlineModules(
+  projectRoot: string,
+  directoryToPackage: Map<string, string>,
+  context: CustomResolutionContext,
+  moduleName: string,
+  platform: string | null
+): Resolution {
+  const inlineModulesModulesPath = path.resolve(projectRoot, './.expo/inlineModules/modules');
+
+  let inlineModuleFileExtension = null;
+  if (moduleName.endsWith('.module')) {
+    inlineModuleFileExtension = '.module.js';
+  } else if (moduleName.endsWith('.view')) {
+    inlineModuleFileExtension = '.view.js';
+  }
+
+  if (inlineModuleFileExtension) {
+    const originModuleDirname = path.dirname(context.originModulePath);
+    let modulePackageRoot: string | undefined = directoryToPackage.get(originModuleDirname);
+    if (!modulePackageRoot) {
+      modulePackageRoot = findUpPackageJsonDirectory(
+        path.dirname(context.originModulePath),
+        directoryToPackage
+      );
+    }
+    if (!modulePackageRoot) {
+      return { type: 'empty' };
+    }
+    const modulePathRelativeToItsPackageRoot = path.relative(
+      modulePackageRoot,
+      fs.realpathSync(path.dirname(context.originModulePath))
+    );
+
+    const modulePath = path.resolve(
+      inlineModulesModulesPath,
+      modulePathRelativeToItsPackageRoot,
+      moduleName.substring(0, moduleName.lastIndexOf('.')) + inlineModuleFileExtension
+    );
+
+    return {
+      filePath: modulePath,
+      type: 'sourceFile',
+    };
+  }
+
+  return context.resolveRequest(context, moduleName, platform);
+}
+
 export function createStableModuleIdFactory(
   root: string
 ): (path: string, context?: { platform: string; environment?: string | null }) => number {
@@ -228,6 +297,8 @@ export function getDefaultConfig(
 
   // Add support for cjs (without platform extensions).
   sourceExts.push('cjs');
+  sourceExts.push('kt');
+  sourceExts.push('swift');
 
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
   const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
@@ -285,6 +356,22 @@ export function getDefaultConfig(
   });
 
   const serverRoot = getMetroServerRoot(projectRoot);
+  const expoConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const directoryToPackage = new Map<string, string>();
+  const resolveInlineModulesWithAdditionalConfig = (
+    context: CustomResolutionContext,
+    moduleName: string,
+    platform: string | null
+  ) => {
+    return resolveInlineModules(projectRoot, directoryToPackage, context, moduleName, platform);
+  };
+
+  const contextResolveRequest = (
+    context: CustomResolutionContext,
+    moduleName: string,
+    platform: string | null
+  ) => context.resolveRequest(context, moduleName, platform);
+  const defaultResolveRequest = metroDefaultValues.resolver.resolveRequest ?? contextResolveRequest;
 
   const routerPackageRoot = resolveFrom.silent(projectRoot, 'expo-router');
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
@@ -310,6 +397,10 @@ export function getDefaultConfig(
         .filter((assetExt: string) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
+      resolveRequest:
+        expoConfig.exp.experiments?.inlineModules === true
+          ? resolveInlineModulesWithAdditionalConfig
+          : defaultResolveRequest,
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.

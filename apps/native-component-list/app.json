@@ -81,6 +81,12 @@
       "eas": {
         "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774"
       }
+    },
+    "experiments": {
+      "inlineModules": true
+    },
+    "inlineModules": {
+      "watchedDirectories": ["src/screens/inlineModules/inlineModulesExamples/"]
     }
   }
 }

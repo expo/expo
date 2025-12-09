@@ -1,6 +1,7 @@
 /* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
+const fs = require('node:fs');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -24,6 +25,23 @@ config.watchFolders = [
   path.join(monorepoRoot, 'apps/test-suite'), // Workaround for Yarn v1 workspace issue where workspace dependencies aren't properly linked, should be at `<root>/node_modules/apps/test-suite`
 ];
 
+function findUpPackageJsonDirectory(cwd, directoryToPackage) {
+  if (['.', path.sep].includes(cwd)) return undefined;
+  if (directoryToPackage.has(cwd)) return directoryToPackage.get(cwd);
+
+  const packageFound = fs.existsSync(path.resolve(cwd, './package.json'));
+  if (packageFound) {
+    directoryToPackage.set(cwd, cwd);
+    return cwd;
+  }
+  const packageRoot = findUpPackageJsonDirectory(path.dirname(cwd), directoryToPackage);
+  if (packageRoot) {
+    directoryToPackage.set(cwd, packageRoot);
+  }
+  return packageRoot;
+}
+const directoryToPackage = new Map();
+
 // When testing on MacOS we need to swap out `react-native` for `react-native-macos`
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (
@@ -33,6 +51,43 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     const newModuleName = moduleName.replace('react-native', 'react-native-macos');
     return context.resolveRequest(context, newModuleName, platform);
   }
+
+  const inlineModulesModulesPath = path.resolve(__dirname, './.expo/inlineModules/modules');
+
+  let inlineModuleFileExtension = null;
+  if (moduleName.endsWith('.module')) {
+    inlineModuleFileExtension = '.module.js';
+  } else if (moduleName.endsWith('.view')) {
+    inlineModuleFileExtension = '.view.js';
+  }
+  if (inlineModuleFileExtension) {
+    const originModuleDirname = path.dirname(context.originModulePath);
+    let modulePackageRoot = directoryToPackage.get(originModuleDirname);
+    if (!modulePackageRoot) {
+      modulePackageRoot = findUpPackageJsonDirectory(
+        path.dirname(context.originModulePath),
+        directoryToPackage
+      );
+    }
+    if (!modulePackageRoot) {
+      return { type: 'empty' };
+    }
+    const modulePathRelativeToItsPackageRoot = path.relative(
+      modulePackageRoot,
+      fs.realpathSync(path.dirname(context.originModulePath))
+    );
+    const modulePath = path.resolve(
+      inlineModulesModulesPath,
+      modulePathRelativeToItsPackageRoot,
+      moduleName.substring(0, moduleName.lastIndexOf('.')) + inlineModuleFileExtension
+    );
+
+    return {
+      filePath: modulePath,
+      type: 'sourceFile',
+    };
+  }
+
   return context.resolveRequest(context, moduleName, platform);
 };
 // writing a screenshot otherwise shows a metro refresh banner at the top of the screen which can interfere with another screenshot
