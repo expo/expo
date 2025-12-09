@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix search params types inference for routes without route params ([#41301](https://github.com/expo/expo/pull/41301) by [@AmauryLiet](https://github.com/AmauryLiet))
+
 ### 💡 Others
 
 ## 5.1.8 — 2025-12-05
