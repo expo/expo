@@ -96,6 +96,33 @@ export async function getSubstitutionDataPrompts(
       message: 'Do you want the module to include a native View component?',
       initial: false, // todo revert to true
     },
+    {
+      // Ask for the view name only if user wants to include a native View
+      type: (_: any, answers: Answers<string>) => (answers.includeView ? 'text' : null),
+      name: 'viewName',
+      message: 'What is the native View name?',
+      initial: (_: any, answers: Answers<string>) => {
+        const base = answers.name || '';
+        // Suggest base + 'View' unless base already ends with View
+        let suggestion = base.endsWith('View') ? base : `${base}View`;
+        // Avoid suggesting a name equal to the module name
+        const moduleName = base.endsWith('Module') ? base : `${base}Module`;
+        if (suggestion === moduleName) {
+          suggestion = `${base}NativeView`;
+        }
+        return suggestion;
+      },
+      validate: (input: string, answers: Answers<string>) => {
+        if (!answers.includeView) return true;
+        if (!input) return 'The native View name cannot be empty';
+        const base = answers.name || '';
+        const prospectiveModuleName = base.endsWith('Module') ? base : `${base}Module`;
+        if (input === prospectiveModuleName) {
+          return 'View name must differ from the module name (try removing "Module" or adding "View").';
+        }
+        return true;
+      },
+    },
   ];
 
   if (includeGhConfig) {
@@ -165,6 +192,33 @@ export async function getLocalSubstitutionDataPrompts(
       name: 'includeView',
       message: 'Do you want the module to include a native View component?',
       initial: false, // todo revert to true
+    },
+    {
+      // Ask for the view name only if user wants to include a native View
+      type: (_: any, answers: Answers<string>) => (answers.includeView ? 'text' : null),
+      name: 'viewName',
+      message: 'What is the native View name?',
+      initial: (_: any, answers: Answers<string>) => {
+        const base = answers.name || '';
+        // Suggest base + 'View' unless base already ends with View
+        let suggestion = base.endsWith('View') ? base : `${base}View`;
+        // Avoid suggesting a name equal to the module name
+        const moduleName = base.endsWith('Module') ? base : `${base}Module`;
+        if (suggestion === moduleName) {
+          suggestion = `${base}NativeView`;
+        }
+        return suggestion;
+      },
+      validate: (input: string, answers: Answers<string>) => {
+        if (!answers.includeView) return true;
+        if (!input) return 'The native View name cannot be empty';
+        const base = answers.name || '';
+        const prospectiveModuleName = base.endsWith('Module') ? base : `${base}Module`;
+        if (input === prospectiveModuleName) {
+          return 'View name must differ from the module name (try removing "Module" or adding "View").';
+        }
+        return true;
+      },
     },
   ];
 }

@@ -414,6 +414,7 @@ async function askForSubstitutionDataAsync(
     repo,
     platform,
     includeView,
+    viewName,
   } = await prompts(promptQueries, { onCancel});
 
   // Derive reverse-DNS base identifier (Android package / iOS bundle id base) from slug
@@ -424,14 +425,26 @@ async function askForSubstitutionDataAsync(
   const android = selectedPlatforms.includes('android');
   const web = selectedPlatforms.includes('web');
 
+  // Resolve names consistently
+  const moduleName = handleSuffix(name, 'Module');
+  let resolvedViewName = viewName ?? handleSuffix(name, 'View');
+  // Ensure viewName never collides with moduleName
+  if (resolvedViewName === moduleName) {
+    const baseNoModule = name.endsWith('Module') ? name.slice(0, -'Module'.length) : name;
+    resolvedViewName = handleSuffix(baseNoModule, 'View');
+    if (resolvedViewName === moduleName) {
+      resolvedViewName = `${baseNoModule}NativeView`;
+    }
+  }
+
   if (isLocal) {
     return {
       project: {
         slug,
         name,
         package: projectPackage,
-        moduleName: handleSuffix(name, 'Module'),
-        viewName: handleSuffix(name, 'View'),
+        moduleName,
+        viewName: resolvedViewName,
       },
       features: {
         view: !!includeView,
@@ -457,8 +470,8 @@ async function askForSubstitutionDataAsync(
       version: '0.1.0',
       description,
       package: projectPackage,
-      moduleName: handleSuffix(name, 'Module'),
-      viewName: handleSuffix(name, 'View'),
+      moduleName,
+      viewName: resolvedViewName,
     },
     features: {
       view: !!includeView,
