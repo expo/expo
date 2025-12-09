@@ -19,6 +19,7 @@ import {
   getLocalSubstitutionDataPrompts,
   getSlugPrompt,
   getSubstitutionDataPrompts,
+  getViewNamePrompt,
 } from './prompts';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
@@ -423,31 +424,7 @@ async function askForSubstitutionDataAsync(
   let viewName: string | undefined = undefined;
 
   if (includeView) {
-    const viewPrompt: PromptObject<string> = {
-      type: 'text',
-      name: 'viewName',
-      message: 'What is the native View name?',
-      initial: () => {
-        const base = name || '';
-        let suggestion = base.endsWith('View') ? base : `${base}View`;
-        const moduleName = base.endsWith('Module') ? base : `${base}Module`;
-        if (suggestion === moduleName) {
-          suggestion = `${base}NativeView`;
-        }
-        return suggestion;
-      },
-      validate: (input: string) => {
-        if (!input) return 'The native View name cannot be empty';
-        const base = name || '';
-        const prospectiveModuleName = base.endsWith('Module') ? base : `${base}Module`;
-        if (input === prospectiveModuleName) {
-          return 'View name must differ from the module name (try removing "Module" or adding "View").';
-        }
-        return true;
-      },
-    };
-
-    const { viewName: answeredViewName } = await prompts(viewPrompt, { onCancel });
+    const { viewName: answeredViewName } = await prompts(getViewNamePrompt(name), { onCancel });
     viewName = answeredViewName;
   }
 

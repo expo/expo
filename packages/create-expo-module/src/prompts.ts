@@ -133,6 +133,32 @@ export async function getSubstitutionDataPrompts(
   return prompts;
 }
 
+export function getViewNamePrompt(name: string): PromptObject<string> {
+  return {
+    type: 'text',
+    name: 'viewName',
+    message: 'What is the native View name?',
+    initial: () => {
+      const base = name || '';
+      let suggestion = base.endsWith('View') ? base : `${base}View`;
+      const moduleName = base.endsWith('Module') ? base : `${base}Module`;
+      if (suggestion === moduleName) {
+        suggestion = `${base}NativeView`;
+      }
+      return suggestion;
+    },
+    validate: (input: string) => {
+      if (!input) return 'The native View name cannot be empty';
+      const base = name || '';
+      const prospectiveModuleName = base.endsWith('Module') ? base : `${base}Module`;
+      if (input === prospectiveModuleName) {
+        return 'View name must differ from the module name (try removing "Module" or adding "View").';
+      }
+      return true;
+    },
+  };
+}
+
 export async function getLocalSubstitutionDataPrompts(
   slug: string
 ): Promise<PromptObject<string>[]> {
