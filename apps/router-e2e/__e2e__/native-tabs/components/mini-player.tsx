@@ -1,4 +1,4 @@
-import FontAwesomeIcons from '@expo/vector-icons/FontAwesome5';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { Image, ColorValue, DynamicColorIOS, Platform, Pressable, Text, View } from 'react-native';
 import { ShimmerText } from './shimmer';
@@ -17,6 +17,7 @@ export function MiniPlayer({ isPlaying, setIsPlaying }: MiniPlayerProps) {
   });
   return (
     <View style={{ flex: 1 }}>
+      Unwrapped Text
       <View
         style={{
           // width,
@@ -75,4 +76,3 @@ export function MiniPlayer({ isPlaying, setIsPlaying }: MiniPlayerProps) {
     </View>
   );
 }
-import Ionicons from '@expo/vector-icons/Ionicons';
