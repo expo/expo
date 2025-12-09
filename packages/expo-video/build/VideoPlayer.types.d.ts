@@ -292,7 +292,8 @@ export type VideoThumbnailOptions = {
  * - `error`: The player has encountered an error while loading or playing the video.
  */
 export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
-export type VideoSource = string | number | null | {
+export type VideoSource = string | number | null | VideoSourceObject;
+export type VideoSourceObject = {
     /**
      * The URI of the video.
      *
@@ -497,7 +498,7 @@ export type SubtitleTrack = {
      *
      * @platform android
      */
-    id: string;
+    id?: string;
     /**
      * Language of the subtitle track. For example, `en`, `pl`, `de`.
      */
@@ -558,7 +559,7 @@ export type AudioTrack = {
      * A string used by expo-video to identify the audio track.
      * @platform android
      */
-    id: string;
+    id?: string;
     /**
      * Language of the audio track. For example, 'en', 'pl', 'de'.
      */
