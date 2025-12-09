@@ -49,7 +49,10 @@ export type RouteInputParams<T extends Route> = Extract<Href, {
 }>['params'];
 export type RouteOutputParams<T extends Route> = Extract<HrefOutputParams, {
     pathname: T;
-}> extends never ? HrefOutputParams extends infer H ? H extends Record<'pathname' | 'params', any> ? T extends H['pathname'] ? H['params'] : never : never : never : Extract<HrefOutputParams, {
+}> extends never ? HrefOutputParams extends infer H ? H extends {
+    pathname: any;
+    params?: any;
+} ? T extends H['pathname'] ? H['params'] : never : never : never : Extract<HrefOutputParams, {
     pathname: T;
 }>['params'];
 export type RouteParams<T extends Route> = RouteOutputParams<T>;
