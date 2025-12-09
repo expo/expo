@@ -825,9 +825,10 @@ export interface Android {
      */
     version?: string;
     /**
-     * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to false.
+     * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to true.
+     * @deprecated Android 16+ (API level 36) requires edge-to-edge to be enabled. This feature can't be disabled anymore. [learn more](https://developer.android.com/about/versions/16/behavior-changes-16#edge-to-edge)
      */
-    edgeToEdgeEnabled?: boolean;
+    edgeToEdgeEnabled?: true;
     /**
      * Enable your app to use the [predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) on Android 13 (API level 33) and later. Default to false.
      */
