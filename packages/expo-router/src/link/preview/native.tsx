@@ -146,6 +146,8 @@ export function LinkZoomTransitionSource(
     <LinkZoomTransitionSourceNativeView
       {...props}
       disableForceFlatten
+      collapsable={false}
+      collapsableChildren={false}
       style={{ display: 'contents' }}
     />
   );
@@ -167,6 +169,8 @@ export function LinkZoomTransitionAlignmentRectDetector(props: {
     <LinkZoomTransitionAlignmentRectDetectorNative
       {...props}
       disableForceFlatten
+      collapsable={false}
+      collapsableChildren={false}
       style={{ display: 'contents' }}
     />
   );
