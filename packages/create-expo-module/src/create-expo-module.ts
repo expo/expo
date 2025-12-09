@@ -134,6 +134,7 @@ async function main(target: string | undefined, options: CommandOptions) {
     await createModuleFromTemplate(packagePath, targetDir, data);
     step.succeed('Created the module from template files');
   });
+
   if (!options.local) {
     await newStep('Installing module dependencies', async (step) => {
       await installDependencies(packageManager, targetDir);
@@ -189,7 +190,7 @@ async function main(target: string | undefined, options: CommandOptions) {
     printFurtherLocalInstructions(slug, data.project.moduleName);
   } else {
     console.log('✅ Successfully created Expo module');
-    printFurtherInstructions(targetDir, packageManager, options.example);
+    printFurtherInstructions(targetDir, packageManager, options.example, data.features);
   }
 }
 
@@ -529,19 +530,36 @@ async function confirmTargetDirAsync(targetDir: string): Promise<void> {
 function printFurtherInstructions(
   targetDir: string,
   packageManager: PackageManagerName,
-  includesExample: boolean
+  includesExample: boolean,
+  features: { ios?: boolean; android?: boolean; web?: boolean; platforms?: string[] }
 ) {
   if (includesExample) {
-    const commands = [
-      `cd ${path.relative(CWD, targetDir)}`,
-      formatRunCommand(packageManager, 'open:ios'),
-      formatRunCommand(packageManager, 'open:android'),
-    ];
+    const commands: string[] = [`cd ${path.relative(CWD, targetDir)}`];
+    const platformNames: string[] = [];
+
+    if (features?.ios) {
+      platformNames.push('iOS');
+      commands.push(formatRunCommand(packageManager, 'open:ios'));
+    }
+    if (features?.android) {
+      platformNames.push('Android');
+      commands.push(formatRunCommand(packageManager, 'open:android'));
+    }
 
     console.log();
-    console.log(
-      'To start developing your module, navigate to the directory and open Android and iOS projects of the example app'
-    );
+    if (platformNames.length === 0) {
+      console.log('To start developing your module, navigate to the example directory:');
+    } else if (platformNames.length === 1) {
+      console.log(
+        `To start developing your module, navigate to the directory and open the ${platformNames[0]} project of the example app`
+      );
+    } else {
+      const last = platformNames.pop();
+      console.log(
+        `To start developing your module, navigate to the directory and open the ${platformNames.join(', ')} and ${last} projects of the example app`
+      );
+    }
+
     commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
     console.log();
   }

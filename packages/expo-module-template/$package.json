@@ -11,9 +11,11 @@
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "open:ios": "xed example/ios",
-    "open:android": "open -a \"Android Studio\" example/android"
+    "expo-module": "expo-module"<% const platformScripts = [];
+      if (features.ios) platformScripts.push(`${JSON.stringify('open:ios')}: ${JSON.stringify('xed example/ios')}`);
+      if (features.android) platformScripts.push(`${JSON.stringify('open:android')}: ${JSON.stringify('open -a "Android Studio" example/android')}`);
+      if (platformScripts.length) { %>,
+    <%- platformScripts.join(',\n    ') %><% } %>
   },
   "keywords": ["react-native", "expo", "<%- project.slug %>", "<%- project.name %>"],
   "repository": "<%- repo %>",
