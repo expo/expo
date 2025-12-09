@@ -268,6 +268,7 @@ function parseFileTreeFilesLiteral(literal) {
 
   try {
     return parse(literal);
+    // eslint-disable-next-line no-unused-vars
   } catch (error) {
     try {
       return parse(sanitizeFileTreeFilesLiteral(literal));
