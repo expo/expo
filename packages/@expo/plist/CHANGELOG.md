@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- bump base64-js from 1.2.3 to 1.5.1 ([#41211](https://github.com/expo/expo/pull/41211) by [@hassankhan](https://github.com/hassankhan))
+
 ## 0.4.8 - 2025-12-05
 
 _This version does not introduce any user-facing changes._
