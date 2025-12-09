@@ -58,7 +58,7 @@ extension ExpoSwiftUI {
     }
   }
 
-  public protocol RNHostProtocol {
+  public protocol RNHostViewProtocol {
     var matchContents: Bool { get set }
   }
 }
@@ -76,7 +76,7 @@ private struct ViewSizeWrapper: View {
   }
 
   var body: some View {
-    if let rnHost = viewHost.view as? ExpoSwiftUI.RNHostProtocol, rnHost.matchContents {
+    if let rnHostView = viewHost.view as? ExpoSwiftUI.RNHostViewProtocol, rnHostView.matchContents {
       viewHost
         .frame(width: viewSizeModel.viewFrame.width, height: viewSizeModel.viewFrame.height)
     } else {
