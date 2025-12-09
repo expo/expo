@@ -1,3 +1,5 @@
+import { parseUrlUsingCustomBase } from '../utils/url';
+
 /**
  * Convert a route's pathname to a loader module path.
  *
@@ -7,7 +9,7 @@
  * getLoaderModulePath(`/posts/1`) // `/_expo/loaders/posts/1`
  */
 export function getLoaderModulePath(pathname: string): string {
-  const urlPath = new URL(pathname, 'http://localhost').pathname;
+  const urlPath = parseUrlUsingCustomBase(pathname).pathname;
   const normalizedPath = urlPath === '/' ? '/' : urlPath.replace(/\/$/, '');
   const pathSegment = normalizedPath === '/' ? '/index' : normalizedPath;
 
