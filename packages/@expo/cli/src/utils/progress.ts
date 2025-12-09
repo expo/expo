@@ -23,14 +23,13 @@ export function createProgressBar(barFormat: string, options: ProgressBar.Progre
   const errorReal = console.error;
 
   const wrapNativeLogs = (): void => {
-    // @ts-expect-error
-    console.log = (...args: any) => bar.interrupt(...args);
-    // @ts-expect-error
-    console.info = (...args: any) => bar.interrupt(...args);
-    // @ts-expect-error
-    console.warn = (...args: any) => bar.interrupt(...args);
-    // @ts-expect-error
-    console.error = (...args: any) => bar.interrupt(...args);
+    // TODO(@kitten): This was a spread-passthrough since this code was added, but typings indicate
+    // this isn't correct and we're discarding output here. If we could have a better stdout redirection
+    // in the future here, that'd be preferable
+    console.log = (...args: any[]) => bar.interrupt(...(args as [string]));
+    console.info = (...args: any[]) => bar.interrupt(...(args as [string]));
+    console.warn = (...args: any[]) => bar.interrupt(...(args as [string]));
+    console.error = (...args: any[]) => bar.interrupt(...(args as [string]));
   };
 
   const resetNativeLogs = (): void => {

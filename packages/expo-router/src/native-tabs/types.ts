@@ -1,6 +1,12 @@
 import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
-import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
+import type {
+  ColorValue,
+  ImageSourcePropType,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
 import type { BottomTabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -35,6 +41,32 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   hidden?: boolean;
   specialEffects?: BottomTabsScreenProps['specialEffects'];
   nativeProps?: NativeScreenProps;
+  disableAutomaticContentInsets?: boolean;
+  contentStyle?: Pick<
+    ViewStyle,
+    | 'backgroundColor'
+    | 'experimental_backgroundImage'
+    | 'padding'
+    | 'paddingTop'
+    | 'paddingBottom'
+    | 'paddingLeft'
+    | 'paddingRight'
+    | 'paddingBlock'
+    | 'paddingBlockEnd'
+    | 'paddingBlockStart'
+    | 'paddingInline'
+    | 'paddingInlineEnd'
+    | 'paddingInlineStart'
+    | 'paddingEnd'
+    | 'paddingHorizontal'
+    | 'paddingVertical'
+    | 'paddingStart'
+    | 'alignContent'
+    | 'alignItems'
+    | 'justifyContent'
+    | 'flexDirection'
+    | 'gap'
+  >;
 }
 
 export type SymbolOrImageSource =
@@ -121,6 +153,12 @@ export interface NativeTabsProps extends PropsWithChildren {
    * The background color of every badge in the tab bar.
    */
   badgeBackgroundColor?: ColorValue;
+  /**
+   * When set to `true`, hides the tab bar.
+   *
+   * @default false
+   */
+  hidden?: boolean;
   // #endregion common props
   // #region iOS props
   /**
@@ -223,9 +261,13 @@ export interface NativeTabsProps extends PropsWithChildren {
   badgeTextColor?: ColorValue;
   // #endregion android props
 }
+
+export interface InternalNativeTabsProps extends NativeTabsProps {
+  nonTriggerChildren?: React.ReactNode;
+}
 export interface NativeTabsViewProps
   extends Omit<
-    NativeTabsProps,
+    InternalNativeTabsProps,
     | 'labelStyle'
     | 'iconColor'
     | 'backgroundColor'
@@ -335,6 +377,29 @@ export interface NativeTabTriggerProps {
    * @platform ios
    */
   role?: NativeTabsTabBarItemRole;
+  /**
+   * The default behavior differs between iOS and Android.
+   *
+   * On **Android**, the content of a native tabs screen is automatically wrapped in a `SafeAreaView`,
+   * and the **bottom** inset is applied. Other insets must be handled manually.
+   *
+   * On **iOS**, the first scroll view nested inside a native tabs screen has
+   * [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled
+   *
+   * When this property is set to `true`, automatic content inset adjustment is disabled for the screen
+   * and must be managed manually. You can use `SafeAreaView` from `react-native-screens/experimental`
+   * to handle safe area insets.
+   *
+   * @platform android
+   * @platform ios
+   */
+  disableAutomaticContentInsets?: boolean;
+  /**
+   * The style applied to the content of the tab
+   *
+   * Note: Only certain style properties are supported.
+   */
+  contentStyle?: NativeTabOptions['contentStyle'];
 }
 
 const SUPPORTED_TAB_BAR_ITEM_ROLES = [

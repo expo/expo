@@ -149,7 +149,7 @@ const Menus = () => {
               console.log('Delete Pressed');
             }}
           />
-          <Link.Menu title="Single" displayAsPalette displayInline>
+          <Link.Menu title="Single" palette inline>
             <Link.MenuAction
               title="1"
               onPress={() => setPalette('1')}

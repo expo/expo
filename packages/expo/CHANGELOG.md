@@ -16,29 +16,62 @@
 - [iOS] Add `applicationDidReceiveMemoryWarning` subscribing to ExpoAppDelegate ([#40504](https://github.com/expo/expo/pull/40504) by [@szydlovsky](https://github.com/szydlovsky))
 - Fork default RN `HMRClient` to enable custom HMR Errors handling and UI ([#40449](https://github.com/expo/expo/pull/40449) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Add support for a new error overlay UI from `@expo/log-box` ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers. ([#40684](https://github.com/expo/expo/pull/40684) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `Class` definition for shared objects is now optional. ([#40708](https://github.com/expo/expo/pull/40708) by [@tsapeta](https://github.com/tsapeta))
 - Split out JSI layer from the modules core. ([#40755](https://github.com/expo/expo/pull/40755) by [@tsapeta](https://github.com/tsapeta))
+- Add `@expo/local-build-cache-provider` package ([#41270](https://github.com/expo/expo/pull/41270) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Added `appDelegateWillBeginInitialization` function to AppDelegate subscribers. ([#41456](https://github.com/expo/expo/pull/41456) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
-- Fix setting filename in `FormData`. ([#40586](https://github.com/expo/expo/pull/40586) by [@aleqsio](https://github.com/aleqsio))
-- Fixed DOM Components entry not found from updates on Android. ([#40574](https://github.com/expo/expo/pull/40574) by [@kudo](https://github.com/kudo))
 - Empty HMR update should not reset the error overlay ([#40741](https://github.com/expo/expo/pull/40741) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- Fix `ExpoAppDelegate` not extending `UIResponder`. ([#41066](https://github.com/expo/expo/pull/41066) by [@tsapeta](https://github.com/tsapeta))
 - Fixed broken `Updates.reloadAsync`. ([#41260](https://github.com/expo/expo/pull/41260) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - [Types] Fix `transitionDuration` type missing the `number` option for Reanimated V4 compatibility. ([#40793](https://github.com/expo/expo/pull/40793) by [@DelphineBugner](https://github.com/DelphineBugner))
 - [android] Add getDefaultReactHost to ExpoReactHostFactory ([#40086](https://github.com/expo/expo/pull/40086) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [Android] Remove edge-to-edge logic from `ReactActivityDelegateWrapper`. ([#40263](https://github.com/expo/expo/pull/40263) by [@behenate](https://github.com/behenate))
 - [expo/dom] Add `overrideUri` to `DOMProps` to enable pre-bundled DOM Components. ([#40397](https://github.com/expo/expo/pull/40397) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- Add `internal/async-require-module` for `@expo/metro-config`'s `asyncRequireModulePath`([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
+- Add recommended `react-server-dom-webpack` version to `bundledNativeModules.json` ([#41429](https://github.com/expo/expo/pull/41429) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.26 - 2025-12-04
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.25 - 2025-11-18
+
+### 🐛 Bug fixes
+
+- Fix `ExpoAppDelegate` not extending `UIResponder`. ([#41066](https://github.com/expo/expo/pull/41066) by [@tsapeta](https://github.com/tsapeta))
+
+## 54.0.24 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.23 - 2025-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.22 - 2025-11-03
+
+### 🎉 New features
+
+- [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers. ([#40684](https://github.com/expo/expo/pull/40684) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fix setting filename in `FormData`. ([#40586](https://github.com/expo/expo/pull/40586) by [@aleqsio](https://github.com/aleqsio))
+- Fixed DOM Components entry not found from updates on Android. ([#40574](https://github.com/expo/expo/pull/40574) by [@kudo](https://github.com/kudo))
+
+## 54.0.21 - 2025-10-28
+
+### 💡 Others
+
+- Add `internal/async-require-module` for `@expo/metro-config`'s `asyncRequireModulePath`([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
+- [Android] Remove edge-to-edge logic from `ReactActivityDelegateWrapper`. ([#40263](https://github.com/expo/expo/pull/40263) by [@behenate](https://github.com/behenate))
 
 ## 54.0.20 - 2025-10-23
 

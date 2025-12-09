@@ -48,6 +48,7 @@ public:
   jclass jJavaScriptObject;
   jclass jJavaScriptValue;
   jclass jJavaScriptTypedArray;
+  jclass jJavaScriptArrayBuffer;
 
   jclass jReadableNativeArray;
   jclass jReadableNativeMap;

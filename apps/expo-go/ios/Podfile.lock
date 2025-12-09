@@ -16,9 +16,6 @@ PODS:
     - ReactCommon/turbomodule/core
   - EXConstants (18.0.9):
     - ExpoModulesCore
-  - EXImageLoader (6.0.0):
-    - ExpoModulesCore
-    - React-Core
   - EXJSONUtils (0.15.0)
   - EXJSONUtils/Tests (0.15.0)
   - EXManifests (1.0.8):
@@ -223,7 +220,6 @@ PODS:
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImageManipulator (14.0.7):
-    - EXImageLoader
     - ExpoModulesCore
     - SDWebImageWebPCoder
   - ExpoImagePicker (17.0.8):
@@ -3661,7 +3657,7 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNScreens (4.19.0-nightly-20251123-253b82666):
+  - RNScreens (4.19.0-nightly-20251203-1746a584e):
     - boost
     - DoubleConversion
     - fast_float
@@ -3688,10 +3684,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.19.0-nightly-20251123-253b82666)
+    - RNScreens/common (= 4.19.0-nightly-20251203-1746a584e)
     - SocketRocket
     - Yoga
-  - RNScreens/common (4.19.0-nightly-20251123-253b82666):
+  - RNScreens/common (4.19.0-nightly-20251203-1746a584e):
     - boost
     - DoubleConversion
     - fast_float
@@ -3992,7 +3988,6 @@ DEPENDENCIES:
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../node_modules/expo-av/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
-  - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
@@ -4237,8 +4232,6 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/expo-av/ios"
   EXConstants:
     :path: "../../../packages/expo-constants/ios"
-  EXImageLoader:
-    :path: "../../../packages/expo-image-loader/ios"
   EXJSONUtils:
     :path: "../../../packages/expo-json-utils/ios"
   EXManifests:
@@ -4581,13 +4574,12 @@ SPEC CHECKSUMS:
   EXApplication: a9d1c46d473d36f61302a9a81db2379441f3f094
   EXAV: f33ecd2d85522045cb1f0cc2fae3aa53e4e0c3c0
   EXConstants: 59d46d25b89f88cc38291a56dbce4d550758f72d
-  EXImageLoader: e501c001bc40b8326605e82e6e80363c80fe06b5
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
   Expo: 446942b564f6fa3f855457d1f1678a9d5c5f3741
-  expo-dev-menu: 5cb7b596faa72b1134ccf05e183006a867b704e3
-  expo-dev-menu-interface: 600df12ea01efecdd822daaf13cc0ac091775533
+  expo-dev-menu: ae1feaf51f47590afc4527c6a75165beb7aed0dd
+  expo-dev-menu-interface: 30d9aa2fbca275a1335ca7e076273dac1d42d40a
   ExpoAgeRange: 5203a372b2f4ef4e5510acf025373d52de60f8df
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
   ExpoAsset: 4375a46b45b12bbfcf6efac8c8a33aebdb8ba12b
@@ -4612,7 +4604,7 @@ SPEC CHECKSUMS:
   ExpoGlassEffect: 02d9577dfe05a6b6c9856fd71514120e96792052
   ExpoHaptics: b48d913e7e5f23816c6f130e525c9a6501b160b5
   ExpoImage: 0fc185a4a4e462fedfe877ae66204a7c541dfee0
-  ExpoImageManipulator: dbf5b8fc805b55463811cb3da96ab60c532faae8
+  ExpoImageManipulator: d6ebf77518412c40d9837d72bf043fd95edec643
   ExpoImagePicker: bd0a5c81d7734548f6908a480609257e85d19ea8
   ExpoKeepAwake: 3f5e3ac53627849174f3603271df8e08f174ed4a
   ExpoLinearGradient: f9e7182e5253d53b2de4134b69d70bbfc2d50588
@@ -4638,7 +4630,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 6f52a070c3083c11717cf2236ae8fd6ac45bf028
   ExpoSMS: 429edbe5911e7899bc9a0a1a2c106677f552dc33
   ExpoSpeech: 0b515130c96898789e72e8d0aac82b7e9123e88b
-  ExpoSQLite: f9d1202877e12bfa78a58309a3977ee4ea0b1314
+  ExpoSQLite: e22c4e298016e658454527ec7dbda5a237b293a3
   ExpoStoreReview: 142af4a031b0a7ad99e70e1de8675da03be4ff40
   ExpoSymbols: ef7b8ac77ac2d496b1bc3f0f7daf5e19c3a9933a
   ExpoSystemUI: 5e7fbe4b716edb9e3a7bc0441e4a3b6b1f9eb1ea
@@ -4766,7 +4758,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: c4a42c6a77d474f05162d61a4ab4253d13008277
   RNGestureHandler: afae32614741017de0f813f74586eee29773f31a
   RNReanimated: ef9140fe842a253834fdf8aaff0c0edacf560dde
-  RNScreens: 37488c034f22072a8c5404cb8372a35d0e3b90b0
+  RNScreens: 4e990ea0c4dac22e87b6a4f8b08c8efb9c3d28b6
   RNSVG: 6e742388ed2c7bfe7c9f5baf42b8eb850adc0442
   RNWorklets: 089683f4a4564f30393d32352d41d9e92c3e5a55
   SDWebImage: f29024626962457f3470184232766516dee8dfea
@@ -4787,6 +4779,6 @@ SPEC CHECKSUMS:
   Yoga: cec68ad2cff7afc3e8f47ad6a056aa4b084cd1ac
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 0b9713db7a4765fdd022d7a668e1e138bf3b17b0
+PODFILE CHECKSUM: 742e8f741f69382578860d1bf3542a2909c81f37
 
 COCOAPODS: 1.16.2

@@ -1,6 +1,13 @@
 'use client';
 
-import React, { isValidElement, use, type PropsWithChildren, type ReactElement } from 'react';
+import { nanoid } from 'nanoid/non-secure';
+import React, {
+  isValidElement,
+  use,
+  useMemo,
+  type PropsWithChildren,
+  type ReactElement,
+} from 'react';
 import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -9,6 +16,7 @@ import { HrefPreview } from './preview/HrefPreview';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { NativeLinkPreviewAction, NativeLinkPreviewContent } from './preview/native';
 import { Slot } from '../ui/Slot';
+import { LinkAppleZoom } from './zoom/link-apple-zoom';
 
 export interface LinkMenuActionProps {
   /**
@@ -56,6 +64,7 @@ export interface LinkMenuActionProps {
  * @platform ios
  */
 export function LinkMenuAction(props: LinkMenuActionProps) {
+  const identifier = useMemo(() => nanoid(), []);
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
@@ -65,6 +74,7 @@ export function LinkMenuAction(props: LinkMenuActionProps) {
       {...rest}
       onSelected={onPress}
       keepPresented={unstable_keepPresented}
+      identifier={identifier}
     />
   );
 }
@@ -84,12 +94,20 @@ export interface LinkMenuProps {
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
    */
+  palette?: boolean;
+  /**
+   * @deprecated Use `palette` prop instead.
+   */
   displayAsPalette?: boolean;
   /**
    * If `true`, the menu will be displayed inline.
    * This means that the menu will not be collapsed
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
+   */
+  inline?: boolean;
+  /**
+   * @deprecated Use `inline` prop instead.
    */
   displayInline?: boolean;
   /**
@@ -120,18 +138,24 @@ export interface LinkMenuProps {
  * @platform ios
  */
 export const LinkMenu: React.FC<LinkMenuProps> = (props) => {
+  const identifier = useMemo(() => nanoid(), []);
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
   const children = React.Children.toArray(props.children).filter(
     (child) => isValidElement(child) && (child.type === LinkMenuAction || child.type === LinkMenu)
   );
+  const displayAsPalette = props.palette ?? props.displayAsPalette;
+  const displayInline = props.inline ?? props.displayInline;
   return (
     <NativeLinkPreviewAction
       {...props}
+      displayAsPalette={displayAsPalette}
+      displayInline={displayInline}
       title={props.title ?? ''}
       onSelected={() => {}}
       children={children}
+      identifier={identifier}
     />
   );
 };
@@ -219,7 +243,18 @@ export function LinkPreview(props: LinkPreviewProps) {
   );
 }
 
-export type LinkTriggerProps = PropsWithChildren;
+export interface LinkTriggerProps extends PropsWithChildren {
+  /**
+   * A shorthand for enabling the Apple Zoom Transition on this link trigger.
+   *
+   * When set to `true`, the trigger will be wrapped with `Link.AppleZoom`.
+   * If another `Link.AppleZoom` is already used inside `Link.Trigger`, an error
+   * will be thrown.
+   *
+   * @platform ios 18+
+   */
+  withAppleZoom?: boolean;
+}
 
 /**
  * Serves as the trigger for a link.
@@ -240,7 +275,7 @@ export type LinkTriggerProps = PropsWithChildren;
  *
  * @platform ios
  */
-export function LinkTrigger(props: LinkTriggerProps) {
+export function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps) {
   if (React.Children.count(props.children) > 1 || !isValidElement(props.children)) {
     // If onPress is passed, this means that Link passed props to this component.
     // We can assume that asChild is used, so we throw an error, because link will not work in this case.
@@ -251,5 +286,9 @@ export function LinkTrigger(props: LinkTriggerProps) {
     }
     return props.children;
   }
-  return <Slot {...props} />;
+  const content = <Slot {...props} />;
+  if (withAppleZoom) {
+    return <LinkAppleZoom>{content}</LinkAppleZoom>;
+  }
+  return content;
 }

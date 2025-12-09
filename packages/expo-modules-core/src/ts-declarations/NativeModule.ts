@@ -11,7 +11,4 @@ export declare class NativeModule<
    * @private
    */
   ViewPrototypes?: { [viewName: string]: object };
-
-  // Ideally if we don't have it, but not all modules have concrete types in `requireNativeModule`.
-  [key: string]: any;
 }

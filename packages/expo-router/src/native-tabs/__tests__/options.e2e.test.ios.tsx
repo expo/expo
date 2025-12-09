@@ -775,6 +775,26 @@ describe('Tab options', () => {
         },
       } as BottomTabsScreenProps);
     });
+
+    it.each([true, false, undefined])(
+      'When disableAutomaticContentInsets is %p, overrideScrollViewContentInsetAdjustmentBehavior is the opposite',
+      (value) => {
+        renderRouter({
+          _layout: () => (
+            <NativeTabs>
+              <NativeTabs.Trigger name="index" disableAutomaticContentInsets={value} />
+            </NativeTabs>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+        expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+          overrideScrollViewContentInsetAdjustmentBehavior: !value,
+        } as BottomTabsScreenProps);
+      }
+    );
   });
 });
 

@@ -2,6 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
+import java.nio.ByteBuffer
 
 /**
  * A Kotlin representation of jsi::Value.
@@ -20,6 +21,11 @@ class JavaScriptArrayBuffer @DoNotStrip private constructor(@DoNotStrip private 
   external fun read8Byte(position: Int): Long
   external fun readFloat(position: Int): Float
   external fun readDouble(position: Int): Double
+
+  /**
+   * Returns a direct [ByteBuffer] that wraps this ArrayBuffer's underlying data.
+   */
+  external fun toDirectBuffer(): ByteBuffer
 
   @Throws(Throwable::class)
   protected fun finalize() {

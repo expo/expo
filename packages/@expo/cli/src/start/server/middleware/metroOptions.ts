@@ -1,4 +1,5 @@
 import { ExpoConfig } from '@expo/config';
+import Server from '@expo/metro/metro/Server';
 import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types';
 
 import { env } from '../../../utils/env';
@@ -21,13 +22,13 @@ export type ExpoMetroOptions = {
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
-  bytecode: boolean;
+  bytecode?: boolean;
   /** Enable async routes (route-based bundle splitting) in Expo Router. */
   asyncRoutes?: boolean;
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
-  routerRoot: string;
+  routerRoot?: string;
   /** Enable React compiler support in Babel. */
-  reactCompiler: boolean;
+  reactCompiler?: boolean;
   baseUrl?: string;
   isExporting: boolean;
   /** Is bundling a DOM Component ("use dom"). Requires the entry dom component file path. */
@@ -124,7 +125,7 @@ export function getMetroDirectBundleOptionsForExpoConfig(
   projectRoot: string,
   exp: ExpoConfig,
   options: Omit<ExpoMetroOptions, 'baseUrl' | 'reactCompiler' | 'routerRoot' | 'asyncRoutes'>
-): Partial<ExpoMetroBundleOptions> {
+) {
   return getMetroDirectBundleOptions({
     ...options,
     reactCompiler: !!exp.experiments?.reactCompiler,
@@ -134,9 +135,7 @@ export function getMetroDirectBundleOptionsForExpoConfig(
   });
 }
 
-export function getMetroDirectBundleOptions(
-  options: ExpoMetroOptions
-): Partial<ExpoMetroBundleOptions> {
+export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
   const {
     mainModuleName,
     platform,
@@ -215,7 +214,7 @@ export function getMetroDirectBundleOptions(
     }
   }
 
-  const bundleOptions: Partial<ExpoMetroBundleOptions> = {
+  return {
     platform,
     entryFile: mainModuleName,
     dev,
@@ -239,10 +238,12 @@ export function getMetroDirectBundleOptions(
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
       exporting: isExporting || undefined,
+      excludeSource: Server.DEFAULT_BUNDLE_OPTIONS.excludeSource,
     },
-  };
-
-  return bundleOptions;
+    // TODO(@kitten): See comments in MetroBundlerDevServer.ts; should all defaults be added and the logic
+    // from `src/start/server/middleware/metroOptions.ts` that adds default be moved here?
+    shallow: Server.DEFAULT_BUNDLE_OPTIONS.shallow,
+  } as const;
 }
 
 export function createBundleUrlPathFromExpoConfig(

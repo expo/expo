@@ -61,12 +61,20 @@ export interface LinkMenuProps {
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
      */
+    palette?: boolean;
+    /**
+     * @deprecated Use `palette` prop instead.
+     */
     displayAsPalette?: boolean;
     /**
      * If `true`, the menu will be displayed inline.
      * This means that the menu will not be collapsed
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
+     */
+    inline?: boolean;
+    /**
+     * @deprecated Use `inline` prop instead.
      */
     displayInline?: boolean;
     /**
@@ -151,7 +159,18 @@ export interface LinkPreviewProps {
  * @platform ios
  */
 export declare function LinkPreview(props: LinkPreviewProps): React.JSX.Element | null;
-export type LinkTriggerProps = PropsWithChildren;
+export interface LinkTriggerProps extends PropsWithChildren {
+    /**
+     * A shorthand for enabling the Apple Zoom Transition on this link trigger.
+     *
+     * When set to `true`, the trigger will be wrapped with `Link.AppleZoom`.
+     * If another `Link.AppleZoom` is already used inside `Link.Trigger`, an error
+     * will be thrown.
+     *
+     * @platform ios 18+
+     */
+    withAppleZoom?: boolean;
+}
 /**
  * Serves as the trigger for a link.
  * The content inside this component will be rendered as part of the base link.
@@ -171,5 +190,5 @@ export type LinkTriggerProps = PropsWithChildren;
  *
  * @platform ios
  */
-export declare function LinkTrigger(props: LinkTriggerProps): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.JSX.Element | null | undefined;
+export declare function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.JSX.Element | null | undefined;
 //# sourceMappingURL=elements.d.ts.map

@@ -8,9 +8,9 @@ exports.isNativeTabTrigger = isNativeTabTrigger;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
-const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
-const useSafeLayoutEffect_1 = require("../views/useSafeLayoutEffect");
 const elements_1 = require("./common/elements");
+const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
+const useFocusEffect_1 = require("../useFocusEffect");
 const children_1 = require("../utils/children");
 const icon_1 = require("./utils/icon");
 const materialIconConverter_1 = require("./utils/materialIconConverter");
@@ -57,20 +57,19 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
 function NativeTabTriggerImpl(props) {
     const route = (0, native_1.useRoute)();
     const navigation = (0, native_1.useNavigation)();
-    const isFocused = navigation.isFocused();
     const isInPreview = (0, PreviewRouteContext_1.useIsPreview)();
-    (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
+    (0, useFocusEffect_1.useFocusEffect)((0, react_1.useCallback)(() => {
         // This will cause the tab to update only when it is focused.
         // As long as all tabs are loaded at the start, we don't need this check.
         // It is here to ensure similar behavior to stack
-        if (isFocused && !isInPreview) {
+        if (!isInPreview) {
             if (navigation.getState()?.type !== 'tab') {
                 throw new Error(`Trigger component can only be used in the tab screen. Current route: ${route.name}`);
             }
             const options = convertTabPropsToOptions(props, true);
             navigation.setOptions(options);
         }
-    }, [isFocused, props, isInPreview]);
+    }, [props, isInPreview]));
     return null;
 }
 exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
@@ -79,7 +78,7 @@ exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     Badge: elements_1.NativeTabsTriggerBadge,
     VectorIcon: elements_1.NativeTabsTriggerVectorIcon,
 });
-function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, }, isDynamic = false) {
+function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, }, isDynamic = false) {
     const initialOptions = isDynamic
         ? {
             ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
@@ -92,8 +91,10 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
                     scrollToTop: !disableScrollToTop,
                 },
             },
+            contentStyle,
             role,
             nativeProps: unstable_nativeProps,
+            disableAutomaticContentInsets,
         };
     const allowedChildren = (0, children_1.filterAllowedChildrenElements)(children, [
         elements_1.NativeTabsTriggerBadge,
