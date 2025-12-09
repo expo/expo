@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.2.0-beta.10 — 2025-12-09
+
+### 🛠 Breaking changes
+
 - [iOS] - Match `Picker` API with SwiftUI API ([#40982](https://github.com/expo/expo/pull/40982) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] - Remove `frame`, `fixedSize`, `padding` from common props and remove `color` prop from `Label` ([#41213](https://github.com/expo/expo/pull/41213) by [@nishan](https://github.com/intergalacticspacehighway))
 
@@ -25,8 +35,6 @@
 - [android] Add missing scopes to modifiers. ([#41231](https://github.com/expo/expo/pull/41231) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix `ContextMenu` item with subtitle buttons ([#40926](https://github.com/expo/expo/pull/40926) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `TextField` causing crash when reload and unmounting. ([#40960](https://github.com/expo/expo/pull/40960) by [@nishan](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 0.2.0-beta.8 — 2025-11-06
 
