@@ -57,12 +57,15 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
               return item.barButtonItem
             }
             if let menu = menuItemsMap[$0] {
-              return UIBarButtonItem(
+              let item = UIBarButtonItem(
                 title: menu.title,
                 image: menu.icon.flatMap { UIImage(systemName: $0) },
                 primaryAction: nil,
                 menu: menu.uiAction as? UIMenu
               )
+              // Otherwise, the menu items will be reversed in the toolbar
+              item.preferredMenuElementOrder = .fixed
+              return item
             }
             print(
               "[expo-router] Warning: Could not find toolbar item or menu for identifier \($0)"
@@ -87,6 +90,7 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
       }
       addRouterToolbarItemAtIndex(toolbarItem, index: index)
     } else if let menu = childComponentView as? LinkPreviewNativeActionView {
+      menu.parentMenuUpdatable = self
       addMenuToolbarItemAtIndex(menu, index: index)
     } else {
       print(
