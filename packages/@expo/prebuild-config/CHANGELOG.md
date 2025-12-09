@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix withEdgeToEdge types ([#41510](https://github.com/expo/expo/pull/41510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ### ⚠️ Notices
