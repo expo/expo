@@ -1,6 +1,8 @@
 import FontAwesomeIcons from '@expo/vector-icons/FontAwesome5';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import { ColorValue, DynamicColorIOS, Platform, Pressable, Text, View } from 'react-native';
+import { Image, ColorValue, DynamicColorIOS, Platform, Pressable, Text, View } from 'react-native';
+import { ShimmerText } from './shimmer';
+import { Color } from 'expo-router';
 
 interface MiniPlayerProps {
   isPlaying: boolean;
@@ -23,44 +25,54 @@ export function MiniPlayer({ isPlaying, setIsPlaying }: MiniPlayerProps) {
           alignItems: 'center',
           paddingVertical: 8,
           paddingHorizontal: 16,
-          gap: 8,
+          gap: 12,
         }}>
         <View style={{ flex: 1, flexDirection: 'row', gap: 8 }}>
-          <View
+          <Image
+            source={require('../../../assets/echo.png')}
             style={{
-              backgroundColor: 'blue',
+              width: 30,
+              // backgroundColor: 'blue',
               height: '100%',
               aspectRatio: 1,
               borderRadius: 8,
             }}
           />
-          <View>
-            <Text
+          <View style={{ gap: 2 }}>
+            <ShimmerText
               style={{
-                fontWeight: 700,
                 fontSize: 14,
                 color: textColor,
-              }}>
-              Bad Habits
-            </Text>
+                width: placement === 'regular' ? 300 : 175,
+              }}
+              ellipsizeMode="clip"
+              lineBreakMode="middle"
+              numberOfLines={1}
+              highlightColor="#9DA3AE"
+              speed={0.7}>
+              {placement === 'regular'
+                ? 'Designing Liquid Glass accessory...'
+                : 'Designing accessory...'}
+            </ShimmerText>
             <Text
               style={{
-                fontSize: 12,
-                color: textColor,
+                fontSize: 10,
+                color: Color.ios.secondaryLabel,
               }}>
-              Ed Sheeran
+              Claude Opus 4.5
             </Text>
           </View>
         </View>
         <Pressable onPress={() => setIsPlaying(!isPlaying)}>
-          <FontAwesomeIcons name={isPlaying ? 'pause' : 'play'} size={18} color={textColor} />
+          <Ionicons name={'stop'} size={18} color={Color.ios.label} />
         </Pressable>
         {placement === 'regular' && (
           <Pressable onPress={() => console.log('forward pressed')}>
-            <FontAwesomeIcons name="forward" size={24} color={textColor} />
+            <Ionicons name="ellipsis-horizontal" size={20} color={textColor} />
           </Pressable>
         )}
       </View>
     </View>
   );
 }
+import Ionicons from '@expo/vector-icons/Ionicons';

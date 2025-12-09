@@ -26,7 +26,11 @@ export default function Layout() {
           content={process.env.EXPO_NOT_PUBLIC_TEST_VALUE}
         />
       </Head>
-      <Stack />
+      <Stack
+        screenOptions={{
+          headerTransparent: true,
+        }}
+      />
     </>
   );
 }

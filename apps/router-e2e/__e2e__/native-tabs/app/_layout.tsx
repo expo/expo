@@ -1,6 +1,6 @@
 import MIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { VectorIcon } from 'expo-router';
+import { Color, VectorIcon } from 'expo-router';
 import { enableZoomTransition } from 'expo-router/internal/utils';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
@@ -9,9 +9,9 @@ import { Appearance, Platform, useColorScheme } from 'react-native';
 import { MiniPlayer } from '../components/mini-player';
 import { ActiveTabsContext } from '../utils/active-tabs-context';
 
-if (process.env.EXPO_OS !== 'web') {
-  Appearance.setColorScheme('unspecified');
-}
+// if (process.env.EXPO_OS !== 'web') {
+//   Appearance.setColorScheme('unspecified');
+// }
 
 enableZoomTransition();
 
@@ -23,6 +23,7 @@ export default function Layout() {
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ActiveTabsContext.Provider value={{ activeTabs, setActiveTabs }}>
         <NativeTabs
+          tintColor={Color.ios.label}
           // Both platforms
           // labelStyle={{
           //   default: {
@@ -55,17 +56,19 @@ export default function Layout() {
           <NativeTabs.Trigger
             name="index"
             // disableAutomaticContentInsets
-            contentStyle={{
-              experimental_backgroundImage: 'linear-gradient(135deg, #fbc2eb, #a6c1ee)',
-            }}>
+            contentStyle={
+              {
+                // experimental_backgroundImage: 'linear-gradient(135deg, #fbc2eb, #a6c1ee)',
+              }
+            }>
             <NativeTabs.Trigger.Label
             // selectedStyle={{ color: '#0f0' }}
             >
-              My Watch
+              Create
             </NativeTabs.Trigger.Label>
             <NativeTabs.Trigger.Icon
               // selectedColor="deepNavy"
-              sf="applewatch.side.right"
+              sf={{ default: 'ellipsis.message', selected: 'ellipsis.message.fill' }}
               md="watch"
             />
           </NativeTabs.Trigger>
@@ -81,27 +84,30 @@ export default function Layout() {
             <NativeTabs.Trigger.Icon
               // selectedColor="#f00"
               sf={{
-                default: 'lock.applewatch',
+                default: 'puzzlepiece.extension',
                 selected: 'lock.open.applewatch',
               }}
               drawable="ic_lock_open"
             />
-            <NativeTabs.Trigger.Label style={{ display: 'none' }} />
-            <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
-          </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="explore">
-            {Platform.OS !== 'web' && (
-              <NativeTabs.Trigger.Icon
-                src={<VectorIcon family={MIcons} name="compass-calibration" />}
-              />
-            )}
-            <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
+
+            <NativeTabs.Trigger.Label>Plugins</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="dynamic">
-            <NativeTabs.Trigger.Icon sf="figure.disc.sports" drawable="ic_menu" />
-            <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
-            <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Icon sf="cloud" drawable="ic_menu" />
+            <NativeTabs.Trigger.Label>Cloud</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="explore" role="search">
+            {/* <NativeTabs.Trigger.Badge>2</NativeTabs.Trigger.Badge> */}
+
+            <NativeTabs.Trigger.Icon
+              // src={require('../../../assets/expo.png')}
+              src={{ uri: 'expo' }}
+              // sf="expo"
+              drawable="ic_search"
+            />
+            <NativeTabs.Trigger.Label>Deploy</NativeTabs.Trigger.Label>
+          </NativeTabs.Trigger>
+
           <NativeTabs.BottomAccessory>
             <MiniPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
           </NativeTabs.BottomAccessory>
