@@ -17,8 +17,9 @@ import { getRootComponent } from './getRootComponent';
 import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
 import { Head } from '../head';
+import { createDebug } from '../utils/debug';
 
-const debug = require('debug')('expo:router:renderStaticContent');
+const debug = createDebug('expo:router:server:renderStaticContent');
 
 AppRegistry.registerComponent('App', () => ExpoRoot);
 
