@@ -1,0 +1,83 @@
+---
+title: Environment variables in EAS
+sidebar_title: Overview
+description: An overview of how to use Expo Application Services (EAS) environment variables across builds, updates, and workflows.
+searchRank: 8
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+
+[Environment variables in Expo](/guides/environment-variables) explains how environment variables work with Expo framework and **.env** files to set environment variables that can be inlined in your app's JavaScript/TypeScript code. In this process, Expo CLI substitutes prefixed variables in your code (for example, `process.env.EXPO_PUBLIC_VARNAME`) with the corresponding value set in the **.env** files on your development machine.
+
+Since **Expo Application Services (EAS)** such as EAS Build and EAS Workflows jobs run on a remote server, **.env** files from your local machine are not available to these jobs. For instance, if **.env** files are excluded from project's version control, that is they are listed in the **.gitignore** file or not committed.
+
+Additionally, you may want to use environment variables outside of your project's code to customize your app binary at build time. For example, you want to set bundle identifier or a private key for an error reporting service. To accommodate these needs, EAS provides a separate mechanism for environment variables. This mechanism is focused on storing and managing environment variables oon EAS servers and synchronizing them for local development.
+
+## Why use EAS environment variables
+
+- Keep configuration in one place for cloud builds, updates, and workflows without committing **.env** files.
+- Separate values by environment (`development`, `preview`, `production`) while reusing names.
+- Control visibility (plain text, sensitive, secret) so only the right surfaces can read each value.
+- Apply the same set locally with [`eas env:pull`](/eas/environment-variables/manage/#pull-variables-for-local-development) or inside CI/CD.
+
+## Key concepts
+
+### Available environments
+
+EAS supports three environments for environment variables: `development`, `preview`, and `production` environments. Each environment is an independent set of variables that can be used to customize your app in different contexts.
+
+For example, you can use different API keys for development and production, or use different bundle identifiers for app store releases.
+
+Every EAS Build and Workflows job runs using environment variables from one of the available environments. You can also use environments for updates, allowing you to use the same set of environment variables for your build jobs. You can do this when publishing an update by providing the `--environment` flag.
+
+Environment variables can be assigned to multiple environments and have the same value across all of them, or be created for a single environment, so that you can set a specific value for a single environment.
+
+### Scope
+
+- **Project-wide**: Specific to a single EAS project. You can create, view, and manage them by navigating to the [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page in your project's dashboard. These environment variables are available in any jobs that run on EAS servers and updates for this project. They can also be pulled locally for development if their visibility setting allows it.
+- **Account-wide**: Available across all projects in your EAS account. You can create, view, and manage them by navigating to the [Environment variables](https://expo.dev/accounts/[account]/settings/environment-variables) page in your account's dashboard. These environment variables are available in jobs that run on EAS servers and updates, together with project-wide variables for a project. You can pull them locally or read outside of EAS servers if their [visibility setting](#visibility-settings-for-environment-variables) allows it.
+
+## Visibility settings for environment variables
+
+There are three different visibility settings available for each environment variable:
+
+| Visibility | Description                                                                                                                                  |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Plain text | Visible on the website, in EAS CLI, and in logs.                                                                                             |
+| Sensitive  | Obfuscated in EAS Build and Workflows job logs. You can use a toggle to make them visible on the website. They are also readable in EAS CLI. |
+| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in EAS Build and Workflows job logs.   |
+
+> **warning** Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run your app**. **Secret type environment variables** are intended to provide values to an EAS Build or Workflows job so that they may be used to alter how a job runs. For example, setting an `NPM_TOKEN` to install private packages from npm, or a setting a Sentry API key to create a release and upload your source maps. Secrets do not provide any additional security for values that you end up embedding in your application itself.
+
+## Where to go next
+
+<BoxLink
+  title="Create and manage environment variables in EAS"
+  description="Learn how to create, scope, and consume environment variables with EAS dashboard and EAS CLI."
+  href="/eas/environment-variables/manage/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Using environment variables in EAS"
+  description="Learn how to use environment variables in EAS builds, updates, and workflow jobs."
+  href="/eas/environment-variables/usage/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Without EAS"
+  description="Local-only or public-only usage of environment variables."
+  href="/eas/environment-variables/without-eas/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="FAQ"
+  description="A list of frequently asked questions about environment variables in EAS."
+  href="/eas/environment-variables/faq/"
+  Icon={BookOpen02Icon}
+/>

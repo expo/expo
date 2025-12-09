@@ -1,0 +1,154 @@
+---
+title: Using Environment variables in EAS
+sidebar_title: Usage
+description: How to use environment variables in EAS builds, updates, and workflow jobs.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+The following sections cover how to use environment variables in EAS builds, updates, and workflow jobs.
+
+### Use environment variables with EAS Build
+
+To have a full control over the environments used for your builds, you can specify the [`environment`](/eas/json#environment) field in the build profiles settings in the **eas.json** file.
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      /* @info Using <CODE>development</CODE> environment */
+      "environment": "development"
+      /* @end */
+      /* @hide ... */ /* @end */
+    },
+    "preview": {
+      /* @info Using <CODE>preview</CODE> environment */
+      "environment": "preview"
+      /* @end */
+      /* @hide ... */ /* @end */
+    },
+    "production": {
+      /* @info Using <CODE>production</CODE> environment */
+      "environment": "production"
+      /* @end */
+      /* @hide ... */ /* @end */
+    },
+    "my-profile": {
+      /* @info Using <CODE>production</CODE> environment */
+      "environment": "production"
+      /* @end */
+      /* @hide ... */ /* @end */
+    }
+  }
+}
+```
+
+All of the environment variables from the selected environment will be used during the build process. Plain text and sensitive variables will be available when resolving build configuration based on the dynamic app config in EAS CLI as well.
+
+> **info** The environment variables of secret type are not available during build configuration resolution in EAS CLI as they are not readable outside of the EAS servers.
+
+In this example app, all of the environment variables except `GOOGLE_SERVICES_JSON` (which is secret) will be available during build configuration resolution in EAS CLI.
+
+It's especially important in this context to have the correct visibility set for the `APP_VARIANT` variable so that the variable available in EAS CLI and is able to generate credentials for the correct package name and bundle identifier.
+
+### Use environment variables with EAS Update
+
+The most convenient way to use EAS environment variables with EAS Update is to run the `eas update` command with the `--environment` flag specified:
+
+<Terminal cmd={['$ eas update --environment production']} />
+
+When the `--environment` flag is used, **only the environment variables from the specified EAS environment will be used during the update process** and won't use the **.env** files present in your project. This flag allows you to use the same environment variables while creating updates as with creating builds.
+
+Expo CLI will substitute prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding plain text and sensitive environment variable values set on EAS servers for the environment specified with the `--environment` flag. Any `EXPO_PUBLIC_` variables in your application code will be replaced inline with the corresponding values from your EAS environment whether that is your local machine or your CI/CD server.
+
+We recommend using the `--environment` flag to ensure the same environment variables are used both for your update and build jobs.
+
+> **info** The secret variables will not be available during the update process as they are not readable outside of EAS servers.
+
+<Collapsible summary="Using .env files with EAS Update">
+
+When the `--environment` flag is **not provided**, `eas update` will use the **.env** files present in your project directory for the update job and won't use the environment variables set on the EAS servers.
+
+[Environment variables in Expo](/guides/environment-variables) describes how to use **.env** files to set and use environment variables within your JavaScript code. Expo CLI will substitute prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
+
+When you run `eas update`, all **.env** files will be evaluated when your JavaScript is bundled.
+Any `EXPO_PUBLIC_` variables in your application code will be replaced inline with the corresponding values from your **.env** files that are present on the machine from which the update is published, whether that is your local machine or your CI/CD server.
+
+> **info** When using **.env** files with EAS Update, `EXPO_PUBLIC_` variables in these files will only be used when bundling your app's JavaScript. They will not be available when evaluating **app.config.js**.
+
+</Collapsible>
+
+### Use environment variables for other commands
+
+One way to supply non-secret EAS environment variables to other EAS commands is to use the `eas env:exec` command.
+
+<Terminal cmd={["$ eas env:exec --environment production 'echo $APP_VARIANT'"]} />
+
+For example, it can be useful when uploading source maps to Sentry using a [`SENTRY_AUTH_TOKEN`](/guides/using-sentry) variable after an update bundle is created.
+
+<Terminal
+  cmd={["$ eas env:exec --environment production 'npx sentry-expo-upload-sourcemaps dist'"]}
+/>
+
+### EAS Build and Workflows job runs
+
+#### Setting the environment for your builds
+
+To set the environment for your EAS Build jobs, you can use the `environment` option in **eas.json** and set it to one of the available environments: `development`, `preview` or `production`.
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "environment": "development"
+    },
+    "preview": {
+      "environment": "preview"
+    },
+    "production": {
+      "environment": "production"
+    },
+    "my-profile": {
+      "environment": "production"
+  }
+}
+```
+
+If you don't set the `environment` option, we will set the environment automatically based on your build's configuration:
+
+- `development`: for development client build
+- `preview`: for other configurations
+- `production`: for app store build
+
+<Collapsible summary="Built-in environment variables">
+
+The following environment variables are additional system environment variables exposed to each job and can be used within any build step. They are not a part of any project environment and are not available when evaluating **app.config.js** locally:
+
+- `CI=1`: indicates this is a CI environment
+- `EAS_BUILD=true`: indicates this is an EAS Build environment
+- `EAS_BUILD_PLATFORM`: either `android` or `ios`
+- `EAS_BUILD_RUNNER`: either `eas-build` for EAS Build cloud builds or `local-build-plugin` for [local builds](/build-reference/local-builds/)
+- `EAS_BUILD_ID`: the build ID, for example, `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
+- `EAS_BUILD_PROFILE`: the name of the build profile from **eas.json**, for example, `production`
+- `EAS_BUILD_GIT_COMMIT_HASH`: the hash of the Git commit, for example, `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
+- `EAS_BUILD_NPM_CACHE_URL`: the URL of npm cache ([learn more](/build-reference/private-npm-packages))
+- `EAS_BUILD_MAVEN_CACHE_URL`: the URL of Maven cache ([learn more](/build-reference/caching/#android-dependencies))
+- `EAS_BUILD_COCOAPODS_CACHE_URL`: the URL of CocoaPods cache ([learn more](/build-reference/caching/#ios-dependencies))
+- `EAS_BUILD_USERNAME`: the username of the user initiating the build (it's undefined for bot users)
+- `EAS_BUILD_WORKINGDIR`: the remote directory path with your project
+
+</Collapsible>
+
+#### Dynamically setting environment variables during the job execution
+
+You can also set environment variables dynamically during the job execution using the `set-env` command.
+The `set-env` executable is available in the `PATH` on EAS Build workers, and can be used to set environment variables that will be visible in the next build phases.
+
+For example, you can add the following in one of the [EAS Build hooks](/build-reference/npm-hooks/) and the environment variable `EXAMPLE_ENV` will be available until the end of the build job.
+
+<Terminal cmd={['$ set-env EXAMPLE_ENV "example value"']} />
+
+#### Accessing environment variables
+
+After creating an environment variable, you can read it on subsequent EAS Build jobs with `process.env.VARIABLE_NAME` from Node.js or in shell scripts as `$VARIABLE_NAME`.

@@ -1,0 +1,15 @@
+---
+title: Using Environment variables without EAS
+sidebar_title: Without EAS
+description: Local-only and non-EAS ways to work with environment variables in Expo and React Native projects.
+searchRank: 2
+---
+
+EAS is the recommended way to manage variables for cloud builds and updates, but you can still work locally or with other tooling.
+
+## Local development with Expo CLI
+
+- Expo CLI loads `EXPO_PUBLIC_` variables from **.env** files and inlines them into client bundles. Use this for values that are safe to ship to users.
+- Add non-public variables to **.env** files for use in `app.config.js` or custom scripts. Keep these files in **.gitignore**.
+- You do not need to restart the dev server to pick up **.env** changes; Expo CLI reloads them automatically.
+- Link to Expo CLI [environment variables guide](/guides/environment-variables/).
