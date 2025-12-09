@@ -28,6 +28,7 @@
 #endif // !RCT_NEW_ARCH_ENABLED
 
 @class EXAppContext;
+@class EXViewModuleWrapper;
 
 // Addition to the interface that is visible in both Swift and Objective-C
 @interface ExpoFabricViewObjC (ExpoFabricViewInterface)
