@@ -8,7 +8,9 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Fix the browser closing after the app is backgrounded by adding a new option to use a proxy activity to launch custom tabs. ([#41457](https://github.com/expo/expo/pull/41457) by [@lukmccall](https://github.com/lukmccall))
+
+  ### 💡 Others
 
 ## 15.0.10 - 2025-12-05
 
