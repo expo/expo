@@ -264,7 +264,7 @@ extension ExpoSwiftUI {
 
 extension UIHostingController {
     func disableSafeArea() {
-      if #available(iOS 16.4, tvOS 16.4, *) {
+      if #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) {
         self.safeAreaRegions.remove(.keyboard)
       } else {
         // For older versions
