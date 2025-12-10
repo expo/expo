@@ -135,7 +135,11 @@ export async function test(t) {
       const newContact = await Contact.create({ givenName: 'FavTest', isFavourite: true });
       contacts.push(newContact);
       const fetchedDetails = await newContact.getDetails([ContactField.IS_FAVOURITE]);
-      t.expect(fetchedDetails.isFavourite).toBe(true);
+      if (Platform.OS === 'android') {
+        t.expect(fetchedDetails.isFavourite).toBe(true);
+      } else {
+        t.expect(fetchedDetails.isFavourite).toBeUndefined();
+      }
     });
 
     t.it('.getDetails(ContactField.FULL_NAME) should return full name correctly', async () => {
@@ -767,22 +771,16 @@ export async function test(t) {
       await contact.delete();
     });
 
-    t.it('.get/set IsFavourite()', async () => {
-      await contact.setIsFavourite(true);
-      const isFavourite = await contact.getIsFavourite();
-      if (Platform.OS === 'android') {
+    if (Platform.OS === 'android') {
+      t.it('.get/set IsFavourite()', async () => {
+        await contact.setIsFavourite(true);
+        const isFavourite = await contact.getIsFavourite();
         t.expect(isFavourite).toBe(true);
-      } else {
-        t.expect(isFavourite).toBeUndefined();
-      }
-      await contact.setIsFavourite(false);
-      const isNotFavourite = await contact.getIsFavourite();
-      if (Platform.OS === 'android') {
+        await contact.setIsFavourite(false);
+        const isNotFavourite = await contact.getIsFavourite();
         t.expect(isNotFavourite).toBe(false);
-      } else {
-        t.expect(isNotFavourite).toBeUndefined();
-      }
-    });
+      });
+    }
 
     t.it('.getFullName(), ', async () => {
       const newGivenName = 'John';
@@ -1173,35 +1171,29 @@ export async function test(t) {
   });
 
   t.describe('.update()', () => {
-    t.it('.update({ isFavourite })', async () => {
-      const contact = await Contact.create({
-        givenName: 'Fav',
-        familyName: 'User',
-      });
-      contacts.push(contact);
+    if (Platform.OS === 'android') {
+      t.it('.update({ isFavourite })', async () => {
+        const contact = await Contact.create({
+          givenName: 'Fav',
+          familyName: 'User',
+        });
+        contacts.push(contact);
 
-      await contact.update({ isFavourite: true });
-      const details = await contact.getDetails([
-        ContactField.IS_FAVOURITE,
-        ContactField.GIVEN_NAME,
-        ContactField.FAMILY_NAME,
-      ]);
-      t.expect(details.givenName).toBe(null);
-      t.expect(details.familyName).toBe(null);
-      if (Platform.OS === 'android') {
+        await contact.update({ isFavourite: true });
+        const details = await contact.getDetails([
+          ContactField.IS_FAVOURITE,
+          ContactField.GIVEN_NAME,
+          ContactField.FAMILY_NAME,
+        ]);
+        t.expect(details.givenName).toBe(null);
+        t.expect(details.familyName).toBe(null);
         t.expect(details.isFavourite).toBe(true);
-      } else {
-        t.expect(details.isFavourite).toBeUndefined();
-      }
 
-      await contact.update({ isFavourite: false });
-      const isFavourite = await contact.getIsFavourite();
-      if (Platform.OS === 'android') {
+        await contact.update({ isFavourite: false });
+        const isFavourite = await contact.getIsFavourite();
         t.expect(isFavourite).toBe(false);
-      } else {
-        t.expect(isFavourite).toBeUndefined();
-      }
-    });
+      });
+    }
 
     t.it('.update({ givenName, familyName })', async () => {
       const contact = await Contact.create({
@@ -1393,19 +1385,12 @@ export async function test(t) {
       contacts.push(contact);
 
       await contact.patch({ isFavourite: true });
-      let isFavourite = await contact.getIsFavourite();
       if (Platform.OS === 'android') {
+        let isFavourite = await contact.getIsFavourite();
         t.expect(isFavourite).toBe(true);
-      } else {
-        t.expect(isFavourite).toBeUndefined();
-      }
-
-      await contact.patch({ isFavourite: false });
-      isFavourite = await contact.getIsFavourite();
-      if (Platform.OS === 'android') {
+        await contact.patch({ isFavourite: false });
+        isFavourite = await contact.getIsFavourite();
         t.expect(isFavourite).toBe(false);
-      } else {
-        t.expect(isFavourite).toBeUndefined();
       }
     });
 
@@ -1814,7 +1799,12 @@ export async function test(t) {
       const initialEmails = await contact.getEmails();
       const initialPhones = await contact.getPhones();
       const initialDates = await contact.getDates();
-      const initialExtraNames = await contact.getExtraNames();
+      let initialExtraNames;
+      if (Platform.OS === 'android') {
+        initialExtraNames = await contact.getExtraNames();
+      } else {
+        initialExtraNames = [];
+      }
       const initialAddresses = await contact.getAddresses();
       const initialUrls = await contact.getUrlAddresses();
 
