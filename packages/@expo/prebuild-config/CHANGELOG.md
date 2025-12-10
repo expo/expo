@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix withEdgeToEdge types ([#41510](https://github.com/expo/expo/pull/41510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Scope `.icon` build setting to app target.
 
 ### 💡 Others
 
