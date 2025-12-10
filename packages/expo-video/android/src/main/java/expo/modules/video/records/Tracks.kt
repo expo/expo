@@ -57,6 +57,8 @@ class VideoTrack(
   @Field val mimeType: String?,
   @Field val isSupported: Boolean = true,
   @Field val bitrate: Int? = null,
+  @Field val averageBitrate: Int? = null,
+  @Field val peakBitrate: Int? = null,
   @Field val frameRate: Float? = null,
   var format: Format? = null
 ) : Record, Serializable {
@@ -65,14 +67,18 @@ class VideoTrack(
       val id = format?.id ?: return null
       val size = VideoSize(format)
       val mimeType = format.sampleMimeType
-      val bitrate = format.bitrate.takeIf { it != Format.NO_VALUE }
+      val averageBitrate = format.averageBitrate.takeIf { it != Format.NO_VALUE }
+      val peakBitrate = format.peakBitrate.takeIf { it != Format.NO_VALUE }
       val frameRate = format.frameRate.takeIf { it != Format.NO_VALUE.toFloat() }
+
       return VideoTrack(
         id = id,
         size = size,
         mimeType = mimeType,
         isSupported = isSupported,
-        bitrate = bitrate,
+        bitrate = averageBitrate ?: peakBitrate,
+        averageBitrate = averageBitrate,
+        peakBitrate = peakBitrate,
         frameRate = frameRate,
         format = format
       )
