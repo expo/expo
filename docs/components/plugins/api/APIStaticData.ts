@@ -101,7 +101,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
   ArrayBuffer:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer',
   Asset: '/versions/latest/sdk/asset/#asset',
-  CommonViewModifierProps: 'modifiers',
   AsyncIterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
   AuthSessionOpenOptions: '/versions/latest/sdk/webbrowser/#authsessionopenoptions',
@@ -113,6 +112,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
   ColorValue: 'https://reactnative.dev/docs/colors',
+  CommonViewModifierProps: 'modifiers',
   Component: 'https://react.dev/reference/react/Component',
   CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
