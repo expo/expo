@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
 import { INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME } from '../../navigationParams';
+import { parseUrlUsingCustomBase } from '../../utils/url';
 import { useIsPreview } from '../preview/PreviewRouteContext';
 import { LinkProps } from '../useLinkHooks';
 
@@ -61,9 +62,11 @@ export function useZoomTransitionPrimitives({ href, asChild }: LinkProps) {
       return href;
     }
     if (typeof href === 'string') {
+      const { pathname, searchParams } = parseUrlUsingCustomBase(href);
       return {
-        pathname: href,
+        pathname,
         params: {
+          ...Object.fromEntries(searchParams.entries()),
           [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: zoomTransitionId,
         },
       };

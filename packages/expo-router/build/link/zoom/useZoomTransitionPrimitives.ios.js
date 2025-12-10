@@ -6,6 +6,7 @@ const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
 const ZoomTransitionEnabler_1 = require("./ZoomTransitionEnabler");
 const navigationParams_1 = require("../../navigationParams");
+const url_1 = require("../../utils/url");
 const PreviewRouteContext_1 = require("../preview/PreviewRouteContext");
 function useZoomTransitionPrimitives({ href, asChild }) {
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
@@ -46,9 +47,11 @@ function useZoomTransitionPrimitives({ href, asChild }) {
             return href;
         }
         if (typeof href === 'string') {
+            const { pathname, searchParams } = (0, url_1.parseUrlUsingCustomBase)(href);
             return {
-                pathname: href,
+                pathname,
                 params: {
+                    ...Object.fromEntries(searchParams.entries()),
                     [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: zoomTransitionId,
                 },
             };
