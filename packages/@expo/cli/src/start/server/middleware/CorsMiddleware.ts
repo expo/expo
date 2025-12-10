@@ -33,7 +33,14 @@ export function createCorsMiddleware(exp: ExpoConfig) {
         return;
       }
 
-      res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+      // Skip for localhost since we shouldn't allow escalating cross-origin requests
+      // across separate sites running on localhost. If the `Origin` is set to a localhost
+      // hostname, the browser is either likely to disregard CORS anyway, or we're not
+      // making a cross-origin request anyway
+      if (hostname !== 'localhost' && !hostname.startsWith('127.')) {
+        res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+      }
+
       maybePreventMetroResetCorsHeader(req, res);
     }
 
