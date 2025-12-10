@@ -12,27 +12,17 @@ sealed interface PhoneRecord {
     @Required @Field override val id: String,
     @Field val label: String? = null,
     @Field val number: String? = null,
-    @Field val countryCode: String? = null,
-    @Field val digits: String? = null
   ) : ExistingRecord
 
   data class New(
     @Field val label: String? = null,
     @Field val number: String? = null,
-    @Field val countryCode: String? = null,
-    @Field val digits: String? = null
   ) : NewRecord
 
   class Patch() : PatchRecord {
     @Required @Field
     override lateinit var id: String
-
     @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
-
     @Field val number: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
-
-    @Field val countryCode: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
-
-    @Field val digits: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
   }
 }
