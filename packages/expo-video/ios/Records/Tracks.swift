@@ -37,7 +37,7 @@ internal struct VideoTrack: Record, Equatable {
   @Field var id: String? = nil
   @Field var size: VideoSize? = nil
   @Field var mimeType: String? = nil
-  @Field var bitrate: Int? = nil
+  @Field var bitrate: Int? = nil // deprecated as of SDK 55
   @Field var peakBitrate: Int? = nil
   @Field var averageBitrate: Int? = nil
   @Field var isSupported: Bool = true

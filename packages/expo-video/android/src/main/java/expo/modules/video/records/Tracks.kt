@@ -56,7 +56,7 @@ class VideoTrack(
   @Field val size: VideoSize,
   @Field val mimeType: String?,
   @Field val isSupported: Boolean = true,
-  @Field val bitrate: Int? = null,
+  @Field val bitrate: Int? = null, // deprecated as of SDK 55
   @Field val averageBitrate: Int? = null,
   @Field val peakBitrate: Int? = null,
   @Field val frameRate: Float? = null,
