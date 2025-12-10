@@ -281,6 +281,9 @@ export async function instantiateMetroAsync(
       }
       return middleware.use(metroMiddleware);
     };
+
+    const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint({ serverBaseUrl });
+    Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
   }
 
   // Attach Expo Atlas if enabled
@@ -298,10 +301,7 @@ export async function instantiateMetroAsync(
     metroBundler,
     metroConfig,
     {
-      websocketEndpoints: {
-        ...websocketEndpoints,
-        ...createDevToolsPluginWebsocketEndpoint({ serverBaseUrl }),
-      },
+      websocketEndpoints,
       watch: !isExporting && isWatchEnabled(),
     },
     {
