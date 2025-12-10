@@ -1326,21 +1326,18 @@ describe('Link with zoom transition', () => {
     consoleWarnMock.mockRestore();
   });
   it('When Link.AppleZoom is used without asChild a warning is shown', () => {
-    renderRouter({
-      index: () => (
-        <View testID="index-page">
-          <Link href="/test">
-            <Link.AppleZoom>Test</Link.AppleZoom>
-          </Link>
-        </View>
-      ),
-      test: () => <View testID="test-page" />,
-    });
-    expect(screen.getByTestId('index-page')).toBeVisible();
-    expect(consoleWarnMock).toHaveBeenCalledTimes(1);
-    expect(consoleWarnMock).toHaveBeenCalledWith(
-      '[expo-router] Zoom transition source cannot be added: Link must be used with `asChild` prop to enable zoom transitions.'
-    );
+    expect(() =>
+      renderRouter({
+        index: () => (
+          <View testID="index-page">
+            <Link href="/test">
+              <Link.AppleZoom>Test</Link.AppleZoom>
+            </Link>
+          </View>
+        ),
+        test: () => <View testID="test-page" />,
+      })
+    ).toThrow('[expo-router] Link must be used with `asChild` prop to enable zoom transitions.');
   });
   it('When multiple children are passed to Link.AppleZoom a warning is shown', () => {
     renderRouter({
@@ -1363,23 +1360,20 @@ describe('Link with zoom transition', () => {
     );
   });
   it('When external link is used with Link.AppleZoom, a warning is shown', () => {
-    renderRouter({
-      index: () => (
-        <View testID="index-page">
-          <Link href="http://example.com" asChild>
-            <Link.AppleZoom>
-              <Pressable />
-            </Link.AppleZoom>
-          </Link>
-        </View>
-      ),
-      test: () => <View testID="test-page" />,
-    });
-    expect(screen.getByTestId('index-page')).toBeVisible();
-    expect(consoleWarnMock).toHaveBeenCalledTimes(1);
-    expect(consoleWarnMock).toHaveBeenCalledWith(
-      '[expo-router] Zoom transition source cannot be added: Zoom transitions can only be used with internal links.'
-    );
+    expect(() =>
+      renderRouter({
+        index: () => (
+          <View testID="index-page">
+            <Link href="http://example.com" asChild>
+              <Link.AppleZoom>
+                <Pressable />
+              </Link.AppleZoom>
+            </Link>
+          </View>
+        ),
+        test: () => <View testID="test-page" />,
+      })
+    ).toThrow('[expo-router] Zoom transitions can only be used with internal links.');
   });
 
   it('When multiple nested Link.AppleZoom components are used within same link an error is thrown', () => {
@@ -1387,7 +1381,7 @@ describe('Link with zoom transition', () => {
       renderRouter({
         index: () => (
           <View testID="index-page">
-            <Link href="http://example.com" asChild>
+            <Link href="/test" asChild>
               <Link.AppleZoom>
                 <Link.AppleZoom>
                   <Pressable />
@@ -1408,7 +1402,7 @@ describe('Link with zoom transition', () => {
       renderRouter({
         index: () => (
           <View testID="index-page">
-            <Link href="http://example.com" asChild>
+            <Link href="/test" asChild>
               <Pressable>
                 <Link.AppleZoom>
                   <Text>Test</Text>
