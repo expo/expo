@@ -24,16 +24,24 @@ describe(createCorsMiddleware, () => {
   });
 
   it('should pass through requests without origin', () => {
-    middleware(asRequest({ url: 'http://localhost:8081/', headers: {} }), res, next);
+    middleware(asRequest({ url: 'http://example.com:8081/', headers: {} }), res, next);
     expect(resHeaders['Access-Control-Allow-Origin']).toBeUndefined();
     expect(next).toHaveBeenCalled();
     expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
   });
 
-  it('should allow CORS from localhost', () => {
-    const origin = 'http://localhost:8082/';
-    middleware(asRequest({ url: 'http://localhost:8081/', headers: { origin } }), res, next);
+  it('should allow CORS from "devtools"', () => {
+    const origin = 'http://devtools:8082/';
+    middleware(asRequest({ url: 'http://devtools:8082/', headers: { origin } }), res, next);
     expect(resHeaders['Access-Control-Allow-Origin']).toBe(origin);
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it('should skip CORS headers from "localhost"', () => {
+    const origin = 'http://localhost:8082/';
+    middleware(asRequest({ url: 'http://localhost:8082/', headers: { origin } }), res, next);
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(undefined);
     expect(next).toHaveBeenCalled();
     expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
   });
@@ -103,9 +111,9 @@ describe(createCorsMiddleware, () => {
   });
 
   it('should prevent metro reset the hardcoded CORS header', () => {
-    const origin = 'http://localhost:8082/';
+    const origin = 'http://devtools:8082/';
     middleware(
-      asRequest({ url: 'http://localhost:8081/index.map', headers: { origin } }),
+      asRequest({ url: 'http://devtools:8081/index.map', headers: { origin } }),
       res,
       next
     );
@@ -139,10 +147,10 @@ describe(createCorsMiddleware, () => {
   });
 
   it('Advanced CORS like preflight requests are not supported', () => {
-    const origin = 'http://localhost:8082/';
+    const origin = 'http://devtools:8082/';
     middleware(
       asRequest({
-        url: 'http://localhost:8081/',
+        url: 'http://devtools:8081/',
         headers: { origin, 'Access-Control-Request-Method': 'DELETE' },
         method: 'OPTIONS',
       }),
