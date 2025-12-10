@@ -12,7 +12,7 @@ The following sections cover how to create, scope, and consume environment varia
 
 ## Create environment variables
 
-- [**Choose an environment or multiple environments**](/eas/environment-variables/#available-environments): `development`, `preview`, and `production` are available by default. A variable can be reused across them or customized per environment.
+- [**Choose an environment or multiple environments**](/eas/environment-variables/#available-environments): `development`, `preview`, and `production` are available by default. A variable can be reused across them or customized per environment. You can also create a custom environment when adding a new environment variable.
 - [**Choose scope**](/eas/environment-variables/#scope): project-wide variables apply to one project; account-wide variables can be reused across projects and are merged with project variables at runtime.
 - [**Choose visibility**](/eas/environment-variables/#visibility-settings-for-environment-variables): Use **secret** for values that should never leave EAS servers, **sensitive** for values that may be revealed locally, and **plain text** for non-sensitive values.
 
@@ -159,24 +159,24 @@ export default {
 
 You can use [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) in your project or account to create, update, and delete environment variables.
 
-You can also use EAS CLI to manage them.
+You can also use EAS CLI to manage them. The following commands are provided as examples for `production` environment. When using these commands, replace `production` with the environment you want to manage.
 
 <Terminal
   cmd={[
     '# To create a new environment variable',
-    '$ eas env:create --name VARIABLE_NAME --value VARIABLE_VALUE --environment ENVIRONMENT --visibility VISIBILITY',
+    '$ eas env:create --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment production --visibility plaintext',
     '',
     '# To update an existing environment variable',
-    '$ eas env:update --name VARIABLE_NAME --value VARIABLE_VALUE --environment ENVIRONMENT --visibility VISIBILITY',
+    '$ eas env:update --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment production --visibility plaintext',
     '',
     '# To delete an existing environment variable',
     '$ eas env:delete',
     '',
     '# To list all environment variables',
-    '$ eas env:list --environment ENVIRONMENT',
+    '$ eas env:list --environment production',
     '',
     '# To pull environment variables into a .env file',
-    '$ eas env:pull --environment ENVIRONMENT',
+    '$ eas env:pull --environment production',
   ]}
 />
 
