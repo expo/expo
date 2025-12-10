@@ -8,8 +8,6 @@ platforms: ['ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Expo UI Picker matches the official SwiftUI [Picker API](https://developer.apple.com/documentation/swiftui/picker) and supports all picker styles via the [`pickerStyle`](modifiers/#pickerstylestyle) modifier.
 
@@ -32,13 +30,13 @@ export default function SegmentedPickerExample() {
   return (
     <Host matchContents>
       <Picker
-        modifiers={[pickerStyle("segmented")]}
+        modifiers={[pickerStyle('segmented')]}
         label="Select a fruit"
         selection={selectedTag}
         onSelectionChange={({ nativeEvent: { selection } }) => {
           setSelectedTag(selection);
         }}>
-        {options.map((option) => (
+        {options.map(option => (
           <Text key={option} modifiers={[tag(option)]}>
             {option}
           </Text>
@@ -64,13 +62,13 @@ export default function MenuPickerExample() {
   return (
     <Host matchContents>
       <Picker
-        modifiers={[pickerStyle("menu")]}
+        modifiers={[pickerStyle('menu')]}
         label="Select a fruit"
         selection={selectedTag}
         onSelectionChange={({ nativeEvent: { selection } }) => {
           setSelectedTag(selection);
         }}>
-        {options.map((option) => (
+        {options.map(option => (
           <Text key={option} modifiers={[tag(option)]}>
             {option}
           </Text>
@@ -98,13 +96,13 @@ export default function WheelPickerExample() {
   return (
     <Host matchContents>
       <Picker
-        modifiers={[pickerStyle("wheel")]}
+        modifiers={[pickerStyle('wheel')]}
         label="Select a fruit"
         selection={selectedTag}
         onSelectionChange={({ nativeEvent: { selection } }) => {
           setSelectedTag(selection);
         }}>
-        {options.map((option) => (
+        {options.map(option => (
           <Text key={option} modifiers={[tag(option)]}>
             {option}
           </Text>
