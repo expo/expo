@@ -3,12 +3,11 @@ package expo.modules.contacts.next.domain.model.structuredname
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
-import expo.modules.contacts.next.domain.model.ClearableField
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.structuredname.operations.ExistingStructuredName
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object StructuredNameField : ExtractableField.Data<ExistingStructuredName>, ClearableField {
+object StructuredNameField : ExtractableField.Data<ExistingStructuredName> {
   override val mimeType = StructuredName.CONTENT_ITEM_TYPE
 
   override val projection = arrayOf(

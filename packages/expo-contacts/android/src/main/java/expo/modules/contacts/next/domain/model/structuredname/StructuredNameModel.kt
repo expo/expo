@@ -1,6 +1,7 @@
 package expo.modules.contacts.next.domain.model.structuredname
 
 import android.content.ContentValues
+import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
 
 abstract class StructuredNameModel(
@@ -16,6 +17,8 @@ abstract class StructuredNameModel(
   val mimeType = StructuredName.CONTENT_ITEM_TYPE
   open val contentValues =
     ContentValues().apply {
+      put(ContactsContract.Data.MIMETYPE, mimeType)
+      put(StructuredName.GIVEN_NAME, givenName)
       put(StructuredName.GIVEN_NAME, givenName)
       put(StructuredName.MIDDLE_NAME, middleName)
       put(StructuredName.FAMILY_NAME, familyName)

@@ -2,13 +2,12 @@ package expo.modules.contacts.next.domain.model.event
 
 import android.database.Cursor
 import android.provider.ContactsContract.CommonDataKinds.Event
-import expo.modules.contacts.next.domain.model.ClearableField
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
 import expo.modules.contacts.next.domain.wrappers.ContactDate
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object EventField : ExtractableField.Data<ExistingEvent>, ClearableField {
+object EventField : ExtractableField.Data<ExistingEvent> {
   override val mimeType = Event.CONTENT_ITEM_TYPE
 
   override val projection = arrayOf(

@@ -1,7 +1,7 @@
 package expo.modules.contacts.next.mappers
 
 import expo.modules.contacts.next.domain.model.Appendable
-import expo.modules.contacts.next.domain.model.ClearableField
+import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.Updatable
 import expo.modules.contacts.next.domain.model.contact.ContactPatch
 import expo.modules.contacts.next.domain.wrappers.ContactId
@@ -19,7 +19,7 @@ class ContactPatchBuilder(
   val rawContactId: RawContactId,
   val mapper: ContactRecordDomainMapper
 ) {
-  val modifiedFields = mutableSetOf<ClearableField>()
+  val modifiedFields = mutableSetOf<ExtractableField.Data<*>>()
   val toUpdate = mutableListOf<Updatable>()
   val toAppend = mutableListOf<Appendable>()
 
@@ -36,7 +36,7 @@ class ContactPatchBuilder(
   @OptIn(EitherType::class)
   inline fun <reified T : PatchRecord, reified R : NewRecord> withListProperty(
     property: ValueOrUndefined<List<Either<T, R>>?>,
-    field: ClearableField
+    field: ExtractableField.Data<*>
   ) = apply {
     if (property.isUndefined) {
       return@apply

@@ -14,8 +14,7 @@ data class AddContactInput(
 
 class AddContactContract : AppContextActivityResultContract<AddContactInput, Boolean> {
   override fun createIntent(context: Context, input: AddContactInput): Intent {
-    val intent = Intent(Intent.ACTION_INSERT)
-    intent.type = ContactsContract.Contacts.CONTENT_TYPE
+    val intent = Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI)
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, ArrayList(input.contactValues))
     return intent
   }

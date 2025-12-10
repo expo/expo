@@ -6,7 +6,6 @@ import android.database.Cursor
 import android.provider.ContactsContract
 import expo.modules.contacts.next.ContactIdNotFoundException
 import expo.modules.contacts.next.domain.model.Appendable
-import expo.modules.contacts.next.domain.model.ClearableField
 import expo.modules.contacts.next.domain.model.Extractable
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.Updatable
@@ -61,7 +60,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
 
   private suspend fun getDataIds(
     contactId: ContactId,
-    extractableFields: Set<ClearableField>
+    extractableFields: Set<ExtractableField.Data<*>>
   ): List<DataId> = withContext(Dispatchers.IO) {
     val mimeTypes = extractableFields
       .map { it.mimeType }

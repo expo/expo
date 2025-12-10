@@ -133,7 +133,7 @@ class Contact(
     return mapper.toRecord(existingContact)
   }
 
-  suspend fun editWithForm() = withContext(Dispatchers.IO) {
+  suspend fun presentEditForm() = withContext(Dispatchers.IO) {
     intentDelegate.launchEditContact(getLookupKeyUri())
   }
 
@@ -174,12 +174,14 @@ class Contact(
       return contactFactory.create(contactId)
     }
 
-    suspend fun createWithForm(
-      createContactRecord: CreateContactRecord,
+    suspend fun presentCreateForm(
+      createContactRecord: CreateContactRecord?,
       contactMapper: ContactRecordDomainMapper,
       contactIntentDelegate: ContactIntentDelegate
     ): Boolean {
-      val contentValues = contactMapper.toContentValues(createContactRecord)
+      val contentValues = createContactRecord?.let {
+        contactMapper.toContentValues(createContactRecord)
+      } ?: emptyList()
       return contactIntentDelegate.launchAddContact(contentValues)
     }
 
@@ -215,7 +217,7 @@ class Contact(
         .map { contactMapper.toRecord(it) }
     }
 
-    suspend fun pick(
+    suspend fun presentPicker(
       contactIntentDelegate: ContactIntentDelegate,
       contactFactory: ContactFactory
     ): Contact? {

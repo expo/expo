@@ -1,6 +1,7 @@
 package expo.modules.contacts.next.domain.model.relationship
 
 import android.content.ContentValues
+import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Relation
 
 abstract class RelationModel(
@@ -10,6 +11,7 @@ abstract class RelationModel(
   val mimeType = Relation.CONTENT_ITEM_TYPE
   open val contentValues =
     ContentValues().apply {
+      put(ContactsContract.Data.MIMETYPE, mimeType)
       put(Relation.NAME, name)
       put(Relation.TYPE, label.type)
       put(Relation.LABEL, label.label)

@@ -2,12 +2,11 @@ package expo.modules.contacts.next.domain.model.relationship
 
 import android.database.Cursor
 import android.provider.ContactsContract.CommonDataKinds.Relation
-import expo.modules.contacts.next.domain.model.ClearableField
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.relationship.operations.ExistingRelation
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object RelationField : ExtractableField.Data<ExistingRelation>, ClearableField {
+object RelationField : ExtractableField.Data<ExistingRelation> {
   override val projection = arrayOf(Relation._ID, Relation.NAME, Relation.TYPE, Relation.LABEL)
 
   override val mimeType = Relation.CONTENT_ITEM_TYPE
