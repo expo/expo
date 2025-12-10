@@ -919,24 +919,26 @@ export async function withMetroMultiPlatformAsync(
     getMetroBundler: () => Bundler;
   }
 ) {
+  const watchFolders = (config.watchFolders as string[]) || [];
+  asWritable(config).watchFolders = watchFolders;
+
   // Change the default metro-runtime to a custom one that supports bundle splitting.
   // NOTE(@kitten): This is now always active and EXPO_USE_METRO_REQUIRE / isNamedRequiresEnabled is disregarded
   const metroDefaults: typeof import('@expo/metro/metro-config/defaults/defaults') = require('@expo/metro/metro-config/defaults/defaults');
-  asWritable(metroDefaults).moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
+  const metroRequirePolyfill = require.resolve('@expo/cli/build/metro-require/require');
+  asWritable(metroDefaults).moduleSystem = metroRequirePolyfill;
+  watchFolders.push(path.dirname(metroRequirePolyfill));
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
   // This is used for running Expo CLI in development against projects outside the monorepo.
   if (!isDirectoryIn(__dirname, projectRoot)) {
-    const watchFolders = (config.watchFolders as string[]) || [];
-    asWritable(config).watchFolders = watchFolders;
-    // TODO: Make this generic or reduce
+    const reactNativePolyfills: string[] = require('react-native/rn-get-polyfills')();
     watchFolders.push(
-      path.join(require.resolve('@expo/metro-config/package.json'), '../..'),
-      // For virtual modules
-      path.join(require.resolve('expo/package.json'), '..'),
-      path.join(require.resolve('@react-native/js-polyfills/package.json'), '..')
+      ...[path.dirname(require.resolve('expo/package.json')), ...reactNativePolyfills]
+        .map((targetPath) => (fs.existsSync(targetPath) ? path.dirname(targetPath) : null))
+        .filter((targetPath) => targetPath != null)
     );
   }
 
