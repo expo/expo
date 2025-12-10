@@ -117,7 +117,7 @@ function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
           // If its a response body, write it to the global storage
           const { requestId, ...requestInfo } = message.params;
           NETWORK_RESPONSE_STORAGE.set(requestId, requestInfo);
-        } else {
+        } else if (message.method.startsWith('Network.')) {
           // Otherwise, directly re-broadcast the Network events to all connected debuggers
           debuggerWebsocket.clients.forEach((debuggerSocket) => {
             if (debuggerSocket.readyState === debuggerSocket.OPEN) {
