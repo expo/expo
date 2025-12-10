@@ -27,7 +27,7 @@ data class PatchContactRecord(
   @Field val company: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val department: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val jobTitle: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
-  @Field val phoneticOrganizationName: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
+  @Field val phoneticCompanyName: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val note: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val image: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val emails: ValueOrUndefined<List<Either<EmailRecord.Patch, EmailRecord.New>>?> = ValueOrUndefined.Undefined(),
