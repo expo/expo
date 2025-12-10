@@ -132,7 +132,8 @@ function Button() {
                   native: { color: '#000' },
                 }),
             ]}>
-            <Text style={styles.textSecondary}>$</Text> touch {`${getRootDir()}/index.tsx`}</Text>
+            <Text style={styles.textSecondary}>$</Text> touch {`${getRootDir()}/index.tsx`}
+          </Text>
         </View>
       )}
     </Pressable>

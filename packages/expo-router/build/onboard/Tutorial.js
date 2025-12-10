@@ -118,7 +118,8 @@ function Button() {
                         native: { color: '#000' },
                     }),
             ]}>
-            <react_native_1.Text style={styles.textSecondary}>$</react_native_1.Text> touch {`${getRootDir()}/index.tsx`}</react_native_1.Text>
+            <react_native_1.Text style={styles.textSecondary}>$</react_native_1.Text> touch {`${getRootDir()}/index.tsx`}
+          </react_native_1.Text>
         </react_native_1.View>)}
     </Pressable_1.Pressable>);
 }
