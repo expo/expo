@@ -405,7 +405,7 @@ export const eas = [
           makePage('eas/environment-variables/without-eas.mdx'),
           makePage('eas/environment-variables/faq.mdx'),
         ],
-        { expanded: true }
+        { expanded: false }
       ),
     ],
     {
