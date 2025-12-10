@@ -1,15 +1,30 @@
 ---
-title: Using Environment variables without EAS
+title: Using environment variables without EAS
 sidebar_title: Without EAS
-description: Local-only and non-EAS ways to work with environment variables in Expo and React Native projects.
-searchRank: 2
+description: Local-only and non-EAS ways to manage environment variables in Expo and React Native projects.
 ---
 
-EAS is the recommended way to manage variables for cloud builds and updates, but you can still work locally or with other tooling.
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-## Local development with Expo CLI
+import { BoxLink } from '~/ui/components/BoxLink';
 
-- Expo CLI loads `EXPO_PUBLIC_` variables from **.env** files and inlines them into client bundles. Use this for values that are safe to ship to users.
-- Add non-public variables to **.env** files for use in `app.config.js` or custom scripts. Keep these files in **.gitignore**.
-- You do not need to restart the dev server to pick up **.env** changes; Expo CLI reloads them automatically.
-- Link to Expo CLI [environment variables guide](/guides/environment-variables/).
+[EAS](/eas/environment-variables/) is the recommended way to manage environment variables for cloud builds and updates, but you can still work locally or with other tooling.
+
+## Managing environment variables without EAS
+
+If you want to manage environment variables without EAS, you can use tools like [`dotenv`](https://www.npmjs.com/package/dotenv) (Node-based loaders) or services such as [Doppler](https://www.doppler.com/) that inject environment variables. These utilities allow you to create a **.env** file in which you can store your environment variables.
+
+> **Note:** Avoid committing secrets to **.env** files if you are managing your environment variables without EAS.
+
+## How environment variables are loaded
+
+After creating **.env** file, you need to ensure that the file is committed to your project's Version Control System and is not listed inside **.gitignore** file. A **.env** file committed to your project, is picked by EAS commands like `eas build`, `eas update`, and so on.
+
+The **.env** files load according to the standard .env file resolution and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the .env files. Code inside **node_modules** directory is not affected for security purposes.
+
+<BoxLink
+  title="Reading environment variables from .env files"
+  description="For more information, see how to  read environment variables from .env files in Expo CLI."
+  href="/guides/environment-variables/#reading-environment-variables-from-env-files"
+  Icon={BookOpen02Icon}
+/>
