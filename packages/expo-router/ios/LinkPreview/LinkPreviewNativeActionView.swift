@@ -149,7 +149,7 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
   #if RCT_NEW_ARCH_ENABLED
     override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
       if let childActionView = childComponentView as? LinkPreviewNativeActionView {
-        subActions.append(childActionView)
+        subActions.insert(childActionView, at: index)
         childActionView.parentMenuUpdatable = self
       } else {
         print(

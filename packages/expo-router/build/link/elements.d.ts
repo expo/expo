@@ -1,4 +1,4 @@
-import React, { type PropsWithChildren, type ReactElement } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export interface LinkMenuActionProps {
@@ -83,7 +83,7 @@ export interface LinkMenuProps {
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
      */
     destructive?: boolean;
-    children: ReactElement<LinkMenuActionProps> | ReactElement<LinkMenuActionProps>[];
+    children?: React.ReactNode;
 }
 /**
  * Groups context menu actions for a link.

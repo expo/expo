@@ -1,13 +1,7 @@
 'use client';
 
 import { nanoid } from 'nanoid/non-secure';
-import React, {
-  isValidElement,
-  use,
-  useMemo,
-  type PropsWithChildren,
-  type ReactElement,
-} from 'react';
+import React, { isValidElement, use, useMemo, type PropsWithChildren } from 'react';
 import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -116,7 +110,7 @@ export interface LinkMenuProps {
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
    */
   destructive?: boolean;
-  children: ReactElement<LinkMenuActionProps> | ReactElement<LinkMenuActionProps>[];
+  children?: React.ReactNode;
 }
 
 /**
