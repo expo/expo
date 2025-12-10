@@ -94,7 +94,7 @@ export async function getSubstitutionDataPrompts(
       type: 'confirm',
       name: 'includeView',
       message: 'Do you want the module to include a native View component?',
-      initial: false, // todo revert to true
+      initial: true,
     },
   ];
 
@@ -190,7 +190,7 @@ export async function getLocalSubstitutionDataPrompts(
       type: 'confirm',
       name: 'includeView',
       message: 'Do you want the module to include a native View component?',
-      initial: false, // todo revert to true
+      initial: true,
     },
   ];
 }

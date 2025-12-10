@@ -321,11 +321,6 @@ async function createModuleFromTemplate(
       escape: (value: string) => value.replace(/\./g, path.sep),
     });
 
-    // Skip files that the template marked as to be ignored.
-    if (!renderedRelativePath || renderedRelativePath.includes('__skip__')) {
-      continue;
-    }
-
     const fromPath = path.join(templatePath, file);
     const toPath = path.join(targetPath, renderedRelativePath);
     const template = await fs.promises.readFile(fromPath, 'utf8');
@@ -428,7 +423,6 @@ async function askForSubstitutionDataAsync(
     viewName = answeredViewName;
   }
 
-  // Derive reverse-DNS base identifier (Android package / iOS bundle id base) from slug
   const projectPackage = deriveBaseIdentifierFromSlug(slug);
 
   const selectedPlatforms: string[] = Array.isArray(platform) ? platform : platform ? [platform] : [];
@@ -436,7 +430,6 @@ async function askForSubstitutionDataAsync(
   const android = selectedPlatforms.includes('android');
   const web = selectedPlatforms.includes('web');
 
-  // Resolve names consistently
   const moduleName = handleSuffix(name, 'Module');
   let resolvedViewName = viewName ?? handleSuffix(name, 'View');
   // Ensure viewName never collides with moduleName
