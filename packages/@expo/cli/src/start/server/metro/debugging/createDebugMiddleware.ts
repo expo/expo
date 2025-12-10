@@ -1,17 +1,24 @@
+import type { NextHandleFunction } from 'connect';
 import { WebSocketServer } from 'ws';
 
 import { createHandlersFactory } from './createHandlersFactory';
 import { env } from '../../../../utils/env';
+import { isLocalSocket } from '../../../../utils/net';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { TerminalReporter } from '../TerminalReporter';
 import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
 
 const debug = require('debug')('expo:metro:debugging:middleware') as typeof console.log;
 
+interface DebugMiddleware {
+  debugMiddleware: NextHandleFunction;
+  debugWebsocketEndpoints: Record<string, WebSocketServer>;
+}
+
 export function createDebugMiddleware(
   metroBundler: MetroBundlerDevServer,
   reporter: TerminalReporter
-) {
+): DebugMiddleware {
   // Load the React Native debugging tools from project
   // TODO: check if this works with isolated modules
   const { createDevMiddleware } =
@@ -41,13 +48,27 @@ export function createDebugMiddleware(
     },
   });
 
+  const debuggerWebsocketEndpoint = websocketEndpoints['/inspector/debug'] as WebSocketServer;
+
   // NOTE(cedric): add a temporary websocket to handle Network-related CDP events
-  websocketEndpoints['/inspector/network'] = createNetworkWebsocket(
-    websocketEndpoints['/inspector/debug']
-  );
+  websocketEndpoints['/inspector/network'] = createNetworkWebsocket(debuggerWebsocketEndpoint);
+
+  // Explicitly limit debugger websocket to loopback requests
+  debuggerWebsocketEndpoint.on('connection', (socket, request) => {
+    if (!isLocalSocket(request.socket)) {
+      socket.close();
+    }
+  });
 
   return {
-    debugMiddleware: middleware,
+    debugMiddleware(req, res, next) {
+      // The debugger middleware is skipped entirely if the connection isn't a loopback request
+      if (isLocalSocket(req.socket)) {
+        return middleware(req, res, next);
+      } else {
+        return next();
+      }
+    },
     debugWebsocketEndpoints: websocketEndpoints,
   };
 }
