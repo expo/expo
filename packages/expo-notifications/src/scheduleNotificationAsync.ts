@@ -109,7 +109,7 @@ export function parseTrigger(
 
   if (!hasValidTriggerObject(userFacingTrigger)) {
     throw new TypeError(
-      `The \`trigger\` object you provided is invalid. It needs contain a \`type\` or \`channelId\` entry. Refer to the documentation to update your code: https://docs.expo.dev/versions/latest/sdk/notifications/#notificationtriggerinput`
+      `The \`trigger\` object you provided is invalid. It needs to contain a \`type\` or \`channelId\` entry. Refer to the documentation to update your code: https://docs.expo.dev/versions/latest/sdk/notifications/#notificationtriggerinput`
     );
   }
   const dateTrigger = parseDateTrigger(userFacingTrigger);

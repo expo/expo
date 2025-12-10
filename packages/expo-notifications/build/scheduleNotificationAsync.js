@@ -76,7 +76,7 @@ export function parseTrigger(userFacingTrigger) {
         throw new TypeError('Encountered an `undefined` notification trigger. If you want to trigger the notification immediately, pass in an explicit `null` value.');
     }
     if (!hasValidTriggerObject(userFacingTrigger)) {
-        throw new TypeError(`The \`trigger\` object you provided is invalid. It needs contain a \`type\` or \`channelId\` entry. Refer to the documentation to update your code: https://docs.expo.dev/versions/latest/sdk/notifications/#notificationtriggerinput`);
+        throw new TypeError(`The \`trigger\` object you provided is invalid. It needs to contain a \`type\` or \`channelId\` entry. Refer to the documentation to update your code: https://docs.expo.dev/versions/latest/sdk/notifications/#notificationtriggerinput`);
     }
     const dateTrigger = parseDateTrigger(userFacingTrigger);
     if (dateTrigger) {
