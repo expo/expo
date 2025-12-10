@@ -47,6 +47,7 @@
 - fix setting dynamic options using NativeTabs.Trigger ([#41481](https://github.com/expo/expo/pull/41481) by [@Ubax](https://github.com/Ubax))
 - [ios] fix toolbar menu updates and ordering of items ([#41522](https://github.com/expo/expo/pull/41522) by [@Ubax](https://github.com/Ubax))
 - [ios] prevent native crash when Link.AppleZoom with direct child Text is rendered inside Text ([#41518](https://github.com/expo/expo/pull/41518) by [@Ubax](https://github.com/Ubax))
+- [ios] fix zoom transition with custom params in href ([#41508](https://github.com/expo/expo/pull/41508) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
