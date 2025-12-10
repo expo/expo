@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- improve runtime validation for NotificationTriggerInput ([#41538](https://github.com/expo/expo/pull/41538) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 - fix completion handler never called for background notifications ([#41300](https://github.com/expo/expo/pull/41300) by [@vonovak](https://github.com/vonovak))
