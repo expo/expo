@@ -1,10 +1,9 @@
 import type { NextHandleFunction } from 'connect';
-import type { IncomingMessage } from 'node:http';
 import { WebSocketServer } from 'ws';
 
 import { createHandlersFactory } from './createHandlersFactory';
 import { env } from '../../../../utils/env';
-import { isLocalSocket } from '../../../../utils/net';
+import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { TerminalReporter } from '../TerminalReporter';
 import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
@@ -92,16 +91,6 @@ function makeLogger(reporter: TerminalReporter, level: 'info' | 'warn' | 'error'
       data,
     });
 }
-
-const isMatchingOrigin = (request: IncomingMessage, serverBaseUrl: string): boolean => {
-  // NOTE(@kitten): The browser will always send an origin header for websocket upgrade connections
-  if (!request.headers.origin) {
-    return true;
-  }
-  const actualHost = new URL(request.headers.origin).host;
-  const expectedHost = new URL(serverBaseUrl).host;
-  return actualHost === expectedHost;
-};
 
 /**
  * This adds a dedicated websocket connection that handles Network-related CDP events.
