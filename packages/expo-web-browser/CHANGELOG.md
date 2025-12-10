@@ -10,7 +10,9 @@
 
 - [Android] Fix the browser closing after the app is backgrounded by adding a new option to use a proxy activity to launch custom tabs. ([#41457](https://github.com/expo/expo/pull/41457) by [@lukmccall](https://github.com/lukmccall))
 
-  ### 💡 Others
+### 💡 Others
+
+- [Android] Remove `experimentalLauncherActivity` config plugin option as it was replaced with the `useProxyActivity` option on `openBrowserAsync` and `openAuthSessionAsync` methods.
 
 ## 15.0.10 - 2025-12-05
 
