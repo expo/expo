@@ -23,6 +23,31 @@ Additionally, you may want to use environment variables outside of your project'
 - Control visibility (plain text, sensitive, secret) so only the right surfaces can read each value.
 - Apply the same set locally with [`eas env:pull`](/eas/environment-variables/manage/#pull-variables-for-local-development) or inside CI/CD.
 
+## Quick start
+
+1. To create a new environment variable, use the EAS CLI and run the following command inside your project directory. The following command creates a new environment variable with the name `EXPO_PUBLIC_API_URL` and the value `https://api.example.com` for the `production` environment.
+
+<Terminal
+  cmd={[
+    '$ cd ~/projects/my-app',
+    '$ eas env:create --name EXPO_PUBLIC_API_URL --value https://api.example.com --environment production --visibility plainText',
+  ]}
+/>
+
+2. Verify if the environment variable is created successfully by confirming it appears with the **production** badge in the [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) in your project settings. You canm
+
+3. To use the environment variable in EAS Build, add `environment` field to the `prodcuction` build profile:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "environment": "production"
+    }
+  }
+}
+```
+
 ## Key concepts
 
 ### Available environments
