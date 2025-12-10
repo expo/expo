@@ -303,6 +303,13 @@ function handleSuffix(name: string, suffix: string): string {
   return `${name}${suffix}`;
 }
 
+function resolveViewName(name: string, moduleName: string, providedViewName?: string): string {
+  const baseName = name.endsWith('Module') ? name.slice(0, -'Module'.length) : name;
+  const fallbackView = providedViewName ?? handleSuffix(name, 'View');
+  const candidates = [fallbackView, handleSuffix(baseName, 'View'), `${baseName}NativeView`];
+  return candidates.find((candidate) => candidate !== moduleName) ?? `${baseName}NativeView`;
+}
+
 /**
  * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
@@ -327,11 +334,9 @@ async function createModuleFromTemplate(
     const renderedContent = ejs.render(template, data);
 
     //if the first non-empty line contains __SKIP_FILE__, skip writing this file
-    {
-      const firstNonEmptyLine = renderedContent.split(/\r?\n/).find((l) => l.trim().length > 0) || '';
-      if (firstNonEmptyLine.includes('__SKIP_FILE__')) {
-        continue;
-      }
+    const firstNonEmptyLine = renderedContent.split(/\r?\n/).find((l) => l.trim().length > 0) || '';
+    if (firstNonEmptyLine.includes('__SKIP_FILE__')) {
+      continue;
     }
 
     if (!fs.existsSync(path.dirname(toPath))) {
@@ -425,21 +430,24 @@ async function askForSubstitutionDataAsync(
 
   const projectPackage = deriveBaseIdentifierFromSlug(slug);
 
-  const selectedPlatforms: string[] = Array.isArray(platform) ? platform : platform ? [platform] : [];
-  const ios = selectedPlatforms.includes('ios');
-  const android = selectedPlatforms.includes('android');
-  const web = selectedPlatforms.includes('web');
+  const platformSelection = (() => {
+    const list: string[] = [].concat(platform ?? []);
+    return {
+      list,
+      isiOS(): boolean {
+        return this.list.includes('ios');
+      },
+      isAndroid(): boolean {
+        return this.list.includes('android');
+      },
+      isWeb(): boolean {
+        return this.list.includes('web');
+      },
+    };
+  })();
 
   const moduleName = handleSuffix(name, 'Module');
-  let resolvedViewName = viewName ?? handleSuffix(name, 'View');
-  // Ensure viewName never collides with moduleName
-  if (resolvedViewName === moduleName) {
-    const baseNoModule = name.endsWith('Module') ? name.slice(0, -'Module'.length) : name;
-    resolvedViewName = handleSuffix(baseNoModule, 'View');
-    if (resolvedViewName === moduleName) {
-      resolvedViewName = `${baseNoModule}NativeView`;
-    }
-  }
+  let resolvedViewName = resolveViewName(name, moduleName, viewName);
 
   if (isLocal) {
     return {
@@ -452,10 +460,10 @@ async function askForSubstitutionDataAsync(
       },
       features: {
         view: !!includeView,
-        platforms: selectedPlatforms,
-        ios,
-        android,
-        web,
+        platforms: platformSelection.list,
+        ios: platformSelection.isiOS(),
+        android: platformSelection.isAndroid(),
+        web: platformSelection.isWeb(),
       },
       type: 'local',
     };
@@ -479,10 +487,10 @@ async function askForSubstitutionDataAsync(
     },
     features: {
       view: !!includeView,
-      platforms: selectedPlatforms,
-      ios,
-      android,
-      web,
+      platforms: platformSelection.list,
+      ios: platformSelection.isiOS(),
+      android: platformSelection.isAndroid(),
+      web: platformSelection.isWeb(),
     },
     author,
     license: 'MIT',
