@@ -55,7 +55,8 @@ const getRootComponent_1 = require("./getRootComponent");
 const _ctx_1 = require("../../_ctx");
 const ExpoRoot_1 = require("../ExpoRoot");
 const head_1 = require("../head");
-const debug = require('debug')('expo:router:renderStaticContent');
+const debug_1 = require("../utils/debug");
+const debug = (0, debug_1.createDebug)('expo:router:server:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
