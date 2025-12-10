@@ -51,14 +51,37 @@ To use the environment variable in EAS Build, add `environment` field to the `pr
 }
 ```
 
+Any environment variable that is created for the `production` build profile will be available during the build process.
+
+</Step>
+
+<Step label="4">
+
+To use the environment variable with EAS Update, run the `eas update` command with the `--environment` flag specified:
+
+<Terminal cmd={['$ eas update --environment production']} />
+
+The `--environment` flag is used to specify the environment to use for the update job. Only the environment variables from the specified environment will be used during the update process.
+
+</Step>
+
+<Step label="5">
+
+To use the environment variable with EAS Hosting, run the `eas deploy` command with the `--environment` flag specified:
+
+<Terminal cmd={['$ eas deploy --environment production']} />
+
+The `--environment` flag is used to specify the environment to use for the deploy job. Only the environment variables from the specified environment will be used during the deploy process.
+
 </Step>
 
 ## Why use EAS environment variables
 
 - Keep configuration in one place for cloud builds, updates, and workflows without committing **.env** files.
-- Separate values by environment (`development`, `preview`, `production` or a custom environment) while reusing names.
+- Separate values by environment (`development`, `preview`, `production`) while reusing names.
 - Control visibility (plain text, sensitive, secret) so only the right surfaces can read each value.
 - Apply the same set locally with [`eas env:pull`](/eas/environment-variables/manage/#pull-variables-for-local-development) or inside CI/CD.
+- Enterprise and production customers can create custom environments to manage environment variables for their apps.
 
 ## Key concepts
 
