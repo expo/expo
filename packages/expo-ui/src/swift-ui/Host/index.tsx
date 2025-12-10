@@ -77,7 +77,7 @@ export function Host(props: HostProps) {
       onLayoutContent={onLayoutContent}
       layoutDirection={
         layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
-      } 
+      }
       ignoreSafeAreaKeyboardInsets={ignoreSafeAreaKeyboardInsets}
       {...restProps}
     />
