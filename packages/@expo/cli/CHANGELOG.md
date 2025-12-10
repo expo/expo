@@ -34,6 +34,7 @@
 - [Internal] Use local monorepo template for `expo/expo` development ([#41383](https://github.com/expo/expo/pull/41383) by [@kitten](https://github.com/kitten))
 - Replace type declaration override for `@expo/config-types` with cast ([#41453](https://github.com/expo/expo/pull/41453) by [@kitten](https://github.com/kitten))
 - [Internal] add `Async` suffix to `exportMiddleware` and `exportServerRoute` ([#41443](https://github.com/expo/expo/pull/41443) by [@hassankhan](https://github.com/hassankhan))
+- Embed `/_expo/touch` templates ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
