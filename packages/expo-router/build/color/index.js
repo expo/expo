@@ -24,7 +24,7 @@ __exportStar(require("./android.material.types"), exports);
 __exportStar(require("./ios.types"), exports);
 const iosColor = new Proxy({}, {
     get(_, prop) {
-        return (0, react_native_1.PlatformColor)(prop);
+        return { semantic: [prop] };
     },
 });
 const androidAttrColor = new Proxy({}, {
