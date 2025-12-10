@@ -22,7 +22,9 @@ sealed interface EmailRecord {
   class Patch() : PatchRecord {
     @Required @Field
     override lateinit var id: String
+
     @Field var label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field var address: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
   }
 }

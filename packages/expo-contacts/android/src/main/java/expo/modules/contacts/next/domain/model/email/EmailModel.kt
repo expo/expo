@@ -2,7 +2,6 @@ package expo.modules.contacts.next.domain.model.email
 
 import android.content.ContentValues
 import android.provider.ContactsContract
-import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.CommonDataKinds.Email
 
 abstract class EmailModel(
