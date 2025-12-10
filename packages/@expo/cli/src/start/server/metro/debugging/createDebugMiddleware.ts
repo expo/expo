@@ -4,7 +4,6 @@ import { WebSocketServer } from 'ws';
 import { createHandlersFactory } from './createHandlersFactory';
 import { env } from '../../../../utils/env';
 import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
-import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { TerminalReporter } from '../TerminalReporter';
 import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
 
@@ -15,10 +14,15 @@ interface DebugMiddleware {
   debugWebsocketEndpoints: Record<string, WebSocketServer>;
 }
 
-export function createDebugMiddleware(
-  metroBundler: MetroBundlerDevServer,
-  reporter: TerminalReporter
-): DebugMiddleware {
+interface DebugMiddlewareParams {
+  serverBaseUrl: string;
+  reporter: TerminalReporter;
+}
+
+export function createDebugMiddleware({
+  serverBaseUrl,
+  reporter,
+}: DebugMiddlewareParams): DebugMiddleware {
   // Load the React Native debugging tools from project
   // TODO: check if this works with isolated modules
   const { createDevMiddleware } =
@@ -28,9 +32,7 @@ export function createDebugMiddleware(
     // TODO: Check with cedric why this can be removed
     // https://github.com/facebook/react-native/pull/53921
     // projectRoot: metroBundler.projectRoot,
-    serverBaseUrl: metroBundler
-      .getUrlCreator()
-      .constructUrl({ scheme: 'http', hostType: 'localhost' }),
+    serverBaseUrl,
     logger: createLogger(reporter),
     unstable_customInspectorMessageHandler: createHandlersFactory(),
     // TODO: Forward all events to the shared Metro log reporter. Do this when we have opinions on how all logs should be presented.

@@ -1,9 +1,23 @@
 import { WebSocket, WebSocketServer } from 'ws';
 
-export function createDevToolsPluginWebsocketEndpoint(): Record<string, WebSocketServer> {
+import { isLocalSocket, isMatchingOrigin } from '../../../utils/net';
+
+interface DevToolsPluginWebsocketEndpointParams {
+  serverBaseUrl: string;
+}
+
+export function createDevToolsPluginWebsocketEndpoint({
+  serverBaseUrl,
+}: DevToolsPluginWebsocketEndpointParams): Record<string, WebSocketServer> {
   const wss = new WebSocketServer({ noServer: true });
 
-  wss.on('connection', (ws: WebSocket) => {
+  wss.on('connection', (ws, request) => {
+    // Explicitly limit devtools websocket to loopback requests
+    if (!isLocalSocket(request.socket) || !isMatchingOrigin(request, serverBaseUrl)) {
+      ws.close();
+      return;
+    }
+
     ws.on('message', (message, isBinary) => {
       // Broadcast the received message to all other connected clients
       wss.clients.forEach((client) => {
