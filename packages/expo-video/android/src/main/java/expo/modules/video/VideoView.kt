@@ -78,7 +78,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
 
   var pipParams by IgnoreSameSet(PiPParams()) { new, old ->
     listeners.forEach {
-      it.get()?.onPiPParamsChanged(this,old, new)
+      it.get()?.onPiPParamsChanged(this, old, new)
     }
   }
     private set
@@ -269,7 +269,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   }
 
   fun removeVideoViewListener(listener: VideoViewListener) {
-    listeners.retainAll{ it.get() != listener }
+    listeners.retainAll { it.get() != listener }
   }
 
   override fun onVideoSourceLoaded(

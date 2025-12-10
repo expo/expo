@@ -36,14 +36,14 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
   var isInPiP = false
     private set
 
-  var currentPiPViewCandidate: WeakReference<VideoView?> = WeakReference(null)
+  var currentPiPViewCandidate = WeakReference<VideoView>(null)
     private set
 
   private var pipHelperFragment: PictureInPictureHelperFragment? = null
   private val videoViews = mutableListOf<WeakReference<VideoView>>()
   private val strongVideoViews
     get() = videoViews.mapNotNull { it.get() }
-  private val rootViewChildrenOriginalVisibility: MutableMap<Int, Int> = mutableMapOf()
+  private val rootViewChildrenOriginalVisibility = mutableMapOf<Int, Int>()
   private var isReleased = false
 
   init {
@@ -62,7 +62,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
   }
 
   /**
-   * Updates whether the main activity will auto-enter Pictrue in Picture, elects a new PiP candidate
+   * Updates whether the main activity will auto-enter Picture in Picture, elects a new PiP candidate
    * and refreshes PiP parameters such as the rectHint.
    */
   private fun findAndSetupPipCandidate() {
@@ -134,7 +134,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
   }
 
   override fun onPictureInPictureStop() {
-    if (mainActivity.get() == null) {
+    if (!isInPiP) {
       return
     }
 
@@ -247,7 +247,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
   private fun maybeWarnAboutAutoEnterViews() {
     val pipViews = strongVideoViews.filter { it.autoEnterPiP }
 
-    // Ideally we want users to have only one view with `startsPictureInPictureAutomatically`, if multiple exist we try to elect one that makes the most sense.
+    // Ideally, we want users to have only one view with `startsPictureInPictureAutomatically`, if multiple exist we try to elect one that makes the most sense.
     // We can only do the election **during** picture in picture transition, therefore we can't set the rectHint for the transition. That's why we show the warning.
     if (pipViews.size > 1) {
       appContext.get()?.jsLogger?.warn(
@@ -259,7 +259,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
   }
 
   /**
-   * For optimal picture in picture experience it's best to only have one view. This method
+   * For an optimal picture in picture experience, it's best to only have one view. This method
    * hides all children of the root view and makes the player the only visible child of the rootView.
    */
   private fun layoutForPiPEnter(videoView: VideoView) {

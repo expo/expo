@@ -8,8 +8,8 @@ data class PiPParams(
   val canEnter: Boolean = false,
   val willEnter: Boolean = false,
   val blocksAppFromEntering: Boolean = false,
-  val aspectRatio: Rational? = Rational(16,9),
-  val rectHint: Rect = Rect(0,0,0,0),
+  val aspectRatio: Rational? = Rational(16, 9),
+  val rectHint: Rect = Rect(0, 0, 0, 0)
 ) {
   override fun equals(other: Any?): Boolean {
     if (other == null) {
@@ -20,11 +20,11 @@ data class PiPParams(
     }
     return (
       this.canEnter == other.canEnter &&
-      this.willEnter == other.willEnter &&
-      this.autoEnter == other.autoEnter &&
-      this.blocksAppFromEntering == other.blocksAppFromEntering &&
-      this.aspectRatio == other.aspectRatio &&
-      this.rectHint == other.rectHint
+        this.willEnter == other.willEnter &&
+        this.autoEnter == other.autoEnter &&
+        this.blocksAppFromEntering == other.blocksAppFromEntering &&
+        this.aspectRatio == other.aspectRatio &&
+        this.rectHint == other.rectHint
       )
   }
 
