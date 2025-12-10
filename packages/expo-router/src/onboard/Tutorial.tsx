@@ -2,11 +2,25 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { createEntryFileAsync } from './createEntryFile';
+import { getDevServer } from '../getDevServer';
 import { Link } from '../exports';
 import { Pressable } from '../views/Pressable';
 
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
+
+function createEntryFileAsync() {
+  if (process.env.NODE_ENV === 'production') {
+    // No dev server
+    console.warn('createEntryFile() cannot be used in production');
+    return;
+  }
+
+  // Pings middleware in the Expo CLI dev server.
+  return fetch(getDevServer().url + '_expo/touch', {
+    method: 'POST',
+    body: JSON.stringify({ type: 'router_index' }),
+  });
+}
 
 export function Tutorial() {
   React.useEffect(() => {
