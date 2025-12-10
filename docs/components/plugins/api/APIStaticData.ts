@@ -8,7 +8,6 @@ export const nonLinkableTypes = [
   'BufferSource',
   'CodedError',
   'ColorValue',
-  'CommonViewModifierProps',
   'ComponentClass',
   'ComponentProps',
   'ComponentType',
@@ -102,6 +101,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   ArrayBuffer:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer',
   Asset: '/versions/latest/sdk/asset/#asset',
+  CommonViewModifierProps: 'modifiers',
   AsyncIterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
   AuthSessionOpenOptions: '/versions/latest/sdk/webbrowser/#authsessionopenoptions',
