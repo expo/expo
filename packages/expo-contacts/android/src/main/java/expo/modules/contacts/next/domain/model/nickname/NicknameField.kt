@@ -2,12 +2,11 @@ package expo.modules.contacts.next.domain.model.nickname
 
 import android.database.Cursor
 import android.provider.ContactsContract.CommonDataKinds.Nickname
-import expo.modules.contacts.next.domain.model.ClearableField
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object NicknameField : ExtractableField.Data<ExistingNickname>, ClearableField {
+object NicknameField : ExtractableField.Data<ExistingNickname> {
   override val mimeType = Nickname.CONTENT_ITEM_TYPE
 
   override val projection = arrayOf(

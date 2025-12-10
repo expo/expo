@@ -44,7 +44,7 @@ export declare class Contact {
     getImAddresses(): Promise<ImAddress.Existing[]>;
     deleteImAddress(imAddress: ImAddress.Existing | string): Promise<void>;
     updateImAddress(updatedImAddress: ImAddress.Existing): Promise<void>;
-    editWithForm(options?: FormOptions): Promise<boolean>;
+    presentEditForm(options?: FormOptions): Promise<boolean>;
     share(subject: string): Promise<boolean>;
     getFullName(): Promise<string>;
     getIsFavourite(): Promise<boolean>;
@@ -88,7 +88,7 @@ export declare class Contact {
     setNonGregorianBirthday(nonGregorianBirthday: NonGregorianBirthday | null): Promise<boolean>;
     static getAll(options?: ContactQueryOptions): Promise<Contact[]>;
     static create(contact: CreateContactRecord): Promise<Contact>;
-    static createWithForm(contact?: CreateContactRecord): Promise<boolean>;
+    static presentCreateForm(contact?: CreateContactRecord): Promise<boolean>;
     static getCount(): Promise<number>;
     static hasAny(): Promise<boolean>;
     static presentPicker(): Promise<Contact>;

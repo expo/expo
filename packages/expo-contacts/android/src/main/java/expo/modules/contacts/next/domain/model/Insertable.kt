@@ -11,7 +11,6 @@ interface Insertable {
   fun toInsertOperation() =
     with(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)) {
       withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-      withValue(ContactsContract.Data.MIMETYPE, mimeType)
       withValues(contentValues)
       build()
     }

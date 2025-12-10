@@ -1,6 +1,7 @@
 package expo.modules.contacts.next.domain.model.organization
 
 import android.content.ContentValues
+import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Organization
 
 abstract class OrganizationModel(
@@ -12,6 +13,7 @@ abstract class OrganizationModel(
   val mimeType = Organization.CONTENT_ITEM_TYPE
   open val contentValues =
     ContentValues().apply {
+      put(ContactsContract.Data.MIMETYPE, mimeType)
       put(Organization.COMPANY, company)
       put(Organization.DEPARTMENT, department)
       put(Organization.TITLE, jobTitle)

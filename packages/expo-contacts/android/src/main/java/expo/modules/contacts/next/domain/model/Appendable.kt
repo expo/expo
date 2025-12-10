@@ -13,7 +13,6 @@ interface Appendable {
   fun toAppendOperation() =
     with(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)) {
       withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactId.value)
-      withValue(ContactsContract.Data.MIMETYPE, mimeType)
       withValues(contentValues)
       build()
     }

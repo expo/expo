@@ -2,12 +2,11 @@ package expo.modules.contacts.next.domain.model.structuredpostal
 
 import android.database.Cursor
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
-import expo.modules.contacts.next.domain.model.ClearableField
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.structuredpostal.operations.ExistingStructuredPostal
 import expo.modules.contacts.next.domain.wrappers.DataId
 
-object StructuredPostalField : ExtractableField.Data<ExistingStructuredPostal>, ClearableField {
+object StructuredPostalField : ExtractableField.Data<ExistingStructuredPostal> {
   override val mimeType = StructuredPostal.CONTENT_ITEM_TYPE
 
   override val projection = arrayOf(

@@ -1,6 +1,7 @@
 package expo.modules.contacts.next.domain.model.structuredpostal
 
 import android.content.ContentValues
+import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
 
 abstract class StructuredPostalModel(
@@ -14,6 +15,7 @@ abstract class StructuredPostalModel(
   val mimeType = StructuredPostal.CONTENT_ITEM_TYPE
   open val contentValues =
     ContentValues().apply {
+      put(ContactsContract.Data.MIMETYPE, mimeType)
       put(StructuredPostal.STREET, street)
       put(StructuredPostal.CITY, city)
       put(StructuredPostal.REGION, region)

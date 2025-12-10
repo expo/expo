@@ -328,8 +328,8 @@ class ContactsNextModule : Module() {
         self.urlAddresses.delete(urlAddressRecord)
       }
 
-      AsyncFunction("editWithForm") Coroutine { self: Contact ->
-        self.editWithForm()
+      AsyncFunction("presentEditForm") Coroutine { self: Contact ->
+        self.presentEditForm()
       }
 
       StaticAsyncFunction("create") Coroutine { createContactRecord: CreateContactRecord ->
@@ -337,12 +337,12 @@ class ContactsNextModule : Module() {
         Contact.create(createContactRecord, contactRepository, contactMapper, contactFactory)
       }
 
-      StaticAsyncFunction("addWithForm") Coroutine { createContactRecord: CreateContactRecord ->
-        Contact.createWithForm(createContactRecord, contactMapper, contactIntentDelegate)
+      StaticAsyncFunction("presentCreateForm") Coroutine { createContactRecord: CreateContactRecord? ->
+        Contact.presentCreateForm(createContactRecord, contactMapper, contactIntentDelegate)
       }
 
-      StaticAsyncFunction("pick") Coroutine { ->
-        Contact.pick(contactIntentDelegate, contactFactory)
+      StaticAsyncFunction("presentPicker") Coroutine { ->
+        Contact.presentPicker(contactIntentDelegate, contactFactory)
       }
 
       StaticAsyncFunction("getAll") Coroutine { contactQueryOptions: ContactQueryOptions? ->
