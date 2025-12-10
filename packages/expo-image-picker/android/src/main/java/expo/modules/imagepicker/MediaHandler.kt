@@ -85,11 +85,8 @@ internal class MediaHandler(
         return null
       }
       runCatching {
-        val nameIndex = cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME)
-        val sizeIndex = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
-
-        val name: String? = cursor.getString(nameIndex)
-        val size = cursor.getLong(sizeIndex)
+        val name = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME).takeIf { it != -1 }?.let { cursor.getString(it) }
+        val size = cursor.getColumnIndex(OpenableColumns.SIZE).takeIf { it != -1 }?.let { cursor.getLong(it) }
         AdditionalFileData(
           name,
           size
