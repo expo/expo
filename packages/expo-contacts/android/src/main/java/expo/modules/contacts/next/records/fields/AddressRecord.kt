@@ -15,7 +15,7 @@ sealed interface AddressRecord {
     @Field val city: String? = null,
     @Field val region: String? = null,
     @Field val postcode: String? = null,
-    @Field val country: String? = null,
+    @Field val country: String? = null
   ) : ExistingRecord
 
   data class New(
@@ -24,17 +24,23 @@ sealed interface AddressRecord {
     @Field val city: String? = null,
     @Field val region: String? = null,
     @Field val postcode: String? = null,
-    @Field val country: String? = null,
+    @Field val country: String? = null
   ) : NewRecord
 
   class Patch() : PatchRecord {
     @Required @Field
     override lateinit var id: String
+
     @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val street: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val city: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val region: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val postcode: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val country: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
   }
 }

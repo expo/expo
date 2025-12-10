@@ -23,7 +23,9 @@ sealed interface DateRecord {
   class Patch() : PatchRecord {
     @Required @Field
     override lateinit var id: String
+
     @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val date: ValueOrUndefined<ContactDateRecord?> = ValueOrUndefined.Undefined()
   }
 

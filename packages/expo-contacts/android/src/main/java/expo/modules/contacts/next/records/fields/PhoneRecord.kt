@@ -11,18 +11,20 @@ sealed interface PhoneRecord {
   data class Existing(
     @Required @Field override val id: String,
     @Field val label: String? = null,
-    @Field val number: String? = null,
+    @Field val number: String? = null
   ) : ExistingRecord
 
   data class New(
     @Field val label: String? = null,
-    @Field val number: String? = null,
+    @Field val number: String? = null
   ) : NewRecord
 
   class Patch() : PatchRecord {
     @Required @Field
     override lateinit var id: String
+
     @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
     @Field val number: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
   }
 }
