@@ -12,7 +12,6 @@ import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.ValueOrUndefined
 import expo.modules.kotlin.types.toKClass
-import kotlin.collections.asSequence
 import kotlin.collections.orEmpty
 
 class ContactPatchBuilder(
@@ -20,18 +19,18 @@ class ContactPatchBuilder(
   val rawContactId: RawContactId,
   val mapper: ContactRecordDomainMapper
 ) {
-  val fieldsToClear = mutableListOf<ClearableField>()
-  val modelsToPatch = mutableListOf<Updatable>()
-  val modelsToAppend = mutableListOf<Appendable>()
+  val modifiedFields = mutableSetOf<ClearableField>()
+  val toUpdate = mutableListOf<Updatable>()
+  val toAppend = mutableListOf<Appendable>()
 
-  fun build() = ContactPatch(contactId, fieldsToClear, modelsToAppend, modelsToPatch)
+  fun build() = ContactPatch(contactId, modifiedFields, toAppend, toUpdate)
 
   fun withUpdatable(updatable: Updatable) = apply {
-    modelsToPatch.add(updatable)
+    toUpdate.add(updatable)
   }
 
   fun withAppendable(appendable: Appendable) = apply {
-    modelsToAppend.add(appendable)
+    toAppend.add(appendable)
   }
 
   @OptIn(EitherType::class)
@@ -43,22 +42,21 @@ class ContactPatchBuilder(
       return@apply
     }
     if (property.optional == null) {
-      fieldsToClear.add(field)
       return@apply
     }
+    modifiedFields.add(field)
     property.optional
       .orEmpty()
-      .asSequence()
       .partition { it.`is`(toKClass<T>()) }
       .let { (patches, appends) ->
         patches
           .map { it.get(toKClass<T>()) }
           .map { mapper.toPatchable(it) }
-          .forEach { modelsToPatch.add(it) }
+          .forEach { toUpdate.add(it) }
         appends
           .map { it.get(toKClass<R>()) }
           .map { mapper.toAppendable(record = it, rawContactId = rawContactId) }
-          .forEach { modelsToAppend.add(it) }
+          .forEach { toAppend.add(it) }
       }
   }
 }

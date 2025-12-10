@@ -1480,7 +1480,7 @@ export async function test(t) {
       t.expect(updatedEmails.some((e) => e.address === 'work@example.com')).toBe(false);
     });
 
-    t.it('.patch({ emails: null })', async () => {
+    t.it('.patch({ emails: [] })', async () => {
       const contact = await Contact.create({
         givenName: 'Email',
         familyName: 'User',
@@ -1488,11 +1488,7 @@ export async function test(t) {
       });
       contacts.push(contact);
 
-      await contact.getEmails();
-
-      await contact.patch({
-        emails: null,
-      });
+      await contact.patch({ emails: [] });
 
       const updatedEmails = await contact.getEmails();
       t.expect(updatedEmails.length).toBe(0);
@@ -1521,9 +1517,11 @@ export async function test(t) {
       t.expect(updatedPhones.some((p) => p.number === '+48987654321')).toBe(true);
       t.expect(updatedPhones.some((p) => p.number === '+48111222333')).toBe(true);
       t.expect(updatedPhones.some((p) => p.number === '123456789')).toBe(false);
+      t.expect(updatedPhones.some((p) => p.label === 'work')).toBe(true);
+      t.expect(updatedPhones.some((p) => p.label === 'personal')).toBe(true);
     });
 
-    t.it('.patch({ phones: null })', async () => {
+    t.it('.patch({ phones: [] })', async () => {
       const contact = await Contact.create({
         givenName: 'Phone',
         familyName: 'User',
@@ -1532,7 +1530,7 @@ export async function test(t) {
       contacts.push(contact);
 
       await contact.patch({
-        phones: null,
+        phones: [],
       });
 
       const updatedPhones = await contact.getPhones();
@@ -1574,7 +1572,7 @@ export async function test(t) {
       t.expect(updatedDates.some((d) => d.date.year === '1990')).toBe(false);
     });
 
-    t.it('.patch({ dates: null })', async () => {
+    t.it('.patch({ dates: [] })', async () => {
       const contact = await Contact.create({
         givenName: 'Date',
         familyName: 'User',
@@ -1588,7 +1586,7 @@ export async function test(t) {
       contacts.push(contact);
 
       await contact.patch({
-        dates: null,
+        dates: [],
       });
 
       const updatedDates = await contact.getDates();
@@ -1620,7 +1618,7 @@ export async function test(t) {
         t.expect(updatedExtraNames.some((n) => n.name === 'Tester')).toBe(false);
       });
 
-      t.it('.patch({ extraNames: null })', async () => {
+      t.it('.patch({ extraNames: [] })', async () => {
         const contact = await Contact.create({
           givenName: 'Extra',
           familyName: 'User',
@@ -1629,7 +1627,7 @@ export async function test(t) {
         contacts.push(contact);
 
         await contact.patch({
-          extraNames: null,
+          extraNames: [],
         });
 
         const updatedExtraNames = await contact.getExtraNames();
@@ -1677,7 +1675,7 @@ export async function test(t) {
       t.expect(updatedAddresses.some((a) => a.street === '123 Main St')).toBe(false);
     });
 
-    t.it('.patch({ addresses: null })', async () => {
+    t.it('.patch({ addresses: [] })', async () => {
       const contact = await Contact.create({
         givenName: 'Postal',
         familyName: 'User',
@@ -1695,7 +1693,7 @@ export async function test(t) {
       contacts.push(contact);
 
       await contact.patch({
-        addresses: null,
+        addresses: [],
       });
 
       const updatedAddresses = await contact.getAddresses();
@@ -1726,7 +1724,7 @@ export async function test(t) {
       t.expect(updatedRelations.some((r) => r.name === 'Alice')).toBe(false);
     });
 
-    t.it('.patch({ relations: null })', async () => {
+    t.it('.patch({ relations: [] })', async () => {
       const contact = await Contact.create({
         givenName: 'Relation',
         familyName: 'User',
@@ -1735,14 +1733,14 @@ export async function test(t) {
       contacts.push(contact);
 
       await contact.patch({
-        relations: null,
+        relations: [],
       });
 
       const updatedRelations = await contact.getRelations();
       t.expect(updatedRelations.length).toBe(0);
     });
 
-    t.it('.patch({ urlAddresses })', async () => {
+    t.it('.patch({ urlAddresses: [] })', async () => {
       const contact = await Contact.create({
         givenName: 'Web',
         familyName: 'User',
@@ -1766,7 +1764,7 @@ export async function test(t) {
       t.expect(updatedUrls.some((u) => u.url === 'https://example.com')).toBe(false);
     });
 
-    t.it('.patch({ urlAddresses: null })', async () => {
+    t.it('.patch({ urlAddresses: [] })', async () => {
       const contact = await Contact.create({
         givenName: 'Web',
         familyName: 'User',
@@ -1775,7 +1773,7 @@ export async function test(t) {
       contacts.push(contact);
 
       await contact.patch({
-        urlAddresses: null,
+        urlAddresses: [],
       });
 
       const updatedUrls = await contact.getUrlAddresses();
@@ -1786,8 +1784,12 @@ export async function test(t) {
       const initialContactDetails = {
         givenName: 'InitialGiven',
         familyName: 'InitialFamily',
+        middleName: 'InitialMiddle',
+        prefix: 'Mr.',
+        suffix: 'Sr.',
         company: 'InitialCompany',
         jobTitle: 'InitialJob',
+        phoneticCompanyName: 'InitialPhoneticCompany',
         emails: [{ label: 'work', address: 'work@example.com' }],
         phones: [{ label: 'work', number: '111222333' }],
         dates: [{ label: 'birthday', date: { year: '1990', month: '01', day: '01' } }],
@@ -1802,6 +1804,8 @@ export async function test(t) {
         ],
         relations: [{ label: 'spouse', name: 'InitialSpouse' }],
         urlAddresses: [{ label: 'homepage', url: 'https://initial.example.com' }],
+        socialProfiles: [{ label: 'twitter', username: 'initialuser', service: 'Twitter' }],
+        imAddresses: [{ label: 'skype', username: 'initialuser', service: 'Skype' }],
       };
 
       const contact = await Contact.create(initialContactDetails);
@@ -1821,6 +1825,9 @@ export async function test(t) {
 
         company: 'UpdatedCompany',
         jobTitle: null,
+        phoneticCompanyName: null,
+        prefix: null,
+        suffix: null,
 
         emails: [
           { ...initialEmails[0], address: 'work_updated@example.com' },
@@ -1847,12 +1854,15 @@ export async function test(t) {
           { label: 'work', street: '987 Work Ave', city: 'Krakow', country: 'Poland' },
         ],
 
-        relations: null,
+        relations: [],
 
         urlAddresses: [
           { ...initialUrls[0], url: 'https://updated.example.com' },
           { label: 'work', url: 'https://work.example.com' },
         ],
+
+        socialProfiles: initialContactDetails.socialProfiles,
+        imAddresses: initialContactDetails.imAddresses,
       });
 
       const updatedContact = await contact.getDetails();
@@ -1898,6 +1908,16 @@ export async function test(t) {
       t.expect(updatedUrls.length).toBe(2);
       t.expect(updatedUrls.some((u) => u.url === 'https://updated.example.com')).toBe(true);
       t.expect(updatedUrls.some((u) => u.url === 'https://work.example.com')).toBe(true);
+
+      if (Platform.OS === 'ios') {
+        const socialProfiles = await contact.getSocialProfiles();
+        t.expect(socialProfiles.length).toBe(1);
+        t.expect(socialProfiles[0].username).toBe('initialuser');
+
+        const imAddresses = await contact.getImAddresses();
+        t.expect(imAddresses.length).toBe(1);
+        t.expect(imAddresses[0].username).toBe('initialuser');
+      }
     });
   });
 

@@ -7,12 +7,11 @@ import expo.modules.contacts.next.domain.wrappers.ContactId
 
 data class ContactPatch(
   val contactId: ContactId,
-  val toClear: List<ClearableField>,
+  val modifiedFields: Set<ClearableField>,
   val toAppend: List<Appendable>,
   val toUpdate: List<Updatable>
 ) {
   fun toPatchOperations() = buildList {
-    addAll(toClear.map { it.toClearOperation(contactId) })
     addAll(toAppend.map { it.toAppendOperation() })
     addAll(toUpdate.map { it.toUpdateOperation() })
   }

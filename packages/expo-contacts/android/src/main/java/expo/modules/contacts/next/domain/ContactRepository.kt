@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.provider.ContactsContract
 import expo.modules.contacts.next.ContactIdNotFoundException
 import expo.modules.contacts.next.domain.model.Appendable
+import expo.modules.contacts.next.domain.model.ClearableField
 import expo.modules.contacts.next.domain.model.Extractable
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.Updatable
@@ -39,21 +40,61 @@ class ContactRepository(val contentResolver: ContentResolver) {
       ?: throw ContactIdNotFoundException()
   }
 
-  suspend fun patch(contactPatch: ContactPatch): Boolean {
-    val operations = contactPatch.toPatchOperations()
+  suspend fun patch(contactPatch: ContactPatch): Boolean = withContext(Dispatchers.IO) {
+    val operations = contactPatch.toPatchOperations().toMutableList()
+    val idsToKeep = contactPatch.toUpdate
+      .filterIsInstance<Updatable.Data>()
+      .map { it.dataId }
+      .toSet()
+    operations.addAll(
+      getDataIds(contactPatch.contactId, contactPatch.modifiedFields)
+        .minus(idsToKeep)
+        .map {
+          ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+            .withSelection("${ContactsContract.Data._ID} = ?", arrayOf(it.value))
+            .build()
+        }
+    )
     contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, operations)
-    return true
+    return@withContext true
+  }
+
+  private suspend fun getDataIds(
+    contactId: ContactId,
+    extractableFields: Set<ClearableField>
+  ): List<DataId> = withContext(Dispatchers.IO) {
+    val mimeTypes = extractableFields
+      .map { it.mimeType }
+      .distinct()
+    val inClausePlaceholders = mimeTypes.joinToString(",") { "?" }
+
+    contentResolver.safeQuery(
+      uri = ContactsContract.Data.CONTENT_URI,
+      projection = arrayOf(ContactsContract.Data._ID),
+      selection = "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} IN ($inClausePlaceholders)",
+      selectionArgs = arrayOf(contactId.value) + mimeTypes.toTypedArray()
+    ).use { cursor ->
+      ensureActive()
+      cursor.asSequence()
+        .map { it.getString(0) }
+        .map { DataId(it) }
+        .toList()
+    }
   }
 
   suspend fun update(updateContact: UpdateContact): Boolean {
-    contentResolver.safeDelete(
-      uri = ContactsContract.Data.CONTENT_URI,
-      where = "${RawContactId.COLUMN_IN_DATA_TABLE} = ?",
-      selectionArgs = arrayOf(updateContact.rawContactId.value)
-    )
-    val operations = updateContact.toAppend
-      .map { it.toAppendOperation() }
-      .plus(updateContact.starred.toUpdateOperation())
+    val deleteOperation = ContentProviderOperation
+      .newDelete(ContactsContract.Data.CONTENT_URI)
+      .withSelection(
+        "${RawContactId.COLUMN_IN_DATA_TABLE} = ?",
+        arrayOf(updateContact.rawContactId.value)
+      )
+      .build()
+    val operations = buildList {
+      add(deleteOperation)
+      addAll(updateContact.toAppend.map { it.toAppendOperation() })
+      add(updateContact.starred.toUpdateOperation())
+    }
     contentResolver.safeApplyBatch(ContactsContract.AUTHORITY, operations)
     return true
   }

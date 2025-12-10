@@ -16,4 +16,4 @@ fun PatchContactRecord.isChangingOrganization() =
   !company.isUndefined ||
     !department.isUndefined ||
     !jobTitle.isUndefined ||
-    !phoneticOrganizationName.isUndefined
+    !phoneticCompanyName.isUndefined
