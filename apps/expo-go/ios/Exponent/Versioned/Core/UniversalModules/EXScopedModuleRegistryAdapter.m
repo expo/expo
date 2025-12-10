@@ -54,7 +54,6 @@ if (params[@"fileSystemDirectories"]) {
 
 #if __has_include(<ExpoModulesCore/EXPermissionsService.h>)
   EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
-  [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
 #endif
 

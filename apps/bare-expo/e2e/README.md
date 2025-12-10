@@ -6,10 +6,13 @@
 - `brew install oxipng` for image compression
 - run `yarn install` in `bare-expo/e2e/image-comparison`
 - (optional, recommended) Alignment with devices which are used in CI ([iOS](https://github.com/expo/expo/blob/051a306ce7c5b875f7398450e5aeec2e52e313ae/apps/bare-expo/scripts/start-ios-e2e-test.ts#L18), [Android](https://github.com/expo/expo/blob/051a306ce7c5b875f7398450e5aeec2e52e313ae/.github/actions/use-android-emulator/action.yml#L48)). This is necessary for assertions on what is visible on the screen and (especially) for view shots to match.
-- use the following command to generate the Android emulator:
+- use the following commands to generate the Android emulator:
 
 ```bash
-avdmanager create avd --force -n pixel_7_pro --package 'system-images;android-36;google_apis;x86_64' --device pixel_7_pro
+# Install the system image:
+sdkmanager "system-images;android-36;google_apis;arm64-v8a"
+# Create the emulator:
+avdmanager create avd --force -n pixel_7_pro --package 'system-images;android-36;google_apis;arm64-v8a' --device pixel_7_pro
 ```
 
 ### Authoring e2e tests

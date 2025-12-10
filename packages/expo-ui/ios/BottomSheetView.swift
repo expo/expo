@@ -3,23 +3,6 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal enum PresentationDragIndicatorVisibility: String, Enumerable {
-  case automatic
-  case visible
-  case hidden
-
-  func toPresentationDragIndicator() -> Visibility {
-    switch self {
-    case .visible:
-      return .visible
-    case .hidden:
-      return .hidden
-    default:
-      return .automatic
-    }
-  }
-}
-
 internal enum PresentationBackgroundInteractionType: String, Enumerable {
   case automatic
   case enabled
@@ -42,6 +25,23 @@ internal struct PresentationBackgroundInteractionProps: Record {
   @Field var detent: PresentationBackgroundInteractionDetentProps?
 }
 
+internal enum PresentationDragIndicatorVisibility: String, Enumerable {
+  case automatic
+  case visible
+  case hidden
+
+  func toPresentationDragIndicator() -> Visibility {
+    switch self {
+    case .visible:
+      return .visible
+    case .hidden:
+      return .hidden
+    default:
+      return .automatic
+    }
+  }
+}
+
 final class BottomSheetProps: UIBaseViewProps {
   @Field var isOpened: Bool = false
   // Accepts `medium`, `large`, and `fraction` like 0.4
@@ -52,10 +52,10 @@ final class BottomSheetProps: UIBaseViewProps {
   @Field var interactiveDismissDisabled: Bool = false
 }
 
-struct HeightPreferenceKey: PreferenceKey {
-  static var defaultValue: CGFloat?
+struct SizePreferenceKey: PreferenceKey {
+  static var defaultValue: CGSize?
 
-  static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+  static func reduce(value: inout CGSize?, nextValue: () -> CGSize?) {
     guard let nextValue = nextValue() else {
       return
     }
@@ -63,10 +63,12 @@ struct HeightPreferenceKey: PreferenceKey {
   }
 }
 
-private struct ReadHeightModifier: ViewModifier {
+private struct ReadSizeModifier: ViewModifier {
   private var sizeView: some View {
     GeometryReader { geometry in
-      Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+      Color.clear
+        .preference(key: SizePreferenceKey.self, value: geometry.size)
+        .allowsHitTesting(false)
     }
   }
 
@@ -75,12 +77,34 @@ private struct ReadHeightModifier: ViewModifier {
   }
 }
 
+private struct BottomSheetSizeReader<Children: View>: View {
+  let children: Children
+  let onChildrenSizeChange: ((CGSize) -> Void)?
+
+  init(
+    children: Children,
+    onChildrenSizeChange: ((CGSize) -> Void)? = nil
+  ) {
+    self.children = children
+    self.onChildrenSizeChange = onChildrenSizeChange
+  }
+
+  var body: some View {
+    children
+      .modifier(ReadSizeModifier())
+      .onPreferenceChange(SizePreferenceKey.self) { size in
+        if let size, let onChildrenSizeChange {
+          onChildrenSizeChange(size)
+        }
+      }
+    }
+}
+
 struct BottomSheetView: ExpoSwiftUI.View {
   @ObservedObject var props: BottomSheetProps
-
   @State private var isOpened: Bool
-  @State var height: CGFloat = 0
- 
+  @State private var childrenSize: CGSize = .zero
+
   init(props: BottomSheetProps) {
     self.props = props
     self._isOpened = State(initialValue: props.isOpened)
@@ -131,19 +155,17 @@ struct BottomSheetView: ExpoSwiftUI.View {
   @available(iOS 16.0, tvOS 16.0, *)
   private func getDetents() -> Set<PresentationDetent> {
     guard let detentArray = props.presentationDetents, !detentArray.isEmpty else {
-      return [.height(self.height)]
+      return [.height(childrenSize.height)]
     }
-
     let result = detentArray.compactMap { detent(from: $0) }
-    return result.isEmpty ? [.height(self.height)] : Set(result)
+    return result.isEmpty ? [.height(childrenSize.height)] : Set(result)
   }
 
-  @available(iOS 16.4, tvOS 16.4, *)
+ @available(iOS 16.4, tvOS 16.4, *)
   private func getPresentationBackgroundInteraction() -> PresentationBackgroundInteraction {
     guard let interaction = props.presentationBackgroundInteraction else {
       return .automatic
     }
-
     switch interaction.type {
     case .automatic:
       return .automatic
@@ -159,79 +181,49 @@ struct BottomSheetView: ExpoSwiftUI.View {
     }
   }
 
-  var body: some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      // When children contain a UIView (UIViewRepresentable),
-      // SwiftUI will try to expand the UIView size to match the SwiftUI layout.
-      // This breaks the `ReadHeightModifier()` size measurement.
-      // In this case, we must measure the current view directly.
-      let hasHostingChildren = (props.children ?? []).first { ExpoSwiftUI.isHostingView($0) } != nil
+  private func handleChildrenSizeChange(_ size: CGSize) {
+    // Only update if size actually changed to avoid unnecessary re-renders
+    guard childrenSize != size else { return }
+    childrenSize = size
+  }
 
-      Rectangle().hidden()
-        .if(hasHostingChildren) {
-          $0
-            .modifier(ReadHeightModifier())
-            .onPreferenceChange(HeightPreferenceKey.self) { height in
-              if let height {
-                self.height = height
-              }
-            }
-        }
-        .sheet(isPresented: $isOpened) {
-          let sheetContent = Children()
-            .if(!hasHostingChildren) {
-              $0
-                .modifier(ReadHeightModifier())
-                .onPreferenceChange(HeightPreferenceKey.self) { height in
-                  if let height {
-                    self.height = height
-                  }
-                }
-            }
-            .presentationDetents(getDetents())
-            .interactiveDismissDisabled(props.interactiveDismissDisabled)
-            .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
+  @ViewBuilder
+  private var sheetContent: some View {
+    let content = BottomSheetSizeReader(
+      children: Children(),
+      onChildrenSizeChange: handleChildrenSizeChange
+    ).interactiveDismissDisabled(props.interactiveDismissDisabled)
 
-          if #available(iOS 16.4, tvOS 16.4, *) {
-            sheetContent.presentationBackgroundInteraction(getPresentationBackgroundInteraction())
-          } else {
-            sheetContent
-          }
-        }
-        .onChange(of: isOpened, perform: { newIsOpened in
-          if props.isOpened == newIsOpened {
-            return
-          }
-          props.onIsOpenedChange([
-            "isOpened": newIsOpened
-          ])
-        })
-        .onChange(of: props.isOpened) { newValue in
-          isOpened = newValue
-        }
-        .onAppear {
-          isOpened = props.isOpened
-        }
+    if #available(iOS 16.4, tvOS 16.4, *) {
+      content
+        .presentationDetents(getDetents())
+        .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
+        .presentationBackgroundInteraction(getPresentationBackgroundInteraction())
+    } else if #available(iOS 16.0, tvOS 16.0, *) {
+      content
+        .presentationDetents(getDetents())
+        .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
     } else {
-      Rectangle().hidden()
-        .sheet(isPresented: $isOpened) {
-          Children()
-            .interactiveDismissDisabled(props.interactiveDismissDisabled)
-        }
-        .onChange(of: isOpened, perform: { newIsOpened in
-          if props.isOpened == newIsOpened {
-            return
-          }
-          props.onIsOpenedChange([
-            "isOpened": newIsOpened
-          ])
-        })
-        .onChange(of: props.isOpened) { newValue in
-          isOpened = newValue
-        }
-        .onAppear {
-          isOpened = props.isOpened
-        }
+      content
     }
+  }
+
+  var body: some View {
+    Rectangle().hidden()
+      .sheet(isPresented: $isOpened) { sheetContent }
+      .onChange(of: isOpened, perform: { newIsOpened in
+        if props.isOpened == newIsOpened {
+          return
+        }
+        props.onIsOpenedChange([
+          "isOpened": newIsOpened
+        ])
+      })
+      .onChange(of: props.isOpened) { newValue in
+        isOpened = newValue
+      }
+      .onAppear {
+        isOpened = props.isOpened
+      }
   }
 }
