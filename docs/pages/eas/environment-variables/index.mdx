@@ -9,6 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 [Environment variables in Expo](/guides/environment-variables) explains how environment variables work with Expo framework and **.env** files to set environment variables that can be inlined in your app's JavaScript/TypeScript code. In this process, Expo CLI substitutes prefixed variables in your code (for example, `process.env.EXPO_PUBLIC_VARNAME`) with the corresponding value set in the **.env** files on your development machine.
 
@@ -16,27 +17,29 @@ Since **Expo Application Services (EAS)** such as EAS Build and EAS Workflows jo
 
 Additionally, you may want to use environment variables outside of your project's code to customize your app binary at build time. For example, you want to set bundle identifier or a private key for an error reporting service. To accommodate these needs, EAS provides a separate mechanism for environment variables. This mechanism is focused on storing and managing environment variables oon EAS servers and synchronizing them for local development.
 
-## Why use EAS environment variables
-
-- Keep configuration in one place for cloud builds, updates, and workflows without committing **.env** files.
-- Separate values by environment (`development`, `preview`, `production`) while reusing names.
-- Control visibility (plain text, sensitive, secret) so only the right surfaces can read each value.
-- Apply the same set locally with [`eas env:pull`](/eas/environment-variables/manage/#pull-variables-for-local-development) or inside CI/CD.
-
 ## Quick start
 
-1. To create a new environment variable, use the EAS CLI and run the following command inside your project directory. The following command creates a new environment variable with the name `EXPO_PUBLIC_API_URL` and the value `https://api.example.com` for the `production` environment.
+<Step label="1">
+
+To create a new environment variable, use the EAS CLI and run the following command inside your project directory. The following command creates a new environment variable with the name `EXPO_PUBLIC_API_URL` and the value `https://api.example.com` for the `production` environment.
 
 <Terminal
   cmd={[
-    '$ cd ~/projects/my-app',
     '$ eas env:create --name EXPO_PUBLIC_API_URL --value https://api.example.com --environment production --visibility plainText',
   ]}
 />
 
-2. Verify if the environment variable is created successfully by confirming it appears with the **production** badge in the [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) in your project settings. You canm
+</Step>
 
-3. To use the environment variable in EAS Build, add `environment` field to the `prodcuction` build profile:
+<Step label="2">
+
+Verify if the environment variable is created successfully by confirming it appears with the **production** badge in the [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) in your project settings. You canm
+
+</Step>
+
+<Step label="3">
+
+To use the environment variable in EAS Build, add `environment` field to the `prodcuction` build profile:
 
 ```json eas.json
 {
@@ -48,13 +51,22 @@ Additionally, you may want to use environment variables outside of your project'
 }
 ```
 
+</Step>
+
+## Why use EAS environment variables
+
+- Keep configuration in one place for cloud builds, updates, and workflows without committing **.env** files.
+- Separate values by environment (`development`, `preview`, `production` or a custom environment) while reusing names.
+- Control visibility (plain text, sensitive, secret) so only the right surfaces can read each value.
+- Apply the same set locally with [`eas env:pull`](/eas/environment-variables/manage/#pull-variables-for-local-development) or inside CI/CD.
+
 ## Key concepts
 
 ### Available environments
 
-EAS supports three environments for environment variables: `development`, `preview`, and `production` environments. Each environment is an independent set of variables that can be used to customize your app in different contexts.
+By default,EAS supports three environments for environment variables: `development`, `preview`, and `production` environments. You can create a custom environment by adding a new environment to the **eas.json** file.
 
-For example, you can use different API keys for development and production, or use different bundle identifiers for app store releases.
+Each environment is an independent set of variables that can be used to customize your app in different contexts. For example, you can use different API keys for development and production, or use different bundle identifiers for app store releases.
 
 Every EAS Build and Workflows job runs using environment variables from one of the available environments. You can also use environments for updates, allowing you to use the same set of environment variables for your build jobs. You can do this when publishing an update by providing the `--environment` flag.
 
