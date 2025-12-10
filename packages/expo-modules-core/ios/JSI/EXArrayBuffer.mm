@@ -42,11 +42,11 @@
   return _buffer;
 }
 
-- (size_t)getSize { 
+- (size_t)getSize {
   return _buffer->size();
 }
 
-- (nonnull void *)getUnsafeMutableRawPointer { 
+- (nonnull void *)getUnsafeMutableRawPointer {
   return _buffer->data();
 }
 
@@ -82,13 +82,13 @@
   return _jsiBuffer->size(*[_runtime get]);
 }
 
-- (nonnull void *)getUnsafeMutableRawPointer { 
+- (nonnull void *)getUnsafeMutableRawPointer {
   return _jsiBuffer->data(*[_runtime get]);
 }
 
 - (EXArrayBufferStrongRef * _Nullable)memoryStrongRef {
-  // For JS array, the runtime is the owner of the underlying ArrayBuffer memory
-  // we don't own any strong reference
+  // JavaScript ArrayBuffers don't provide direct strong references to the underlying
+  // memory since the JS runtime  owns the memory and manages its lifetime.
   return nullptr;
 }
 

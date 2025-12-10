@@ -4,10 +4,23 @@
 #import <ExpoModulesJSI/EXJavaScriptObject.h>
 #import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
+/**
+ * A reference-counting wrapper around ArrayBuffer memory to manage lifetime.
+ * Used to ensure ArrayBuffer memory remains valid when shared between
+ * Swift Data objects and the underlying buffer.
+ */
 @interface EXArrayBufferStrongRef : NSObject
+/**
+ * Releases the strong reference to the underlying memory buffer.
+ * After calling this method, the memory may be deallocated.
+ */
 - (void)reset;
 @end
 
+/**
+ * Protocol defining the interface for raw ArrayBuffer implementations.
+ * Provides access to the underlying memory and size information.
+ */
 NS_SWIFT_NAME(RawArrayBuffer)
 @protocol EXArrayBuffer
 
@@ -15,10 +28,18 @@ NS_SWIFT_NAME(RawArrayBuffer)
 
 - (nonnull void *)getUnsafeMutableRawPointer;
 
+/**
+ * Returns a strong reference to the underlying memory buffer, or nil if not applicable.
+ * Used to prevent deallocation when the memory is shared with other objects.
+ */
 - (EXArrayBufferStrongRef *_Nullable)memoryStrongRef;
 
 @end
 
+/**
+ * Native ArrayBuffer implementation that manages its own memory allocation.
+ * This is used for ArrayBuffers created from native code that own their memory.
+ */
 NS_SWIFT_NAME(RawNativeArrayBuffer)
 @interface EXNativeArrayBuffer : NSObject<EXArrayBuffer>
 
@@ -37,6 +58,10 @@ NS_SWIFT_NAME(init(data:size:cleanup:));
 
 @end
 
+/**
+ * JavaScript ArrayBuffer implementation that wraps a JSI ArrayBuffer.
+ * This provides access to ArrayBuffers created in JavaScript from native code.
+ */
 NS_SWIFT_NAME(RawJavaScriptArrayBuffer)
 @interface EXJavaScriptArrayBuffer : EXJavaScriptObject<EXArrayBuffer>
 

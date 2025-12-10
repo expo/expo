@@ -1,5 +1,9 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+/**
+ A protocol for all array buffer types.
+ Array buffers represent a fixed-length raw binary data buffer.
+ */
 internal protocol AnyArrayBuffer: AnyArgument {
   /**
    Initializes an array buffer from the given underlying representation.
