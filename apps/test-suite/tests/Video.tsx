@@ -223,6 +223,13 @@ const hlsSourceData: SourceLoadEventPayload = {
 
 // END: - Expected return values from SourceLoadEventPayload
 
+interface TestOptions {
+  expectLoad: boolean;
+  expectPlay: boolean;
+  expectAudioTracks: boolean;
+  expectSubtitleTracks: boolean;
+}
+
 export async function test({ describe, expect, it, ...t }, { setPortalChild, cleanupPortal }: any) {
   let player: VideoPlayer | null = null;
 
@@ -243,13 +250,6 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
       player = null;
     }
   });
-
-  interface TestOptions {
-    expectLoad: boolean;
-    expectPlay: boolean;
-    expectAudioTracks: boolean;
-    expectSubtitleTracks: boolean;
-  }
 
   const defaultOptions: TestOptions = {
     expectLoad: true,
