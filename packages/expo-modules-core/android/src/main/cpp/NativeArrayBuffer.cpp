@@ -73,4 +73,5 @@ std::shared_ptr<ByteBufferJSIWrapper> NativeArrayBuffer::jsiMutableBuffer() {
 jni::local_ref<jni::JByteBuffer> NativeArrayBuffer::toDirectBuffer() {
   return jni::make_local(buffer->getBuffer());
 }
+
 }
