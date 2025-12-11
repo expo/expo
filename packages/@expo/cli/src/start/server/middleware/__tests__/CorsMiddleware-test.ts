@@ -66,14 +66,6 @@ describe(createCorsMiddleware, () => {
     expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
   });
 
-  it('should allow CORS from https://chrome-devtools-frontend.appspot.com/', () => {
-    const origin = 'https://chrome-devtools-frontend.appspot.com';
-    middleware(asRequest({ url: 'http://localhost:8081/', headers: { origin } }), res, next);
-    expect(resHeaders['Access-Control-Allow-Origin']).toBe(origin);
-    expect(next).toHaveBeenCalled();
-    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
-  });
-
   it(`should allow CORS from expo-router's origin`, () => {
     const origin = 'https://example.org';
     const middleware = createCorsMiddleware({ ...config, extra: { router: { origin } } });
