@@ -419,6 +419,52 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  // MARK: - Modules registration
+
+  /**
+   Registers native modules provided by generated `ExpoModulesProvider`.
+   */
+  @objc
+  public func registerNativeModules() {
+    registerNativeModules(provider: Self.modulesProvider())
+  }
+
+  /**
+   Registers native modules provided by given provider.
+   */
+  @objc
+  public func registerNativeModules(provider: ModulesProvider) {
+    useModulesProvider(provider)
+
+    // TODO: Make `registerNativeViews` thread-safe
+    if Thread.isMainThread {
+      MainActor.assumeIsolated {
+        self.registerNativeViews()
+      }
+    } else {
+      Task { @MainActor [weak self] in
+        self?.registerNativeViews()
+      }
+    }
+  }
+
+  /**
+   Registers native views defined by registered native modules.
+   - Note: It should stay private as `registerNativeModules` should be the only call site. Works only with the New Architecture.
+   - Todo: `RCTComponentViewFactory` is thread-safe, so this function should be as well.
+   */
+  @MainActor
+  private func registerNativeViews() {
+#if RCT_NEW_ARCH_ENABLED
+    for holder in moduleRegistry {
+      for (key, viewDefinition) in holder.definition.views {
+        let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
+        ExpoFabricView.registerComponent(viewModule, appContext: self)
+      }
+    }
+#endif
+  }
+
   // MARK: - Runtime
 
   internal func prepareRuntime() throws {
