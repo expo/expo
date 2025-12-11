@@ -12,6 +12,7 @@ class DevMenuViewModel: ObservableObject {
   @Published var clipboardMessage: String?
   @Published var hostUrlCopiedMessage: String?
   @Published var isOnboardingFinished: Bool = true
+  @Published var showAIMode: Bool = false
 
   private let devMenuManager = DevMenuManager.shared
   private var cancellables = Set<AnyCancellable>()
