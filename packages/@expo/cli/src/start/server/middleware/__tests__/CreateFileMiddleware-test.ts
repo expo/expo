@@ -12,7 +12,11 @@ afterEach(() => {
 function createMiddleware() {
   vol.fromJSON({}, '/');
 
-  const middleware = new CreateFileMiddleware('/');
+  const middleware = new CreateFileMiddleware({
+    metroRoot: '/',
+    projectRoot: '/',
+    appDir: '/app',
+  });
   middleware['parseRawBody'] = jest.fn((req) => JSON.parse((req as any).body));
   return { middleware };
 }
@@ -58,7 +62,7 @@ describe('handleRequestAsync', () => {
     expect(response.statusCode).toBe(405);
     expect(response.end).toBeCalledWith('Method Not Allowed');
   });
-  it('creates a basic file', async () => {
+  it('creates a "router_index" file', async () => {
     const { middleware } = createMiddleware();
 
     const response = createMockResponse();
@@ -66,18 +70,15 @@ describe('handleRequestAsync', () => {
       asReq({
         url: 'http://localhost:8081/_expo/touch',
         method: 'POST',
-        body: JSON.stringify({
-          contents: 'hello world',
-          path: '/hello.txt',
-        }),
+        body: JSON.stringify({ type: 'router_index' }),
       }),
       response
     );
     expect(response.statusCode).toBe(200);
     expect(response.end).toBeCalledWith('OK');
-    expect(vol.readFileSync('/hello.txt', 'utf8')).toBe('hello world');
+    expect(vol.readFileSync('/app/index.js', 'utf8')).toMatch(/import/);
   });
-  it('creates a TypeScript file when added to a project with a tsconfig', async () => {
+  it('creates a "router_index" TypeScript file when added to a project with a tsconfig', async () => {
     vol.writeFileSync('/tsconfig.json', JSON.stringify({ compilerOptions: {} }));
 
     const { middleware } = createMiddleware();
@@ -87,34 +88,12 @@ describe('handleRequestAsync', () => {
       asReq({
         url: 'http://localhost:8081/_expo/touch',
         method: 'POST',
-        body: JSON.stringify({
-          contents: 'hello world',
-          path: '/hello.js',
-        }),
+        body: JSON.stringify({ type: 'router_index' }),
       }),
       response
     );
     expect(response.statusCode).toBe(200);
     expect(response.end).toBeCalledWith('OK');
-    expect(vol.readFileSync('/hello.tsx', 'utf8')).toBe('hello world');
-  });
-  it('creates a basic JavaScript file', async () => {
-    const { middleware } = createMiddleware();
-
-    const response = createMockResponse();
-    await middleware.handleRequestAsync(
-      asReq({
-        url: 'http://localhost:8081/_expo/touch',
-        method: 'POST',
-        body: JSON.stringify({
-          contents: 'hello world',
-          path: '/hello.js',
-        }),
-      }),
-      response
-    );
-    expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('OK');
-    expect(vol.readFileSync('/hello.js', 'utf8')).toBe('hello world');
+    expect(vol.readFileSync('/app/index.tsx', 'utf8')).toMatch(/import/);
   });
 });
