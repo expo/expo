@@ -65,10 +65,5 @@ NS_SWIFT_NAME(init(data:size:cleanup:));
 NS_SWIFT_NAME(RawJavaScriptArrayBuffer)
 @interface EXJavaScriptArrayBuffer : EXJavaScriptObject<EXArrayBuffer>
 
-#ifdef __cplusplus
-- (nonnull instancetype)initWith:(std::shared_ptr<jsi::Object>)jsObjectPtr
-                         runtime:(EXJavaScriptRuntime *_Nonnull)runtime;
-#endif
-
 @end
 
