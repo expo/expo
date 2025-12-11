@@ -1,11 +1,5 @@
 #include "MemoryBuffer.h"
 
-#include <functional>
-#include <jsi/jsi.h>
-#include <thread>
-#include <utility>
-#include <utility>
-
 namespace expo {
 
 using namespace facebook;

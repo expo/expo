@@ -5,9 +5,6 @@
  ArrayBuffer objects are used to represent a generic, fixed-length raw binary data buffer.
  */
 public class ArrayBuffer: AnyArrayBuffer {
-  /**
-   The underlying raw array buffer implementation that provides memory access.
-   */
   let backingBuffer: RawArrayBuffer
 
   /**

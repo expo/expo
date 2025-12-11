@@ -57,10 +57,7 @@ extension ArrayBuffer {
     if initializeToZero {
       data.initialize(repeating: 0, count: size)
     }
-    let deleteFunc = {
-      data.deallocate()
-    }
-    return NativeArrayBuffer(wrapping: data, count: size, cleanup: deleteFunc)
+    return NativeArrayBuffer(wrapping: data, count: size, cleanup: { data.deallocate() })
   }
 
   // MARK: - Copy

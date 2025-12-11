@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <functional>
 #include <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;

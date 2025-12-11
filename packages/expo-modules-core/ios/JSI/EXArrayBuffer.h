@@ -51,7 +51,7 @@ NS_SWIFT_NAME(init(data:size:cleanup:));
 
 #ifdef __cplusplus
 /**
- Returns a shared pointer to the underlying memory.
+ Returns a shared pointer to the underlying memory that can be used to create a JSI ArrayBuffer.
  */
 - (std::shared_ptr<jsi::MutableBuffer>)jsiBuffer;
 #endif
