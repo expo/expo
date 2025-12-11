@@ -27,14 +27,6 @@ export const UIScreens = [
     },
   },
   {
-    name: 'DateTimePicker component (legacy)',
-    route: 'ui/date-time-picker',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./DateTimePickerScreen'));
-    },
-  },
-  {
     name: 'Switch component',
     route: 'ui/switch',
     options: {},

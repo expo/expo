@@ -1,4 +1,5 @@
 import {
+  ColorPicker,
   DatePicker,
   DatePickerComponent,
   Form,
@@ -9,7 +10,7 @@ import {
   Switch,
   Text,
 } from '@expo/ui/swift-ui';
-import { animation, datePickerStyle, pickerStyle, tag, Animation, font, listSectionSpacing, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import { animation, datePickerStyle, pickerStyle, tag, tint, Animation } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
 const displayedComponentsOptions = [{
@@ -28,6 +29,7 @@ export default function DatePickerScreen() {
   const [styleIndex, setStyleIndex] = useState(0);
   const [displayedComponentsIndex, setDisplayedComponentsIndex] = useState(0);
   const [useRange, setUseRange] = useState(false);
+  const [tintColor, setTintColor] = useState<string | null>('#007AFF');
   const today = new Date();
   const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
   const [animate, setAnimate] = useState(false);
@@ -44,7 +46,7 @@ export default function DatePickerScreen() {
             }
             range={useRange ? { start: today, end: thirtyDaysFromNow } : undefined}
             onDateChange={({ nativeEvent: { date } }) => setSelectedDate(new Date(date))}
-            modifiers={[datePickerStyle(styleOptions[styleIndex])]}
+            modifiers={[datePickerStyle(styleOptions[styleIndex]), ...(tintColor ? [tint(tintColor)] : [])]}
           />
         </Section>
         <Section title="Selected Values">
@@ -87,6 +89,11 @@ export default function DatePickerScreen() {
             value={useRange}
             label="Limit to next 30 days"
             onValueChange={setUseRange}
+          />
+          <ColorPicker
+            label="Tint Color"
+            selection={tintColor}
+            onValueChanged={setTintColor}
           />
         </Section>
         <Section title="Date Picker with custom label">
