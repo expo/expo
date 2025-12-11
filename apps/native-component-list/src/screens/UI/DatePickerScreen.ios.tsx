@@ -93,6 +93,7 @@ export default function DatePickerScreen() {
             selection={displayedComponentsIndex}
             onSelectionChange={({ nativeEvent: { selection } }) => {
               setDisplayedComponentsIndex(selection as number);
+              setAnimate(!animate);
             }}>
             {displayedComponentsOptions.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
