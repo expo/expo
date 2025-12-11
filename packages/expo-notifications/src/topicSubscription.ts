@@ -3,7 +3,13 @@ import { UnavailabilityError } from 'expo-modules-core';
 import TopicSubscriptionModule from './TopicSubscriptionModule';
 import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';
 
-export async function subscribeToTopicAsync(topic: string): Promise<void> {
+/**
+ * Subscribes the device to a push notification topic. This allows the device to receive notifications sent to that topic.
+ * @param topic The topic name to subscribe to.
+ * @return A Promise which resolves to `null` once the device is subscribed to the topic.
+ * @platform android
+ */
+export async function subscribeToTopicAsync(topic: string): Promise<null> {
   if (!TopicSubscriptionModule.subscribeToTopicAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'subscribeToTopicAsync');
   }
@@ -12,7 +18,13 @@ export async function subscribeToTopicAsync(topic: string): Promise<void> {
   return TopicSubscriptionModule.subscribeToTopicAsync(topic);
 }
 
-export async function unsubscribeFromTopicAsync(topic: string): Promise<void> {
+/**
+ * Unsubscribes the device from a push notification topic. The device will no longer receive notifications sent to that topic.
+ * @param topic The topic name to unsubscribe from.
+ * @return A Promise which resolves to `null` once the device is unsubscribed from the topic.
+ * @platform android
+ */
+export async function unsubscribeFromTopicAsync(topic: string): Promise<null> {
   if (!TopicSubscriptionModule.unsubscribeFromTopicAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'unsubscribeFromTopicAsync');
   }

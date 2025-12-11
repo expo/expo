@@ -1,23 +1,13 @@
 import type { TopicSubscriptionModule } from './TopicSubscriptionModule.types';
 
-let warningHasBeenShown = false;
-
 const module: Required<TopicSubscriptionModule> = {
   addListener: () => {},
   removeListeners: () => {},
   subscribeToTopicAsync: () => {
-    if (!warningHasBeenShown) {
-      console.warn(`[expo-notifications] Broadcast topics are supported only on Android.`);
-      warningHasBeenShown = true;
-    }
-    return Promise.resolve();
+    return Promise.resolve(null);
   },
   unsubscribeFromTopicAsync: () => {
-    if (!warningHasBeenShown) {
-      console.warn(`[expo-notifications] Broadcast topics are supported only on Android.`);
-      warningHasBeenShown = true;
-    }
-    return Promise.resolve();
+    return Promise.resolve(null);
   },
 };
 
