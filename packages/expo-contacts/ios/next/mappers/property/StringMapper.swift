@@ -1,15 +1,27 @@
+import Contacts
+
 struct StringMapper: PropertyMapper {
   typealias TDto = String?
-  typealias TDomain = String
   
-  func toDomain(value: String?) -> String {
-    return value ?? ""
+  let descriptor: CNKeyDescriptor
+  
+  let keyPath: ReferenceWritableKeyPath<CNMutableContact, String>
+  
+  private let keyString: String
+  
+  init(descriptor: String, keyPath: ReferenceWritableKeyPath<CNMutableContact, String>) {
+    self.descriptor = descriptor as CNKeyDescriptor
+    self.keyPath = keyPath
+    self.keyString = descriptor
   }
-  
-  func toDto(value: String) -> String? {
-    guard !value.isEmpty else {
-      return nil
-    }
-    return value
+
+  func extract(from contact: CNContact) throws -> String? {
+    let value = contact.value(forKey: keyString) as? String
+    
+    return (value?.isEmpty ?? true) ? nil : value
+  }
+
+  func apply(_ value: String?, to contact: CNMutableContact) throws {
+    contact[keyPath: keyPath] = value ?? ""
   }
 }

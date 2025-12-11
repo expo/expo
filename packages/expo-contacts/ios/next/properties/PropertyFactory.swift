@@ -11,13 +11,11 @@ final class PropertyFactory {
   }
   
   func make<Mapper: PropertyMapper>(
-    _ property: ContactProperty<Mapper.TDomain>,
     mapper: Mapper,
     isReadOnly: Bool = false
-  ) -> PropertyManager<Mapper.TDomain, Mapper.TDto> {
+  ) -> PropertyManager<Mapper> {
     return PropertyManager(
       contactId: contactId,
-      key: property.key,
       contactRepository: contactRepository,
       mapper: mapper,
       isReadOnly: isReadOnly

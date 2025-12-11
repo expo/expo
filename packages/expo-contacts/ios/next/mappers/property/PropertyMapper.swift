@@ -1,6 +1,8 @@
+import Contacts
+
 protocol PropertyMapper {
-  associatedtype TDomain
   associatedtype TDto
-  func toDomain(value: TDto) throws -> TDomain
-  func toDto(value: TDomain) throws -> TDto
+  var descriptor: CNKeyDescriptor { get }
+  func extract(from contact: CNContact) throws -> TDto
+  func apply(_ value: TDto, to contact: CNMutableContact) throws
 }

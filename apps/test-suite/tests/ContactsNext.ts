@@ -844,6 +844,16 @@ export async function test(t) {
         const nullNickname = await contact.getNickname();
         t.expect(nullNickname).toBeNull();
       });
+
+      t.it('.get/set Birthday()', async () => {
+        const newBirthday = { day: '15', month: '06', year: '1990' };
+        await contact.setBirthday(newBirthday);
+        const retrievedBirthday = await contact.getBirthday();
+        t.expect(retrievedBirthday).toEqual(newBirthday);
+        await contact.setBirthday(null);
+        const nullBirthday = await contact.getBirthday();
+        t.expect(nullBirthday).toBeNull();
+      });
     }
 
     t.it('.get/set Prefix()', async () => {
@@ -987,7 +997,7 @@ export async function test(t) {
 
       calendarsToTest.forEach((calendarCase) => {
         t.it(`should set and get ${calendarCase.name} nonGregorianBirthday`, async () => {
-          const birthday = { year: calendarCase.year, month: '3', day: '15' };
+          const birthday = { year: calendarCase.year, month: '03', day: '15' };
 
           await contact.setNonGregorianBirthday({
             ...birthday,
