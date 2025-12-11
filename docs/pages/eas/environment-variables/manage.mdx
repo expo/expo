@@ -215,4 +215,34 @@ You can also use the **Export** option in the EAS dashboard to download the file
 
 > **important** Creating custom environments is available for [Enterprise and production](/billing/plans/#plans) plans only.
 
-[Enterprise and production](/billing/plans/#plans) customers can create custom environments to manage environment variables.
+If you project relies on complex workflows and requires the flexibility to create more environments, you can use custom environments.
+
+### Create a custom environment in EAS dashboard
+
+To create a custom environment in EAS dashboard:
+
+- In your project, navigate to the **Project settings** > [**Environment variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) and then click on the **Add Variables** button.
+- Under **Environments**, click the **plus (+) icon** to create a new environment.
+
+<ContentSpotlight
+  alt="Create a custom environment in an EAS project dashboard"
+  src="/static/images/env-vars/custom-environment.png"
+  className="max-w-[600px]"
+/>
+
+- After creating the environment, it will be selected under the **Custom environments** section.
+- You can now proceed to create environment variables for this new environment.
+
+### Create a custom environment with EAS CLI
+
+Custom environments can be created with EAS CLI using the `eas env:create` command. For example, the command below creates a new custom environment called `staging`:
+
+<Terminal cmd={['$ eas env:create --environment staging']} />
+
+The above command creates a new custom environment called `staging` and then prompts you to enter the environment variables for this new environment. The `--environment` flag is used to specify the environment to create.
+
+### Use a custom environment
+
+To use a custom environment, you can use the `--environment` flag. For example, the command below is used to publish updates in a project for the `staging` environment:
+
+<Terminal cmd={['$ eas build --environment staging']} />
