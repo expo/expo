@@ -1,8 +1,9 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <Foundation/Foundation.h>
-#import <ExpoModulesJSI/EXJavaScriptObject.h>
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
+#ifdef __cplusplus
+#import <jsi/jsi.h>
+#import <ExpoModulesJSI/MemoryBuffer.h>
+#endif
 
 /**
  * A reference-counting wrapper around ArrayBuffer memory to manage lifetime.
@@ -10,6 +11,11 @@
  * Swift Data objects and the underlying buffer.
  */
 @interface EXArrayBufferStrongRef : NSObject
+
+#ifdef __cplusplus
+- (nonnull instancetype)initWith:(std::shared_ptr<expo::MemoryBuffer>)ptr;
+#endif
+
 /**
  * Releases the strong reference to the underlying memory buffer.
  * After calling this method, the memory may be deallocated.
@@ -36,34 +42,4 @@ NS_SWIFT_NAME(RawArrayBuffer)
 
 @end
 
-/**
- * Native ArrayBuffer implementation that manages its own memory allocation.
- * This is used for ArrayBuffers created from native code that own their memory.
- */
-NS_SWIFT_NAME(RawNativeArrayBuffer)
-@interface EXNativeArrayBuffer : NSObject<EXArrayBuffer>
-
-- (nonnull instancetype)initWithData:(uint8_t*_Nonnull)data
-                                size:(size_t)size
-                             cleanup:(void (^_Nonnull)(void))cleanup
-NS_SWIFT_NAME(init(data:size:cleanup:));
-
-
-#ifdef __cplusplus
-/**
- Returns a shared pointer to the underlying memory that can be used to create a JSI ArrayBuffer.
- */
-- (std::shared_ptr<jsi::MutableBuffer>)jsiBuffer;
-#endif
-
-@end
-
-/**
- * JavaScript ArrayBuffer implementation that wraps a JSI ArrayBuffer.
- * This provides access to ArrayBuffers created in JavaScript from native code.
- */
-NS_SWIFT_NAME(RawJavaScriptArrayBuffer)
-@interface EXJavaScriptArrayBuffer : EXJavaScriptObject<EXArrayBuffer>
-
-@end
 

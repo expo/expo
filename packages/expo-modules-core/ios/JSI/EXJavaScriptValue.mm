@@ -5,7 +5,7 @@
 #import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 #import <ExpoModulesJSI/EXRawJavaScriptFunction.h>
 #import <ExpoModulesJSI/EXJavaScriptTypedArray.h>
-#import <ExpoModulesJSI/EXArrayBuffer.h>
+#import <ExpoModulesJSI/EXRawJavaScriptArrayBuffer.h>
 #import <ExpoModulesJSI/TypedArray.h>
 
 @implementation EXJavaScriptValue {

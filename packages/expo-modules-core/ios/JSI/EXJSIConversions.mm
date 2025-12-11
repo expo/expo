@@ -9,7 +9,7 @@
 #import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 #import <ExpoModulesJSI/EXStringUtils.h>
 #import <ExpoModulesJSI/EXJavaScriptObjectBinding.h>
-#import <ExpoModulesJSI/EXArrayBuffer.h>
+#import <ExpoModulesJSI/EXNativeArrayBuffer.h>
 
 namespace expo {
 
