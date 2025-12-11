@@ -97,7 +97,7 @@ PODS:
     - ExpoModulesCore
   - ExpoAsset (12.0.11):
     - ExpoModulesCore
-  - ExpoAudio (1.0.16):
+  - ExpoAudio (1.1.0):
     - ExpoModulesCore
   - ExpoBackgroundFetch (14.0.9):
     - ExpoModulesCore
@@ -4313,7 +4313,7 @@ SPEC CHECKSUMS:
   Expo: cea74c3abc3639a57a05fcd8303e517e7dec00ca
   ExpoAppleAuthentication: 31bb6cdc57d7169e5d994fff7ec4b97c62423534
   ExpoAsset: 315c4209dbe6f59377d3fc296ea8f483e259a830
-  ExpoAudio: 55a8d667ad4765adffcef13ede84b8bac9449891
+  ExpoAudio: f9136458a2789de9454e5c8f6f8b25bbb62cfcae
   ExpoBackgroundFetch: 2e4cc3089620a1b0ad1ec041e20797bfdcaf0541
   ExpoBackgroundTask: 8c89a1486d59f10d3158575dad5e57f1d3fb966d
   ExpoBattery: 2f50b8c8ca481cedf0f86237bff01a2bf375d78f
@@ -4387,7 +4387,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: b775e38aae65834cb803ca728aac4d16c7e31147
+  hermes-engine: 2edae2e4655735438fa60eb2869307fed67d5c1e
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

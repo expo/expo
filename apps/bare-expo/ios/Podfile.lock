@@ -362,7 +362,7 @@ PODS:
     - ExpoModulesCore
   - ExpoAsset (12.0.11):
     - ExpoModulesCore
-  - ExpoAudio (1.0.16):
+  - ExpoAudio (1.1.0):
     - ExpoModulesCore
   - ExpoBackgroundFetch (14.0.9):
     - ExpoModulesCore
@@ -3592,7 +3592,7 @@ SPEC CHECKSUMS:
   ExpoAppIntegrity: ad25977bb6613a38e8ad1a56a6aa972c871a872a
   ExpoAppleAuthentication: 31bb6cdc57d7169e5d994fff7ec4b97c62423534
   ExpoAsset: 315c4209dbe6f59377d3fc296ea8f483e259a830
-  ExpoAudio: 55a8d667ad4765adffcef13ede84b8bac9449891
+  ExpoAudio: f9136458a2789de9454e5c8f6f8b25bbb62cfcae
   ExpoBackgroundFetch: 2e4cc3089620a1b0ad1ec041e20797bfdcaf0541
   ExpoBackgroundTask: 8c89a1486d59f10d3158575dad5e57f1d3fb966d
   ExpoBattery: 2f50b8c8ca481cedf0f86237bff01a2bf375d78f
