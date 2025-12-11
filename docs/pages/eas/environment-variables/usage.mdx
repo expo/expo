@@ -9,7 +9,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 The following sections cover how to use environment variables in EAS builds, updates, and workflow jobs.
 
-### Use environment variables with EAS Build
+## Using environment variables with EAS Build
 
 To have a full control over the environments used for your builds, you can specify the [`environment`](/eas/json#environment) field in the build profiles settings in the **eas.json** file.
 
@@ -52,7 +52,7 @@ In this example app, all of the environment variables except `GOOGLE_SERVICES_JS
 
 It's especially important in this context to have the correct visibility set for the `APP_VARIANT` variable so that the variable available in EAS CLI and is able to generate credentials for the correct package name and bundle identifier.
 
-### Use environment variables with EAS Update
+## Using environment variables with EAS Update
 
 The most convenient way to use EAS environment variables with EAS Update is to run the `eas update` command with the `--environment` flag specified:
 
@@ -79,7 +79,7 @@ Any `EXPO_PUBLIC_` variables in your application code will be replaced inline wi
 
 </Collapsible>
 
-### Use environment variables for other commands
+## Using environment variables for other commands
 
 One way to supply non-secret EAS environment variables to other EAS commands is to use the `eas env:exec` command.
 
@@ -91,9 +91,9 @@ For example, it can be useful when uploading source maps to Sentry using a [`SEN
   cmd={["$ eas env:exec --environment production 'npx sentry-expo-upload-sourcemaps dist'"]}
 />
 
-### EAS Build and Workflows job runs
+## EAS Build and Workflows job runs
 
-#### Setting the environment for your builds
+### Setting the environment for your builds
 
 To set the environment for your EAS Build jobs, you can use the `environment` option in **eas.json** and set it to one of the available environments: `development`, `preview` or `production`.
 
@@ -140,7 +140,7 @@ The following environment variables are additional system environment variables 
 
 </Collapsible>
 
-#### Dynamically setting environment variables during the job execution
+### Dynamically setting environment variables during the job execution
 
 You can also set environment variables dynamically during the job execution using the `set-env` command.
 The `set-env` executable is available in the `PATH` on EAS Build workers, and can be used to set environment variables that will be visible in the next build phases.
@@ -149,6 +149,6 @@ For example, you can add the following in one of the [EAS Build hooks](/build-re
 
 <Terminal cmd={['$ set-env EXAMPLE_ENV "example value"']} />
 
-#### Accessing environment variables
+### Accessing environment variables
 
 After creating an environment variable, you can read it on subsequent EAS Build jobs with `process.env.VARIABLE_NAME` from Node.js or in shell scripts as `$VARIABLE_NAME`.
