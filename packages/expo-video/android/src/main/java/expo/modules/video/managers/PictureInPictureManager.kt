@@ -166,7 +166,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
       removePiPHelperFragment()
     }
     videoView.removeVideoViewListener(this)
-    currentPiPViewCandidate = WeakReference(findAutoPiPViewCandidate(strongVideoViews))
+    findAndSetupPipCandidate()
   }
 
   override fun onAppBackgrounded() {
