@@ -1,24 +1,24 @@
-import { TopicSubscribeModule } from './TopicSubscribeModule.types';
+import type { TopicSubscriptionModule } from './TopicSubscriptionModule.types';
 
 let warningHasBeenShown = false;
 
-export default {
+const module: Required<TopicSubscriptionModule> = {
   addListener: () => {},
   removeListeners: () => {},
-  topicSubscribeAsync: () => {
-    if (!warningHasBeenShown) {
-      console.warn(`[expo-notifications] Broadcast topics are supported only on Android.`);
-      warningHasBeenShown = true;
-    }
-    // Shouldn't this be a rejection?
-    // expo design principles say no
-    return Promise.resolve();
-  },
-  topicUnsubscribeAsync: () => {
+  subscribeToTopicAsync: () => {
     if (!warningHasBeenShown) {
       console.warn(`[expo-notifications] Broadcast topics are supported only on Android.`);
       warningHasBeenShown = true;
     }
     return Promise.resolve();
   },
-} as TopicSubscribeModule;
+  unsubscribeFromTopicAsync: () => {
+    if (!warningHasBeenShown) {
+      console.warn(`[expo-notifications] Broadcast topics are supported only on Android.`);
+      warningHasBeenShown = true;
+    }
+    return Promise.resolve();
+  },
+};
+
+export default module;
