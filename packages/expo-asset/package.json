@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@expo/image-utils": "^0.7.6",
-    "expo-constants": "~17.1.7"
+    "expo-constants": "~17.1.8"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.1.0",

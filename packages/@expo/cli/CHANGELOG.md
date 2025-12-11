@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.24.23 — 2025-12-11
+
+### 💡 Others
+
 - Embed `/_expo/touch` templates ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
 - Skip adding unnecessary CORS response header for `localhost` requests ([#41542](https://github.com/expo/expo/pull/41542) by [@kitten](https://github.com/kitten))
 
