@@ -38,6 +38,7 @@ private fun defaultAppContextMock(): Pair<AppContext, RuntimeContext> {
   every { runtimeContext.appContext } answers { appContextMock }
   every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
   every { appContextMock.hostingRuntimeContext } answers { runtimeContext }
+  every { appContextMock.runtime } answers { runtimeContext }
 
   return appContextMock to runtimeContext
 }
@@ -96,7 +97,7 @@ internal inline fun withJSIInterop(
         register(it, null)
       }
     }
-    val sharedObjectRegistry = SharedObjectRegistry(appContextMock.hostingRuntimeContext)
+    val sharedObjectRegistry = SharedObjectRegistry(appContextMock.runtime)
     every { appContextMock.registry } answers { registry }
     every { runtimeContext.sharedObjectRegistry } answers { sharedObjectRegistry }
 
