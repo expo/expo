@@ -2,7 +2,6 @@
   "expo.jsEngine": "hermes",
   "newArchEnabled": "true",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
-  "expo.inlineModules.enabled": "true",
   "expo.inlineModules.watchedDirectories": "[\"../native-component-list/src/screens/inlineModules/inlineModulesExamples\"]",
   "ios.buildReactNativeFromSource": "false"
 }
