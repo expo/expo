@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Embed `/_expo/touch` templates ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
+
 ## 54.0.18 — 2025-12-05
 
 ### 📚 3rd party library updates
