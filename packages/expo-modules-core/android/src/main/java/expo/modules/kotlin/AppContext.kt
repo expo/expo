@@ -57,7 +57,11 @@ class AppContext(
 
   // The main context used in the app.
   // Modules attached to this context will be available on the main js context.
+  @Deprecated("Use AppContext.runtimeContext instead", ReplaceWith("runtime"))
   val hostingRuntimeContext = RuntimeContext(this, reactContextHolder)
+
+  val runtime: RuntimeContext
+    get() = hostingRuntimeContext
 
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
@@ -355,6 +359,7 @@ class AppContext(
   /**
    * Runs a code block on the JavaScript thread.
    */
+  @Deprecated("Use RuntimeContext.schedule instead", ReplaceWith("runtime.schedule(runnable)"))
   fun executeOnJavaScriptThread(runnable: Runnable) {
     hostingRuntimeContext.reactContext?.runOnJSQueueThread(runnable)
   }
