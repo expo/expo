@@ -3,10 +3,7 @@ package expo.modules.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ColorScheme
@@ -19,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -73,18 +71,36 @@ internal class HostView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     val context = LocalContext.current
-    val density = LocalDensity.current
     val colorScheme = props.colorScheme.value?.toColorScheme(context)
       ?: ExpoColorScheme.defaultColorScheme(context, isSystemInDarkTheme())
 
     MaterialTheme(colorScheme = colorScheme) {
-      Box(
-        modifier = Modifier
-          .then(if (props.matchContentsHorizontal.value == true) Modifier.wrapContentWidth() else Modifier)
-          .then(if (props.matchContentsVertical.value == true) Modifier.wrapContentHeight() else Modifier)
-          .onSizeChanged { size -> dispatchOnLayoutContent(size, density) }
-      ) {
+      MaybeMatchContentsLayout {
         Children(this@Content)
+      }
+    }
+  }
+
+  @Composable
+  private fun MaybeMatchContentsLayout(content: @Composable () -> Unit) {
+    val density = LocalDensity.current
+
+    Layout(
+      modifier = Modifier
+        .then(if (props.matchContentsHorizontal.value == true) Modifier.wrapContentWidth() else Modifier)
+        .then(if (props.matchContentsVertical.value == true) Modifier.wrapContentHeight() else Modifier)
+        .onSizeChanged { size -> dispatchOnLayoutContent(size, density) },
+      content = content
+    ) { measurables, constraints ->
+      val placeables = measurables.map { it.measure(constraints) }
+
+      val width = placeables.maxOfOrNull { it.width } ?: 0
+      val height = placeables.maxOfOrNull { it.height } ?: 0
+
+      layout(width, height) {
+        placeables.forEach { child ->
+          child.place(0, 0)
+        }
       }
     }
   }
