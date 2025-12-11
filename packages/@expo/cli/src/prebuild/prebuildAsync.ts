@@ -174,7 +174,7 @@ export async function prebuildAsync(
   } else {
     debug('Skipped pod install');
   }
-  const inlineModulesEnabled = exp.experiments?.inlineModules === true;
+  const inlineModulesEnabled = !!exp.experiments?.inlineModules;
   if (inlineModulesEnabled && options.platforms.includes('ios')) {
     await updateXCodeProject(projectRoot);
   }

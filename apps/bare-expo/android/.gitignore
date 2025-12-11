@@ -81,7 +81,7 @@ gen-external-apklibs
 # Java class files
 
 # Generated files
-app/src/main/java/local/
+app/src/main/java/inline/
 
 # Gradle files
 .gradle

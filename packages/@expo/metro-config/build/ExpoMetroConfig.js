@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.internal_supervisingTransformerPath = exports.unstable_transformerPath = void 0;
+exports.resolveInlineModules = resolveInlineModules;
 exports.createStableModuleIdFactory = createStableModuleIdFactory;
 exports.getDefaultConfig = getDefaultConfig;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
@@ -267,7 +268,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 .filter((assetExt) => !sourceExts.includes(assetExt)),
             sourceExts,
             nodeModulesPaths,
-            resolveRequest: expoConfig.exp.experiments?.inlineModules === true
+            resolveRequest: expoConfig.exp.experiments?.inlineModules
                 ? resolveInlineModulesWithAdditionalConfig
                 : defaultResolveRequest,
             blockList: [

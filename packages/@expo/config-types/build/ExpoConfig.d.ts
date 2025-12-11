@@ -317,9 +317,14 @@ export interface ExpoConfig {
          */
         reactServerFunctions?: boolean;
         /**
-         * Enable support for local modules in Expo CLI and Expo Modules Autolinking.
+         * Configuration for inline modules. If defined it enables inline modules functionality in expo cli and expo-modules-autolinking.
          */
-        inlineModules?: boolean;
+        inlineModules?: {
+            /**
+             * List of directories watched for inline modules.
+             */
+            watchedDirectories: [string];
+        };
     };
     /**
      * Internal properties for developer tools
@@ -332,15 +337,6 @@ export interface ExpoConfig {
             [k: string]: any;
         };
         [k: string]: any;
-    };
-    /**
-     * Configuration for local modules
-     */
-    inlineModules?: {
-        /**
-         * List of directories watched for local modules.
-         */
-        watchedDirectories: [string];
     };
 }
 /**
