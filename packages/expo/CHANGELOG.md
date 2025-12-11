@@ -32,6 +32,7 @@
 - [android] Add getDefaultReactHost to ExpoReactHostFactory ([#40086](https://github.com/expo/expo/pull/40086) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [expo/dom] Add `overrideUri` to `DOMProps` to enable pre-bundled DOM Components. ([#40397](https://github.com/expo/expo/pull/40397) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Add recommended `react-server-dom-webpack` version to `bundledNativeModules.json` ([#41429](https://github.com/expo/expo/pull/41429) by [@kitten](https://github.com/kitten))
+- Update `metro-source-map` import source in `expo/scripts/compose-source-maps` ([#41458](https://github.com/expo/expo/pull/41458) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
