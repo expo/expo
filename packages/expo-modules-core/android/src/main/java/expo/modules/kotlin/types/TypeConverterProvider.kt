@@ -16,6 +16,7 @@ import expo.modules.kotlin.jni.JavaScriptArrayBuffer
 import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -237,6 +238,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       ),
       JavaScriptArrayBuffer::class to createTrivialTypeConverter(
         ExpectedType(CppType.JS_ARRAY_BUFFER)
+      ),
+      NativeArrayBuffer::class to createTrivialTypeConverter(
+        ExpectedType(CppType.NATIVE_ARRAY_BUFFER)
       ),
 
       Int8Array::class to Int8ArrayTypeConverter(),
