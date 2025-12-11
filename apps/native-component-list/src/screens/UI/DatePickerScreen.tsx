@@ -10,19 +10,30 @@ import {
   Switch,
   Text,
 } from '@expo/ui/swift-ui';
-import { animation, datePickerStyle, pickerStyle, tag, tint, Animation } from '@expo/ui/swift-ui/modifiers';
+import {
+  animation,
+  datePickerStyle,
+  pickerStyle,
+  tag,
+  tint,
+  Animation,
+} from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
-const displayedComponentsOptions = [{
-  value: ['date'],
-  label: 'Date',
-}, {
-  value: ['hourAndMinute'],
-  label: 'Time',
-}, {
-  value: ['date', 'hourAndMinute'],
-  label: 'Both',
-}]
+const displayedComponentsOptions = [
+  {
+    value: ['date'],
+    label: 'Date',
+  },
+  {
+    value: ['hourAndMinute'],
+    label: 'Time',
+  },
+  {
+    value: ['date', 'hourAndMinute'],
+    label: 'Both',
+  },
+];
 const styleOptions = ['automatic', 'compact', 'graphical', 'wheel'] as const;
 export default function DatePickerScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -42,11 +53,15 @@ export default function DatePickerScreen() {
             title="Select date"
             selection={selectedDate}
             displayedComponents={
-              displayedComponentsOptions[displayedComponentsIndex].value as unknown as DatePickerComponent[]
+              displayedComponentsOptions[displayedComponentsIndex]
+                .value as unknown as DatePickerComponent[]
             }
             range={useRange ? { start: today, end: thirtyDaysFromNow } : undefined}
             onDateChange={({ nativeEvent: { date } }) => setSelectedDate(new Date(date))}
-            modifiers={[datePickerStyle(styleOptions[styleIndex]), ...(tintColor ? [tint(tintColor)] : [])]}
+            modifiers={[
+              datePickerStyle(styleOptions[styleIndex]),
+              ...(tintColor ? [tint(tintColor)] : []),
+            ]}
           />
         </Section>
         <Section title="Selected Values">
@@ -85,27 +100,19 @@ export default function DatePickerScreen() {
               </Text>
             ))}
           </Picker>
-          <Switch
-            value={useRange}
-            label="Limit to next 30 days"
-            onValueChange={setUseRange}
-          />
-          <ColorPicker
-            label="Tint Color"
-            selection={tintColor}
-            onValueChanged={setTintColor}
-          />
+          <Switch value={useRange} label="Limit to next 30 days" onValueChange={setUseRange} />
+          <ColorPicker label="Tint Color" selection={tintColor} onValueChanged={setTintColor} />
         </Section>
         <Section title="Date Picker with custom label">
           <DatePicker
             selection={selectedDate}
             displayedComponents={
-              displayedComponentsOptions[displayedComponentsIndex].value as unknown as DatePickerComponent[]
+              displayedComponentsOptions[displayedComponentsIndex]
+                .value as unknown as DatePickerComponent[]
             }
             range={useRange ? { start: today, end: thirtyDaysFromNow } : undefined}
             onDateChange={({ nativeEvent: { date } }) => setSelectedDate(new Date(date))}
-            modifiers={[datePickerStyle(styleOptions[styleIndex])]}
-          >
+            modifiers={[datePickerStyle(styleOptions[styleIndex])]}>
             <Text color="#007AFF">Select date</Text>
             <Text>{selectedDate.toDateString()}</Text>
           </DatePicker>
