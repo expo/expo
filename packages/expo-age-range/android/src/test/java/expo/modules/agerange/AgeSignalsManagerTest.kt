@@ -81,7 +81,7 @@ class AgeSignalsManagerTest {
 
     assertEquals(null, ageRangeResult)
     assertNotNull("Expected error callback to be called", errorResult)
-    assertEquals("Age Signals Error: -7", errorResult!!.message)
+    assertEquals("Status{statusCode=Age Signals Error: -7, resolution=null}", errorResult!!.message)
     assertEquals(AgeSignalsErrorCode.PLAY_SERVICES_VERSION_OUTDATED.toString(), errorResult.code)
   }
 }

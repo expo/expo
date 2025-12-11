@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android] bump com.google.android.play:age-signals dependency to 0.0.2
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

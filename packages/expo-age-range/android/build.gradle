@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.google.android.play:age-signals:0.0.1-beta02'
+  implementation 'com.google.android.play:age-signals:0.0.2'
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.robolectric:robolectric:4.16'

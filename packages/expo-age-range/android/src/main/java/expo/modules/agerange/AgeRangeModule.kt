@@ -16,13 +16,12 @@ class AgeRangeModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
+  private val ageSignalsManager by lazy { AgeSignalsManagerFactory.create(context.applicationContext) }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoAgeRange")
 
     AsyncFunction("requestAgeRangeAsync") { _: Any, promise: Promise ->
-      val ageSignalsManager =
-        AgeSignalsManagerFactory.create(context.applicationContext)
-
       requestAgeRange(
         ageSignalsManager = ageSignalsManager,
         onSuccess = { result -> promise.resolve(result) },
@@ -55,8 +54,9 @@ fun requestAgeRange(
 
 fun processAgeSignalsError(exception: Exception): CodedException {
   if (exception is AgeSignalsException) {
+    // for codes explanation see https://developer.android.com/google/play/age-signals/use-age-signals-api#handle-api-errors
     val errorCode = exception.status.statusCode
-    val status = exception.status.statusMessage ?: "An error occurred with code $errorCode"
+    val status = exception.status.toString()
     return CodedException(errorCode.toString(), status, exception)
   } else {
     return exception.toCodedException()
