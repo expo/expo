@@ -86,6 +86,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ChartView.self)
     ExpoUIView(ColorPickerView.self)
     ExpoUIView(DateTimePickerView.self)
+    ExpoUIView(DatePickerView.self)
     ExpoUIView(DisclosureGroupView.self)
     ExpoUIView(ExpoUI.ContentUnavailableView.self)
     ExpoUIView(ExpoUI.ContextMenu.self)
