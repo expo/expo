@@ -7,10 +7,7 @@ struct SnackRow: View {
   let onTap: () -> Void
 
   private var isSupported: Bool {
-    let supportedSDK = getSupportedSDKVersion()
-    let snackSDKMajor = getSDKMajorVersion(snack.sdkVersion)
-    let supportedSDKMajor = getSDKMajorVersion(supportedSDK)
-    return snackSDKMajor == supportedSDKMajor
+    return isSDKCompatible(snack.sdkVersion)
   }
 
   var body: some View {
@@ -44,7 +41,7 @@ struct SnackRow: View {
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(Color.expoSecondarySystemGroupedBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .clipShape(RoundedRectangle(cornerRadius: BorderRadius.small))
             }
 
             if snack.isDraft {
@@ -54,7 +51,7 @@ struct SnackRow: View {
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(Color.expoSecondarySystemGroupedBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .clipShape(RoundedRectangle(cornerRadius: BorderRadius.small))
             }
           }
         }
@@ -67,7 +64,7 @@ struct SnackRow: View {
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
     }
     .buttonStyle(PlainButtonStyle())
   }

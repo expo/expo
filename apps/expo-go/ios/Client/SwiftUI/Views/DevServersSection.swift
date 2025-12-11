@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DevelopmentServersSection: View {
+struct DevServersSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
   @State private var showingURLInput = false
   @State private var urlText = ""
@@ -64,7 +64,7 @@ struct DevelopmentServersSection: View {
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.expoSecondarySystemBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
 
       Text("Select the local server when it appears here.")
         .font(.subheadline)
@@ -72,7 +72,7 @@ struct DevelopmentServersSection: View {
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(Color.expoSystemBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
   }
 
   private var enterUrl: some View {
@@ -119,7 +119,7 @@ struct DevelopmentServersSection: View {
             .frame(maxWidth: .infinity)
             .padding()
             .background(urlText.isEmpty ? Color.gray : Color.black)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
         }
         .disabled(urlText.isEmpty)
         .buttonStyle(PlainButtonStyle())
@@ -128,7 +128,7 @@ struct DevelopmentServersSection: View {
     .animation(.easeInOut, value: showingURLInput)
     .padding()
     .background(showingURLInput ? Color.expoSecondarySystemBackground : Color.expoSystemBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
   }
 
   private func presentTroubleshooting() {

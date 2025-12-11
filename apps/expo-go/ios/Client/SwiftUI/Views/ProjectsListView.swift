@@ -28,7 +28,7 @@ struct ProjectsListView: View {
           .frame(maxWidth: .infinity)
           .padding()
           .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
         }
 
         if viewModel.isLoading {

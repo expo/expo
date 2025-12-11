@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-func getExpoAvatarColor(for firstLetter: String) -> (background: Color, foreground: Color) {
+func getAvatarColor(for firstLetter: String) -> (background: Color, foreground: Color) {
   switch firstLetter.lowercased() {
   case "a"..."d":
     return (Color.blue.opacity(0.2), Color.blue)

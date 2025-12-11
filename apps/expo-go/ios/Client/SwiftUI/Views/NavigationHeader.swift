@@ -27,7 +27,7 @@ struct NavigationHeader: View {
         navigation.showUserProfile()
       } label: {
         if viewModel.isLoggedIn, let account = viewModel.selectedAccount {
-          createAccountAvatar(account: account)
+          AvatarView(account: account, size: 36)
         } else {
           ZStack {
             Circle()
@@ -46,56 +46,5 @@ struct NavigationHeader: View {
     .padding(.horizontal)
     .padding(.vertical, 8)
     .background(Color.expoSystemBackground)
-  }
-
-  @ViewBuilder
-  private func createAccountAvatar(account: Account) -> some View {
-    let isOrganization = account.ownerUserActor == nil
-    let profilePhoto = account.ownerUserActor?.profilePhoto
-    let name = account.ownerUserActor?.username ?? account.name
-    let firstLetter = String(name.prefix(1).uppercased())
-
-    if isOrganization {
-      let color = getExpoAvatarColor(for: firstLetter)
-
-      Circle()
-        .fill(color.background)
-        .frame(width: 36, height: 36)
-        .overlay(
-          Image(systemName: "building.2")
-            .font(.system(size: 16))
-            .foregroundColor(color.foreground)
-        )
-    } else if let profilePhoto,
-      !profilePhoto.isEmpty,
-      let url = URL(string: profilePhoto) {
-      Avatar(url: url) { image in
-        image
-          .resizable()
-          .scaledToFill()
-      } placeholder: {
-        Circle()
-          .fill(Color.expoSystemGray5)
-          .overlay(
-            Image(systemName: "person")
-              .font(.system(size: 16))
-              .foregroundColor(.secondary)
-          )
-      }
-      .frame(width: 36, height: 36)
-      .clipShape(Circle())
-      .id("\(account.id)-\(profilePhoto)")
-    } else {
-      let color = getExpoAvatarColor(for: firstLetter)
-
-      Circle()
-        .fill(color.background)
-        .frame(width: 36, height: 36)
-        .overlay(
-          Text(firstLetter)
-            .font(.system(size: 16, weight: .medium))
-            .foregroundColor(color.foreground)
-        )
-    }
   }
 }
