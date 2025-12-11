@@ -1,8 +1,10 @@
 ---
 title: Frequently asked questions about environment variables in EAS
 sidebar_title: FAQ
-description: A list of frequently asked questions about environment variables in EAS.
+description: Frequently asked questions about environment variables in EAS.
 ---
+
+This page covers frequently asked questions about environment variables in EAS.
 
 ## What is the recommended workflow for using environment variables in my EAS project?
 
@@ -70,4 +72,6 @@ To ensure that you can use the same environment variables in your updates as you
 ## Are there any limitations to using environment variables in EAS?
 
 - Environment variable value size is limited to 32 KiB for environment variables with secret visibility and 4 KiB for other visibility types.
-- You can create up to 100 account-wide environment variables for each Expo account and 100 project-specific environment variables for each app.
+- You can create up to 150 account-wide environment variables for each Expo account and 200 project-specific environment variables for each app.
+- [Custom environments](/eas/environment-variables/manage/#custom-environments) are limited to 10 per project.
+- When creating a custom environment, an environment name can contain letters, digits, underscores and hyphens, and be between 3-100 characters.
