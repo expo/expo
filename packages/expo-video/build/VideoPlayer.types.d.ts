@@ -534,8 +534,19 @@ export type VideoTrack = {
     isSupported: boolean;
     /**
      * Specifies the bitrate in bits per second. This is the peak bitrate if known, or else the average bitrate if known, or else null.
+     *
+     * @deprecated Use `peakBitrate` or `averageBitrate` instead.
      */
     bitrate: number | null;
+    /**
+     * Specifies the average bitrate in bits per second or null if the value is unknown.
+     *
+     */
+    averageBitrate: number | null;
+    /**
+     * Specifies the average bitrate in bits per second or null if the value is unknown.
+     */
+    peakBitrate: number | null;
     /**
      * Specifies the frame rate of the video track in frames per second.
      */

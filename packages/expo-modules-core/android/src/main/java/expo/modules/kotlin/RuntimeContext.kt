@@ -42,6 +42,14 @@ class RuntimeContext(
   }
 
   /**
+   * Runs a code block on the JavaScript thread.
+   */
+  fun schedule(block: () -> Unit) {
+    // TODO(@lukmccall): start using RuntimeScheduler
+    reactContext?.runOnJSQueueThread(block)
+  }
+
+  /**
    * The core module that defines the `expo` object in the global scope of the JS runtime.
    *
    * Note: in current implementation this module won't receive any events.
@@ -52,7 +60,8 @@ class RuntimeContext(
     ModuleHolder(module, null)
   }
 
-  val jniDeallocator: JNIDeallocator = JNIDeallocator()
+  @PublishedApi
+  internal val jniDeallocator: JNIDeallocator = JNIDeallocator()
 
   internal val sharedObjectRegistry = SharedObjectRegistry(this)
 
@@ -63,7 +72,7 @@ class RuntimeContext(
    * It will be a NOOP if the remote debugging was activated.
    */
   @OptIn(FrameworkAPI::class)
-  fun installJSIContext() = synchronized(this) {
+  internal fun installJSIContext() = synchronized(this) {
     if (isJSIContextInitialized()) {
       logger.warn("⚠️ JSI interop was already installed")
       return
@@ -102,7 +111,7 @@ class RuntimeContext(
     }
   }
 
-  fun deallocate() {
+  internal fun deallocate() {
     jniDeallocator.deallocate()
   }
 }

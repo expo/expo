@@ -179,6 +179,17 @@ public:
   bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
 };
 
+class NativeArrayBufferFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
 /**
  * Converter from any js value to [expo.modules.kotlin.jni.JavaScriptValue].
  */

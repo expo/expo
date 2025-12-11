@@ -1,38 +1,42 @@
-import type { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
-export type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
-export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
-export type DateTimePickerProps = {
+export type DatePickerComponent = 'date' | 'hourAndMinute';
+export type DateRange = {
+    start?: Date;
+    end?: Date;
+};
+export type DatePickerProps = {
     /**
-     * The initial date to display on the picker.
-     */
-    initialDate?: string | null;
-    /**
-     * A title displayed on the picker on iOS.
+     * A title/label displayed on the picker.
      */
     title?: string;
     /**
-     * Callback function that is called when a date is selected.
+     * The currently selected date.
      */
-    onDateSelected?: (date: Date) => void;
+    selection?: Date;
     /**
-     * The variant of the picker, which determines its appearance and behavior.
-     * @default 'automatic'
+     * The selectable date range.
      */
-    variant?: IOSVariant;
+    range?: DateRange;
     /**
-     * The components that the picker should display.
-     * On iOS, you can have a picker that selects both date and time.
-     * @default 'date'
+     * The components to display: 'date' and/or 'hourAndMinute'.
+     * @default ['date']
      */
-    displayedComponents?: DisplayedComponents;
+    displayedComponents?: DatePickerComponent[];
     /**
-     * The tint color to use on the picker elements.
+     * Callback when the date selection changes.
      */
-    color?: ColorValue;
+    onDateChange?: (event: {
+        nativeEvent: {
+            date: Date;
+        };
+    }) => void;
+    /**
+     * Children to use as a custom label.
+     */
+    children?: React.ReactNode;
 } & CommonViewModifierProps;
 /**
- * Renders a `DateTimePicker` component.
+ * Renders a SwiftUI `DatePicker` component.
  */
-export declare function DateTimePicker(props: DateTimePickerProps): import("react").JSX.Element;
+export declare function DatePicker(props: DatePickerProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
