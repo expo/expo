@@ -30,7 +30,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/colorpicker': ['swift-ui/ColorPicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/contextmenu': ['swift-ui/ContextMenu/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/contextmenu': ['jetpack-compose/ContextMenu/index.tsx', 'expo-ui'],
-  'expo-ui/swift-ui/datetimepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/datepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/gauge': ['swift-ui/Gauge/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/host': ['swift-ui/Host/index.tsx', 'expo-ui'],
