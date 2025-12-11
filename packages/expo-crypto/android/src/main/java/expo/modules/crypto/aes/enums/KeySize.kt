@@ -1,5 +1,6 @@
 package expo.modules.crypto.aes.enums
 
+import expo.modules.crypto.aes.InvalidKeyLengthException
 import expo.modules.kotlin.types.Enumerable
 
 enum class KeySize(val bitSize: Int) : Enumerable {
@@ -11,8 +12,8 @@ enum class KeySize(val bitSize: Int) : Enumerable {
     get() = bitSize / 8
 
   companion object {
-    fun fromByteLength(byteLen: Int): KeySize = requireNotNull(
+    fun fromByteLength(byteLen: Int): KeySize =
       entries.find { it.byteSize == byteLen }
-    ) { "EncryptionKey cannot be created from bytes of length '$byteLen'" }
+        ?: throw InvalidKeyLengthException(byteLen)
   }
 }

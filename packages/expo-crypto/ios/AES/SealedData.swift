@@ -17,9 +17,9 @@ final class SealedData: SharedObject {
   }
 
   init(ivLength: Int, tagLength: Int, content: Data) throws {
-    // SealedBox(combined:) works only if IV length is 12
+    // SealedBox(combined:) works only if IV length is 12 (default)
     // otherwise this needs to be done manually
-    if ivLength == 12 {
+    if ivLength == DEFAULT_IV_LENGTH {
       inner = try AES.GCM.SealedBox(combined: content)
     } else {
       let nonce = try AES.GCM.Nonce(data: content.prefix(ivLength))

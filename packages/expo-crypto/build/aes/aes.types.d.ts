@@ -21,7 +21,7 @@ export declare enum KeySize {
  * Byte length of the GCM authentication tag, is a security parameter.
  * The AES-GCM specification recommends that it should be 16, 15, 14, 13, or 12 bytes,
  * although 8 or 4 bytes may be acceptable in some applications.
- * For additional guidance, see [Appendix C](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf#%5B%7B%22num%22%3A92%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C0%2C792%2Cnull%5D) of the NIST Publication
+ * For additional guidance, see [Appendix C](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf) of the NIST Publication
  * on "Recommendation for Block Cipher Modes of Operation".
  *
  * Default and recommended value is 16. On Apple, the only supported value for encryption is 16.
@@ -89,7 +89,7 @@ export interface EncryptOptions {
     /**
      * The length of the authentication tag in bytes.
      * Defaults to 16 bytes.
-     * NONE: On Apple, this option is ignored, tag will always have 16 bytes.
+     * NOTE: On Apple, this option is ignored, tag will always have 16 bytes.
      * @platform android
      * @platform web
      * @default 16

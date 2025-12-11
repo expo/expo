@@ -1,5 +1,6 @@
 package expo.modules.crypto.aes.objects
 
+import expo.modules.crypto.aes.InvalidSealedDataConfigException
 import expo.modules.crypto.aes.extensions.copiedArray
 import expo.modules.crypto.aes.extensions.init
 import expo.modules.crypto.aes.records.SealedDataConfig
@@ -14,8 +15,8 @@ class SealedData(
   private val content: ByteArray
 ) : SharedObject() {
   init {
-    assert(content.size > ivSize + tagSize) {
-      "Invalid SealedData size"
+    if (content.size < ivSize + tagSize) {
+      throw InvalidSealedDataConfigException()
     }
   }
 

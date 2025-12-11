@@ -29,7 +29,7 @@ import javax.crypto.spec.GCMParameterSpec
 @OptIn(EitherType::class)
 typealias BinaryInput = Either<ByteArray, String>
 
-@OptIn(EitherType::class)
+@OptIn(EitherType::class, ExperimentalStdlibApi::class)
 class AesCryptoModule : Module() {
   private val rng: SecureRandom by lazy { SecureRandom() }
 
@@ -43,8 +43,27 @@ class AesCryptoModule : Module() {
       Constructor {
         throw Exceptions.IllegalArgument("EncryptionKey constructor cannot be used directly")
       }
-      StaticAsyncFunction("generate", this@AesCryptoModule::generateKey)
-      StaticAsyncFunction("import", this@AesCryptoModule::importKey)
+
+      StaticAsyncFunction("generate") { size: KeySize? ->
+        EncryptionKey(size ?: KeySize.AES256)
+      }
+      StaticAsyncFunction("import") { input: Either<ByteArray, String>, encoding: KeyEncoding? ->
+        val bytes = if (input.`is`(ByteArray::class)) {
+          input.get(ByteArray::class)
+        } else {
+          val encodedString = input.get(String::class)
+          when (encoding) {
+            null -> throw MissingStringEncodingException()
+            KeyEncoding.BASE64 -> Base64.decode(encodedString, Base64.NO_WRAP)
+            KeyEncoding.HEX ->
+              encodedString
+                .lowercase()
+                .substringAfter("0x")
+                .hexToByteArray(HexFormat.Default)
+          }
+        }
+        EncryptionKey(bytes)
+      }
 
       AsyncFunction("bytes") { key: EncryptionKey -> key.bytes }
       AsyncFunction("encoded") { key: EncryptionKey, encoding: KeyEncoding ->
@@ -58,6 +77,7 @@ class AesCryptoModule : Module() {
       Constructor {
         throw Exceptions.IllegalArgument("SealedData constructor cannot be used directly")
       }
+
       StaticFunction("fromParts", this@AesCryptoModule::sealedDataFromParts)
       StaticFunction("fromCombined") { combined: ByteArray, config: SealedDataConfig? ->
         val config = config ?: SealedDataConfig()
@@ -84,31 +104,6 @@ class AesCryptoModule : Module() {
     }
   }
 
-  private fun generateKey(size: KeySize?): EncryptionKey {
-    return EncryptionKey(size ?: KeySize.AES256)
-  }
-
-  @OptIn(ExperimentalStdlibApi::class)
-  private fun importKey(input: Either<ByteArray, String>, encoding: KeyEncoding?): EncryptionKey {
-    val bytes = if (input.`is`(ByteArray::class)) {
-      input.get(ByteArray::class)
-    } else {
-      requireNotNull(encoding) {
-        "'encoding' argument must be provided for string input"
-      }
-      val encodedString = input.get(String::class)
-      when (encoding) {
-        KeyEncoding.BASE64 -> Base64.decode(encodedString, Base64.NO_WRAP)
-        KeyEncoding.HEX ->
-          encodedString
-            .lowercase()
-            .substringAfter("0x")
-            .hexToByteArray(HexFormat.Default)
-      }
-    }
-    return EncryptionKey(bytes)
-  }
-
   private fun encrypt(
     plaintext: BinaryInput,
     key: EncryptionKey,
@@ -117,13 +112,16 @@ class AesCryptoModule : Module() {
     val key = key.cryptoKey
     val plaintextBuffer = ByteBuffer.wrap(plaintext.toBytes())
 
-    val cipher = Cipher.getInstance(CIPHER_TRANSFORMATION_NAME).apply {
-      val params = options?.gcmParameterSpec(rng)
-      init(Cipher.ENCRYPT_MODE, key, params)
-      options?.additionalData?.let { updateAAD(it.toBytes()) }
+    try {
+      val cipher = Cipher.getInstance(CIPHER_TRANSFORMATION_NAME).apply {
+        val params = options?.gcmParameterSpec(rng)
+        init(Cipher.ENCRYPT_MODE, key, params)
+        options?.additionalData?.let { updateAAD(it.toBytes()) }
+      }
+      return cipher.encrypt(plaintextBuffer)
+    } catch (err: Throwable) {
+      throw EncryptionFailed(err)
     }
-
-    return cipher.encrypt(plaintextBuffer)
   }
 
   private fun decrypt(
@@ -133,14 +131,18 @@ class AesCryptoModule : Module() {
   ): Any {
     val key = key.cryptoKey
 
-    val cipher = Cipher.getInstance(CIPHER_TRANSFORMATION_NAME).apply {
-      val spec = GCMParameterSpec(sealedData.tagSize * 8, sealedData.ivBytes)
-      init(Cipher.DECRYPT_MODE, key, spec)
-    }
-    options?.additionalData?.let { cipher.updateAAD(it.toBytes()) }
+    try {
+      val cipher = Cipher.getInstance(CIPHER_TRANSFORMATION_NAME).apply {
+        val spec = GCMParameterSpec(sealedData.tagSize * 8, sealedData.ivBytes)
+        init(Cipher.DECRYPT_MODE, key, spec)
+      }
+      options?.additionalData?.let { cipher.updateAAD(it.toBytes()) }
 
-    val plaintext = cipher.decrypt(sealedData)
-    return plaintext.array().formatted(options?.output)
+      val plaintext = cipher.decrypt(sealedData)
+      return plaintext.array().formatted(options?.output)
+    } catch (err: Throwable) {
+      throw DecryptionFailed(err)
+    }
   }
 
   private fun sealedDataFromParts(iv: BinaryInput, ciphertext: BinaryInput, tag: Either<ByteArray, Int>?): SealedData {

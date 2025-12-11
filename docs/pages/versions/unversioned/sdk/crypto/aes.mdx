@@ -35,12 +35,12 @@ export default function App() {
       const encryptionKey = await AES.EncryptionKey.generate();
       const sealedData = await AES.encryptAsync(plaintextBase64, key);
       const decryptedBase64 = await AES.decryptAsync(sealedData, key, {
-        output: 'base64'
+        output: 'base64',
       });
 
       const decrpyted = atob(decryptedBase64);
       console.log('Decrypted: ', decrpyted);
-    })()j
+    })();
   }, []);
 
   return (

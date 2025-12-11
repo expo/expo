@@ -70,6 +70,7 @@ public class AesCryptoModule: Module {
       AsyncFunction("encoded") { (key: EncryptionKey, encoding: DataEncoding) in
         key.encoded(with: encoding)
       }
+
       Property("size") { (key: EncryptionKey) in key.keySize }
     }
 
@@ -151,15 +152,6 @@ public class AesCryptoModule: Module {
     key: EncryptionKey,
     options: EncryptOptions?
   ) throws -> SealedData {
-    if let bytes: Data = options?.nonce?.get() {
-      log.info("Got bytes", bytes)
-    } else if let size: Int = options?.nonce?.get() {
-      log.info("Got size", size)
-    } else if let either = options?.nonce {
-      log.info("Nonce", either)
-      log.info("is Data", either.is(Data.self))
-      log.info("is Int", either.is(Int.self))
-    }
     let iv: AES.GCM.Nonce
     if let bytes: Data = options?.nonce?.get() {
       iv = try AES.GCM.Nonce(data: bytes)

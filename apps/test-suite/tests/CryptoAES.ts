@@ -1,14 +1,18 @@
 import { AES } from 'expo-crypto';
+import { EncryptionKey, SealedData } from 'expo-crypto/build/aes';
 import { Platform } from 'react-native';
 
-function areArraysEqual(a, b) {
+const DEFAULT_IV_LENGTH = 12;
+const DEFAULT_TAG_LENGTH = 16;
+
+function areArraysEqual(a: Uint8Array, b: Uint8Array) {
   if (a.length !== b.length) {
     return false;
   }
   return a.every((item, index) => item === b[index]);
 }
 
-function uint8ArrayToBase64(uint8Array) {
+function uint8ArrayToBase64(uint8Array: Uint8Array) {
   let binaryString = '';
   for (let i = 0; i < uint8Array.length; i++) {
     binaryString += String.fromCharCode(uint8Array[i]);
@@ -121,7 +125,7 @@ export async function test({ describe, it, expect, beforeAll }) {
     });
 
     describe('encryptAsync() and decryptAsync()', () => {
-      let key;
+      let key: EncryptionKey;
 
       beforeAll(async () => {
         key = await AES.EncryptionKey.generate();
@@ -134,8 +138,8 @@ export async function test({ describe, it, expect, beforeAll }) {
         const sealedData = await AES.encryptAsync(base64Plaintext, key);
         expect(sealedData).toBeDefined();
         expect(sealedData.ciphertext.length).toBeGreaterThan(0);
-        expect(sealedData.ivSize).toBe(12); // Default IV length
-        expect(sealedData.tagSize).toBe(16); // Default tag length
+        expect(sealedData.ivSize).toBe(DEFAULT_IV_LENGTH);
+        expect(sealedData.tagSize).toBe(DEFAULT_TAG_LENGTH);
 
         const decrypted = await AES.decryptAsync(sealedData, key, { output: 'base64' });
         expect(decrypted).toBe(base64Plaintext);
@@ -248,8 +252,8 @@ export async function test({ describe, it, expect, beforeAll }) {
     });
 
     describe('SealedData', () => {
-      let key;
-      let sealedData;
+      let key: EncryptionKey;
+      let sealedData: SealedData;
 
       beforeAll(async () => {
         key = await AES.EncryptionKey.generate();
@@ -262,8 +266,8 @@ export async function test({ describe, it, expect, beforeAll }) {
         expect(sealedData.iv).toBeDefined();
         expect(sealedData.tag).toBeDefined();
         expect(sealedData.combinedSize).toBeGreaterThan(0);
-        expect(sealedData.ivSize).toBe(12);
-        expect(sealedData.tagSize).toBe(16);
+        expect(sealedData.ivSize).toBe(DEFAULT_IV_LENGTH);
+        expect(sealedData.tagSize).toBe(DEFAULT_TAG_LENGTH);
       });
 
       it('exports as combined format', async () => {
@@ -324,7 +328,7 @@ export async function test({ describe, it, expect, beforeAll }) {
     });
 
     describe('Round-trip encryption with different formats', () => {
-      let key;
+      let key: EncryptionKey;
 
       beforeAll(async () => {
         key = await AES.EncryptionKey.generate();
