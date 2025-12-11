@@ -10,102 +10,100 @@ class GetContactDetailsMapper {
   }
 
   func map(contact: CNContact) throws -> GetContactDetailsRecord {
+    let imageMapper = ImageMapper(service: imageService, filename: "\(contact.identifier)-image.png")
+    let thumbnailMapper = ImageMapper(service: imageService, filename: "\(contact.identifier)-thumb.png")
+
     return GetContactDetailsRecord(
       id: contact.identifier,
+      
       fullName: contact.areKeysAvailable([CNContactFormatter.descriptorForRequiredKeys(for: .fullName)])
         ? FullNameExtractor.extract(from: contact)
         : nil,
       
       givenName: contact.isKeyAvailable(CNContactGivenNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactGivenNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactGivenNameKey, keyPath: \.givenName).extract(from: contact)
         : nil,
         
       middleName: contact.isKeyAvailable(CNContactMiddleNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactMiddleNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactMiddleNameKey, keyPath: \.middleName).extract(from: contact)
         : nil,
         
       familyName: contact.isKeyAvailable(CNContactFamilyNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactFamilyNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactFamilyNameKey, keyPath: \.familyName).extract(from: contact)
         : nil,
         
       maidenName: contact.isKeyAvailable(CNContactPreviousFamilyNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactPreviousFamilyNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactPreviousFamilyNameKey, keyPath: \.previousFamilyName).extract(from: contact)
         : nil,
         
       nickname: contact.isKeyAvailable(CNContactNicknameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactNicknameKey) as! String)
+        ? try StringMapper(descriptor: CNContactNicknameKey, keyPath: \.nickname).extract(from: contact)
         : nil,
         
       prefix: contact.isKeyAvailable(CNContactNamePrefixKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactNamePrefixKey) as! String)
+        ? try StringMapper(descriptor: CNContactNamePrefixKey, keyPath: \.namePrefix).extract(from: contact)
         : nil,
         
       suffix: contact.isKeyAvailable(CNContactNameSuffixKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactNameSuffixKey) as! String)
+        ? try StringMapper(descriptor: CNContactNameSuffixKey, keyPath: \.nameSuffix).extract(from: contact)
         : nil,
-        
+      
       phoneticGivenName: contact.isKeyAvailable(CNContactPhoneticGivenNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactPhoneticGivenNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactPhoneticGivenNameKey, keyPath: \.phoneticGivenName).extract(from: contact)
         : nil,
         
       phoneticMiddleName: contact.isKeyAvailable(CNContactPhoneticMiddleNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactPhoneticMiddleNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactPhoneticMiddleNameKey, keyPath: \.phoneticMiddleName).extract(from: contact)
         : nil,
         
       phoneticFamilyName: contact.isKeyAvailable(CNContactPhoneticFamilyNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactPhoneticFamilyNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactPhoneticFamilyNameKey, keyPath: \.phoneticFamilyName).extract(from: contact)
         : nil,
-        
+      
       company: contact.isKeyAvailable(CNContactOrganizationNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactOrganizationNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactOrganizationNameKey, keyPath: \.organizationName).extract(from: contact)
         : nil,
         
       department: contact.isKeyAvailable(CNContactDepartmentNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactDepartmentNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactDepartmentNameKey, keyPath: \.departmentName).extract(from: contact)
         : nil,
         
       jobTitle: contact.isKeyAvailable(CNContactJobTitleKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactJobTitleKey) as! String)
+        ? try StringMapper(descriptor: CNContactJobTitleKey, keyPath: \.jobTitle).extract(from: contact)
         : nil,
         
       phoneticCompanyName: contact.isKeyAvailable(CNContactPhoneticOrganizationNameKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactPhoneticOrganizationNameKey) as! String)
+        ? try StringMapper(descriptor: CNContactPhoneticOrganizationNameKey, keyPath: \.phoneticOrganizationName).extract(from: contact)
         : nil,
-        
+      
       note: contact.isKeyAvailable(CNContactNoteKey)
-        ? StringMapper().toDto(value: contact.value(forKey: CNContactNoteKey) as! String)
+        ? try StringMapper(descriptor: CNContactNoteKey, keyPath: \.note).extract(from: contact)
         : nil,
-        
+      
       image: contact.isKeyAvailable(CNContactImageDataKey)
-        ? try ImageMapper(
-            service: imageService,
-            filename: "\(contact.identifier)-\(CNContactImageDataKey).png"
-          ).toDto(value: contact.value(forKey: CNContactImageDataKey) as? Data)
+        ? try imageMapper.extract(from: contact)
         : nil,
         
       thumbnail: contact.isKeyAvailable(CNContactThumbnailImageDataKey)
-        ? try ImageMapper(
-            service: imageService,
-            filename: "\(contact.identifier)-\(CNContactThumbnailImageDataKey).png"
-          ).toDto(value: contact.value(forKey: CNContactThumbnailImageDataKey) as? Data)
+        ? try thumbnailMapper.extract(from: contact)
         : nil,
-        
+      
       birthday: contact.isKeyAvailable(CNContactBirthdayKey)
-        ? ContactDateMapper().toDto(value: contact.value(forKey: CNContactBirthdayKey) as? DateComponents)
+        ? try ContactDateMapper().extract(from: contact)
         : nil,
         
       nonGregorianBirthday: contact.isKeyAvailable(CNContactNonGregorianBirthdayKey)
-        ? NonGregorianBirthdayMapper().toDto(value: contact.value(forKey: CNContactNonGregorianBirthdayKey) as? DateComponents)
+        ? try NonGregorianBirthdayMapper().extract(from: contact)
         : nil,
-        
+      
       emails: contact.isKeyAvailable(CNContactEmailAddressesKey)
         ? contact.emailAddresses.map { EmailMapper().cnLabeledValueToExistingRecord($0) }
         : nil,
-        
+      
       dates: contact.isKeyAvailable(CNContactDatesKey)
         ? contact.dates.map { DateMapper().cnLabeledValueToExistingRecord($0) }
         : nil,
-        
+      
       phones: contact.isKeyAvailable(CNContactPhoneNumbersKey)
         ? contact.phoneNumbers.map { PhoneMapper().cnLabeledValueToExistingRecord($0) }
         : nil,

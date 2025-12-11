@@ -1,26 +1,37 @@
+import Contacts
+
 struct ImageMapper: PropertyMapper {
-  typealias TDomain = Data?
-  typealias TDto = String?
-  
-  private let service: ImageService
-  private let filename: String
+    typealias TDto = String?
+    
+    // Deskryptor wymagany do pobrania danych binarnych zdjęcia
+    var descriptor: CNKeyDescriptor { CNContactImageDataKey as CNKeyDescriptor }
+    
+    private let service: ImageService
+    private let filename: String
 
-  init(service: ImageService, filename: String) {
-    self.service = service
-    self.filename = filename
-  }
-
-  func toDto(value: Data?) throws -> String? {
-    guard let data = value else {
-      return nil
+    init(service: ImageService, filename: String) {
+        self.service = service
+        self.filename = filename
     }
-    return try service.url(from: data, filename: filename)
-  }
 
-  func toDomain(value: String?) throws -> Data? {
-    guard let path = value else {
-      return nil
+    // ODCZYT: Data -> Ścieżka pliku (String)
+    func extract(from contact: CNContact) throws -> String? {
+        guard let data = contact.imageData else {
+            return nil
+        }
+        return try service.url(from: data, filename: filename)
     }
-    return try service.imageData(from: path)
-  }
+
+    // ZAPIS: Ścieżka pliku (String) -> Data
+    func apply(_ value: String?, to contact: CNMutableContact) throws {
+        guard let path = value else {
+            // Jeśli przyszło null/nil -> usuwamy zdjęcie
+            contact.imageData = nil
+            return
+        }
+        
+        // Jeśli przyszła ścieżka -> ładujemy plik do Data i przypisujemy
+        let data = try service.imageData(from: path)
+        contact.imageData = data
+    }
 }

@@ -1,45 +1,34 @@
 import Contacts
 
-class PropertyManager<TDomain, TDto> {
+class PropertyManager<Mapper: PropertyMapper> {
   private let contactId: String
-  private let key: CNKeyDescriptor
-  private let keyString: String
   private let contactRepository: ContactRepository
-  private let toDto: (TDomain) throws -> TDto
-  private let toDomain: (TDto) throws -> TDomain
+  private let mapper: Mapper
   private let isReadOnly: Bool
 
-  init<Mapper: PropertyMapper>(
+  init(
     contactId: String,
-    key: String,
     contactRepository: ContactRepository,
     mapper: Mapper,
     isReadOnly: Bool = false
-  ) where Mapper.TDomain == TDomain,
-        Mapper.TDto == TDto
-  {
+  ) {
     self.contactId = contactId
-    self.key = key as CNKeyDescriptor
-    self.keyString = key
     self.contactRepository = contactRepository
-    self.toDomain = mapper.toDomain
-    self.toDto = mapper.toDto
+    self.mapper = mapper
     self.isReadOnly = isReadOnly
   }
   
-  func get() throws -> TDto {
-    let contact = try contactRepository.getMutableById(id: contactId, keysToFetch: [key])
-    let value = contact.value(forKey: keyString) as! TDomain
-    return try toDto(value)
+  func get() throws -> Mapper.TDto {
+    let contact = try contactRepository.getMutableById(id: contactId, keysToFetch: [mapper.descriptor])
+    return try mapper.extract(from: contact)
   }
   
-  func set(_ value: TDto) throws {
+  func set(_ value: Mapper.TDto) throws {
     guard !isReadOnly else {
       throw FailedToSetReadOnlyProperty()
     }
-    let contact = try contactRepository.getMutableById(id: contactId, keysToFetch: [key])
-    let domainValue = try toDomain(value)
-    contact.setValue(domainValue, forKey: keyString)
+    let contact = try contactRepository.getMutableById(id: contactId, keysToFetch: [mapper.descriptor])
+    try mapper.apply(value, to: contact)
     try contactRepository.update(contact: contact)
   }
 }

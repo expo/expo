@@ -84,7 +84,7 @@ class CNKeyDescriptorMapper{
     if case .value = patchRecord.jobTitle { keys.append(CNContactJobTitleKey as CNKeyDescriptor) }
     if case .value = patchRecord.phoneticCompanyName { keys.append(CNContactPhoneticOrganizationNameKey as CNKeyDescriptor) }
     if case .value = patchRecord.note { keys.append(CNContactNoteKey as CNKeyDescriptor) }
-    if case .value = patchRecord.image { keys.append(CNContactNoteKey as CNKeyDescriptor) }
+    if case .value = patchRecord.image { keys.append(CNContactImageDataKey as CNKeyDescriptor) }
     if case .value = patchRecord.emails { keys.append(CNContactEmailAddressesKey as CNKeyDescriptor) }
     if case .value = patchRecord.phones { keys.append(CNContactPhoneNumbersKey as CNKeyDescriptor) }
     if case .value = patchRecord.dates { keys.append(CNContactDatesKey as CNKeyDescriptor) }

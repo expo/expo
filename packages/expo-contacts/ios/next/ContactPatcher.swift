@@ -4,7 +4,7 @@ import ExpoModulesCore
 class ContactPatcher {
   private let imageMapper: ImageMapper
   
-  init (imageMapper: ImageMapper) {
+  init(imageMapper: ImageMapper) {
     self.imageMapper = imageMapper
   }
   
@@ -12,24 +12,30 @@ class ContactPatcher {
     patch: PatchContactRecord,
     to contact: inout CNMutableContact
   ) throws {
-    try apply(patch: patch.givenName, to: &contact, at: \.givenName, mapper: StringMapper())
-    try apply(patch: patch.middleName, to: &contact, at: \.middleName, mapper: StringMapper())
-    try apply(patch: patch.familyName, to: &contact, at: \.familyName, mapper: StringMapper())
-    try apply(patch: patch.maidenName, to: &contact, at: \.previousFamilyName, mapper: StringMapper())
-    try apply(patch: patch.nickname, to: &contact, at: \.nickname, mapper: StringMapper())
-    try apply(patch: patch.prefix, to: &contact, at: \.namePrefix, mapper: StringMapper())
-    try apply(patch: patch.suffix, to: &contact, at: \.nameSuffix, mapper: StringMapper())
-    try apply(patch: patch.company, to: &contact, at: \.organizationName, mapper: StringMapper())
-    try apply(patch: patch.jobTitle, to: &contact, at: \.jobTitle, mapper: StringMapper())
-    try apply(patch: patch.department, to: &contact, at: \.departmentName, mapper: StringMapper())
-    try apply(patch: patch.phoneticGivenName, to: &contact, at: \.phoneticGivenName, mapper: StringMapper())
-    try apply(patch: patch.phoneticMiddleName, to: &contact, at: \.phoneticMiddleName, mapper: StringMapper())
-    try apply(patch: patch.phoneticFamilyName, to: &contact, at: \.phoneticFamilyName, mapper: StringMapper())
-    try apply(patch: patch.phoneticCompanyName, to: &contact, at: \.phoneticOrganizationName, mapper: StringMapper())
-    try apply(patch: patch.note, to: &contact, at: \.note, mapper: StringMapper())
-    try apply(patch: patch.birthday, to: &contact, at: \.birthday, mapper: ContactDateMapper())
-    try apply(patch: patch.nonGregorianBirthday, to: &contact, at: \.nonGregorianBirthday, mapper: NonGregorianBirthdayMapper())
-    try apply(patch: patch.image, to: &contact, at: \.imageData, mapper: imageMapper)
+    try apply(patch: patch.givenName, to: &contact, mapper: StringMapper(descriptor: CNContactGivenNameKey, keyPath: \.givenName))
+    try apply(patch: patch.middleName, to: &contact, mapper: StringMapper(descriptor: CNContactMiddleNameKey, keyPath: \.middleName))
+    try apply(patch: patch.familyName, to: &contact, mapper: StringMapper(descriptor: CNContactFamilyNameKey, keyPath: \.familyName))
+    try apply(patch: patch.maidenName, to: &contact, mapper: StringMapper(descriptor: CNContactPreviousFamilyNameKey, keyPath: \.previousFamilyName))
+    try apply(patch: patch.nickname, to: &contact, mapper: StringMapper(descriptor: CNContactNicknameKey, keyPath: \.nickname))
+    try apply(patch: patch.prefix, to: &contact, mapper: StringMapper(descriptor: CNContactNamePrefixKey, keyPath: \.namePrefix))
+    try apply(patch: patch.suffix, to: &contact, mapper: StringMapper(descriptor: CNContactNameSuffixKey, keyPath: \.nameSuffix))
+    
+    try apply(patch: patch.company, to: &contact, mapper: StringMapper(descriptor: CNContactOrganizationNameKey, keyPath: \.organizationName))
+    try apply(patch: patch.jobTitle, to: &contact, mapper: StringMapper(descriptor: CNContactJobTitleKey, keyPath: \.jobTitle))
+    try apply(patch: patch.department, to: &contact, mapper: StringMapper(descriptor: CNContactDepartmentNameKey, keyPath: \.departmentName))
+    
+    try apply(patch: patch.phoneticGivenName, to: &contact, mapper: StringMapper(descriptor: CNContactPhoneticGivenNameKey, keyPath: \.phoneticGivenName))
+    try apply(patch: patch.phoneticMiddleName, to: &contact, mapper: StringMapper(descriptor: CNContactPhoneticMiddleNameKey, keyPath: \.phoneticMiddleName))
+    try apply(patch: patch.phoneticFamilyName, to: &contact, mapper: StringMapper(descriptor: CNContactPhoneticFamilyNameKey, keyPath: \.phoneticFamilyName))
+    try apply(patch: patch.phoneticCompanyName, to: &contact, mapper: StringMapper(descriptor: CNContactPhoneticOrganizationNameKey, keyPath: \.phoneticOrganizationName))
+    
+    try apply(patch: patch.note, to: &contact, mapper: StringMapper(descriptor: CNContactNoteKey, keyPath: \.note))
+    
+    try apply(patch: patch.birthday, to: &contact, mapper: ContactDateMapper())
+    try apply(patch: patch.nonGregorianBirthday, to: &contact, mapper: NonGregorianBirthdayMapper())
+    
+    try apply(patch: patch.image, to: &contact, mapper: imageMapper)
+
     try apply(patches: patch.emails, keyPath: \.emailAddresses, mapper: EmailMapper(), on: &contact)
     try apply(patches: patch.phones, keyPath: \.phoneNumbers, mapper: PhoneMapper(), on: &contact)
     try apply(patches: patch.dates, keyPath: \.dates, mapper: DateMapper(), on: &contact)
@@ -43,11 +49,10 @@ class ContactPatcher {
   private func apply<Mapper: PropertyMapper>(
     patch: ValueOrUndefined<Mapper.TDto>,
     to contact: inout CNMutableContact,
-    at keyPath: WritableKeyPath<CNMutableContact, Mapper.TDomain>,
     mapper: Mapper
   ) throws {
     if case .value(let value) = patch {
-      contact[keyPath: keyPath] = try mapper.toDomain(value: value)
+      try mapper.apply(value, to: contact)
     }
   }
   

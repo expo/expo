@@ -2,10 +2,19 @@ import Contacts
 import Foundation
 
 struct NonGregorianBirthdayMapper: PropertyMapper {
-  typealias TDomain = DateComponents?
   typealias TDto = NonGregorianBirthday?
   
-  func toDomain(value: NonGregorianBirthday?) -> DateComponents? {
+  var descriptor: CNKeyDescriptor { CNContactNonGregorianBirthdayKey as CNKeyDescriptor }
+
+  func extract(from contact: CNContact) throws -> NonGregorianBirthday? {
+    return toDto(value: contact.nonGregorianBirthday)
+  }
+  
+  func apply(_ value: NonGregorianBirthday?, to contact: CNMutableContact) throws {
+    contact.nonGregorianBirthday = toDomain(value: value)
+  }
+  
+  private func toDomain(value: NonGregorianBirthday?) -> DateComponents? {
     guard let dto = value else {
       return nil
     }
@@ -27,7 +36,7 @@ struct NonGregorianBirthdayMapper: PropertyMapper {
     return components
   }
   
-  func toDto(value: DateComponents?) -> NonGregorianBirthday? {
+  private func toDto(value: DateComponents?) -> NonGregorianBirthday? {
     guard let components = value else {
       return nil
     }
@@ -37,25 +46,17 @@ struct NonGregorianBirthdayMapper: PropertyMapper {
       return nil
     }
     
+    guard let month = components.month, let day = components.day else {
+      return nil
+    }
+    
     let dto = NonGregorianBirthday()
     
-    if let day = components.day {
-      dto.day = String(day)
-    } else {
-      dto.day = "1"
-    }
-    
-    if let month = components.month {
-      dto.month = String(month)
-    } else {
-      dto.month = "1"
-    }
-    
-    if let year = components.year {
-      dto.year = String(year)
-    }
-    
+    dto.day = String(format: "%02d", day)
+    dto.month = String(format: "%02d", month)
+    dto.year = components.year.map { String($0) }
     dto.calendar = supportedCalendar
+    
     return dto
   }
 }
@@ -96,4 +97,3 @@ extension NonGregorianBirthdayCalendar {
     }
   }
 }
-
