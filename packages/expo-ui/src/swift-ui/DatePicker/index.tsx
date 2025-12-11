@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import * as React from 'react';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -71,4 +70,3 @@ const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = require
 export function DatePicker(props: DatePickerProps) {
   return <DatePickerNativeView {...transformDatePickerProps(props)} />;
 }
-

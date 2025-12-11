@@ -6,8 +6,8 @@ import { animation } from './animation/index';
 import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
-import type { Color } from './types';
 import { datePickerStyle } from './datePickerStyle';
+import type { Color } from './types';
 /**
  * Sets the spacing between adjacent sections.
  * @param spacing - The spacing to apply.
