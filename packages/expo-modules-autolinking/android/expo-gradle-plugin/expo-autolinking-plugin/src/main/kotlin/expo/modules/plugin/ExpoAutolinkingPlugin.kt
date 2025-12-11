@@ -13,6 +13,8 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
+//import org.gradle.process.ExecSpec
+//import org.gradle.process.*
 import java.nio.file.Paths
 
 const val generatedPackageListNamespace = "expo.modules"
@@ -44,6 +46,27 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
       project.logger.quiet("  - ${subproject.name.withColor(Colors.GREEN)} (${subproject.version})")
     }
 
+   project.gradle.projectsEvaluated {
+     val srcDir = project.file("src/main/java/inline/modules/").absolutePath
+     val buildDir = project.file("build/inline/modules/").absolutePath
+     val nodeWorkingDir = project.rootProject.projectDir
+
+     project.providers.exec { spec ->
+       spec.workingDir(nodeWorkingDir)
+       spec.commandLine(
+         "node",
+         "--no-warnings",
+         "--eval",
+         "require('expo/bin/autolinking')",
+         "expo-modules-autolinking",
+         "mirror-kotlin-inline-modules",
+         srcDir,
+         buildDir,
+         project.findProperty("expo.inlineModules.watchedDirectories") ?: emptyList<String>()
+       )
+     }.standardOutput.asText.get()
+   }
+
     prebuiltProjects.forEach { prebuiltProject ->
       val publication = requireNotNull(prebuiltProject.publication)
       project.dependencies.add("api", "${publication.groupId}:${publication.artifactId}:${publication.version}")
@@ -67,12 +90,16 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
         .sourceSets
         .getByName("main")
         .java
-        .srcDir(getPackageListDir(project))
+        .srcDirs(getPackageListDir(project), getInlineModulesDir(project))
     }
   }
 
   fun getPackageListDir(project: Project): Provider<Directory> {
     return project.layout.buildDirectory.dir(generatedFilesSrcDir)
+  }
+
+  fun getInlineModulesDir(project: Project): Provider<Directory> {
+    return project.layout.buildDirectory.dir("inline/modules");
   }
 
   fun getPackageListFile(project: Project): Provider<RegularFile> {
