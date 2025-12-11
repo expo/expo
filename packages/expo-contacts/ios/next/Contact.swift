@@ -127,8 +127,8 @@ class ContactNext: SharedObject {
   ) throws -> [GetContactDetailsRecord] {
     return try contactRepository.getPaginated(
       keysToFetch: CNKeyDescriptorMapper.map(from: fields ?? ContactField.allCases),
-      predicate: queryOptions?.name.map {
-        CNContact.predicateForContacts(matchingName: $0)
+      predicate: queryOptions?.name.flatMap {
+        $0.isEmpty ? nil : CNContact.predicateForContacts(matchingName: $0)
       },
       limit: queryOptions?.limit,
       offset: queryOptions?.offset,
