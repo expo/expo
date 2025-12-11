@@ -18,3 +18,10 @@ export async function downloadAsync(
 ): Promise<string> {
   return AssetModule.downloadAsync(url, md5Hash, type);
 }
+
+/**
+ * Returns content of asset as `Uint8Array` from the given URL.
+ */
+export async function bytes(url: string): Promise<Uint8Array<ArrayBuffer>> {
+  return AssetModule.bytes(url);
+}

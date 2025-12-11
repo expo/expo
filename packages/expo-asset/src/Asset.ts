@@ -3,7 +3,7 @@ import { Platform } from 'expo-modules-core';
 
 import { AssetMetadata, selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
-import { downloadAsync } from './ExpoAsset';
+import { downloadAsync, bytes } from './ExpoAsset';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';
 import { IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
@@ -304,4 +304,87 @@ export class Asset {
     }
     return this;
   }
+
+  /**
+   * Returns content of asset as `Uint8Array` from the given URL.
+   *
+   * @platform android
+   * @platform web
+   *
+   * @returns Returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+   */
+  async bytes(): Promise<Uint8Array<ArrayBuffer>> {
+    if (Platform.OS === 'web') {
+      const ab = await fileArrayBuffer(this.uri);
+
+      return new Uint8Array(ab);
+    }
+
+    return bytes(this.uri);
+  }
+
+  /**
+   * Returns content of asset as `ArrayBuffer` from the given URL.
+   *
+   * @platform android
+   * @platform web
+   *
+   * @returns Returns a `Promise` that resolves with the contents of the asset as a `ArrayBuffer`.
+   */
+  async arrayBuffer(): Promise<ArrayBuffer> {
+    if (Platform.OS === 'web') {
+      return fileArrayBuffer(this.uri);
+    }
+
+    const uint8Array = await bytes(this.uri);
+
+    return uint8Array.buffer as ArrayBuffer;
+  }
+
+  /**
+   * A helper that wraps [`Asset.fromModule().bytes()`](#frommodulevirtualassetmodule) for convenience.
+   *
+   * @platform android
+   * @platform web
+   *
+   * @param moduleId Value of `require('path/to/file')` or external network URLs
+   * @returns Returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+   * @example
+   * ```ts
+   * const uint8Array = await Asset.content(require('./assets/snack-icon.png'));
+   * ```
+   */
+  static async content(moduleId: number | string): Promise<Uint8Array<ArrayBuffer>> {
+    return Asset.fromModule(moduleId).bytes();
+  }
+
+  /**
+   * A helper that wraps [`Asset.fromModule().arrayBuffer()`](#frommodulevirtualassetmodule) for convenience.
+   *
+   * @platform android
+   * @platform web
+   *
+   * @param moduleId Value of `require('path/to/file')` or external network URLs
+   * @returns Returns a `Promise` that resolves with the contents of the asset as a `ArrayBuffer`.
+   * @example
+   * ```ts
+   * const arrayBuffer = await Asset.contentArrayBuffer(require('./assets/snack-icon.png'));
+   * ```
+   */
+  static async contentArrayBuffer(moduleId: number | string): Promise<ArrayBuffer> {
+    return Asset.fromModule(moduleId).arrayBuffer();
+  }
 }
+
+const fileArrayBuffer = async (fileName: string) => {
+  const response = await fetch(fileName);
+  const { ok, status, statusText } = response;
+
+  if (!ok) {
+    throw new Error(
+      `File "${fileName}" not fetched: ${statusText} (${status}): ${await response.text()}`
+    );
+  }
+
+  return response.arrayBuffer();
+};

@@ -5,3 +5,7 @@ export async function downloadAsync(
 ): Promise<string> {
   return url;
 }
+
+export async function bytes(url: string): Promise<Uint8Array<ArrayBuffer>> {
+  throw new Error('Not callable on web');
+}
