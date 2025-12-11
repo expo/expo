@@ -1,11 +1,11 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ReactCommon/RCTHost.h>
-
 #import <Expo/ExpoReactNativeFactory.h>
+
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/EXRuntime.h>
 #import <ExpoModulesCore-Swift.h>
+#import <ReactCommon/RCTHost.h>
 
 @implementation EXReactNativeFactory {
   EXAppContext *_appContext;
