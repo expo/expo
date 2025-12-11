@@ -108,7 +108,7 @@
   "react-native-svg": "15.12.1",
   "react-native-view-shot": "4.0.3",
   "react-native-webview": "13.15.0",
-  "react-server-dom-webpack": "~19.2.1",
+  "react-server-dom-webpack": "~19.2.2",
   "sentry-expo": "~7.0.0",
   "unimodules-app-loader": "~6.0.7",
   "unimodules-image-loader-interface": "~6.1.0",
