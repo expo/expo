@@ -1508,7 +1508,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private async inlineModulesSetup(): Promise<void> {
     const { projectRoot, metro } = this;
     const { exp } = getConfig(this.projectRoot);
-    if (exp.experiments?.inlineModules === true) {
+    if (exp.experiments?.inlineModules) {
       return startModuleGenerationAsync({ projectRoot, metro });
     }
   }

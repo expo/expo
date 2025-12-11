@@ -1,6 +1,7 @@
 import type { Reporter } from '@expo/metro/metro';
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
+import { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver/types';
 import { INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 export interface LoadOptions {
     config?: string;
@@ -31,6 +32,7 @@ export interface DefaultConfigOptions {
         debugId?: string;
     }) => Module[])[];
 }
+export declare function resolveInlineModules(projectRoot: string, directoryToPackage: Map<string, string>, context: CustomResolutionContext, moduleName: string, platform: string | null): Resolution;
 export declare function createStableModuleIdFactory(root: string): (path: string, context?: {
     platform: string;
     environment?: string | null;

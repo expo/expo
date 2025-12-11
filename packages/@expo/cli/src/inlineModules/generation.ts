@@ -178,7 +178,7 @@ export function updateXCodeProject(projectRoot: string): void {
   };
 
   const swiftWatchedDirectories =
-    getConfig(projectRoot).exp.inlineModules?.watchedDirectories ?? [];
+    getConfig(projectRoot).exp.experiments?.inlineModules?.watchedDirectories ?? [];
   for (const dir of swiftWatchedDirectories) {
     if (dirEntryExists(dir)) {
       continue;
@@ -220,7 +220,8 @@ function getWatchedDirAncestorAbsolutePath(
   projectRoot: string,
   filePathAbsolute: string
 ): string | null {
-  const watchedDirectories = getConfig(projectRoot).exp.inlineModules?.watchedDirectories ?? [];
+  const watchedDirectories =
+    getConfig(projectRoot).exp.experiments?.inlineModules?.watchedDirectories ?? [];
   const realRoot = path.resolve(projectRoot);
   for (const dir of watchedDirectories) {
     const dirPathAbsolute = path.resolve(realRoot, dir);
@@ -316,7 +317,8 @@ async function generateMirrorDirectories(
     }
   };
 
-  const watchedDirectories = getConfig(projectRoot).exp.inlineModules?.watchedDirectories ?? [];
+  const watchedDirectories =
+    getConfig(projectRoot).exp.experiments?.inlineModules?.watchedDirectories ?? [];
   for (const watchedDirectory of watchedDirectories) {
     await generateExportsAndTypesForDirectory(
       path.resolve(projectRoot, watchedDirectory),
