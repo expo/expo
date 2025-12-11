@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [android] do not crash if `ContentProvider` doesn't provide mime type ([#41495](https://github.com/expo/expo/pull/41495) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+## 17.0.9 — 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 17.0.8 — 2025-09-11
 

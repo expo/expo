@@ -43,14 +43,6 @@ class DevMenuKeyCommandsInterceptor {
 
     commands.registerKeyCommand(
       withInput: "r",
-      modifierFlags: .command,
-      action: { _ in
-        DevMenuManager.shared.reload()
-      }
-    )
-
-    commands.registerKeyCommand(
-      withInput: "r",
       modifierFlags: [],
       action: { _ in
         DevMenuManager.shared.reload()

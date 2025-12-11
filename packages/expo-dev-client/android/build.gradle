@@ -8,13 +8,13 @@ expoModule {
 }
 
 group = "host.exp.exponent"
-version = "6.0.18"
+version = "6.0.20"
 
 android {
   namespace "expo.modules.devclient"
   defaultConfig {
     versionCode 1
-    versionName "6.0.18"
+    versionName "6.0.20"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 

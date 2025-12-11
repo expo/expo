@@ -82,7 +82,10 @@ function withWebPolyfills(
       virtualModuleId,
       (() => {
         if (ctx.platform === 'web') {
-          return `global.$$require_external = typeof require !== "undefined" ? require : () => null;`;
+          // NOTE(@hassankhan): We need to wrap require in an arrow function rather than assigning
+          // it directly because `workerd` loses its `this` context when `require` is dereferenced
+          // and called later.
+          return `global.$$require_external = typeof require !== "undefined" ? (m) => require(m) : () => null;`;
         } else {
           // Wrap in try/catch to support Android.
           return 'try { global.$$require_external = typeof expo === "undefined" ? require : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';

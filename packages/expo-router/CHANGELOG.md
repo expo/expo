@@ -8,7 +8,24 @@
 
 ### 🐛 Bug fixes
 
+- Fix search params types inference for routes without route params ([#41301](https://github.com/expo/expo/pull/41301) by [@AmauryLiet](https://github.com/AmauryLiet))
+- resolve "Illegal invocation" errors in `workerd` runtime ([#41502](https://github.com/expo/expo/pull/41502) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
+
+- Update `/_expo/touch` usage in onboarding ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
+
+## 6.0.17 — 2025-12-05
+
+### 💡 Others
+
+- Bump and tighten `react-server-dom-webpack` peer range ([#41379](https://github.com/expo/expo/pull/41379) by [@kitten](https://github.com/kitten))
+
+## 6.0.16 — 2025-12-04
+
+### 🐛 Bug fixes
+
+- Replace internal base URL for parsing pathnames with `file:` ([#41338](https://github.com/expo/expo/pull/41338) by [@kitten](https://github.com/kitten))
 
 ## 6.0.15 — 2025-11-17
 

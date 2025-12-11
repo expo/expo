@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '8.0.9'
+version = '8.0.10'
 
 android {
   namespace "expo.modules.device"
   defaultConfig {
     versionCode 12
-    versionName '8.0.9'
+    versionName '8.0.10'
   }
 }
 

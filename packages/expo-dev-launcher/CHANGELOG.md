@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 6.0.20 — 2025-12-05
+
+### 🐛 Bug fixes
+
+- [iOS] Fix port scanning on pysical devices. ([#40824](https://github.com/expo/expo/pull/40824) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 6.0.19 — 2025-12-04
+
+### 🐛 Bug fixes
+
+- Restore config plugin `launchMode` support ([#41363](https://github.com/expo/expo/pull/41363) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 6.0.18 — 2025-11-17
 
 _This version does not introduce any user-facing changes._

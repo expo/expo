@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 3.0.23 — 2025-12-04
+
+### 💡 Others
+
+- Fallback to resolving modules from list of duplicates, if a search path module is invalid or fails to resolve ([#41309](https://github.com/expo/expo/pull/41309) by [@kitten](https://github.com/kitten))
+
 ## 3.0.22 — 2025-11-17
 
 ### 🐛 Bug fixes

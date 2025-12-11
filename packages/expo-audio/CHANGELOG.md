@@ -22,6 +22,10 @@
 - Removing `Record` from `RecordingPresets` type annotation to improve type safety ([#39391](https://github.com/expo/expo/pull/39391) by [@Shoghy](https://github.com/Shoghy))
 - Separate the conditions to enable and disable microphone permissions. ([#40861](https://github.com/expo/expo/pull/40861) by [@alanjhughes](https://github.com/alanjhughes))
 
+## 1.0.16 — 2025-12-04
+
+_This version does not introduce any user-facing changes._
+
 ## 1.0.15 — 2025-11-21
 
 ### 🐛 Bug fixes

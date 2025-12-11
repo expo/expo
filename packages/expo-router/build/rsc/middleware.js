@@ -16,7 +16,8 @@ exports.renderRscAsync = renderRscAsync;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const node_path_1 = __importDefault(require("node:path"));
 const rsc_renderer_1 = require("./rsc-renderer");
-const debug = require('debug')('expo:server:rsc-renderer');
+const debug_1 = require("../utils/debug");
+const debug = (0, debug_1.createDebug)('expo:router:server:rsc-renderer');
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map();
 function serverRequire(...targetOutputModulePath) {
