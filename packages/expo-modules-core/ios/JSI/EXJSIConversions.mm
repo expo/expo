@@ -9,6 +9,7 @@
 #import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 #import <ExpoModulesJSI/EXStringUtils.h>
 #import <ExpoModulesJSI/EXJavaScriptObjectBinding.h>
+#import <ExpoModulesJSI/EXNativeArrayBuffer.h>
 
 namespace expo {
 
@@ -100,6 +101,10 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   }
   if ([value isKindOfClass:[EXJavaScriptObjectBinding class]]) {
     return jsi::Value(runtime, *[[(EXJavaScriptObjectBinding *)value get] get]);
+  }
+  if ([value isKindOfClass:[EXNativeArrayBuffer class]]) {
+    auto memoryBuffer = [(EXNativeArrayBuffer *)value jsiBuffer];
+    return jsi::ArrayBuffer(runtime, memoryBuffer);
   }
   if ([value isKindOfClass:[NSString class]]) {
     return convertNSStringToJSIString(runtime, (NSString *)value);
