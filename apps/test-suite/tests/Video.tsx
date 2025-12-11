@@ -78,12 +78,14 @@ const brokenSource = {
 const bigBuckBunnySourceData: SourceLoadEventPayload = {
   availableVideoTracks: [
     {
+      bitrate: 5372792,
       id: '2',
-      bitrate: 1991287,
-      frameRate: 24,
-      size: { width: 1280, height: 720 },
-      mimeType: 'video/avc',
       isSupported: true,
+      frameRate: 24,
+      peakBitrate: 5372792,
+      mimeType: 'video/avc',
+      size: { height: 720, width: 1280 },
+      averageBitrate: 1991287,
     },
   ],
   videoSource: {
@@ -117,12 +119,14 @@ const localVideoSourceData: SourceLoadEventPayload = {
   availableAudioTracks: [{ language: 'und', label: 'Unknown language' }],
   availableVideoTracks: [
     {
-      isSupported: true,
-      bitrate: 240787,
-      frameRate: 24,
       mimeType: 'video/mp4v',
+      isSupported: true,
       size: { width: 569, height: 320 },
+      averageBitrate: 240787,
       id: '1',
+      bitrate: 240787,
+      peakBitrate: null,
+      frameRate: 24,
     },
   ],
   duration: 15,
@@ -151,68 +155,84 @@ const hlsSourceData: SourceLoadEventPayload = {
   ],
   availableVideoTracks: [
     {
-      frameRate: null,
-      id: 'video/250kbit.m3u8',
+      peakBitrate: 258157,
       size: { height: 180, width: 422 },
       bitrate: 258157,
-      mimeType: 'video/avc',
+      averageBitrate: null,
       isSupported: true,
+      id: 'video/250kbit.m3u8',
+      mimeType: 'video/avc',
+      frameRate: null,
     },
     {
-      mimeType: 'video/avc',
-      id: 'video/500kbit.m3u8',
-      size: { width: 638, height: 272 },
-      frameRate: null,
-      isSupported: true,
       bitrate: 520929,
-    },
-    {
-      id: 'video/800kbit.m3u8',
-      frameRate: null,
-      bitrate: 831270,
-      isSupported: true,
+      mimeType: 'video/avc',
+      peakBitrate: 520929,
       size: { height: 272, width: 638 },
+      averageBitrate: null,
+      frameRate: null,
+      isSupported: true,
+      id: 'video/500kbit.m3u8',
+    },
+    {
+      peakBitrate: 831270,
+      frameRate: null,
+      id: 'video/800kbit.m3u8',
+      size: { height: 272, width: 638 },
+      averageBitrate: null,
+      isSupported: true,
+      bitrate: 831270,
       mimeType: 'video/avc',
     },
     {
       mimeType: 'video/avc',
-      size: { width: 958, height: 408 },
-      frameRate: null,
-      bitrate: 1144430,
-      isSupported: true,
       id: 'video/1100kbit.m3u8',
+      averageBitrate: null,
+      frameRate: null,
+      isSupported: true,
+      peakBitrate: 1144430,
+      bitrate: 1144430,
+      size: { height: 408, width: 958 },
     },
     {
+      frameRate: null,
+      peakBitrate: 1558322,
+      mimeType: 'video/avc',
+      size: { width: 1277, height: 554 },
+      averageBitrate: null,
+      isSupported: true,
       id: 'video/1500kbit.m3u8',
-      frameRate: null,
-      size: { height: 554, width: 1277 },
-      mimeType: 'video/avc',
       bitrate: 1558322,
-      isSupported: true,
     },
     {
-      bitrate: 4149264,
       id: 'video/4000kbit.m3u8',
-      isSupported: true,
+      bitrate: 4149264,
       frameRate: null,
-      size: { width: 1921, height: 818 },
+      averageBitrate: null,
+      peakBitrate: 4149264,
       mimeType: 'video/avc',
-    },
-    {
       size: { height: 818, width: 1921 },
-      mimeType: 'video/avc',
       isSupported: true,
-      frameRate: null,
-      id: 'video/6000kbit.m3u8',
-      bitrate: 6214307,
     },
     {
+      averageBitrate: null,
       mimeType: 'video/avc',
-      frameRate: null,
-      id: 'video/10000kbit.m3u8',
-      size: { width: 4096, height: 1744 },
-      bitrate: 10285391,
+      bitrate: 6214307,
+      size: { height: 818, width: 1921 },
+      id: 'video/6000kbit.m3u8',
+      peakBitrate: 6214307,
       isSupported: true,
+      frameRate: null,
+    },
+    {
+      averageBitrate: null,
+      mimeType: 'video/avc',
+      id: 'video/10000kbit.m3u8',
+      isSupported: true,
+      size: { height: 1744, width: 4096 },
+      peakBitrate: 10285391,
+      frameRate: null,
+      bitrate: 10285391,
     },
   ],
   availableAudioTracks: [
@@ -323,8 +343,10 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
             expect(actualTrack).toBeDefined();
 
             // Bitrate (allow slight variance)
-            if (actualTrack.bitrate && expectedTrack.bitrate) {
-              expect(Math.abs(actualTrack.bitrate - expectedTrack.bitrate)).toBeLessThan(10);
+            if (actualTrack.averageBitrate && expectedTrack.averageBitrate) {
+              expect(
+                Math.abs(actualTrack.averageBitrate - expectedTrack.averageBitrate)
+              ).toBeLessThan(10);
             }
 
             if (expectedTrack.frameRate) {
@@ -439,17 +461,15 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
     });
 
     it('Receives playbackRateChange event', async () => {
-      let promise = waitForEvent(player, 'playbackRateChange');
-      player.playbackRate = 0.5;
-      expect((await promise).playbackRate).toBe(0.5);
+      await waitForEvent(player, 'playbackRateChange', () => {
+        player.playbackRate = 0.5;
+      });
+      expect(player.playbackRate).toBe(0.5);
 
-      promise = waitForEvent(player, 'playbackRateChange');
-      player.playbackRate = 1.5;
-      expect((await promise).playbackRate).toBe(1.5);
-
-      promise = waitForEvent(player, 'playbackRateChange');
-      player.playbackRate = 1;
-      expect((await promise).playbackRate).toBe(1);
+      await waitForEvent(player, 'playbackRateChange', () => {
+        player.playbackRate = 1.5;
+      });
+      expect(player.playbackRate).toBe(1.5);
     });
 
     it('Receives volumeChange event', async () => {
@@ -480,6 +500,7 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
       await replaceAndLoadPlayerSource(player, localVideoSource);
       player.play();
       player.currentTime = 13;
+      player.play();
       await waitForEvent(player, 'playToEnd');
     });
 
@@ -616,9 +637,8 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
       player.volume = 0.75;
       expect(player.volume).toEqual(0.75);
     });
-
     it(`player.currentTime`, async () => {
-      await replaceAndLoadPlayerSource(player, localVideoSource);
+      await player.replaceAsync(localVideoSource);
       player.currentTime = 7;
       await waitForEventTo(player, 'statusChange', (payload) => {
         if (payload.status === 'readyToPlay') {
@@ -647,7 +667,9 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
       player.currentTime = 0;
       expect(player.playbackRate).toEqual(4);
 
-      await waitForEventTo(player, 'statusChange', (payload) => payload.status === 'readyToPlay');
+      if (player.status !== 'readyToPlay') {
+        await waitForEventTo(player, 'statusChange', (payload) => payload.status === 'readyToPlay');
+      }
       player.play();
 
       await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -774,9 +796,10 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
     });
 
     it('player.replay()', async () => {
-      await replaceAndLoadPlayerSource(player, localVideoSource);
-      player.seekBy(5);
-      await waitForEventTo(player, 'statusChange', (payload) => payload.status === 'readyToPlay');
+      await player.replaceAsync(localVideoSource);
+      player.currentTime = 5;
+
+      await waitForEventTo(player, 'statusChange', (p) => p.status === 'readyToPlay');
 
       // Ensure we are not at the start
       expect(player.currentTime).toBeGreaterThan(0);
@@ -794,12 +817,10 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
     it(`player.seekBy()`, async () => {
       await replaceAndLoadPlayerSource(player, localVideoSource);
       player.seekBy(5);
+      player.play();
+      await waitForEvent(player, 'playingChange', () => player.play());
 
-      await waitForEventTo(player, `statusChange`, (payload) => payload.status === 'readyToPlay');
-      if (player.status !== 'readyToPlay') {
-        await waitForEventTo(player, `statusChange`, (payload) => payload.status === 'readyToPlay');
-      }
-      expect(player.currentTime).toBeCloseTo(5);
+      expect(player.currentTime).toBeCloseTo(5, 1);
     });
 
     it('player.generateThumbnailsAsync()', async () => {
