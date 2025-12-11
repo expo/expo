@@ -4,7 +4,7 @@ import { View, Text, Alert, ScrollView, StyleSheet, Pressable } from 'react-nati
 
 function Chip(props: React.ComponentProps<typeof JetpackChip>) {
   return (
-    <Host>
+    <Host matchContents>
       <JetpackChip {...props} />
     </Host>
   );
