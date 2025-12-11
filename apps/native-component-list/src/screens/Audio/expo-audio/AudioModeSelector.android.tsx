@@ -14,11 +14,13 @@ export default function AudioModeSelector() {
       interruptionModeAndroid: 'doNotMix',
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
+      allowsBackgroundRecording: false,
     },
     current: {
       interruptionModeAndroid: 'doNotMix',
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
+      allowsBackgroundRecording: false,
     },
   });
 
@@ -34,7 +36,8 @@ export default function AudioModeSelector() {
   const modesEqual = (modeA: Partial<AudioMode>, modeB: Partial<AudioMode>) =>
     modeA.interruptionModeAndroid === modeB.interruptionModeAndroid &&
     modeA.shouldRouteThroughEarpiece === modeB.shouldRouteThroughEarpiece &&
-    modeA.shouldPlayInBackground === modeB.shouldPlayInBackground;
+    modeA.shouldPlayInBackground === modeB.shouldPlayInBackground &&
+    modeA.allowsBackgroundRecording === modeB.allowsBackgroundRecording;
 
   const setMode = (interruptionModeAndroid: AudioMode['interruptionModeAndroid']) => () =>
     setState((state) => ({ ...state, next: { ...state.next, interruptionModeAndroid } }));
@@ -98,6 +101,10 @@ export default function AudioModeSelector() {
       {renderToggle({
         title: 'Stay active in background',
         valueName: 'shouldPlayInBackground',
+      })}
+      {renderToggle({
+        title: 'Allow background recording',
+        valueName: 'allowsBackgroundRecording',
       })}
       {renderModeSelector({
         title: 'Do not mix',

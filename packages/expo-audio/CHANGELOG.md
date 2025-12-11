@@ -6,9 +6,21 @@
 
 ### 🎉 New features
 
+- [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
+- [iOS/Android] Add support background recording. ([#41134](https://github.com/expo/expo/pull/41134) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
+- [Android] Removed call to setShowActionsInCompactView when using custom layout in notification. ([#40557](https://github.com/expo/expo/pull/40557) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Fixed race-condition when creating the notification before the actions has been added. ([#40518](https://github.com/expo/expo/pull/40518) by [@chrfalch](https://github.com/chrfalch))
+- [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
+
 ### 💡 Others
+
+- Removing `Record` from `RecordingPresets` type annotation to improve type safety ([#39391](https://github.com/expo/expo/pull/39391) by [@Shoghy](https://github.com/Shoghy))
+- Separate the conditions to enable and disable microphone permissions. ([#40861](https://github.com/expo/expo/pull/40861) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.0.16 — 2025-12-04
 
@@ -139,6 +151,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [iOS] Support setting seek tolerences when calling `seekTo` on the player. ([#37669](https://github.com/expo/expo/pull/37669) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Support lock screen controls. ([#37126](https://github.com/expo/expo/pull/37126) by [@alanjhughes](https://github.com/alanjhughes)
 
 ### 🐛 Bug fixes
 

@@ -68,7 +68,7 @@ function getStatusFromMedia(media, id) {
         didJustFinish: media.ended,
         isBuffering: false,
         playbackRate: media.playbackRate,
-        shouldCorrectPitch: false,
+        shouldCorrectPitch: true,
         mute: media.muted,
         loop: media.loop,
     };
@@ -174,6 +174,9 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.load();
         getStatusFromMedia(this.media, this.id);
     }
+    setActiveForLockScreen(active, metadata) { }
+    updateLockScreenMetadata(metadata) { }
+    clearLockScreenControls() { }
     _createMediaElement() {
         const newSource = getSourceUri(this.src);
         const media = new Audio(newSource);
