@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Add recommended `react-server-dom-webpack` version to `bundledNativeModules.json` ([#41423](https://github.com/expo/expo/pull/41423) by [@kitten](https://github.com/kitten))
+- Bump `react-server-dom-webpack` ([#41585](https://github.com/expo/expo/pull/41585) by [@kitten](https://github.com/kitten))
 
 ## 53.0.24 — 2025-11-18
 
