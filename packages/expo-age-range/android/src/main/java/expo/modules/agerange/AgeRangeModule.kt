@@ -56,7 +56,7 @@ fun processAgeSignalsError(exception: Exception): CodedException {
   if (exception is AgeSignalsException) {
     // for codes explanation see https://developer.android.com/google/play/age-signals/use-age-signals-api#handle-api-errors
     val errorCode = exception.status.statusCode
-    val status = exception.status.toString()
+    val status = exception.status.statusMessage ?: "An error occurred with code $errorCode"
     return CodedException(errorCode.toString(), status, exception)
   } else {
     return exception.toCodedException()

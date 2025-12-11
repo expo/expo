@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+	// when bumping, check if the ignored test is passing with the new version
   implementation 'com.google.android.play:age-signals:0.0.2'
 
   testImplementation 'junit:junit:4.13.2'
