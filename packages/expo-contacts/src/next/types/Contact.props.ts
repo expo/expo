@@ -1,5 +1,9 @@
 import { ContactDetails } from './Contact.types';
 
+/**
+ * Enum representing the various fields of a contact. These fields can be used
+ * to specify which details to retrieve from a contact.
+ */
 export enum ContactField {
   IS_FAVOURITE = 'isFavourite',
   FULL_NAME = 'fullName',
@@ -31,6 +35,9 @@ export enum ContactField {
   IM_ADDRESSES = 'imAddresses',
 }
 
+/**
+ * Enum representing the sort order options for querying contacts.
+ */
 export enum ContactsSortOrder {
   UserDefault = 'userDefault',
   GivenName = 'givenName',
@@ -38,27 +45,81 @@ export enum ContactsSortOrder {
   None = 'none',
 }
 
+/**
+ * Options for querying multiple contacts.
+ */
 export type ContactQueryOptions = {
+  /*
+   * Maximum number of contacts to return. If not specified, all matching contacts are returned.
+   */
   limit?: number;
+  /*
+   * Number of contacts to skip from the start of the result set. If not specified, starts from the beginning.
+   */
   offset?: number;
+  /*
+   * Sort order for the returned contacts. If not specified, the default sort order is used.
+   */
   sortOrder?: ContactsSortOrder;
+  /*
+   * A string to filter contacts by name. If specified, only contacts whose name contains this string are returned.
+   */
   name?: string;
+  /*
+   * Whether to include raw contact data in the results. Default is false.
+   * @platform iOS
+   */
   rawContacts?: boolean;
 };
 
+/**
+ * Denotes the functionality of a native contact form.
+ * @platform ios
+ */
 export type FormOptions = {
+  /**
+   * The properties that will be displayed when viewing a contact.
+   */
   displayedPropertyKeys?: ContactField[];
+  /**
+   * The message displayed under the name of the contact. Only applies when editing an existing contact.
+   */
   message?: string;
+  /**
+   * Used if contact doesn't have a name defined.
+   */
   alternateName?: string;
+  /**
+   * Allows for contact mutation.
+   */
   allowsEditing?: boolean;
+  /**
+   * Actions like share, add, create.
+   */
   allowsActions?: boolean;
+  /**
+   * Show or hide the similar contacts.
+   */
   shouldShowLinkedContacts?: boolean;
+  /**
+   * Present the new contact controller. If set to `false` the unknown controller will be shown.
+   */
   isNew?: boolean;
+  /**
+   * The name of the left bar button. Only applies when editing an existing contact.
+   */
   cancelButtonTitle?: string;
+  /**
+   * Prevents the controller from animating in.
+   */
   preventAnimation?: boolean;
+  /**
+   * The parent group for a new contact.
+   */
   groupId?: string;
 };
 
+// @hidden
 export type ContactFieldKey = {
   [ContactField.IS_FAVOURITE]: 'isFavourite';
   [ContactField.FULL_NAME]: 'fullName';
@@ -90,6 +151,7 @@ export type ContactFieldKey = {
   [ContactField.IM_ADDRESSES]: 'imAddresses';
 };
 
+// @hidden
 export type PartialContactDetails<T extends readonly ContactField[]> = {
   id: string;
 } & {

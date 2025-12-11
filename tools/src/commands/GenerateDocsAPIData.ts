@@ -78,6 +78,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-clipboard': [['Clipboard.ts', 'Clipboard.types.ts']],
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['index.ts'],
+  'expo-contacts-next': ['next/index.ts', 'expo-contacts'],
   'expo-crypto': ['Crypto.ts'],
   'expo-dev-client': ['DevClient.ts'],
   'expo-device': ['Device.ts'],
