@@ -1,12 +1,8 @@
-# Tests whether the fullscreen opens, and if appropriate events were sent
 appId: dev.expo.Payments
 jsEngine: graaljs
 ---
 - openLink: bareexpo://components/video/player_prop
 
-- tapOn:
-    text: 'Open'
-    optional: true
 - tapOn: "Prepare for e2e"
 - tapOn: "Move player 1 to the next video view"
 - runFlow:

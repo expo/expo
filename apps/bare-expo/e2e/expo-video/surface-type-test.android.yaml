@@ -1,4 +1,3 @@
-# Tests whether the fullscreen opens, and if appropriate events were sent
 appId: dev.expo.Payments
 jsEngine: graaljs
 ---

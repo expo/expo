@@ -4,9 +4,6 @@ jsEngine: graaljs
 # when devving, start from different screen so state is reset
 #- openLink: bareexpo://components
 - openLink: bareexpo://components/video/events
-- tapOn:
-    text: 'Open'
-    optional: true
 
 - assertVisible: 'source = Big Buck Bunny'
 - assertVisible: 'isPlaying = false'
