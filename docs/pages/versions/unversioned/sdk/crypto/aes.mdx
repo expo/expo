@@ -1,6 +1,6 @@
 ---
 title: Crypto AES
-description: A universal library for crypto operations.
+description: A universal library for crypto operations such as AES encryption and decryption.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-crypto'
 packageName: 'expo-crypto'
 iconUrl: '/static/images/packages/expo-crypto.png'
@@ -21,7 +21,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <SnackInline label='Simple encryption / decryption' dependencies={['expo-crypto']}>
 
-```jsx
+```tsx
 import { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { AES } from 'expo-crypto';
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 
 ### Usage with FileSystem and SecureStore
 
-Encrypt data and save to file
+Encrypt data and save it to the file:
 
 ```ts
 import { AES } from 'expo-crypto';
@@ -72,25 +72,25 @@ import { File, Paths } from 'expo-file-system';
 import * as SecureStore from 'expo-secure-store';
 
 async function encryptAndSaveData(plaintextData: Uint8Array) {
-  // generate encryption key
+  // Generate encryption key
   const encryptionKey = await AES.EncryptionKey.generate();
 
-  // encrypt data
+  // Encrypt data
   const sealedData = await AES.encryptAsync(plaintextData, encryptionKey);
   const encryptedBytes = await sealedData.combined();
 
-  // store encryption key
+  // Store encryption key
   const keyHex = await encryptionKey.encoded('hex');
   await SecureStore.setItemAsync('aes-encryption-key', keyHex);
 
-  // save encrypted file
+  // Save encrypted file
   const file = new File(Paths.cache, 'encrypted.dat');
   file.create({ overwrite: true });
   file.write(encryptedBytes);
 }
 ```
 
-Load file and decrypt data
+Load file and decrypt data:
 
 ```ts
 import { AES } from 'expo-crypto';
@@ -113,7 +113,7 @@ async function loadAndDecryptData(): Promise<Uint8Array | null> {
   const encryptedBytes = await file.bytes();
   const sealedData = AES.SealedData.fromCombined(encryptedBytes);
 
-  // decrypt data
+  // Decrypt data
   const plaintextBytes = await AES.decryptAsync(data, encryptionKey);
 
   return plaintextBytes;

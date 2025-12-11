@@ -32,19 +32,19 @@ export type TagByteLength = 16 | 15 | 14 | 13 | 12 | 8 | 4;
  */
 export interface SealedDataConfig {
     /**
-     * The length of the initialization vector in bytes. Defaults to 12.
+     * The length of the initialization vector in bytes.
      * @default 12
      */
     ivLength: number;
     /**
-     * The length of the authentication tag in bytes. Defaults to 16.
+     * The length of the authentication tag in bytes.
      * @default 16
      */
     tagLength: TagByteLength;
 }
 interface CommonDecryptOptions {
     /**
-     * Output format for the decrypted data. Defaults to 'bytes'.
+     * Output format for the decrypted data.
      * @default 'bytes'
      */
     output?: 'bytes' | 'base64';
@@ -55,13 +55,13 @@ interface CommonDecryptOptions {
     additionalData?: BinaryInput;
 }
 /**
- * Decrypt options that return the result as a base64 string.
+ * Decrypt options that return the result as a `base64` string.
  */
 export interface Base64DecryptOptions extends CommonDecryptOptions {
     output: 'base64';
 }
 /**
- * Decrypt options that return the result as a Uint8Array.
+ * Decrypt options that return the result as a `Uint8Array`.
  */
 export interface ArrayBufferDecryptOptions extends CommonDecryptOptions {
     output?: 'bytes';
@@ -82,14 +82,14 @@ type NonceParam = {
 export interface EncryptOptions {
     /**
      * Parameters for nonce generation.
-     * Defaults to a 12-byte random value.
      * @default { length: 12 }
      */
     nonce?: NonceParam;
     /**
      * The length of the authentication tag in bytes.
-     * Defaults to 16 bytes.
-     * NOTE: On Apple, this option is ignored, tag will always have 16 bytes.
+     *
+     * > **Note:** On Apple, this option is ignored. The tag will always have 16 bytes.
+     *
      * @platform android
      * @platform web
      * @default 16

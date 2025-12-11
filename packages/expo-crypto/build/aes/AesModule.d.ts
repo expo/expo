@@ -15,7 +15,7 @@ declare class EncryptionKey {
      * Imports an encryption key from a byte array.
      * Validates the size of the key.
      * @param bytes The key as a byte array.
-     * @returns A promise that resolves to an EncryptionKey instance.
+     * @returns A promise that resolves to an `EncryptionKey` instance.
      */
     static import(bytes: Uint8Array): Promise<EncryptionKey>;
     /**
@@ -23,7 +23,7 @@ declare class EncryptionKey {
      * Validates the size of the key.
      * @param hexString The key as a string.
      * @param encoding The encoding used in the string ('hex' or 'base64').
-     * @returns A promise that resolves to an EncryptionKey instance.
+     * @returns A promise that resolves to an `EncryptionKey` instance.
      */
     static import(hexString: string, encoding: 'hex' | 'base64'): Promise<EncryptionKey>;
     /**
@@ -32,13 +32,13 @@ declare class EncryptionKey {
     size: KeySize;
     /**
      * Retrieves the key as a byte array.
-     * Asynchronous due to the use of SubtleCrypto exportKey API.
+     * Asynchronous due to the use of [`SubtleCrypto` `exportKey`](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey) API.
      * @returns A promise that resolves to the byte array representation of the key.
      */
     bytes(): Promise<Uint8Array>;
     /**
      * Retrieves the key encoded as a string in the specified format.
-     * Asynchronous due to the use of SubtleCrypto exportKey API.
+     * Asynchronous due to the use of [`SubtleCrypto` `exportKey`](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey) API.
      * @param encoding The encoding format to use ('hex' or 'base64').
      * @returns A promise that resolves to the string representation of the key.
      */
@@ -74,7 +74,7 @@ declare class SealedData {
     /**
      * Retrieves the ciphertext from the sealed data.
      * @param options Options controlling whether to include the authentication tag and output encoding.
-     * @returns The ciphertext as a Uint8Array or base64 string depending on encoding option.
+     * @returns The ciphertext as a `Uint8Array` or `base64` string depending on encoding option.
      */
     ciphertext(options: {
         withTag?: boolean;
@@ -87,21 +87,21 @@ declare class SealedData {
     /**
      * Retrieves the initialization vector (nonce) from the sealed data.
      * @param encoding Output encoding format. Defaults to 'bytes'.
-     * @returns The initialization vector as a Uint8Array or base64 string depending on encoding.
+     * @returns The initialization vector as a `Uint8Array` or `base64` string depending on encoding.
      */
     iv(encoding?: 'bytes'): Promise<Uint8Array>;
     iv(encoding: 'base64'): Promise<string>;
     /**
      * Retrieves the authentication tag from the sealed data.
      * @param encoding Output encoding format. Defaults to 'bytes'.
-     * @returns The authentication tag as a Uint8Array or base64 string depending on encoding.
+     * @returns The authentication tag as a `Uint8Array` or `base64` string depending on encoding.
      */
     tag(encoding?: 'bytes'): Promise<Uint8Array>;
     tag(encoding: 'base64'): Promise<string>;
     /**
      * Retrieves a combined representation of the IV, ciphertext, and tag.
      * @param encoding Output encoding format. Defaults to 'bytes'.
-     * @returns The combined data as a Uint8Array or base64 string depending on encoding.
+     * @returns The combined data as a `Uint8Array` or `base64` string depending on encoding.
      */
     combined(encoding?: 'bytes'): Promise<Uint8Array>;
     combined(encoding: 'base64'): Promise<string>;
