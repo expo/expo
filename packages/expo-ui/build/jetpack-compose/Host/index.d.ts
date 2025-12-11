@@ -2,7 +2,7 @@ import { type ColorSchemeName, StyleProp, ViewStyle } from 'react-native';
 import { PrimitiveBaseProps } from '../layout';
 export type HostProps = {
     /**
-     * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
+     * When true, the host view will update its size in the React Native view tree to match the content's layout from Jetpack Compose.
      * Can be only set once on mount.
      * @default false
      */
