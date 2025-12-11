@@ -40,7 +40,7 @@ export function createCorsMiddleware(exp: ExpoConfig) {
 
   return (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
     if (typeof req.headers.origin === 'string') {
-      const { host, hostname, origin } = new URL(req.headers.origin);
+      const { host, hostname } = new URL(req.headers.origin);
       const isSameOrigin = host === req.headers.host;
       const isLocalhost = _isLocalHostname(hostname);
       const isAllowedHost = allowedHosts.includes(host) || isLocalhost;
@@ -54,6 +54,9 @@ export function createCorsMiddleware(exp: ExpoConfig) {
         );
         return;
       } else if (!isLocalhost && isAllowedHost) {
+        // Skipped for localhost since we shouldn't allow escalating cross-origin requests
+        // across separate sites running on localhost. If the `Origin` is set to a localhost
+        // hostname, we're not making a cross-origin request anyway
         res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
       }
 
