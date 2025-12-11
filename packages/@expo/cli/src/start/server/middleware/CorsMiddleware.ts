@@ -3,7 +3,6 @@ import type { ExpoConfig } from '@expo/config';
 import type { ServerRequest, ServerResponse } from './server.types';
 
 const DEFAULT_ALLOWED_CORS_HOSTS = [
-  'chrome-devtools-frontend.appspot.com', // Support remote Chrome DevTools frontend
   'devtools', // Support local Chrome DevTools `devtools://devtools`
 ];
 
