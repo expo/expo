@@ -153,6 +153,12 @@ export interface NativeTabsProps extends PropsWithChildren {
    * The background color of every badge in the tab bar.
    */
   badgeBackgroundColor?: ColorValue;
+  /**
+   * When set to `true`, hides the tab bar.
+   *
+   * @default false
+   */
+  hidden?: boolean;
   // #endregion common props
   // #region iOS props
   /**

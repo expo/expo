@@ -54,7 +54,8 @@ const react_1 = __importDefault(require("react"));
 const server_node_1 = __importDefault(require("react-dom/server.node"));
 const getRootComponent_1 = require("./getRootComponent");
 const html_1 = require("./html");
-const debug = require('debug')('expo:router:server:renderStaticContent');
+const debug_1 = require("../utils/debug");
+const debug = (0, debug_1.createDebug)('expo:router:server:renderStaticContent');
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1

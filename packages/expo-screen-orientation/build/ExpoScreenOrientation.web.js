@@ -63,6 +63,7 @@ class ExpoScreenOrientation extends NativeModule {
     orientation = Platform.canUseViewport
         ? screen.orientation || screen.msOrientation || null
         : null;
+    listener;
     async emitOrientationEvent() {
         const [orientationLock, orientation] = await Promise.all([
             getOrientationLockAsync(),
@@ -85,7 +86,7 @@ class ExpoScreenOrientation extends NativeModule {
         }
     }
     stopObserving() {
-        if (Platform.canUseEventListeners) {
+        if (Platform.canUseEventListeners && this.listener) {
             if (this.orientation && this.orientation.removeEventListener) {
                 this.orientation.removeEventListener('change', this.listener);
             }

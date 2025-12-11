@@ -1,18 +1,11 @@
-import type { ExpoConfig, Platform } from '@expo/config';
+import type { ExpoConfig, ExpoConfigWeb, Platform } from '@expo/config';
 import resolveFrom from 'resolve-from';
 
 /** Which bundler each platform should use. */
 export type PlatformBundlers = Record<Platform, 'metro' | 'webpack'>;
 
-// TODO(@kitten): Not on type yet
-declare module '@expo/config-types' {
-  export interface IOS {
-    bundler?: 'webpack' | 'metro';
-  }
-  export interface Android {
-    bundler?: 'webpack' | 'metro';
-  }
-}
+/** XDL-schema doesn't have `ios.bundler` and `android.bundler`, since this is technically deprecated */
+type WithBundlerConfig = Pick<ExpoConfigWeb, 'bundler'> | undefined | null;
 
 /** Get the platform bundlers mapping. */
 export function getPlatformBundlers(
@@ -29,8 +22,8 @@ export function getPlatformBundlers(
   }
 
   return {
-    ios: exp.ios?.bundler ?? 'metro',
-    android: exp.android?.bundler ?? 'metro',
+    ios: (exp.ios as WithBundlerConfig)?.bundler ?? 'metro',
+    android: (exp.android as WithBundlerConfig)?.bundler ?? 'metro',
     web,
   };
 }

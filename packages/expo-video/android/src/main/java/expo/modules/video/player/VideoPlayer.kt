@@ -101,24 +101,32 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var preservesPitch = false
     set(preservesPitch) {
       field = preservesPitch
-      playbackParameters = applyPitchCorrection(playbackParameters)
+      appContext?.mainQueue?.launch {
+        playbackParameters = applyPitchCorrection(playbackParameters)
+      }
     }
   var showNowPlayingNotification = false
     set(value) {
       field = value
-      serviceSetShowNotification(value)
+      appContext?.mainQueue?.launch {
+        serviceSetShowNotification(value)
+      }
     }
   var duration = 0f
   var isLive = false
 
   var volume: Float by IgnoreSameSet(1f) { new: Float, old: Float ->
-    player.volume = if (muted) 0f else new
+    appContext.mainQueue.launch {
+      player.volume = if (muted) 0f else new
+    }
     userVolume = volume
     sendEvent(PlayerEvent.VolumeChanged(new, old))
   }
 
   var muted: Boolean by IgnoreSameSet(false) { new: Boolean, old: Boolean ->
-    player.volume = if (new) 0f else userVolume
+    appContext.mainQueue.launch {
+      player.volume = if (new) 0f else userVolume
+    }
     sendEvent(PlayerEvent.MutedChanged(new, old))
   }
 
@@ -126,7 +134,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     PlaybackParameters.DEFAULT,
     propertyMapper = { applyPitchCorrection(it) }
   ) { new: PlaybackParameters, old: PlaybackParameters ->
-    player.playbackParameters = new
+    appContext.mainQueue.launch {
+      player.playbackParameters = new
+    }
 
     if (old.speed != new.speed) {
       sendEvent(PlayerEvent.PlaybackRateChanged(new.speed, old.speed))

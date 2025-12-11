@@ -73,7 +73,6 @@ class DevMenuKeyCommandsInterceptor {
     commands.unregisterKeyCommand(withInput: "d", modifierFlags: .command)
     commands.unregisterKeyCommand(withInput: "d", modifierFlags: .control)
     commands.unregisterKeyCommand(withInput: "r", modifierFlags: [])
-    commands.unregisterKeyCommand(withInput: "r", modifierFlags: .command)
     commands.unregisterKeyCommand(withInput: "i", modifierFlags: .command)
     commands.unregisterKeyCommand(withInput: "p", modifierFlags: .command)
 

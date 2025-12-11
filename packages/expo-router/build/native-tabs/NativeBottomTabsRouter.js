@@ -26,7 +26,18 @@ function NativeBottomTabsRouter(options) {
                             if (route.params && 'screen' in route.params) {
                                 expoParams[navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME] = true;
                             }
-                            const params = (0, navigationParams_1.appendInternalExpoRouterParams)(route.params, expoParams);
+                            if (process.env.NODE_ENV !== 'production') {
+                                if (expoParams[navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]) {
+                                    console.warn('Zoom transition is not supported when navigating between tabs. Falling back to standard navigation transition.');
+                                }
+                            }
+                            // Zoom transition needs to be disabled for navigation inside tabs
+                            // Otherwise user can end up in a situation where a view is missing on one tab
+                            // because it was used to perform zoom transition on another tab
+                            const params = (0, navigationParams_1.removeParams)((0, navigationParams_1.appendInternalExpoRouterParams)(route.params, expoParams), [
+                                navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+                                navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
+                            ]);
                             return {
                                 ...route,
                                 params,
