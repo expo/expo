@@ -158,7 +158,7 @@ function findUpPackageJsonDirectory(
   return packageRoot;
 }
 
-function resolveInlineModules(
+export function resolveInlineModules(
   projectRoot: string,
   directoryToPackage: Map<string, string>,
   context: CustomResolutionContext,
@@ -394,10 +394,9 @@ export function getDefaultConfig(
         .filter((assetExt: string) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
-      resolveRequest:
-        expoConfig.exp.experiments?.inlineModules === true
-          ? resolveInlineModulesWithAdditionalConfig
-          : defaultResolveRequest,
+      resolveRequest: expoConfig.exp.experiments?.inlineModules
+        ? resolveInlineModulesWithAdditionalConfig
+        : defaultResolveRequest,
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.
