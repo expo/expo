@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - Update `/_expo/touch` usage in onboarding ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
+- Bump `react-server-dom-webpack` ([#41575](https://github.com/expo/expo/pull/41575) by [@kitten](https://github.com/kitten))
 
 ## 6.0.17 — 2025-12-05
 
