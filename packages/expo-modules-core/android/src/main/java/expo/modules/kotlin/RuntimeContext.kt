@@ -60,6 +60,7 @@ class RuntimeContext(
     ModuleHolder(module, null)
   }
 
+  @PublishedApi
   internal val jniDeallocator: JNIDeallocator = JNIDeallocator()
 
   internal val sharedObjectRegistry = SharedObjectRegistry(this)
