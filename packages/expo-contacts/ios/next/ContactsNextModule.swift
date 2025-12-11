@@ -333,7 +333,7 @@ public class ContactsNextModule: Module {
         try this.thumbnail.get()
       }
       
-      AsyncFunction("editWithForm") { (this: ContactNext, options: FormOptions?, promise: Promise) in
+      AsyncFunction("presentEditForm") { (this: ContactNext, options: FormOptions?, promise: Promise) in
         try formDelegate.presentEditForm(for: this, options: options ?? nil, promise: promise)
       }.runOnQueue(.main)
       
@@ -358,8 +358,9 @@ public class ContactsNextModule: Module {
         )
       }
       
-      StaticAsyncFunction("createWithForm") { (options: FormOptions?, promise: Promise) in
-        try formDelegate.presentAddForm(contact: CNContact(), options: options, promise: promise)
+      StaticAsyncFunction("presentCreateForm") { (createContactRecord: CreateContactRecord, options: FormOptions?, promise: Promise) in
+        let contact = try CreateContactMapper(imageService: imageService).toCNMutableContact(createContactRecord)
+        try formDelegate.presentAddForm(contact: contact, options: options, promise: promise)
       }.runOnQueue(.main)
       
       StaticAsyncFunction("presentPicker") { (promise: Promise) in
