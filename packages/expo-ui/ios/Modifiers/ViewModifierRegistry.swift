@@ -1737,5 +1737,9 @@ extension ViewModifierRegistry {
     register("submitLabel") { params, appContext, _ in
       return try SubmitLabelModifier(from: params, appContext: appContext)
     }
+
+    register("datePickerStyle") { params, appContext, _ in
+      return try DatePickerStyleModifier(from: params, appContext: appContext)
+    }
   }
 }
