@@ -7,6 +7,9 @@ const DEFAULT_ALLOWED_CORS_HOSTS = [
   'devtools', // Support local Chrome DevTools `devtools://devtools`
 ];
 
+/** Check if hostname matches "localhost" exactly, the local IPv6,
+ * a local IPV4 in the 127.0.0.0/8 range, or an IPv6-to-4 range
+ * (starting with ::ffff: and ending in an IPv4) */
 export const _isLocalHostname = (hostname: string) => {
   if (hostname === 'localhost') {
     return true;
@@ -54,9 +57,8 @@ export function createCorsMiddleware(exp: ExpoConfig) {
         );
         return;
       } else if (!isLocalhost && isAllowedHost) {
-        // Skipped for localhost since we shouldn't allow escalating cross-origin requests
-        // across separate sites running on localhost. If the `Origin` is set to a localhost
-        // hostname, we're not making a cross-origin request anyway
+        // Skipped for localhost to only allow requests from this dev-sever and not escalate
+        // the cross-origin resource sharing that's allowed beyond the browser's defaults
         res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
       }
 
