@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 6.0.18 — 2025-12-11
+
+### 🐛 Bug fixes
+
 - Fix search params types inference for routes without route params ([#41301](https://github.com/expo/expo/pull/41301) by [@AmauryLiet](https://github.com/AmauryLiet))
 - resolve "Illegal invocation" errors in `workerd` runtime ([#41502](https://github.com/expo/expo/pull/41502) by [@hassankhan](https://github.com/hassankhan))
 

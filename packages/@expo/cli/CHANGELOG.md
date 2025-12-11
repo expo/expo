@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.19 — 2025-12-11
+
+### 🐛 Bug fixes
+
 - Report stack traces on unexpected `TransformerError`s and `SyntaxError`s from Metro ([#41468](https://github.com/expo/expo/pull/41468) by [@kitten](https://github.com/kitten))
 - resolve "Illegal invocation" errors in `workerd` runtime ([#41502](https://github.com/expo/expo/pull/41502) by [@hassankhan](https://github.com/hassankhan))
 

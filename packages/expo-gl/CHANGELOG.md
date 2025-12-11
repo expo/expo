@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 16.0.9 — 2025-12-11
+
+### 🐛 Bug fixes
+
 - Fix race condition bug for **web** env for `onLayout` callback. ([#41460](https://github.com/expo/expo/pull/41460) by [@psnet](https://github.com/psnet))
 
 ### 💡 Others

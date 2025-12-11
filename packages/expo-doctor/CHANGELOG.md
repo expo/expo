@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.17.13 — 2025-12-11
+
+_This version does not introduce any user-facing changes._
+
 ## 1.17.12 — 2025-12-04
 
 ### 💡 Others

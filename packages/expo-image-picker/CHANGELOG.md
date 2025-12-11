@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [android] do not crash if `ContentProvider` doesn't provide mime type ([#41495](https://github.com/expo/expo/pull/41495) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 17.0.10 — 2025-12-11
+
+### 🐛 Bug fixes
+
+- [android] do not crash if `ContentProvider` doesn't provide mime type ([#41495](https://github.com/expo/expo/pull/41495) by [@vonovak](https://github.com/vonovak))
 
 ## 17.0.9 — 2025-12-05
 

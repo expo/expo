@@ -55,7 +55,7 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-types": "^54.0.9",
+    "@expo/config-types": "^54.0.10",
     "@expo/json-file": "~10.0.8",
     "@expo/plist": "^0.4.8",
     "@expo/sdk-runtime-versions": "^1.0.0",
