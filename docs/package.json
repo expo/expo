@@ -4,16 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "yarn generate-static-resources && next dev -p 3002",
-    "build": "yarn copy-latest && yarn generate-llms && next build",
-    "export": "yarn generate-static-resources production && yarn versions-schema-sync && yarn append-last-modified-dates && yarn run build",
-    "export-preview": "yarn generate-static-resources preview && yarn versions-schema-sync && yarn append-last-modified-dates && yarn run build",
+    "dev": "pnpm generate-static-resources && next dev -p 3002",
+    "build": "pnpm copy-latest && pnpm generate-llms && next build",
+    "export": "pnpm generate-static-resources production && pnpm versions-schema-sync && pnpm append-last-modified-dates && pnpm run build",
+    "export-preview": "pnpm generate-static-resources preview && pnpm versions-schema-sync && pnpm append-last-modified-dates && pnpm run build",
     "export-server": "http-server out -p 8000",
     "lint": "tsc --noEmit && node scripts/lint.js --max-warnings 0",
     "lint-links": "remark -u validate-links ./pages",
-    "lint-prose": "yarn vale --glob='!pages/versions/latest/**' .",
+    "lint-prose": "pnpm vale --glob='!pages/versions/latest/**' .",
     "watch": "tsc --noEmit -w",
-    "test": "yarn generate-static-resources && yarn node --experimental-vm-modules $(yarn bin jest)",
+    "test": "pnpm generate-static-resources && pnpm node --experimental-vm-modules $(pnpm bin jest)",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "copy-latest": "node ./scripts/copy-latest.js",
     "generate-llms": "node ./scripts/generate-llms/index.js",
@@ -23,7 +23,7 @@
     "permissions-sync-android": "npx scrape-permissions-json@latest components/plugins/permissions/data --android",
     "versions-schema-sync": "node ./scripts/fetch-versions-schema.js",
     "react-navigation-docs-sync": "node ./scripts/fetch-react-navigation-options.js",
-    "postinstall": "yarn copy-latest && yarn generate-static-resources"
+    "postinstall": "pnpm copy-latest && pnpm generate-static-resources"
   },
   "packageManager": "yarn@4.9.1",
   "dependencies": {

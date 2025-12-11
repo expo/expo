@@ -7,7 +7,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "jest .",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },

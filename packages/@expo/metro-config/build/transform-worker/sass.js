@@ -7,6 +7,7 @@ exports.matchSass = matchSass;
 exports.compileSass = compileSass;
 const resolve_from_1 = __importDefault(require("resolve-from"));
 let sassInstance = null;
+// TODO(@kitten): Incorrect; rely on optional peer
 function getSassInstance(projectRoot) {
     if (!sassInstance) {
         const sassPath = resolve_from_1.default.silent(projectRoot, 'sass');
@@ -26,9 +27,7 @@ function matchSass(filename) {
     }
     return null;
 }
-function compileSass(projectRoot, { filename, src }, 
-// TODO: Expose to users somehow...
-options) {
+function compileSass(projectRoot, { filename, src }, options) {
     const sass = getSassInstance(projectRoot);
     const result = sass.compileString(src, options);
     return {

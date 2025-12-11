@@ -5,7 +5,6 @@
   "compilerOptions": {
     "outDir": "./build",
     "esModuleInterop": true,
-    "sourceMap": true,
-    "typeRoots": ["../cli/ts-declarations"]
+    "sourceMap": true
   }
 }
