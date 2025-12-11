@@ -20,7 +20,7 @@ module Expo
 
       podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
       @watched_directories = '[]'
-      if podfile_properties['expo.inlineModules.enabled'] == 'true' && podfile_properties["expo.inlineModules.watchedDirectories"] != nil then
+      if podfile_properties["expo.inlineModules.watchedDirectories"] != nil then
         @watched_directories = JSON.generate(podfile_properties['expo.inlineModules.watchedDirectories'])
       end
 
