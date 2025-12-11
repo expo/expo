@@ -22,21 +22,10 @@ jsEngine: graaljs
           - assertVisible: "Video"
 
 - assertNotVisible: "Enter Fullscreen"
-- runFlow:
-      when:
-          platform: Android
-      commands:
-          - tapOn:
-                point: "50%,50%"
-          - tapOn:
-                id: "dev.expo.payments:id/exo_fullscreen"
-- runFlow:
-      when:
-          platform: iOS
-      commands:
-          - tapOn:
-                point: "11%,10%"
-                repeat: 2
+- tapOn:
+    point: '${maestro.platform == "android" ? "94%,97%" : "11%,10%"}'
+    delay: 400
+    repeat: 2
 
 - assertVisible: "Enter Fullscreen"
 - assertVisible: "0 = onFullscreenEnter"
