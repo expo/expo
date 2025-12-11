@@ -83,25 +83,26 @@ export function encryptAsync(
  * @param sealedData The data to decrypt.
  * @param key The key to use for decryption.
  * @param options Options for decryption, including output encoding and additional data.
- * @returns A promise that resolves to the decrypted data string.
+ * @returns A promise that resolves to the decrypted data buffer or string, depending on encoding option.
  */
+export function decryptAsync(
+  sealedData: SealedData,
+  key: EncryptionKey,
+  options?: DecryptOptions
+): Promise<string | Uint8Array>;
+/** @hidden */
 export function decryptAsync(
   sealedData: SealedData,
   key: EncryptionKey,
   options: Base64DecryptOptions
 ): Promise<string>;
-/**
- * Decrypts the given sealed data using the specified key and options.
- * @param sealedData The data to decrypt.
- * @param key The key to use for decryption.
- * @param options Options for decryption, including output encoding and additional data.
- * @returns A promise that resolves to the decrypted data buffer.
- */
+/** @hidden */
 export function decryptAsync(
   sealedData: SealedData,
   key: EncryptionKey,
   options?: ArrayBufferDecryptOptions
 ): Promise<Uint8Array>;
+
 export function decryptAsync(
   sealedData: SealedData,
   key: EncryptionKey,

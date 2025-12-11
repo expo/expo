@@ -46,7 +46,10 @@ export interface SealedDataConfig {
   tagLength: TagByteLength;
 }
 
-interface CommonDecryptOptions {
+/**
+ * Options for the decryption process.
+ */
+export interface DecryptOptions {
   /**
    * Output format for the decrypted data.
    * @default 'bytes'
@@ -60,26 +63,39 @@ interface CommonDecryptOptions {
 }
 
 /**
+ * @hidden
  * Decrypt options that return the result as a `base64` string.
  */
-export interface Base64DecryptOptions extends CommonDecryptOptions {
+export interface Base64DecryptOptions extends DecryptOptions {
   output: 'base64';
 }
 
 /**
+ * @hidden
  * Decrypt options that return the result as a `Uint8Array`.
  */
-export interface ArrayBufferDecryptOptions extends CommonDecryptOptions {
+export interface ArrayBufferDecryptOptions extends DecryptOptions {
   output?: 'bytes';
 }
-
-export type DecryptOptions = Base64DecryptOptions | ArrayBufferDecryptOptions;
 
 /**
  * Configuration for the nonce (initialization vector) during encryption.
  * Can specify either the byte length of the IV to generate or provide an IV directly.
  */
-type NonceParam = { length: number } | { bytes: Uint8Array };
+export type NonceParam =
+  | {
+      /**
+       * Byte length of nonce to be generated.
+       * @default 12
+       */
+      length: number;
+    }
+  | {
+      /**
+       * Provided nonce bytes.
+       */
+      bytes: BinaryInput;
+    };
 
 /**
  * Options for the encryption process.

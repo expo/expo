@@ -1,5 +1,5 @@
 import AesCryptoModule from './AesModule';
-import { ArrayBufferDecryptOptions, Base64DecryptOptions, EncryptOptions, BinaryInput } from './aes.types';
+import { ArrayBufferDecryptOptions, Base64DecryptOptions, DecryptOptions, EncryptOptions, BinaryInput } from './aes.types';
 export * from './aes.types';
 /**
  * Represents an AES encryption key that can be used for encryption and decryption operations.
@@ -26,15 +26,11 @@ export declare function encryptAsync(plaintext: BinaryInput, key: EncryptionKey,
  * @param sealedData The data to decrypt.
  * @param key The key to use for decryption.
  * @param options Options for decryption, including output encoding and additional data.
- * @returns A promise that resolves to the decrypted data string.
+ * @returns A promise that resolves to the decrypted data buffer or string, depending on encoding option.
  */
+export declare function decryptAsync(sealedData: SealedData, key: EncryptionKey, options?: DecryptOptions): Promise<string | Uint8Array>;
+/** @hidden */
 export declare function decryptAsync(sealedData: SealedData, key: EncryptionKey, options: Base64DecryptOptions): Promise<string>;
-/**
- * Decrypts the given sealed data using the specified key and options.
- * @param sealedData The data to decrypt.
- * @param key The key to use for decryption.
- * @param options Options for decryption, including output encoding and additional data.
- * @returns A promise that resolves to the decrypted data buffer.
- */
+/** @hidden */
 export declare function decryptAsync(sealedData: SealedData, key: EncryptionKey, options?: ArrayBufferDecryptOptions): Promise<Uint8Array>;
 //# sourceMappingURL=index.d.ts.map
