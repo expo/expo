@@ -66,18 +66,40 @@ We recommend using the `--environment` flag to ensure the same environment varia
 
 > **info** The secret variables will not be available during the update process as they are not readable outside of EAS servers.
 
-<Collapsible summary="Using .env files with EAS Update">
+## Using environment variables with EAS Hosting
 
-When the `--environment` flag is **not provided**, `eas update` will use the **.env** files present in your project directory for the update job and won't use the environment variables set on the EAS servers.
+An Expo Router web project can include environment variables that are used on both the client and the server. Client-side values are inlined in the JavaScript bundle when you run `npx expo export`, while server-side values are stored on the server and are deployed with your API routes when you run `eas deploy`.
 
-[Environment variables in Expo](/guides/environment-variables) describes how to use **.env** files to set and use environment variables within your JavaScript code. Expo CLI will substitute prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
+> **warning** With EAS Hosting, only **plain text** and **sensitive** [environment variables](/eas/environment-variables/#visibility-settings-for-environment-variables) can be used. Secrets cannot be deployed with EAS Hosting.
 
-When you run `eas update`, all **.env** files will be evaluated when your JavaScript is bundled.
-Any `EXPO_PUBLIC_` variables in your application code will be replaced inline with the corresponding values from your **.env** files that are present on the machine from which the update is published, whether that is your local machine or your CI/CD server.
+<Collapsible summary="Client-side environment variables">
 
-> **info** When using **.env** files with EAS Update, `EXPO_PUBLIC_` variables in these files will only be used when bundling your app's JavaScript. They will not be available when evaluating **app.config.js**.
+All code that runs in the browser is client-side. In an Expo Router project, this includes all code that is not an API Route or server function. The environment variables in your client-side code are inlined at build time. You should never put any sensitive information in your client-side code, which is why all client-side environment variables must be prefixed with [`EXPO_PUBLIC_`](/guides/environment-variables/).
+
+When you run `npx expo export`, all instances of `process.env.EXPO_PUBLIC_*` environment variables will be replaced with values from the environment.
 
 </Collapsible>
+
+<Collapsible summary="Server-side environment variables">
+
+All the code in your [API routes](/router/web/api-routes/) (files ending with **+api.ts**) run on the server. Since the code running on the server is never visible to the app user, you can safely use sensitive environment variables such as API keys and tokens.
+
+Server-side environment variables are not inlined in the code, they are uploaded with the deployment when you run the `eas deploy` command.
+
+</Collapsible>
+
+### Storing environment variables
+
+When deploying a project with EAS environment variables, note that the environment variables for the client-side and server-side code are included at different steps:
+
+- Running `npx expo export --platform web` will inline the `EXPO_PUBLIC_` variables in the frontend code. So ensure that your **.env.local** file includes the correct environment variables before running the `npx export` command.
+- `eas deploy --environment production` will include all variables for the given environment (in this case, `production`) in the API routes. EAS Environment variables loaded with the `--environment` flag will take precedence over ones defined in **.env** and **.env.local** files.
+
+> **warning** **Environment variables are per deployment, and deployments are immutable**. This means that after changing an environment variable, you will need to re-export your project, and re-deploy in order for them to be updated.
+
+### For local development
+
+For local development, both client- and server-side environment variables are loaded from [local **.env** files](/guides/environment-variables/), which should be gitignored. If you are using EAS environment variables, use [`eas env:pull`](/eas/environment-variables/manage/#pull-variables-for-local-development) to retrieve the environment variables for `development`, `preview`, or `production`.
 
 ## Using environment variables for other commands
 
@@ -125,18 +147,18 @@ If you don't set the `environment` option, we will set the environment automatic
 
 The following environment variables are additional system environment variables exposed to each job and can be used within any build step. They are not a part of any project environment and are not available when evaluating **app.config.js** locally:
 
-- `CI=1`: indicates this is a CI environment
-- `EAS_BUILD=true`: indicates this is an EAS Build environment
-- `EAS_BUILD_PLATFORM`: either `android` or `ios`
-- `EAS_BUILD_RUNNER`: either `eas-build` for EAS Build cloud builds or `local-build-plugin` for [local builds](/build-reference/local-builds/)
-- `EAS_BUILD_ID`: the build ID, for example, `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
-- `EAS_BUILD_PROFILE`: the name of the build profile from **eas.json**, for example, `production`
-- `EAS_BUILD_GIT_COMMIT_HASH`: the hash of the Git commit, for example, `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
-- `EAS_BUILD_NPM_CACHE_URL`: the URL of npm cache ([learn more](/build-reference/private-npm-packages))
-- `EAS_BUILD_MAVEN_CACHE_URL`: the URL of Maven cache ([learn more](/build-reference/caching/#android-dependencies))
-- `EAS_BUILD_COCOAPODS_CACHE_URL`: the URL of CocoaPods cache ([learn more](/build-reference/caching/#ios-dependencies))
-- `EAS_BUILD_USERNAME`: the username of the user initiating the build (it's undefined for bot users)
-- `EAS_BUILD_WORKINGDIR`: the remote directory path with your project
+- `CI=1`: Indicates this is a CI environment
+- `EAS_BUILD=true`: Indicates this is an EAS Build environment
+- `EAS_BUILD_PLATFORM`: Either `android` or `ios`
+- `EAS_BUILD_RUNNER`: Either `eas-build` for EAS Build cloud builds or `local-build-plugin` for [local builds](/build-reference/local-builds/)
+- `EAS_BUILD_ID`: The build ID, for example, `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
+- `EAS_BUILD_PROFILE`: The name of the build profile from **eas.json**, for example, `production`
+- `EAS_BUILD_GIT_COMMIT_HASH`: The hash of the Git commit, for example, `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
+- `EAS_BUILD_NPM_CACHE_URL`: The URL of npm cache ([learn more](/build-reference/private-npm-packages))
+- `EAS_BUILD_MAVEN_CACHE_URL`: The URL of Maven cache ([learn more](/build-reference/caching/#android-dependencies))
+- `EAS_BUILD_COCOAPODS_CACHE_URL`: The URL of CocoaPods cache ([learn more](/build-reference/caching/#ios-dependencies))
+- `EAS_BUILD_USERNAME`: The username of the user initiating the build (it's undefined for bot users)
+- `EAS_BUILD_WORKINGDIR`: The remote directory path with your project
 
 </Collapsible>
 

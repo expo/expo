@@ -20,7 +20,7 @@ If you want to manage environment variables without EAS, you can use tools like 
 
 After creating **.env** file, you need to ensure that the file is committed to your project's Version Control System and is not listed inside **.gitignore** file. A **.env** file committed to your project, is picked by EAS commands like `eas build`, `eas update`, and so on.
 
-The **.env** files load according to the standard .env file resolution and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the .env files. Code inside **node_modules** directory is not affected for security purposes.
+The **.env** files load according to the standard .env file resolution and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARIABLE_NAME]` with the corresponding value set in the .env files. Code inside **node_modules** directory is not affected for security purposes.
 
 <BoxLink
   title="Reading environment variables from .env files"
@@ -28,3 +28,20 @@ The **.env** files load according to the standard .env file resolution and then 
   href="/guides/environment-variables/#reading-environment-variables-from-env-files"
   Icon={BookOpen02Icon}
 />
+
+## Using .env files with EAS Update
+
+When the `--environment` flag is **not provided**, `eas update` will use the **.env** files present in your project directory for the update job and won't use the environment variables set on the EAS servers.
+
+[Environment variables in Expo](/guides/environment-variables) describes how to use **.env** files to set and use environment variables within your JavaScript code. Expo CLI will substitute prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
+
+When you run `eas update`, all **.env** files will be evaluated when your JavaScript is bundled.
+Any `EXPO_PUBLIC_` variables in your application code will be replaced inline with the corresponding values from your **.env** files that are present on the machine from which the update is published, whether that is your local machine or your CI/CD server.
+
+> **info** When using **.env** files with EAS Update, `EXPO_PUBLIC_` variables in these files will only be used when bundling your app's JavaScript. They will not be available when evaluating **app.config.js**.
+
+## Using .env files with EAS Hosting
+
+When using **.env** files with EAS Hosting, `EXPO_PUBLIC_` variables in these files will only be used when bundling your app's JavaScript.
+
+The [steps for including client-side and server-side environment variables](/eas/environment-variables/usage/#storing-environment-variables) are the same as when using EAS environment variables. So you need to ensure that your local **.env** files include the correct environment variables before running the `npx export` command.
