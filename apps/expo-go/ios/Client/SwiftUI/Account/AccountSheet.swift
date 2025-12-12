@@ -147,7 +147,7 @@ struct AccountSheet: View {
     .disabled(viewModel.isAuthenticating)
   }
 
-  private func accountRow(account: ExpoAccount) -> some View {
+  private func accountRow(account: Account) -> some View {
     Button {
       viewModel.selectAccount(accountId: account.id)
     }
@@ -178,17 +178,53 @@ struct AccountSheet: View {
   }
 
   @ViewBuilder
-  private func createAvatar(account: ExpoAccount) -> some View {
-    let firstLetter = account.name.prefix(1).uppercased()
-    let color = getExpoAvatarColor(for: String(firstLetter))
+  private func createAvatar(account: Account) -> some View {
+    let isOrganization = account.ownerUserActor == nil
+    let profilePhoto = account.ownerUserActor?.profilePhoto
+    let name = account.ownerUserActor?.fullName ?? account.name
 
-    Circle()
-      .fill(color.background)
+    if isOrganization {
+      let color = getExpoAvatarColor(for: String(name.first ?? "o"))
+
+      Circle()
+        .fill(color.background)
+        .frame(width: 40, height: 40)
+        .overlay(
+          Image(systemName: "building.2")
+            .font(.system(size: 18))
+            .foregroundColor(color.foreground)
+        )
+    } else if let profilePhoto,
+      !profilePhoto.isEmpty,
+      let url = URL(string: profilePhoto) {
+      Avatar(url: url) { image in
+        image
+          .resizable()
+          .scaledToFill()
+      } placeholder: {
+        Circle()
+          .fill(Color.expoSystemGray5)
+          .overlay(
+            Image(systemName: "person")
+              .font(.system(size: 20))
+              .foregroundColor(.secondary)
+          )
+      }
       .frame(width: 40, height: 40)
-      .overlay(
-        Text(firstLetter)
-          .font(.system(size: 18, weight: .medium))
-          .foregroundColor(color.foreground)
-      )
+      .clipShape(Circle())
+      .id("\(account.id)-\(profilePhoto)")
+    } else {
+      let firstLetter = (account.ownerUserActor?.username ?? account.name).prefix(1).uppercased()
+      let color = getExpoAvatarColor(for: String(firstLetter))
+
+      Circle()
+        .fill(color.background)
+        .frame(width: 40, height: 40)
+        .overlay(
+          Text(firstLetter)
+            .font(.system(size: 18, weight: .medium))
+            .foregroundColor(color.foreground)
+        )
+    }
   }
 }

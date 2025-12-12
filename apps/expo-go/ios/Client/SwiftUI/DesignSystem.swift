@@ -165,29 +165,6 @@ extension View {
   }
 }
 
-func getExpoAvatarColor(for text: String) -> (background: Color, foreground: Color) {
-  guard let firstChar = text.first else {
-    return (Color.expoPurple.opacity(0.2), Color.expoPurple)
-  }
-
-  switch firstChar.lowercased() {
-  case "a"..."d":
-    return (Color.expoBlue.opacity(0.15), Color.expoBlue)
-  case "e"..."h":
-    return (Color.expoGreen.opacity(0.15), Color.expoGreen)
-  case "i"..."l":
-    return (Color.expoOrange.opacity(0.15), Color.expoOrange)
-  case "m"..."p":
-    return (Color.expoRed.opacity(0.15), Color.expoRed)
-  case "q"..."t":
-    return (Color.expoPink.opacity(0.15), Color.expoPink)
-  case "u"..."z":
-    return (Color.expoPurple.opacity(0.15), Color.expoPurple)
-  default:
-    return (Color.expoPurple.opacity(0.15), Color.expoPurple)
-  }
-}
-
 struct ExpoListRowStyle: ViewModifier {
   let isFirst: Bool
   let isLast: Bool

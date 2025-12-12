@@ -11,7 +11,9 @@ struct SnacksSection: View {
 
       VStack(spacing: 6) {
         ForEach(viewModel.snacks.prefix(3)) { snack in
-          SnackRow(snack: snack)
+          SnackRow(snack: snack) {
+            openSnack(snack)
+          }
         }
 
         if viewModel.snacks.count > 3 {
@@ -25,5 +27,35 @@ struct SnacksSection: View {
         }
       }
     }
+  }
+
+  private func openSnack(_ snack: Snack) {
+    let supportedSDK = getSupportedSDKVersion()
+    let snackSDKMajor = getSDKMajorVersion(snack.sdkVersion)
+    let supportedSDKMajor = getSDKMajorVersion(supportedSDK)
+
+    guard snackSDKMajor == supportedSDKMajor else {
+      viewModel.showErrorAlert(
+        "Selected Snack uses unsupported SDK (\(snackSDKMajor))\n\n" +
+        "The currently running version of Expo Go supports SDK \(supportedSDKMajor) only. " +
+        "Update your Snack to this version to run it."
+      )
+      return
+    }
+
+    let encodedFullName = snack.fullName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? snack.fullName
+    let url = "exp://exp.host/\(encodedFullName)?sdkVersion=\(supportedSDK).0.0"
+
+    viewModel.openApp(url: url)
+    viewModel.addToRecentlyOpened(url: url, name: snack.name, iconUrl: nil)
+  }
+
+  private func getSupportedSDKVersion() -> String {
+    let versions = EXVersions.sharedInstance()
+    return versions.sdkVersion ?? "54"
+  }
+
+  private func getSDKMajorVersion(_ sdkVersion: String) -> String {
+    return sdkVersion.components(separatedBy: ".").first ?? sdkVersion
   }
 }

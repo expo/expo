@@ -5,9 +5,14 @@ import UIKit
 
 @objc public class ExpoGoHomeBridge: NSObject {
   @objc public static let shared = ExpoGoHomeBridge()
+  private weak var homeViewModel: HomeViewModel?
 
   private override init() {
     super.init()
+  }
+
+  func setHomeViewModel(_ viewModel: HomeViewModel) {
+    self.homeViewModel = viewModel
   }
 
   @objc public func openApp(url: String, completion: @escaping (Bool, String?) -> Void) {
@@ -28,18 +33,26 @@ import UIKit
   @objc public func isAuthenticated() -> Bool {
     return UserDefaults.standard.string(forKey: "expo-session-secret") != nil
   }
+
+  @objc public func addHistoryItem(withUrl url: String, name: String, iconUrl: String?) {
+    DispatchQueue.main.async { [weak self] in
+      self?.homeViewModel?.addToRecentlyOpened(url: url, name: name, iconUrl: iconUrl)
+    }
+  }
 }
 
 extension HomeViewModel {
   func openAppViaBridge(url: String) {
     ExpoGoHomeBridge.shared.openApp(url: url) { [weak self] success, error in
       DispatchQueue.main.async {
-        if success {
-          self?.addToRecentlyOpened(url: url, name: self?.extractAppName(from: url) ?? url)
-        } else if let error = error {
+        if !success, let error {
           self?.showErrorAlert(error)
         }
       }
     }
+  }
+
+  func connectViewModelToBridge() {
+    ExpoGoHomeBridge.shared.setHomeViewModel(self)
   }
 }

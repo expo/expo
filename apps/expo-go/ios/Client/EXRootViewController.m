@@ -165,7 +165,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsManifest *)manifest
 {
+  if (!manifestUrl || !manifest) {
+    return;
+  }
 
+  NSString *appName = nil;
+  NSString *iconUrl = nil;
+
+  if ([manifest.rawManifestJSON[@"extra"] isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *extra = manifest.rawManifestJSON[@"extra"];
+    if ([extra[@"expoClient"] isKindOfClass:[NSDictionary class]]) {
+      NSDictionary *expoClient = extra[@"expoClient"];
+      appName = expoClient[@"name"];
+      iconUrl = expoClient[@"iconUrl"];
+    }
+  }
+
+  if (!appName && manifest.rawManifestJSON[@"name"]) {
+    appName = manifest.rawManifestJSON[@"name"];
+  }
+
+  if (!appName) {
+    appName = manifestUrl.absoluteString;
+  }
+  
+  [[ExpoGoHomeBridge shared] addHistoryItemWithUrl:manifestUrl.absoluteString
+                                              name:appName
+                                           iconUrl:iconUrl];
 }
 
 - (void)getHistoryUrlForScopeKey:(NSString *)scopeKey completion:(void (^)(NSString *))completion

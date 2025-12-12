@@ -4,31 +4,32 @@ import SwiftUI
 
 struct ProjectRow: View {
   let project: ExpoProject
+  let onTap: () -> Void
 
   var body: some View {
-    HStack {
-      Image(systemName: "app")
-        .foregroundColor(.blue)
-        .frame(width: 24, height: 24)
+    Button(action: onTap) {
+      HStack {
+        VStack(alignment: .leading, spacing: 2) {
+          Text(project.name)
+            .font(.body)
+            .fontWeight(.semibold)
+            .foregroundColor(.primary)
 
-      VStack(alignment: .leading, spacing: 2) {
-        Text(project.name)
-          .font(.headline)
-          .foregroundColor(.primary)
+          Text(project.fullName)
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
 
-        Text(project.fullName)
+        Spacer()
+
+        Image(systemName: "chevron.right")
           .font(.caption)
           .foregroundColor(.secondary)
       }
-
-      Spacer()
-
-      Image(systemName: "chevron.right")
-        .font(.caption)
-        .foregroundColor(.secondary)
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
-    .padding()
-    .background(Color.expoSecondarySystemGroupedBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .buttonStyle(PlainButtonStyle())
   }
 }

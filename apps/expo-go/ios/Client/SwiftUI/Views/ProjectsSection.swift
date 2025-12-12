@@ -11,7 +11,9 @@ struct ProjectsSection: View {
 
       VStack(spacing: 6) {
         ForEach(viewModel.projects.prefix(3)) { project in
-          ProjectRow(project: project)
+          ProjectRow(project: project) {
+            openProject(project)
+          }
         }
 
         if viewModel.projects.count > 3 {
@@ -25,5 +27,11 @@ struct ProjectsSection: View {
         }
       }
     }
+  }
+
+  private func openProject(_ project: ExpoProject) {
+    let url = project.latestUpdateUrl ?? "exp://exp.host/\(project.fullName)"
+    viewModel.openApp(url: url)
+    viewModel.addToRecentlyOpened(url: url, name: project.name, iconUrl: nil)
   }
 }
