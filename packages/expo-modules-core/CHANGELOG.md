@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] check if `AppContextActivityResultLauncher` coroutine continuation is active before resuming ([#41319](https://github.com/expo/expo/pull/41319) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 3.0.28 — 2025-12-05
