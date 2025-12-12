@@ -45,7 +45,6 @@ export default function VideoFullscreenScreen() {
           console.log('Exited Fullscreen');
           setIsFullscreen(false);
         }}
-        allowsFullscreen={allowFullscreen}
         fullscreenOptions={{
           enable: allowFullscreen,
           orientation: orientations[lockIndex] as FullscreenOrientation,

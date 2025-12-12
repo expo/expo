@@ -51,7 +51,6 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
    */
   const audioContextRef = useRef<null | AudioContext>(null);
   const zeroGainNodeRef = useRef<null | GainNode>(null);
-  const allowFullscreen = props.fullscreenOptions?.enable ?? props.allowsFullscreen;
 
   useEffect(() => {
     if (props.useAudioNodePlayback) {
@@ -64,9 +63,6 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
 
   useImperativeHandle(ref, () => ({
     enterFullscreen: async () => {
-      if (!props.allowsFullscreen || !videoRef.current) {
-        return;
-      }
       // Cast the video to any to avoid ts errors. Methods such as webkitRequestFullscreen,
       // webkitEnterFullScreen, msRequestFullscreen are not typed even though they exist.
       const video = videoRef.current as any;
@@ -264,7 +260,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   return (
     <video
       controls={props.nativeControls ?? true}
-      controlsList={allowFullscreen ? undefined : 'nofullscreen'}
+      controlsList={props.fullscreenOptions?.enable ? undefined : 'nofullscreen'}
       crossOrigin={props.crossOrigin}
       style={{
         ...mapStyles(props.style),

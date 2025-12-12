@@ -35,13 +35,6 @@ export interface VideoViewProps extends ViewProps {
      */
     contentFit?: VideoContentFit;
     /**
-     * Determines whether fullscreen mode is allowed or not.
-     *
-     * > Note: This option has been deprecated in favor of the `fullscreenOptions` prop and will be disabled in the future.
-     * @default true
-     */
-    allowsFullscreen?: boolean;
-    /**
      * Determines the fullscreen mode options.
      */
     fullscreenOptions?: FullscreenOptions;
@@ -183,7 +176,6 @@ export type FullscreenOrientation = 'default' | 'portrait' | 'portraitUp' | 'por
 export type FullscreenOptions = {
     /**
      * Specifies whether the fullscreen mode should be available to the user. When `false`, the fullscreen button will be hidden in the player.
-     * Equivalent to the `allowsFullscreen` prop.
      * @default true
      */
     enable: boolean;
