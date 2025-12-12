@@ -5,8 +5,8 @@ name: Native tabs
 - openLink: router-e2e://tabs
 - runFlow: ../close-warning.yml
 - assertVisible: "Index screen"
-- runFlow: assert-all-tabs-visible.yml
-- runFlow: assert-accessory-visible.yml
+- runFlow: ../assert-all-tabs-visible.yml
+- runFlow: ../assert-accessory-visible.yml
 
 # Navigate to Faces tab
 - tapOn: "lock.applewatch"

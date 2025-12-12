@@ -6,8 +6,8 @@ name: Native tabs minimize behavior
 - runFlow: ../close-warning.yml
 # Base tabs
 - assertVisible: "Index screen"
-- runFlow: assert-all-tabs-visible.yml
-- runFlow: assert-accessory-visible.yml
+- runFlow: ../assert-all-tabs-visible.yml
+- runFlow: ../assert-accessory-visible.yml
 # Ensuring that accessory is in expanded state
 - assertVisible:
     id: "forward-button"
@@ -26,7 +26,7 @@ name: Native tabs minimize behavior
     element:
       text: "Item 25"
     direction: "DOWN"
-- runFlow: assert-accessory-visible.yml
+- runFlow: ../assert-accessory-visible.yml
 - assertVisible:
     id: "pause-button"
 # Inline state

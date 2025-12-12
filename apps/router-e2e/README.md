@@ -13,8 +13,10 @@ To run the E2E tests, navigate to `packages/@expo/cli` and run `yarn test:e2e <N
 To run the tests for native navigation, in the `apps/router-e2e` directory, run:
 
 ```bash
-maestro test __e2e__/native-navigation/__tests__/
+yarn test:e2e
 ```
+
+This command will start the expo server and run the maestro tests located in the `__e2e__/native-navigation/__tests__` directory.
 
 ### Native
 

@@ -5,8 +5,8 @@ name: Link preview tabs
 - openLink: router-e2e://tabs
 - runFlow: ../close-warning.yml
 - assertVisible: "Index screen"
-- runFlow: assert-all-tabs-visible.yml
-- runFlow: assert-accessory-visible.yml
+- runFlow: ../assert-all-tabs-visible.yml
+- runFlow: ../assert-accessory-visible.yml
 
 # Navigate to Faces tab
 - longPressOn:
@@ -14,15 +14,15 @@ name: Link preview tabs
 - assertVisible: "Face 0"
 - tapOn: "Face 0"
 - assertVisible: "systemBlue"
-- runFlow: assert-all-tabs-visible.yml
-- runFlow: assert-accessory-visible.yml
+- runFlow: ../assert-all-tabs-visible.yml
+- runFlow: ../assert-accessory-visible.yml
 - assertVisible:
     id: "BackButton"
 
 - tapOn:
     id: "BackButton"
 - assertVisible: "Face Gallery"
-- runFlow: assert-all-tabs-visible.yml
-- runFlow: assert-accessory-visible.yml
+- runFlow: ../assert-all-tabs-visible.yml
+- runFlow: ../assert-accessory-visible.yml
 
 
