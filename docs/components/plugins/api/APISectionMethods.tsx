@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+import { BracketsEllipsesDuotoneIcon } from '@expo/styleguide-icons/duotone/BracketsEllipsesDuotoneIcon';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
@@ -97,6 +98,12 @@ export const renderMethod = (
           hideInSidebar={overloadIndex > 0}
           tags={hasOverloads ? ['overload'] : undefined}
         />
+        {hasOverloads && (
+          <div className="px-4 text-tertiary">
+            <BracketsEllipsesDuotoneIcon className="icon-xs mr-1 inline shrink-0" />
+            <span className="text-3xs">Overload #{overloadIndex + 1}</span>
+          </div>
+        )}
         {parameters && parameters.length > 0 && (
           <>
             <APIMethodParamRows parameters={parameters} sdkVersion={sdkVersion} />
