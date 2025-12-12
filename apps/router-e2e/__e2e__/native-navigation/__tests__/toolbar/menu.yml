@@ -1,0 +1,69 @@
+appId: com.expo.routere2e
+name: Toolbar menu
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://toolbar?menu=1
+- runFlow: ../close-warning.yml
+- assertVisible: "Toolbar E2E Test Screen"
+- tapOn: "Actions"
+- assertVisible: "Send email"
+- assertVisible:
+    id: "paperplane"
+- assertVisible: "Delete email"
+- assertVisible:
+    id: "trash"
+- assertVisible: "Archive emails"
+- assertVisible:
+    id: "tray"
+- assertVisible: "Organize"
+- assertVisible: "Move to folder"
+- assertVisible:
+    id: "folder"
+- assertVisible: "Add tag"
+- assertVisible:
+    id: "tag"
+- assertVisible: "Preferences"
+- assertVisible: "Quick Actions"
+- assertVisible: "Locked action"
+- assertVisible:
+    id: "lock"
+- tapOn: "Preferences"
+- assertVisible: "Preferences"
+- assertVisible: "Disable notifications"
+- assertVisible: "Red"
+- assertVisible: "Blue"
+- assertVisible: 
+    id: "checkmark"
+    index: 1
+- assertNotVisible: 
+    id: "checkmark"
+    index: 2
+- assertVisible: "Green"
+- assertVisible: "Favorite Color"
+- tapOn: "Preferences"
+- assertVisible: "Send email"
+- assertVisible: "Move to folder"
+- tapOn: "Quick Actions"
+- assertVisible:
+    id: "star"
+- assertVisible:
+    id: "flag"
+- assertVisible:
+    id: "pin"
+- tapOn: "Quick Actions"
+- tapOn: "Move to folder"
+- assertVisible: "Moving to folder..."
+- tapOn: "OK"
+- tapOn: "Actions"
+- tapOn: "Preferences"
+- tapOn: "Red"
+- assertVisible: "You selected red"
+- tapOn: "OK"
+- tapOn: "Actions"
+- tapOn: "Preferences"
+- assertVisible:
+    id: "checkmark"
+    index: 1
+- assertVisible:
+    id: "checkmark"
+    index: 2

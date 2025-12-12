@@ -1,6 +1,6 @@
 import { ScrollView } from 'react-native';
 
-import { Faces } from '../../components/faces';
+import { Faces } from '../../../components/faces';
 
 export default function Index() {
   return (

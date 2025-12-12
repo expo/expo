@@ -1,0 +1,12 @@
+appId: com.expo.routere2e
+name: Toolbar button press
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://toolbar
+- runFlow: ../close-warning.yml
+- assertVisible: "Toolbar E2E Test Screen"
+- tapOn:
+    id: "custom-plus-button"
+- assertVisible: "Plus button pressed!"
+- tapOn: "OK"
+

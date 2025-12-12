@@ -1,0 +1,36 @@
+appId: com.expo.routere2e
+name: Toolbar spacer
+jsEngine: graaljs
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://toolbar?searchButton=true&micButton=true
+- runFlow: ../close-warning.yml
+- assertVisible: "Toolbar E2E Test Screen"
+- tapOn:
+    id: toggle-fixed-spacer
+- tapOn:
+    point: 27%, 92%
+- assertVisible: "Searching for: empty"
+- tapOn: OK
+- tapOn:
+    point: 48%,92%
+- assertVisible: "Microphone"
+- tapOn: OK
+- longPressOn:
+    id: input-fixed-spacer-width
+- tapOn: "Select All"
+- inputText: "100"
+- tapOn: Fixed Spacer Width (pt)
+- tapOn:
+    point: 17%, 92%
+- assertVisible: "Searching for: empty"
+- tapOn: OK
+- tapOn:
+    point: 58%,92%
+- assertVisible: "Microphone"
+- tapOn: OK
+# TODO: Add screenshots comparison
+- takeScreenshot: spacer-not-shares-background
+- tapOn:
+    id: toggle-fixed-spacer-share-background
+- takeScreenshot: spacer-shares-background
