@@ -15,6 +15,7 @@ const HomeIndex = () => {
         <Text>Current Path: {pathname}</Text>
       </View>
       <CaseLink href="/tabs" text="Native Tabs" />
+      <CaseLink href="/toolbar" text="Toolbar" />
     </ScrollView>
   );
 };

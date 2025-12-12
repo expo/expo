@@ -45,7 +45,8 @@
     "android:stack": "E2E_ROUTER_SRC=stack expo run:android",
     "lint": "expo lint __e2e__",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "test:e2e": "./maestro/test.sh"
   },
   "dependencies": {
     "@expo/dom-webview": "0.2.7",
