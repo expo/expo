@@ -17,7 +17,14 @@ export async function applyPluginsAsync(projectRoot: string, packages: string[])
       projectRoot,
       exp,
       // Split any possible NPM tags. i.e. `expo@latest` -> `expo`
-      packages.map((pkg) => pkg.split('@')[0]).filter(Boolean)
+      packages
+        .map((pkg) => {
+          if (pkg[0] === '@') {
+            return '@' + pkg.slice(1).split('@')[0];
+          }
+          return pkg.split('@')[0];
+        })
+        .filter(Boolean)
     );
   } catch (error: any) {
     // If we fail to apply plugins, the log a warning and continue.
