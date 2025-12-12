@@ -41,13 +41,13 @@ AesCryptoModule.SealedData.fromParts = function fromParts(
  * Represents an AES encryption key that can be used for encryption and decryption operations.
  * This class provides methods to generate, import, and export encryption keys.
  */
-export class EncryptionKey extends AesCryptoModule.EncryptionKey {}
+export class EncryptionKey extends AesCryptoModule.EncryptionKey { }
 
 /**
  * Represents encrypted data including the ciphertext, initialization vector, and authentication tag.
  * This class provides methods to create sealed data from various formats and extract its components.
  */
-export class SealedData extends AesCryptoModule.SealedData {}
+export class SealedData extends AesCryptoModule.SealedData { }
 
 /**
  * Encrypts the given plaintext using AES-GCM with the specified key.
@@ -78,18 +78,6 @@ export function encryptAsync(
   return AesCryptoModule.encryptAsync(convertBinaryInput(plaintext), key, nativeOptions);
 }
 
-/**
- * Decrypts the given sealed data using the specified key and options.
- * @param sealedData The data to decrypt.
- * @param key The key to use for decryption.
- * @param options Options for decryption, including output encoding and additional data.
- * @returns A promise that resolves to the decrypted data buffer or string, depending on encoding option.
- */
-export function decryptAsync(
-  sealedData: SealedData,
-  key: EncryptionKey,
-  options?: DecryptOptions
-): Promise<string | Uint8Array>;
 /** @hidden */
 export function decryptAsync(
   sealedData: SealedData,
@@ -102,6 +90,18 @@ export function decryptAsync(
   key: EncryptionKey,
   options?: ArrayBufferDecryptOptions
 ): Promise<Uint8Array>;
+/**
+ * Decrypts the given sealed data using the specified key and options.
+ * @param sealedData The data to decrypt.
+ * @param key The key to use for decryption.
+ * @param options Options for decryption, including output encoding and additional data.
+ * @returns A promise that resolves to the decrypted data buffer or string, depending on encoding option.
+ */
+export function decryptAsync(
+  sealedData: SealedData,
+  key: EncryptionKey,
+  options?: DecryptOptions
+): Promise<string | Uint8Array>;
 
 export function decryptAsync(
   sealedData: SealedData,

@@ -21,6 +21,10 @@ export declare class SealedData extends AesCryptoModule.SealedData {
  * @returns A promise that resolves to a SealedData instance containing the encrypted data.
  */
 export declare function encryptAsync(plaintext: BinaryInput, key: EncryptionKey, options?: EncryptOptions): Promise<SealedData>;
+/** @hidden */
+export declare function decryptAsync(sealedData: SealedData, key: EncryptionKey, options: Base64DecryptOptions): Promise<string>;
+/** @hidden */
+export declare function decryptAsync(sealedData: SealedData, key: EncryptionKey, options?: ArrayBufferDecryptOptions): Promise<Uint8Array>;
 /**
  * Decrypts the given sealed data using the specified key and options.
  * @param sealedData The data to decrypt.
@@ -29,8 +33,4 @@ export declare function encryptAsync(plaintext: BinaryInput, key: EncryptionKey,
  * @returns A promise that resolves to the decrypted data buffer or string, depending on encoding option.
  */
 export declare function decryptAsync(sealedData: SealedData, key: EncryptionKey, options?: DecryptOptions): Promise<string | Uint8Array>;
-/** @hidden */
-export declare function decryptAsync(sealedData: SealedData, key: EncryptionKey, options: Base64DecryptOptions): Promise<string>;
-/** @hidden */
-export declare function decryptAsync(sealedData: SealedData, key: EncryptionKey, options?: ArrayBufferDecryptOptions): Promise<Uint8Array>;
 //# sourceMappingURL=index.d.ts.map

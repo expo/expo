@@ -86,49 +86,52 @@ declare class SealedData {
    */
   static fromParts(iv: BinaryInput, ciphertextWithTag: BinaryInput, tagLength?: number): SealedData;
 
+  /** @hidden */
+  ciphertext(options: { withTag?: boolean; encoding: 'base64' }): Promise<string>;
+  /** @hidden */
+  ciphertext(options?: { withTag?: boolean; encoding?: 'bytes' }): Promise<Uint8Array>;
   /**
    * Retrieves the ciphertext from the sealed data.
    * @param options Options controlling whether to include the authentication tag and output encoding.
    * @returns The ciphertext as a `Uint8Array` or `base64` string depending on encoding option.
    */
-  ciphertext(options: { withTag?: boolean; encoding?: 'base64' | 'bytes' }): Promise<string>;
-  /** @hidden */
-  ciphertext(options: { withTag?: boolean; encoding: 'base64' }): Promise<string>;
-  /** @hidden */
-  ciphertext(options?: { withTag?: boolean; encoding?: 'bytes' }): Promise<Uint8Array>;
+  ciphertext(options: {
+    withTag?: boolean;
+    encoding?: 'base64' | 'bytes';
+  }): Promise<string | Uint8Array>;
 
+  /** @hidden */
+  iv(encoding?: 'bytes'): Promise<Uint8Array>;
+  /** @hidden */
+  iv(encoding: 'base64'): Promise<string>;
   /**
    * Retrieves the initialization vector (nonce) from the sealed data.
    * @param encoding Output encoding format. Defaults to `bytes`.
    * @returns The initialization vector as a `Uint8Array` or `base64` string depending on encoding.
    */
   iv(encoding?: 'bytes' | 'base64'): Promise<string | Uint8Array>;
-  /** @hidden */
-  iv(encoding?: 'bytes'): Promise<Uint8Array>;
-  /** @hidden */
-  iv(encoding: 'base64'): Promise<string>;
 
+  /** @hidden */
+  tag(encoding?: 'bytes'): Promise<Uint8Array>;
+  /** @hidden */
+  tag(encoding: 'base64'): Promise<string>;
   /**
    * Retrieves the authentication tag from the sealed data.
    * @param encoding Output encoding format. Defaults to `bytes`.
    * @returns The authentication tag as a `Uint8Array` or `base64` string depending on encoding.
    */
   tag(encoding?: 'bytes' | 'base64'): Promise<string | Uint8Array>;
-  /** @hidden */
-  tag(encoding?: 'bytes'): Promise<Uint8Array>;
-  /** @hidden */
-  tag(encoding: 'base64'): Promise<string>;
 
+  /** @hidden */
+  combined(encoding?: 'bytes'): Promise<Uint8Array>;
+  /** @hidden */
+  combined(encoding: 'base64'): Promise<string>;
   /**
    * Retrieves a combined representation of the IV, ciphertext, and tag.
    * @param encoding Output encoding format. Defaults to `bytes`.
    * @returns The combined data as a `Uint8Array` or `base64` string depending on encoding.
    */
   combined(encoding?: 'bytes' | 'base64'): Promise<string | Uint8Array>;
-  /** @hidden */
-  combined(encoding?: 'bytes'): Promise<Uint8Array>;
-  /** @hidden */
-  combined(encoding: 'base64'): Promise<string>;
 
   /** Total size of the combined data (IV + ciphertext + tag) in bytes. */
   readonly combinedSize: number;
