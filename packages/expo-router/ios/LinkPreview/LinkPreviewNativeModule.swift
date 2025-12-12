@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 public class LinkPreviewNativeModule: Module {
   static let moduleName: String = "ExpoRouterNativeLinkPreview"
-  lazy var zoomSourceRepository = LinkZoomTransitionsSourceRepository()
+  lazy var zoomSourceRepository = LinkZoomTransitionsSourceRepository(logger: appContext?.jsLogger)
   lazy var zoomAlignmentViewRepository = LinkZoomTransitionsAlignmentViewRepository()
 
   public func definition() -> ModuleDefinition {
