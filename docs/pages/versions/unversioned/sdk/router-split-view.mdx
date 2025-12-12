@@ -22,6 +22,36 @@ import { FileTree } from '~/ui/components/FileTree';
 
 > See the [Expo Router](./router) reference for more information about the file-based routing library for native and web app.
 
+## Platform support
+
+Split View is only available on iOS. On other platforms, the `SplitView` component automatically falls back to rendering as a standard `Slot` navigator, ensuring your app works across all platforms without conditional code.
+
+## Known limitations
+
+<Collapsible summary="Cannot be nested">
+
+There can only be one `SplitView` in the navigation hierarchy. Attempting to nest split views will result in an error.
+
+</Collapsible>
+
+<Collapsible summary="Cannot be used inside other navigators">
+
+`SplitView` cannot be used inside another navigator (except for `Slot`). It must be used at the root layout level.
+
+</Collapsible>
+
+<Collapsible summary="Requires prebuild">
+
+After enabling split view in app config, you must run `npx expo prebuild` to apply the native configuration. The feature won't work in Expo Go.
+
+</Collapsible>
+
+<Collapsible summary="Only specific children allowed">
+
+`SplitView` only accepts `SplitView.Column` and `SplitView.Inspector` as direct children. Other components will be ignored with a warning.
+
+</Collapsible>
+
 ## Installation
 
 To use `expo-router/unstable-split-view` in your project, you need to install `expo-router` in your project. Follow the instructions from Expo Router's installation guide:
@@ -111,7 +141,6 @@ A sidebar with supporting column and main content:
 ```tsx app/_layout.tsx
 import { Link, useGlobalSearchParams } from 'expo-router';
 import { SplitView } from 'expo-router/unstable-split-view';
-import React from 'react';
 import { SafeAreaView } from 'react-native-screens/experimental';
 
 export default function Layout() {
@@ -356,36 +385,6 @@ export default function Id() {
   );
 }
 ```
-
-## Platform support
-
-Split View is only available on iOS. On other platforms, the `SplitView` component automatically falls back to rendering as a standard `Slot` navigator, ensuring your app works across all platforms without conditional code.
-
-## Known limitations
-
-<Collapsible summary="Cannot be nested">
-
-There can only be one `SplitView` in the navigation hierarchy. Attempting to nest split views will result in an error.
-
-</Collapsible>
-
-<Collapsible summary="Cannot be used inside other navigators">
-
-`SplitView` cannot be used inside another navigator (except for `Slot`). It must be used at the root layout level.
-
-</Collapsible>
-
-<Collapsible summary="Requires prebuild">
-
-After enabling split view in app config, you must run `npx expo prebuild` to apply the native configuration. The feature won't work in Expo Go.
-
-</Collapsible>
-
-<Collapsible summary="Only specific children allowed">
-
-`SplitView` only accepts `SplitView.Column` and `SplitView.Inspector` as direct children. Other components will be ignored with a warning.
-
-</Collapsible>
 
 ## API
 
