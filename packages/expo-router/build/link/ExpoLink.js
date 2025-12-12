@@ -44,29 +44,30 @@ const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const LinkWithPreview_1 = require("./LinkWithPreview");
 const elements_1 = require("./elements");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
-const useZoomTransitionPrimitives_1 = require("./zoom/useZoomTransitionPrimitives");
+const useZoomHref_1 = require("./zoom/useZoomHref");
 const url_1 = require("../utils/url");
-const zoom_transition_context_1 = require("./zoom/zoom-transition-context");
+const zoom_transition_context_providers_1 = require("./zoom/zoom-transition-context-providers");
 function ExpoLink(props) {
+    return (<zoom_transition_context_providers_1.ZoomTransitionSourceContextProvider linkProps={props}>
+      <ExpoLinkImpl {...props}/>
+    </zoom_transition_context_providers_1.ZoomTransitionSourceContextProvider>);
+}
+function ExpoLinkImpl(props) {
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
-    const { zoomTransitionSourceContextValue, href } = (0, useZoomTransitionPrimitives_1.useZoomTransitionPrimitives)(props);
+    const href = (0, useZoomHref_1.useZoomHref)(props);
     const shouldUseLinkWithPreview = process.env.EXPO_OS === 'ios' &&
         isLinkWithPreview(props) &&
         !isPreview &&
         expo_constants_1.default?.expoConfig?.newArchEnabled !== false;
     if (shouldUseLinkWithPreview) {
-        return (<zoom_transition_context_1.ZoomTransitionSourceContext value={zoomTransitionSourceContextValue}>
-        <LinkWithPreview_1.LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href}/>
-      </zoom_transition_context_1.ZoomTransitionSourceContext>);
+        return <LinkWithPreview_1.LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href}/>;
     }
     let children = props.children;
     if (react_1.default.Children.count(props.children) > 1) {
         const arrayChildren = react_1.default.Children.toArray(props.children).filter((child) => !(0, react_1.isValidElement)(child) || (child.type !== elements_1.LinkPreview && child.type !== elements_1.LinkMenu));
         children = arrayChildren.length === 1 ? arrayChildren[0] : props.children;
     }
-    return (<zoom_transition_context_1.ZoomTransitionSourceContext value={zoomTransitionSourceContextValue}>
-      <BaseExpoRouterLink_1.BaseExpoRouterLink {...props} href={href} children={children}/>
-    </zoom_transition_context_1.ZoomTransitionSourceContext>);
+    return <BaseExpoRouterLink_1.BaseExpoRouterLink {...props} href={href} children={children}/>;
 }
 function isLinkWithPreview(props) {
     const isExternal = (0, url_1.shouldLinkExternally)(String(props.href));

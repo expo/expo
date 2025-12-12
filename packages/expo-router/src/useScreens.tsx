@@ -15,7 +15,7 @@ import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } fr
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
-import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context';
+import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
