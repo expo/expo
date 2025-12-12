@@ -539,5 +539,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/reference/async-routes/': '/router/web/async-routes/',
 
   // After creating EAS environment variables section
-  '/eas/hosting/environment-variables/': '/eas/environment-variables/',
+  '/eas/hosting/environment-variables/':
+    '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',
 };
