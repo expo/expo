@@ -7,15 +7,13 @@
 #import "EXAppViewController.h"
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
-#import "EXDevelopmentHomeLoader.h"
+#import "EXHomeStubLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXRootViewController.h"
 #import "EXDevMenu-Swift.h"
-#import "EXEmbeddedHomeLoader.h"
-#import "EXBuildConstants.h"
 #import "EXUtil.h"
 #import <React/RCTBridge+Private.h>
 
@@ -91,13 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
 
-  // if developing, use development manifest from EXBuildConstants
-  EXAbstractLoader *homeAppLoader;
-  if ([EXBuildConstants sharedInstance].isDevKernel) {
-    homeAppLoader = [[EXDevelopmentHomeLoader alloc] init];
-  } else {
-    homeAppLoader = [[EXEmbeddedHomeLoader alloc] init];
-  }
+  EXHomeStubLoader *homeAppLoader = [[EXHomeStubLoader alloc] init];
 
   EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];
   [[EXKernel sharedInstance].appRegistry registerHomeAppRecord:homeAppRecord];

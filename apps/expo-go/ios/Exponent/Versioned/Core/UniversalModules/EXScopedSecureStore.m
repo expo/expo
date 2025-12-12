@@ -38,24 +38,6 @@
   return [NSString stringWithFormat:@"%@-%@", _scopeKey, key];
 }
 
-- (NSString *)_getValueWithKey:(NSString *)key
-                   withOptions:(NSDictionary *)options
-                         error:(NSError **)error __deprecated_msg("To be removed once SDK 41 is phased out")
-{
-  NSError *searchError;
-  NSData *data = [self _searchKeychainWithKey:key
-                                  withOptions:options
-                                        error:&searchError];
-  if (data) {
-    NSString *value = [[NSString alloc] initWithData:data
-                                            encoding:NSUTF8StringEncoding];
-    return value;
-  }
-
-  *error = searchError;
-  return nil;
-}
-
 - (NSString *)getValueWithScopedKey:(NSString *)scopedKey withOptions:(NSDictionary *)options
 {
   NSError *searchError;
