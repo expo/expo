@@ -18,12 +18,9 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.Direction
 import expo.modules.kotlin.views.ExpoComposeView
-import java.util.EnumSet
 
 enum class ProgressVariant(val value: String) : Enumerable {
   CIRCULAR("circular"),
@@ -57,8 +54,7 @@ class ProgressView(context: Context, appContext: AppContext) :
     val (colors) = props.elementColors
 
     when (variant) {
-      ProgressVariant.LINEAR ->
-        AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
+      ProgressVariant.LINEAR -> {
           val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.linearColor
           val trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.linearTrackColor
           if (progress != null) {
@@ -77,8 +73,7 @@ class ProgressView(context: Context, appContext: AppContext) :
             )
           }
         }
-      ProgressVariant.CIRCULAR ->
-        AutoSizingComposable(shadowNodeProxy) {
+      ProgressVariant.CIRCULAR -> {
           val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.circularColor
           if (progress != null) {
             CircularProgressIndicator(
@@ -95,8 +90,7 @@ class ProgressView(context: Context, appContext: AppContext) :
             )
           }
         }
-      ProgressVariant.LINEAR_WAVY ->
-        AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
+      ProgressVariant.LINEAR_WAVY -> {
           val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.linearColor
           val trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.linearTrackColor
           if (progress != null) {
@@ -114,8 +108,7 @@ class ProgressView(context: Context, appContext: AppContext) :
             )
           }
         }
-      ProgressVariant.CIRCULAR_WAVY ->
-        AutoSizingComposable(shadowNodeProxy) {
+      ProgressVariant.CIRCULAR_WAVY -> {
           val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.circularColor
           if (progress != null) {
             CircularWavyProgressIndicator(
