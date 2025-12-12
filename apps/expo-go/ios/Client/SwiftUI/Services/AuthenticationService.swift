@@ -9,15 +9,11 @@ class AuthenticationService: ObservableObject {
   @Published var user: UserActor?
   @Published var selectedAccountId: String?
   @Published var isAuthenticating = false
+  @Published var isAuthenticated = false
 
   private let sessionKey = "expo-session-secret"
   private let selectedAccountKey = "expo-selected-account-id"
   private let presentationContext = ExpoGoAuthPresentationContext()
-
-  var isAuthenticated: Bool {
-    let sessionSecret = UserDefaults.standard.string(forKey: sessionKey)
-    return sessionSecret != nil && !sessionSecret!.isEmpty
-  }
 
   var selectedAccount: Account? {
     guard let userData = user,
@@ -37,8 +33,11 @@ class AuthenticationService: ObservableObject {
   }
 
   func checkAuthenticationStatus() {
+    let sessionSecret = UserDefaults.standard.string(forKey: sessionKey)
+    isAuthenticated = sessionSecret != nil && !sessionSecret!.isEmpty
+
     if isAuthenticated {
-      if let sessionSecret = UserDefaults.standard.string(forKey: sessionKey) {
+      if let sessionSecret {
         APIClient.shared.setSession(sessionSecret)
       }
       Task {
@@ -91,6 +90,7 @@ class AuthenticationService: ObservableObject {
     APIClient.shared.setSession(nil)
     user = nil
     selectedAccountId = nil
+    isAuthenticated = false
   }
 
   func selectAccount(accountId: String) {
@@ -121,14 +121,17 @@ class AuthenticationService: ObservableObject {
         }
 
         guard let callbackURL,
-              let components = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false),
-              let sessionSecret = components.queryItems?.first(where: { $0.name == "session_secret" })?.value else {
+          let components = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false),
+          let sessionSecret = components.queryItems?.first(where: { $0.name == "session_secret" })?.value else {
           continuation.resume(throwing: ExpoGoError.noSessionSecret)
           return
         }
 
         UserDefaults.standard.set(sessionSecret, forKey: self.sessionKey)
         APIClient.shared.setSession(sessionSecret)
+        Task { @MainActor in
+          self.isAuthenticated = true
+        }
         continuation.resume(returning: true)
       }
 

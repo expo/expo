@@ -36,6 +36,7 @@
     "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/styleguide-base": "^1.0.1",
     "@expo/ui": "~0.2.0-beta.10",
+    "@expo/vector-icons": "^15.0.2",
     "@lottiefiles/dotlottie-react": "^0.10.1",
     "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-native-async-storage/async-storage": "2.2.0",

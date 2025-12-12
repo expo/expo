@@ -250,6 +250,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _setOptimisticManifest:processedManifest];
   }
   _isUpToDate = isUpToDate;
+  _appLauncher = launcher;
   if (launcher.launchedUpdate.manifest.isUsingDeveloperTool) {
     // in dev mode, we need to set an optimistic manifest but nothing else
     return;
@@ -259,7 +260,6 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
-  _appLauncher = launcher;
   if (self.delegate) {
     [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
   }

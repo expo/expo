@@ -26,8 +26,8 @@ struct NavigationHeader: View {
       Button {
         navigation.showUserProfile()
       } label: {
-        if viewModel.isLoggedIn, let user = viewModel.user {
-          createUserAvatar(user: user)
+        if viewModel.isLoggedIn, let account = viewModel.selectedAccount {
+          createAccountAvatar(account: account)
         } else {
           ZStack {
             Circle()
@@ -49,10 +49,24 @@ struct NavigationHeader: View {
   }
 
   @ViewBuilder
-  private func createUserAvatar(user: UserActor) -> some View {
-    let profilePhoto = user.profilePhoto
+  private func createAccountAvatar(account: Account) -> some View {
+    let isOrganization = account.ownerUserActor == nil
+    let profilePhoto = account.ownerUserActor?.profilePhoto
+    let name = account.ownerUserActor?.username ?? account.name
+    let firstLetter = String(name.prefix(1).uppercased())
 
-    if let profilePhoto,
+    if isOrganization {
+      let color = getExpoAvatarColor(for: firstLetter)
+
+      Circle()
+        .fill(color.background)
+        .frame(width: 36, height: 36)
+        .overlay(
+          Image(systemName: "building.2")
+            .font(.system(size: 16))
+            .foregroundColor(color.foreground)
+        )
+    } else if let profilePhoto,
       !profilePhoto.isEmpty,
       let url = URL(string: profilePhoto) {
       Avatar(url: url) { image in
@@ -70,9 +84,8 @@ struct NavigationHeader: View {
       }
       .frame(width: 36, height: 36)
       .clipShape(Circle())
-      .id("\(user.id)-\(profilePhoto)")
+      .id("\(account.id)-\(profilePhoto)")
     } else {
-      let firstLetter = String(user.username.prefix(1).uppercased())
       let color = getExpoAvatarColor(for: firstLetter)
 
       Circle()

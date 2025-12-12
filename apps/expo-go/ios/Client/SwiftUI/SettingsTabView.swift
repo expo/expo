@@ -1,10 +1,14 @@
 //  Copyright © 2025 650 Industries. All rights reserved.
 
 import SwiftUI
+import AuthenticationServices
 
 struct SettingsTabView: View {
   @EnvironmentObject var viewModel: HomeViewModel
   @State private var allowAnalytics = false
+  @State private var isDeleting = false
+  @State private var deletionError: String?
+  @State private var context: AuthPresentationContextProvider?
 
   var body: some View {
     ScrollView {
@@ -129,6 +133,58 @@ struct SettingsTabView: View {
           .foregroundColor(.primary)
           .clipShape(RoundedRectangle(cornerRadius: 12))
         }
+
+        if viewModel.isAuthenticated {
+          VStack(alignment: .leading, spacing: 16) {
+            Text("Delete Account")
+              .font(.headline)
+              .foregroundColor(.primary)
+
+            VStack(alignment: .leading, spacing: 12) {
+              HStack(spacing: 12) {
+                Image(systemName: "trash")
+                  .font(.title2)
+                  .foregroundColor(.red)
+
+                Text("Delete your account")
+                  .font(.headline)
+                  .foregroundColor(.primary)
+              }
+
+              Text("This action is irreversible. It will delete your personal account, projects, and activity.")
+                .font(.body)
+                .foregroundColor(.secondary)
+
+              if let error = deletionError {
+                Text(error)
+                  .font(.body)
+                  .foregroundColor(.white)
+                  .padding()
+                  .frame(maxWidth: .infinity)
+                  .background(Color.red)
+                  .clipShape(RoundedRectangle(cornerRadius: 8))
+              }
+
+              Button {
+                handleDeleteAccount()
+              } label: {
+                Text(isDeleting ? "Deleting..." : "Delete Account")
+                  .font(.body)
+                  .fontWeight(.medium)
+                  .foregroundColor(.red)
+                  .frame(maxWidth: .infinity)
+                  .padding()
+                  .background(Color.red.opacity(0.1))
+                  .clipShape(RoundedRectangle(cornerRadius: 8))
+              }
+              .buttonStyle(PlainButtonStyle())
+              .disabled(isDeleting)
+            }
+            .padding()
+            .background(Color.expoSecondarySystemBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+          }
+        }
       }
       .padding()
     }
@@ -152,5 +208,51 @@ struct SettingsTabView: View {
     """
 
     UIPasteboard.general.string = buildInfo
+  }
+
+  private func handleDeleteAccount() {
+    guard !isDeleting else { return }
+
+    deletionError = nil
+    isDeleting = true
+
+    let redirectBase = "expauth://after-delete"
+    let websiteOrigin = "https://expo.dev"
+    guard let encodedRedirect = redirectBase.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+          let url = URL(string: "\(websiteOrigin)/settings/delete-user-expo-go?post_delete_redirect_uri=\(encodedRedirect)") else {
+      deletionError = "Failed to create delete account URL"
+      isDeleting = false
+      return
+    }
+
+    let session = ASWebAuthenticationSession(url: url, callbackURLScheme: "expauth") { [self] callbackURL, error in
+      isDeleting = false
+
+      if let error {
+        if case ASWebAuthenticationSessionError.canceledLogin = error {
+          return
+        }
+        deletionError = error.localizedDescription
+        return
+      }
+
+      if callbackURL != nil {
+        viewModel.signOut()
+      }
+    }
+
+    session.presentationContextProvider = context
+    session.prefersEphemeralWebBrowserSession = false
+    session.start()
+  }
+}
+
+private class AuthPresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
+  func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+    let window = UIApplication.shared.connectedScenes
+      .compactMap { $0 as? UIWindowScene }
+      .flatMap { $0.windows }
+      .first { $0.isKeyWindow }
+    return window ?? ASPresentationAnchor()
   }
 }
