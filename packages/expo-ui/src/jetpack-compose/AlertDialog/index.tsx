@@ -2,6 +2,21 @@ import { requireNativeView } from 'expo';
 
 import { ExpoModifier } from '../../types';
 
+/**
+ * Color configuration for AlertDialog buttons.
+ * @platform android
+ */
+export type AlertDialogButtonColors = {
+  /**
+   * The background color of the button.
+   */
+  containerColor?: string;
+  /**
+   * The text color of the button.
+   */
+  contentColor?: string;
+};
+
 export type AlertDialogProps = {
   /**
    * The title of the alert dialog.
@@ -19,6 +34,16 @@ export type AlertDialogProps = {
    * The text of the dismiss button of the alert dialog.
    */
   dismissButtonText?: string;
+  /**
+   * Colors for the confirm button.
+   * @platform android
+   */
+  confirmButtonColors?: AlertDialogButtonColors;
+  /**
+   * Colors for the dismiss button.
+   * @platform android
+   */
+  dismissButtonColors?: AlertDialogButtonColors;
   /**
    * Whether the alert dialog is visible.
    *

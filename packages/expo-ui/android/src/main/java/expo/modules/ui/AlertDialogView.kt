@@ -1,7 +1,9 @@
 package expo.modules.ui
 
 import android.content.Context
+import android.graphics.Color
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -12,23 +14,34 @@ import expo.modules.kotlin.views.ComposeProps
 import androidx.compose.ui.Modifier
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
 import java.io.Serializable
 
 open class AlertDialogButtonPressedEvent() : Record, Serializable
 
+class AlertDialogButtonColors : Record {
+  @Field
+  val containerColor: Color? = null
+
+  @Field
+  val contentColor: Color? = null
+}
+
 data class AlertDialogProps(
   val title: MutableState<String?> = mutableStateOf(null),
   val text: MutableState<String?> = mutableStateOf(null),
   val confirmButtonText: MutableState<String?> = mutableStateOf(null),
   val dismissButtonText: MutableState<String?> = mutableStateOf(null),
+  val confirmButtonColors: MutableState<AlertDialogButtonColors?> = mutableStateOf(null),
+  val dismissButtonColors: MutableState<AlertDialogButtonColors?> = mutableStateOf(null),
   val visible: MutableState<Boolean> = mutableStateOf(false),
   val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 class AlertDialogView(context: Context, appContext: AppContext) :
-  ExpoComposeView<AlertDialogProps>(context, appContext) {
+  ExpoComposeView<AlertDialogProps>(context, appContext, withHostingView = true) {
   override val props = AlertDialogProps()
   private val onDismissPressed by EventDispatcher<AlertDialogButtonPressedEvent>()
   private val onConfirmPressed by EventDispatcher<AlertDialogButtonPressedEvent>()
@@ -39,6 +52,8 @@ class AlertDialogView(context: Context, appContext: AppContext) :
     val (text) = props.text
     val (confirmButtonText) = props.confirmButtonText
     val (dismissButtonText) = props.dismissButtonText
+    val (confirmButtonColors) = props.confirmButtonColors
+    val (dismissButtonColors) = props.dismissButtonColors
     val (visible) = props.visible
 
     if (!visible) {
@@ -49,14 +64,26 @@ class AlertDialogView(context: Context, appContext: AppContext) :
       modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
       confirmButton = {
         confirmButtonText?.let {
-          TextButton(onClick = { onConfirmPressed.invoke(AlertDialogButtonPressedEvent()) }) {
+          TextButton(
+            onClick = { onConfirmPressed.invoke(AlertDialogButtonPressedEvent()) },
+            colors = ButtonDefaults.textButtonColors(
+              containerColor = confirmButtonColors?.containerColor.compose,
+              contentColor = confirmButtonColors?.contentColor.compose
+            )
+          ) {
             Text(it)
           }
         }
       },
       dismissButton = {
         dismissButtonText?.let {
-          TextButton(onClick = { onDismissPressed.invoke(AlertDialogButtonPressedEvent()) }) {
+          TextButton(
+            onClick = { onDismissPressed.invoke(AlertDialogButtonPressedEvent()) },
+            colors = ButtonDefaults.textButtonColors(
+              containerColor = dismissButtonColors?.containerColor.compose,
+              contentColor = dismissButtonColors?.contentColor.compose
+            )
+          ) {
             Text(it)
           }
         }
