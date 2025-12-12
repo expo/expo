@@ -235,11 +235,15 @@ async function copyCommonFixturesToProject(
       cwd: path.join(repoRoot, 'patches'),
       absolute: true,
     });
+    const reactNativeJsonString = await fs.readFile(
+      path.join(projectRoot, 'node_modules', 'react-native', 'package.json'),
+      'utf-8'
+    );
+    const reactNativeJson = JSON.parse(reactNativeJsonString);
+    const reactNativeVersion = reactNativeJson.version;
+    const patchFileName = `react-native+${reactNativeVersion}.patch`;
     if (patchFile.length > 0) {
-      await fs.copyFile(
-        patchFile[0],
-        path.join(projectRoot, 'patches', path.basename(patchFile[0]))
-      );
+      await fs.copyFile(patchFile[0], path.join(projectRoot, 'patches', patchFileName));
     }
   }
 
@@ -360,7 +364,7 @@ async function preparePackageJson(
           'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         postinstall: 'patch-package',
         'start:dev-client':
-          'npx expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
+          'CI=false npx expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;
@@ -415,7 +419,7 @@ async function preparePackageJson(
       dependencies: {
         ...packageJson.dependencies,
         'react-native': 'npm:react-native-tvos@0.83-stable',
-        '@react-native-tvos/config-tv': '^0.1.4',
+        '@react-native-tvos/config-tv': '^0.1.5',
       },
       expo: {
         install: {

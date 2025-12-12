@@ -45,14 +45,24 @@ enum DevLauncherAppControllerError: Int, Error, LocalizedError {
  */
 @objc(EXUpdatesDevLauncherController)
 @objcMembers
-public final class DevLauncherAppController: NSObject, InternalAppControllerInterface, UpdatesExternalInterface {
+public final class DevLauncherAppController: NSObject, InternalAppControllerInterface, UpdatesDevLauncherInterface {
+  public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> UpdatesStateChangeSubscription {
+    return DisabledUpdatesStateChangeSubscription()
+  }
+
+  public var launchedUpdateId: UUID?
+
+  public var embeddedUpdateId: UUID?
+
+  public var isEnabled: Bool
+
   public let eventManager: UpdatesEventManager = NoOpUpdatesEventManager()
   public var reloadScreenManager: Reloadable? = ReloadScreenManager()
 
   private let logger = UpdatesLogger()
 
-  public weak var delegate: AppControllerDelegate?
-  public weak var updatesExternalInterfaceDelegate: (any EXUpdatesInterface.UpdatesExternalInterfaceDelegate)?
+  public var delegate: AppControllerDelegate?
+  public var updatesExternalInterfaceDelegate: (any UpdatesExternalInterfaceDelegate)?
 
   public func launchAssetUrl() -> URL? {
     return launcher?.launchAssetUrl
@@ -60,6 +70,10 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   public var launchAssetURL: URL? {
     launcher?.launchAssetUrl
+  }
+
+  public var launchAssetPath: String? {
+    launcher?.launchAssetUrl?.relativePath
   }
 
   public var runtimeVersion: String? {
@@ -107,7 +121,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       loaderSelectionPolicy: LoaderSelectionPolicyDevelopmentClient(config: self.config),
       reaperSelectionPolicy: ReaperSelectionPolicyDevelopmentClient()
     )
-
+    self.isEnabled = false
     super.init()
   }
 
