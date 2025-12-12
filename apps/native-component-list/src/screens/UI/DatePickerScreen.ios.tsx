@@ -77,8 +77,8 @@ export default function DatePickerScreen() {
             label="Style"
             modifiers={[pickerStyle('menu')]}
             selection={styleIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setStyleIndex(selection as number);
+            onSelectionChange={(selection) => {
+              setStyleIndex(selection);
               setAnimate(!animate);
             }}>
             {styleOptions.map((option, index) => (
@@ -91,8 +91,8 @@ export default function DatePickerScreen() {
             label="Components"
             modifiers={[pickerStyle('menu')]}
             selection={displayedComponentsIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setDisplayedComponentsIndex(selection as number);
+            onSelectionChange={(selection) => {
+              setDisplayedComponentsIndex(selection);
               setAnimate(!animate);
             }}>
             {displayedComponentsOptions.map((option, index) => (
