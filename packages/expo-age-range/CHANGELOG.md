@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android] bump com.google.android.play:age-signals dependency to 0.0.2 ([#41568](https://github.com/expo/expo/pull/41568) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
