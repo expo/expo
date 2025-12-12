@@ -27,7 +27,3 @@ struct ProjectsSection: View {
     }
   }
 }
-
-#Preview {
-  ProjectsSection()
-}

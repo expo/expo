@@ -7,7 +7,6 @@
 #import "EXAppLoadingProgressWindowController.h"
 #import "EXAppLoadingCancelView.h"
 #import "Expo_Go-Swift.h"
-#import "EXHomeModule.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
@@ -719,8 +718,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_storeLastFatalErrorDate:(NSDate *)date
 {
-  [[NSUserDefaults standardUserDefaults] setObject:date forKey:kEXLastFatalErrorDateDefaultsKey];
-  [[NSUserDefaults standardUserDefaults] synchronize];
+  [[NSUserDefaults standardUserDefaults] setObject:date forKey:@"EXKernelLastFatalErrorDateDefaultsKey"];
 }
 
 #pragma mark - Internal

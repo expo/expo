@@ -34,7 +34,3 @@ struct HomeTabView: View {
     }
   }
 }
-
-#Preview {
-    HomeTabView()
-}

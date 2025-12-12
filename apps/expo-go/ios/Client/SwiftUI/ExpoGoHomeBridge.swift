@@ -36,7 +36,6 @@ import UIKit
   @objc public func isAuthenticated() -> Bool {
     return UserDefaults.standard.string(forKey: "expo-session-secret") != nil
   }
-
 }
 
 extension HomeViewModel {

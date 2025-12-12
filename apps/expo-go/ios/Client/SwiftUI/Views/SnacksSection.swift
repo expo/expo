@@ -27,7 +27,3 @@ struct SnacksSection: View {
     }
   }
 }
-
-#Preview {
-  SnacksSection()
-}

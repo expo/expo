@@ -3,7 +3,6 @@
 #import "EXKernelServiceRegistry.h"
 #import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
-#import "EXHomeModuleManager.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXSensorManager.h"
@@ -17,7 +16,6 @@
 
 @property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
-@property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
 @property (nonatomic, strong) EXUpdatesDatabaseManager *updatesDatabaseManager;
@@ -36,7 +34,6 @@
     [self cachedResourceManager];
     [self errorRecoveryManager];
     [self linkingManager];
-    [self homeModuleManager];
     [self sensorManager];
     [self updatesDatabaseManager];
     [self updatesManager];
@@ -77,14 +74,6 @@
   return _linkingManager;
 }
 
-- (EXHomeModuleManager *)homeModuleManager
-{
-  if (!_homeModuleManager) {
-    _homeModuleManager = [[EXHomeModuleManager alloc] init];
-  }
-  return _homeModuleManager;
-}
-
 - (EXSensorManager *)sensorManager
 {
   if (!_sensorManager) {
@@ -122,7 +111,6 @@
     NSArray *registryServices = @[
                                   self.cachedResourceManager,
                                   self.errorRecoveryManager,
-                                  self.homeModuleManager,
                                   self.linkingManager,
                                   self.sensorManager,
                                   self.updatesDatabaseManager,

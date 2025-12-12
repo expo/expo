@@ -63,7 +63,3 @@ class ExpoGoNavigation: ObservableObject {
     showingUserProfile = true
   }
 }
-
-#Preview {
-  HomeRootView(viewModel: HomeViewModel())
-}

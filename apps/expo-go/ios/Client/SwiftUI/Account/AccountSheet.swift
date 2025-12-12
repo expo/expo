@@ -192,7 +192,3 @@ struct AccountSheet: View {
       )
   }
 }
-
-#Preview {
-  AccountSheet()
-}

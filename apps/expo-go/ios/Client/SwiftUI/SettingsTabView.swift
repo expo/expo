@@ -152,7 +152,3 @@ struct SettingsTabView: View {
     UIPasteboard.general.string = buildInfo
   }
 }
-
-#Preview {
-    SettingsTabView()
-}

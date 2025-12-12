@@ -76,7 +76,3 @@ struct DiagnosticCard: View {
     .clipShape(RoundedRectangle(cornerRadius: 12))
   }
 }
-
-#Preview {
-    DiagnosticsTabView()
-}

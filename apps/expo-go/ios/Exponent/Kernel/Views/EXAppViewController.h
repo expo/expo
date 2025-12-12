@@ -40,5 +40,3 @@
 @property (nonatomic, strong) UIView *contentView;
 
 @end
-
-extern NSString *const kEXLastFatalErrorDateDefaultsKey;

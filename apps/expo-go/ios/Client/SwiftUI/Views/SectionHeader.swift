@@ -24,9 +24,3 @@ struct SectionHeader: View {
     }
   }
 }
-
-#Preview {
-  SectionHeader(title: "Section", actionTitle: "Action") {
-
-  }
-}
