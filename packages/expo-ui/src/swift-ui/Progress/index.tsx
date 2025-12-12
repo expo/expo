@@ -4,7 +4,7 @@ import { ColorValue } from 'react-native';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type CircularProgressProps = {
+export type ProgressProps = {
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -13,24 +13,14 @@ export type CircularProgressProps = {
    * Progress color.
    */
   color?: ColorValue;
+  /**
+   * The style of the progress indicator.
+   * @default 'circular'
+   */
+  variant: 'linear' | 'circular';
 } & CommonViewModifierProps;
 
-export type LinearProgressProps = {
-  /**
-   * The current progress value of the slider. This is a number between `0` and `1`.
-   */
-  progress?: number | null;
-  /**
-   * Progress color.
-   */
-  color?: ColorValue;
-} & CommonViewModifierProps;
-
-type NativeProgressProps =
-  | CircularProgressProps
-  | (LinearProgressProps & {
-      variant: 'linear' | 'circular';
-    });
+type NativeProgressProps = ProgressProps;
 
 const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNativeView(
   'ExpoUI',
@@ -38,31 +28,15 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
 );
 
 /**
- * Renders a `CircularProgress` component.
+ * Renders a `Progress` component.
  */
-export function CircularProgress(props: CircularProgressProps) {
+export function Progress(props: ProgressProps) {
   const { modifiers, ...restProps } = props;
   return (
     <NativeProgressView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}
-      variant="circular"
-    />
-  );
-}
-
-/**
- * Renders a `LinearProgress` component.
- */
-export function LinearProgress(props: LinearProgressProps) {
-  const { modifiers, ...restProps } = props;
-  return (
-    <NativeProgressView
-      modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}
-      variant="linear"
     />
   );
 }
