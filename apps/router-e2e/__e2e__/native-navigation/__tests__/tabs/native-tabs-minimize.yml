@@ -2,8 +2,8 @@ appId: com.expo.routere2e
 name: Native tabs minimize behavior
 ---
 - stopApp: com.expo.routere2e
-- openLink: router-e2e://
-- runFlow: close-warning.yml
+- openLink: router-e2e://tabs
+- runFlow: ../close-warning.yml
 # Base tabs
 - assertVisible: "Index screen"
 - runFlow: assert-all-tabs-visible.yml

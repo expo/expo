@@ -2,7 +2,7 @@ import { Link, Stack, useIsPreview, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
 
-import { useFaceColors } from '../../components/faces';
+import { useFaceColors } from '../../../components/faces';
 
 export default function Index() {
   const [shouldPerformHeavyComputation, setShouldPerformHeavyComputation] = useState(false);
