@@ -1,97 +1,234 @@
----
-title: Start developing
-description: Make your first change to an Expo project and see it live on your device.
-hideTOC: true
----
+<!DOCTYPE html>
 
-import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
-
-<Step label="1">
-## Start a development server
-To start the development server, run the following command:
-
-<Terminal cmd={['$ npx expo start']} />
-
-</Step>
-
-<Step label="2">
-## Open the app on your device
-
-After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
-
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>a</kbd> or <kbd>i</kbd> respectively to open the app.
-
-<Collapsible summary="Having problems?">
-
-Make sure you are on the same Wi-Fi network on your computer and your device.
-
-If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
-
-<Terminal cmd={['$ npx expo start --tunnel']} />
-
-> Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
-
-</Collapsible>
-
-</Step>
-
-<Step label="3">
-
-## Make your first change
-
-Open the **app/(tabs)/index.tsx** file in your code editor and make a change.
-
-<DiffBlock
-  raw={`diff --git a/app/(tabs)/index.tsx b/app/(tabs)/index.tsx
-index 45cfa0e..4d1b384 100644
---- a/app/(tabs)/index.tsx
-+++ b/app/(tabs)/index.tsx
-@@ -17,7 +17,7 @@ export default function HomeScreen() {
+<html class="dark" dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>شاشة الإعدادات</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2b8cee",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
       }
-    >
-      <ThemedView style={styles.titleContainer}>
--       <ThemedText type="title">Welcome!</ThemedText>
-+       <ThemedText type="title">Hello World!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-  `}
-/>
-
-<Collapsible summary="Changes not showing up on your device?">
-
-Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
-
-- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
-- Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS.
-- If you see **Enable Fast Refresh**, press it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
-
-  <ContentSpotlight
-    alt="Developer menu in Expo Go app."
-    src="/static/images/get-started/developer-menu.png"
-    className="max-w-[540px]"
-  />
-
-</Collapsible>
-
-</Step>
-
----
-
-## File structure
-
-Below, you can get familiar with the default project's file structure:
-
-<ProjectStructure />
-
-## Features
-
-The default project template has the following features:
-
-<TemplateFeatures />
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<!-- Top App Bar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="flex size-12 shrink-0 items-center justify-center">
+</div>
+<h2 class="text-gray-800 dark:text-white text-lg font-bold leading-tight flex-1 text-center">الإعدادات</h2>
+<div class="flex size-12 shrink-0 items-center justify-center">
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 py-3">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-full h-full">
+<div class="text-gray-400 dark:text-gray-500 flex border-none bg-gray-200 dark:bg-gray-800/50 items-center justify-center pl-4 rounded-r-full border-l-0">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-full text-gray-800 dark:text-white focus:outline-0 focus:ring-0 border-none bg-gray-200 dark:bg-gray-800/50 focus:border-none h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 rounded-r-none border-r-0 pr-2 text-base font-normal leading-normal" placeholder="بحث في الإعدادات" value=""/>
+</div>
+</label>
+</div>
+<!-- Spacer -->
+<div class="h-4"></div>
+<!-- Account Section -->
+<div class="flex flex-col px-4">
+<div class="mb-2 bg-gray-200 dark:bg-gray-800/50 rounded-lg overflow-hidden">
+<!-- Profile -->
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">person</span>
+</div>
+<p class="text-gray-800 dark:text-white text-base font-medium leading-normal flex-1 truncate">الملف الشخصي</p>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<hr class="border-gray-300 dark:border-gray-700/60 ml-16 mr-4"/>
+<!-- Privacy -->
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<p class="text-gray-800 dark:text-white text-base font-medium leading-normal flex-1 truncate">الخصوصية</p>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<hr class="border-gray-300 dark:border-gray-700/60 ml-16 mr-4"/>
+<!-- Security -->
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">security</span>
+</div>
+<p class="text-gray-800 dark:text-white text-base font-medium leading-normal flex-1 truncate">الأمان</p>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Application Section -->
+<div class="flex flex-col px-4 mt-4">
+<div class="mb-2 bg-gray-200 dark:bg-gray-800/50 rounded-lg overflow-hidden">
+<!-- Notifications -->
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+<p class="text-gray-800 dark:text-white text-base font-medium leading-normal flex-1 truncate">الإشعارات</p>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<hr class="border-gray-300 dark:border-gray-700/60 ml-16 mr-4"/>
+<!-- Appearance -->
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">dark_mode</span>
+</div>
+<p class="text-gray-800 dark:text-white text-base font-medium leading-normal flex-1 truncate">المظهر</p>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<hr class="border-gray-300 dark:border-gray-700/60 ml-16 mr-4"/>
+<!-- Chats -->
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">chat</span>
+</div>
+<p class="text-gray-800 dark:text-white text-base font-medium leading-normal flex-1 truncate">الدردشات</p>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Support Section -->
+<div class="flex flex-col px-4 mt-4">
+<div class="mb-2 bg-gray-200 dark:bg-gray-800/50 rounded-lg overflow-hidden">
+<!-- Help -->
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">help</span>
+</div>
+<p class="text-gray-800 dark:text-white text-base font-medium leading-normal flex-1 truncate">المساعدة والأسئلة الشائعة</p>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<hr class="border-gray-300 dark:border-gray-700/60 ml-16 mr-4"/>
+<!-- Contact Us -->
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<p class="text-gray-800 dark:text-white text-base font-medium leading-normal flex-1 truncate">تواصل معنا</p>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<hr class="border-gray-300 dark:border-gray-700/60 ml-16 mr-4"/>
+<!-- About -->
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">info</span>
+</div>
+<p class="text-gray-800 dark:text-white text-base font-medium leading-normal flex-1 truncate">عن التطبيق</p>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Log Out Section -->
+<div class="flex flex-col px-4 mt-4">
+<div class="mb-2 bg-gray-200 dark:bg-gray-800/50 rounded-lg overflow-hidden">
+<div class="flex items-center gap-4 bg-transparent p-4 min-h-14 justify-between">
+<div class="flex items-center gap-4 w-full">
+<div class="text-red-500 dark:text-red-500 flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined">logout</span>
+</div>
+<p class="text-red-500 dark:text-red-500 text-base font-medium leading-normal flex-1 truncate">تسجيل الخروج</p>
+</div>
+</div>
+</div>
+</div>
+<div class="h-10"></div>
+</div>
+</body></html>
