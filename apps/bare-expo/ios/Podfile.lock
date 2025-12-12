@@ -2845,7 +2845,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNReanimated (4.1.3):
+  - RNReanimated (4.2.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2867,10 +2867,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/reanimated (= 4.1.3)
+    - RNReanimated/reanimated (= 4.2.0)
     - RNWorklets
     - Yoga
-  - RNReanimated/reanimated (4.1.3):
+  - RNReanimated/reanimated (4.2.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2892,10 +2892,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/reanimated/apple (= 4.1.3)
+    - RNReanimated/reanimated/apple (= 4.2.0)
     - RNWorklets
     - Yoga
-  - RNReanimated/reanimated/apple (4.1.3):
+  - RNReanimated/reanimated/apple (4.2.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3011,7 +3011,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.6.1):
+  - RNWorklets (0.7.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3033,9 +3033,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets (= 0.6.1)
+    - RNWorklets/worklets (= 0.7.1)
     - Yoga
-  - RNWorklets/worklets (0.6.1):
+  - RNWorklets/worklets (0.7.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3057,9 +3057,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets/apple (= 0.6.1)
+    - RNWorklets/worklets/apple (= 0.7.1)
     - Yoga
-  - RNWorklets/worklets/apple (0.6.1):
+  - RNWorklets/worklets/apple (0.7.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3912,10 +3912,10 @@ SPEC CHECKSUMS:
   RNCPicker: 38a9deb903d9a8ae18b598bac727e6c84b3cf0fa
   RNDateTimePicker: 6fdd63f5d1e0f21faf4cc8674957c52958a7efae
   RNGestureHandler: 72efe2ab9d5d1b1d25b96f3ad3d174992f3bad87
-  RNReanimated: a8df76e5dd2315dfd8711d7937ec3e0e09800c74
+  RNReanimated: 03e066b9967a8ccd8ff28aa88c098d8117b4d860
   RNScreens: 23072e49d81e27f08b9451f63ac81fa33237c48f
   RNSVG: 595d31b6cd45e92424c6b623bd93e1e9b6aa8b79
-  RNWorklets: c181ebc224265a35743abc490e54a5cf66eb2add
+  RNWorklets: 78d1eb5df6aa27c762c1466aaaffba8774d807a8
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
