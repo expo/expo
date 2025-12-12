@@ -99,7 +99,7 @@ export const renderMethod = (
           tags={hasOverloads ? ['overload'] : undefined}
         />
         {hasOverloads && (
-          <div className="px-4 text-tertiary">
+          <div className="px-4 pb-2 text-tertiary">
             <BracketsEllipsesDuotoneIcon className="icon-xs mr-1 inline shrink-0" />
             <span className="text-3xs">Overload #{overloadIndex + 1}</span>
           </div>
