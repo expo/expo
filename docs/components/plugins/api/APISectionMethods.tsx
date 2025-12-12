@@ -70,7 +70,7 @@ export const renderMethod = (
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
 
-  return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
+  return signatures.map(({ name, parameters, comment, type, typeParameter }, overloadIndex) => {
     const returnComment = getTagData('returns', comment);
     const platforms = getAllTagData('platform', comment);
     return (
@@ -92,6 +92,8 @@ export const renderMethod = (
           )}
           platforms={platforms.length > 0 ? platforms : parentPlatforms}
           baseNestingLevel={baseNestingLevel}
+          // only show first overload in sidebar to avoid duplicates
+          hideInSidebar={overloadIndex > 0}
         />
         {parameters && parameters.length > 0 && (
           <>
@@ -128,7 +130,6 @@ export const renderMethod = (
             ) : undefined
           }
         />
-        {}
       </div>
     );
   });
