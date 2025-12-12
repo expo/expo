@@ -15,11 +15,38 @@ public typealias UpdatesProgressBlock = (_ successfulAssetCount: UInt, _ failedA
 public typealias UpdatesManifestBlock = (_ manifest: [String: Any]) -> Bool
 
 /**
- * Protocol for modules that depend on expo-updates for loading production updates but do not want
- * to depend on expo-updates or delegate control to the singleton EXUpdatesAppController.
+ * All updates controllers implement this protocol, which provides information on the running
+ * updates system.
  */
-@objc(EXUpdatesExternalInterface)
-public protocol UpdatesExternalInterface {
+@objc(EXUpdatesInterface)
+public protocol UpdatesInterface {
+  /*
+   * Whether updates is enabled
+   */
+  @objc var isEnabled: Bool { get }
+  /*
+   * These properties are set when updates is enabled, or the dev client is running
+   */
+  @objc var runtimeVersion: String? { get }
+  @objc var updateURL: URL? { get }
+  /*
+   * These properties are only set when updates is enabled
+   */
+  @objc var launchedUpdateId: UUID? { get }
+  @objc var embeddedUpdateId: UUID? { get }
+  /*
+   * User code or third party modules can add a listener that will be called
+   * on updates state machine transitions (only when updates is enabled)
+   */
+  @objc func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> String
+  @objc func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String)
+}
+
+/**
+ * Implemented only by the dev client updates controller.
+ */
+@objc(EXUpdatesDevLauncherInterface)
+public protocol UpdatesDevLauncherInterface: UpdatesInterface {
   @objc weak var updatesExternalInterfaceDelegate: (any UpdatesExternalInterfaceDelegate)? { get set }
   @objc var launchAssetURL: URL? { get }
 
@@ -44,16 +71,10 @@ public protocol UpdatesExternalInterface {
  */
 @objc(EXUpdatesExternalInterfaceDelegate)
 public protocol UpdatesExternalInterfaceDelegate {
-  @objc func updatesExternalInterfaceDidRequestRelaunch(_ updatesExternalInterface: UpdatesExternalInterface)
+  @objc func updatesExternalInterfaceDidRequestRelaunch(_ updatesExternalInterface: UpdatesDevLauncherInterface)
 }
 
-/**
- * Protocol for use by the expo-app-metrics library
- */
-@objc(EXUpdatesExternalMetricsInterface)
-public protocol UpdatesExternalMetricsInterface {
-  @objc var runtimeVersion: String? { get }
-  @objc var updateURL: URL? { get }
-  @objc var launchedUpdateId: UUID? { get }
-  @objc var embeddedUpdateId: UUID? { get }
+@objc(EXUpdatesStateChangeListener)
+public protocol UpdatesStateChangeListener {
+  func updatesStateDidChange(_ event: [String: Any])
 }

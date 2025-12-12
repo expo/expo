@@ -3,12 +3,44 @@ package expo.modules.updatesinterface
 import android.net.Uri
 import org.json.JSONObject
 import java.lang.ref.WeakReference
+import java.util.UUID
 
 /**
  * Interface for modules that depend on expo-updates for loading production updates but do not want
  * to depend on expo-updates or delegate control to the singleton UpdatesController.
+ *
+ * All updates controllers implement this protocol
  */
 interface UpdatesInterface {
+  /**
+   * Whether updates is enabled
+   */
+  val isEnabled: Boolean get() = false
+
+  /**
+   * These properties are set when updates is enabled, or the dev client is running
+   */
+  val runtimeVersion: String?
+  val updateUrl: Uri?
+
+  /**
+   * These properties are only set when updates is enabled
+   */
+  val launchedUpdateId: UUID? get() = null
+  val embeddedUpdateId: UUID? get() = null
+
+  /**
+   * User code or third party modules can add a listener that will be called
+   * on updates state machine transitions (only when updates is enabled)
+   */
+  fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): String
+  fun unsubscribeFromUpdatesStateChanges(subscriptionId: String)
+}
+
+/**
+ * Implemented only by the dev client updates controller.
+ */
+interface UpdatesDevLauncherInterface : UpdatesInterface {
   interface UpdateCallback {
     fun onFailure(e: Exception?)
     fun onSuccess(update: Update?)
@@ -32,7 +64,12 @@ interface UpdatesInterface {
   fun reset()
   fun fetchUpdateWithConfiguration(configuration: HashMap<String, Any>, callback: UpdateCallback)
   fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>): Boolean
+}
 
-  val runtimeVersion: String?
-  val updateUrl: Uri?
+interface UpdatesInterfaceCallbacks {
+  fun onRequestRelaunch()
+}
+
+interface UpdatesStateChangeListener {
+  fun updatesStateDidChange(event: Map<String, Any>)
 }
