@@ -16,7 +16,7 @@ import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **important** SplitView is currently in [alpha](/more/release-statuses/#alpha) and available in [canary releases](/versions/latest/#using-pre-release-versions) of `expo-router`.
+> **important** SplitView is currently in [alpha](/more/release-statuses/#alpha) and available in [canary releases](/versions/latest/#using-pre-release-versions) of `expo-router`. It requires configuration in **app.json** and is not available in Expo Go.
 
 `expo-router/unstable-split-view` is a submodule of `expo-router` and exports components to build split view layouts using [platform-native system split views](https://developer.apple.com/design/human-interface-guidelines/split-views).
 
@@ -74,7 +74,7 @@ A simple sidebar with main content:
 import { Link } from 'expo-router';
 import { SplitView } from 'expo-router/unstable-split-view';
 import { Text, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-screens/experimental';
 
 export default function Layout() {
   return (
@@ -185,9 +185,9 @@ Here's a password manager-style app with three columns:
 />
 
 ```tsx app/_layout.tsx
-import { Link, useGlobalSearchParams } from 'expo-router';
+import { Link, Color, useGlobalSearchParams } from 'expo-router';
 import { SplitView } from 'expo-router/unstable-split-view';
-import { PlatformColor, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-screens/experimental';
 
 export default function Layout() {
@@ -257,7 +257,7 @@ function PasscodeCard({ param, title }: { param: string; title: string }) {
       style={[
         style.passcodeCard,
         {
-          backgroundColor: isActive ? PlatformColor('systemBlue') : PlatformColor('systemGray6'),
+          backgroundColor: isActive ? Color.ios.systemBlue : Color.ios.systemGray6,
         },
       ]}
       asChild>
@@ -275,7 +275,7 @@ function PasswordElement({ title }: { title: string }) {
     <Link href={`/${params.type}/${title}/`} asChild>
       <Pressable
         style={{
-          backgroundColor: isActive ? PlatformColor('systemBlue') : undefined,
+          backgroundColor: isActive ? Color.ios.systemBlue : undefined,
           padding: 12,
         }}>
         <SafeAreaView edges={{ left: true }}>
@@ -327,12 +327,13 @@ export default function Index() {
 ```
 
 ```tsx app/[type]/index.tsx
-import { PlatformColor, Text, View } from 'react-native';
+import { Color } from 'expo-router';
+import { Text, View } from 'react-native';
 
 export default function Index() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ color: PlatformColor('label'), fontSize: 24, fontWeight: 'bold' }}>
+      <Text style={{ color: Color.ios.label, fontSize: 24, fontWeight: 'bold' }}>
         Nothing is selected
       </Text>
     </View>
