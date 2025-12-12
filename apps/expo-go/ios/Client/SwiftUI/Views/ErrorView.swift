@@ -31,7 +31,9 @@ struct ErrorView: View {
           Spacer()
 
           if let onDismiss = onDismiss {
-            Button(action: onDismiss) {
+            Button {
+              onDismiss()
+            } label: {
               Image(systemName: "xmark.circle.fill")
                 .font(.title2)
                 .foregroundColor(.secondary)
@@ -56,7 +58,9 @@ struct ErrorView: View {
       Spacer()
 
       VStack(spacing: 12) {
-        Button(action: onRetry) {
+        Button {
+          onRetry()
+        } label: {
           HStack {
             Image(systemName: "arrow.clockwise")
             Text("Try Again")
@@ -70,7 +74,9 @@ struct ErrorView: View {
         }
 
         if let onDismiss = onDismiss {
-          Button(action: onDismiss) {
+          Button {
+            onDismiss()
+          } label: {
             Text("Dismiss")
               .font(.headline)
               .foregroundColor(.black)
@@ -86,12 +92,4 @@ struct ErrorView: View {
     }
     .background(Color.expoSystemBackground)
   }
-}
-
-#Preview {
-  ErrorView(
-    error: .networkError(URLError(.notConnectedToInternet)),
-    onRetry: {},
-    onDismiss: {}
-  )
 }

@@ -14,7 +14,9 @@ struct SnackRow: View {
   }
 
   var body: some View {
-    Button(action: onTap) {
+    Button {
+      onTap()
+    } label: {
       HStack {
         VStack(alignment: .leading, spacing: 4) {
           Text(snack.name)
@@ -68,14 +70,5 @@ struct SnackRow: View {
       .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     .buttonStyle(PlainButtonStyle())
-  }
-
-  private func getSupportedSDKVersion() -> String {
-    let versions = EXVersions.sharedInstance()
-    return versions.sdkVersion
-  }
-
-  private func getSDKMajorVersion(_ sdkVersion: String) -> String {
-    return sdkVersion.components(separatedBy: ".").first ?? sdkVersion
   }
 }

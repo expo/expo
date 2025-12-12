@@ -78,7 +78,9 @@ struct SettingsTabView: View {
             .foregroundColor(.primary)
 
           VStack(spacing: 0) {
-            Button(action: { allowAnalytics.toggle() }) {
+            Button {
+              allowAnalytics.toggle()
+            } label: {
               HStack {
                 Text("Allow access to app-related data for tracking")
                   .font(.body)

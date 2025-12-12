@@ -9,7 +9,9 @@ struct GestureOption: View {
   let action: () -> Void
 
   var body: some View {
-    Button(action: action) {
+    Button {
+      action()
+    } label: {
       HStack {
         Image(imageName)
           .foregroundColor(.primary)

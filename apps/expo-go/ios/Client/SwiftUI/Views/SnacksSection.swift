@@ -11,25 +11,34 @@ struct SnacksSection: View {
 
       VStack(spacing: 6) {
         ForEach(viewModel.snacks.prefix(3)) { snack in
-          SnackRow(snack: snack) {
-            openSnack(snack)
-          }
+          SnackRowWithAction(snack: snack)
         }
 
         if viewModel.snacks.count > 3 {
-          Button("See all snacks") {
-            // TODO: Navigate to snacks list
+          NavigationLink(destination: SnacksListView(accountName: viewModel.selectedAccount?.name ?? "")) {
+            Text("See all snacks")
+              .frame(maxWidth: .infinity)
+              .padding()
+              .background(Color.expoSecondarySystemGroupedBackground)
+              .clipShape(RoundedRectangle(cornerRadius: 12))
           }
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(Color.expoSecondarySystemGroupedBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
         }
       }
     }
   }
+}
 
-  private func openSnack(_ snack: Snack) {
+struct SnackRowWithAction: View {
+  let snack: Snack
+  @EnvironmentObject var viewModel: HomeViewModel
+
+  var body: some View {
+    SnackRow(snack: snack) {
+      openSnack()
+    }
+  }
+
+  private func openSnack() {
     let supportedSDK = getSupportedSDKVersion()
     let snackSDKMajor = getSDKMajorVersion(snack.sdkVersion)
     let supportedSDKMajor = getSDKMajorVersion(supportedSDK)
@@ -48,14 +57,5 @@ struct SnacksSection: View {
 
     viewModel.openApp(url: url)
     viewModel.addToRecentlyOpened(url: url, name: snack.name, iconUrl: nil)
-  }
-
-  private func getSupportedSDKVersion() -> String {
-    let versions = EXVersions.sharedInstance()
-    return versions.sdkVersion ?? "54"
-  }
-
-  private func getSDKMajorVersion(_ sdkVersion: String) -> String {
-    return sdkVersion.components(separatedBy: ".").first ?? sdkVersion
   }
 }

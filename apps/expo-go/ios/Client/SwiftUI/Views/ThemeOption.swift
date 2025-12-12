@@ -9,7 +9,9 @@ struct ThemeOption: View {
   let action: () -> Void
 
   var body: some View {
-    Button(action: action) {
+    Button {
+      action()
+    } label: {
       HStack {
         Image(systemName: icon)
           .foregroundColor(.primary)

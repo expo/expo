@@ -17,12 +17,36 @@ struct HomeTabView: View {
             RecentlyOpenedSection()
           }
 
-          if !viewModel.projects.isEmpty && viewModel.isLoggedIn {
-            ProjectsSection()
-          }
+          if viewModel.isLoggedIn {
+            if viewModel.isLoadingData && viewModel.projects.isEmpty {
+              ProjectsLoadingSection()
+            } else if !viewModel.projects.isEmpty {
+              ProjectsSection()
+            } else if !viewModel.isLoadingData {
+              VStack(alignment: .leading, spacing: 12) {
+                SectionHeader(title: "PROJECTS")
+                EmptyStateView(
+                  icon: "folder",
+                  message: "No projects yet",
+                  description: "Create your first project on expo.dev"
+                )
+              }
+            }
 
-          if !viewModel.snacks.isEmpty && viewModel.isLoggedIn {
-            SnacksSection()
+            if viewModel.isLoadingData && viewModel.snacks.isEmpty {
+              SnacksLoadingSection()
+            } else if !viewModel.snacks.isEmpty {
+              SnacksSection()
+            } else if !viewModel.isLoadingData {
+              VStack(alignment: .leading, spacing: 12) {
+                SectionHeader(title: "SNACKS")
+                EmptyStateView(
+                  icon: "play.rectangle",
+                  message: "No snacks yet",
+                  description: "Try Snack to experiment with Expo"
+                )
+              }
+            }
           }
         }
         .padding()
@@ -31,6 +55,12 @@ struct HomeTabView: View {
       .refreshable {
         await viewModel.refreshData()
       }
+    }
+    .onAppear {
+      viewModel.onViewWillAppear()
+    }
+    .onDisappear {
+      viewModel.onViewDidDisappear()
     }
   }
 }

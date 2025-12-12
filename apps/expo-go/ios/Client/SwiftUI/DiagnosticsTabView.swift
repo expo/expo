@@ -46,7 +46,9 @@ struct DiagnosticCard: View {
   let action: () -> Void
 
   var body: some View {
-    Button(action: action) {
+    Button {
+      action()
+    } label: {
       HStack(alignment: .top) {
         VStack(alignment: .leading, spacing: 8) {
           HStack {

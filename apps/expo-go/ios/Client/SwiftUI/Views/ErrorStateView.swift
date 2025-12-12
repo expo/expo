@@ -23,7 +23,9 @@ struct ErrorStateView: View {
         .multilineTextAlignment(.center)
 
       if let onRetry = onRetry {
-        Button(action: onRetry) {
+        Button {
+          onRetry()
+        } label: {
           HStack(spacing: 6) {
             Image(systemName: "arrow.clockwise")
               .font(.caption)
