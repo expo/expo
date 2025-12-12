@@ -10,8 +10,10 @@ const PreviewRouteContext_1 = require("../preview/PreviewRouteContext");
 const native_1 = require("../preview/native");
 let _isZoomTransitionEnabled = false;
 function enableZoomTransition() {
-    console.warn('[expo-router] Zoom transition is an experimental feature. Use at your own risk.');
-    _isZoomTransitionEnabled = true;
+    if (process.env.EXPO_OS === 'ios') {
+        console.warn('[expo-router] Zoom transition is an experimental feature. Use at your own risk.');
+        _isZoomTransitionEnabled = true;
+    }
 }
 function isZoomTransitionEnabled() {
     return _isZoomTransitionEnabled;

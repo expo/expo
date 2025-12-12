@@ -98,7 +98,7 @@ export function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps) {
 }
 // #endregion
 
-// #region Zoom transition
+// #region Zoom transition enabler
 const LinkZoomTransitionEnablerNativeView: React.ComponentType<
   ViewProps & { zoomTransitionSourceIdentifier: string; disableForceFlatten?: boolean }
 > | null = areNativeViewsAvailable
@@ -119,7 +119,9 @@ export function LinkZoomTransitionEnabler(props: {
     />
   );
 }
+// #endregion
 
+// #region Zoom transition source
 interface LinkSourceAlignmentRect {
   x: number;
   y: number;
@@ -127,18 +129,21 @@ interface LinkSourceAlignmentRect {
   height: number;
 }
 
-const LinkZoomTransitionSourceNativeView: React.ComponentType<
-  ViewProps & {
-    identifier: string;
-    disableForceFlatten?: boolean;
-    alignment?: LinkSourceAlignmentRect;
-  }
-> | null = areNativeViewsAvailable
-  ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
-  : null;
-export function LinkZoomTransitionSource(
-  props: PropsWithChildren<{ identifier: string; alignment?: LinkSourceAlignmentRect }>
-) {
+interface LinkZoomTransitionSourceProps extends PropsWithChildren {
+  identifier: string;
+  alignment?: LinkSourceAlignmentRect;
+  animateAspectRatioChange?: boolean;
+}
+
+interface LinkZoomTransitionSourceNativeProps extends ViewProps, LinkZoomTransitionSourceProps {
+  disableForceFlatten?: boolean;
+}
+
+const LinkZoomTransitionSourceNativeView: React.ComponentType<LinkZoomTransitionSourceNativeProps> | null =
+  areNativeViewsAvailable
+    ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
+    : null;
+export function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps) {
   if (!LinkZoomTransitionSourceNativeView) {
     return null;
   }
@@ -152,7 +157,9 @@ export function LinkZoomTransitionSource(
     />
   );
 }
+// #endregion
 
+// #region Zoom transition rect detector
 const LinkZoomTransitionAlignmentRectDetectorNative: React.ComponentType<
   ViewProps & { identifier: string; disableForceFlatten?: boolean; children?: React.ReactNode }
 > | null = areNativeViewsAvailable

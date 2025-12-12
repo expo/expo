@@ -822,6 +822,19 @@ jobs:
       - run: echo "${{ replaceAll(github.ref_name, '/', '-') }}"
 ```
 
+#### `substring(input, start, end)`
+
+Extracts a substring from `input` starting at `start` and ending at `end`. If `end` is not provided, the substring is extracted from `start` to the end of `input`. Uses [`String#substring`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring) under the hood.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo "${{ substring(github.ref_name, 0, 50) }}"
+```
+
 ## Pre-packaged jobs
 
 ### `jobs.<job_id>.type`

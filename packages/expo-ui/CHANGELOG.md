@@ -3,9 +3,12 @@
 ## Unpublished
 
 ### 🛠 Breaking changes
+
 - [iOS] - Match `DatePicker` API with SwiftUI API. Remove `DateTimePicker` component ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Merge Circular/Linear progress components into one ([#41596](https://github.com/expo/expo/pull/41596) by [@jakex7](https://github.com/jakex7))
 
 ### 🎉 New features
+
 - [iOS] - Add range and custom label support in `DatePicker` ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes

@@ -57,7 +57,7 @@ import ExpoModulesCore
     hostingController.view.frame = view.frame
     hostingController.view.autoresizingMask = [.width, .height]
 #endif
-    
+
   }
 
 #if os(iOS) || os(tvOS)
