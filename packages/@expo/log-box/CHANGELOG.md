@@ -15,3 +15,5 @@
 ### 💡 Others
 
 ### ⚠️ Notices
+
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
