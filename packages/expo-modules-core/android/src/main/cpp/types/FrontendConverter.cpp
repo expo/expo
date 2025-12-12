@@ -9,6 +9,7 @@
 #include "../JSIContext.h"
 #include "../JavaScriptObject.h"
 #include "../JavaScriptArrayBuffer.h"
+#include "../NativeArrayBuffer.h"
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
 #include "../javaclasses/Collections.h"
@@ -197,6 +198,31 @@ bool TypedArrayFrontendConverter::canConvert(
   const jsi::Value &value
 ) const {
   return value.isObject();
+}
+
+jobject NativeArrayBufferFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+  auto arrayBuffer = value.asObject(rt).getArrayBuffer(rt);
+  return NativeArrayBuffer::newInstance(
+    jsiContext,
+    rt,
+    arrayBuffer
+  ).release();
+}
+
+bool NativeArrayBufferFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  if (value.isObject()) {
+    auto object = value.getObject(rt);
+    return object.isArrayBuffer(rt);
+  }
+  return false;
 }
 
 jobject JavaScriptValueFrontendConverter::convert(

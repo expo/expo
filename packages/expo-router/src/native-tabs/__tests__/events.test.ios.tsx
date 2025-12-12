@@ -185,7 +185,7 @@ it('does not pop stack on repeated tab press', async () => {
   expect(screen.getByTestId('a-index')).toBeVisible();
   expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
   expect(BottomTabsScreen.mock.calls[0][0].tabKey).toMatch(/index-[-\w]+/);
-  expect(BottomTabsScreen.mock.calls[1][0].tabKey).toMatch(/a-\w+/);
+  expect(BottomTabsScreen.mock.calls[1][0].tabKey).toMatch(/a-[-\w]+/);
 
   const indexTabKey = BottomTabsScreen.mock.calls[0][0].tabKey;
   const aTabKey = BottomTabsScreen.mock.calls[1][0].tabKey;

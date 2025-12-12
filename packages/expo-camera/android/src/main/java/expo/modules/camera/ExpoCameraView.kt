@@ -405,8 +405,14 @@ class ExpoCameraView(
     }
   }
 
+  fun recreateCamera() {
+    scope.launch {
+      createCamera()
+    }
+  }
+
   @SuppressLint("UnsafeOptInUsageError")
-  suspend fun createCamera() {
+  private suspend fun createCamera() {
     if (!shouldCreateCamera || previewPaused) {
       return
     }
@@ -781,8 +787,8 @@ class ExpoCameraView(
     addView(
       previewView,
       ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT
+        LayoutParams.MATCH_PARENT,
+        LayoutParams.MATCH_PARENT
       )
     )
   }

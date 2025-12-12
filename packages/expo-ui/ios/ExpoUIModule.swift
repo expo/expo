@@ -6,6 +6,12 @@ public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
+    View(RNHostView.self) {
+      Prop("matchContents") { (view, matchContents: Bool) in
+        view.matchContents = matchContents
+      }
+    }
+
     OnDestroy {
       Task { @MainActor in
         NamespaceRegistry.shared.removeAll()
@@ -79,7 +85,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ExpoUI.Button.self)
     ExpoUIView(ChartView.self)
     ExpoUIView(ColorPickerView.self)
-    ExpoUIView(DateTimePickerView.self)
+    ExpoUIView(DatePickerView.self)
     ExpoUIView(DisclosureGroupView.self)
     ExpoUIView(ExpoUI.ContentUnavailableView.self)
     ExpoUIView(ExpoUI.ContextMenu.self)

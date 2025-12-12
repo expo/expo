@@ -33,6 +33,8 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
       is WritableNativeArray -> invokeNative(result)
       is WritableNativeMap -> invokeNative(result)
       is SharedObject -> invokeNative(result)
+      is JavaScriptArrayBuffer -> invokeNative(result)
+      is NativeArrayBuffer -> invokeNative(result)
       is IntArray -> invokeIntArray(result)
       is LongArray -> invokeLongArray(result)
       is FloatArray -> invokeFloatArray(result)
@@ -88,6 +90,8 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
   private external fun invokeNative(result: WritableNativeArray)
   private external fun invokeNative(result: WritableNativeMap)
   private external fun invokeNative(result: SharedObject)
+  private external fun invokeNative(result: JavaScriptArrayBuffer)
+  private external fun invokeNative(result: NativeArrayBuffer)
   private external fun invokeNative(code: String, errorMessage: String)
 
   private external fun invokeIntArray(result: IntArray)

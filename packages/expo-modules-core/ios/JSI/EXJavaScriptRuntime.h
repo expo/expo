@@ -48,11 +48,7 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 #ifdef __cplusplus
 
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
-                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
-                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
-                       runtimeScheduler:(std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeScheduler;
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime;
 
 /**
  Returns the underlying runtime object.

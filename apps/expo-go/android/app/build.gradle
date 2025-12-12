@@ -1,5 +1,10 @@
 import java.nio.file.Files
 import java.nio.file.Paths
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.CacheableTask
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -277,12 +282,33 @@ dependencies {
 // This has to be down here for some reason
 apply plugin: 'com.google.gms.google-services'
 
-def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir') {
-  doLast {
-    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/mobileRelease/mergeMobileReleaseNativeLibs/out/lib"))
-    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/questRelease/mergeQuestReleaseNativeLibs/out/lib"))
+@CacheableTask
+abstract class EnsureCrashlyticsDirTask extends DefaultTask {
+  @OutputDirectories
+  abstract ConfigurableFileCollection getTargetDirectories()
+
+  @TaskAction
+  void execute() {
+    getTargetDirectories().files.each { dir ->
+      if (!dir.exists()) {
+        if (!dir.mkdirs()) {
+          throw new RuntimeException("Failed to create directory: ${dir.absolutePath}")
+        }
+      }
+    }
   }
 }
+
+def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir', EnsureCrashlyticsDirTask) {
+  targetDirectories.from(
+    layout.buildDirectory.dir('intermediates/merged_native_libs/mobileRelease/mergeMobileReleaseNativeLibs/out/lib'),
+    layout.buildDirectory.dir('intermediates/merged_native_libs/questRelease/mergeQuestReleaseNativeLibs/out/lib')
+  )
+
+  group = 'crashlytics'
+  description = 'Creates missing native lib directories to prevent Crashlytics build errors'
+}
+
 preBuild.dependsOn(ensureCrashlyticsDir)
 
 afterEvaluate {

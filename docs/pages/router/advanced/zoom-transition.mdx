@@ -1,0 +1,304 @@
+---
+title: Zoom transition
+description: Learn how to use the zoom transition to create fluid animations between screens when using Expo Router for iOS.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **important** Zoom transition is currently in [alpha](/more/release-statuses/#alpha) and available in [canary releases](/versions/latest/#using-pre-release-versions) of `expo-router`.
+
+> **info** **Tip:** To enable zoom transitions, run `enableZoomTransition()` in your **app/\_layout.tsx`** file.
+
+<ContentSpotlight
+  alt="A video presenting simple gallery with zoom transitions."
+  file="expo-router/zoom-transition.mp4"
+/>
+
+Zoom transitions provide a fluid animation effect when navigating between screens by zooming from a source element to the destination screen. This feature leverages iOS 18+ native zoom transition API to create shared, interactive transitions that produce a sense of spatial awareness between routes. For example, a card thumbnail may transition to become a full-width banner on the next route.
+
+## Get started
+
+To implement zoom transitions, you need to use the `Link.AppleZoom` component to mark the source element and optionally `Link.AppleZoom.Target` to specify the target alignment on the destination screen.
+
+### Basic example
+
+Here's a basic example showing how to create a zoom transition from an image to a preview screen. Start by enabling `enableZoomTransition()` in your root app layout file (**app/\_layout.tsx**):
+
+```tsx app/_layout.tsx
+import { enableZoomTransition } from 'expo-router/internal/utils';
+
+enableZoomTransition();
+export default function Layout() {
+  ... // your layout code
+}
+```
+
+Add `Link.AppleZoom` to wrap the source element (`Image`) in your screen component that you want to zoom from:
+
+```tsx app/index.tsx
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { Link } from 'expo-router';
+import { Image } from 'expo-image';
+
+export default function HomeScreen() {
+  return (
+    <View style={styles.container}>
+      <Link href="/image" asChild>
+        <Link.AppleZoom>
+          <Pressable>
+            <Image
+              source={{ uri: 'https://example.com/image-1.jpg' }}
+              style={{ width: 100, height: 200 }}
+            />
+          </Pressable>
+        </Link.AppleZoom>
+      </Link>
+    </View>
+  );
+}
+```
+
+In the destination screen, define the `Image` component:
+
+```tsx app/image.tsx
+import { View, Text, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+
+export default function DetailsScreen() {
+  return <Image source={{ uri: 'https://example.com/image-1.jpg' }} style={{ flex: 1 }} />;
+}
+```
+
+## Using `Link.AppleZoom`
+
+The `Link.AppleZoom` component wraps the element you want to zoom from. It is useful for marking the source of the zoom transition, if you want to include additional elements alongside the zoomed content.
+
+```tsx
+<Link href="/image" asChild>
+  <Pressable>
+    <Link.AppleZoom>
+      <View>{/* Your content */}</View>
+    </Link.AppleZoom>
+    <Text>Subtitle</Text>
+  </Pressable>
+</Link>
+```
+
+> **info** `Link.AppleZoom` only accepts a single child component. If you need to wrap multiple children, use a `View` or another container component.
+
+### Customizing alignment
+
+You can specify the alignment of the zoomed element on the destination screen by using `Link.AppleZoom.Target` element.
+
+```tsx app/image.tsx
+export default function ImageScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Link.AppleZoom.Target>
+        <Image source={{ uri: 'https://example.com/image-1.jpg' }} style={{ width: '100%' }} />
+      </Link.AppleZoom.Target>
+    </View>
+  );
+}
+```
+
+If you need more control over the alignment rectangle, you can pass an `alignmentRect` prop to `Link.AppleZoom`. However, this is normally not necessary if you use `Link.AppleZoom.Target`.
+
+> **info** The `alignmentRect` prop internally relies on [`alignmentRectProvider`](https://developer.apple.com/documentation/uikit/uiviewcontroller/transition/zoomoptions/alignmentrectprovider) API.
+
+```tsx
+<Link.AppleZoom alignmentRect={{ x: 0, y: 0, width: 200, height: 300 }}>
+  <Image source={{ uri: 'https://example.com/image-1.jpg' }} style={{ width: 100, height: 150 }} />
+</Link.AppleZoom>
+```
+
+## Complete example
+
+Here's a more complex example showing a gallery grid with zoom transitions to detail views. The source screen component (**app/index.tsx**) uses `Link.AppleZoom` to wrap an `Image` component:
+
+```tsx app/index.tsx
+import { Image } from 'expo-image';
+import { Link } from 'expo-router';
+import { useState } from 'react';
+import { Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+
+const IMAGES = [
+  // Define your array of images here.
+];
+
+export default function Index() {
+  return (
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.scrollViewContent}
+      contentInsetAdjustmentBehavior="automatic">
+      {IMAGES.map((_, index) => (
+        <Thumbnail key={index} index={index} />
+      ))}
+    </ScrollView>
+  );
+}
+
+function Thumbnail({ index }: { index: number }) {
+  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
+  return (
+    <Link
+      href={{
+        pathname: `/image/[id]`,
+        // You need to pass the image size to the detail page, so that the layout can be measured during the first render.
+        params: { id: index, width: size?.width, height: size?.height },
+      }}
+      asChild>
+      <Pressable style={styles.thumbnail}>
+        <Link.AppleZoom>
+          <Image
+            source={IMAGES[index % IMAGES.length]}
+            style={styles.thumbnailImage}
+            onLoad={e => setSize({ width: e.source.width, height: e.source.height })}
+          />
+        </Link.AppleZoom>
+        <Text style={{ textAlign: 'center' }}>Photo {index + 1}</Text>
+      </Pressable>
+    </Link>
+  );
+}
+
+const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+  scrollViewContent: {
+    justifyContent: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+  },
+  thumbnail: {
+    width: 170,
+    aspectRatio: 1,
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
+});
+```
+
+In the destination screen, the `Link.AppleZoomTarget` is used to specify the alignment of the zoomed element:
+
+```tsx app/image/[id].tsx
+import { Image } from 'expo-image';
+import { Link, useLocalSearchParams } from 'expo-router';
+import { useMemo } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+
+export default function ImagePage() {
+  const params = useLocalSearchParams();
+  const index = params.id ? parseInt(params.id as string, 10) : 0;
+  const imageSource = IMAGES[index % IMAGES.length];
+  const imageSize = {
+    width: parseInt(params.width as string, 10),
+    height: parseInt(params.height as string, 10),
+  };
+  const windowDimensions = useWindowDimensions();
+  // Compute the size to fit within the window while maintaining aspect ratio.
+  const computedSize = useMemo(() => {
+    if (!imageSize.width || !imageSize.height) {
+      return { width: windowDimensions.width, height: windowDimensions.height };
+    }
+    const widthRatio = windowDimensions.width / imageSize.width;
+    const heightRatio = windowDimensions.height / imageSize.height;
+    const minRatio = Math.min(widthRatio, heightRatio);
+    return {
+      width: imageSize.width * minRatio,
+      height: imageSize.height * minRatio,
+    };
+  }, [imageSize, windowDimensions]);
+
+  return (
+    <View style={styles.container}>
+      <Link.AppleZoomTarget>
+        <View style={{ ...computedSize }}>
+          <Image source={imageSource} style={styles.image} />
+        </View>
+      </Link.AppleZoomTarget>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+});
+```
+
+## Platform support
+
+Zoom transitions is only available on iOS 18 and later. On older iOS versions or other platforms, the component will render normally without the zoom animation effect.
+
+The zoom transition components automatically detect platform support and gracefully degrade to standard navigation on unsupported platforms.
+
+## Known limitations
+
+<Collapsible summary="Using zoom transition with headers">
+
+We recommend avoiding the use of zoom transitions when navigating between screens that have a header (navigation bar). There are known issues with the native iOS zoom transition API that can lead to visual glitches or unexpected behavior when headers are involved.
+
+</Collapsible>
+
+<Collapsible summary="Single child requirement">
+
+Both `Link.AppleZoom` and `Link.AppleZoom.Target` only accept a single child component. If you attempt to pass multiple children, a warning will be logged and the component will not render properly.
+
+**Incorrect:**
+
+```tsx
+<Link.AppleZoom>
+  <View />
+  <Text />
+</Link.AppleZoom>
+```
+
+**Correct:**
+
+```tsx
+<Link.AppleZoom>
+  <View>
+    <Image />
+    <Text />
+  </View>
+</Link.AppleZoom>
+```
+
+</Collapsible>
+
+<Collapsible summary="Supported only within router's Stack navigator">
+
+The zoom transition feature is only supported when using the router's built-in Stack navigator.
+If you attempt to use Link with zoom transition to a screen that is not part of a Stack navigator, the zoom transition will not work as expected.
+
+</Collapsible>
+
+<Collapsible summary="Must be used within a Link">
+
+`Link.AppleZoom` must be used as a direct or indirect child of a `Link` component with the `asChild` prop. Using it outside this context will result in an error.
+
+</Collapsible>
+
+<Collapsible summary="iOS 18+ only">
+
+The zoom transition feature requires iOS 18 or later. While the components will render on older versions, the zoom animation will not be applied.
+
+</Collapsible>

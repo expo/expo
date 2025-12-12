@@ -1,4 +1,3 @@
-import { toByteArray } from 'base64-js';
 import { UnavailabilityError, UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
 
 import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest } from './Crypto.types';
@@ -46,9 +45,6 @@ export function getRandomBytes(byteCount: number): Uint8Array {
     const byteArray = new Uint8Array(validByteCount);
     ExpoCrypto.getRandomValues(byteArray);
     return byteArray;
-  } else if (ExpoCrypto.getRandomBase64String) {
-    const base64 = ExpoCrypto.getRandomBase64String(validByteCount);
-    return toByteArray(base64);
   } else {
     throw new UnavailabilityError('expo-crypto', 'getRandomBytes');
   }
@@ -68,9 +64,6 @@ export async function getRandomBytesAsync(byteCount: number): Promise<Uint8Array
     const byteArray = new Uint8Array(validByteCount);
     ExpoCrypto.getRandomValues(byteArray);
     return byteArray;
-  } else if (ExpoCrypto.getRandomBase64StringAsync) {
-    const base64 = await ExpoCrypto.getRandomBase64StringAsync(validByteCount);
-    return toByteArray(base64);
   } else {
     throw new UnavailabilityError('expo-crypto', 'getRandomBytesAsync');
   }

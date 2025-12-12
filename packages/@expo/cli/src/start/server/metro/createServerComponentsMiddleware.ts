@@ -334,7 +334,7 @@ export function createServerComponentsMiddleware(
   function getResolveClientEntry(context: {
     platform: string;
     engine?: 'hermes' | null;
-    ssrManifest?: Map<string, string>;
+    ssrManifest?: Map<string, string | null>;
   }): (
     file: string,
     isServer: boolean
@@ -515,7 +515,7 @@ export function createServerComponentsMiddleware(
       body?: ReadableStream<Uint8Array>;
       engine?: 'hermes' | null;
       contentType?: string;
-      ssrManifest?: Map<string, string>;
+      ssrManifest?: Map<string, string | null>;
       decodedBody?: unknown;
       routerOptions: Record<string, any>;
     },
@@ -581,7 +581,7 @@ export function createServerComponentsMiddleware(
         routerOptions,
       }: {
         platform: string;
-        ssrManifest: Map<string, string>;
+        ssrManifest: Map<string, string | null>;
         routerOptions: Record<string, any>;
       },
       files: ExportAssetMap

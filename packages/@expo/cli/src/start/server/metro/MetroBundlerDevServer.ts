@@ -34,7 +34,6 @@ import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
 import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import {
   createServerComponentsMiddleware,
@@ -134,6 +133,14 @@ interface SSRModuleContentsResult extends Omit<BundleDirectResult, 'bundle'> {
   map: string;
 }
 
+// TODO(@kitten): We access this here to run server-side code bundled by metro
+// It's not isolated into a worker thread yet
+// Check `metro-require/require.ts` for how this function is defined
+declare namespace globalThis {
+  const __c: (() => void) | undefined;
+  let __expo_rsc_inject_module: (params: { code: string; id: string }) => void | undefined;
+}
+
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
 /** Default port to use for apps running in Expo Go. */
@@ -167,7 +174,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
-  private async exportServerRoute({
+  private async exportServerRouteAsync({
     contents,
     artifactFilename,
     files,
@@ -218,7 +225,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files.set(artifactFilename, fileData);
   }
 
-  private async exportMiddleware({
+  private async exportMiddlewareAsync({
     manifest,
     appDir,
     outputDir,
@@ -243,7 +250,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       path.join(outputDir, path.relative(appDir, middlewareFilePath.replace(/\.[tj]sx?$/, '.js')))
     );
 
-    await this.exportServerRoute({
+    await this.exportServerRouteAsync({
       contents,
       artifactFilename,
       files,
@@ -301,7 +308,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     }
 
-    await this.exportMiddleware({
+    await this.exportMiddlewareAsync({
       manifest,
       appDir,
       outputDir,
@@ -322,7 +329,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               path.join(outputDir, path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js')))
             );
 
-      await this.exportServerRoute({
+      await this.exportServerRouteAsync({
         contents,
         artifactFilename,
         files,
@@ -673,8 +680,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
       platform: expoBundleOptions.platform ?? 'web',
-      // @ts-expect-error: `runtimeBytecodeVersion` does not exist in `expoBundleOptions` or `TransformInputOptions`
-      runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
     };
 
     const resolvedEntryFilePath = await this.resolveRelativePathAsync(filePath, {
@@ -688,6 +693,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
+    // TODO(@kitten): We've flagged this way of "direct transpilation" for replacement, since it's hard to maintain
+    // It's possible that the intention here was to do something like what `exportEmbedAsync` is doing (using Server.DEFAULT_BUNDLE_OPTIONS)
+    // That's why the defaults were added to match types. It's unclear though if that was correct
+    // Maybe the `Server.DEFAULT_BUNDLE_OPTIONS` logic should be hoisted into `getMetroDirectBundleOptions`?
     const results = await this._bundleDirectAsync(resolvedEntryFilePath, {
       graphOptions: {
         lazy: expoBundleOptions.lazy ?? false,
@@ -696,14 +705,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       resolverOptions,
       serializerOptions: {
         ...expoBundleOptions.serializerOptions,
-
         inlineSourceMap: expoBundleOptions.inlineSourceMap ?? false,
         modulesOnly: expoBundleOptions.modulesOnly ?? false,
         runModule: expoBundleOptions.runModule ?? true,
-        // @ts-expect-error
-        sourceUrl: expoBundleOptions.sourceUrl,
-        // @ts-expect-error
-        sourceMapUrl: extraOptions.sourceMapUrl ?? expoBundleOptions.sourceMapUrl,
+        sourceUrl: expoBundleOptions.sourceUrl!,
+        sourceMapUrl: extraOptions.sourceMapUrl ?? expoBundleOptions.sourceMapUrl!,
       },
       transformOptions,
     });
@@ -919,7 +925,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     debug('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
 
-    const ssrManifest = new Map<string, string>();
+    const ssrManifest = new Map<string, string | null>();
 
     if (Object.keys(moduleIdToSplitBundle).length) {
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
@@ -935,7 +941,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Native apps with bundle splitting disabled.
       debug('No split bundles');
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
-        // @ts-expect-error
         ssrManifest.set(boundary, null);
       });
     }
@@ -1167,8 +1172,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Maybe put behind a flag for now?
       middleware.use(domComponentRenderer);
 
-      // TODO: Disable both of these when tunneling to prevent security issues
-      middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
+      middleware.use(
+        new CreateFileMiddleware({
+          metroRoot: serverRoot,
+          projectRoot: this.projectRoot,
+          appDir,
+        }).getHandler()
+      );
 
       // For providing info to the error overlay.
       middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {
@@ -1396,7 +1406,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
             if (!isInitialUpdate && hasUpdate) {
               // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
-              // @ts-expect-error
               if (typeof globalThis.__c === 'function') globalThis.__c();
 
               const allModuleIds = new Set(
@@ -1426,8 +1435,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           if (data.body?.type === 'GraphNotFoundError') {
             Log.error(
               'Available SSR HMR keys:',
-              // @ts-expect-error
-              (this.metro?._bundler._revisionsByGraphId as Map).keys()
+              `${this.metro?._bundler._revisionsByGraphId.keys()}`
             );
           }
           break;
@@ -1536,7 +1544,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         );
 
         for (const key in error) {
-          // @ts-expect-error
           err[key] = error[key];
         }
 
@@ -1660,7 +1667,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   // Ensure the global is available for SSR CSS modules to inject client updates.
   private bindRSCDevModuleInjectionHandler() {
     // Used by SSR CSS modules to broadcast client updates.
-    // @ts-expect-error
     globalThis.__expo_rsc_inject_module = this.sendClientModule.bind(this);
   }
 
@@ -1745,6 +1751,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         dev: boolean;
       };
       serializerOptions: {
+        output?: 'string' | ({} & string);
         modulesOnly: boolean;
         runModule: boolean;
         sourceMapUrl: string;
@@ -1915,7 +1922,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       let bundleCode: string | null = null;
       let bundleMap: string | null = null;
 
-      // @ts-expect-error: If the output is multi-bundle...
       if (serializerOptions.output === 'static') {
         try {
           const parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
@@ -1985,10 +1991,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         bundle: bundleCode,
         map: bundleMap,
       };
-    } catch (error) {
+    } catch (error: any) {
       // Mark the error so we know how to format and return it later.
-      // @ts-expect-error
-      error[IS_METRO_BUNDLE_ERROR_SYMBOL] = true;
+      if (error) {
+        error[IS_METRO_BUNDLE_ERROR_SYMBOL] = true;
+      }
 
       this.metro._reporter.update({
         buildID: getBuildID(buildNumber),

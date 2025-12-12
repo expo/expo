@@ -2,6 +2,7 @@ import ExpoModulesCore
 import WebKit
 
 class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
+  var identifier: String = ""
   // MARK: - Shared props
   var title: String = "" {
     didSet {
@@ -148,7 +149,7 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
   #if RCT_NEW_ARCH_ENABLED
     override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
       if let childActionView = childComponentView as? LinkPreviewNativeActionView {
-        subActions.append(childActionView)
+        subActions.insert(childActionView, at: index)
         childActionView.parentMenuUpdatable = self
       } else {
         print(

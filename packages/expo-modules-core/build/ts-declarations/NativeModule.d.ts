@@ -10,6 +10,5 @@ export declare class NativeModule<TEventsMap extends EventsMap = Record<never, n
     ViewPrototypes?: {
         [viewName: string]: object;
     };
-    [key: string]: any;
 }
 //# sourceMappingURL=NativeModule.d.ts.map

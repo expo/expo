@@ -21,6 +21,7 @@ import {
 } from '@react-navigation/native-stack';
 import * as React from 'react';
 
+import { DescriptorsContext } from './descriptors-context';
 import { useLinkPreviewContext } from '../../link/preview/LinkPreviewContext';
 
 function NativeStackNavigator({
@@ -168,20 +169,26 @@ function NativeStackNavigator({
   // END FORK
 
   return (
-    <NavigationContent>
-      <NativeStackView
-        {...rest}
-        // START FORK
-        state={computedState}
-        navigation={navigationWrapper}
-        descriptors={computedDescriptors}
-        // state={state}
-        // navigation={navigation}
-        // descriptors={descriptors}
-        // END FORK
-        describe={describe}
-      />
-    </NavigationContent>
+    // START FORK
+    <DescriptorsContext value={descriptors}>
+      {/* END FORK */}
+      <NavigationContent>
+        <NativeStackView
+          {...rest}
+          // START FORK
+          state={computedState}
+          navigation={navigationWrapper}
+          descriptors={computedDescriptors}
+          // state={state}
+          // navigation={navigation}
+          // descriptors={descriptors}
+          // END FORK
+          describe={describe}
+        />
+      </NavigationContent>
+      {/* START FORK */}
+    </DescriptorsContext>
+    // END FORK
   );
 }
 

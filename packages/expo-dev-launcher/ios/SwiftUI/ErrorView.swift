@@ -29,7 +29,9 @@ struct ErrorView: View {
       actions
     }
     .background(Color.expoSystemBackground)
+    #if !os(macOS)
     .navigationBarHidden(true)
+    #endif
   }
 
   private var stackTrace: some View {

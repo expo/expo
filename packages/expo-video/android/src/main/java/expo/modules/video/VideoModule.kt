@@ -85,9 +85,7 @@ class VideoModule : Module() {
           ref.muted
         }
         .set { ref: VideoPlayer, muted: Boolean ->
-          appContext.mainQueue.launch {
-            ref.muted = muted
-          }
+          ref.muted = muted
         }
 
       Property("volume")
@@ -95,10 +93,8 @@ class VideoModule : Module() {
           ref.volume
         }
         .set { ref: VideoPlayer, volume: Float ->
-          appContext.mainQueue.launch {
-            ref.userVolume = volume
-            ref.volume = volume
-          }
+          ref.userVolume = volume
+          ref.volume = volume
         }
 
       Property("currentTime")
@@ -180,10 +176,8 @@ class VideoModule : Module() {
           ref.playbackParameters.speed
         }
         .set { ref: VideoPlayer, playbackRate: Float ->
-          appContext.mainQueue.launch {
-            val pitch = if (ref.preservesPitch) 1f else playbackRate
-            ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
-          }
+          val pitch = if (ref.preservesPitch) 1f else playbackRate
+          ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
         }
 
       Property("isLive")
@@ -196,9 +190,7 @@ class VideoModule : Module() {
           ref.preservesPitch
         }
         .set { ref: VideoPlayer, preservesPitch: Boolean ->
-          appContext.mainQueue.launch {
-            ref.preservesPitch = preservesPitch
-          }
+          ref.preservesPitch = preservesPitch
         }
 
       Property("showNowPlayingNotification")
@@ -206,9 +198,7 @@ class VideoModule : Module() {
           ref.showNowPlayingNotification
         }
         .set { ref: VideoPlayer, showNotification: Boolean ->
-          appContext.mainQueue.launch {
-            ref.showNowPlayingNotification = showNotification
-          }
+          ref.showNowPlayingNotification = showNotification
         }
 
       Property("status")
@@ -287,9 +277,7 @@ class VideoModule : Module() {
           ref.audioMixingMode
         }
         .set { ref: VideoPlayer, audioMixingMode: AudioMixingMode ->
-          appContext.mainQueue.launch {
-            ref.audioMixingMode = audioMixingMode
-          }
+          ref.audioMixingMode = audioMixingMode
         }
 
       Property("keepScreenOnWhilePlaying")
