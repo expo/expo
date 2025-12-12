@@ -7,6 +7,7 @@ import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
@@ -31,7 +32,8 @@ import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
-import expo.modules.updatesinterface.UpdatesMetricsInterface
+import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesStateChangeListener
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +59,7 @@ class EnabledUpdatesController(
   private val context: Context,
   private var updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
-) : IUpdatesController, UpdatesMetricsInterface {
+) : IUpdatesController, UpdatesInterface {
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
   private val logger = UpdatesLogger(context.filesDir)
@@ -79,6 +81,8 @@ class EnabledUpdatesController(
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()
   override val reloadScreenManager = ReloadScreenManager()
+
+  internal val stateChangeListenerMap: MutableMap<String, UpdatesStateChangeListener> = mutableMapOf()
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context.filesDir).purgeLogEntries {
@@ -320,7 +324,7 @@ class EnabledUpdatesController(
     updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
   }
 
-  // UpdatesMetricsInterface implementations
+  // UpdatesEnabledInterface implementations
 
   override val runtimeVersion: String?
     get() = updatesConfiguration.runtimeVersionRaw
@@ -329,10 +333,24 @@ class EnabledUpdatesController(
     get() = updatesConfiguration.updateUrl
 
   override val launchedUpdateId: UUID?
-    get() = startupProcedure.launchedUpdate?.id
+    get() = launchedUpdate?.id
 
   override val embeddedUpdateId: UUID?
     get() = getEmbeddedUpdate()?.id
+
+  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): String {
+    val subscriptionId = UUID.randomUUID().toString()
+    stateChangeListenerMap[subscriptionId] = listener
+    return subscriptionId
+  }
+
+  override fun unsubscribeFromUpdatesStateChanges(subscriptionId: String) {
+    if (stateChangeListenerMap.containsKey(subscriptionId)) {
+      stateChangeListenerMap.remove(subscriptionId)
+    }
+  }
+
+  override val isEnabled: Boolean = true
 
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName

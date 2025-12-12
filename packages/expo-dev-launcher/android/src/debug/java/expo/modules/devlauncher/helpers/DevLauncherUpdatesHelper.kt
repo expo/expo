@@ -2,7 +2,7 @@ package expo.modules.devlauncher.helpers
 
 import android.content.Context
 import android.net.Uri
-import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import org.json.JSONObject
 import java.lang.Exception
 import java.util.*
@@ -11,16 +11,16 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-suspend fun UpdatesInterface.loadUpdate(
+suspend fun UpdatesDevLauncherInterface.loadUpdate(
   configuration: HashMap<String, Any>,
   context: Context,
   shouldContinue: (manifest: JSONObject) -> Boolean
-): UpdatesInterface.Update =
+): UpdatesDevLauncherInterface.Update =
   suspendCoroutine { cont ->
     this.fetchUpdateWithConfiguration(
       configuration,
-      object : UpdatesInterface.UpdateCallback {
-        override fun onSuccess(update: UpdatesInterface.Update?) {
+      object : UpdatesDevLauncherInterface.UpdateCallback {
+        override fun onSuccess(update: UpdatesDevLauncherInterface.Update?) {
           // if the update is null, we previously aborted the fetch, so we've already resumed
           update?.let { cont.resume(update) }
         }
@@ -32,7 +32,7 @@ suspend fun UpdatesInterface.loadUpdate(
           return if (shouldContinue(manifest)) {
             true
           } else {
-            cont.resume(object : UpdatesInterface.Update {
+            cont.resume(object : UpdatesDevLauncherInterface.Update {
               override val manifest: JSONObject = manifest
               override val launchAssetPath: String
                 get() = throw Exception("Tried to access launch asset path for a manifest that was not loaded")

@@ -162,8 +162,10 @@ public final class UpdatesMultipartStreamReader {
   }
 }
 
+// swiftlint:disable legacy_objc_type
 private extension Data {
   func range(of data: Data, options: Data.SearchOptions = [], in range: NSRange) -> NSRange {
     return (self as NSData).range(of: data, options: options, in: range)
   }
 }
+// swiftlint:enable legacy_objc_type

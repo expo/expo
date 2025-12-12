@@ -7,7 +7,7 @@ import EXUpdatesInterface
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
-public class EnabledAppController: InternalAppControllerInterface, UpdatesExternalMetricsInterface, StartupProcedureDelegate {
+public class EnabledAppController: InternalAppControllerInterface, UpdatesInterface, StartupProcedureDelegate {
   public weak var delegate: AppControllerDelegate?
   public var reloadScreenManager: Reloadable? = ReloadScreenManager()
 
@@ -59,7 +59,6 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesExtern
     self.logger.info(message: "AppController sharedInstance created")
     self.eventManager = QueueUpdatesEventManager(logger: logger)
     self.stateMachine = UpdatesStateMachine(logger: self.logger, eventManager: self.eventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
-    UpdatesControllerRegistry.sharedInstance.metricsController = self
   }
 
   public func start() {
@@ -159,7 +158,21 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesExtern
     stateMachine.queueExecution(stateMachineProcedure: procedure)
   }
 
-  // MARK: - UpdatesExternalMetricsInterface
+  // MARK: - UpdatesInterface
+
+  internal var stateChangeListeners: [String:any UpdatesStateChangeListener] = [:]
+
+  public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> String {
+    let subscriptionId = UUID().uuidString
+    stateChangeListeners[subscriptionId] = listener
+    return subscriptionId
+  }
+
+  public func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String) {
+    if stateChangeListeners[subscriptionId] != nil {
+      stateChangeListeners.removeValue(forKey: subscriptionId)
+    }
+  }
 
   public var runtimeVersion: String? {
     return config.runtimeVersion
@@ -176,6 +189,8 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesExtern
   public var embeddedUpdateId: UUID? {
     return getEmbeddedUpdate()?.updateId
   }
+
+  public var isEnabled: Bool = true
 
   // MARK: - Internal
 

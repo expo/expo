@@ -1,6 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable function_parameter_count
+// swiftlint:disable closure_body_length
 
 import Foundation
 
@@ -132,7 +133,9 @@ public final class RemoteAppLoader: AppLoader {
         let canApplyPatch = asset.isLaunchAsset &&
           self.launchedUpdate != nil &&
           self.requestedUpdate != nil &&
+          // swiftlint:disable force_unwrapping
           self.launchedUpdate!.updateId != self.requestedUpdate!.updateId
+          // swiftlint:enable force_unwrapping
 
         self.downloader.downloadAsset(
           asset: asset,
@@ -267,3 +270,4 @@ public final class RemoteAppLoader: AppLoader {
 }
 
 // swiftlint:enable function_parameter_count
+// swiftlint:enable closure_body_length

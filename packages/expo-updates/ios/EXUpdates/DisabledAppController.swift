@@ -1,6 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import EXUpdatesInterface
 
 /**
  * Updates controller for applications that either disable updates explicitly or have an error
@@ -9,7 +10,17 @@ import ExpoModulesCore
  * - Internal database initialization errors
  * - Configuration errors (missing required configuration)
  */
-public class DisabledAppController: InternalAppControllerInterface {
+public class DisabledAppController: InternalAppControllerInterface, UpdatesInterface {
+  public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> String {
+    return ""
+  }
+
+  public func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String) {}
+
+  public var launchedUpdateId: UUID? = nil
+
+  public var embeddedUpdateId: UUID? = nil
+
   public var reloadScreenManager: Reloadable?
 
   public let isActiveController = false
@@ -101,6 +112,14 @@ public class DisabledAppController: InternalAppControllerInterface {
       initialContext: stateMachine.context
     )
   }
+
+  // MARK: UpdatesInterface
+
+  public var runtimeVersion: String?
+
+  public var updateURL: URL?
+
+  public var isEnabled: Bool = false
 
   public func requestRelaunch(
     success successBlockArg: @escaping () -> Void,

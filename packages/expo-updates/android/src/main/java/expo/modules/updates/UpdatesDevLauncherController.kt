@@ -29,8 +29,9 @@ import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClie
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
+import expo.modules.updatesinterface.UpdatesStateChangeListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -56,7 +57,7 @@ class UpdatesDevLauncherController(
   initialUpdatesConfiguration: UpdatesConfiguration?,
   override val updatesDirectory: File?,
   private val updatesDirectoryException: Exception?
-) : IUpdatesController, UpdatesInterface {
+) : IUpdatesController, UpdatesDevLauncherInterface {
   override val eventManager = NoOpUpdatesEventManager()
   override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
 
@@ -138,13 +139,19 @@ class UpdatesDevLauncherController(
   override val updateUrl: Uri?
     get() = updatesConfiguration?.updateUrl
 
+  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): String {
+    return ""
+  }
+
+  override fun unsubscribeFromUpdatesStateChanges(subscriptionId: String) {}
+
   /**
    * Fetch an update using a dynamically generated configuration object (including a potentially
    * different update URL than the one embedded in the build).
    */
   override fun fetchUpdateWithConfiguration(
     configuration: HashMap<String, Any>,
-    callback: UpdatesInterface.UpdateCallback
+    callback: UpdatesDevLauncherInterface.UpdateCallback
   ) {
     val newUpdatesConfiguration: UpdatesConfiguration
     try {
@@ -266,7 +273,7 @@ class UpdatesDevLauncherController(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
     fileDownloader: FileDownloader,
-    callback: UpdatesInterface.UpdateCallback
+    callback: UpdatesDevLauncherInterface.UpdateCallback
   ) {
     // ensure that we launch the update we want, even if it isn't the latest one
     val currentSelectionPolicy = selectionPolicy
@@ -294,7 +301,7 @@ class UpdatesDevLauncherController(
     try {
       launcher.launch(databaseHolder.database)
       this@UpdatesDevLauncherController.launcher = launcher
-      callback.onSuccess(object : UpdatesInterface.Update {
+      callback.onSuccess(object : UpdatesDevLauncherInterface.Update {
         override val manifest: JSONObject
           get() = launcher.launchedUpdate!!.manifest
         override val launchAssetPath: String
