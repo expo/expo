@@ -211,5 +211,5 @@ function findPackageByName(packages: string[], name: string) {
 
 /** Determine if a specific version is requested for a package */
 function packageHasVersion(name = '') {
-  return name.indexOf('@') > 0; // Scoped packages may start with `@`
+  return name.indexOf('@', 1) > 0; // Scoped packages may start with `@`
 }
