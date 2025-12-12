@@ -8,7 +8,55 @@ import { UpdatesLogEntry } from 'expo-updates';
 import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const ExpoUpdatesE2ETest = requireNativeModule('ExpoUpdatesE2ETest');
+const ExpoUpdatesE2ETestModule = requireNativeModule('ExpoUpdatesE2ETest');
+
+ExpoUpdatesE2ETestModule.addListener('Expo.updatesE2EStateChangeEvent', _handleE2EStateChangeEvent);
+
+type UpdatesE2EModuleState = {
+  runtimeVersion: string;
+  embeddedUpdateId: string;
+  launchedUpdateId: string;
+  type?: string | null;
+  manifest?: ExpoUpdatesManifest | null;
+};
+
+const _updatesE2EStateChangeListeners = new Set<(event: any) => void>();
+
+// Reemits native state change events
+function _handleE2EStateChangeEvent(params: any) {
+  const newParams = typeof params === 'string' ? JSON.parse(params) : { ...params };
+
+  _updatesE2EStateChangeListeners.forEach((listener) => listener(newParams));
+}
+
+function useUpdatesE2EModuleState() {
+  const runtimeVersion = ExpoUpdatesE2ETestModule.getRuntimeVersion();
+  const embeddedUpdateId = ExpoUpdatesE2ETestModule.getEmbeddedUpdateId();
+  const launchedUpdateId = ExpoUpdatesE2ETestModule.getLaunchedUpdateId();
+  const [state, setState] = React.useState<UpdatesE2EModuleState>({
+    type: null,
+    manifest: null,
+    runtimeVersion,
+    embeddedUpdateId,
+    launchedUpdateId,
+  });
+  const listener = React.useCallback((event: any) => {
+    setState({
+      type: event.type,
+      manifest: event.manifest,
+      runtimeVersion,
+      embeddedUpdateId,
+      launchedUpdateId,
+    });
+  }, []);
+  React.useEffect(() => {
+    _updatesE2EStateChangeListeners.add(listener);
+    return () => {
+      _updatesE2EStateChangeListeners.delete(listener);
+    };
+  }, [listener]);
+  return state;
+}
 
 require('./includedAssets/test.png');
 require('./includedAssets/lock-filled.svg');
@@ -70,6 +118,8 @@ export default function App() {
     restartCount,
     downloadProgress,
   } = Updates.useUpdates();
+
+  const e2eModuleState = useUpdatesE2EModuleState();
 
   React.useEffect(() => {
     setStartTime(Date.now());
@@ -135,13 +185,13 @@ export default function App() {
   });
 
   const handleReadAssetFiles = runBlockAsync(async () => {
-    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 
   const handleClearAssetFiles = runBlockAsync(async () => {
-    await ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
-    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    await ExpoUpdatesE2ETestModule.clearInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 

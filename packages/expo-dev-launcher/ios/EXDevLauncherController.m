@@ -280,8 +280,8 @@
 
 - (nullable NSURL *)sourceUrl
 {
-  if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && ((id<EXUpdatesExternalInterface>)_updatesInterface).launchAssetURL) {
-    return ((id<EXUpdatesExternalInterface>)_updatesInterface).launchAssetURL;
+  if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && ((id<EXUpdatesDevLauncherInterface>)_updatesInterface).launchAssetURL) {
+    return ((id<EXUpdatesDevLauncherInterface>)_updatesInterface).launchAssetURL;
   }
   return _sourceUrl;
 }
@@ -416,7 +416,7 @@
       // do nothing for now
     } success:^(NSDictionary * _Nullable manifest) {
       if (manifest) {
-        launchExpoApp(((id<EXUpdatesExternalInterface>)self->_updatesInterface).launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
+        launchExpoApp(((id<EXUpdatesDevLauncherInterface>)self->_updatesInterface).launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
       }
     } error:onError];
   };
@@ -679,7 +679,7 @@
   return updatesConfig;
 }
 
-- (void)updatesExternalInterfaceDidRequestRelaunch:(id<EXUpdatesExternalInterface> _Nonnull)updatesExternalInterface {
+- (void)updatesExternalInterfaceDidRequestRelaunch:(id<EXUpdatesDevLauncherInterface> _Nonnull)updatesExternalInterface {
   NSURL * _Nullable appUrl = self.appManifestURLWithFallback;
   if (!appUrl) {
     return;

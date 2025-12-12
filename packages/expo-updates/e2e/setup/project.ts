@@ -235,11 +235,15 @@ async function copyCommonFixturesToProject(
       cwd: path.join(repoRoot, 'patches'),
       absolute: true,
     });
+    const reactNativeJsonString = await fs.readFile(
+      path.join(projectRoot, 'node_modules', 'react-native', 'package.json'),
+      'utf-8'
+    );
+    const reactNativeJson = JSON.parse(reactNativeJsonString);
+    const reactNativeVersion = reactNativeJson.version;
+    const patchFileName = `react-native+${reactNativeVersion}.patch`;
     if (patchFile.length > 0) {
-      await fs.copyFile(
-        patchFile[0],
-        path.join(projectRoot, 'patches', path.basename(patchFile[0]))
-      );
+      await fs.copyFile(patchFile[0], path.join(projectRoot, 'patches', patchFileName));
     }
   }
 
@@ -415,7 +419,7 @@ async function preparePackageJson(
       dependencies: {
         ...packageJson.dependencies,
         'react-native': 'npm:react-native-tvos@0.83-stable',
-        '@react-native-tvos/config-tv': '^0.1.4',
+        '@react-native-tvos/config-tv': '^0.1.5',
       },
       expo: {
         install: {
