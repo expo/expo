@@ -39,7 +39,7 @@ extension ArrayBuffer {
       .assumingMemoryBound(to: UInt8.self)
     let mutablePtr = UnsafeMutablePointer(mutating: pointer)
 
-      // This should manage the memory of the underlying Data manually
+    // This should manage the memory of the underlying Data manually
     return NativeArrayBuffer(wrapping: mutablePtr, count: size, cleanup: { unamanagedData.release() })
   }
 

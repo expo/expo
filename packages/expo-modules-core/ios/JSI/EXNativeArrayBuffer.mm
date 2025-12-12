@@ -18,19 +18,23 @@
   return self;
 }
 
-- (std::shared_ptr<jsi::MutableBuffer>)jsiBuffer {
+- (std::shared_ptr<jsi::MutableBuffer>)jsiBuffer
+{
   return _buffer;
 }
 
-- (size_t)getSize {
+- (size_t)getSize
+{
   return _buffer->size();
 }
 
-- (nonnull void *)getUnsafeMutableRawPointer {
+- (nonnull void *)getUnsafeMutableRawPointer
+{
   return _buffer->data();
 }
 
-- (EXArrayBufferStrongRef * _Nullable)memoryStrongRef {
+- (EXArrayBufferStrongRef * _Nullable)memoryStrongRef
+{
   return [[EXArrayBufferStrongRef alloc] initWith:_buffer];
 }
 

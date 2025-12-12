@@ -24,17 +24,20 @@
   return self;
 }
 
-- (size_t)getSize {
+- (size_t)getSize
+{
   return _jsiBuffer->size(*[_runtime get]);
 }
 
-- (nonnull void *)getUnsafeMutableRawPointer {
+- (nonnull void *)getUnsafeMutableRawPointer
+{
   return _jsiBuffer->data(*[_runtime get]);
 }
 
-- (EXArrayBufferStrongRef * _Nullable)memoryStrongRef {
-    // JavaScript ArrayBuffers don't provide direct strong references to the underlying
-    // memory since the JS runtime  owns the memory and manages its lifetime.
+- (EXArrayBufferStrongRef * _Nullable)memoryStrongRef
+{
+  // JavaScript ArrayBuffers don't provide direct strong references to the underlying
+  // memory since the JS runtime owns the memory and manages its lifetime.
   return nullptr;
 }
 

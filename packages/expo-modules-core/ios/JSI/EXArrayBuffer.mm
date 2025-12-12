@@ -7,7 +7,8 @@
   std::shared_ptr<expo::MemoryBuffer> _ptr;
 }
 
-- (nonnull instancetype)initWith:(std::shared_ptr<expo::MemoryBuffer>)ptr {
+- (nonnull instancetype)initWith:(std::shared_ptr<expo::MemoryBuffer>)ptr
+{
   if (self = [super init]) {
     _ptr = ptr;
   }

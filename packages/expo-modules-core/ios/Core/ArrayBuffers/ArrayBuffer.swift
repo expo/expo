@@ -44,7 +44,7 @@ public class ArrayBuffer: AnyArrayBuffer {
    doesn't guarantee to modify the array buffer's underlying memory.
    */
   public var data: Data {
-      // Get a strong reference to prevent deallocation while Data object exists
+    // Get a strong reference to prevent deallocation while Data object exists
     let sharedPointer = backingBuffer.memoryStrongRef()
 
     return Data(
@@ -59,7 +59,7 @@ public class ArrayBuffer: AnyArrayBuffer {
    - Returns: An NSMutableData object backed by this ArrayBuffer's memory
    */
   public func mutableData() -> NSMutableData {
-      // Get a strong reference to prevent deallocation while NSMutableData object exists
+    // Get a strong reference to prevent deallocation while NSMutableData object exists
     let sharedPointer = backingBuffer.memoryStrongRef()
 
     return NSMutableData(
