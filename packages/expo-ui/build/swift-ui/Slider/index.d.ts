@@ -5,7 +5,7 @@ export type SliderProps = {
      */
     value?: number;
     /**
-     * The step increment for the slider. Use `0` for continuous (no steps).
+     * The step increment for the slider.
      */
     step?: number;
     /**
