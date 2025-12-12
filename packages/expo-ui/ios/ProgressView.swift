@@ -17,7 +17,7 @@ final class ProgressProps: UIBaseViewProps {
 
 struct ProgressView: ExpoSwiftUI.View {
   @ObservedObject public var props: ProgressProps
-  
+
   var body: some View {
     progressView
       .tint(props.color)
