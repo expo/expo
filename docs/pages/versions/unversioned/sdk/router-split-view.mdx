@@ -16,7 +16,7 @@ import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **important** SplitView is currently in [alpha](/more/release-statuses/#alpha) and available in [canary releases](/versions/latest/#using-pre-release-versions) of `expo-router`. It requires configuration in **app.json** and is not available in Expo Go.
+> **important** SplitView is currently in [alpha](/more/release-statuses/#alpha) and available in [canary releases](/versions/latest/#using-pre-release-versions) of `expo-router`. You need to use a [development build](/develop/development-builds/introduction) since it is unavailable in Expo Go.
 
 `expo-router/unstable-split-view` is a submodule of `expo-router` and exports components to build split view layouts using [platform-native system split views](https://developer.apple.com/design/human-interface-guidelines/split-views).
 
@@ -35,7 +35,7 @@ To use `expo-router/unstable-split-view` in your project, you need to install `e
 
 ## Configuration in app config
 
-To enable Split View support, add the `unstable_splitView` property to the `expo-router` plugin configuration in your app config file (app.json or app.config.js):
+To enable Split View support, add the `unstable_splitView` property to the `expo-router` plugin configuration in your [app config](/workflow/configuration/) file:
 
 <ConfigPluginExample>
 
@@ -108,7 +108,7 @@ A sidebar with supporting column and main content:
   className="max-h-[400px]"
 />
 
-```tsx
+```tsx app/_layout.tsx
 import { Link, useGlobalSearchParams } from 'expo-router';
 import { SplitView } from 'expo-router/unstable-split-view';
 import React from 'react';
@@ -116,6 +116,7 @@ import { SafeAreaView } from 'react-native-screens/experimental';
 
 export default function Layout() {
   const params = useGlobalSearchParams();
+
   return (
     <SplitView>
       <SplitView.Column>
@@ -376,7 +377,7 @@ There can only be one `SplitView` in the navigation hierarchy. Attempting to nes
 
 <Collapsible summary="Requires prebuild">
 
-After enabling split view in **app.json**, you must run `npx expo prebuild` to apply the native configuration. The feature won't work in Expo Go.
+After enabling split view in app config, you must run `npx expo prebuild` to apply the native configuration. The feature won't work in Expo Go.
 
 </Collapsible>
 
