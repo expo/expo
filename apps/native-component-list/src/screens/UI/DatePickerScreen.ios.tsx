@@ -57,7 +57,7 @@ export default function DatePickerScreen() {
                 .value as unknown as DatePickerComponent[]
             }
             range={useRange ? { start: today, end: thirtyDaysFromNow } : undefined}
-            onDateChange={({ nativeEvent: { date } }) => setSelectedDate(new Date(date))}
+            onDateChange={(date) => setSelectedDate(date)}
             modifiers={[
               datePickerStyle(styleOptions[styleIndex]),
               ...(tintColor ? [tint(tintColor)] : []),
@@ -112,7 +112,7 @@ export default function DatePickerScreen() {
                 .value as unknown as DatePickerComponent[]
             }
             range={useRange ? { start: today, end: thirtyDaysFromNow } : undefined}
-            onDateChange={({ nativeEvent: { date } }) => setSelectedDate(new Date(date))}
+            onDateChange={(date) => setSelectedDate(date)}
             modifiers={[datePickerStyle(styleOptions[styleIndex])]}>
             <Text color="#007AFF">Select date</Text>
             <Text>{selectedDate.toDateString()}</Text>

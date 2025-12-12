@@ -30,7 +30,7 @@ export default function DatePickerExample() {
         title="Select a date"
         selection={selectedDate}
         displayedComponents={['date']}
-        onDateChange={({ nativeEvent: { date } }) => {
+        onDateChange={date => {
           setSelectedDate(date);
         }}
       />
@@ -54,7 +54,7 @@ export default function TimePickerExample() {
         title="Select a time"
         selection={selectedDate}
         displayedComponents={['hourAndMinute']}
-        onDateChange={({ nativeEvent: { date } }) => {
+        onDateChange={date => {
           setSelectedDate(date);
         }}
       />
@@ -78,7 +78,7 @@ export default function DateTimePickerExample() {
         title="Select date and time"
         selection={selectedDate}
         displayedComponents={['date', 'hourAndMinute']}
-        onDateChange={({ nativeEvent: { date } }) => {
+        onDateChange={date => {
           setSelectedDate(date);
         }}
       />
@@ -106,7 +106,7 @@ export default function DateRangePickerExample() {
           start: new Date(2024, 0, 1),
           end: new Date(2024, 11, 31),
         }}
-        onDateChange={({ nativeEvent: { date } }) => {
+        onDateChange={date => {
           setSelectedDate(date);
         }}
       />
@@ -134,7 +134,7 @@ export default function WheelDatePickerExample() {
         title="Select a date"
         selection={selectedDate}
         displayedComponents={['date']}
-        onDateChange={({ nativeEvent: { date } }) => {
+        onDateChange={date => {
           setSelectedDate(date);
         }}
       />
@@ -158,7 +158,7 @@ export default function GraphicalDatePickerExample() {
         title="Select a date"
         selection={selectedDate}
         displayedComponents={['date']}
-        onDateChange={({ nativeEvent: { date } }) => {
+        onDateChange={date => {
           setSelectedDate(date);
         }}
       />
