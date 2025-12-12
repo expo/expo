@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- improve runtime validation for NotificationTriggerInput ([#41538](https://github.com/expo/expo/pull/41538) by [@vonovak](https://github.com/vonovak))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.32.15 — 2025-12-12
+
+### 🎉 New features
+
+- improve runtime validation for NotificationTriggerInput ([#41538](https://github.com/expo/expo/pull/41538) by [@vonovak](https://github.com/vonovak))
 
 ## 0.32.14 — 2025-12-05
 

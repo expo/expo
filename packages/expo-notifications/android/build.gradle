@@ -5,13 +5,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '0.32.14'
+version = '0.32.15'
 
 android {
   namespace "expo.modules.notifications"
   defaultConfig {
     versionCode 21
-    versionName '0.32.14'
+    versionName '0.32.15'
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 

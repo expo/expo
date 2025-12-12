@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.19 — 2025-12-12
+
+### 💡 Others
+
 - Bump `react-server-dom-webpack` ([#41588](https://github.com/expo/expo/pull/41588) by [@kitten](https://github.com/kitten))
 
 ## 6.0.18 — 2025-12-11
