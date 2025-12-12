@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
+import { NativeSyntheticEvent } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { NativeSyntheticEvent } from 'react-native';
 
 export type DatePickerComponent = 'date' | 'hourAndMinute';
 
