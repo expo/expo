@@ -48,6 +48,7 @@
 - [ios] fix toolbar menu updates and ordering of items ([#41522](https://github.com/expo/expo/pull/41522) by [@Ubax](https://github.com/Ubax))
 - [ios] prevent native crash when Link.AppleZoom with direct child Text is rendered inside Text ([#41518](https://github.com/expo/expo/pull/41518) by [@Ubax](https://github.com/Ubax))
 - [ios] fix zoom transition with custom params in href ([#41508](https://github.com/expo/expo/pull/41508) by [@Ubax](https://github.com/Ubax))
+- [ios] fix zoom transition issues with external links and preview ([#41507](https://github.com/expo/expo/pull/41507) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
@@ -76,7 +77,8 @@
 - [iOS] replace LinkPreviewNativeNavigationObjC with direct swift calls ([#41331](https://github.com/expo/expo/pull/41331) by [@Ubax](https://github.com/Ubax))
 - add utility function parseUrlUsingCustomBase ([#41506](https://github.com/expo/expo/pull/41506) by [@Ubax](https://github.com/Ubax))
 - Update `/_expo/touch` usage in onboarding ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
-- Bump `react-server-dom-webpack` ([#41574](https://github.com/expo/expo/pull/41574) by [@kitten](https://github.com/kitten))
+- Bump `react-server-dom-webpack` ([#41574](https://github.com/expo/expo/pull/41574) by [@kitten](https://github.com/kitten)) ([#41589](https://github.com/expo/expo/pull/41589) by [@kitten](https://github.com/kitten))
+- [ios] add internal animateAspectRatioChange prop ([#41511](https://github.com/expo/expo/pull/41511) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.17 - 2025-12-05
 

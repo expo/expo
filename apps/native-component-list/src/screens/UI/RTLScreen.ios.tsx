@@ -3,7 +3,7 @@ import {
   Host,
   HStack,
   Image,
-  LinearProgress,
+  Progress,
   Picker,
   Slider,
   Switch,
@@ -116,7 +116,7 @@ export default function RTLTestScreen() {
         <Host matchContents layoutDirection={isRTL ? 'rightToLeft' : 'leftToRight'}>
           <HStack spacing={8}>
             <Text>20%</Text>
-            <LinearProgress progress={0.2} />
+            <Progress progress={0.2} variant="linear" />
           </HStack>
         </Host>
       </Section>

@@ -1,6 +1,6 @@
 import {
   Button,
-  CircularProgress,
+  Progress,
   Host,
   Image,
   Label,
@@ -119,7 +119,7 @@ export default function ButtonScreen() {
             </VStack>
           </Button>
           <Button>
-            <CircularProgress color="blue" />
+            <Progress color="blue" variant="circular" />
           </Button>
         </Section>
         <Section title="interpolated strings">

@@ -3,12 +3,14 @@ import RNScreens
 import UIKit
 
 class LinkSourceInfo {
-  let alignment: CGRect?
+  var alignment: CGRect?
+  var animateAspectRatioChange: Bool
   weak var view: UIView?
 
-  init(view: UIView, alignment: CGRect?) {
-    self.alignment = alignment
+  init(view: UIView, alignment: CGRect?, animateAspectRatioChange: Bool) {
     self.view = view
+    self.alignment = alignment
+    self.animateAspectRatioChange = animateAspectRatioChange
   }
 }
 
@@ -66,11 +68,19 @@ class LinkZoomTransitionsSourceRepository {
   ) {
     lock.lock()
     defer { lock.unlock() }
-    if let source = sources[identifier], let view = source.view, !identifier.isEmpty {
-      sources[identifier] = LinkSourceInfo(
-        view: view,
-        alignment: alignment,
-      )
+    if let source = sources[identifier], !identifier.isEmpty {
+      source.alignment = alignment
+    }
+  }
+
+  func updateAnimateAspectRatioChange(
+    identifier: String,
+    animateAspectRatioChange: Bool
+  ) {
+    lock.lock()
+    defer { lock.unlock() }
+    if let source: LinkSourceInfo = sources[identifier], !identifier.isEmpty {
+      source.animateAspectRatioChange = animateAspectRatioChange
     }
   }
 }
@@ -127,11 +137,21 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
 
   var alignment: CGRect? {
     didSet {
-      // Update alignment info in the sourceRepository
       if child != nil {
         sourceRepository?.updateAlignment(
           identifier: identifier,
           alignment: alignment
+        )
+      }
+    }
+  }
+
+  var animateAspectRatioChange: Bool = false {
+    didSet {
+      if child != nil {
+        sourceRepository?.updateAnimateAspectRatioChange(
+          identifier: identifier,
+          animateAspectRatioChange: animateAspectRatioChange
         )
       }
     }
@@ -144,7 +164,9 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
         if oldValue.isEmpty {
           sourceRepository?.registerSource(
             identifier: identifier,
-            source: LinkSourceInfo(view: child, alignment: alignment)
+            source: LinkSourceInfo(
+              view: child, alignment: alignment,
+              animateAspectRatioChange: animateAspectRatioChange)
           )
         } else {
           sourceRepository?.updateIdentifier(
@@ -173,7 +195,9 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
     child = childComponentView
     sourceRepository?.registerSource(
       identifier: identifier,
-      source: LinkSourceInfo(view: childComponentView, alignment: alignment)
+      source: LinkSourceInfo(
+        view: childComponentView, alignment: alignment,
+        animateAspectRatioChange: animateAspectRatioChange)
     )
     super.mountChildComponentView(childComponentView, index: index)
   }
@@ -265,17 +289,28 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
         let options = UIViewController.Transition.ZoomOptions()
 
         options.alignmentRectProvider = { context in
-          let sourceInfo = self.sourceRepository?.getSource(
-            identifier: self.zoomTransitionSourceIdentifier)
-          let alignmentView = self.alignmentViewRepository?.get(
-            identifier: self.zoomTransitionSourceIdentifier)
-          if let alignmentView = alignmentView {
-            return alignmentView.convert(
-              alignmentView.bounds,
-              to: context.zoomedViewController.view
-            )
+          guard
+            let sourceInfo = self.sourceRepository?.getSource(
+              identifier: self.zoomTransitionSourceIdentifier)
+          else {
+            return nil
           }
-          return sourceInfo?.alignment
+          guard
+            let alignmentView = self.alignmentViewRepository?.get(
+              identifier: self.zoomTransitionSourceIdentifier)
+          else {
+            return sourceInfo.alignment
+          }
+
+          let rect = alignmentView.convert(
+            alignmentView.bounds,
+            to: context.zoomedViewController.view
+          )
+          if sourceInfo.animateAspectRatioChange,
+            let sourceView = sourceInfo.view {
+            return self.calculateAdjustedRect(rect, toMatch: sourceView.bounds.size)
+          }
+          return rect
         }
         options.interactiveDismissShouldBegin = { _ in
           !self.isPreventingInteractiveDismissal
@@ -300,6 +335,41 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
     } else {
       print("[expo-router] No navigation controller found to enable zoom transition")
     }
+  }
+
+  private func calculateAdjustedRect(
+    _ rect: CGRect, toMatch sourceSize: CGSize
+  ) -> CGRect {
+    guard sourceSize.width > 0, sourceSize.height > 0,
+      rect.width > 0, rect.height > 0
+    else {
+      return rect
+    }
+    let sourceAspectRatio = sourceSize.width / sourceSize.height
+    let rectAspectRatio = rect.width / rect.height
+
+    if abs(sourceAspectRatio - rectAspectRatio) < 0.001 {
+      return rect  // Aspect ratios are essentially equal
+    }
+
+    if rectAspectRatio > sourceAspectRatio {
+      // Rect is wider - adjust width
+      let adjustedWidth = rect.height * sourceAspectRatio
+      return CGRect(
+        x: rect.midX - (adjustedWidth / 2),
+        y: rect.origin.y,
+        width: adjustedWidth,
+        height: rect.height
+      )
+    }
+    // Rect is taller - adjust height
+    let adjustedHeight = rect.width / sourceAspectRatio
+    return CGRect(
+      x: rect.origin.x,
+      y: rect.midY - (adjustedHeight / 2),
+      width: rect.width,
+      height: adjustedHeight
+    )
   }
 
   private func findViewController() -> RNSScreen? {

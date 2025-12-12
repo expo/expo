@@ -33,11 +33,12 @@
 - [android] Add getDefaultReactHost to ExpoReactHostFactory ([#40086](https://github.com/expo/expo/pull/40086) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [expo/dom] Add `overrideUri` to `DOMProps` to enable pre-bundled DOM Components. ([#40397](https://github.com/expo/expo/pull/40397) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Add recommended `react-server-dom-webpack` version to `bundledNativeModules.json` ([#41429](https://github.com/expo/expo/pull/41429) by [@kitten](https://github.com/kitten))
-- Bump `react-server-dom-webpack` ([#41574](https://github.com/expo/expo/pull/41574) by [@kitten](https://github.com/kitten))
+- Bump `react-server-dom-webpack` ([#41574](https://github.com/expo/expo/pull/41574) by [@kitten](https://github.com/kitten)) ([#41589](https://github.com/expo/expo/pull/41589) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 54.0.26 - 2025-12-04
 
