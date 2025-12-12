@@ -1,35 +1,38 @@
 import AesCryptoModule from './AesModule';
 import { uint8ArrayToBase64 } from './web-utils';
 export * from './aes.types';
-// Native functions don't yet support all `BinaryInput` formats
-const nativeFromCombined = AesCryptoModule.SealedData.fromCombined;
-const nativeFromParts = AesCryptoModule.SealedData.fromParts;
-AesCryptoModule.SealedData.fromCombined = function fromCombined(combined, config) {
-    const processedInput = convertBinaryInput(combined);
-    return nativeFromCombined(processedInput, config);
-};
-AesCryptoModule.SealedData.fromParts = function fromParts(iv, ciphertext, tag) {
-    const processedIV = convertBinaryInput(iv);
-    const processedCiphertext = convertBinaryInput(ciphertext);
-    if (!tag || typeof tag === 'number') {
-        return nativeFromParts(processedIV, processedCiphertext, tag);
-    }
-    else {
-        const processedTag = convertBinaryInput(tag);
-        return nativeFromParts(processedIV, processedCiphertext, processedTag);
-    }
-};
 /**
  * Represents an AES encryption key that can be used for encryption and decryption operations.
  * This class provides methods to generate, import, and export encryption keys.
  */
-export class EncryptionKey extends AesCryptoModule.EncryptionKey {
+export class AESEncryptionKey extends AesCryptoModule.EncryptionKey {
 }
 /**
  * Represents encrypted data including the ciphertext, initialization vector, and authentication tag.
  * This class provides methods to create sealed data from various formats and extract its components.
  */
-export class SealedData extends AesCryptoModule.SealedData {
+export class AESSealedData extends AesCryptoModule.SealedData {
+    static fromParts(iv, ciphertext, tag) {
+        const processedIV = convertBinaryInput(iv);
+        const processedCiphertext = convertBinaryInput(ciphertext);
+        if (!tag || typeof tag === 'number') {
+            return AesCryptoModule.SealedData.fromParts(processedIV, processedCiphertext, tag);
+        }
+        else {
+            const processedTag = convertBinaryInput(tag);
+            return AesCryptoModule.SealedData.fromParts(processedIV, processedCiphertext, processedTag);
+        }
+    }
+    /**
+     * Static method. Creates a SealedData instance from a combined byte array, including the IV, ciphertext, and tag.
+     * @param combined The combined data array. When providing a string, it must be base64-encoded.
+     * @param config Configuration specifying IV and tag lengths.
+     * @returns A SealedData object.
+     */
+    static fromCombined(combined, config) {
+        const processedInput = convertBinaryInput(combined);
+        return AesCryptoModule.SealedData.fromCombined(processedInput, config);
+    }
 }
 /**
  * Encrypts the given plaintext using AES-GCM with the specified key.
@@ -38,7 +41,7 @@ export class SealedData extends AesCryptoModule.SealedData {
  * @param options Optional encryption parameters including nonce, tag length, and additional data.
  * @returns A promise that resolves to a SealedData instance containing the encrypted data.
  */
-export function encryptAsync(plaintext, key, options = {}) {
+export function aesEncryptAsync(plaintext, key, options = {}) {
     const { nonce: iv, additionalData: aad, ...rest } = options;
     let nativeOptions = { ...rest };
     if (iv) {
@@ -51,7 +54,7 @@ export function encryptAsync(plaintext, key, options = {}) {
     }
     return AesCryptoModule.encryptAsync(convertBinaryInput(plaintext), key, nativeOptions);
 }
-export function decryptAsync(sealedData, key, options = {}) {
+export function aesDecryptAsync(sealedData, key, options = {}) {
     const { additionalData, ...rest } = options;
     const nativeOptions = {
         ...rest,

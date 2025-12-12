@@ -6,11 +6,7 @@ import ExpoCrypto from './ExpoCrypto';
 declare const global: any;
 
 export * from './Crypto.types';
-
-/**
- * @hidden
- */
-export * as AES from './aes';
+export * from './aes';
 
 class CryptoError extends TypeError {
   code = 'ERR_CRYPTO';

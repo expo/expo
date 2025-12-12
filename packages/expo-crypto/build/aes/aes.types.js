@@ -1,16 +1,16 @@
 /**
  * AES key sizes in bits.
  */
-export var KeySize;
-(function (KeySize) {
+export var AESKeySize;
+(function (AESKeySize) {
     /** 128-bit AES key */
-    KeySize[KeySize["AES128"] = 128] = "AES128";
+    AESKeySize[AESKeySize["AES128"] = 128] = "AES128";
     /** 192-bit AES key. It is unsupported on Web.
      * @platform apple
      * @platform android
      */
-    KeySize[KeySize["AES192"] = 192] = "AES192";
+    AESKeySize[AESKeySize["AES192"] = 192] = "AES192";
     /** 256-bit AES key */
-    KeySize[KeySize["AES256"] = 256] = "AES256";
-})(KeySize || (KeySize = {}));
+    AESKeySize[AESKeySize["AES256"] = 256] = "AES256";
+})(AESKeySize || (AESKeySize = {}));
 //# sourceMappingURL=aes.types.js.map

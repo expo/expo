@@ -1,5 +1,5 @@
 import { registerWebModule, NativeModule } from 'expo';
-import { KeySize, } from './aes.types';
+import { AESKeySize, } from './aes.types';
 import { base64ToUintArray, binaryInputBytes, bytesToHex, hexToUintArray, uint8ArrayToBase64, } from './web-utils';
 const DEFAULT_IV_LENGTH = 12;
 const DEFAULT_TAG_LENGTH = 16;
@@ -15,7 +15,7 @@ class EncryptionKey {
         this.keySize = size;
     }
     static async generate(size) {
-        const keySize = size ?? KeySize.AES256;
+        const keySize = size ?? AESKeySize.AES256;
         const algorithm = { name: 'AES-GCM', length: keySize };
         const key = await crypto.subtle.generateKey(algorithm, true, ['encrypt', 'decrypt']);
         return new EncryptionKey(key, keySize);

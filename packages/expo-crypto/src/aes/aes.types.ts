@@ -7,7 +7,7 @@ export type BinaryInput = string | Uint8Array | ArrayBuffer;
 /**
  * AES key sizes in bits.
  */
-export enum KeySize {
+export enum AESKeySize {
   /** 128-bit AES key */
   AES128 = 128,
   /** 192-bit AES key. It is unsupported on Web.
@@ -28,12 +28,12 @@ export enum KeySize {
  *
  * Default and recommended value is 16. On Apple, the only supported value for encryption is 16.
  */
-export type TagByteLength = 16 | 15 | 14 | 13 | 12 | 8 | 4;
+export type GCMTagByteLength = 16 | 15 | 14 | 13 | 12 | 8 | 4;
 
 /**
  * Configuration for parsing sealed data from combined format.
  */
-export interface SealedDataConfig {
+export interface AESSealedDataConfig {
   /**
    * The length of the initialization vector in bytes.
    * @default 12
@@ -43,13 +43,13 @@ export interface SealedDataConfig {
    * The length of the authentication tag in bytes.
    * @default 16
    */
-  tagLength: TagByteLength;
+  tagLength: GCMTagByteLength;
 }
 
 /**
  * Options for the decryption process.
  */
-export interface DecryptOptions {
+export interface AESDecryptOptions {
   /**
    * Output format for the decrypted data.
    * @default 'bytes'
@@ -66,7 +66,7 @@ export interface DecryptOptions {
  * @hidden
  * Decrypt options that return the result as a `base64` string.
  */
-export interface Base64DecryptOptions extends DecryptOptions {
+export interface Base64DecryptOptions extends AESDecryptOptions {
   output: 'base64';
 }
 
@@ -74,7 +74,7 @@ export interface Base64DecryptOptions extends DecryptOptions {
  * @hidden
  * Decrypt options that return the result as a `Uint8Array`.
  */
-export interface ArrayBufferDecryptOptions extends DecryptOptions {
+export interface ArrayBufferDecryptOptions extends AESDecryptOptions {
   output?: 'bytes';
 }
 
@@ -82,7 +82,7 @@ export interface ArrayBufferDecryptOptions extends DecryptOptions {
  * Configuration for the nonce (initialization vector) during encryption.
  * Can specify either the byte length of the IV to generate or provide an IV directly.
  */
-export type NonceParam =
+export type GCMNonceParam =
   | {
       /**
        * Byte length of nonce to be generated.
@@ -100,12 +100,12 @@ export type NonceParam =
 /**
  * Options for the encryption process.
  */
-export interface EncryptOptions {
+export interface AESEncryptOptions {
   /**
    * Parameters for nonce generation.
    * @default { length: 12 }
    */
-  nonce?: NonceParam;
+  nonce?: GCMNonceParam;
 
   /**
    * The length of the authentication tag in bytes.
@@ -116,7 +116,7 @@ export interface EncryptOptions {
    * @platform web
    * @default 16
    */
-  tagLength?: TagByteLength;
+  tagLength?: GCMTagByteLength;
 
   /**
    * Additional authenticated data (AAD) for GCM mode.

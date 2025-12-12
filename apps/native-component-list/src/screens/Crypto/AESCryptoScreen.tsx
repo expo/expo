@@ -1,23 +1,29 @@
-import { AES } from 'expo-crypto';
+import {
+  AESEncryptionKey,
+  aesEncryptAsync,
+  aesDecryptAsync,
+  AESKeySize,
+  AESEncryptOptions,
+} from 'expo-crypto';
 import { Platform, ScrollView, StyleSheet } from 'react-native';
 
 import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
 
 const GENERATE_KEY: FunctionDescription = {
-  name: 'EncryptionKey.generate',
+  name: 'AESEncryptionKey.generate',
   parameters: [
     {
       name: 'keySize',
       type: 'enum',
       values: [
-        { name: 'KeySize.AES128', value: AES.KeySize.AES128 },
-        { name: 'KeySize.AES256', value: AES.KeySize.AES256 },
-        ...(Platform.OS !== 'web' ? [{ name: 'AES192', value: AES.KeySize.AES192 }] : []),
+        { name: 'KeySize.AES128', value: AESKeySize.AES128 },
+        { name: 'KeySize.AES256', value: AESKeySize.AES256 },
+        ...(Platform.OS !== 'web' ? [{ name: 'AES192', value: AESKeySize.AES192 }] : []),
       ],
     },
   ],
   actions: async (keySize: any) => {
-    const key = await AES.EncryptionKey.generate(keySize);
+    const key = await AESEncryptionKey.generate(keySize);
     const keyBytes = await key.bytes();
     return {
       size: key.size,
@@ -27,7 +33,7 @@ const GENERATE_KEY: FunctionDescription = {
 };
 
 const IMPORT_KEY: FunctionDescription = {
-  name: 'EncryptionKey.import',
+  name: 'AESEncryptionKey.import',
   parameters: [
     {
       name: 'encodedKey',
@@ -48,7 +54,7 @@ const IMPORT_KEY: FunctionDescription = {
   actions: async (keyInput: [type: string, value: string | Uint8Array]) => {
     const [inputType, inputValue] = keyInput;
     const encoding = inputType === 'raw' ? undefined : inputType;
-    const key = await AES.EncryptionKey.import(inputValue as any, encoding as 'hex' | 'base64');
+    const key = await AESEncryptionKey.import(inputValue as any, encoding as 'hex' | 'base64');
     const bytes = await key.bytes();
     return {
       size: key.size,
@@ -66,11 +72,11 @@ const EXPORT_KEY_BYTES: FunctionDescription = {
       values: [
         {
           name: 'Random AES128 Key',
-          value: async () => await AES.EncryptionKey.generate(AES.KeySize.AES128),
+          value: async () => await AESEncryptionKey.generate(AESKeySize.AES128),
         },
         {
           name: 'Random AES256 Key',
-          value: async () => await AES.EncryptionKey.generate(AES.KeySize.AES256),
+          value: async () => await AESEncryptionKey.generate(AESKeySize.AES256),
         },
       ],
     },
@@ -91,15 +97,15 @@ const EXPORT_KEY_ENCODED: FunctionDescription = {
       values: [
         {
           name: 'Fixed AES256 Key',
-          value: async () => await AES.EncryptionKey.import(new Uint8Array(32).fill(170)),
+          value: async () => await AESEncryptionKey.import(new Uint8Array(32).fill(170)),
         },
         {
           name: 'Random AES256 Key',
-          value: async () => await AES.EncryptionKey.generate(AES.KeySize.AES256),
+          value: async () => await AESEncryptionKey.generate(AESKeySize.AES256),
         },
         {
           name: 'Random AES128 Key',
-          value: async () => await AES.EncryptionKey.generate(AES.KeySize.AES128),
+          value: async () => await AESEncryptionKey.generate(AESKeySize.AES128),
         },
       ],
     },
@@ -111,14 +117,14 @@ const EXPORT_KEY_ENCODED: FunctionDescription = {
       values: ['hex', 'base64'],
     },
   ],
-  actions: async (encoding: 'hex' | 'base64', key: () => Promise<AES.EncryptionKey>) => {
+  actions: async (encoding: 'hex' | 'base64', key: () => Promise<AESEncryptionKey>) => {
     const resolvedKey = await key();
     return await resolvedKey.encoded(encoding);
   },
 };
 
 const ENCRYPT_ASYNC: FunctionDescription = {
-  name: 'encryptAsync',
+  name: 'aesEncryptAsync',
   parameters: [
     {
       name: 'plaintext',
@@ -138,7 +144,7 @@ const ENCRYPT_ASYNC: FunctionDescription = {
     {
       name: 'key',
       type: 'constant',
-      value: () => AES.EncryptionKey.generate(),
+      value: () => AESEncryptionKey.generate(),
     },
     {
       name: 'options',
@@ -167,11 +173,11 @@ const ENCRYPT_ASYNC: FunctionDescription = {
   ],
   actions: async (
     plaintext: string | Uint8Array,
-    key: () => Promise<AES.EncryptionKey>,
-    options: AES.EncryptOptions
+    key: () => Promise<AESEncryptionKey>,
+    options: AESEncryptOptions
   ) => {
     const resolvedKey = await key();
-    const sealedData = await AES.encryptAsync(plaintext, resolvedKey, options);
+    const sealedData = await aesEncryptAsync(plaintext, resolvedKey, options);
     const iv = await sealedData.iv('base64');
     const tag = await sealedData.tag('base64');
     const ciphertext = await sealedData.ciphertext();
@@ -220,10 +226,10 @@ const ENCRYPT_DECRYPT_DEMO: FunctionDescription = {
     },
   ],
   actions: async (plaintext: string, encryptAAD: any, decryptAAD: any) => {
-    const key = await AES.EncryptionKey.generate();
-    const sealedData = await AES.encryptAsync(plaintext, key, { additionalData: encryptAAD });
+    const key = await AESEncryptionKey.generate();
+    const sealedData = await aesEncryptAsync(plaintext, key, { additionalData: encryptAAD });
     const combinedBase64 = await sealedData.combined('base64');
-    const decrypted = await AES.decryptAsync(sealedData, key, {
+    const decrypted = await aesDecryptAsync(sealedData, key, {
       output: 'base64',
       additionalData: decryptAAD,
     });
@@ -256,7 +262,7 @@ function AESCryptoScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {FUNCTIONS_DESCRIPTIONS.map((props, idx) => (
-        <FunctionDemo key={idx} namespace="AES" {...props} />
+        <FunctionDemo key={idx} namespace="Crypto" {...props} />
       ))}
     </ScrollView>
   );

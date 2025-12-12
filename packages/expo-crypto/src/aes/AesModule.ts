@@ -1,12 +1,12 @@
 import { NativeModule, requireNativeModule } from 'expo';
 
 import {
-  DecryptOptions,
-  EncryptOptions,
-  KeySize,
-  SealedDataConfig,
+  AESDecryptOptions,
+  AESEncryptOptions,
+  AESKeySize,
+  AESSealedDataConfig,
   BinaryInput,
-  TagByteLength,
+  GCMTagByteLength,
 } from './aes.types';
 
 /**
@@ -19,7 +19,7 @@ declare class EncryptionKey {
    * @param size The size of the key (128, 192, or 256). Defaults to 256.
    * @returns A promise that resolves to an EncryptionKey instance.
    */
-  static generate(size?: KeySize): Promise<EncryptionKey>;
+  static generate(size?: AESKeySize): Promise<EncryptionKey>;
   /**
    * Imports an encryption key from a byte array.
    * Validates the size of the key.
@@ -39,7 +39,7 @@ declare class EncryptionKey {
   /**
    * The size of the encryption key in bits (128, 192, or 256).
    */
-  size: KeySize;
+  size: AESKeySize;
 
   /**
    * Retrieves the key as a byte array.
@@ -61,29 +61,8 @@ declare class EncryptionKey {
  * Represents encrypted data, including ciphertext, initialization vector, and authentication tag.
  */
 declare class SealedData {
-  /**
-   * Creates a SealedData instance from a combined byte array, including the IV, ciphertext, and tag.
-   * @param combined The combined data array. When providing a string, it must be base64-encoded.
-   * @param config Configuration specifying IV and tag lengths.
-   * @returns A SealedData object.
-   */
-  static fromCombined(combined: BinaryInput, config?: SealedDataConfig): SealedData;
-
-  /**
-   * Creates a SealedData instance from separate nonce, ciphertext, and optionally a tag.
-   * @param iv The initialization vector. When providing a string, it must be base64-encoded.
-   * @param ciphertext The encrypted data. Should not include GCM tag. When providing a string, it must be base64-encoded.
-   * @param tag The authentication tag. When providing a string, it must be base64-encoded.
-   * @returns A SealedData object.
-   */
+  static fromCombined(combined: BinaryInput, config?: AESSealedDataConfig): SealedData;
   static fromParts(iv: BinaryInput, ciphertext: BinaryInput, tag: BinaryInput): SealedData;
-  /**
-   * Creates a SealedData instance from separate nonce, ciphertext, and optionally a tag.
-   * @param iv The initialization vector. When providing a string, it must be base64-encoded.
-   * @param ciphertextWithTag The encrypted data with GCM tag appended. When providing a string, it must be base64-encoded.
-   * @param tagLength Authentication tag length in bytes. Defaults to 16.
-   * @returns A SealedData object.
-   */
   static fromParts(iv: BinaryInput, ciphertextWithTag: BinaryInput, tagLength?: number): SealedData;
 
   /** @hidden */
@@ -138,10 +117,10 @@ declare class SealedData {
   /** Size of the initialization vector in bytes. */
   readonly ivSize: number;
   /** Size of the authentication tag in bytes. */
-  readonly tagSize: TagByteLength;
+  readonly tagSize: GCMTagByteLength;
 }
 
-type NativeEncryptOptions = Omit<EncryptOptions, 'nonce'> & {
+type NativeAESEncryptOptions = Omit<AESEncryptOptions, 'nonce'> & {
   nonce?: number | BinaryInput | undefined;
 };
 
@@ -149,18 +128,18 @@ declare class NativeAesCryptoModule extends NativeModule {
   EncryptionKey: typeof EncryptionKey;
   SealedData: typeof SealedData;
 
-  generateKey(size?: KeySize): Promise<EncryptionKey>;
+  generateKey(size?: AESKeySize): Promise<EncryptionKey>;
   importKey(keyInput: string | Uint8Array, encoding?: 'hex' | 'base64'): Promise<EncryptionKey>;
 
   encryptAsync(
     plaintext: BinaryInput,
     key: EncryptionKey,
-    options?: NativeEncryptOptions
+    options?: NativeAESEncryptOptions
   ): Promise<SealedData>;
   decryptAsync(
     sealedData: SealedData,
     key: EncryptionKey,
-    options?: DecryptOptions
+    options?: AESDecryptOptions
   ): Promise<string | Uint8Array>;
 }
 

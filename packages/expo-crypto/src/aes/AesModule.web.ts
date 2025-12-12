@@ -1,12 +1,12 @@
 import { registerWebModule, NativeModule } from 'expo';
 
 import {
-  DecryptOptions,
-  EncryptOptions,
-  KeySize,
-  SealedDataConfig,
+  AESDecryptOptions,
+  AESEncryptOptions,
+  AESKeySize,
+  AESSealedDataConfig,
   BinaryInput,
-  TagByteLength,
+  GCMTagByteLength,
 } from './aes.types';
 import {
   base64ToUintArray,
@@ -19,22 +19,22 @@ import {
 const DEFAULT_IV_LENGTH = 12;
 const DEFAULT_TAG_LENGTH = 16;
 
-const defaultConfig: SealedDataConfig = {
+const defaultConfig: AESSealedDataConfig = {
   ivLength: DEFAULT_IV_LENGTH,
   tagLength: DEFAULT_TAG_LENGTH,
 };
 
 class EncryptionKey {
   key: CryptoKey;
-  keySize: KeySize;
+  keySize: AESKeySize;
 
-  private constructor(key: CryptoKey, size: KeySize) {
+  private constructor(key: CryptoKey, size: AESKeySize) {
     this.key = key;
     this.keySize = size;
   }
 
-  static async generate(size?: KeySize): Promise<EncryptionKey> {
-    const keySize = size ?? KeySize.AES256;
+  static async generate(size?: AESKeySize): Promise<EncryptionKey> {
+    const keySize = size ?? AESKeySize.AES256;
     const algorithm = { name: 'AES-GCM', length: keySize };
     const key = await crypto.subtle.generateKey(algorithm, true, ['encrypt', 'decrypt']);
     return new EncryptionKey(key, keySize);
@@ -69,21 +69,21 @@ class EncryptionKey {
     return encoded;
   }
 
-  get size(): KeySize {
+  get size(): AESKeySize {
     return this.keySize;
   }
 }
 
 class SealedData {
   private buffer: ArrayBuffer;
-  private config: SealedDataConfig;
+  private config: AESSealedDataConfig;
 
-  private constructor(buffer: ArrayBuffer, config: SealedDataConfig) {
+  private constructor(buffer: ArrayBuffer, config: AESSealedDataConfig) {
     this.buffer = buffer;
     this.config = config;
   }
 
-  static fromCombined(combined: BinaryInput, config?: SealedDataConfig): SealedData {
+  static fromCombined(combined: BinaryInput, config?: AESSealedDataConfig): SealedData {
     const buffer = binaryInputBytes(combined).buffer as ArrayBuffer;
     return new SealedData(buffer, config ?? defaultConfig);
   }
@@ -91,7 +91,7 @@ class SealedData {
   static fromParts(
     iv: BinaryInput,
     ciphertext: BinaryInput,
-    tag?: BinaryInput | TagByteLength
+    tag?: BinaryInput | GCMTagByteLength
   ): SealedData {
     const ciphertextBytes = binaryInputBytes(ciphertext);
     const ivBytes = binaryInputBytes(iv);
@@ -107,7 +107,7 @@ class SealedData {
       combined.set(ivBytes);
       combined.set(ciphertextBytes, ivLength);
 
-      const config: SealedDataConfig = {
+      const config: AESSealedDataConfig = {
         ivLength,
         tagLength: tag,
       };
@@ -115,7 +115,7 @@ class SealedData {
     }
 
     const tagBytes = binaryInputBytes(tag);
-    const tagLength = tagBytes.byteLength as TagByteLength;
+    const tagLength = tagBytes.byteLength as GCMTagByteLength;
     const totalLength = ivLength + ciphertextBytes.byteLength + tagLength;
 
     const combined = new Uint8Array(totalLength);
@@ -129,7 +129,7 @@ class SealedData {
   get ivSize(): number {
     return this.config.ivLength;
   }
-  get tagSize(): TagByteLength {
+  get tagSize(): GCMTagByteLength {
     return this.config.tagLength;
   }
   get combinedSize(): number {
@@ -169,7 +169,7 @@ class SealedData {
   }
 }
 
-type NativeEncryptOptions = Omit<EncryptOptions, 'nonce'> & {
+type NativeEncryptOptions = Omit<AESEncryptOptions, 'nonce'> & {
   nonce?: number | Uint8Array | undefined;
 };
 
@@ -215,7 +215,7 @@ class AesCryptoModule extends NativeModule {
   async decryptAsync(
     sealedData: SealedData,
     key: EncryptionKey,
-    options: DecryptOptions = {}
+    options: AESDecryptOptions = {}
   ): Promise<string | Uint8Array> {
     const { additionalData: aad, output } = options;
 
