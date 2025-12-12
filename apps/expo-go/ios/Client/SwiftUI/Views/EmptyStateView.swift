@@ -59,6 +59,6 @@ struct EmptyStateView: View {
     .padding(24)
     .frame(maxWidth: .infinity)
     .background(Color.expoSecondarySystemBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
   }
 }

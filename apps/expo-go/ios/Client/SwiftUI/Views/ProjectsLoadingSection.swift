@@ -20,11 +20,11 @@ struct ProjectSkeletonRow: View {
   var body: some View {
     HStack(spacing: 12) {
       VStack(alignment: .leading, spacing: 2) {
-        RoundedRectangle(cornerRadius: 4)
+        RoundedRectangle(cornerRadius: BorderRadius.small)
           .fill(Color.gray.opacity(0.2))
           .frame(width: 120, height: 16)
 
-        RoundedRectangle(cornerRadius: 4)
+        RoundedRectangle(cornerRadius: BorderRadius.small)
           .fill(Color.gray.opacity(0.15))
           .frame(width: 180, height: 12)
       }
@@ -38,7 +38,7 @@ struct ProjectSkeletonRow: View {
     }
     .padding()
     .background(Color.expoSecondarySystemBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
     .redacted(reason: .placeholder)
   }
 }

@@ -12,11 +12,8 @@ class HomeViewModel: ObservableObject {
 
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
 
-  @Published var showingErrorAlert = false
-  @Published var errorAlertMessage = ""
   @Published var showingAccountSheet = false
-  @Published var networkError: APIError?
-  @Published var showingNetworkError = false
+  @Published var errorToShow: ErrorInfo?
   @Published var isNetworkAvailable = true
 
   @Published var user: UserActor?
@@ -33,17 +30,8 @@ class HomeViewModel: ObservableObject {
   private var cancellables = Set<AnyCancellable>()
   private let persistenceManager = PersistenceManager.shared
 
-  var selectedAccount: Account? {
-    guard let userData = user,
-          let selectedAccountId = selectedAccountId else {
-      return nil
-    }
-    return userData.accounts.first { $0.id == selectedAccountId }
-  }
-
-  var isLoggedIn: Bool {
-    return isAuthenticated && user != nil
-  }
+  var selectedAccount: Account? { authService.selectedAccount }
+  var isLoggedIn: Bool { authService.isLoggedIn }
 
   var shakeToShowDevMenu: Bool { settingsManager.shakeToShowDevMenu }
   var threeFingerLongPressEnabled: Bool { settingsManager.threeFingerLongPressEnabled }
@@ -99,7 +87,7 @@ class HomeViewModel: ObservableObject {
         dataService.startPolling(accountName: account.name)
       }
     } catch {
-      showErrorAlert("Failed to sign in")
+      showError("Failed to sign in")
     }
   }
 
@@ -110,7 +98,7 @@ class HomeViewModel: ObservableObject {
         dataService.startPolling(accountName: account.name)
       }
     } catch {
-      showErrorAlert("Failed to sign up")
+      showError("Failed to sign up")
     }
   }
 
@@ -172,27 +160,6 @@ class HomeViewModel: ObservableObject {
     persistenceManager.saveRecentlyOpened(recentlyOpenedApps)
   }
 
-  private func normalizeUrl(_ url: String) -> String {
-    guard let urlComponents = URLComponents(string: url) else {
-      return url
-    }
-
-    // Build URL without scheme
-    var components: [String] = []
-    if let host = urlComponents.host {
-      components.append(host)
-    }
-    if let port = urlComponents.port {
-      components.append(":\(port)")
-    }
-    components.append(urlComponents.path)
-    if let query = urlComponents.query {
-      components.append("?\(query)")
-    }
-
-    return components.joined()
-  }
-
   func clearRecentlyOpenedApps() {
     recentlyOpenedApps = []
     persistenceManager.saveRecentlyOpened([])
@@ -243,24 +210,12 @@ class HomeViewModel: ObservableObject {
     showingAccountSheet = true
   }
 
-  func showErrorAlert(_ message: String) {
-    errorAlertMessage = message
-    showingErrorAlert = true
+  func showError(_ message: String, apiError: APIError? = nil) {
+    errorToShow = ErrorInfo(message: message, apiError: apiError)
   }
 
-  func dismissErrorAlert() {
-    errorAlertMessage = ""
-    showingErrorAlert = false
-  }
-
-  func showNetworkError(_ error: APIError) {
-    networkError = error
-    showingNetworkError = true
-  }
-
-  func clearNetworkError() {
-    networkError = nil
-    showingNetworkError = false
+  func clearError() {
+    errorToShow = nil
   }
 
   private func setupSubscriptions() {
@@ -316,6 +271,17 @@ class HomeViewModel: ObservableObject {
         self.dataService.startPolling(accountName: account.name)
       }
       .store(in: &cancellables)
+  }
+}
+
+struct ErrorInfo: Identifiable {
+  let id = UUID()
+  let message: String
+  let apiError: APIError?
+
+  init(message: String, apiError: APIError? = nil) {
+    self.message = message
+    self.apiError = apiError
   }
 }
 

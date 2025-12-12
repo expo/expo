@@ -34,7 +34,7 @@ class AuthenticationService: ObservableObject {
 
   func checkAuthenticationStatus() {
     let sessionSecret = UserDefaults.standard.string(forKey: sessionKey)
-    isAuthenticated = sessionSecret != nil && !sessionSecret!.isEmpty
+    isAuthenticated = !(sessionSecret?.isEmpty ?? true)
 
     if isAuthenticated {
       if let sessionSecret {
@@ -154,7 +154,10 @@ class AuthenticationService: ObservableObject {
 
 private class ExpoGoAuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-    let window = UIApplication.shared.windows.first { $0.isKeyWindow }
+    let window = UIApplication.shared.connectedScenes
+      .compactMap { $0 as? UIWindowScene }
+      .flatMap { $0.windows }
+      .first { $0.isKeyWindow }
     return window ?? ASPresentationAnchor()
   }
 }

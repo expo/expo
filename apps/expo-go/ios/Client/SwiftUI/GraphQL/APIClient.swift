@@ -9,7 +9,7 @@ class APIClient {
     return false
   }
 
-  private var session: URLSession {
+  private lazy var session: URLSession = {
     let config = URLSessionConfiguration.default
     config.urlCache = URLCache(
       memoryCapacity: 10 * 1024 * 1024,
@@ -19,7 +19,7 @@ class APIClient {
     config.requestCachePolicy = .returnCacheDataElseLoad
     config.timeoutIntervalForRequest = 30
     return URLSession(configuration: config)
-  }
+  }()
 
   private var apiEndpoint: String {
     return useStaging

@@ -32,7 +32,7 @@ struct BranchRow: View {
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(Color.expoSecondarySystemGroupedBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .clipShape(RoundedRectangle(cornerRadius: BorderRadius.small))
             }
           }
         }
@@ -45,7 +45,7 @@ struct BranchRow: View {
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
     }
     .buttonStyle(PlainButtonStyle())
   }

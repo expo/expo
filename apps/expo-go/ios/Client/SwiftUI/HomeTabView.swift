@@ -11,7 +11,7 @@ struct HomeTabView: View {
 
       ScrollView {
         VStack(spacing: 20) {
-          DevelopmentServersSection()
+          DevServersSection()
 
           if !viewModel.recentlyOpenedApps.isEmpty {
             RecentlyOpenedSection()
@@ -24,7 +24,7 @@ struct HomeTabView: View {
               ProjectsSection()
             } else if !viewModel.isLoadingData {
               VStack(alignment: .leading, spacing: 12) {
-                SectionHeader(title: "PROJECTS")
+                SectionHeader(title: "projects".uppercased())
                 EmptyStateView(
                   icon: "folder",
                   message: "No projects yet",
@@ -39,7 +39,7 @@ struct HomeTabView: View {
               SnacksSection()
             } else if !viewModel.isLoadingData {
               VStack(alignment: .leading, spacing: 12) {
-                SectionHeader(title: "SNACKS")
+                SectionHeader(title: "snacks".uppercased())
                 EmptyStateView(
                   icon: "play.rectangle",
                   message: "No snacks yet",

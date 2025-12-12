@@ -26,7 +26,7 @@ struct GeofencingDiagnosticsView: View {
           .padding()
           .background(Color.black)
           .foregroundColor(.white)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
         }
         .padding()
       } else if viewModel.initialRegion == nil {
@@ -52,7 +52,7 @@ struct GeofencingDiagnosticsView: View {
             }
             .background(Color.black.opacity(0.8))
             .foregroundColor(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
 
             Spacer()
 
@@ -81,7 +81,7 @@ struct GeofencingDiagnosticsView: View {
           }
           .background(viewModel.canToggleGeofencing ? Color.black.opacity(0.8) : Color.gray.opacity(0.6))
           .foregroundColor(.white)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
           .disabled(!viewModel.canToggleGeofencing)
           .padding()
           .frame(maxWidth: .infinity, alignment: .trailing)

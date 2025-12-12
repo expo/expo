@@ -20,7 +20,7 @@ struct SnacksSection: View {
               .frame(maxWidth: .infinity)
               .padding()
               .background(Color.expoSecondarySystemGroupedBackground)
-              .clipShape(RoundedRectangle(cornerRadius: 12))
+              .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
           }
         }
       }
@@ -39,12 +39,10 @@ struct SnackRowWithAction: View {
   }
 
   private func openSnack() {
-    let supportedSDK = getSupportedSDKVersion()
-    let snackSDKMajor = getSDKMajorVersion(snack.sdkVersion)
-    let supportedSDKMajor = getSDKMajorVersion(supportedSDK)
-
-    guard snackSDKMajor == supportedSDKMajor else {
-      viewModel.showErrorAlert(
+    guard isSDKCompatible(snack.sdkVersion) else {
+      let snackSDKMajor = getSDKMajorVersion(snack.sdkVersion)
+      let supportedSDKMajor = getSDKMajorVersion(getSupportedSDKVersion())
+      viewModel.showError(
         "Selected Snack uses unsupported SDK (\(snackSDKMajor))\n\n" +
         "The currently running version of Expo Go supports SDK \(supportedSDKMajor) only. " +
         "Update your Snack to this version to run it."
@@ -52,6 +50,7 @@ struct SnackRowWithAction: View {
       return
     }
 
+    let supportedSDK = getSupportedSDKVersion()
     let encodedFullName = snack.fullName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? snack.fullName
     let url = "exp://exp.host/\(encodedFullName)?sdkVersion=\(supportedSDK).0.0"
 

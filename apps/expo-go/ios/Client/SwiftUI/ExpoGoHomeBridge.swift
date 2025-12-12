@@ -46,7 +46,7 @@ extension HomeViewModel {
     ExpoGoHomeBridge.shared.openApp(url: url) { [weak self] success, error in
       DispatchQueue.main.async {
         if !success, let error {
-          self?.showErrorAlert(error)
+          self?.showError(error)
         }
       }
     }

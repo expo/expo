@@ -20,7 +20,7 @@ struct ProjectsSection: View {
               .frame(maxWidth: .infinity)
               .padding()
               .background(Color.expoSecondarySystemGroupedBackground)
-              .clipShape(RoundedRectangle(cornerRadius: 12))
+              .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
           }
         }
       }
@@ -57,7 +57,7 @@ struct ProjectRowWithNavigation: View {
         let branch = project.firstTwoBranches[0]
         if branch.updates.count == 1 {
           let update = branch.updates[0]
-          if isUpdateCompatibleWithThisExpoGo(update) {
+          if isSDKCompatible(update.expoGoSDKVersion) {
 
             viewModel.openApp(url: update.manifestPermalink)
             viewModel.addToRecentlyOpened(
@@ -81,17 +81,5 @@ struct ProjectRowWithNavigation: View {
         )
       }
     }
-  }
-
-  private func isUpdateCompatibleWithThisExpoGo(_ update: AppUpdate) -> Bool {
-    guard let sdkVersion = update.expoGoSDKVersion else {
-      return false
-    }
-
-    let supportedSDK = getSupportedSDKVersion()
-    let updateMajorVersion = getSDKMajorVersion(sdkVersion)
-    let supportedMajorVersion = getSDKMajorVersion(supportedSDK)
-
-    return updateMajorVersion == supportedMajorVersion
   }
 }

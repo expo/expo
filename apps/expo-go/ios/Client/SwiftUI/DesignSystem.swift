@@ -4,6 +4,7 @@ import SwiftUI
 import ExpoModulesCore
 
 extension Color {
+  // Brand colors
   static let expoBlue = Color(red: 0.0, green: 0.46, blue: 1.0)
   static let expoGreen = Color(red: 0.0, green: 0.8, blue: 0.4)
   static let expoOrange = Color(red: 1.0, green: 0.4, blue: 0.0)
@@ -17,6 +18,20 @@ extension Color {
 
   static let expoBorder = Color(.separator)
   static let expoSecondaryBorder = Color(.opaqueSeparator)
+
+  static let expoSystemBackground = Color(uiColor: .systemBackground)
+  static let expoSecondarySystemBackground = Color(uiColor: .secondarySystemBackground)
+  static let expoTertiarySystemBackground = Color(uiColor: .tertiarySystemBackground)
+  static let expoSystemGroupedBackground = Color(uiColor: .systemGroupedBackground)
+  static let expoSecondarySystemGroupedBackground = Color(uiColor: .secondarySystemGroupedBackground)
+  static let expoTertiarySystemGroupedBackground = Color(uiColor: .tertiarySystemGroupedBackground)
+
+  static let expoSystemGray = Color(uiColor: .systemGray)
+  static let expoSystemGray2 = Color(uiColor: .systemGray2)
+  static let expoSystemGray3 = Color(uiColor: .systemGray3)
+  static let expoSystemGray4 = Color(uiColor: .systemGray4)
+  static let expoSystemGray5 = Color(uiColor: .systemGray5)
+  static let expoSystemGray6 = Color(uiColor: .systemGray6)
 }
 
 extension Font {
@@ -77,6 +92,13 @@ extension View {
       x: 0,
       y: 2
     )
+  }
+
+  func expoRowStyle() -> some View {
+    self
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
   }
 }
 

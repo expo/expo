@@ -25,7 +25,7 @@ struct LocationDiagnosticsView: View {
           .padding()
           .background(Color.black)
           .foregroundColor(.white)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
         }
         .padding()
       } else if viewModel.initialRegion == nil {
@@ -48,7 +48,7 @@ struct LocationDiagnosticsView: View {
                 }
                 .background(Color.black.opacity(0.8))
                 .foregroundColor(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
               }
 
               Button {
@@ -61,7 +61,7 @@ struct LocationDiagnosticsView: View {
               }
               .background(Color.black.opacity(0.8))
               .foregroundColor(.white)
-              .clipShape(RoundedRectangle(cornerRadius: 8))
+              .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
             }
 
             Spacer()
@@ -92,7 +92,7 @@ struct LocationDiagnosticsView: View {
             }
             .background(Color.black.opacity(0.8))
             .foregroundColor(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
 
             if viewModel.isBackgroundLocationAvailable {
               Button {
@@ -105,7 +105,7 @@ struct LocationDiagnosticsView: View {
               }
               .background(Color.black.opacity(0.8))
               .foregroundColor(.white)
-              .clipShape(RoundedRectangle(cornerRadius: 8))
+              .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
             }
           }
           .padding()
