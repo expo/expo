@@ -191,15 +191,6 @@ RCT_EXPORT_METHOD(goToHomeAsync)
   }
 }
 
-/**
- * Opens QR scanner to open another app by scanning its QR code.
- */
-RCT_EXPORT_METHOD(selectQRReader)
-{
-  if (_delegate) {
-    [_delegate homeModuleDidSelectQRReader:self];
-  }
-}
 
 RCT_REMAP_METHOD(getDevMenuSettingsAsync,
                  getDevMenuSettingsAsync:(RCTPromiseResolveBlock)resolve

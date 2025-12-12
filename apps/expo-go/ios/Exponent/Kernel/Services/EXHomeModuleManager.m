@@ -50,14 +50,6 @@
   [module requestToCloseDevMenu];
 }
 
-- (void)homeModuleDidSelectQRReader:(EXHomeModule *)module
-{
-  if ([EXKernel sharedInstance].browserController) {
-    [EXUtil performSynchronouslyOnMainThread:^{
-      [[EXKernel sharedInstance].browserController showQRReader];
-    }];
-  }
-}
 
 - (void)homeModule:(__unused EXHomeModule *)module didOpenUrl:(NSString *)url
 {

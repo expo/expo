@@ -146,11 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
   [self presentViewController:alert animated:YES completion:nil];
 }
 
-- (void)showQRReader
-{
-  [self moveHomeToVisible];
-  [[self _getHomeAppManager] showQRReader];
-}
 
 - (void)moveHomeToVisible
 {

@@ -30,6 +30,25 @@
 NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
 
 @implementation EXHomeAppManager
+{
+  HomeViewController *_swiftUIViewController;
+}
+
+#pragma mark - SwiftUI Integration
+
+- (UIView *)rootView
+{
+  if (!_swiftUIViewController) {
+    _swiftUIViewController = [[HomeViewController alloc] init];
+  }
+  return _swiftUIViewController.view;
+}
+
+- (void)invalidate
+{
+  _swiftUIViewController = nil;
+  [super invalidate];
+}
 
 - (NSDictionary *)extraParams
 {
@@ -89,10 +108,6 @@ NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
                    }];
 }
 
-- (void)showQRReader
-{
-  [self _dispatchHomeJSEvent:@"showQRReader" body:@{} onSuccess:nil onFailure:nil];
-}
 
 - (void)dispatchForegroundHomeEvent
 {
