@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - [iOS] - Add range and custom label support in `DatePicker` ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Add `timerInterval` to `Progress` compoennt.
 
 ### 🐛 Bug fixes
 

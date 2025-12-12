@@ -14,6 +14,10 @@ export type ProgressProps = {
      * @default 'circular'
      */
     variant?: 'linear' | 'circular';
+    /**
+     * The start and end dates for automatic timer progress.
+     */
+    timerInterval?: [Date, Date];
 } & CommonViewModifierProps;
 /**
  * Renders a `Progress` component.

@@ -10,15 +10,16 @@ internal enum ProgressVariant: String, Enumerable {
 
 final class ProgressProps: UIBaseViewProps {
   @Field var variant: ProgressVariant = .circular
+  @Field var timerInterval: [Date]?
   @Field var progress: Double?
   @Field var color: Color?
 }
 
 struct ProgressView: ExpoSwiftUI.View {
-  @ObservedObject var props: ProgressProps
-
+  @ObservedObject public var props: ProgressProps
+  
   var body: some View {
-    SwiftUI.ProgressView(value: props.progress)
+    progressView
       .tint(props.color)
       .if(props.variant == .circular) {
         $0.progressViewStyle(.circular)
@@ -26,5 +27,14 @@ struct ProgressView: ExpoSwiftUI.View {
       .if(props.variant == .linear) {
         $0.progressViewStyle(.linear)
       }
+  }
+  
+  @ViewBuilder
+  private var progressView: some View {
+    if let timerInterval = props.timerInterval, timerInterval.count >= 2, let lower = timerInterval.first, let upper = timerInterval.last, lower <= upper, #available(iOS 16.0, *) {
+      SwiftUI.ProgressView(timerInterval: ClosedRange(uncheckedBounds: (lower: lower, upper: upper)))
+    } else {
+      SwiftUI.ProgressView(value: props.progress)
+    }
   }
 }
