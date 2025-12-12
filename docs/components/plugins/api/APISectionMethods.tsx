@@ -69,6 +69,7 @@ export const renderMethod = (
 ) => {
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
+  const hasOverloads = signatures.length > 1;
 
   return signatures.map(({ name, parameters, comment, type, typeParameter }, overloadIndex) => {
     const returnComment = getTagData('returns', comment);
@@ -94,6 +95,7 @@ export const renderMethod = (
           baseNestingLevel={baseNestingLevel}
           // only show first overload in sidebar to avoid duplicates
           hideInSidebar={overloadIndex > 0}
+          tags={hasOverloads ? ['overload'] : undefined}
         />
         {parameters && parameters.length > 0 && (
           <>
