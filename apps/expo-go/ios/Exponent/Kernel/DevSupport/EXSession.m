@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXSession.h"
-#import "EXUnversioned.h"
 
 NSString * const kEXSessionKeychainKey = @"host.exp.exponent.session";
 NSString * const kEXSessionKeychainService = @"app";
@@ -75,7 +74,7 @@ NSString * const kEXSessionKeychainService = @"app";
                                                           error:&jsonError];
   if (jsonError) {
     if (error) {
-      *error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
+      *error = [NSError errorWithDomain:@"EXKernelErrorDomain"
                                     code:-1
                                 userInfo:@{
                                            NSLocalizedDescriptionKey: @"Could not serialize JSON to save session to keychain",
@@ -101,7 +100,7 @@ NSString * const kEXSessionKeychainService = @"app";
     return YES;
   } else {
     if (error) {
-      *error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
+      *error = [NSError errorWithDomain:@"EXKernelErrorDomain"
                                     code:-1
                                 userInfo:@{ NSLocalizedDescriptionKey: @"Could not save session to keychain" }];
     }
@@ -118,7 +117,7 @@ NSString * const kEXSessionKeychainService = @"app";
     return YES;
   } else {
     if (error) {
-      *error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
+      *error = [NSError errorWithDomain:@"EXKernelErrorDomain"
                                     code:-1
                                 userInfo:@{ NSLocalizedDescriptionKey: @"Could not delete session from keychain" }];
     }
