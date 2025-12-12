@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `allowsFullscreen` prop.
+
 ### 🎉 New features
 
 - [Android][iOS] Add `seek tolerance` and `scrubbingModeOptions` properties to the player. ([#40203](https://github.com/expo/expo/pull/40203) by [@behenate](https://github.com/behenate))
