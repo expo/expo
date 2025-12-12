@@ -41,13 +41,13 @@ AesCryptoModule.SealedData.fromParts = function fromParts(
  * Represents an AES encryption key that can be used for encryption and decryption operations.
  * This class provides methods to generate, import, and export encryption keys.
  */
-export class EncryptionKey extends AesCryptoModule.EncryptionKey { }
+export class EncryptionKey extends AesCryptoModule.EncryptionKey {}
 
 /**
  * Represents encrypted data including the ciphertext, initialization vector, and authentication tag.
  * This class provides methods to create sealed data from various formats and extract its components.
  */
-export class SealedData extends AesCryptoModule.SealedData { }
+export class SealedData extends AesCryptoModule.SealedData {}
 
 /**
  * Encrypts the given plaintext using AES-GCM with the specified key.

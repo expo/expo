@@ -6,7 +6,7 @@ export var KeySize;
     /** 128-bit AES key */
     KeySize[KeySize["AES128"] = 128] = "AES128";
     /** 192-bit AES key. It is unsupported on Web.
-     * @platform ios
+     * @platform apple
      * @platform android
      */
     KeySize[KeySize["AES192"] = 192] = "AES192";

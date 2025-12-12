@@ -11,7 +11,7 @@ export enum KeySize {
   /** 128-bit AES key */
   AES128 = 128,
   /** 192-bit AES key. It is unsupported on Web.
-   * @platform ios
+   * @platform apple
    * @platform android
    */
   AES192 = 192,
