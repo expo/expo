@@ -166,7 +166,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     return;
   }
 
-  if (_visibleApp != _appRegistry.homeAppRecord) {
+  if (_visibleApp != nil) {
     [EXUtil performSynchronouslyOnMainThread:^{
       [self->_browserController moveHomeToVisible];
     }];
@@ -194,7 +194,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [appRecord.viewController reloadFromCache];
 }
 
-- (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord *)appRecord
+- (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord * _Nullable)appRecord
 {
   EXKernelAppRecord *appRecordPreviouslyVisible = _visibleApp;
   if (appRecord != appRecordPreviouslyVisible) {
@@ -218,7 +218,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
       _visibleApp = nil;
     }
     
-    if (_visibleApp && _visibleApp != _appRegistry.homeAppRecord) {
+    if (_visibleApp != nil) {
       [self _unregisterUnusedAppRecords];
     }
   }

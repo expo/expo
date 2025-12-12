@@ -4,20 +4,19 @@
 
 #import <ExpoModulesCore/EXDefines.h>
 
+#import "EXAbstractLoader.h"
 #import "EXAppViewController.h"
-#import "EXHomeAppManager.h"
 #import "EXKernel.h"
-#import "EXHomeStubLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
-#import "EXKernelLinkingManager.h"
-#import "EXKernelServiceRegistry.h"
 #import "EXRootViewController.h"
 #import "EXDevMenu-Swift.h"
 #import "EXUtil.h"
-#import <React/RCTBridge+Private.h>
+
 
 #import "Expo_Go-Swift.h"
+
+#import <React/RCTBridge+Private.h>
 
 @import ExpoScreenOrientation;
 
@@ -32,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, weak) UIViewController *transitioningToViewController;
 @property (nonatomic, readonly) BOOL isLocalNetworkAccessGranted;
+@property (nonatomic, strong) HomeViewController *homeViewController;
 
 @end
 
@@ -87,25 +87,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createRootAppAndMakeVisible
 {
-  EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
-
-  EXHomeStubLoader *homeAppLoader = [[EXHomeStubLoader alloc] init];
-
-  EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];
-  [[EXKernel sharedInstance].appRegistry registerHomeAppRecord:homeAppRecord];
-  [self moveAppToVisible:homeAppRecord];
+  _homeViewController = [[HomeViewController alloc] init];
+  [self _showHomeViewController];
 }
 
 #pragma mark - EXAppBrowserController
 
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
-  BOOL isHomeApp = appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
-  if (isHomeApp || [EXUtil isExpoHostedUrl:appRecord.appLoader.manifestUrl] || [self isLocalNetworkAccessGranted]) {
+  if ([EXUtil isExpoHostedUrl:appRecord.appLoader.manifestUrl] || [self isLocalNetworkAccessGranted]) {
     [self foregroundApp:appRecord];
     return;
   }
-  
+
   [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success) {
     dispatch_async(dispatch_get_main_queue(), ^{
       if (success) {
@@ -142,11 +136,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveHomeToVisible
 {
   [DevMenuManager.shared hideMenu];
-  [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
+  [self _showHomeViewController];
 }
 
 - (BOOL)_isHomeVisible {
-  return [EXKernel sharedInstance].appRegistry.homeAppRecord == [EXKernel sharedInstance].visibleApp;
+  return _homeViewController != nil && self.contentViewController == _homeViewController;
 }
 
 // this is different from Util.reload()
@@ -171,12 +165,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsManifest *)manifest
 {
-  [[self _getHomeAppManager] addHistoryItemWithUrl:manifestUrl manifest:manifest];
+
 }
 
 - (void)getHistoryUrlForScopeKey:(NSString *)scopeKey completion:(void (^)(NSString *))completion
 {
-  return [[self _getHomeAppManager] getHistoryUrlForScopeKey:scopeKey completion:completion];
+  if (completion) {
+    completion(nil);
+  }
 }
 
 - (void)setIsNuxFinished:(BOOL)isFinished
@@ -193,9 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appDidFinishLoadingSuccessfully:(EXKernelAppRecord *)appRecord
 {
   // show nux if needed
-  if (!self.isNuxFinished
-      && appRecord == [EXKernel sharedInstance].visibleApp
-      && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+  if (!self.isNuxFinished && appRecord == [EXKernel sharedInstance].visibleApp) {
     [DevMenuManager.shared openMenu];
   }
 
@@ -221,9 +215,10 @@ NS_ASSUME_NONNULL_BEGIN
   }
   
   _isAnimatingAppTransition = YES;
-  
-  EXAppViewController *viewControllerToHide = (EXAppViewController *)self.contentViewController;
-  
+
+  UIViewController *viewControllerToHide = self.contentViewController;
+  BOOL isHidingHome = (viewControllerToHide == _homeViewController);
+
   if (viewControllerToShow) {
     [self.view addSubview:viewControllerToShow.view];
     [self addChildViewController:viewControllerToShow];
@@ -236,9 +231,11 @@ NS_ASSUME_NONNULL_BEGIN
   void (^finalizeTransition)(void) = ^{
     EX_ENSURE_STRONGIFY(self)
     if (viewControllerToHide) {
-      // backgrounds and then dismisses all modals that are presented by the app
-      [viewControllerToHide backgroundControllers];
-      [viewControllerToHide dismissViewControllerAnimated:NO completion:nil];
+      if (!isHidingHome && [viewControllerToHide isKindOfClass:[EXAppViewController class]]) {
+        EXAppViewController *appVC = (EXAppViewController *)viewControllerToHide;
+        [appVC backgroundControllers];
+        [appVC dismissViewControllerAnimated:NO completion:nil];
+      }
       [viewControllerToHide willMoveToParentViewController:nil];
       [viewControllerToHide removeFromParentViewController];
       [viewControllerToHide.view removeFromSuperview];
@@ -267,33 +264,98 @@ NS_ASSUME_NONNULL_BEGIN
   if (!animated) {
     return finalizeTransition();
   }
-  
-  if (viewControllerToHide.contentView) {
-    viewControllerToHide.contentView.transform = CGAffineTransformIdentity;
-    viewControllerToHide.contentView.alpha = 1.0f;
+
+  UIView *viewToHide = viewControllerToHide.view;
+  UIView *viewToShow = viewControllerToShow.view;
+
+  if (viewToHide) {
+    viewToHide.alpha = 1.0f;
   }
-  if (viewControllerToShow.contentView) {
-    viewControllerToShow.contentView.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
-    viewControllerToShow.contentView.alpha = 0;
+  if (viewToShow) {
+    viewToShow.alpha = 0;
   }
 
   [UIView animateWithDuration:0.3f animations:^{
-    if (viewControllerToHide.contentView) {
-      viewControllerToHide.contentView.transform = CGAffineTransformMakeScale(0.95f, 0.95f);
-      viewControllerToHide.contentView.alpha = 0.5f;
+    if (viewToHide) {
+      viewToHide.alpha = 0.5f;
     }
-    if (viewControllerToShow.contentView) {
-      viewControllerToShow.contentView.transform = CGAffineTransformIdentity;
-      viewControllerToShow.contentView.alpha = 1.0f;
+    if (viewToShow) {
+      viewToShow.alpha = 1.0f;
     }
   } completion:^(BOOL finished) {
     finalizeTransition();
   }];
 }
 
-- (EXHomeAppManager *)_getHomeAppManager
+- (void)_showHomeViewController
 {
-  return (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
+  if (_isAnimatingAppTransition) {
+    return;
+  }
+
+  
+  if (_homeViewController == self.contentViewController) {
+    return;
+  }
+
+  _isAnimatingAppTransition = YES;
+
+  UIViewController *viewControllerToHide = self.contentViewController;
+
+  [self.view addSubview:_homeViewController.view];
+  [self addChildViewController:_homeViewController];
+
+  [self _applySupportedInterfaceOrientations];
+
+  EX_WEAKIFY(self)
+  void (^finalizeTransition)(void) = ^{
+    EX_ENSURE_STRONGIFY(self)
+    if (viewControllerToHide) {
+      if ([viewControllerToHide isKindOfClass:[EXAppViewController class]]) {
+        EXAppViewController *appVC = (EXAppViewController *)viewControllerToHide;
+        [appVC backgroundControllers];
+        [appVC dismissViewControllerAnimated:NO completion:nil];
+      }
+      [viewControllerToHide willMoveToParentViewController:nil];
+      [viewControllerToHide removeFromParentViewController];
+      [viewControllerToHide.view removeFromSuperview];
+    }
+
+    [self->_homeViewController didMoveToParentViewController:self];
+    self.contentViewController = self->_homeViewController;
+
+    self.isAnimatingAppTransition = NO;
+    self.transitioningToViewController = nil;
+
+    if (self.delegate) {
+      [self.delegate viewController:self didNavigateAppToVisible:nil];
+    }
+
+    [self _applySupportedInterfaceOrientations];
+  };
+
+  BOOL animated = (viewControllerToHide != nil);
+  if (!animated) {
+    return finalizeTransition();
+  }
+
+  if (viewControllerToHide.view) {
+    viewControllerToHide.view.alpha = 1.0f;
+  }
+  if (_homeViewController.view) {
+    _homeViewController.view.alpha = 0;
+  }
+
+  [UIView animateWithDuration:0.3f animations:^{
+    if (viewControllerToHide.view) {
+      viewControllerToHide.view.alpha = 0.5f;
+    }
+    if (self->_homeViewController.view) {
+      self->_homeViewController.view.alpha = 1.0f;
+    }
+  } completion:^(BOOL finished) {
+    finalizeTransition();
+  }];
 }
 
 - (void)_maybeResetNuxState

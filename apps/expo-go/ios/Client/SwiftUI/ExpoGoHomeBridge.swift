@@ -25,14 +25,6 @@ import UIKit
     }
   }
 
-  @objc public func addToHistory(url: String, appName: String) {
-    let kernel = EXKernel.sharedInstance()
-    if let homeAppRecord = kernel.appRegistry.homeAppRecord,
-       let homeAppManager = homeAppRecord.appManager as? EXHomeAppManager,
-       let manifestUrl = URL(string: url) {
-    }
-  }
-
   @objc public func isAuthenticated() -> Bool {
     return UserDefaults.standard.string(forKey: "expo-session-secret") != nil
   }
