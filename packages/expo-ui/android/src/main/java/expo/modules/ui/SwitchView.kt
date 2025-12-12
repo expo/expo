@@ -14,7 +14,6 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
@@ -128,8 +127,8 @@ class SwitchView(context: Context, appContext: AppContext) :
       onValueChange(ValueChangeEvent(checked))
     }
 
-    AutoSizingComposable(shadowNodeProxy) {
-      ThemedHybridSwitch(variant, checked, onCheckedChange, colors, Modifier.fromExpoModifiers(props.modifiers.value, this@Content))
-    }
+    ThemedHybridSwitch(variant, checked, onCheckedChange, colors,
+      Modifier.fromExpoModifiers(props.modifiers.value,
+        this@Content))
   }
 }
