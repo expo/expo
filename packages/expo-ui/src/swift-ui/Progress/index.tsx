@@ -17,7 +17,7 @@ export type ProgressProps = {
    * The style of the progress indicator.
    * @default 'circular'
    */
-  variant: 'linear' | 'circular';
+  variant?: 'linear' | 'circular';
 } & CommonViewModifierProps;
 
 type NativeProgressProps = ProgressProps;

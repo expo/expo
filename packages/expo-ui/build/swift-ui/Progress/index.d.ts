@@ -13,7 +13,7 @@ export type ProgressProps = {
      * The style of the progress indicator.
      * @default 'circular'
      */
-    variant: 'linear' | 'circular';
+    variant?: 'linear' | 'circular';
 } & CommonViewModifierProps;
 /**
  * Renders a `Progress` component.
