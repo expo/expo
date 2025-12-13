@@ -73,34 +73,81 @@ export const stripVersionFromPath = (path?: string) => {
   return path.replace(/\/versions\/[\w.]+/, '');
 };
 
-export const pathStartsWith = (name: string, path: string) => {
-  return path.startsWith(`/${name}`);
+export const pathStartsWith = (name: string, path: string) => path.startsWith(`/${name}`);
+
+const missingHashStyleId = 'missing-hash-target-style';
+const ensureMissingHashStyle = () => {
+  if (document.getElementById(missingHashStyleId)) {
+    return;
+  }
+
+  const style = document.createElement('style');
+  style.id = missingHashStyleId;
+  style.textContent = `
+    a[data-missing-hash-target="true"] {
+      color: #d93025 !important;
+      text-decoration: underline !important;
+      text-decoration-color: #d93025 !important;
+      text-decoration-thickness: 2px;
+      background-color: #fff3f2;
+      border-radius: 4px;
+      padding: 0 2px;
+    }
+
+    a[data-missing-hash-target="true"] code {
+      color: #d93025 !important;
+    }
+  `;
+  document.head.appendChild(style);
 };
 
 export function listMissingHashLinkTargets(apiName?: string) {
-  const contentLinks = document.querySelectorAll<HTMLAnchorElement>(
-    `div.size-full.overflow-x-hidden.overflow-y-auto a`
-  );
-
-  const wantedHashes = Array.from(contentLinks)
-    .map(link => {
-      if (link.hostname !== 'localhost' || !link.href.startsWith(link.baseURI.split('#')[0])) {
-        return '';
-      }
-      return link.hash.slice(1);
-    })
-    .filter(hash => hash !== '');
-
-  const availableIDs = new Set(Array.from(document.querySelectorAll('*[id]')).map(link => link.id));
-  const missingEntries = wantedHashes.filter(hash => !availableIDs.has(hash));
-
-  if (missingEntries.length > 0) {
-    /* eslint-disable no-console */
-    console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
-    console.table(missingEntries);
-    console.groupEnd();
-    /* eslint-enable no-console */
+  if (process.env.NODE_ENV !== 'development') {
+    return;
   }
+
+  const stripHashAndTrailingSlash = (url: string) => url.split('#')[0].replace(/\/$/, '');
+  const pageUrl = stripHashAndTrailingSlash(window.location.href);
+
+  const localLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>(
+      `div.size-full.overflow-x-hidden.overflow-y-auto a`
+    )
+  )
+    .filter(link => stripHashAndTrailingSlash(link.href) === pageUrl && link.hash.length > 1)
+    .map(link => ({ link, hash: link.hash.slice(1) }));
+
+  if (localLinks.length === 0) {
+    return;
+  }
+
+  const availableIDs = new Set(Array.from(document.querySelectorAll('*[id]')).map(el => el.id));
+  const missingEntries = localLinks.map(({ hash }) => hash).filter(hash => !availableIDs.has(hash));
+  const missingSet = new Set(missingEntries);
+
+  if (missingSet.size === 0) {
+    localLinks.forEach(({ link }) => {
+      link.removeAttribute('data-missing-hash-target');
+    });
+    return;
+  }
+
+  ensureMissingHashStyle();
+
+  localLinks.forEach(({ link, hash }) => {
+    if (!missingSet.has(hash)) {
+      link.removeAttribute('data-missing-hash-target');
+      return;
+    }
+
+    link.setAttribute('data-missing-hash-target', 'true');
+    link.setAttribute('title', `Missing hash target: #${hash}`);
+  });
+
+  /* eslint-disable no-console */
+  console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
+  console.table(missingEntries);
+  console.groupEnd();
 }
 
 export function versionToText(version: string): string {
