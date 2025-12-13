@@ -46,7 +46,7 @@
     "clipboard-copy": "^4.0.1",
     "cmdk": "^0.2.1",
     "date-fns": "^4.1.0",
-    "framer-motion": "^12.23.24",
+    "framer-motion": "^12.23.26",
     "front-matter": "^4.0.2",
     "github-slugger": "^2.0.0",
     "lodash": "^4.17.21",

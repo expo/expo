@@ -7036,7 +7036,7 @@ __metadata:
     eslint-plugin-tailwindcss: "npm:^3.18.2"
     eslint-plugin-testing-library: "npm:^7.13.4"
     eslint-plugin-unicorn: "npm:^62.0.0"
-    framer-motion: "npm:^12.23.24"
+    framer-motion: "npm:^12.23.26"
     front-matter: "npm:^4.0.2"
     fs-extra: "npm:^11.3.2"
     github-slugger: "npm:^2.0.0"
@@ -7317,9 +7317,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^12.23.24":
-  version: 12.23.24
-  resolution: "framer-motion@npm:12.23.24"
+"framer-motion@npm:^12.23.26":
+  version: 12.23.26
+  resolution: "framer-motion@npm:12.23.26"
   dependencies:
     motion-dom: "npm:^12.23.23"
     motion-utils: "npm:^12.23.6"
@@ -7335,7 +7335,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/716addd9fa85dd2c1475ab848e14c4e6d3246ced041de84afc19b1d6534c897256c8f2878864cf057039116e56f5ca1b87a4cbb943f0b1cf37199ef7174c3cf8
+  checksum: 10c0/7dbbc4a392b969804e04a056e3d89a55bf31572dc7f6cd79050b90616fbb84a1762e4ac4e2537c735d347bbf4ceebea126f5c090234149b12cffa3ea6c518a34
   languageName: node
   linkType: hard
 
