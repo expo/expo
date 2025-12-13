@@ -18,12 +18,68 @@ export default function TextInputScreen() {
         }}>
         Set text
       </Button>
-      <Section title="Text Input">
+      <Section title="Filled Text Input (Default)">
         <Host>
           <TextInput
             ref={textRef}
             autocorrection={false}
             defaultValue="hey there"
+            onChangeText={setValue}
+          />
+        </Host>
+      </Section>
+      <Section title="Outlined Text Input">
+        <Host>
+          <TextInput
+            variant="outlined"
+            autocorrection={false}
+            defaultValue="hey there"
+            onChangeText={setValue}
+          />
+        </Host>
+      </Section>
+      <Section title="Filled with Label">
+        <Host>
+          <TextInput
+            label="Username"
+            autocorrection={false}
+            defaultValue=""
+            onChangeText={setValue}
+          />
+        </Host>
+      </Section>
+      <Section title="Outlined with Label">
+        <Host>
+          <TextInput
+            variant="outlined"
+            label="Email Address"
+            autocorrection={false}
+            defaultValue=""
+            onChangeText={setValue}
+          />
+        </Host>
+      </Section>
+      <Section title="Filled with Label and Placeholder">
+        <Host>
+          <TextInput
+            label="Email Address"
+            placeholder="username@example.com"
+            keyboardType="email-address"
+            autocorrection={false}
+            defaultValue=""
+            onChangeText={setValue}
+          />
+        </Host>
+      </Section>
+      <Section title="Outlined with Label and Placeholder">
+        <Host>
+          <TextInput
+            variant="outlined"
+            label="Phone Number"
+            placeholder="+1 (123) 456-7890"
+            keyboardType="phone-pad"
+            autocorrection={false}
+            defaultValue=""
             onChangeText={setValue}
           />
         </Host>
