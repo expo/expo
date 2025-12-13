@@ -9,6 +9,11 @@ export type GetStaticContentOptions = {
     loader?: {
         data?: any;
     };
+    /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
+    assets?: {
+        css: string[];
+        js: string[];
+    };
 };
 export declare function getStaticContent(location: URL, options?: GetStaticContentOptions): Promise<string>;
 export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';
