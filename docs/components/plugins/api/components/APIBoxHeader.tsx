@@ -1,12 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { AdditionalProps } from '~/common/headingManager';
 import { MONOSPACE, RawH3 } from '~/ui/components/Text';
 
 import { CommentData, CommentTagData } from '../APIDataTypes';
 import { getCodeHeadingWithBaseNestingLevel, getTagNamesList } from '../APISectionUtils';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
 
-type Props = {
+type Props = AdditionalProps & {
   name: string;
   comment?: CommentData;
   baseNestingLevel?: number;
@@ -20,8 +21,10 @@ export function APIBoxHeader({
   platforms,
   baseNestingLevel = 3,
   deprecated = false,
+  ...additionalProps
 }: Props) {
   const HeaderComponent = getCodeHeadingWithBaseNestingLevel(baseNestingLevel, RawH3);
+  const tags = [...(getTagNamesList(comment) ?? []), ...(additionalProps?.tags ?? [])];
   return (
     <div
       className={mergeClasses(
@@ -29,7 +32,7 @@ export function APIBoxHeader({
         'max-md-gutters:flex-col max-md-gutters:gap-y-1.5',
         '[&_h3]:!mb-0'
       )}>
-      <HeaderComponent tags={getTagNamesList(comment)}>
+      <HeaderComponent {...additionalProps} tags={tags}>
         <MONOSPACE
           weight="medium"
           className={mergeClasses(

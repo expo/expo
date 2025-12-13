@@ -127,9 +127,9 @@ export default function TextInputScreen() {
           <Picker
             label="Submit label"
             modifiers={[pickerStyle('menu')]}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setSelectedSubmitLabel(selection as (typeof submitLabelOptions)[number]);
-            }}>
+            onSelectionChange={(selection) =>
+              setSelectedSubmitLabel(selection as (typeof submitLabelOptions)[number])
+            }>
             {submitLabelOptions.map((option) => (
               <Text key={option} modifiers={[tag(option)]}>
                 {option}

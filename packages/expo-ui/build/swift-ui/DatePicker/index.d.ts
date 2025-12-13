@@ -25,11 +25,7 @@ export type DatePickerProps = {
     /**
      * Callback when the date selection changes.
      */
-    onDateChange?: (event: {
-        nativeEvent: {
-            date: Date;
-        };
-    }) => void;
+    onDateChange?: (date: Date) => void;
     /**
      * Children to use as a custom label.
      */

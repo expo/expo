@@ -75,7 +75,7 @@ export default function RTLTestScreen() {
             <Picker
               modifiers={[pickerStyle('segmented')]}
               selection={pickerSelection}
-              onSelectionChange={({ nativeEvent: { selection } }) => setPickerSelection(selection)}>
+              onSelectionChange={setPickerSelection}>
               {options.map((option, index) => (
                 <Text key={index} modifiers={[tag(index)]}>
                   {option}
@@ -85,7 +85,7 @@ export default function RTLTestScreen() {
             <Picker
               modifiers={[pickerStyle('menu')]}
               selection={pickerSelection}
-              onSelectionChange={({ nativeEvent: { selection } }) => setPickerSelection(selection)}>
+              onSelectionChange={setPickerSelection}>
               {options.map((option, index) => (
                 <Text key={index} modifiers={[tag(index)]}>
                   {option}

@@ -176,9 +176,7 @@ export default function ListScreen() {
             label="Scroll dismisses keyboard"
             modifiers={[pickerStyle('menu')]}
             selection={scrollDismissesKeyboardIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setScrollDismissesKeyboardIndex(selection as number);
-            }}>
+            onSelectionChange={setScrollDismissesKeyboardIndex}>
             {scrollDismissesKeyboardOptions.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
                 {option}
@@ -189,9 +187,7 @@ export default function ListScreen() {
             label="List style"
             modifiers={[pickerStyle('menu')]}
             selection={selectedIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setSelectedIndex(selection as number);
-            }}>
+            onSelectionChange={setSelectedIndex}>
             {listStyleOptions.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
                 {option}
