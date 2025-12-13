@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
 
@@ -35,10 +35,6 @@ export type LoadingIndicatorProps = {
    * Only applies when `variant` is `contained`.
    */
   containerColor?: ColorValue;
-  /**
-   * Custom styles for the component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * Modifiers for the component.
    */

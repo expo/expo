@@ -18,36 +18,36 @@ export default function LoadingScreen() {
   return (
     <Page>
       <Section title="Indeterminate loading" gap={16}>
-        <Host style={{ width: 50, height: 50 }}>
+        <Host matchContents>
           <LoadingIndicator />
         </Host>
       </Section>
       <Section title="Indeterminate contained loading" gap={16}>
-        <Host style={{ width: 50, height: 50 }}>
+        <Host matchContents>
           <LoadingIndicator variant="contained" />
         </Host>
       </Section>
       <Section title="Determinate loading" gap={16} row>
-        <Host style={{ width: 50, height: 50 }}>
+        <Host matchContents>
           <LoadingIndicator variant="contained" progress={progress} />
         </Host>
-        <Host style={{ width: 50, height: 50 }}>
+        <Host matchContents>
           <LoadingIndicator progress={progress} />
         </Host>
       </Section>
       <Section title="Indicator color" gap={16} row>
-        <Host style={{ width: 50, height: 50 }}>
+        <Host matchContents>
           <LoadingIndicator progress={progress} color="red" />
         </Host>
-        <Host style={{ width: 50, height: 50 }}>
+        <Host matchContents>
           <LoadingIndicator variant="contained" progress={progress} color="blue" />
         </Host>
       </Section>
       <Section title="Container color" gap={16} row>
-        <Host style={{ width: 50, height: 50 }}>
+        <Host matchContents>
           <LoadingIndicator variant="contained" containerColor="#cccccc" />
         </Host>
-        <Host style={{ width: 50, height: 50 }}>
+        <Host matchContents>
           <LoadingIndicator variant="contained" containerColor="#ff4500" />
         </Host>
       </Section>
