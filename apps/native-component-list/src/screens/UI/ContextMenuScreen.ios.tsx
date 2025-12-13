@@ -10,7 +10,7 @@ import {
   List,
   Section,
   Divider,
-  HStack,
+  RNHostView,
 } from '@expo/ui/swift-ui';
 import {
   buttonStyle,
@@ -134,11 +134,11 @@ export default function ContextMenuScreen() {
               </ContextMenu>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <HStack modifiers={[frame({ width: 200, height: 200 })]}>
+              <RNHostView matchContents>
                 <View style={styles.longPressMenu}>
                   <VideoView player={player} style={styles.longPressMenu} contentFit="cover" />
                 </View>
-              </HStack>
+              </RNHostView>
             </ContextMenu.Trigger>
             <ContextMenu.Preview>
               <View style={styles.preview}>
