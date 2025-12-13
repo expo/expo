@@ -72,10 +72,6 @@ function transformSliderProps(props: SliderProps): NativeSliderProps {
   } = props;
   return {
     ...restProps,
-    min: props.min,
-    max: props.max,
-    step: props.step,
-    value: props.value,
     onValueChanged: onValueChange
       ? ({ nativeEvent: { value } }) => {
           onValueChange(value);
