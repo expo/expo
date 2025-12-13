@@ -1,7 +1,12 @@
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoHaptics from './ExpoHaptics';
-import { NotificationFeedbackType, ImpactFeedbackStyle, AndroidHaptics } from './Haptics.types';
+import {
+  NotificationFeedbackType,
+  ImpactFeedbackStyle,
+  AndroidHaptics,
+  HapticPatternData,
+} from './Haptics.types';
 
 // @needsAudit
 /**
@@ -63,4 +68,19 @@ export async function performAndroidHapticsAsync(type: AndroidHaptics) {
   await ExpoHaptics.performHapticsAsync(type);
 }
 
-export { NotificationFeedbackType, ImpactFeedbackStyle, AndroidHaptics };
+/**
+ * Plays a Core Haptics pattern on iOS using the device haptics engine.
+ *
+ * @platform ios
+ */
+export async function playPatternAsync(pattern: HapticPatternData): Promise<void> {
+  if (Platform.OS !== 'ios') {
+    return;
+  }
+  if (!ExpoHaptics?.playPatternAsync) {
+    throw new UnavailabilityError('Haptics', 'playPatternAsync');
+  }
+  await ExpoHaptics.playPatternAsync(pattern);
+}
+
+export { NotificationFeedbackType, ImpactFeedbackStyle, AndroidHaptics, HapticPatternData };
