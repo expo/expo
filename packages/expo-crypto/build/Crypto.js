@@ -2,6 +2,10 @@ import { UnavailabilityError } from 'expo-modules-core';
 import { CryptoDigestAlgorithm, CryptoEncoding } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';
 export * from './Crypto.types';
+/**
+ * @hidden
+ */
+export * as AES from './aes';
 class CryptoError extends TypeError {
     code = 'ERR_CRYPTO';
     constructor(message) {
