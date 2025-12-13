@@ -107,7 +107,8 @@ class DatabaseLauncher(
     } else {
       null
     }
-    val launchAssetFile = embeddedLaunchAsset ?: ensureAssetExists(launchAsset, database, embeddedUpdate, extraHeaders)
+    val launchAssetFile = embeddedLaunchAsset
+      ?: ensureAssetExists(launchAsset, database, embeddedUpdate, extraHeaders)
     if (launchAssetFile != null) {
       this.launchAssetFile = launchAssetFile.toString()
     } else {
@@ -194,7 +195,11 @@ class DatabaseLauncher(
         asset.relativePath = filename
         val assetFile = File(updatesDirectory, filename)
         if (!assetFile.exists()) {
-          loaderFiles.copyAssetAndGetHash(asset, assetFile, context)
+          val result = loaderFiles.copyAssetAndGetHash(asset, assetFile, context)
+          asset.hash = result.hash
+          if (asset.isLaunchAsset) {
+            asset.expectedSize = result.size
+          }
         }
         if (assetFile.exists()) {
           this[asset] = Uri.fromFile(assetFile).toString()
@@ -207,6 +212,50 @@ class DatabaseLauncher(
     }
   }
 
+  private fun isAssetValid(assetFile: File, asset: AssetEntity): Boolean {
+    if (!assetFile.exists()) {
+      return false
+    }
+
+    if (asset.isLaunchAsset) {
+      val expectedSize = asset.expectedSize
+      if (expectedSize != null) {
+        val actualSize = assetFile.length()
+        if (actualSize != expectedSize) {
+          val cause = Exception("Size mismatch: expected=$expectedSize actual=$actualSize")
+          logger.error(
+            "Launch asset ${asset.key} size mismatch. File is corrupted.",
+            cause,
+            UpdatesErrorCode.AssetsFailedToLoad
+          )
+          return false
+        }
+      } else {
+        try {
+          val actualHash = UpdatesUtils.sha256(assetFile)
+          if (!actualHash.contentEquals(asset.hash)) {
+            val cause = Exception("Hash mismatch")
+            logger.error(
+              "Launch asset ${asset.key} hash mismatch. File is corrupted.",
+              cause,
+              UpdatesErrorCode.AssetsFailedToLoad
+            )
+            return false
+          }
+        } catch (e: Exception) {
+          logger.error(
+            "Failed to validate launch asset ${asset.key}",
+            e,
+            UpdatesErrorCode.AssetsFailedToLoad
+          )
+          return false
+        }
+      }
+    }
+
+    return true
+  }
+
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   suspend fun ensureAssetExists(
     asset: AssetEntity,
@@ -215,30 +264,42 @@ class DatabaseLauncher(
     extraHeaders: JSONObject
   ): File? {
     val assetFile = File(updatesDirectory, asset.relativePath ?: "")
-    var assetFileExists = assetFile.exists()
-    if (!assetFileExists) {
-      // something has gone wrong, we're missing this asset
-      // first we check to see if a copy is embedded in the binary
-      if (embeddedUpdate != null) {
-        val embeddedAssets = embeddedUpdate.assetEntityList
-        var matchingEmbeddedAsset: AssetEntity? = null
-        for (embeddedAsset in embeddedAssets) {
-          if (embeddedAsset.key != null && embeddedAsset.key == asset.key) {
-            matchingEmbeddedAsset = embeddedAsset
-            break
-          }
-        }
 
-        if (matchingEmbeddedAsset != null) {
-          try {
-            val hash = loaderFiles.copyAssetAndGetHash(matchingEmbeddedAsset, assetFile, context)
-            if (hash.contentEquals(asset.hash)) {
-              assetFileExists = true
-            }
-          } catch (e: Exception) {
-            // things are really not going our way...
-            logger.error("Failed to copy matching embedded asset", e, UpdatesErrorCode.AssetsFailedToLoad)
+    if (isAssetValid(assetFile, asset)) {
+      return assetFile
+    }
+
+    if (assetFile.exists()) {
+      logger.warn("Asset ${asset.key} exists but is invalid, will re-download/copy")
+      assetFile.delete()
+    }
+
+    var assetFileExists = false
+
+    // something has gone wrong, we're missing or have a corrupted asset
+    // first we check to see if a copy is embedded in the binary
+    if (embeddedUpdate != null) {
+      val embeddedAssets = embeddedUpdate.assetEntityList
+      var matchingEmbeddedAsset: AssetEntity? = null
+      for (embeddedAsset in embeddedAssets) {
+        if (embeddedAsset.key != null && embeddedAsset.key == asset.key) {
+          matchingEmbeddedAsset = embeddedAsset
+          break
+        }
+      }
+
+      if (matchingEmbeddedAsset != null) {
+        try {
+          val result = loaderFiles.copyAssetAndGetHash(matchingEmbeddedAsset, assetFile, context)
+          if (asset.isLaunchAsset) {
+            asset.expectedSize = result.size
           }
+          if (result.hash.contentEquals(asset.hash)) {
+            assetFileExists = true
+          }
+        } catch (e: Exception) {
+          // things are really not going our way...
+          logger.error("Failed to copy matching embedded asset", e, UpdatesErrorCode.AssetsFailedToLoad)
         }
       }
     }
