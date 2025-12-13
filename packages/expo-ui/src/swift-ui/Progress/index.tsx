@@ -18,9 +18,15 @@ export type ProgressProps = {
    * @default 'circular'
    */
   variant?: 'linear' | 'circular';
+  /**
+   * The start and end dates for automatic timer progress.
+   */
+  timerInterval?: [Date, Date];
 } & CommonViewModifierProps;
 
-type NativeProgressProps = ProgressProps;
+type NativeProgressProps = Omit<ProgressProps, 'timerInterval'> & {
+  timerInterval?: number[];
+};
 
 const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNativeView(
   'ExpoUI',
@@ -31,12 +37,13 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
  * Renders a `Progress` component.
  */
 export function Progress(props: ProgressProps) {
-  const { modifiers, ...restProps } = props;
+  const { modifiers, timerInterval, ...restProps } = props;
   return (
     <NativeProgressView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}
+      timerInterval={timerInterval?.map((date) => date.getTime())}
     />
   );
 }
