@@ -73,7 +73,9 @@ export const stripVersionFromPath = (path?: string) => {
   return path.replace(/\/versions\/[\w.]+/, '');
 };
 
-export const pathStartsWith = (name: string, path: string) => path.startsWith(`/${name}`);
+export const pathStartsWith = (name: string, path: string) => {
+  return path.startsWith(`/${name}`);
+};
 
 const missingHashStyleId = 'missing-hash-target-style';
 const ensureMissingHashStyle = () => {
