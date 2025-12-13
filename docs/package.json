@@ -42,7 +42,7 @@
     "@reach/tabs": "^0.18.0",
     "@sentry/nextjs": "^10.28.0",
     "@sentry/react": "^10.28.0",
-    "@xyflow/react": "^12.9.3",
+    "@xyflow/react": "^12.10.0",
     "clipboard-copy": "^4.0.1",
     "cmdk": "^0.2.1",
     "date-fns": "^4.1.0",
