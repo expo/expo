@@ -8,39 +8,92 @@ platforms: ['ios']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+
+Expo UI Slider matches the official SwiftUI [Slider API](https://developer.apple.com/documentation/swiftui/slider) and allows selecting values from a bounded range.
+
+## Installation
 
 <APIInstallSection />
 
-# Usage
+## Basic slider
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Slider component on iOS."
-      src="/static/images/expo-ui/slider/ios.png"
-      className="max-w-[480px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Host, Slider } from '@expo/ui/swift-ui';
+```tsx BasicSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/swift-ui';
 
-    <Host style={{ minHeight: 60 }}>
+export default function BasicSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+## Slider with custom range
+
+```tsx CustomRangeSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/swift-ui';
+
+export default function CustomRangeSliderExample() {
+  const [value, setValue] = useState(50);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} min={0} max={100} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+## Slider with step
+
+Use the `step` prop to define discrete increments. Set `step` to `0` for continuous values.
+
+```tsx SteppedSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/swift-ui';
+
+export default function SteppedSliderExample() {
+  const [value, setValue] = useState(0);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} min={0} max={100} step={10} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+## Slider with labels
+
+You can add labels to describe the slider's purpose and to mark the minimum and maximum value positions.
+
+```tsx LabeledSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider, Text } from '@expo/ui/swift-ui';
+
+export default function LabeledSliderExample() {
+  const [value, setValue] = useState(50);
+
+  return (
+    <Host matchContents>
       <Slider
         value={value}
-        onValueChange={(value) => {
-          setValue(value);
-        }}
+        min={0}
+        max={100}
+        label={<Text>Volume</Text>}
+        minimumValueLabel={<Text>0</Text>}
+        maximumValueLabel={<Text>100</Text>}
+        onValueChange={setValue}
       />
     </Host>
-    ```
-
-  </Tab>
-</Tabs>
-
-> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/slider) for more information.
+  );
+}
+```
 
 ## API
 
