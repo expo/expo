@@ -2,6 +2,7 @@ package expo.modules.updates
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -16,6 +17,8 @@ import expo.modules.updates.procedures.RecreateReactContextProcedure
 import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
+import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesStateChangeListener
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +46,7 @@ import kotlin.time.toDuration
 class DisabledUpdatesController(
   private val context: Context,
   private val fatalException: Exception?
-) : IUpdatesController {
+) : IUpdatesController, UpdatesInterface {
   /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
   private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -194,6 +197,16 @@ class DisabledUpdatesController(
   override fun shutdown() {
     controllerScope.cancel()
   }
+
+  override val runtimeVersion: String? = null
+
+  override val updateUrl: Uri? = null
+
+  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): String {
+    return ""
+  }
+
+  override fun unsubscribeFromUpdatesStateChanges(subscriptionId: String) {}
 
   companion object {
     private val TAG = DisabledUpdatesController::class.java.simpleName
