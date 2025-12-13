@@ -76,7 +76,9 @@ public final class ExpoUIModule: Module {
     View(LabeledContentLabel.self)
     View(LabeledContentContent.self)
     View(LabelIcon.self)
-    View(SliderView.self)
+
+    // Slider
+    ExpoUIView(SliderView.self)
     View(SliderLabelView.self)
     
     View(HostView.self)

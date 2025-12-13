@@ -1,4 +1,5 @@
 import { Button, Form, Host, HStack, Section, Slider, Text } from '@expo/ui/swift-ui';
+import { tint } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function SliderScreen() {
@@ -81,6 +82,9 @@ export default function SliderScreen() {
           <Button onPress={() => setControlledValue((v) => Math.min(100, v + 10))}>
             Increment
           </Button>
+        </Section>
+        <Section title="Red color Slider">
+          <Slider modifiers={[tint('red')]} />
         </Section>
       </Form>
     </Host>
