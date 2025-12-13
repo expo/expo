@@ -1,15 +1,22 @@
 import { requireNativeView } from 'expo';
-import { Platform, StyleProp, ViewStyle } from 'react-native';
+import { type ColorSchemeName, Platform, StyleProp, ViewStyle } from 'react-native';
 
 import { PrimitiveBaseProps } from '../layout';
 
 //#region Host Component
 export type HostProps = {
+  /**
+   * The color scheme of the host view.
+   */
+  colorScheme?: ColorSchemeName;
+
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
 } & PrimitiveBaseProps;
+
 const HostNativeView: React.ComponentType<PrimitiveBaseProps> | null =
   Platform.OS === 'android' ? requireNativeView('ExpoUI', 'HostView') : null;
+
 export function Host(props: HostProps) {
   if (!HostNativeView) {
     return null;
