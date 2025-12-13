@@ -11,8 +11,11 @@
 ### 🎉 New features
 
 - [iOS] - Add range and custom label support in `DatePicker` ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Add `confirmButtonColors` and `dismissButtonColors` props to AlertDialog ([#41605](https://github.com/expo/expo/pull/41605) by [@kimchi-developer](https://github.com/kimchi-developer))
 
 ### 🐛 Bug fixes
+
+- [Android] Fix Button and AlertDialog not responding to touch events when used inside Host ([#41605](https://github.com/expo/expo/pull/41605) by [@kimchi-developer](https://github.com/kimchi-developer))
 
 ### 💡 Others
 
