@@ -39,7 +39,10 @@ import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServ
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
-import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
+import {
+  getAssetPrefixFromExpoConfig,
+  getBaseUrlFromExpoConfig,
+} from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
@@ -98,6 +101,7 @@ export async function exportAppAsync(
   }
 
   const baseUrl = getBaseUrlFromExpoConfig(exp);
+  const assetPrefix = getAssetPrefixFromExpoConfig(exp) || undefined;
 
   if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
     Log.warn(
@@ -280,6 +284,7 @@ export async function exportAppAsync(
                 exp: projectConfig.exp,
               }),
               baseUrl,
+              assetPrefix,
             });
 
             // Add the favicon assets to the HTML.
@@ -390,6 +395,7 @@ export async function exportAppAsync(
           outputDir: outputPath,
           minify,
           baseUrl,
+          assetPrefix,
           includeSourceMaps: sourceMaps,
           routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
           reactCompiler: !!exp.experiments?.reactCompiler,

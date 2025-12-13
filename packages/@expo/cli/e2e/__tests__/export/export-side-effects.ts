@@ -11,6 +11,7 @@ declare const process: {
     EXPO_USE_STATIC?: string;
     E2E_ROUTER_SRC?: string;
     EXPO_E2E_BASE_PATH?: string;
+    EXPO_E2E_ASSET_PREFIX?: string;
   };
   [key: string]: any;
 };
@@ -24,6 +25,7 @@ export function clearEnv() {
   process.env.EXPO_USE_PATH_ALIASES = '1';
   delete process.env.EXPO_USE_STATIC;
   delete process.env.EXPO_E2E_BASE_PATH;
+  delete process.env.EXPO_E2E_ASSET_PREFIX;
 }
 
 export function restoreEnv() {

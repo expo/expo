@@ -1,5 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`falls back to baseUrl when assetPrefix is not provided 1`] = `
+"<!DOCTYPE html><html><head></head><body><div id="root"></div><script src="/app/_expo/static/js/web/entry-abc123.js" defer></script>
+</body></html>"
+`;
+
 exports[`injects hydration flag 1`] = `
 "<!DOCTYPE html><html><head><script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script></head><body><div id="root"></div><script src="/dist/entry.js" defer></script>
 </body></html>"
@@ -22,5 +27,10 @@ exports[`serializes development static html 1`] = `
 
 exports[`serializes production static html for export 1`] = `
 "<!DOCTYPE html><html><head></head><body><div id="root"></div><script src="/dist/entry.js" defer></script>
+</body></html>"
+`;
+
+exports[`uses assetPrefix for static assets when provided 1`] = `
+"<!DOCTYPE html><html><head><link rel="preload" href="https://cdn.example.com/_expo/static/css/styles-def456.css" as="style"><link rel="stylesheet" href="https://cdn.example.com/_expo/static/css/styles-def456.css"></head><body><div id="root"></div><script src="https://cdn.example.com/_expo/static/js/web/entry-abc123.js" defer></script>
 </body></html>"
 `;

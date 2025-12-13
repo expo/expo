@@ -30,6 +30,8 @@ export type ExpoMetroOptions = {
   /** Enable React compiler support in Babel. */
   reactCompiler?: boolean;
   baseUrl?: string;
+  /** URL prefix for static assets (JS, CSS, fonts). Falls back to baseUrl if not set. */
+  assetPrefix?: string;
   isExporting: boolean;
   /** Is bundling a DOM Component ("use dom"). Requires the entry dom component file path. */
   domRoot?: string;
@@ -106,6 +108,10 @@ export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
 
+export function getAssetPrefixFromExpoConfig(exp: ExpoConfig) {
+  return exp.experiments?.assetPrefix?.trim().replace(/\/+$/, '') ?? '';
+}
+
 export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
   let asyncRoutesSetting;
 
@@ -124,12 +130,13 @@ export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, plat
 export function getMetroDirectBundleOptionsForExpoConfig(
   projectRoot: string,
   exp: ExpoConfig,
-  options: Omit<ExpoMetroOptions, 'baseUrl' | 'reactCompiler' | 'routerRoot' | 'asyncRoutes'>
+  options: Omit<ExpoMetroOptions, 'baseUrl' | 'assetPrefix' | 'reactCompiler' | 'routerRoot' | 'asyncRoutes'>
 ) {
   return getMetroDirectBundleOptions({
     ...options,
     reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: getBaseUrlFromExpoConfig(exp),
+    assetPrefix: getAssetPrefixFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
   });
@@ -150,6 +157,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     preserveEnvVars,
     asyncRoutes,
     baseUrl,
+    assetPrefix,
     routerRoot,
     isExporting,
     inlineSourceMap,
@@ -198,6 +206,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
     environment,
     baseUrl: baseUrl || undefined,
+    assetPrefix: assetPrefix || undefined,
     routerRoot,
     bytecode: bytecode ? '1' : undefined,
     reactCompiler: reactCompiler ? String(reactCompiler) : undefined,
@@ -290,6 +299,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     preserveEnvVars,
     asyncRoutes,
     baseUrl,
+    assetPrefix,
     routerRoot,
     reactCompiler,
     inlineSourceMap,
@@ -343,6 +353,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (baseUrl) {
     queryParams.append('transform.baseUrl', baseUrl);
+  }
+  if (assetPrefix) {
+    queryParams.append('transform.assetPrefix', assetPrefix);
   }
   if (clientBoundaries?.length) {
     queryParams.append('transform.clientBoundaries', JSON.stringify(clientBoundaries));
@@ -443,6 +456,7 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     reactCompiler: isTruthy(getStringParam('transform.reactCompiler') ?? 'false'),
     asyncRoutes: isTruthy(getStringParam('transform.asyncRoutes') ?? 'false'),
     baseUrl: getStringParam('transform.baseUrl') ?? undefined,
+    assetPrefix: getStringParam('transform.assetPrefix') ?? undefined,
     // clientBoundaries: JSON.parse(getStringParam('transform.clientBoundaries') ?? '[]'),
     engine: assertEngine(getStringParam('transform.engine')),
     runModule: isTruthy(getStringParam('runModule') ?? 'true'),

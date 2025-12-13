@@ -8,6 +8,7 @@ export function serializeHtmlWithAssets({
   template,
   devBundleUrl,
   baseUrl,
+  assetPrefix,
   route,
   isExporting,
   hydrate,
@@ -16,6 +17,8 @@ export function serializeHtmlWithAssets({
   template: string;
   /** asset prefix used for deploying to non-standard origins like GitHub pages. */
   baseUrl: string;
+  /** URL prefix for static assets (JS, CSS). Falls back to baseUrl if not set. */
+  assetPrefix?: string;
   devBundleUrl?: string;
   route?: RouteNode;
   isExporting: boolean;
@@ -28,6 +31,7 @@ export function serializeHtmlWithAssets({
     isExporting,
     template,
     baseUrl,
+    assetPrefix,
     bundleUrl: isExporting ? undefined : devBundleUrl,
     route,
     hydrate,
@@ -56,6 +60,7 @@ function htmlFromSerialAssets(
     isExporting,
     template,
     baseUrl,
+    assetPrefix,
     bundleUrl,
     route,
     hydrate,
@@ -63,12 +68,17 @@ function htmlFromSerialAssets(
     isExporting: boolean;
     template: string;
     baseUrl: string;
+    /** URL prefix for static assets (JS, CSS). Falls back to baseUrl if not set. */
+    assetPrefix?: string;
     /** This is dev-only. */
     bundleUrl?: string;
     route?: RouteNode;
     hydrate?: boolean;
   }
 ) {
+  // Use assetPrefix for static assets if provided, otherwise fall back to baseUrl
+  const staticAssetPrefix = assetPrefix ?? baseUrl;
+
   // Combine the CSS modules into tags that have hot refresh data attributes.
   const styleString = assets
     .filter((asset) => asset.type.startsWith('css'))
@@ -76,8 +86,8 @@ function htmlFromSerialAssets(
       if (type === 'css') {
         if (isExporting) {
           return [
-            `<link rel="preload" href="${combineUrlPath(baseUrl, filename)}" as="style">`,
-            `<link rel="stylesheet" href="${combineUrlPath(baseUrl, filename)}">`,
+            `<link rel="preload" href="${combineUrlPath(staticAssetPrefix, filename)}" as="style">`,
+            `<link rel="stylesheet" href="${combineUrlPath(staticAssetPrefix, filename)}">`,
           ].join('');
         } else {
           return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
@@ -116,10 +126,10 @@ function htmlFromSerialAssets(
               return '';
             }
             // Mark async chunks as defer so they don't block the page load.
-            // return `<script src="${combineUrlPath(baseUrl, filename)" defer></script>`;
+            // return `<script src="${combineUrlPath(staticAssetPrefix, filename)" defer></script>`;
           }
 
-          return `<script src="${combineUrlPath(baseUrl, filename)}" defer></script>`;
+          return `<script src="${combineUrlPath(staticAssetPrefix, filename)}" defer></script>`;
         })
         .join('');
 
