@@ -24,7 +24,9 @@ __exportStar(require("./android.material.types"), exports);
 __exportStar(require("./ios.types"), exports);
 const iosColor = new Proxy({}, {
     get(_, prop) {
-        return (0, react_native_1.PlatformColor)(prop);
+        // Fork of PlatformColor for RSC support on iOS.
+        // https://github.com/facebook/react-native/blob/80e384a8011762f571ff6f47b6674de00aab0485/packages/react-native/Libraries/StyleSheet/PlatformColorValueTypes.ios.js#L25-L28
+        return { semantic: [prop] };
     },
 });
 const androidAttrColor = new Proxy({}, {
