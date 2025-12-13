@@ -7081,7 +7081,7 @@ __metadata:
     unist-builder: "npm:^4.0.0"
     unist-util-visit: "npm:^5.0.0"
     user-agent-data-types: "npm:^0.4.2"
-    yet-another-react-lightbox: "npm:^3.25.0"
+    yet-another-react-lightbox: "npm:^3.27.0"
   languageName: unknown
   linkType: soft
 
@@ -14679,9 +14679,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yet-another-react-lightbox@npm:^3.25.0":
-  version: 3.25.0
-  resolution: "yet-another-react-lightbox@npm:3.25.0"
+"yet-another-react-lightbox@npm:^3.27.0":
+  version: 3.27.0
+  resolution: "yet-another-react-lightbox@npm:3.27.0"
   peerDependencies:
     "@types/react": ^16 || ^17 || ^18 || ^19
     "@types/react-dom": ^16 || ^17 || ^18 || ^19
@@ -14692,7 +14692,7 @@ __metadata:
       optional: true
     "@types/react-dom":
       optional: true
-  checksum: 10c0/c2e41c19e4cf3bd1d762c8f135e2f72fc0e6355628e6e2604d11f19286c03f44bac44fee3fc9fd42ff7105f464b28c147979bb5e9cd445999bf7417f6d55d39d
+  checksum: 10c0/0734a705c0c7e67990e59da80c35c1562d15410d6bfe0be26ccc0a52cb1e3733d7e61c216818cc7014d417e964bd68fca7067b0efcbdb9c5b3ec2b58fa4e0d68
   languageName: node
   linkType: hard
 
