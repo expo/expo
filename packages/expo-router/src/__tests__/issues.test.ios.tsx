@@ -7,6 +7,7 @@ import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter, fireEvent, act, waitFor, screen } from '../testing-library';
+import { Link } from '../link/Link';
 
 it('should return correct pathname for nested stack with initialRouteName', async () => {
   const indexRenderCount = jest.fn();
@@ -188,4 +189,71 @@ it('can navigate during first render of nested navigator', async () => {
   expect(innerLayoutMount).toHaveBeenCalledTimes(1);
   expect(innerIndexMount).toHaveBeenCalledTimes(1);
   expect(innerSecondMount).toHaveBeenCalledTimes(1);
+});
+
+it('renders each screen only once when navigating in nested route', () => {
+  const rootLayoutRenderCount = jest.fn();
+  const indexRenderCount = jest.fn();
+  const nestedLayoutRenderCount = jest.fn();
+  const nestedIndexRenderCount = jest.fn();
+  const nestedARenderCount = jest.fn();
+  renderRouter({
+    _layout: function RootLayout() {
+      rootLayoutRenderCount();
+      return <Stack />;
+    },
+    index: function Index() {
+      indexRenderCount();
+      return (
+        <Link testID="link-nested" href="/nested/">
+          Go to Nested
+        </Link>
+      );
+    },
+    'nested/_layout': function NestedLayout() {
+      nestedLayoutRenderCount();
+      return <Stack />;
+    },
+    'nested/index': function NestedIndex() {
+      nestedIndexRenderCount();
+      return (
+        <Link testID="link-nested-a" href="/nested/a">
+          Go to Nested A
+        </Link>
+      );
+    },
+    'nested/a': function NestedA() {
+      nestedARenderCount();
+      return <Text>Nested A</Text>;
+    },
+  });
+
+  expect(screen.getByTestId('link-nested')).toBeVisible();
+  expect(rootLayoutRenderCount).toHaveBeenCalledTimes(1);
+  expect(indexRenderCount).toHaveBeenCalledTimes(1);
+  expect(nestedLayoutRenderCount).toHaveBeenCalledTimes(0);
+  expect(nestedIndexRenderCount).toHaveBeenCalledTimes(0);
+  expect(nestedARenderCount).toHaveBeenCalledTimes(0);
+
+  jest.clearAllMocks();
+
+  act(() => fireEvent.press(screen.getByTestId('link-nested')));
+
+  expect(screen.getByTestId('link-nested-a')).toBeVisible();
+  expect(rootLayoutRenderCount).toHaveBeenCalledTimes(0);
+  expect(indexRenderCount).toHaveBeenCalledTimes(0);
+  expect(nestedLayoutRenderCount).toHaveBeenCalledTimes(1);
+  expect(nestedIndexRenderCount).toHaveBeenCalledTimes(1);
+  expect(nestedARenderCount).toHaveBeenCalledTimes(0);
+
+  jest.clearAllMocks();
+
+  act(() => fireEvent.press(screen.getByTestId('link-nested-a')));
+
+  expect(screen.getByText('Nested A')).toBeVisible();
+  expect(rootLayoutRenderCount).toHaveBeenCalledTimes(0);
+  expect(indexRenderCount).toHaveBeenCalledTimes(0);
+  expect(nestedLayoutRenderCount).toHaveBeenCalledTimes(0);
+  expect(nestedIndexRenderCount).toHaveBeenCalledTimes(0);
+  expect(nestedARenderCount).toHaveBeenCalledTimes(1);
 });
