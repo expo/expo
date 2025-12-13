@@ -257,9 +257,7 @@ export default function ChartScreen() {
           <Picker
             modifiers={[pickerStyle('segmented')]}
             selection={chartTypeIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setChartTypeIndex(selection as number);
-            }}>
+            onSelectionChange={setChartTypeIndex}>
             {chartConfig.chartTypeOptions.map((option, index) => (
               <SwiftUIText key={index} modifiers={[tag(index)]}>
                 {option}
@@ -274,9 +272,7 @@ export default function ChartScreen() {
           <Picker
             modifiers={[pickerStyle('segmented')]}
             selection={dataSetIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setDataSetIndex(selection as number);
-            }}>
+            onSelectionChange={setDataSetIndex}>
             {chartConfig.dataSetOptions.map((option, index) => (
               <SwiftUIText key={index} modifiers={[tag(index)]}>
                 {option}
@@ -296,9 +292,7 @@ export default function ChartScreen() {
               <Picker
                 modifiers={[pickerStyle('segmented')]}
                 selection={lineStyleIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
-                  setLineStyleIndex(selection as number);
-                }}>
+                onSelectionChange={setLineStyleIndex}>
                 {chartConfig.lineStyle.options.map((option, index) => (
                   <SwiftUIText key={index} modifiers={[tag(index)]}>
                     {option}
@@ -313,9 +307,7 @@ export default function ChartScreen() {
               <Picker
                 modifiers={[pickerStyle('segmented')]}
                 selection={pointStyleIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
-                  setPointStyleIndex(selection as number);
-                }}>
+                onSelectionChange={setPointStyleIndex}>
                 {chartConfig.pointStyle.options.map((option, index) => (
                   <SwiftUIText key={index} modifiers={[tag(index)]}>
                     {option}
@@ -337,9 +329,7 @@ export default function ChartScreen() {
               <Picker
                 modifiers={[pickerStyle('segmented')]}
                 selection={barCornerRadiusIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
-                  setBarCornerRadiusIndex(selection as number);
-                }}>
+                onSelectionChange={setBarCornerRadiusIndex}>
                 {chartConfig.barCornerRadius.options.map((option, index) => (
                   <SwiftUIText key={index} modifiers={[tag(index)]}>
                     {option}
@@ -356,9 +346,7 @@ export default function ChartScreen() {
                   <Picker
                     modifiers={[pickerStyle('segmented')]}
                     selection={barWidthIndex}
-                    onSelectionChange={({ nativeEvent: { selection } }) => {
-                      setBarWidthIndex(selection as number);
-                    }}>
+                    onSelectionChange={setBarWidthIndex}>
                     {chartConfig.barWidth.options.map((option, index) => (
                       <SwiftUIText key={index} modifiers={[tag(index)]}>
                         {option}
@@ -380,9 +368,7 @@ export default function ChartScreen() {
               <Picker
                 modifiers={[pickerStyle('segmented')]}
                 selection={pieInnerRadiusIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
-                  setPieInnerRadiusIndex(selection as number);
-                }}>
+                onSelectionChange={setPieInnerRadiusIndex}>
                 {chartConfig.pieInnerRadius.options.map((option, index) => (
                   <SwiftUIText key={index} modifiers={[tag(index)]}>
                     {option}
@@ -397,9 +383,7 @@ export default function ChartScreen() {
               <Picker
                 modifiers={[pickerStyle('segmented')]}
                 selection={pieAngularInsetIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
-                  setPieAngularInsetIndex(selection as number);
-                }}>
+                onSelectionChange={setPieAngularInsetIndex}>
                 {chartConfig.pieAngularInset.options.map((option, index) => (
                   <SwiftUIText key={index} modifiers={[tag(index)]}>
                     {option}
@@ -417,9 +401,7 @@ export default function ChartScreen() {
           <Picker
             modifiers={[pickerStyle('segmented')]}
             selection={gridIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setGridIndex(selection as number);
-            }}>
+            onSelectionChange={setGridIndex}>
             {chartConfig.toggleOptions.map((option, index) => (
               <SwiftUIText key={index} modifiers={[tag(index)]}>
                 {option}
@@ -434,9 +416,7 @@ export default function ChartScreen() {
           <Picker
             modifiers={[pickerStyle('segmented')]}
             selection={animateIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setAnimateIndex(selection as number);
-            }}>
+            onSelectionChange={setAnimateIndex}>
             {chartConfig.toggleOptions.map((option, index) => (
               <SwiftUIText key={index} modifiers={[tag(index)]}>
                 {option}
@@ -452,9 +432,7 @@ export default function ChartScreen() {
           <Picker
             modifiers={[pickerStyle('segmented')]}
             selection={legendIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setLegendIndex(selection as number);
-            }}>
+            onSelectionChange={setLegendIndex}>
             {chartConfig.toggleOptions.map((option, index) => (
               <SwiftUIText key={index} modifiers={[tag(index)]}>
                 {option}
@@ -470,9 +448,7 @@ export default function ChartScreen() {
           <Picker
             modifiers={[pickerStyle('segmented')]}
             selection={showReferenceLinesIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setShowReferenceLinesIndex(selection as number);
-            }}>
+            onSelectionChange={setShowReferenceLinesIndex}>
             {chartConfig.toggleOptions.map((option, index) => (
               <SwiftUIText key={index} modifiers={[tag(index)]}>
                 {option}
@@ -490,9 +466,7 @@ export default function ChartScreen() {
               <Picker
                 modifiers={[pickerStyle('segmented')]}
                 selection={ruleLineWidthIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
-                  setRuleLineWidthIndex(selection as number);
-                }}>
+                onSelectionChange={setRuleLineWidthIndex}>
                 {chartConfig.ruleLine.widthOptions.map((option, index) => (
                   <SwiftUIText key={index} modifiers={[tag(index)]}>
                     {option}
@@ -508,9 +482,7 @@ export default function ChartScreen() {
               <Picker
                 modifiers={[pickerStyle('segmented')]}
                 selection={ruleDashIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
-                  setRuleDashIndex(selection as number);
-                }}>
+                onSelectionChange={setRuleDashIndex}>
                 {chartConfig.ruleDash.options.map((option, index) => (
                   <SwiftUIText key={index} modifiers={[tag(index)]}>
                     {option}

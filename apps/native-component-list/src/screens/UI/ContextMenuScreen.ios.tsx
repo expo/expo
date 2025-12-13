@@ -76,9 +76,7 @@ export default function ContextMenuScreen() {
                 label="Doggos"
                 modifiers={[pickerStyle('menu')]}
                 selection={selectedIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) =>
-                  setSelectedIndex(selection as number)
-                }>
+                onSelectionChange={setSelectedIndex}>
                 {['very', 'veery', 'veeery', 'much'].map((option, index) => (
                   <Text key={index} modifiers={[tag(index)]}>
                     {option}

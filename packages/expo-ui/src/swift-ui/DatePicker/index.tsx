@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type NativeSyntheticEvent } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -31,20 +32,21 @@ export type DatePickerProps = {
   /**
    * Callback when the date selection changes.
    */
-  onDateChange?: (event: { nativeEvent: { date: Date } }) => void;
+  onDateChange?: (date: Date) => void;
   /**
    * Children to use as a custom label.
    */
   children?: React.ReactNode;
 } & CommonViewModifierProps;
 
-type NativeDatePickerProps = Omit<DatePickerProps, 'selection' | 'range'> & {
+type NativeDatePickerProps = Omit<DatePickerProps, 'selection' | 'range' | 'onDateChange'> & {
   selection?: string;
   range?: { start?: string; end?: string };
+  onDateChange?: (event: NativeSyntheticEvent<{ date: Date }>) => void;
 };
 
 function transformDatePickerProps(props: DatePickerProps): NativeDatePickerProps {
-  const { modifiers, selection, range, ...rest } = props;
+  const { modifiers, onDateChange, selection, range, ...rest } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
@@ -54,6 +56,11 @@ function transformDatePickerProps(props: DatePickerProps): NativeDatePickerProps
       ? {
           start: range.start?.toISOString(),
           end: range.end?.toISOString(),
+        }
+      : undefined,
+    onDateChange: onDateChange
+      ? ({ nativeEvent: { date } }) => {
+          onDateChange(new Date(date));
         }
       : undefined,
   };
