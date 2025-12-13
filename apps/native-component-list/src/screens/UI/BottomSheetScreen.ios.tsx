@@ -54,19 +54,13 @@ export default function BottomSheetScreen() {
     <Host style={{ flex: 1 }}>
       <List>
         <Section title="BottomSheet with SwiftUI content">
-          <Button variant="default" onPress={() => setBottomSheetOpen1(!bottomSheetOpen1)}>
-            Open BottomSheet
-          </Button>
+          <Button label="Open BottomSheet" onPress={() => setBottomSheetOpen1(!bottomSheetOpen1)} />
         </Section>
         <Section title="BottomSheet with React Native content">
-          <Button variant="default" onPress={() => setBottomSheetOpen2(!bottomSheetOpen2)}>
-            Open BottomSheet
-          </Button>
+          <Button label="Open BottomSheet" onPress={() => setBottomSheetOpen2(!bottomSheetOpen2)} />
         </Section>
         <Section title="BottomSheet with React Native content full height">
-          <Button variant="default" onPress={() => setBottomSheetOpen3(!bottomSheetOpen3)}>
-            Open BottomSheet
-          </Button>
+          <Button label="Open BottomSheet" onPress={() => setBottomSheetOpen3(!bottomSheetOpen3)} />
         </Section>
         <Switch
           value={enableDetent}
@@ -147,20 +141,18 @@ const BottomSheetWithSwiftUIContent = (props: {
         <Rectangle modifiers={[frame({ width: 100, height })]} />
         <HStack spacing={20} modifiers={[frame({ maxWidth: Infinity, height: Infinity })]}>
           <Button
-            variant="default"
+            label="Increase height"
             onPress={() => {
               setHeight(height + 10);
-            }}>
-            Increase height
-          </Button>
+            }}
+          />
         </HStack>
         <Button
-          variant="default"
+          label="Close sheet"
           onPress={() => {
             props.onIsOpenedChange(false);
-          }}>
-          Close sheet
-        </Button>
+          }}
+        />
       </VStack>
     </BottomSheet>
   );
@@ -191,12 +183,11 @@ const BottomSheetWithReactNativeContent = (props: {
         />
       </RNHostView>
       <Button
-        variant="default"
+        label="Close sheet"
         onPress={() => {
           props.onIsOpenedChange(false);
-        }}>
-        Close sheet
-      </Button>
+        }}
+      />
     </BottomSheet>
   );
 };

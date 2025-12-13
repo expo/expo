@@ -152,7 +152,7 @@ export default function ListScreen() {
           />
         </Section>
         <Section title="Controls" collapsible>
-          <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
+          <Button onPress={() => setEditModeEnabled(!editModeEnabled)} label="Toggle Edit" />
           <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
           <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
           <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />

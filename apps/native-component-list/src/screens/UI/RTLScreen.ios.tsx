@@ -62,15 +62,9 @@ export default function RTLTestScreen() {
           matchContents={{ vertical: true }}
           layoutDirection={isRTL ? 'rightToLeft' : 'leftToRight'}>
           <HStack spacing={12}>
-            <Button variant="default" systemImage="house">
-              בית
-            </Button>
-            <Button variant="glass" systemImage="arrow.forward.square">
-              קדימה
-            </Button>
-            <Button variant="borderedProminent" systemImage="delete.forward" role="destructive">
-              حذف
-            </Button>
+            <Button systemImage="house" label="בית" />
+            <Button systemImage="arrow.forward.square" label="קדימה" />
+            <Button systemImage="delete.forward" role="destructive" label="حذف" />
           </HStack>
         </Host>
       </Section>

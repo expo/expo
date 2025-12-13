@@ -1626,6 +1626,14 @@ extension ViewModifierRegistry {
       return try ButtonStyleModifier(from: params, appContext: appContext)
     }
 
+    register("controlSize") { params, appContext, _ in
+      return try ControlSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("labelStyle") { params, appContext, _ in
+      return try LabelStyleModifier(from: params, appContext: appContext)
+    }
+
     register("textFieldStyle") { params, appContext, _ in
       return try TextFieldStyleModifier(from: params, appContext: appContext)
     }

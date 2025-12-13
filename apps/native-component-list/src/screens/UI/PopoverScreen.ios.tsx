@@ -1,6 +1,7 @@
 import { Button, Host, HStack, Image, Picker, Popover, Text, VStack } from '@expo/ui/swift-ui';
 import {
   background,
+  buttonStyle,
   clipShape,
   frame,
   onTapGesture,
@@ -66,9 +67,11 @@ export default function PopoverScreen() {
                 </VStack>
               </Popover.Content>
               <Popover.Trigger>
-                <Button variant="borderedProminent" onPress={() => setShowPop(true)}>
-                  Button Popover
-                </Button>
+                <Button
+                  modifiers={[buttonStyle('borderedProminent')]}
+                  onPress={() => setShowPop(true)}
+                  label="Button Popover"
+                />
               </Popover.Trigger>
             </Popover>
             <Popover isPresented={textShowPop} onStateChange={(e) => setTextShowPop(e.isPresented)}>
@@ -97,10 +100,12 @@ export default function PopoverScreen() {
                   <Text size={18}>Hello is icon popover</Text>
                 </HStack>
                 <Button
-                  variant={isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'}
-                  onPress={() => Alert.alert('This allert from popover!')}>
-                  Press me
-                </Button>
+                  modifiers={[
+                    buttonStyle(isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'),
+                  ]}
+                  onPress={() => Alert.alert('This allert from popover!')}
+                  label="Press me"
+                />
               </VStack>
             </Popover.Content>
             <Popover.Trigger>
@@ -141,18 +146,24 @@ export default function PopoverScreen() {
                   ))}
                   <Host matchContents>
                     <Button
-                      variant={isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'}
-                      onPress={() => Alert.alert('This allert from popover!')}>
-                      Press me
-                    </Button>
+                      modifiers={[
+                        buttonStyle(
+                          isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'
+                        ),
+                      ]}
+                      onPress={() => Alert.alert('This allert from popover!')}
+                      label="Press me"
+                    />
                   </Host>
                 </ScrollView>
               </VStack>
             </Popover.Content>
             <Popover.Trigger>
-              <Button variant="borderedProminent" onPress={() => setScrollShowPop(true)}>
-                ScrollView Popover
-              </Button>
+              <Button
+                modifiers={[buttonStyle('borderedProminent')]}
+                onPress={() => setScrollShowPop(true)}
+                label="ScrollView Popover"
+              />
             </Popover.Trigger>
           </Popover>
           <Popover
@@ -169,9 +180,11 @@ export default function PopoverScreen() {
               </VStack>
             </Popover.Content>
             <Popover.Trigger>
-              <Button variant="borderedProminent" onPress={() => setImageShowPop(true)}>
-                Image popover
-              </Button>
+              <Button
+                modifiers={[buttonStyle('borderedProminent')]}
+                onPress={() => setImageShowPop(true)}
+                label="Image popover"
+              />
             </Popover.Trigger>
           </Popover>
         </HStack>

@@ -445,6 +445,22 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Sets the size of controls within this view.
+ * @param size - The control size.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/controlsize(_:)).
+ */
+export const controlSize = (size: 'mini' | 'small' | 'regular' | 'large' | 'extraLarge') =>
+  createModifier('controlSize', { size });
+
+/**
+ * Sets the style for labels within this view.
+ * @param style - The label style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelstyle(_:)).
+ */
+export const labelStyle = (style: 'automatic' | 'iconOnly' | 'titleAndIcon' | 'titleOnly') =>
+  createModifier('labelStyle', { style });
+
+/**
  * Sets the text field style for text field views.
  * @param style - The text field style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textfieldstyle(_:)).
@@ -869,6 +885,8 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof controlSize>
+  | ReturnType<typeof labelStyle>
   | ReturnType<typeof textFieldStyle>
   | ReturnType<typeof menuActionDismissBehavior>
   | ReturnType<typeof accessibilityLabel>
