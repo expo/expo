@@ -238,12 +238,13 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
       val newCurrentAudioTrack = audioTracks.currentAudioTrack
       availableVideoTracks = tracks.toVideoTracks()
+      refreshPlaybackInfo()
 
       if (isLoadingNewSource) {
         sendEvent(
           PlayerEvent.VideoSourceLoaded(
             commitedSource,
-            this@VideoPlayer.player.duration / 1000.0,
+            duration.toDouble(),
             availableVideoTracks,
             newSubtitleTracks,
             newAudioTracks
