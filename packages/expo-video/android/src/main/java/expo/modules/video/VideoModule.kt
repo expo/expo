@@ -27,6 +27,7 @@ import expo.modules.video.records.SeekTolerance
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
+import expo.modules.video.managers.VideoManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -41,6 +42,10 @@ class VideoModule : Module() {
 
     OnCreate {
       VideoManager.onModuleCreated(appContext)
+    }
+
+    OnDestroy {
+      VideoManager.onModuleDestroyed(appContext)
     }
 
     Function("isPictureInPictureSupported") {
@@ -396,8 +401,8 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
   Prop("contentFit") { view: T, contentFit: ContentFit ->
     view.contentFit = contentFit
   }
-  Prop("startsPictureInPictureAutomatically") { view: T, autoEnterPiP: Boolean ->
-    view.autoEnterPiP = autoEnterPiP
+  Prop("startsPictureInPictureAutomatically") { view: T, autoEnterPiP: Boolean? ->
+    view.autoEnterPiP = autoEnterPiP ?: false
   }
   Prop("allowsFullscreen") { view: T, allowsFullscreen: Boolean? ->
     view.allowsFullscreen = allowsFullscreen ?: true
