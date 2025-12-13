@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add fast reset system for serialized mods.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

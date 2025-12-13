@@ -1,4 +1,5 @@
 import Debug from 'debug';
+import path from 'path';
 
 import { BaseModOptions, withBaseMod } from './withMod';
 import {
@@ -68,7 +69,7 @@ export function createBaseMod<
       saveToInternal: props.saveToInternal ?? false,
       isProvider: true,
       isIntrospective,
-      async action({ modRequest: { nextMod, ...modRequest }, ...config }) {
+      async action({ modRequest: { nextMod, templateProjectRoot, ...modRequest }, ...config }) {
         try {
           let results: ExportedConfigWithProps<ModType> = {
             ...config,
@@ -76,8 +77,32 @@ export function createBaseMod<
           };
 
           const filePath = await getFilePath(results, props);
-          debug(`mods.${platform}.${modName}: file path: ${filePath || '[skipped]'}`);
-          const modResults = await read(filePath, results, props);
+          let inputFilePath = filePath;
+
+          // Change the input file path for resetting the provider.
+          if (templateProjectRoot) {
+            inputFilePath = await getFilePath(
+              {
+                ...results,
+                modRequest: {
+                  ...results.modRequest,
+                  // Calculate new paths relative to the replacement template root.
+                  platformProjectRoot: path.join(templateProjectRoot, results.modRequest.platform),
+                  projectRoot: templateProjectRoot,
+                },
+              },
+              props
+            );
+          }
+
+          if (inputFilePath === filePath) {
+            debug(`mods.${platform}.${modName}: file path: ${filePath || '[skipped]'}`);
+          } else {
+            debug(`mods.${platform}.${modName}: file path input: ${inputFilePath || '[skipped]'}`);
+            debug(`mods.${platform}.${modName}: file path output: ${filePath || '[skipped]'}`);
+          }
+
+          const modResults = await read(inputFilePath, results, props);
 
           results = await nextMod!({
             ...results,
@@ -160,7 +185,11 @@ export function withGeneratedBaseMods<ModName extends string>(
   }
 ): ExportedConfig {
   return Object.entries(providers).reduce((config, [modName, value]) => {
-    const baseMod = createPlatformBaseMod({ platform, modName, ...(value as any) });
+    const baseMod = createPlatformBaseMod({
+      platform,
+      modName,
+      ...(value as any),
+    });
     return baseMod(config, props);
   }, config);
 }
