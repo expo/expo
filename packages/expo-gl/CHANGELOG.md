@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added ETC compressed texture support for the `compressedTexImage2D` and `compressedTexSubImage2D` WebGL methods. ([#35022](https://github.com/expo/expo/pull/35022) by [@hmallen99](https://github.com/hmallen99))
+
 ### 🐛 Bug fixes
 
 - Fix race condition bug for **web** env for `onLayout` callback. ([#41460](https://github.com/expo/expo/pull/41460) by [@psnet](https://github.com/psnet))
