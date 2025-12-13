@@ -17,7 +17,6 @@ import {
   menuActionDismissBehavior,
   pickerStyle,
   tag,
-  frame,
 } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
