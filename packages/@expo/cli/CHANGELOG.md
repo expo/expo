@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo install` not auto-adding config plugins for scoped packages ([#41613](https://github.com/expo/expo/pull/41613) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 54.0.19 — 2025-12-11
