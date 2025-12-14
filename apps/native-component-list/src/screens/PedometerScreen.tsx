@@ -1,7 +1,7 @@
 import { H2 } from '@expo/html-elements';
 import { Pedometer } from 'expo-sensors';
 import * as React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Platform, ScrollView, Text, View } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import usePermissions from '../utilities/usePermissions';
@@ -45,20 +45,28 @@ function usePedometerHistory({
   }, []);
 
   React.useEffect(() => {
-    Pedometer.isRecordingAvailableAsync().then((isRecordingAvailable) => {
+    (async () => {
+      const isRecordingAvailable = await Pedometer.isRecordingAvailableAsync();
+
       if (!isRecordingAvailable) {
-        console.log('Pedometer history is not available on this device.');
         if (isMounted.current) {
           setData({ steps: 0 });
         }
-      } else {
-        Pedometer.subscribeRecording();
-        Pedometer.getStepCountAsync(start, end).then((data) => {
-          console.log('Pedometer history data:', data);
-          if (isMounted.current) {
-            setData(data);
-          }
-        });
+        return;
+      }
+
+      if (Platform.OS === 'android') {
+        await Pedometer.subscribeRecording();
+      }
+
+      const result = await Pedometer.getStepCountAsync(start, end);
+      if (isMounted.current) {
+        setData(result);
+      }
+    })().catch((error) => {
+      console.log('Pedometer history error:', error);
+      if (isMounted.current) {
+        setData({ steps: 0 });
       }
     });
   }, [start, end]);
@@ -110,7 +118,7 @@ function StepTrackerView() {
   const [isActive, setActive] = React.useState(false);
   const data = usePedometer({ isActive });
   const { lastEvent, isSupported } = usePedometerEvents();
-  const message = data?.steps ? `Total steps ${data.steps}` : `Waiting...`;
+  const message = data ? `Total steps ${data.steps}` : `Waiting...`;
   const eventMessage = React.useMemo(() => {
     if (isSupported === undefined) {
       return 'Checking pedometer event support...';
@@ -145,7 +153,7 @@ function StepHistoryMessage() {
     return yesterday;
   }, [today]);
 
-  const isHistoryAvailable = useResolvedValue(Pedometer.isRecordingAvailableAsync);
+  const [isRecordingAvailable] = useResolvedValue(Pedometer.isRecordingAvailableAsync);
 
   const data = usePedometerHistory({ start: yesterday, end: today });
 
@@ -153,7 +161,7 @@ function StepHistoryMessage() {
   return (
     <View style={{ padding: 10 }}>
       <H2>Step History</H2>
-      {isHistoryAvailable === false ? (
+      {isRecordingAvailable === false ? (
         <Text style={{ paddingTop: 10, fontWeight: 'bold' }}>
           Pedometer history is not available on this device.
         </Text>
