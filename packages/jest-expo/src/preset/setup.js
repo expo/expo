@@ -10,9 +10,9 @@ const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
 const stackTrace = require('stacktrace-js');
 
-const publicExpoModules = require('./moduleMocks/expoModules');
-const internalExpoModules = require('./moduleMocks/internalExpoModules');
-const thirdPartyModules = require('./moduleMocks/thirdPartyModules');
+const expoModulesMocks = require('./moduleMocks/expoModules');
+const internalExpoModulesMocks = require('./moduleMocks/internalExpoModules');
+const thirdPartyModulesMocks = require('./moduleMocks/thirdPartyModules');
 
 // window isn't defined as of react-native 0.45+ it seems
 if (typeof window !== 'object') {
@@ -53,11 +53,7 @@ Object.defineProperty(mockNativeModules, 'LinkingManager', {
   get: () => mockNativeModules.Linking,
 });
 
-const expoModules = merge(publicExpoModules, merge(thirdPartyModules, internalExpoModules));
-
-// Mock the experience URL in development mode for asset setup
-expoModules.NativeUnimoduleProxy.modulesConstants.mockDefinition.ExponentConstants.experienceUrl.mock =
-  'exp://192.168.1.200:8081';
+const nativeModulesMocks = merge(thirdPartyModulesMocks, internalExpoModulesMocks);
 
 function mock(property, customMock) {
   const propertyType = property.type;
@@ -78,8 +74,6 @@ function mock(property, customMock) {
     mockValue = [];
   } else if (propertyType === 'mock') {
     mockValue = mockByMockDefinition(property.mockDefinition);
-  } else {
-    mockValue = {};
   }
   return mockValue;
 }
@@ -105,27 +99,32 @@ function mockByMockDefinition(definition) {
   return mock;
 }
 
-for (const moduleName of Object.keys(expoModules)) {
-  const moduleProperties = expoModules[moduleName];
+function mockModule(modules, mocks, moduleName) {
+  const moduleProperties = mocks[moduleName];
   const mockedProperties = mockProperties(moduleProperties);
 
-  Object.defineProperty(mockNativeModules, moduleName, {
+  Object.defineProperty(modules, moduleName, {
     configurable: true,
     enumerable: true,
     get: () => mockedProperties,
   });
 }
 
-Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach(
-  (viewManagerName) => {
-    Object.defineProperty(mockNativeModules.UIManager, `ViewManagerAdapter_${viewManagerName}`, {
-      get: () => ({
-        NativeProps: {},
-        directEventTypes: [],
-      }),
-    });
-  }
-);
+// React Native and 3rd-party modules
+for (const moduleName of Object.keys(nativeModulesMocks)) {
+  mockModule(mockNativeModules, nativeModulesMocks, moduleName);
+}
+
+// Installs web implementations of the global.expo object for all platforms to polyfill APIs that are normally installed through JSI.
+require('expo-modules-core/src/polyfill/dangerous-internal').installExpoGlobalPolyfill();
+
+// Mock the experience URL in development mode for asset setup
+expoModulesMocks.ExponentConstants.experienceUrl = 'exp://192.168.1.200:8081';
+
+// Apply mocks to `globalThis.expo.modules`
+for (const moduleName of Object.keys(expoModulesMocks)) {
+  mockModule(globalThis.expo.modules, expoModulesMocks, moduleName);
+}
 
 // Mock Expo's default async require messaging sockets when running tests
 jest.mock('expo/src/async-require/messageSocket', () => undefined);
@@ -238,26 +237,6 @@ jest.doMock('expo-modules-core', () => {
 
   const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
 
-  // support old hard-coded mocks TODO: remove this
-  const { NativeModulesProxy } = ExpoModulesCore;
-
-  // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
-  // into the native proxy module. We're not really interested in checking whether the underlying
-  // method is called, just that the proxy method is called, since we have unit tests for the
-  // adapter and believe it works correctly.
-  //
-  // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
-  // This means the mock functions will not throw validation errors the way they would in an app.
-
-  for (const moduleName of Object.keys(NativeModulesProxy)) {
-    const nativeModule = NativeModulesProxy[moduleName];
-    for (const propertyName of Object.keys(nativeModule)) {
-      if (typeof nativeModule[propertyName] === 'function') {
-        nativeModule[propertyName] = jest.fn(async () => {});
-      }
-    }
-  }
-
   function requireMockModule(name) {
     // Support auto-mocking of expo-modules that:
     // 1. have a mock in the `mocks` directory
@@ -310,9 +289,6 @@ jest.doMock('expo-modules-core', () => {
     },
   };
 });
-
-// Installs web implementations of the global.expo object for all platforms to polyfill APIs that are normally installed through JSI.
-require('expo-modules-core/src/polyfill/dangerous-internal').installExpoGlobalPolyfill();
 
 jest.doMock('expo/src/winter/FormData', () => ({
   // The `installFormDataPatch` function is for native runtime only,
