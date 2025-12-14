@@ -217,11 +217,13 @@ const PedometerSensor = () => {
     const subscribe = async () => {
       const isAvailable = await Sensors.Pedometer.isAvailableAsync();
       setIsPedometerAvailable(String(isAvailable));
-      const isHistoryAvailable = await Sensors.Pedometer.isRecordingAvailableAsync();
+      const isHistoryAvailable = isAvailable && (await Sensors.Pedometer.isRecordingAvailableAsync());
       setIsPedometerHistoryAvailable(String(isHistoryAvailable));
 
       if (isHistoryAvailable) {
-        Sensors.Pedometer.subscribeRecording();
+        if (Platform.OS === 'android') {
+          await Sensors.Pedometer.subscribeRecording();
+        }
         const end = new Date();
         const start = new Date();
         start.setDate(end.getDate() - 1);

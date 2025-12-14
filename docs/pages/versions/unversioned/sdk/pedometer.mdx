@@ -15,7 +15,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 > **warning** Pedometer is not available in Expo Go for Android. Expo Go does not include the `ACTIVITY_RECOGNITION` permission that Pedometer needs. With this permission, Google Play could classify Expo Go as a health app. To use Pedometer on Android, create a [development build](/develop/development-builds/introduction/).
 
-> **Note:** iOS does not expose a Recording API toggle. `Pedometer.isRecordingAvailableAsync()` resolves to `false` on iOS, so the background subscription helpers (`subscribeRecording` / `unsubscribeRecording`) are Android-only.
+> **Note:** iOS keeps collecting step history automatically (up to seven days). On Android, step history requires Google Play Services Recording API support, and you may need to call `subscribeRecording()` to start collecting history. The background subscription helpers (`subscribeRecording` / `unsubscribeRecording`) are no-ops on iOS.
 
 ### Pause and resume events
 
@@ -61,23 +61,21 @@ export default function App() {
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
     setIsPedometerAvailable(String(isAvailable));
-    const isHistoryAvailable = await Sensors.Pedometer.isRecordingAvailableAsync();
+    const isHistoryAvailable = await Pedometer.isRecordingAvailableAsync();
     setIsPedometerHistoryAvailable(String(isHistoryAvailable));
 
     if (isHistoryAvailable) {
-      Sensors.Pedometer.subscribeRecording();
+      await Pedometer.subscribeRecording();
       const end = new Date();
       const start = new Date();
       start.setDate(end.getDate() - 1);
 
       const pastStepCountResult = await Pedometer.getStepCountAsync(start, end);
-      if (pastStepCountResult) {
-        setPastStepCount(pastStepCountResult.steps);
-      }
+      setPastStepCount(pastStepCountResult.steps);
     }
 
     if (isAvailable) {
-      return Pedometer.watchStepCount(result => {
+      return Pedometer.watchStepCount((result) => {
         setCurrentStepCount(result.steps);
       });
     }
@@ -94,7 +92,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text>Pedometer.isAvailableAsync(): {isPedometerAvailable}</Text>
-      <Text>Pedometer.isRecordigAvailableAsync(): {isRecordigAvailableAsync}</Text>
+      <Text>Pedometer.isRecordingAvailableAsync(): {isPedometerHistoryAvailable}</Text>
       <Text>Steps taken in the last 24 hours: {pastStepCount}</Text>
       <Text>Walk! And watch this go up: {currentStepCount}</Text>
     </View>

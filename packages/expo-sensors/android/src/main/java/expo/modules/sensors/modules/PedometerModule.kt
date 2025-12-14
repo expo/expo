@@ -11,7 +11,6 @@ import android.hardware.Sensor
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
-import androidx.core.content.ContextCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.tasks.Tasks
@@ -149,28 +148,41 @@ class PedometerModule : Module() {
     }
 
     AsyncFunction("subscribeRecording") {
-      // The recording client is only available on Oreo (API 26) and above.
-      // `isRecordingAvailable` can be used to check for support, otherwise we throw here.
+      if (!isRecordingAvailable()) {
+        throw NotSupportedException("Pedometer Recording API is not available on this device.")
+      }
+
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
       try {
         Tasks.await(localRecordingClient.subscribe(LocalDataType.TYPE_STEP_COUNT_DELTA))
       } catch (e: SecurityException) {
         throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
       }
-      true
     }
 
     AsyncFunction("unsubscribeRecording") {
+      if (!isRecordingAvailable()) {
+        return@AsyncFunction
+      }
+
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
-      Tasks.await(localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA))
+      try {
+        Tasks.await(localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA))
+      } catch (e: SecurityException) {
+        throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
+      }
     }
 
     AsyncFunction("getStepCountAsync") { startTime: Long, endTime: Long ->
+      if (!isRecordingAvailable()) {
+        throw NotSupportedException("Pedometer Recording API is not available on this device.")
+      }
+
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
       val readRequest = LocalDataReadRequest.Builder()
         .aggregate(LocalDataType.TYPE_STEP_COUNT_DELTA)
-        .bucketByTime(1, java.util.concurrent.TimeUnit.DAYS)
-        .setTimeRange(startTime, endTime, java.util.concurrent.TimeUnit.MILLISECONDS)
+        .bucketByTime(1, TimeUnit.DAYS)
+        .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
         .build()
 
       val response = Tasks.await(localRecordingClient.readData(readRequest))
@@ -186,8 +198,10 @@ class PedometerModule : Module() {
 
       var sum = 0
       for (bucket in response.buckets) {
-        for (dataPoint in bucket.dataSets[0].dataPoints) {
-          sum += dataPoint.getValue(LocalField.FIELD_STEPS).asInt()
+        for (dataSet in bucket.dataSets) {
+          for (dataPoint in dataSet.dataPoints) {
+            sum += dataPoint.getValue(LocalField.FIELD_STEPS).asInt()
+          }
         }
       }
 
@@ -197,6 +211,13 @@ class PedometerModule : Module() {
     OnDestroy {
       stopActivityTransitionUpdates()
     }
+  }
+
+  private fun isRecordingAvailable(): Boolean {
+    return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
+      context,
+      LocalRecordingClient.LOCAL_RECORDING_CLIENT_MIN_VERSION_CODE
+    ) == ConnectionResult.SUCCESS
   }
 
   private fun ensureTransitionPendingIntent(): PendingIntent {
@@ -262,12 +283,13 @@ class PedometerModule : Module() {
     }
 
     transitionsReceiver = receiver
-    ContextCompat.registerReceiver(
-      context,
-      receiver,
-      IntentFilter(TransitionAction),
-      ContextCompat.RECEIVER_NOT_EXPORTED
-    )
+    val intentFilter = IntentFilter(TransitionAction)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+    } else {
+      @Suppress("DEPRECATION")
+      context.registerReceiver(receiver, intentFilter)
+    }
 
     return true
   }
