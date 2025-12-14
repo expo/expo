@@ -36,6 +36,7 @@ struct SliderView: ExpoSwiftUI.View {
     #endif
   }
 
+  #if !os(tvOS)
   @ViewBuilder
   private var sliderContent: some View {
     let label = props.children?.compactMap({ $0.childView as? SliderLabelView })
@@ -90,6 +91,7 @@ struct SliderView: ExpoSwiftUI.View {
       }
     }
   }
+  #endif
 }
 
 final class SliderProps: UIBaseViewProps {
