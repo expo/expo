@@ -11,6 +11,7 @@ export { SharedRef } from './SharedRef';
 export { default as Platform } from './Platform';
 export { default as uuid } from './uuid';
 
+export type { ProxyNativeModule } from './NativeModulesProxy.types';
 export { requireNativeViewManager } from './NativeViewManagerAdapter';
 
 export * from './requireNativeModule';

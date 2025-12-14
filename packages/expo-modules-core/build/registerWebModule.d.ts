@@ -5,5 +5,5 @@ import type { NativeModule } from './ts-declarations/NativeModule';
  * @param moduleName – a name to register the module under `globalThis.expo.modules[className]`.
  * @returns A singleton instance of the class passed into arguments.
  */
-export declare function registerWebModule<EventsMap extends Record<never, never>, ModuleType extends typeof NativeModule<EventsMap>>(moduleImplementation: ModuleType, moduleName: string): ModuleType;
+export declare function registerWebModule<EventsMap extends Record<never, never>, ModuleType extends typeof NativeModule<EventsMap>>(moduleImplementation: ModuleType, moduleName?: string): ModuleType;
 //# sourceMappingURL=registerWebModule.d.ts.map

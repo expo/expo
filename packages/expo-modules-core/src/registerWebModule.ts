@@ -11,7 +11,7 @@ import type { NativeModule } from './ts-declarations/NativeModule';
 export function registerWebModule<
   EventsMap extends Record<never, never>,
   ModuleType extends typeof NativeModule<EventsMap>,
->(moduleImplementation: ModuleType, moduleName: string): ModuleType {
+>(moduleImplementation: ModuleType, moduleName?: string): ModuleType {
   ensureNativeModulesAreInstalled();
 
   moduleName = moduleName ?? moduleImplementation.name;

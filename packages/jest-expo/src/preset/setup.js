@@ -57,25 +57,30 @@ const nativeModulesMocks = merge(thirdPartyModulesMocks, internalExpoModulesMock
 
 function mock(property, customMock) {
   const propertyType = property.type;
-  let mockValue;
+
   if (customMock !== undefined) {
-    mockValue = customMock;
-  } else if (propertyType === 'function') {
-    if (property.functionType === 'promise') {
-      mockValue = jest.fn(() => Promise.resolve());
-    } else {
-      mockValue = jest.fn();
-    }
-  } else if (propertyType === 'number') {
-    mockValue = 1;
-  } else if (propertyType === 'string') {
-    mockValue = 'mock';
-  } else if (propertyType === 'array') {
-    mockValue = [];
-  } else if (propertyType === 'mock') {
-    mockValue = mockByMockDefinition(property.mockDefinition);
+    return customMock;
   }
-  return mockValue;
+  if (propertyType === 'function') {
+    // TODO: Add support for sync functions
+    return jest.fn(() => Promise.resolve());
+  }
+  if (propertyType === 'number') {
+    return 1;
+  }
+  if (propertyType === 'string') {
+    return 'mock';
+  }
+  if (propertyType === 'array') {
+    return [];
+  }
+  if (propertyType === 'mock') {
+    return mockByMockDefinition(property.mockDefinition);
+  }
+  if (propertyType === 'object') {
+    return {};
+  }
+  return null;
 }
 
 function mockProperties(moduleProperties, customMocks) {
