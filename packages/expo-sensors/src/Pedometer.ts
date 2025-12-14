@@ -70,10 +70,10 @@ export function watchEventUpdates(callback: PedometerEventCallback): EventSubscr
 }
 
 /**
- * Check if Recording API is available to track steps.
- * Resolves to `false` on iOS because the platform does not expose a Recording API toggle.
+ * Check whether step history recording is available on this platform.
+ * On iOS, historical data is collected automatically (up to seven days).
  * @return Returns a promise that fulfills with a `boolean`, indicating whether
- * historical step count data is available via the background Recording API on this device.
+ * historical step count data is available on this device.
  *
  * > On Android, this checks for the availability of the required Play Services components.
  */

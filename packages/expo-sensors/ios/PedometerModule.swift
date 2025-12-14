@@ -24,10 +24,9 @@ public final class PedometerModule: Module {
     }
 
     AsyncFunction("isRecordingAvailableAsync") {
-      // iOS keeps collecting history automatically (up to seven days) and doesn't
-      // expose a Recording API toggle like Android does, so report this as
-      // unavailable to let the JS layer skip `subscribeRecording` calls.
-      return false
+      // iOS keeps collecting history automatically (up to seven days), so recording is
+      // effectively "available" whenever step counting is available.
+      return CMPedometer.isStepCountingAvailable()
     }
 
     AsyncFunction("startEventUpdates") { (promise: Promise) in

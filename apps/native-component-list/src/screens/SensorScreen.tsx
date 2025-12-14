@@ -1,7 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 import * as Sensors from 'expo-sensors';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const FAST_INTERVAL = 16;
 const SLOW_INTERVAL = 1000;
@@ -213,11 +213,13 @@ const PedometerSensor = () => {
     const subscribe = async () => {
       const isAvailable = await Sensors.Pedometer.isAvailableAsync();
       setIsPedometerAvailable(String(isAvailable));
-      const isHistoryAvailable = await Sensors.Pedometer.isRecordingAvailableAsync();
+      const isHistoryAvailable = isAvailable && (await Sensors.Pedometer.isRecordingAvailableAsync());
       setIsPedometerHistoryAvailable(String(isHistoryAvailable));
 
       if (isHistoryAvailable) {
-        Sensors.Pedometer.subscribeRecording();
+        if (Platform.OS === 'android') {
+          await Sensors.Pedometer.subscribeRecording();
+        }
         const end = new Date();
         const start = new Date();
         start.setDate(end.getDate() - 1);

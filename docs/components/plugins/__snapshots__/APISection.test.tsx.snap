@@ -7204,40 +7204,6 @@ exports[`APISection expo-pedometer 1`] = `
           </span>
         </a>
       </h3>
-      <div
-        class="flex flex-row items-start [table_&]:mb-2.5 mb-0"
-      >
-        <span
-          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
-          data-text="true"
-        >
-          <div
-            class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
-          >
-            <svg
-              class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
-              fill="none"
-              role="img"
-              viewBox="0 0 24 24"
-            >
-              <g
-                id="apple-custom-icon"
-              >
-                <path
-                  d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
-                  fill="currentColor"
-                  id="Vector"
-                />
-              </g>
-            </svg>
-            <span
-              class="whitespace-nowrap !text-3xs font-normal !leading-none"
-            >
-              iOS
-            </span>
-          </div>
-        </span>
-      </div>
     </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
@@ -7523,6 +7489,75 @@ a start date that is more than seven days in the past returns only the available
 
             </div>
           </blockquote>
+          
+
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            As 
+            <a
+              class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+              href="https://developer.android.com/health-and-fitness/guides/recording-api"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Google documentation states
+            </a>
+            :
+          </p>
+          
+
+          <blockquote
+            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            data-testid="callout-container"
+          >
+            <svg
+              class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-default"
+              fill="none"
+              role="img"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="info-circle-duotone-icon"
+              >
+                <path
+                  d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                  fill="currentColor"
+                  id="Fill"
+                  opacity="0.12"
+                />
+                <path
+                  d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                  id="Icon"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </g>
+            </svg>
+            <div
+              class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+            >
+              
+
+              <p
+                class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                data-text="true"
+              >
+                <code
+                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
+                  data-text="true"
+                >
+                  LocalRecordingClient
+                </code>
+                 stores up to 10 days of data.
+              </p>
+              
+
+            </div>
+          </blockquote>
         </div>
       </div>
     </div>
@@ -7679,6 +7714,196 @@ available on this device.
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
+        id="isrecordingavailableasync"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          isRecordingAvailableAsync()
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#isrecordingavailableasync"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+    </div>
+    <div
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    >
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        data-text="true"
+      >
+        Check whether step history recording is available on this platform.
+On iOS, historical data is collected automatically (up to seven days).
+      </p>
+      <div
+        class="flex flex-row items-start gap-2"
+      >
+        <div
+          class="flex flex-row items-center gap-2"
+        >
+          <svg
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <g
+              id="corner-down-right-outline-icon"
+            >
+              <path
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                id="Icon"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </g>
+          </svg>
+          <span
+            class="text-xs font-medium text-tertiary"
+          >
+            Returns:
+          </span>
+        </div>
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          <a
+            class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+            href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Promise
+          </a>
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
+          <span>
+            boolean
+          </span>
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
+        </code>
+      </div>
+      <div
+        class="mb-1 mt-1.5 flex flex-col pl-6"
+      >
+        <div
+          class=""
+        >
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            Returns a promise that fulfills with a 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
+              data-text="true"
+            >
+              boolean
+            </code>
+            , indicating whether
+historical step count data is available on this device.
+          </p>
+          
+
+          <blockquote
+            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            data-testid="callout-container"
+          >
+            <svg
+              class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-default"
+              fill="none"
+              role="img"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="info-circle-duotone-icon"
+              >
+                <path
+                  d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                  fill="currentColor"
+                  id="Fill"
+                  opacity="0.12"
+                />
+                <path
+                  d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                  id="Icon"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </g>
+            </svg>
+            <div
+              class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+            >
+              
+
+              <p
+                class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                data-text="true"
+              >
+                On Android, this checks for the availability of the required Play Services components.
+              </p>
+              
+
+            </div>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        data-heading="true"
         id="requestpermissionsasync"
       >
         <code
@@ -7787,6 +8012,998 @@ available on this device.
           >
             &gt;
           </span>
+        </code>
+      </div>
+    </div>
+  </div>
+  <div
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="starteventupdatesasync"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          startEventUpdatesAsync()
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#starteventupdatesasync"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <div
+        class="flex flex-row items-start [table_&]:mb-2.5 mb-0"
+      >
+        <span
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
+          data-text="true"
+        >
+          <div
+            class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+          >
+            <svg
+              class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="apple-custom-icon"
+              >
+                <path
+                  d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
+                  fill="currentColor"
+                  id="Vector"
+                />
+              </g>
+            </svg>
+            <span
+              class="whitespace-nowrap !text-3xs font-normal !leading-none"
+            >
+              android iOS
+            </span>
+          </div>
+        </span>
+      </div>
+    </div>
+    <div
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    >
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        data-text="true"
+      >
+        Start pedometer pause/resume event tracking.
+Resolves to 
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
+          data-text="true"
+        >
+          false
+        </code>
+         when the platform does not support pedometer events.
+      </p>
+      <div
+        class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+      >
+        <div
+          class="flex flex-row items-center gap-2"
+        >
+          <svg
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <g
+              id="corner-down-right-outline-icon"
+            >
+              <path
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                id="Icon"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </g>
+          </svg>
+          <span
+            class="text-xs font-medium text-tertiary"
+          >
+            Returns:
+          </span>
+        </div>
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          <a
+            class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+            href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Promise
+          </a>
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
+          <span>
+            boolean
+          </span>
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
+        </code>
+      </div>
+    </div>
+  </div>
+  <div
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="stopeventupdatesasync"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          stopEventUpdatesAsync()
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#stopeventupdatesasync"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <div
+        class="flex flex-row items-start [table_&]:mb-2.5 mb-0"
+      >
+        <span
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
+          data-text="true"
+        >
+          <div
+            class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+          >
+            <svg
+              class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="apple-custom-icon"
+              >
+                <path
+                  d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
+                  fill="currentColor"
+                  id="Vector"
+                />
+              </g>
+            </svg>
+            <span
+              class="whitespace-nowrap !text-3xs font-normal !leading-none"
+            >
+              android iOS
+            </span>
+          </div>
+        </span>
+      </div>
+    </div>
+    <div
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    >
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        data-text="true"
+      >
+        Stop pedometer pause/resume event tracking.
+      </p>
+      <div
+        class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+      >
+        <div
+          class="flex flex-row items-center gap-2"
+        >
+          <svg
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <g
+              id="corner-down-right-outline-icon"
+            >
+              <path
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                id="Icon"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </g>
+          </svg>
+          <span
+            class="text-xs font-medium text-tertiary"
+          >
+            Returns:
+          </span>
+        </div>
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          <a
+            class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+            href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Promise
+          </a>
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
+          <span>
+            void
+          </span>
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
+        </code>
+      </div>
+    </div>
+  </div>
+  <div
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="subscriberecording"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          subscribeRecording()
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#subscriberecording"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <div
+        class="flex flex-row items-start [table_&]:mb-2.5 mb-0"
+      >
+        <span
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
+          data-text="true"
+        >
+          <div
+            class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
+          >
+            <svg
+              class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-green12 opacity-80"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="android-custom-icon"
+              >
+                <path
+                  d="M17.0628 15.073C16.5576 15.073 16.1467 14.6605 16.1467 14.1537C16.1467 13.6469 16.5576 13.2347 17.0628 13.2347C17.5679 13.2347 17.9788 13.6469 17.9788 14.1537C17.9788 14.6605 17.5679 15.073 17.0628 15.073ZM6.9372 15.073C6.43204 15.073 6.02116 14.6605 6.02116 14.1537C6.02116 13.6469 6.43204 13.2347 6.9372 13.2347C7.44234 13.2347 7.85325 13.6469 7.85325 14.1537C7.85325 14.6605 7.44234 15.073 6.9372 15.073ZM17.3913 9.53705L19.2222 6.35598C19.3272 6.17313 19.2647 5.93959 19.0828 5.834C18.9008 5.72871 18.6677 5.79135 18.5624 5.97389L16.7087 9.19523C15.291 8.54619 13.6989 8.18468 12 8.18468C10.3011 8.18468 8.70893 8.54619 7.29131 9.19523L5.43751 5.97389C5.33226 5.79135 5.09916 5.72871 4.9172 5.834C4.73524 5.93959 4.67251 6.17313 4.77776 6.35598L6.60865 9.53705C3.46479 11.2524 1.31456 14.4454 1 18.2177H23C22.6851 14.4454 20.5349 11.2524 17.3913 9.53705Z"
+                  fill="currentColor"
+                  id="Vector"
+                />
+              </g>
+            </svg>
+            <span
+              class="whitespace-nowrap !text-3xs font-normal !leading-none"
+            >
+              Android
+            </span>
+          </div>
+        </span>
+      </div>
+    </div>
+    <div
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    >
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        data-text="true"
+      >
+        Subscribe to pedometer tracking. Step count will be tracked by Google Play Services
+Recording API, if available, until unsubscribed. Subsequent calls are safe and ignored.
+      </p>
+      <div
+        class="flex flex-row items-start gap-2"
+      >
+        <div
+          class="flex flex-row items-center gap-2"
+        >
+          <svg
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <g
+              id="corner-down-right-outline-icon"
+            >
+              <path
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                id="Icon"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </g>
+          </svg>
+          <span
+            class="text-xs font-medium text-tertiary"
+          >
+            Returns:
+          </span>
+        </div>
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          <a
+            class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+            href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Promise
+          </a>
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
+          <span>
+            void
+          </span>
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
+        </code>
+      </div>
+      <div
+        class="mb-1 mt-1.5 flex flex-col pl-6"
+      >
+        <div
+          class=""
+        >
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            Returns a promise that fulfills when the subscription is successful.
+          </p>
+          
+
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            As 
+            <a
+              class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+              href="https://developer.android.com/health-and-fitness/guides/recording-api"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Google documentation states
+            </a>
+            :
+          </p>
+          
+
+          <blockquote
+            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            data-testid="callout-container"
+          >
+            <svg
+              class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-default"
+              fill="none"
+              role="img"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="info-circle-duotone-icon"
+              >
+                <path
+                  d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                  fill="currentColor"
+                  id="Fill"
+                  opacity="0.12"
+                />
+                <path
+                  d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                  id="Icon"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </g>
+            </svg>
+            <div
+              class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+            >
+              
+
+              <p
+                class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                data-text="true"
+              >
+                <code
+                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
+                  data-text="true"
+                >
+                  LocalRecordingClient
+                </code>
+                 stores up to 10 days of data.
+              </p>
+              
+
+            </div>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="unsubscriberecording"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          unsubscribeRecording()
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#unsubscriberecording"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <div
+        class="flex flex-row items-start [table_&]:mb-2.5 mb-0"
+      >
+        <span
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
+          data-text="true"
+        >
+          <div
+            class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
+          >
+            <svg
+              class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-green12 opacity-80"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="android-custom-icon"
+              >
+                <path
+                  d="M17.0628 15.073C16.5576 15.073 16.1467 14.6605 16.1467 14.1537C16.1467 13.6469 16.5576 13.2347 17.0628 13.2347C17.5679 13.2347 17.9788 13.6469 17.9788 14.1537C17.9788 14.6605 17.5679 15.073 17.0628 15.073ZM6.9372 15.073C6.43204 15.073 6.02116 14.6605 6.02116 14.1537C6.02116 13.6469 6.43204 13.2347 6.9372 13.2347C7.44234 13.2347 7.85325 13.6469 7.85325 14.1537C7.85325 14.6605 7.44234 15.073 6.9372 15.073ZM17.3913 9.53705L19.2222 6.35598C19.3272 6.17313 19.2647 5.93959 19.0828 5.834C18.9008 5.72871 18.6677 5.79135 18.5624 5.97389L16.7087 9.19523C15.291 8.54619 13.6989 8.18468 12 8.18468C10.3011 8.18468 8.70893 8.54619 7.29131 9.19523L5.43751 5.97389C5.33226 5.79135 5.09916 5.72871 4.9172 5.834C4.73524 5.93959 4.67251 6.17313 4.77776 6.35598L6.60865 9.53705C3.46479 11.2524 1.31456 14.4454 1 18.2177H23C22.6851 14.4454 20.5349 11.2524 17.3913 9.53705Z"
+                  fill="currentColor"
+                  id="Vector"
+                />
+              </g>
+            </svg>
+            <span
+              class="whitespace-nowrap !text-3xs font-normal !leading-none"
+            >
+              Android
+            </span>
+          </div>
+        </span>
+      </div>
+    </div>
+    <div
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    >
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        data-text="true"
+      >
+        Unsubscribe from pedometer tracking.
+      </p>
+      <div
+        class="flex flex-row items-start gap-2"
+      >
+        <div
+          class="flex flex-row items-center gap-2"
+        >
+          <svg
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <g
+              id="corner-down-right-outline-icon"
+            >
+              <path
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                id="Icon"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </g>
+          </svg>
+          <span
+            class="text-xs font-medium text-tertiary"
+          >
+            Returns:
+          </span>
+        </div>
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          <a
+            class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+            href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Promise
+          </a>
+          <span
+            class="text-quaternary"
+          >
+            &lt;
+          </span>
+          <span>
+            void
+          </span>
+          <span
+            class="text-quaternary"
+          >
+            &gt;
+          </span>
+        </code>
+      </div>
+      <div
+        class="mb-1 mt-1.5 flex flex-col pl-6"
+      >
+        <div
+          class=""
+        >
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            Returns a promise that fulfills when the unsubscription is successful.
+          </p>
+          
+
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            As 
+            <a
+              class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+              href="https://developer.android.com/health-and-fitness/guides/recording-api"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Google documentation states
+            </a>
+            :
+          </p>
+          
+
+          <blockquote
+            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            data-testid="callout-container"
+          >
+            <svg
+              class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-default"
+              fill="none"
+              role="img"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="info-circle-duotone-icon"
+              >
+                <path
+                  d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                  fill="currentColor"
+                  id="Fill"
+                  opacity="0.12"
+                />
+                <path
+                  d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                  id="Icon"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </g>
+            </svg>
+            <div
+              class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+            >
+              
+
+              <p
+                class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                data-text="true"
+              >
+                To free up resources, you should make sure to unsubscribe from
+the collection of sensor data when your app is no longer in need of it.
+Unsubscribing will also reset the historical data that was collected.
+              </p>
+              
+
+            </div>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="watcheventupdatescallback"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          watchEventUpdates(callback)
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#watcheventupdatescallback"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+      <div
+        class="flex flex-row items-start [table_&]:mb-2.5 mb-0"
+      >
+        <span
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
+          data-text="true"
+        >
+          <div
+            class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+          >
+            <svg
+              class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="apple-custom-icon"
+              >
+                <path
+                  d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
+                  fill="currentColor"
+                  id="Vector"
+                />
+              </g>
+            </svg>
+            <span
+              class="whitespace-nowrap !text-3xs font-normal !leading-none"
+            >
+              android iOS
+            </span>
+          </div>
+        </span>
+      </div>
+    </div>
+    <div
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+    >
+      <table
+        class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      >
+        <thead
+          class="border-b border-b-default bg-subtle"
+        >
+          <tr
+            class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
+          >
+            <th
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+            >
+              Parameter
+            </th>
+            <th
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+            >
+              Type
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
+          >
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0"
+            >
+              <span
+                class="leading-[1.6154] text-default font-medium"
+                data-text="true"
+              >
+                callback
+              </span>
+            </td>
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0"
+            >
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+                data-text="true"
+              >
+                <a
+                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                  href="#pedometereventcallback"
+                >
+                  PedometerEventCallback
+                </a>
+              </code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br />
+    <div
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    >
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        data-text="true"
+      >
+        Listen for pedometer pause/resume events emitted by the underlying platform.
+Call 
+        <a
+          class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+          href="#starteventupdatesasync"
+        >
+          startEventUpdatesAsync
+        </a>
+         to begin receiving events.
+      </p>
+      <div
+        class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+      >
+        <div
+          class="flex flex-row items-center gap-2"
+        >
+          <svg
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <g
+              id="corner-down-right-outline-icon"
+            >
+              <path
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                id="Icon"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </g>
+          </svg>
+          <span
+            class="text-xs font-medium text-tertiary"
+          >
+            Returns:
+          </span>
+        </div>
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          EventSubscription
         </code>
       </div>
     </div>
@@ -8052,23 +9269,8 @@ provided with a single argument that is
                 class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
                 data-text="true"
               >
-                Pedometer updates will not be delivered while the app is in the background. As an alternative, on Android, use another solution based on
-
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="https://developer.android.com/health-and-fitness/guides/health-connect"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <code
-                    class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
-                    data-text="true"
-                  >
-                    Health Connect API
-                  </code>
-                </a>
-                .
-On iOS, the 
+                Pedometer updates will not be delivered while the app is in the background.
+The 
                 <code
                   class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
                   data-text="true"
@@ -8076,6 +9278,7 @@ On iOS, the
                   getStepCountAsync
                 </code>
                  method can be used to get the step count between two dates.
+On Android, this is subject to Play Services Recording API availability.
               </p>
               
 
@@ -8375,6 +9578,345 @@ After calling this function, the listener will no longer receive any events from
       </span>
     </a>
   </h2>
+  <div
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="pedometerevent"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          PedometerEvent
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#pedometerevent"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+    </div>
+    <div
+      class=""
+    />
+    <div
+      class=""
+    />
+    <div
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
+    >
+      <table
+        class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      >
+        <thead
+          class="border-b border-b-default bg-subtle"
+        >
+          <tr
+            class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
+          >
+            <th
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+            >
+              Property
+            </th>
+            <th
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+            >
+              Type
+            </th>
+            <th
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
+          >
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0"
+            >
+              <span
+                class="leading-[1.6154] text-default font-medium"
+                data-text="true"
+              >
+                date
+              </span>
+            </td>
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0"
+            >
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+                data-text="true"
+              >
+                number
+              </code>
+            </td>
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0"
+            >
+              <div
+                class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+              >
+                <p
+                  class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                  data-text="true"
+                >
+                  Timestamp (in ms since the Unix epoch) associated with the pedometer event.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr
+            class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
+          >
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0"
+            >
+              <span
+                class="leading-[1.6154] text-default font-medium"
+                data-text="true"
+              >
+                type
+              </span>
+            </td>
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0"
+            >
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+                data-text="true"
+              >
+                <span>
+                  'pause'
+                  <span
+                    class="text-quaternary"
+                  >
+                     | 
+                  </span>
+                </span>
+                <span>
+                  'resume'
+                </span>
+              </code>
+            </td>
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0"
+            >
+              <div
+                class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+              >
+                <p
+                  class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                  data-text="true"
+                >
+                  Type of the pedometer event, indicating whether updates have paused or resumed.
+                </p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="pedometereventcallbackevent"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          PedometerEventCallback(event)
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#pedometereventcallbackevent"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+    </div>
+    <div
+      class=""
+    />
+    <div>
+      <div
+        class=""
+      />
+      <div
+        class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+      >
+        <table
+          class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        >
+          <thead
+            class="border-b border-b-default bg-subtle"
+          >
+            <tr
+              class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
+            >
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              >
+                Parameter
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              >
+                Type
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-default font-medium"
+                  data-text="true"
+                >
+                  event
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+                  data-text="true"
+                >
+                  <a
+                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                    href="#pedometerevent"
+                  >
+                    PedometerEvent
+                  </a>
+                </code>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div
+      class="mx-4 mb-2.5 [table_&]:last:mb-0 mt-3.5 flex flex-row items-start gap-2"
+    >
+      <div
+        class="flex flex-row items-center gap-2"
+      >
+        <svg
+          class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <g
+            id="corner-down-right-outline-icon"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
+        <span
+          class="text-xs font-medium text-tertiary"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem]"
+        data-text="true"
+      >
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          void
+        </code>
+      </p>
+    </div>
+  </div>
   <div
     class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
