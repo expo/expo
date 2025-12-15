@@ -70,7 +70,7 @@ index 0000000..1111111 100644
 -
 -AppRegistry.registerComponent(appName, () => App);
 +export default registerRootComponent(App);`}
- />
+/>
 
 After making that change, update your [`MainActivity`](/versions/latest/sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) and [`AppDelegate`](/versions/latest//sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) to use the module name `"main"` instead of your app name.
 
