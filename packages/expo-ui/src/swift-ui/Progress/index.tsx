@@ -4,6 +4,9 @@ import { ColorValue } from 'react-native';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
+type ClosedRangeDate = { lower: Date; upper: Date };
+type ClosedRangeInternal = { lower: number; upper: number };
+
 export type ProgressProps = {
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
@@ -19,13 +22,18 @@ export type ProgressProps = {
    */
   variant?: 'linear' | 'circular';
   /**
-   * The start and end dates for automatic timer progress.
+   * The lower and upper bounds for automatic timer progress.
    */
-  timerInterval?: [Date, Date];
+  timerInterval?: ClosedRangeDate;
+  /**
+   * Whether the progress counts down instead of up.
+   * @default false
+   */
+  countsDown?: boolean;
 } & CommonViewModifierProps;
 
 type NativeProgressProps = Omit<ProgressProps, 'timerInterval'> & {
-  timerInterval?: number[];
+  timerInterval?: ClosedRangeInternal;
 };
 
 const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNativeView(
@@ -43,7 +51,14 @@ export function Progress(props: ProgressProps) {
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}
-      timerInterval={timerInterval?.map((date) => date.getTime())}
+      timerInterval={
+        timerInterval
+          ? {
+              lower: timerInterval.lower.getTime(),
+              upper: timerInterval.upper.getTime(),
+            }
+          : undefined
+      }
     />
   );
 }
