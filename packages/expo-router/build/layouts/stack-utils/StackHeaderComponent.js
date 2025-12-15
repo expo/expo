@@ -9,8 +9,61 @@ const StackHeaderLeftRight_1 = require("./StackHeaderLeftRight");
 const StackHeaderSearchBar_1 = require("./StackHeaderSearchBar");
 const StackHeaderTitle_1 = require("./StackHeaderTitle");
 const children_1 = require("../../utils/children");
+const Screen_1 = require("../../views/Screen");
+/**
+ * The component used to configure the whole stack header.
+ *
+ * When used inside a screen, it allows you to customize the header dynamically by composing
+ * header subcomponents (title, left/right areas, back button, search bar, etc.).
+ *
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Page() {
+ *   return (
+ *     <>
+ *       <Stack.Header>
+ *         <Stack.Header.Title>Page title</Stack.Header.Title>
+ *         <Stack.Header.Left>
+ *           <Stack.Header.Button onPress={() => alert('Left pressed')} />
+ *         </Stack.Header.Left>
+ *         <Stack.Header.Right>
+ *           <Stack.Header.Button onPress={() => alert('Right pressed')} />
+ *         </Stack.Header.Right>
+ *       </Stack.Header>
+ *       <ScreenContent />
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * When used inside a layout, it needs to be wrapped in `Stack.Screen` to take effect.
+ *
+ * Example (inside a layout):
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Layout() {
+ *   return (
+ *     <Stack>
+ *       <Stack.Screen name="index">
+ *         <Stack.Header>
+ *           <Stack.Header.Title>Layout title</Stack.Header.Title>
+ *           <Stack.Header.Right>
+ *             <Stack.Header.Button onPress={() => alert('Right pressed')} />
+ *           </Stack.Header.Right>
+ *         </Stack.Header>
+ *       </Stack.Screen>
+ *     </Stack>
+ *   );
+ * }
+ * ```
+ */
 function StackHeaderComponent(props) {
-    return null;
+    // This component will only render when used inside a page
+    // but only if it is not wrapped in Stack.Screen
+    const updatedOptions = (0, react_1.useMemo)(() => appendStackHeaderPropsToOptions({}, props), [props]);
+    return <Screen_1.Screen options={updatedOptions}/>;
 }
 function appendStackHeaderPropsToOptions(options, props) {
     const flattenedStyle = react_native_1.StyleSheet.flatten(props.style);
