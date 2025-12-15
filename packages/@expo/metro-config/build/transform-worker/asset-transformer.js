@@ -53,6 +53,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         isReactServer) {
         return {
             ast: {
+                comments: null,
                 ...core_1.types.file(core_1.types.program([
                     buildClientReferenceRequire({
                         FILE_PATH: JSON.stringify(`./${(0, filePath_1.toPosixPath)(node_path_1.default.relative(options.projectRoot, absolutePath))}`),
@@ -90,6 +91,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
             const creatorFunction = isReactServer ? buildStaticObjectRef : buildStaticObjectClientRef;
             return {
                 ast: {
+                    comments: null,
                     ...core_1.types.file(core_1.types.program([creatorFunction(options)])),
                     errors: [],
                 },
@@ -100,6 +102,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         // module.exports = "/foo/bar.png";
         return {
             ast: {
+                comments: null,
                 ...core_1.types.file(core_1.types.program([buildStringRef({ FILE_PATH: JSON.stringify(assetPath) })])),
                 errors: [],
             },
@@ -108,6 +111,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
     }
     return {
         ast: {
+            comments: null,
             ...(0, util_1.generateAssetCodeFileAst)(assetRegistryPath, data),
             errors: [],
         },

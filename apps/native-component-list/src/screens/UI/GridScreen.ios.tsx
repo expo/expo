@@ -154,9 +154,7 @@ export default function GridScreen() {
             <Picker
               modifiers={[pickerStyle('menu')]}
               selection={gridCellAxesIndex}
-              onSelectionChange={({ nativeEvent: { selection } }) =>
-                setGridCellAxesIndex(selection as number)
-              }>
+              onSelectionChange={setGridCellAxesIndex}>
               {gridCellAxesOptions.map((option, index) => (
                 <Text key={index} modifiers={[tag(index)]}>
                   {option}
@@ -220,9 +218,7 @@ export default function GridScreen() {
                   <Picker
                     modifiers={[pickerStyle('menu')]}
                     selection={alignmentIndex}
-                    onSelectionChange={({ nativeEvent: { selection } }) =>
-                      setAlignmentIndex(selection as number)
-                    }>
+                    onSelectionChange={setAlignmentIndex}>
                     {alignmentOptions.map((option, index) => (
                       <Text key={index} modifiers={[tag(index)]}>
                         {option}
@@ -257,7 +253,7 @@ export default function GridScreen() {
                 <Picker
                   modifiers={[pickerStyle('segmented')]}
                   selection={anchorType === 'custom' ? 0 : 1}
-                  onSelectionChange={({ nativeEvent: { selection } }) =>
+                  onSelectionChange={(selection) =>
                     setAnchorType(selection === 0 ? 'custom' : 'preset')
                   }>
                   <Text modifiers={[tag(0)]}>Custom</Text>
@@ -268,9 +264,7 @@ export default function GridScreen() {
                     <Picker
                       modifiers={[pickerStyle('menu')]}
                       selection={anchorIndex}
-                      onSelectionChange={({ nativeEvent: { selection } }) =>
-                        setAnchorIndex(selection as number)
-                      }>
+                      onSelectionChange={setAnchorIndex}>
                       {anchorOptions.map((option, index) => (
                         <Text key={index} modifiers={[tag(index)]}>
                           {option}

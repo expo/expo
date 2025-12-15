@@ -76,8 +76,8 @@ export default function FormScreen() {
             label="Menu picker"
             modifiers={[pickerStyle('menu')]}
             selection={selectedIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setSelectedIndex(selection as number);
+            onSelectionChange={(selection) => {
+              setSelectedIndex(selection);
             }}>
             {options.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
@@ -93,8 +93,8 @@ export default function FormScreen() {
             label="Profile Image Size"
             modifiers={[pickerStyle('menu')]}
             selection={selectedProfileImageSizeIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setSelectedProfileImageSizeIndex(selection as number);
+            onSelectionChange={(selection) => {
+              setSelectedProfileImageSizeIndex(selection);
             }}>
             {profileImageSizes.map((size, index) => (
               <Text key={index} modifiers={[tag(index)]}>

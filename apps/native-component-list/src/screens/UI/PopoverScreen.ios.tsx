@@ -33,9 +33,7 @@ export default function PopoverScreen() {
           <Picker
             modifiers={[pickerStyle('segmented')]}
             selection={attachmentAnchor}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setAttachmentAnchor(selection as number);
-            }}>
+            onSelectionChange={setAttachmentAnchor}>
             {attachmentAnchorOptions.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
                 {option}
@@ -46,9 +44,7 @@ export default function PopoverScreen() {
           <Picker
             modifiers={[pickerStyle('segmented')]}
             selection={arrowEdge}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setArrowEdge(selection as number);
-            }}>
+            onSelectionChange={setArrowEdge}>
             {arrowEdgeOptions.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
                 {option}
