@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add `latitudeDelta` and `longitudeDelta` to `onCameraMove` event payload. ([#41655](https://github.com/expo/expo/pull/41655)) by [@matinzd](https://github.com/matinzd)
+- [iOS] Add `latitudeDelta` and `longitudeDelta` to `onCameraMove` event payload. ([#41655](https://github.com/expo/expo/pull/41655) by [@matinzd](https://github.com/matinzd))
 
 ### 🐛 Bug fixes
 
