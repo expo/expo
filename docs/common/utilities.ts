@@ -146,10 +146,36 @@ export function listMissingHashLinkTargets(apiName?: string) {
     link.setAttribute('title', `Missing hash target: #${hash}`);
   });
 
-  /* eslint-disable no-console */
-  console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
-  console.table(missingEntries);
-  console.groupEnd();
+  const isDevToolsOpen = () => {
+    const gap = 160;
+    return (
+      Math.abs(window.outerWidth - window.innerWidth) > gap ||
+      Math.abs(window.outerHeight - window.innerHeight) > gap
+    );
+  };
+
+  const logAsTable = () => {
+    /* eslint-disable no-console */
+    console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
+    console.table(missingEntries);
+    console.groupEnd();
+  };
+
+  const logWhenDevToolsReady = () => {
+    if (isDevToolsOpen()) {
+      logAsTable();
+      return;
+    }
+
+    const handleFirstResize = () => {
+      setTimeout(logAsTable, 0);
+      window.removeEventListener('resize', handleFirstResize);
+    };
+
+    window.addEventListener('resize', handleFirstResize);
+  };
+
+  logWhenDevToolsReady();
 }
 
 export function versionToText(version: string): string {
