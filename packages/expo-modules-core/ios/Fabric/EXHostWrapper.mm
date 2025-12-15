@@ -15,7 +15,7 @@
 #endif
 }
 
-- (instancetype)initWithHost:(id)host
+- (instancetype)initWithHost:(RCTHost *)host
 {
   if (self = [super init]) {
 #ifdef RCT_NEW_ARCH_ENABLED

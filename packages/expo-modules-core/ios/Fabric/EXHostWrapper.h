@@ -2,13 +2,19 @@
 
 #import <ExpoModulesCore/Platform.h>
 
+#ifdef __cplusplus
+#import <ReactCommon/RCTHost.h>
+#endif
+
 /**
  A wrapper around RCTHost. RCTHost isn't directly available in Swift.
  */
 NS_SWIFT_NAME(ExpoHostWrapper)
 @interface EXHostWrapper : NSObject
 
-- (instancetype _Nonnull)initWithHost:(id _Nonnull)host;
+#ifdef __cplusplus
+- (instancetype _Nonnull)initWithHost:(RCTHost * _Nonnull)host;
+#endif
 
 - (nullable UIView *)findViewWithTag:(NSInteger)tag;
 
