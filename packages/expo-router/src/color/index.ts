@@ -68,7 +68,9 @@ export interface ColorType {
 
 const iosColor = new Proxy({} as ColorType['ios'], {
   get(_, prop: string) {
-    return PlatformColor(prop);
+    // Fork of PlatformColor for RSC support on iOS.
+    // https://github.com/facebook/react-native/blob/80e384a8011762f571ff6f47b6674de00aab0485/packages/react-native/Libraries/StyleSheet/PlatformColorValueTypes.ios.js#L25-L28
+    return { semantic: [prop] };
   },
 });
 
