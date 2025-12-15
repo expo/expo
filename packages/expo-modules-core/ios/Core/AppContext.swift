@@ -57,6 +57,12 @@ public final class AppContext: NSObject, @unchecked Sendable {
   public weak var reactBridge: RCTBridge?
 
   /**
+   RCTHost wrapper. This is set by ``ExpoReactNativeFactory`` in `didInitializeRuntime`.
+   */
+  @objc
+  public var hostWrapper: ExpoHostWrapper?
+
+  /**
    Underlying JSI runtime of the running app.
    */
   @objc
@@ -158,6 +164,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
   // MARK: - UI
 
   public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
+    if let view = hostWrapper?.findView(withTag: viewTag) as? ViewType {
+      return view
+    }
+    
     return reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag)) as? ViewType
   }
 
