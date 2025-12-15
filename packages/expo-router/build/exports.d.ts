@@ -25,4 +25,5 @@ export type { SingularOptions } from './useScreens';
 export type * from './types';
 export * from './color';
 export { Badge, BadgeProps, Icon, IconProps, Label, LabelProps, VectorIcon, VectorIconProps, } from './primitives';
+export * from './layouts/stack-utils';
 //# sourceMappingURL=exports.d.ts.map

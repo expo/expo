@@ -7,8 +7,12 @@ import {
   appendStackHeaderBackButtonPropsToOptions,
   StackHeaderBackButton,
 } from './StackHeaderBackButton';
-import { StackHeaderLeft, appendStackHeaderLeftPropsToOptions } from './StackHeaderLeft';
-import { StackHeaderRight, appendStackHeaderRightPropsToOptions } from './StackHeaderRight';
+import {
+  appendStackHeaderLeftPropsToOptions,
+  appendStackHeaderRightPropsToOptions,
+  StackHeaderLeft,
+  StackHeaderRight,
+} from './StackHeaderLeftRight';
 import {
   appendStackHeaderSearchBarPropsToOptions,
   StackHeaderSearchBar,

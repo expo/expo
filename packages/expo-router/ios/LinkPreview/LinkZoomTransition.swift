@@ -18,7 +18,11 @@ class LinkZoomTransitionsSourceRepository {
   private var sources: [String: LinkSourceInfo] = [:]
   private let lock = NSLock()
 
-  init() {}
+  private weak var logger: Logger?
+
+  init(logger: Logger?) {
+    self.logger = logger
+  }
 
   func registerSource(
     identifier: String,
@@ -27,8 +31,8 @@ class LinkZoomTransitionsSourceRepository {
     lock.lock()
     defer { lock.unlock() }
     if sources[identifier] != nil {
-      print(
-        "[expo-router] LinkPreviewZoomTransitionSource with identifier \(identifier) is already registered. Overwriting the existing source."
+      logger?.warn(
+        "[expo-router] Link.AppleZoom with identifier \(identifier) is already registered. This means that you used two sources for the same target, which is not supported and may lead to unexpected behavior."
       )
     }
     if !identifier.isEmpty {
@@ -186,9 +190,9 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
     _ childComponentView: UIView,
     index: Int
   ) {
-    if child != nil {
-      print(
-        "[expo-router] LinkZoomTransitionSource can only have one child view."
+    guard child == nil else {
+      logger?.warn(
+        "[expo-router] Link.AppleZoom can only have a single native child. If you passed a single child, consider adding collapsible={false} to your component"
       )
       return
     }
@@ -203,12 +207,13 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
   }
 
   override func unmountChildComponentView(_ child: UIView, index: Int) {
-    if child == self.child {
-      self.child = nil
-      sourceRepository?.unregisterSource(
-        identifier: identifier
-      )
+    guard child == self.child else {
+      return
     }
+    self.child = nil
+    sourceRepository?.unregisterSource(
+      identifier: identifier
+    )
     super.unmountChildComponentView(child, index: index)
   }
 }
@@ -219,8 +224,8 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
   var identifier: String = "" {
     didSet {
       if oldValue != identifier && !oldValue.isEmpty {
-        print(
-          "[expo-router] LinkZoomTransitionAlignmentRectDetector does not support changing the identifier after it has been set."
+        logger?.warn(
+          "[expo-router] LinkZoomTransitionAlignmentRectDetector does not support changing the identifier after it has been set. This is most likely an internal bug in expo-router."
         )
         return
       }
@@ -237,9 +242,9 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
     _ childComponentView: UIView,
     index: Int
   ) {
-    if child != nil {
-      print(
-        "[expo-router] LinkZoomTransitionAlignmentRectDetector can only have one child view."
+    guard child == nil else {
+      logger?.warn(
+        "[expo-router] Link.AppleZoomTarget can only have a single native child."
       )
       return
     }
@@ -254,13 +259,14 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
   }
 
   override func unmountChildComponentView(_ child: UIView, index: Int) {
-    if child == self.child {
-      self.child = nil
-      alignmentViewRepository?.removeIfSame(
-        identifier: identifier,
-        alignmentView: child
-      )
+    guard child == self.child else {
+      return
     }
+    self.child = nil
+    alignmentViewRepository?.removeIfSame(
+      identifier: identifier,
+      alignmentView: child
+    )
     super.unmountChildComponentView(child, index: index)
   }
 }
@@ -405,4 +411,6 @@ class LinkZoomExpoView: ExpoView {
     }
     return module.zoomAlignmentViewRepository
   }
+
+  lazy var logger = appContext?.jsLogger
 }

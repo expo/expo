@@ -75,8 +75,7 @@ public final class ExpoUIModule: Module {
     View(GridRowView.self)
     View(LabeledContentLabel.self)
     View(LabeledContentContent.self)
-    View(LabelIcon.self)
-
+    View(LabelIcon.self)    
     View(HostView.self)
 
     // MARK: - Expo UI Views
@@ -104,7 +103,11 @@ public final class ExpoUIModule: Module {
     
     ExpoUIView(ExpoUI.ProgressView.self)
     ExpoUIView(SectionView.self)
+
+    // Slider
     ExpoUIView(SliderView.self)
+    View(SliderLabelView.self)
+
     ExpoUIView(SpacerView.self)
     ExpoUIView(StepperView.self)
     ExpoUIView(SwitchView.self)
