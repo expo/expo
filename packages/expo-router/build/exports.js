@@ -87,4 +87,5 @@ Object.defineProperty(exports, "Badge", { enumerable: true, get: function () { r
 Object.defineProperty(exports, "Icon", { enumerable: true, get: function () { return primitives_1.Icon; } });
 Object.defineProperty(exports, "Label", { enumerable: true, get: function () { return primitives_1.Label; } });
 Object.defineProperty(exports, "VectorIcon", { enumerable: true, get: function () { return primitives_1.VectorIcon; } });
+__exportStar(require("./layouts/stack-utils"), exports);
 //# sourceMappingURL=exports.js.map
