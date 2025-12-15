@@ -57,23 +57,20 @@ We recommend that apps using EAS Update use Expo's [`registerRootComponent`](/ve
 
 In a simple app created with React Native Community CLI, the diff would look like this:
 
-```diff
-diff --git a/index.js b/index.js
-index a850d03..8fb69fd 100644
+<DiffBlock
+  raw={`diff --git a/index.js b/index.js
+index 0000000..1111111 100644
 --- a/index.js
 +++ b/index.js
-@@ -2,8 +2,7 @@
-  * @forma
-  */
-
+@@ -1,5 +1,4 @@
 -import {AppRegistry} from 'react-native';
+-import {name as appName} from './app.json';
 +import {registerRootComponent} from 'expo';
  import App from './App';
--import {name as appName} from './app.json';
-
+-
 -AppRegistry.registerComponent(appName, () => App);
-+export default registerRootComponent(App);
-```
++export default registerRootComponent(App);`}
+ />
 
 After making that change, update your [`MainActivity`](/versions/latest/sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) and [`AppDelegate`](/versions/latest//sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) to use the module name `"main"` instead of your app name.
 
