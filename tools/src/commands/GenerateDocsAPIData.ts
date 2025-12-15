@@ -79,7 +79,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['index.ts'],
   'expo-crypto': ['Crypto.ts'],
-  'expo-crypto-aes': ['aes/index.ts', 'expo-crypto'],
   'expo-dev-client': ['DevClient.ts'],
   'expo-device': ['Device.ts'],
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
