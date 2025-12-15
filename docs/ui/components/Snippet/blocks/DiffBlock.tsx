@@ -33,6 +33,53 @@ type Props = PropsWithChildren<{
   SnippetHeaderComponent?: typeof SnippetHeader | typeof PermalinkedSnippetHeader;
 }>;
 
+const normalizeDiff = (text: string) => {
+  if (!text) {
+    return '';
+  }
+
+  let inHunk = false;
+
+  return text
+    .split('\n')
+    .map(line => {
+      if (line.startsWith('diff ')) {
+        inHunk = false;
+        return line;
+      }
+
+      if (line.startsWith('@@')) {
+        inHunk = true;
+        return line;
+      }
+
+      if (
+        line.startsWith('index ') ||
+        line.startsWith('--- ') ||
+        line.startsWith('+++ ') ||
+        line.startsWith('\\ No newline')
+      ) {
+        return line;
+      }
+
+      if (inHunk && !/^[ +-]/.test(line)) {
+        return ` ${line}`;
+      }
+
+      return line;
+    })
+    .join('\n');
+};
+
+const safeParseDiff = (text: string) => {
+  try {
+    return parseDiff(text);
+  } catch (error) {
+    console.warn('Failed to parse diff', error);
+    return null;
+  }
+};
+
 export const DiffBlock = ({
   source,
   raw,
@@ -42,13 +89,15 @@ export const DiffBlock = ({
   collapseDeletedFiles = false,
   SnippetHeaderComponent = SnippetHeader,
 }: Props) => {
-  const [diff, setDiff] = useState<RenderLine[] | null>(raw ? parseDiff(raw) : null);
+  const initialRaw = typeof raw === 'string' && raw.trim().length > 0 ? normalizeDiff(raw) : null;
+  const [diff, setDiff] = useState<RenderLine[] | null>(initialRaw ? safeParseDiff(initialRaw) : null);
   useEffect(() => {
     if (source) {
       const fetchDiffAsync = async () => {
         const response = await fetch(source);
         const result = await response.text();
-        setDiff(parseDiff(result));
+        const normalized = normalizeDiff(result);
+        setDiff(safeParseDiff(normalized));
       };
 
       void fetchDiffAsync();
