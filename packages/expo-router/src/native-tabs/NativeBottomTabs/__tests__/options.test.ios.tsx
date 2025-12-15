@@ -70,7 +70,7 @@ it('can pass options via elements', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
   expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-    icon: { sfSymbolName: 'homepod.2.fill' },
+    icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
     selectedIcon: undefined,
   } as NativeTabOptions);
 });
@@ -117,7 +117,7 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      icon: { sfSymbolName: 'homepod.2.fill' },
+      icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
     } as NativeTabOptions);
   });
 
@@ -136,7 +136,7 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { sfSymbolName: 'homepod.2.fill' },
+      selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
     } as NativeTabOptions);
   });
 
@@ -155,8 +155,8 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { sfSymbolName: 'star.bubble' },
-      icon: { sfSymbolName: 'stairs' },
+      selectedIcon: { type: 'sfSymbol', name: 'star.bubble' },
+      icon: { ios: { type: 'sfSymbol', name: 'stairs' } },
     } as NativeTabOptions);
   });
 
@@ -195,7 +195,7 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      icon: { sfSymbolName: 'homepod.2.fill' },
+      icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
       selectedIcon: undefined,
     } as NativeTabOptions);
   });
@@ -216,7 +216,7 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { sfSymbolName: 'homepod.2.fill' },
+      selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
     } as NativeTabOptions);
   });
 
@@ -238,7 +238,7 @@ describe('Icons', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       selectedIcon: undefined,
-      icon: { sfSymbolName: '0.circle.ar' },
+      icon: { ios: { type: 'sfSymbol', name: '0.circle.ar' } },
     } as NativeTabOptions);
   });
 
@@ -259,7 +259,7 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { sfSymbolName: '0.circle.ar' },
+      selectedIcon: { type: 'sfSymbol', name: '0.circle.ar' },
       icon: undefined,
     } as NativeTabOptions);
   });
@@ -827,7 +827,7 @@ describe('Dynamic options', () => {
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       badgeValue: '3',
-      icon: { sfSymbolName: '0.circle' },
+      icon: { ios: { type: 'sfSymbol', name: '0.circle' } },
       hidden: false,
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
@@ -872,7 +872,7 @@ describe('Dynamic options', () => {
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       badgeValue: '3',
-      icon: { sfSymbolName: '0.circle' },
+      icon: { ios: { type: 'sfSymbol', name: '0.circle' } },
       hidden: false,
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
