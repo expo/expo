@@ -86,17 +86,17 @@ internal struct PaddingModifier: ViewModifier, Record {
   @Field var all: CGFloat?
   @Field var horizontal: CGFloat?
   @Field var vertical: CGFloat?
-  
+
   @Field var top: CGFloat?
   @Field var leading: CGFloat?
   @Field var bottom: CGFloat?
   @Field var trailing: CGFloat?
-  
+
   func body(content: Content) -> some View {
     let hasCustomPadding = [
       all, horizontal, vertical, top, leading, bottom, trailing
     ].contains { $0 != nil }
-    
+
     if !hasCustomPadding {
       // Default SwiftUI padding (system spacing)
       content.padding()
@@ -657,7 +657,6 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
-
 internal enum AnimationType: String, Enumerable {
   case easeInOut
   case easeIn
@@ -793,7 +792,7 @@ internal enum ScrollContentBackgroundTypes: String, Enumerable {
 
 internal struct ScrollContentBackground: ViewModifier, Record {
   @Field var visible: ScrollContentBackgroundTypes = .visible
-  
+
   func body(content: Content) -> some View {
     #if os(tvOS)
       content
@@ -956,15 +955,15 @@ internal struct TextUnderLine: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       switch pattern {
-        case .solid:  
+        case .solid:
           content.underline(isActive, pattern: .solid, color: color)
-        case .dash:  
+        case .dash:
           content.underline(isActive, pattern: .dash, color: color)
-        case .dot:  
+        case .dot:
           content.underline(isActive, pattern: .dot, color: color)
-        case .dashDot:  
+        case .dashDot:
           content.underline(isActive, pattern: .dashDot, color: color)
-        case .dashDotDot:  
+        case .dashDotDot:
           content.underline(isActive, pattern: .dashDotDot, color: color)
         }
       } else {
@@ -981,15 +980,15 @@ internal struct TextStrikeThrough: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       switch pattern {
-        case .solid: 
+        case .solid:
           content.strikethrough(isActive, pattern: .solid, color: color)
         case .dash:
           content.strikethrough(isActive, pattern: .dash, color: color)
-        case .dot:  
+        case .dot:
           content.strikethrough(isActive, pattern: .dot, color: color)
-        case .dashDot: 
+        case .dashDot:
           content.strikethrough(isActive, pattern: .dashDot, color: color)
-        case .dashDotDot:  
+        case .dashDotDot:
           content.strikethrough(isActive, pattern: .dashDotDot, color: color)
         }
       } else {
@@ -1009,9 +1008,9 @@ internal struct MultilineTextAlignment: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     switch alignment {
-      case .center: 
+      case .center:
         content.multilineTextAlignment(.center)
-      case .leading: 
+      case .leading:
         content.multilineTextAlignment(.leading)
       case .trailing:
         content.multilineTextAlignment(.trailing)
@@ -1027,9 +1026,9 @@ internal struct TextSelection: ViewModifier, Record {
       content
     #else
       switch value {
-        case true: 
+        case true:
           content.textSelection(.enabled)
-        case false: 
+        case false:
           content.textSelection(.disabled)
       }
     #endif
@@ -1105,11 +1104,11 @@ internal struct BadgeProminence: ViewModifier, Record {
     #else
       if #available(iOS 17.0, macOS 14.0, *) {
         switch badgeType {
-          case .standard:         
+          case .standard:
             content.badgeProminence(.standard)
-          case .increased:         
+          case .increased:
             content.badgeProminence(.increased)
-          case .decreased:         
+          case .decreased:
             content.badgeProminence(.decreased)
         }
       } else {
@@ -1155,7 +1154,7 @@ internal struct ListSectionMargins: ViewModifier, Record {
         } else {
           content
         }
-      #else 
+      #else
         content
       #endif
     #endif
@@ -1737,11 +1736,11 @@ extension ViewModifierRegistry {
     register("tag") { params, appContext, _ in
       return try TagModifier(from: params, appContext: appContext)
     }
-    
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
-      
+
     register("submitLabel") { params, appContext, _ in
       return try SubmitLabelModifier(from: params, appContext: appContext)
     }

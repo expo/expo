@@ -55,7 +55,7 @@ internal enum PickerStyleType: String, Enumerable {
 
 internal struct PickerStyleModifier: ViewModifier, Record {
   @Field var style: PickerStyleType?
-  
+
   @ViewBuilder
   func body(content: Content) -> some View {
     if let style = style {

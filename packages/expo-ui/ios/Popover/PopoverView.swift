@@ -45,8 +45,7 @@ internal struct PopoverView: ExpoSwiftUI.View {
   private var triggerContent: some View {
     if let content = props.children?
       .compactMap({ $0.childView as? PopoverViewContent })
-      .first
-    {
+      .first {
       content
     }
   }
@@ -55,10 +54,8 @@ internal struct PopoverView: ExpoSwiftUI.View {
   private var popoverContent: some View {
     if let content = props.children?
       .compactMap({ $0.childView as? PopoverViewPopContent })
-      .first
-    {
+      .first {
       content
     }
   }
-
 }

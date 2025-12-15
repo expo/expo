@@ -46,7 +46,7 @@ struct SwitchView: ExpoSwiftUI.View {
       $0.toggleStyle(IOSCheckboxToggleStyle())
     }
   }
-  
+
   @ViewBuilder
   private var toggleView: some View {
       if let systemImage = props.systemImage, !systemImage.isEmpty {

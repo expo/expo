@@ -20,7 +20,7 @@ internal struct TextView: ExpoSwiftUI.View {
 
   var body: some View {
     let hasDeprecatedFontProps = props.weight != nil || props.design != nil || props.size != nil
-    
+
     Text(props.text)
       .if(hasDeprecatedFontProps) { text in
         // TODO: remove this block of code once we remove the deprecated font props

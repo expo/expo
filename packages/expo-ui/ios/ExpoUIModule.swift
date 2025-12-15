@@ -95,12 +95,12 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
-    
+
     // Picker
     ExpoUIView(PickerView.self)
     View(PickerContentView.self)
     View(PickerLabelView.self)
-    
+
     ExpoUIView(ExpoUI.ProgressView.self)
     ExpoUIView(SectionView.self)
 

@@ -50,7 +50,7 @@ internal struct DatePickerView: ExpoSwiftUI.View {
           Children()
         }
       }
-    } 
+    }
     // Use title string
     else {
       let title = props.title ?? ""
