@@ -164,6 +164,8 @@ function convertOptionsIconToPropsIcon_4_16(icon) {
     }
     return undefined;
 }
+// Function added in https://github.com/expo/expo/pull/41631
+// to support native tabs icons in both 4.16 and 4.18+ versions of react-native-screens
 function convertOptionsIconToPropsIcon_4_18(icon) {
     if (!icon) {
         return undefined;
@@ -172,7 +174,6 @@ function convertOptionsIconToPropsIcon_4_18(icon) {
         if ('sf' in icon && icon.sf) {
             return {
                 // selectedIcon
-                // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
                 type: 'sfSymbol',
                 name: icon.sf,
                 // icon
@@ -185,7 +186,6 @@ function convertOptionsIconToPropsIcon_4_18(icon) {
         if ('src' in icon && icon.src) {
             return {
                 // selectedIcon
-                // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
                 type: 'templateSource',
                 templateSource: icon.src,
                 // icon
@@ -199,7 +199,6 @@ function convertOptionsIconToPropsIcon_4_18(icon) {
     else if (process.env.EXPO_OS === 'android') {
         if ('drawable' in icon && icon.drawable) {
             return {
-                // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
                 android: {
                     type: 'drawableResource',
                     name: icon.drawable,
@@ -208,7 +207,6 @@ function convertOptionsIconToPropsIcon_4_18(icon) {
         }
         if ('src' in icon && icon.src) {
             return {
-                // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
                 android: {
                     type: 'imageSource',
                     imageSource: icon.src,
@@ -219,6 +217,8 @@ function convertOptionsIconToPropsIcon_4_18(icon) {
     return undefined;
 }
 function convertOptionsIconToPropsIcon(icon) {
+    // Code added in https://github.com/expo/expo/pull/41631
+    // to support native tabs icons in both 4.16 and 4.18+ versions of react-native-screens
     const [_, minor] = package_json_1.default.version.split('.');
     const is4_18rNewer = minor && parseInt(minor, 10) >= 18;
     if (is4_18rNewer) {
@@ -253,4 +253,5 @@ function BottomTabsWrapper(props) {
     }
     return (<react_native_screens_1.BottomTabs tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode} tabBarMinimizeBehavior={tabBarMinimizeBehavior} {...rest}/>);
 }
+// #endregion
 //# sourceMappingURL=NativeTabsView.js.map

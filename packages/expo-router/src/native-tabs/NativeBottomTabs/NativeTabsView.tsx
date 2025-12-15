@@ -264,9 +264,11 @@ function convertOptionsIconToPropsIcon_4_16(
   return undefined;
 }
 
+// Function added in https://github.com/expo/expo/pull/41631
+// to support native tabs icons in both 4.16 and 4.18+ versions of react-native-screens
 function convertOptionsIconToPropsIcon_4_18(
   icon: AwaitedIcon | undefined
-): BottomTabsScreenProps['icon'] & Partial<BottomTabsScreenProps['selectedIcon']> {
+): (RNS_4_18_PlatformIcon & Partial<RNS_4_18_SelectedIconType>) | undefined {
   if (!icon) {
     return undefined;
   }
@@ -274,7 +276,6 @@ function convertOptionsIconToPropsIcon_4_18(
     if ('sf' in icon && icon.sf) {
       return {
         // selectedIcon
-        // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
         type: 'sfSymbol',
         name: icon.sf,
         // icon
@@ -287,7 +288,6 @@ function convertOptionsIconToPropsIcon_4_18(
     if ('src' in icon && icon.src) {
       return {
         // selectedIcon
-        // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
         type: 'templateSource',
         templateSource: icon.src,
         // icon
@@ -300,7 +300,6 @@ function convertOptionsIconToPropsIcon_4_18(
   } else if (process.env.EXPO_OS === 'android') {
     if ('drawable' in icon && icon.drawable) {
       return {
-        // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
         android: {
           type: 'drawableResource',
           name: icon.drawable,
@@ -309,7 +308,6 @@ function convertOptionsIconToPropsIcon_4_18(
     }
     if ('src' in icon && icon.src) {
       return {
-        // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
         android: {
           type: 'imageSource',
           imageSource: icon.src,
@@ -324,10 +322,12 @@ function convertOptionsIconToPropsIcon_4_18(
 function convertOptionsIconToPropsIcon(
   icon: AwaitedIcon | undefined
 ): BottomTabsScreenProps['icon'] {
+  // Code added in https://github.com/expo/expo/pull/41631
+  // to support native tabs icons in both 4.16 and 4.18+ versions of react-native-screens
   const [_, minor] = rnsPackageJson.version.split('.');
   const is4_18rNewer = minor && parseInt(minor, 10) >= 18;
   if (is4_18rNewer) {
-    return convertOptionsIconToPropsIcon_4_18(icon);
+    return convertOptionsIconToPropsIcon_4_18(icon) as BottomTabsScreenProps['icon'];
   }
   return convertOptionsIconToPropsIcon_4_16(icon);
 }
@@ -381,3 +381,40 @@ function BottomTabsWrapper(props: BottomTabsProps) {
     />
   );
 }
+
+// #region react-native-screens 4.18 compatible types
+// Copied from https://github.com/software-mansion/react-native-screens/blob/4.18.0/src/types.tsx#L111-L140
+type RNS_4_18_PlatformIconShared = {
+  type: 'imageSource';
+  imageSource: ImageSourcePropType;
+};
+
+type RNS_4_18_PlatformIconIOSSfSymbol = {
+  type: 'sfSymbol';
+  name: string;
+};
+
+type RNS_4_18_PlatformIconIOS =
+  | RNS_4_18_PlatformIconIOSSfSymbol
+  | {
+      type: 'templateSource';
+      templateSource: ImageSourcePropType;
+    }
+  | RNS_4_18_PlatformIconShared;
+
+type RNS_4_18_PlatformIconAndroid =
+  | {
+      type: 'drawableResource';
+      name: string;
+    }
+  | RNS_4_18_PlatformIconShared;
+
+interface RNS_4_18_PlatformIcon {
+  ios?: RNS_4_18_PlatformIconIOS;
+  android?: RNS_4_18_PlatformIconAndroid;
+  shared?: RNS_4_18_PlatformIconShared;
+}
+
+// https://github.com/software-mansion/react-native-screens/blob/4.18.0/src/components/bottom-tabs/BottomTabsScreen.types.ts#L438
+type RNS_4_18_SelectedIconType = RNS_4_18_PlatformIconIOS;
+// #endregion
