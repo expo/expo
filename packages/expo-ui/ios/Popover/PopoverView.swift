@@ -8,37 +8,37 @@ internal struct PopoverView: ExpoSwiftUI.View {
   @State private var isPresented: Bool = false
 
   var body: some View {
-    #if os(tvOS)
-      triggerContent
-    #else
-      triggerContent
-        .popover(
-          isPresented: $isPresented,
-          attachmentAnchor: props.attachmentAnchor?.anchor ?? .rect(.bounds),
-          arrowEdge: props.arrowEdge?.edge
-        ) {
-          if #available(iOS 16.4, *) {
-            popoverContent
-              .presentationCompactAdaptation(.popover)
-          } else {
-            popoverContent
+#if os(tvOS)
+    triggerContent
+#else
+    triggerContent
+      .popover(
+        isPresented: $isPresented,
+        attachmentAnchor: props.attachmentAnchor?.anchor ?? .rect(.bounds),
+        arrowEdge: props.arrowEdge?.edge
+      ) {
+        if #available(iOS 16.4, *) {
+          popoverContent
+            .presentationCompactAdaptation(.popover)
+        } else {
+          popoverContent
+        }
+      }
+      .onChange(
+        of: isPresented,
+        perform: { newValue in
+          if props.isPresented != newValue {
+            props.onIsPresentedChange(["isPresented": newValue])
           }
         }
-        .onChange(
-          of: isPresented,
-          perform: { newValue in
-            if props.isPresented != newValue {
-              props.onIsPresentedChange(["isPresented": newValue])
-            }
-          }
-        )
-        .onChange(of: props.isPresented) { newValue in
-          isPresented = newValue
-        }
-        .onAppear {
-          isPresented = props.isPresented
-        }
-    #endif
+      )
+      .onChange(of: props.isPresented) { newValue in
+        isPresented = newValue
+      }
+      .onAppear {
+        isPresented = props.isPresented
+      }
+#endif
   }
 
   @ViewBuilder

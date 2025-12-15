@@ -22,38 +22,38 @@ struct SwitchView: ExpoSwiftUI.View {
 
   var body: some View {
     toggleView
-    .onChange(of: checked, perform: { newValue in
-      if props.value == newValue {
-        return
+      .onChange(of: checked, perform: { newValue in
+        if props.value == newValue {
+          return
+        }
+        props.onValueChange([
+          "value": newValue
+        ])
+      })
+      .tint(props.color)
+      .onReceive(props.objectWillChange, perform: {
+        checked = props.value
+      })
+      .onAppear {
+        checked = props.value
       }
-      props.onValueChange([
-        "value": newValue
-      ])
-    })
-    .tint(props.color)
-    .onReceive(props.objectWillChange, perform: {
-      checked = props.value
-    })
-    .onAppear {
-      checked = props.value
-    }
-    #if !os(tvOS)
-    .if(props.variant == "button") {
-      $0.toggleStyle(.button)
-    }
-    #endif
-    .if(props.variant == "checkbox") {
-      $0.toggleStyle(IOSCheckboxToggleStyle())
-    }
+#if !os(tvOS)
+      .if(props.variant == "button") {
+        $0.toggleStyle(.button)
+      }
+#endif
+      .if(props.variant == "checkbox") {
+        $0.toggleStyle(IOSCheckboxToggleStyle())
+      }
   }
 
   @ViewBuilder
   private var toggleView: some View {
-      if let systemImage = props.systemImage, !systemImage.isEmpty {
-        Toggle(props.label ?? "", systemImage: systemImage, isOn: $checked)
-      } else {
-        Toggle(props.label ?? "", isOn: $checked)
-      }
+    if let systemImage = props.systemImage, !systemImage.isEmpty {
+      Toggle(props.label ?? "", systemImage: systemImage, isOn: $checked)
+    } else {
+      Toggle(props.label ?? "", isOn: $checked)
+    }
   }
 }
 

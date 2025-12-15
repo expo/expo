@@ -161,7 +161,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
     return result.isEmpty ? [.height(childrenSize.height)] : Set(result)
   }
 
- @available(iOS 16.4, tvOS 16.4, *)
+  @available(iOS 16.4, tvOS 16.4, *)
   private func getPresentationBackgroundInteraction() -> PresentationBackgroundInteraction {
     guard let interaction = props.presentationBackgroundInteraction else {
       return .automatic
