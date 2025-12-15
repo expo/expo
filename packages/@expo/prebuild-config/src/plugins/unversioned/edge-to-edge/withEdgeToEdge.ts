@@ -23,7 +23,10 @@ export const withEdgeToEdge: ConfigPlugin<{ projectRoot: string }> = (config, { 
 };
 
 export function applyEdgeToEdge(config: ExpoConfig, projectRoot: string): ExpoConfig {
-  if (config.android?.edgeToEdgeEnabled === false) {
+  // NOTE(@kitten): Override for SDK 54 only. This is deprecated/removed but `false` is still technically accepted just for SDK 54
+  const raw_edgeToEdgeEnabled = config.android?.edgeToEdgeEnabled as boolean | undefined;
+
+  if (raw_edgeToEdgeEnabled === false) {
     WarningAggregator.addWarningAndroid(
       TAG,
       '`edgeToEdgeEnabled` field is explicitly set to false in the project app config. In Android 16+ (targetSdkVersion 36) it is no longer be possible to disable edge-to-edge. Learn more:',
@@ -31,7 +34,7 @@ export function applyEdgeToEdge(config: ExpoConfig, projectRoot: string): ExpoCo
     );
   }
 
-  const edgeToEdgeEnabled = config.android?.edgeToEdgeEnabled !== false;
+  const edgeToEdgeEnabled = raw_edgeToEdgeEnabled !== false;
 
   config = withEdgeToEdgeEnabledGradleProperties(config, { edgeToEdgeEnabled });
   // Enable/disable edge-to-edge enforcement
