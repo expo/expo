@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class ImageViewProps: UIBaseViewProps {
+public final class ImageViewProps: UIBaseViewProps {
   @Field var systemName: String = ""
   @Field var size: Double?
   @Field var color: Color?
@@ -12,10 +12,14 @@ internal final class ImageViewProps: UIBaseViewProps {
   var onTap = EventDispatcher()
 }
 
-internal struct ImageView: ExpoSwiftUI.View {
-  @ObservedObject var props: ImageViewProps
+public struct ImageView: ExpoSwiftUI.View {
+  @ObservedObject public var props: ImageViewProps
 
-  var body: some View {
+  public init(props: ImageViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     let image: Image
 
     if #available(iOS 16.0, tvOS 16.0, *) {

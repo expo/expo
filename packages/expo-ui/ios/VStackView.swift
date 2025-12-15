@@ -20,7 +20,7 @@ internal enum HorizontalAlignmentOptions: String, Enumerable {
   }
 }
 
-internal final class VStackViewProps: UIBaseViewProps {
+public final class VStackViewProps: UIBaseViewProps {
   @Field var spacing: Double?
   @Field var useTapGesture: Bool?
   @Field var alignment: HorizontalAlignmentOptions?
@@ -28,10 +28,14 @@ internal final class VStackViewProps: UIBaseViewProps {
   var onTap = EventDispatcher()
 }
 
-internal struct VStackView: ExpoSwiftUI.View {
-  @ObservedObject var props: VStackViewProps
+public struct VStackView: ExpoSwiftUI.View {
+  @ObservedObject public var props: VStackViewProps
 
-  var body: some View {
+  public init(props: VStackViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     VStack(
       alignment: props.alignment?.toHorizontalAlignment() ?? .center,
       spacing: CGFloat(props.spacing ?? 0)) {
