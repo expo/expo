@@ -12,6 +12,7 @@
 
 - [Android] Fix certain exif keys being dropped because of invalid values. ([#41043](https://github.com/expo/expo/pull/41043) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix camera not being recreated on the old architecture. ([#41405](https://github.com/expo/expo/pull/41405) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix `takePictureAsync` with `pictureRef` returning swapped width/height that didn't account for EXIF orientation. ([#41647](https://github.com/expo/expo/pull/41647) by [@martinezleoml](https://github.com/martinezleoml))
 
 ### 💡 Others
 

@@ -307,11 +307,11 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
     Class("Picture", PictureRef.self) {
       Property("width") { (image: PictureRef) -> Int in
-        return image.ref.cgImage?.width ?? 0
+        return Int(image.ref.size.width)
       }
 
       Property("height") { (image: PictureRef) -> Int in
-        return image.ref.cgImage?.height ?? 0
+        return Int(image.ref.size.height)
       }
 
       AsyncFunction("savePictureAsync") { (image: PictureRef, options: SavePictureOptions?) -> [String: Any?] in
