@@ -36,7 +36,7 @@ class FormDelegate: OnContactPickingResultHandler {
       id: contact.id,
       keysToFetch: [CNContactViewController.descriptorForRequiredKeys()]
     ) else {
-      return promise.reject(ContactNotFoundException(contact.id))
+      throw ContactNotFoundException(contact.id)
     }
     
     var controller = ContactsViewController(for: foundContact)
@@ -56,7 +56,7 @@ class FormDelegate: OnContactPickingResultHandler {
       parent.present(navController, animated: options?.preventAnimation ?? false != true)
     } else {
       contactManipulationPromise = nil
-      promise.reject(MissingViewControllerException())
+      throw MissingViewControllerException()
     }
   }
   
@@ -80,7 +80,7 @@ class FormDelegate: OnContactPickingResultHandler {
       parent.present(navController, animated: options?.preventAnimation ?? false != true)
     } else {
       contactManipulationPromise = nil
-      promise.reject(MissingViewControllerException())
+      throw MissingViewControllerException()
     }
   }
   
@@ -132,12 +132,12 @@ class FormDelegate: OnContactPickingResultHandler {
     }
   }
   
-  func presentAccessPicker(promise: Promise) {
+  func presentAccessPicker(promise: Promise) throws {
     guard #available(iOS 18.0, *) else {
-      return promise.reject(AccessPickerUnavailableException())
+      throw AccessPickerUnavailableException()
     }
     guard let currentViewController = appContext?.utilities?.currentViewController() else {
-      return promise.reject(MissingCurrentViewControllerException())
+      throw MissingCurrentViewControllerException()
     }
     ContactAccessPicker.present(inViewController: currentViewController, promise: promise)
   }

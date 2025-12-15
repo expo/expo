@@ -368,7 +368,7 @@ public class ContactsNextModule: Module {
       }.runOnQueue(.main)
       
       StaticAsyncFunction("presentAccessPicker") { (promise: Promise) in
-        return formDelegate.presentAccessPicker(promise: promise)
+        return try formDelegate.presentAccessPicker(promise: promise)
       }.runOnQueue(.main)
       
       StaticAsyncFunction("getAllDetails") { (fields: [ContactField], contactQueryOptions: ContactQueryOptions?) in
