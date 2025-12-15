@@ -33,7 +33,8 @@
 
   // Inject and decorate the `global.expo` object
   _appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
-
+  [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
+  
   [_appContext registerNativeModules];
 }
 
