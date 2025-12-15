@@ -3,5 +3,8 @@
   "slug": "builtins-tester",
   "ios": {
     "bundleIdentifier": "com.bacon.builtins-tester"
+  },
+  "android": {
+    "package": "com.bacon.builtinstester"
   }
 }

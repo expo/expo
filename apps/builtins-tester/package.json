@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "main": "./index",
   "scripts": {
+    "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz && cd - && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
     "start": "EXPO_ATLAS=1 expo start",
     "android": "expo run:android",
     "ios": "yarn run prepare-builtins && expo run:ios",
