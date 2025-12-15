@@ -1,4 +1,4 @@
-import { Button, Form, Host, HStack, Section, Slider, Text } from '@expo/ui/swift-ui';
+import { Button, Form, Host, Section, Slider, Text } from '@expo/ui/swift-ui';
 import { tint } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
