@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix native tabs icon prop shape for react-native-screens 4.18 on iOS ([#41626](https://github.com/expo/expo/pull/41626) by [@RobJacobson](https://github.com/RobJacobson))
 ### 💡 Others
 
 ## 6.0.19 — 2025-12-12
