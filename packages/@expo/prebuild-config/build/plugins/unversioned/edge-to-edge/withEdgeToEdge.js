@@ -48,10 +48,12 @@ const withEdgeToEdge = (config, {
 };
 exports.withEdgeToEdge = withEdgeToEdge;
 function applyEdgeToEdge(config, projectRoot) {
-  if (config.android?.edgeToEdgeEnabled === false) {
+  // NOTE(@kitten): Override for SDK 54 only. This is deprecated/removed but `false` is still technically accepted just for SDK 54
+  const raw_edgeToEdgeEnabled = config.android?.edgeToEdgeEnabled;
+  if (raw_edgeToEdgeEnabled === false) {
     _configPlugins().WarningAggregator.addWarningAndroid(TAG, '`edgeToEdgeEnabled` field is explicitly set to false in the project app config. In Android 16+ (targetSdkVersion 36) it is no longer be possible to disable edge-to-edge. Learn more:', 'https://expo.fyi/edge-to-edge-rollout');
   }
-  const edgeToEdgeEnabled = config.android?.edgeToEdgeEnabled !== false;
+  const edgeToEdgeEnabled = raw_edgeToEdgeEnabled !== false;
   config = (0, _withEdgeToEdgeEnabledGradleProperties().withEdgeToEdgeEnabledGradleProperties)(config, {
     edgeToEdgeEnabled
   });
