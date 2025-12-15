@@ -5,8 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- A wrapper around RCTHost.
- RCTHost isn't directly available in Swift, so this wrapper provides a typed interface.
+ A wrapper around RCTHost. RCTHost isn't directly available in Swift.
  */
 NS_SWIFT_NAME(ExpoHostWrapper)
 @interface EXHostWrapper : NSObject
