@@ -8,6 +8,7 @@ import {
   type BottomTabsScreenAppearance,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
+import rnsPackageJson from 'react-native-screens/package.json';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import {
@@ -249,7 +250,7 @@ function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
   return !icon || !('src' in icon && icon.src instanceof Promise);
 }
 
-function convertOptionsIconToPropsIcon(
+function convertOptionsIconToPropsIcon_4_16(
   icon: AwaitedIcon | undefined
 ): BottomTabsScreenProps['icon'] {
   if (!icon) {
@@ -261,6 +262,74 @@ function convertOptionsIconToPropsIcon(
     return { templateSource: icon.src };
   }
   return undefined;
+}
+
+function convertOptionsIconToPropsIcon_4_18(
+  icon: AwaitedIcon | undefined
+): BottomTabsScreenProps['icon'] & Partial<BottomTabsScreenProps['selectedIcon']> {
+  if (!icon) {
+    return undefined;
+  }
+  if (process.env.EXPO_OS === 'ios') {
+    if ('sf' in icon && icon.sf) {
+      return {
+        // selectedIcon
+        // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
+        type: 'sfSymbol',
+        name: icon.sf,
+        // icon
+        ios: {
+          type: 'sfSymbol',
+          name: icon.sf,
+        },
+      };
+    }
+    if ('src' in icon && icon.src) {
+      return {
+        // selectedIcon
+        // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
+        type: 'templateSource',
+        templateSource: icon.src,
+        // icon
+        ios: {
+          type: 'templateSource',
+          templateSource: icon.src,
+        },
+      };
+    }
+  } else if (process.env.EXPO_OS === 'android') {
+    if ('drawable' in icon && icon.drawable) {
+      return {
+        // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
+        android: {
+          type: 'drawableResource',
+          name: icon.drawable,
+        },
+      };
+    }
+    if ('src' in icon && icon.src) {
+      return {
+        // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
+        android: {
+          type: 'imageSource',
+          imageSource: icon.src,
+        },
+      };
+    }
+  }
+
+  return undefined;
+}
+
+function convertOptionsIconToPropsIcon(
+  icon: AwaitedIcon | undefined
+): BottomTabsScreenProps['icon'] {
+  const [_, minor] = rnsPackageJson.version.split('.');
+  const is4_18rNewer = minor && parseInt(minor, 10) >= 18;
+  if (is4_18rNewer) {
+    return convertOptionsIconToPropsIcon_4_18(icon);
+  }
+  return convertOptionsIconToPropsIcon_4_16(icon);
 }
 
 function getAndroidIconResource(

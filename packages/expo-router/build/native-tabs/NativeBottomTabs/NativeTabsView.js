@@ -32,10 +32,14 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
 const react_1 = __importStar(require("react"));
 const react_native_screens_1 = require("react-native-screens");
+const package_json_1 = __importDefault(require("react-native-screens/package.json"));
 const appearance_1 = require("./appearance");
 const types_1 = require("./types");
 const utils_1 = require("./utils");
@@ -148,7 +152,7 @@ function useAwaitedScreensIcon(icon) {
 function isAwaitedIcon(icon) {
     return !icon || !('src' in icon && icon.src instanceof Promise);
 }
-function convertOptionsIconToPropsIcon(icon) {
+function convertOptionsIconToPropsIcon_4_16(icon) {
     if (!icon) {
         return undefined;
     }
@@ -159,6 +163,68 @@ function convertOptionsIconToPropsIcon(icon) {
         return { templateSource: icon.src };
     }
     return undefined;
+}
+function convertOptionsIconToPropsIcon_4_18(icon) {
+    if (!icon) {
+        return undefined;
+    }
+    if (process.env.EXPO_OS === 'ios') {
+        if ('sf' in icon && icon.sf) {
+            return {
+                // selectedIcon
+                // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
+                type: 'sfSymbol',
+                name: icon.sf,
+                // icon
+                ios: {
+                    type: 'sfSymbol',
+                    name: icon.sf,
+                },
+            };
+        }
+        if ('src' in icon && icon.src) {
+            return {
+                // selectedIcon
+                // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
+                type: 'templateSource',
+                templateSource: icon.src,
+                // icon
+                ios: {
+                    type: 'templateSource',
+                    templateSource: icon.src,
+                },
+            };
+        }
+    }
+    else if (process.env.EXPO_OS === 'android') {
+        if ('drawable' in icon && icon.drawable) {
+            return {
+                // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
+                android: {
+                    type: 'drawableResource',
+                    name: icon.drawable,
+                },
+            };
+        }
+        if ('src' in icon && icon.src) {
+            return {
+                // @ts-expect-error 4.18 compatible API, which does not exist in 4.16
+                android: {
+                    type: 'imageSource',
+                    imageSource: icon.src,
+                },
+            };
+        }
+    }
+    return undefined;
+}
+function convertOptionsIconToPropsIcon(icon) {
+    const [_, minor] = package_json_1.default.version.split('.');
+    const is4_18rNewer = minor && parseInt(minor, 10) >= 18;
+    if (is4_18rNewer) {
+        return convertOptionsIconToPropsIcon_4_18(icon);
+    }
+    return convertOptionsIconToPropsIcon_4_16(icon);
 }
 function getAndroidIconResource(icon) {
     if (icon && 'src' in icon && icon.src) {
