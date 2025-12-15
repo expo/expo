@@ -44,7 +44,8 @@ export type PedometerUpdateCallback = (result: PedometerResult) => void;
  *
  * > Pedometer updates will not be delivered while the app is in the background.
  * The `getStepCountAsync` method can be used to get the step count between two dates.
- * On Android, this is subject to Play Services Recording API availability.
+ * On Android, historical step counts require Play Services Recording API support and an active
+ * `subscribeRecording()` subscription.
  */
 export function watchStepCount(callback: PedometerUpdateCallback): EventSubscription {
   if (!ExponentPedometer.addListener) {
@@ -58,6 +59,10 @@ export function watchStepCount(callback: PedometerUpdateCallback): EventSubscrip
 /**
  * Listen for pedometer pause/resume events emitted by the underlying platform.
  * Call {@link startEventUpdatesAsync} to begin receiving events.
+ *
+ * > Event delivery is best-effort and generally only while the app is running.
+ * > Do not rely on it while the app is in the background or terminated.
+ * > On Android, events are derived from walking/running activity transitions.
  * @platform android ios
  */
 export function watchEventUpdates(callback: PedometerEventCallback): EventSubscription {
@@ -70,12 +75,13 @@ export function watchEventUpdates(callback: PedometerEventCallback): EventSubscr
 }
 
 /**
- * Check whether step history recording is available on this platform.
+ * Check whether step history is supported on this device.
  * On iOS, historical data is collected automatically (up to seven days).
  * @return Returns a promise that fulfills with a `boolean`, indicating whether
  * historical step count data is available on this device.
  *
- * > On Android, this checks for the availability of the required Play Services components.
+ * > On Android, this checks whether the required Play Services Recording API components are available.
+ * > Step history is only accessible while there is an active `subscribeRecording()` subscription.
  */
 export function isRecordingAvailableAsync(): Promise<boolean> {
   if (!ExponentPedometer.isRecordingAvailableAsync) {
@@ -114,6 +120,7 @@ export async function stopEventUpdatesAsync(): Promise<void> {
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
  * > `LocalRecordingClient` stores up to 10 days of data.
+ * > Data is only accessible while there is an active subscription.
  * @platform android
  */
 export async function subscribeRecording(): Promise<void> {
@@ -153,6 +160,10 @@ export async function unsubscribeRecording(): Promise<void> {
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
  * > `LocalRecordingClient` stores up to 10 days of data.
+ * > Data is only accessible while there is an active subscription.
+ *
+ * On Android, call `subscribeRecording()` before querying step history and keep it active if you want
+ * the previous days to be available.
  */
 export async function getStepCountAsync(start: Date, end: Date): Promise<PedometerResult> {
   if (!ExponentPedometer.getStepCountAsync) {

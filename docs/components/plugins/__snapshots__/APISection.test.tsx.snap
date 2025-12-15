@@ -7553,11 +7553,28 @@ a start date that is more than seven days in the past returns only the available
                   LocalRecordingClient
                 </code>
                  stores up to 10 days of data.
+Data is only accessible while there is an active subscription.
               </p>
               
 
             </div>
           </blockquote>
+          
+
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            On Android, call 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
+              data-text="true"
+            >
+              subscribeRecording()
+            </code>
+             before querying step history and keep it active if you want
+the previous days to be available.
+          </p>
         </div>
       </div>
     </div>
@@ -7764,7 +7781,7 @@ available on this device.
         class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
-        Check whether step history recording is available on this platform.
+        Check whether step history is supported on this device.
 On iOS, historical data is collected automatically (up to seven days).
       </p>
       <div
@@ -7885,7 +7902,15 @@ historical step count data is available on this device.
                 class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
                 data-text="true"
               >
-                On Android, this checks for the availability of the required Play Services components.
+                On Android, this checks whether the required Play Services Recording API components are available.
+Step history is only accessible while there is an active 
+                <code
+                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
+                  data-text="true"
+                >
+                  subscribeRecording()
+                </code>
+                 subscription.
               </p>
               
 
@@ -8564,6 +8589,7 @@ Recording API, if available, until unsubscribed. Subsequent calls are safe and i
                   LocalRecordingClient
                 </code>
                  stores up to 10 days of data.
+Data is only accessible while there is an active subscription.
               </p>
               
 
@@ -8968,6 +8994,54 @@ Call
         </a>
          to begin receiving events.
       </p>
+      
+
+      <blockquote
+        class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+        data-testid="callout-container"
+      >
+        <svg
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-default"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <g
+            id="info-circle-duotone-icon"
+          >
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
+        <div
+          class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+        >
+          
+
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            Event delivery is best-effort and generally only while the app is running.
+Do not rely on it while the app is in the background or terminated.
+On Android, events are derived from walking/running activity transitions.
+          </p>
+          
+
+        </div>
+      </blockquote>
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
       >
@@ -9278,7 +9352,15 @@ The
                   getStepCountAsync
                 </code>
                  method can be used to get the step count between two dates.
-On Android, this is subject to Play Services Recording API availability.
+On Android, historical step counts require Play Services Recording API support and an active
+
+                <code
+                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
+                  data-text="true"
+                >
+                  subscribeRecording()
+                </code>
+                 subscription.
               </p>
               
 
