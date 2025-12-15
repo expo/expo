@@ -7,9 +7,9 @@
     "cp-hbc": "cp dist/_expo/static/js/ios/index-*.hbc ../builtins-tester/ios/builtins.hbc"
   },
   "dependencies": {
-    "expo": "~53.0.9",
-    "react": "19.0.0",
-    "react-native": "0.79.2"
+    "expo": "~54.0.8",
+    "react": "19.2.0",
+    "react-native": "0.83.0"
   },
   "private": true
 }

@@ -9,10 +9,10 @@
     "prepare-builtins": "cd ../builtins && yarn run bundle"
   },
   "dependencies": {
-    "expo": "~53.0.9",
-    "expo-splash-screen": "~0.30.8",
-    "react": "19.0.0",
-    "react-native": "0.79.2",
+    "expo": "~54.0.8",
+    "react": "19.2.0",
+    "react-native": "0.83.0",
+    "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "*"
   },
   "ext": {
