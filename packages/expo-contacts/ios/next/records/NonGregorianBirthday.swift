@@ -16,15 +16,17 @@ enum NonGregorianBirthdayCalendar: String, Enumerable {
 }
 
 struct NonGregorianBirthday: Record {
-  @Field var year: String?
-  @Field var month: String
-  @Field var day: String
+  @Field var year: Int?
+  @Field var month: Int
+  @Field var day: Int
   @Field var calendar: NonGregorianBirthdayCalendar = .islamic
   
   init() {}
   
-  init(year: String?, month: String, day: String, calendar: NonGregorianBirthdayCalendar) {
-    self.year = year
+  init(year: Int?, month: Int, day: Int, calendar: NonGregorianBirthdayCalendar) {
+    if let year = year {
+      self.year = year
+    }
     self.month = month
     self.day = day
     self.calendar = calendar

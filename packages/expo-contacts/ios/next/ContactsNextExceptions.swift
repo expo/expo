@@ -41,3 +41,9 @@ internal final class FailedToSetReadOnlyProperty: Exception {
     "Tried to set a value on a read-only property"
   }
 }
+
+internal final class FailedToParseDate: Exception {
+  override var reason: String {
+    "Could not parse date"
+  }
+}

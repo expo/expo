@@ -72,10 +72,10 @@ class ContactPatcher {
     }
     
     let (patchRecords, newRecords) = try splitPatchAndNewRecords(list)
-    let newItems = newRecords.map { mapper.newRecordToCNLabeledValue($0) }
+    let newItems = try newRecords.map { try mapper.newRecordToCNLabeledValue($0) }
     
     let existingItems = contact[keyPath: keyPath]
-    let modifiedItems = applyPatches(to: existingItems, with: patchRecords, mapper: mapper)
+    let modifiedItems = try applyPatches(to: existingItems, with: patchRecords, mapper: mapper)
     
     contact[keyPath: keyPath] = modifiedItems + newItems
   }
@@ -98,14 +98,14 @@ class ContactPatcher {
     to existing: [CNLabeledValue<Mapper.TDomainValue>],
     with patches: [Mapper.TPatchRecord],
     mapper: Mapper
-  ) -> [CNLabeledValue<Mapper.TDomainValue>] {
+  ) throws -> [CNLabeledValue<Mapper.TDomainValue>] {
     let patchRecordsById = Dictionary(uniqueKeysWithValues: patches.map { ($0.id, $0) })
     
-    return existing.compactMap { item in
+    return try existing.compactMap { item in
       guard let patchForItem = patchRecordsById[item.identifier] else {
         return nil
       }
-      return mapper.apply(patch: patchForItem, to: item)
+      return try mapper.apply(patch: patchForItem, to: item)
     }
   }
 }

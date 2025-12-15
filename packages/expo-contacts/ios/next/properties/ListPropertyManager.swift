@@ -10,9 +10,9 @@ class ListPropertyManager<
   let keyString: String
   let contactRepository: ContactRepository
   
-  let newRecordToCNLabeledValue: (TNewRecord) -> CNLabeledValue<TDomainValue>
-  let existingRecordToCNLabeledValue: (TExistingRecord) -> CNLabeledValue<TDomainValue>
-  let cnLabeledValueToExistingRecord: (CNLabeledValue<TDomainValue>) -> TExistingRecord
+  let newRecordToCNLabeledValue: (TNewRecord) throws -> CNLabeledValue<TDomainValue>
+  let existingRecordToCNLabeledValue: (TExistingRecord) throws -> CNLabeledValue<TDomainValue>
+  let cnLabeledValueToExistingRecord: (CNLabeledValue<TDomainValue>) throws -> TExistingRecord
   
   init<Mapper: ContactRecordMapper>(
     contactId: String,
@@ -39,11 +39,11 @@ class ListPropertyManager<
     guard let labeledValues = contact.value(forKey: keyString) as? [CNLabeledValue<TDomainValue>] else {
       throw FailedToGetContactField(keyString)
     }
-    return labeledValues.map(cnLabeledValueToExistingRecord)
+    return try labeledValues.map(cnLabeledValueToExistingRecord)
   }
   
   func add(_ record: TNewRecord) async throws -> String {
-    let newLabeledValue = newRecordToCNLabeledValue(record)
+    let newLabeledValue = try newRecordToCNLabeledValue(record)
     try await modifyContactField { currentList in
       return (currentList ?? []) + [newLabeledValue]
     }
@@ -90,7 +90,7 @@ class ListPropertyManager<
       throw FailedToGetContactProperty(existingRecord.id)
     }
     
-    let newLabeledValue = existingRecordToCNLabeledValue(existingRecord)
+    let newLabeledValue = try existingRecordToCNLabeledValue(existingRecord)
     let originalValue = currentList[index]
     
     let updatedValue = originalValue

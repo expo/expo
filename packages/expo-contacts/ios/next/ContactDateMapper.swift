@@ -40,32 +40,21 @@ extension ContactDateNext {
   func toNSDateComponents() throws -> NSDateComponents {
     let dateComponents = NSDateComponents()
     if let year = self.year {
-      dateComponents.year = try toInt(year)
+      dateComponents.year = year
     }
-    dateComponents.month =  try toInt(self.month)
-    dateComponents.day =  try toInt(self.day)
+    dateComponents.month = month
+    dateComponents.day = day
     return dateComponents
   }
   
   func toDateComponent() throws -> DateComponents {
     var dateComponents = DateComponents()
     if let year = self.year {
-      dateComponents.year = try toInt(year)
+      dateComponents.year = year
     }
-    dateComponents.month =  try toInt(self.month)
-    dateComponents.day =  try toInt(self.day)
+    dateComponents.month = month
+    dateComponents.day = day
     return dateComponents
-  }
-  
-  private func toInt(_ either: Either<Int, String>) throws -> Int {
-    if (either.`is`(Int.self)) {
-      return try either.`as`(Int.self)
-    }
-    let stringVal = try either.as(String.self)
-    guard let intValue = Int(stringVal) else {
-      throw FailedToParseDate()
-    }
-    return intValue
   }
 }
 

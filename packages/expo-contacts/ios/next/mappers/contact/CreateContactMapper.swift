@@ -35,7 +35,7 @@ class CreateContactMapper {
     }
 
     if let dates = record.dates {
-      contact.dates = dates.map { DateMapper().newRecordToCNLabeledValue($0) }
+      contact.dates = try dates.map { try DateMapper().newRecordToCNLabeledValue($0) }
     }
 
     if let phones = record.phones {

@@ -26,13 +26,13 @@ struct PatchDateRecord: PatchRecord {
 }
 
 struct ContactDateNext: Record {
-  @Field var year: String?
-  @Field var month: String
-  @Field var day: String
+  @Field var year: Int?
+  @Field(FieldOption.required) var month: Int
+  @Field(FieldOption.required) var day: Int
   
   init() {}
   
-  init(year: String?, month: String, day: String) {
+  init(year: Int?, month: Int, day: Int) {
     self.year = year
     self.month = month
     self.day = day
