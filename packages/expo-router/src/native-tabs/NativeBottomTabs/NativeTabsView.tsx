@@ -8,6 +8,7 @@ import {
   type BottomTabsScreenAppearance,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
+import rnsPackageJson from 'react-native-screens/package.json';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import {
@@ -249,7 +250,7 @@ function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
   return !icon || !('src' in icon && icon.src instanceof Promise);
 }
 
-function convertOptionsIconToPropsIcon(
+function convertOptionsIconToPropsIcon_4_16(
   icon: AwaitedIcon | undefined
 ): BottomTabsScreenProps['icon'] {
   if (!icon) {
@@ -261,6 +262,74 @@ function convertOptionsIconToPropsIcon(
     return { templateSource: icon.src };
   }
   return undefined;
+}
+
+// Function added in https://github.com/expo/expo/pull/41631
+// to support native tabs icons in both 4.16 and 4.18+ versions of react-native-screens
+function convertOptionsIconToPropsIcon_4_18(
+  icon: AwaitedIcon | undefined
+): (RNS_4_18_PlatformIcon & Partial<RNS_4_18_SelectedIconType>) | undefined {
+  if (!icon) {
+    return undefined;
+  }
+  if (process.env.EXPO_OS === 'ios') {
+    if ('sf' in icon && icon.sf) {
+      return {
+        // selectedIcon
+        type: 'sfSymbol',
+        name: icon.sf,
+        // icon
+        ios: {
+          type: 'sfSymbol',
+          name: icon.sf,
+        },
+      };
+    }
+    if ('src' in icon && icon.src) {
+      return {
+        // selectedIcon
+        type: 'templateSource',
+        templateSource: icon.src,
+        // icon
+        ios: {
+          type: 'templateSource',
+          templateSource: icon.src,
+        },
+      };
+    }
+  } else if (process.env.EXPO_OS === 'android') {
+    if ('drawable' in icon && icon.drawable) {
+      return {
+        android: {
+          type: 'drawableResource',
+          name: icon.drawable,
+        },
+      };
+    }
+    if ('src' in icon && icon.src) {
+      return {
+        android: {
+          type: 'imageSource',
+          imageSource: icon.src,
+        },
+      };
+    }
+  }
+
+  return undefined;
+}
+
+function convertOptionsIconToPropsIcon(
+  icon: AwaitedIcon | undefined
+): BottomTabsScreenProps['icon'] {
+  // Code added in https://github.com/expo/expo/pull/41631
+  // to support native tabs icons in both 4.16 and 4.18+ versions of react-native-screens
+  const [_, minor] = rnsPackageJson.version.split('.');
+  const is4_18rNewer = minor && parseInt(minor, 10) >= 18;
+  if (is4_18rNewer) {
+    return convertOptionsIconToPropsIcon_4_18(icon) as BottomTabsScreenProps['icon'];
+  }
+  return convertOptionsIconToPropsIcon_4_16(icon);
 }
 
 function getAndroidIconResource(
@@ -312,3 +381,40 @@ function BottomTabsWrapper(props: BottomTabsProps) {
     />
   );
 }
+
+// #region react-native-screens 4.18 compatible types
+// Copied from https://github.com/software-mansion/react-native-screens/blob/4.18.0/src/types.tsx#L111-L140
+type RNS_4_18_PlatformIconShared = {
+  type: 'imageSource';
+  imageSource: ImageSourcePropType;
+};
+
+type RNS_4_18_PlatformIconIOSSfSymbol = {
+  type: 'sfSymbol';
+  name: string;
+};
+
+type RNS_4_18_PlatformIconIOS =
+  | RNS_4_18_PlatformIconIOSSfSymbol
+  | {
+      type: 'templateSource';
+      templateSource: ImageSourcePropType;
+    }
+  | RNS_4_18_PlatformIconShared;
+
+type RNS_4_18_PlatformIconAndroid =
+  | {
+      type: 'drawableResource';
+      name: string;
+    }
+  | RNS_4_18_PlatformIconShared;
+
+interface RNS_4_18_PlatformIcon {
+  ios?: RNS_4_18_PlatformIconIOS;
+  android?: RNS_4_18_PlatformIconAndroid;
+  shared?: RNS_4_18_PlatformIconShared;
+}
+
+// https://github.com/software-mansion/react-native-screens/blob/4.18.0/src/components/bottom-tabs/BottomTabsScreen.types.ts#L438
+type RNS_4_18_SelectedIconType = RNS_4_18_PlatformIconIOS;
+// #endregion
