@@ -20,7 +20,7 @@ export type ButtonProps = {
   onPress?: () => void;
   /**
    * A string describing the system image to display in the button.
-   * This is only used if `label` is string.
+   * Only used when `label` is provided.
    */
   systemImage?: SFSymbol;
   /**
@@ -28,15 +28,16 @@ export type ButtonProps = {
    */
   role?: ButtonRole;
   /**
-   * The label that describes the button's action. This can be a string or a custom view.
+   * The text label for the button. Use this for simple text buttons.
    */
-  label?: string | React.ReactNode;
+  label?: string;
+  /**
+   * Custom content for the button label. Use this for custom label views.
+   */
+  children?: React.ReactNode;
 } & CommonViewModifierProps;
 
-/**
- * @hidden
- */
-export type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButtonPress', void>;
+type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButtonPress', void>;
 
 const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
   'ExpoUI',
@@ -65,7 +66,7 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
  * ```
  */
 export function Button(props: ButtonProps) {
-  const { label, onPress, modifiers, ...restProps } = props;
+  const { label, children, onPress, modifiers, ...restProps } = props;
 
   const baseProps = {
     ...restProps,
@@ -74,9 +75,9 @@ export function Button(props: ButtonProps) {
     onButtonPress: onPress,
   };
 
-  if (typeof label === 'string') {
-    return <ButtonNativeView {...baseProps} label={label} />;
-  }
-
-  return <ButtonNativeView {...baseProps}>{label}</ButtonNativeView>;
+  return (
+    <ButtonNativeView {...baseProps} label={label}>
+      {children}
+    </ButtonNativeView>
+  );
 }

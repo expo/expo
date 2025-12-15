@@ -171,24 +171,22 @@ export default function DisabledButtonExample() {
 }
 ```
 
-## Custom label
+## Custom label content
 
-You can pass a custom component as the `label` prop for more complex button content.
+You can pass custom components as `children` for more complex button label content.
 
-```tsx CustomLabelExample.tsx
+```tsx CustomContentExample.tsx
 import { Host, Button, VStack, Image, Text } from '@expo/ui/swift-ui';
 
-export default function CustomLabelExample() {
+export default function CustomContentExample() {
   return (
     <Host matchContents>
-      <Button
-        label={
-          <VStack spacing={4}>
-            <Image systemName="folder" />
-            <Text>Folder</Text>
-          </VStack>
-        }
-      />
+      <Button onPress={() => console.log('Pressed!')}>
+        <VStack spacing={4}>
+          <Image systemName="folder" />
+          <Text>Folder</Text>
+        </VStack>
+      </Button>
     </Host>
   );
 }

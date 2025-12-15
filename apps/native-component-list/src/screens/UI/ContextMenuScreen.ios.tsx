@@ -183,16 +183,11 @@ export default function ContextMenuScreen() {
         <Section title="Menu item with title and subtitle">
           <ContextMenu modifiers={[buttonStyle('glass')]}>
             <ContextMenu.Items>
-              <Button
-                role="destructive"
-                label={
-                  <>
-                    <Image systemName="trash" />
-                    <Text>Red color item</Text>
-                    <Text>Subtitle</Text>
-                  </>
-                }
-              />
+              <Button role="destructive">
+                <Image systemName="trash" />
+                <Text>Red color item</Text>
+                <Text>Subtitle</Text>
+              </Button>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
               <Text>Show Menu</Text>

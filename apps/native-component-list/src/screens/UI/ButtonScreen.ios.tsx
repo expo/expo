@@ -28,40 +28,34 @@ export default function ButtonScreen() {
     <Host style={{ flex: 1 }}>
       <List>
         <Section title="With Label">
-          <Button
-            label={
-              <Label
-                title="Default Padding"
-                systemImage="gear"
-                modifiers={[
-                  foregroundStyle('black'),
-                  padding(),
-                  background('yellow', shapes.capsule()),
-                ]}
-              />
-            }
-          />
-          <Button
-            label={
-              <Label
-                title="No Padding"
-                systemImage="gear"
-                modifiers={[foregroundStyle('black'), padding({ all: 0 }), background('yellow')]}
-              />
-            }
-          />
-          <Button
-            label={
-              <Label
-                title="Custom Padding"
-                modifiers={[
-                  foregroundStyle('black'),
-                  padding({ horizontal: 20, vertical: 8 }),
-                  background('yellow'),
-                ]}
-              />
-            }
-          />
+          <Button>
+            <Label
+              title="Default Padding"
+              systemImage="gear"
+              modifiers={[
+                foregroundStyle('black'),
+                padding(),
+                background('yellow', shapes.capsule()),
+              ]}
+            />
+          </Button>
+          <Button>
+            <Label
+              title="No Padding"
+              systemImage="gear"
+              modifiers={[foregroundStyle('black'), padding({ all: 0 }), background('yellow')]}
+            />
+          </Button>
+          <Button>
+            <Label
+              title="Custom Padding"
+              modifiers={[
+                foregroundStyle('black'),
+                padding({ horizontal: 20, vertical: 8 }),
+                background('yellow'),
+              ]}
+            />
+          </Button>
         </Section>
         <Section title="Default">
           <Button label="Test" />
@@ -120,15 +114,15 @@ export default function ButtonScreen() {
           <Button label="Red" modifiers={[tint('#f00f0f')]} />
         </Section>
         <Section title="Custom label">
-          <Button
-            label={
-              <VStack spacing={4}>
-                <Image systemName="folder" />
-                <Text>Folder</Text>
-              </VStack>
-            }
-          />
-          <Button label={<Progress color="blue" variant="circular" />} />
+          <Button>
+            <VStack spacing={4}>
+              <Image systemName="folder" />
+              <Text>Folder</Text>
+            </VStack>
+          </Button>
+          <Button>
+            <Progress color="blue" variant="circular" />
+          </Button>
         </Section>
       </List>
     </Host>

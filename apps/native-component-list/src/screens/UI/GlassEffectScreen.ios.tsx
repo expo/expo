@@ -147,7 +147,6 @@ export default function GlassEffect() {
 
           <VStack spacing={15}>
             <Button
-              label={<Text color="#fff">{isGlassExpanded ? 'Hide Tools' : 'Show More Tools'}</Text>}
               onPress={() => setIsGlassExpanded(!isGlassExpanded)}
               modifiers={[
                 padding({ horizontal: 30, vertical: 15 }),
@@ -158,8 +157,9 @@ export default function GlassEffect() {
                     variant: 'clear',
                   },
                 }),
-              ]}
-            />
+              ]}>
+              <Text color="#fff">{isGlassExpanded ? 'Hide Tools' : 'Show More Tools'}</Text>
+            </Button>
           </VStack>
         </VStack>
       </Host>

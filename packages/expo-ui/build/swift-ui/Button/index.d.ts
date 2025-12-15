@@ -15,7 +15,7 @@ export type ButtonProps = {
     onPress?: () => void;
     /**
      * A string describing the system image to display in the button.
-     * This is only used if `label` is string.
+     * Only used when `label` is provided.
      */
     systemImage?: SFSymbol;
     /**
@@ -23,9 +23,13 @@ export type ButtonProps = {
      */
     role?: ButtonRole;
     /**
-     * The label that describes the button's action. This can be a string or a custom view.
+     * The text label for the button. Use this for simple text buttons.
      */
-    label?: string | React.ReactNode;
+    label?: string;
+    /**
+     * Custom content for the button label. Use this for custom label views.
+     */
+    children?: React.ReactNode;
 } & CommonViewModifierProps;
 /**
  * @hidden
@@ -39,10 +43,22 @@ export type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButt
  * import { Button } from '@expo/ui/swift-ui';
  * import { buttonStyle, controlSize, tint, disabled } from '@expo/ui/swift-ui/modifiers';
  *
+ * // Simple text button
+ * <Button label="Delete" onPress={handlePress} />
+ *
+ * // Button with SF Symbol
+ * <Button label="Delete" systemImage="trash" onPress={handlePress} />
+ *
+ * // Button with custom content
+ * <Button onPress={handlePress}>
+ *   <Label text="Sign In" systemImage="arrow.up" />
+ * </Button>
+ *
+ * // Button with modifiers
  * <Button
  *   role="destructive"
- *   onPress={handlePress}
  *   label="Delete"
+ *   onPress={handlePress}
  *   modifiers={[
  *     buttonStyle('bordered'),
  *     controlSize('large'),
