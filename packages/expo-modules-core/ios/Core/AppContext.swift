@@ -59,8 +59,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
   /**
    RCTHost wrapper. This is set by ``ExpoReactNativeFactory`` in `didInitializeRuntime`.
    */
-  @objc
-  public var hostWrapper: ExpoHostWrapper?
+  private var hostWrapper: ExpoHostWrapper?
 
   /**
    Underlying JSI runtime of the running app.
@@ -532,6 +531,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
     if isModuleRegistryInitialized {
       moduleRegistry.post(event: .appContextDestroys)
     }
+  }
+  
+  @objc
+  public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
+    self.hostWrapper = wrapper
   }
 
   // MARK: - Statics

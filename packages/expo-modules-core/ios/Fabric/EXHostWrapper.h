@@ -1,8 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-#import <UIKit/UIKit.h>
-
-NS_ASSUME_NONNULL_BEGIN
+#import <ExpoModulesCore/Platform.h>
 
 /**
  A wrapper around RCTHost. RCTHost isn't directly available in Swift.
@@ -10,10 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 NS_SWIFT_NAME(ExpoHostWrapper)
 @interface EXHostWrapper : NSObject
 
-- (instancetype)initWithHost:(id)host;
+- (instancetype _Nonnull)initWithHost:(id _Nonnull)host;
 
 - (nullable UIView *)findViewWithTag:(NSInteger)tag;
 
 @end
 
-NS_ASSUME_NONNULL_END
