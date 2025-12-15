@@ -1,0 +1,17 @@
+diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
+index 0000000..1111111 100644
+--- a/android/app/src/main/AndroidManifest.xml
++++ b/android/app/src/main/AndroidManifest.xml
+@@ -1,5 +1,6 @@
+ <application
+   android:name=".MainApplication"
+   android:label="@string/app_name"
+   android:icon="@mipmap/ic_launcher"
+   android:roundIcon="@mipmap/ic_launcher_round"
+   android:allowBackup="false"
+   android:theme="@style/AppTheme"
++  android:usesCleartextTraffic="true"
+ >
+-  <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/[your-project-id]" />
++  <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="http://localhost:3000/api/manifest"/>
+ </application>
