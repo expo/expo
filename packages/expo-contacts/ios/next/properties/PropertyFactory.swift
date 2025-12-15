@@ -4,12 +4,12 @@ import ExpoModulesCore
 final class PropertyFactory {
   private let contactId: String
   private let contactRepository: ContactRepository
-  
+
   init(contactId: String, contactRepository: ContactRepository) {
     self.contactId = contactId
     self.contactRepository = contactRepository
   }
-  
+
   func make<Mapper: PropertyMapper>(
     mapper: Mapper,
     isReadOnly: Bool = false
@@ -21,7 +21,7 @@ final class PropertyFactory {
       isReadOnly: isReadOnly
     )
   }
-    
+
   func makeList<Mapper: ContactRecordMapper>(
     _ field: ContactProperty<Mapper.TDomainValue>,
     mapper: Mapper

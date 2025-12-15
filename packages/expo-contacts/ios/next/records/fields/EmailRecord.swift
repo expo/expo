@@ -9,9 +9,9 @@ struct ExistingEmailRecord: ExistingRecord {
   @Field(FieldOption.required) var id: String
   @Field var address: String
   @Field var label: String
-  
+
   init() {}
-  
+
   init(id: String, address: String, label: String) {
     self.id = id
     self.address = address

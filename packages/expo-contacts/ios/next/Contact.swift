@@ -7,7 +7,7 @@ class ContactNext: SharedObject {
   private let imageService: ImageService
   private let imageMapper: ImageMapper
   private let thumbnailMapper: ImageMapper
-  
+
   init(
     id: String,
     contactRepository: ContactRepository,
@@ -20,7 +20,7 @@ class ContactNext: SharedObject {
       service: imageService,
       filename: "\(id)-\(CNContactImageDataKey).png"
     )
-    
+
     self.thumbnailMapper = ImageMapper(
       service: imageService,
       filename: "\(id)-\(CNContactThumbnailImageDataKey).png"
@@ -47,7 +47,7 @@ class ContactNext: SharedObject {
   lazy var department = properties.make(mapper: StringMapper(descriptor: CNContactDepartmentNameKey, keyPath: \.departmentName))
   lazy var phoneticCompanyName = properties.make(mapper: StringMapper(descriptor: CNContactPhoneticOrganizationNameKey, keyPath: \.phoneticOrganizationName))
   lazy var note = properties.make(mapper: StringMapper(descriptor: CNContactNoteKey, keyPath: \.note))
-  lazy var birthday = properties.make(mapper: ContactDateMapper())
+  lazy var birthday = properties.make(mapper: BirthdayMapper())
   lazy var nonGregorianBirthday = properties.make(mapper: NonGregorianBirthdayMapper())
   lazy var image = properties.make(mapper: imageMapper)
   lazy var thumbnail = properties.make(mapper: thumbnailMapper, isReadOnly: true)
@@ -100,7 +100,7 @@ class ContactNext: SharedObject {
     }
     try contactRepository.update(contact: mutableContact)
   }
-  
+
   static func getAll(
     queryOptions: ContactQueryOptions?,
     contactRepository: ContactRepository,
@@ -116,7 +116,8 @@ class ContactNext: SharedObject {
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
       }
-    ).map { contactFactory.create(id: $0.identifier) }
+    )
+    .map { contactFactory.create(id: $0.identifier) }
   }
 
   static func getAllDetails(
@@ -135,9 +136,10 @@ class ContactNext: SharedObject {
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
       }
-    ).map { try getContactDetailsMapper.map(contact: $0) }
+    )
+    .map { try getContactDetailsMapper.map(contact: $0) }
   }
-  
+
   static func create(
     createContactRecord: CreateContactRecord,
     contactRepository: ContactRepository,

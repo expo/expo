@@ -1,18 +1,18 @@
 import ExpoModulesCore
 
 enum NonGregorianBirthdayCalendar: String, Enumerable {
-  case buddhist = "buddhist"
-  case chinese = "chinese"
-  case coptic = "coptic"
-  case ethiopicAmeteMihret = "ethiopicAmeteMihret"
-  case ethiopicAmeteAlem = "ethiopicAmeteAlem"
-  case hebrew = "hebrew"
-  case indian = "indian"
-  case islamic = "islamic"
-  case islamicCivil = "islamicCivil"
-  case japanese = "japanese"
-  case persian = "persian"
-  case republicOfChina = "republicOfChina"
+  case buddhist
+  case chinese
+  case coptic
+  case ethiopicAmeteMihret
+  case ethiopicAmeteAlem
+  case hebrew
+  case indian
+  case islamic
+  case islamicCivil
+  case japanese
+  case persian
+  case republicOfChina
 }
 
 struct NonGregorianBirthday: Record {
@@ -20,9 +20,9 @@ struct NonGregorianBirthday: Record {
   @Field var month: Int
   @Field var day: Int
   @Field var calendar: NonGregorianBirthdayCalendar = .islamic
-  
+
   init() {}
-  
+
   init(year: Int?, month: Int, day: Int, calendar: NonGregorianBirthdayCalendar) {
     if let year = year {
       self.year = year

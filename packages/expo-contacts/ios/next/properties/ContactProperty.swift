@@ -1,11 +1,9 @@
 import Contacts
 
 // The purpose of this structure is to bind a contact key to its data type to ensure type safety in PropertyFactory.
+// swiftlint:disable legacy_objc_type
 struct ContactProperty<Value> {
   let key: String
-}
-
-extension ContactProperty {
   static var givenName: ContactProperty<String> {
     return ContactProperty<String>(key: CNContactGivenNameKey)
   }
@@ -114,3 +112,4 @@ extension ContactProperty {
     return ContactProperty<CNSocialProfile>(key: CNContactSocialProfilesKey)
   }
 }
+// swiftlint:enable legacy_objc_type

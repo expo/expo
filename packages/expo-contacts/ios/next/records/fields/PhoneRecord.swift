@@ -9,9 +9,9 @@ struct ExistingPhoneRecord: Record, ExistingRecord {
   @Field(FieldOption.required) var id: String
   @Field var number: String?
   @Field var label: String?
-  
+
   init() {}
-  
+
   init(id: String, number: String?, label: String?) {
     self.id = id
     self.number = number

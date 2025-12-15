@@ -5,7 +5,7 @@ struct PostalAddressMapper: ContactRecordMapper {
   typealias TNewRecord = NewPostalAddressRecord
   typealias TPatchRecord = PatchPostalAddressRecord
   typealias TDomainValue = CNPostalAddress
-  
+
   func newRecordToCNLabeledValue(_ record: NewPostalAddressRecord) -> CNLabeledValue<CNPostalAddress> {
     let postalAddress = mapToCNPostalAddress(
       street: record.street,
@@ -30,7 +30,7 @@ struct PostalAddressMapper: ContactRecordMapper {
 
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<CNPostalAddress>) -> ExistingPostalAddressRecord {
     let postalAddress = labeledValue.value
-    
+
     return ExistingPostalAddressRecord(
       id: labeledValue.identifier,
       label: labeledValue.label,
@@ -55,18 +55,20 @@ struct PostalAddressMapper: ContactRecordMapper {
     mutableAddress.state = region ?? ""
     mutableAddress.postalCode = postalCode ?? ""
     mutableAddress.country = country ?? ""
-    return mutableAddress.copy() as! CNPostalAddress
+    return mutableAddress
   }
-  
+
   func apply(patch: PatchPostalAddressRecord, to cnLabeledValue: CNLabeledValue<CNPostalAddress>) -> CNLabeledValue<CNPostalAddress> {
     var toModify = cnLabeledValue
 
     if case .value(let label) = patch.label {
       toModify = toModify.settingLabel(label)
     }
-    
-    let mutableAddress = toModify.value.mutableCopy() as! CNMutablePostalAddress
-    
+
+    guard let mutableAddress = toModify.value.mutableCopy() as? CNMutablePostalAddress else {
+      return toModify
+    }
+
     if case .value(let street) = patch.street {
       mutableAddress.street = street ?? ""
     }
@@ -76,18 +78,17 @@ struct PostalAddressMapper: ContactRecordMapper {
     if case .value(let region) = patch.region {
       mutableAddress.state = region ?? ""
     }
-    if case .value(let postalCode) = patch.postalCode {
-      mutableAddress.postalCode = postalCode ?? ""
+    if case .value(let postcode) = patch.postcode {
+      mutableAddress.postalCode = postcode ?? ""
     }
     if case .value(let country) = patch.country {
       mutableAddress.country = country ?? ""
     }
-    if case .value(let iso) = patch.isoCountryCode {
-      mutableAddress.isoCountryCode = iso ?? ""
-    }
-    
-    toModify = toModify.settingValue(mutableAddress.copy() as! CNPostalAddress)
 
-    return toModify
+    guard let addressCopy = mutableAddress.copy() as? CNPostalAddress else {
+      return toModify
+    }
+
+    return toModify.settingValue(addressCopy)
   }
 }

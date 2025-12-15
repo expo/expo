@@ -6,7 +6,7 @@ struct SocialProfileMapper: ContactRecordMapper {
   typealias TNewRecord = NewSocialProfileRecord
   typealias TPatchRecord = PatchSocialProfileRecord
   typealias TDomainValue = CNSocialProfile
-  
+
   func newRecordToCNLabeledValue(_ record: NewSocialProfileRecord) -> CNLabeledValue<CNSocialProfile> {
     let socialProfile = mapToCNSocialProfile(
       urlString: record.url,
@@ -29,7 +29,7 @@ struct SocialProfileMapper: ContactRecordMapper {
 
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<CNSocialProfile>) -> ExistingSocialProfileRecord {
     let socialProfile = labeledValue.value
-    
+
     return ExistingSocialProfileRecord(
       id: labeledValue.identifier,
       label: labeledValue.label ?? CNLabelOther,
@@ -53,19 +53,19 @@ struct SocialProfileMapper: ContactRecordMapper {
       service: service ?? ""
     )
   }
-  
+
   func apply(patch: PatchSocialProfileRecord, to cnLabeledValue: CNLabeledValue<CNSocialProfile>) -> CNLabeledValue<CNSocialProfile> {
     var toModify = cnLabeledValue
 
     if case .value(let label) = patch.label {
       toModify = toModify.settingLabel(label)
     }
-    
+
     var currentUrlString = toModify.value.urlString
     var currentUsername = toModify.value.username
     var currentService = toModify.value.service
     var currentUserId = toModify.value.userIdentifier
-    
+
     if case .value(let url) = patch.url {
       currentUrlString = url ?? ""
     }
@@ -78,14 +78,14 @@ struct SocialProfileMapper: ContactRecordMapper {
     if case .value(let userId) = patch.userId {
       currentUserId = userId ?? ""
     }
-    
+
     let newSocialProfile = CNSocialProfile(
       urlString: currentUrlString,
       username: currentUsername,
       userIdentifier: currentUserId,
       service: currentService
     )
-    
+
     toModify = toModify.settingValue(newSocialProfile)
 
     return toModify

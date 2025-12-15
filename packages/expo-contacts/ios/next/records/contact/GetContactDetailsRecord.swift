@@ -30,9 +30,9 @@ struct GetContactDetailsRecord: Record {
   @Field var urlAddresses: [ExistingUrlAddressRecord]?
   @Field var imAddresses: [ExistingImAddressRecord]?
   @Field var socialProfiles: [ExistingSocialProfileRecord]?
-  
+
   init() {}
-  
+
   init(
     id: String,
     fullName: String? = nil,
@@ -52,7 +52,7 @@ struct GetContactDetailsRecord: Record {
     phoneticCompanyName: String? = nil,
     note: String? = nil,
     image: String? = nil,
-    thumbnail: String? =  nil,
+    thumbnail: String? = nil,
     birthday: ContactDateNext? = nil,
     nonGregorianBirthday: NonGregorianBirthday? = nil,
     emails: [ExistingEmailRecord]? = nil,

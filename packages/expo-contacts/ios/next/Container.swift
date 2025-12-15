@@ -49,15 +49,15 @@ class Container: SharedObject {
       )
     }
   }
-  
+
   func getContacts(_ queryOptions: ContactQueryOptions?) throws -> [ContactNext] {
     var keys = [CNContactIdentifierKey as CNKeyDescriptor]
-    
+
     if queryOptions?.name != nil {
       keys.append(CNContactFormatter.descriptorForRequiredKeys(for: .fullName))
       keys.append(CNContactFormatter.descriptorForRequiredKeys(for: .phoneticFullName))
     }
-    
+
     return try contactRepository.getPaginated(
       keysToFetch: keys,
       predicate: CNContact.predicateForContactsInContainer(withIdentifier: id),
@@ -71,20 +71,20 @@ class Container: SharedObject {
     )
     .map { contactFactory.create(id: $0.identifier) }
   }
-  
+
   // The Contacts library does not support compound predicates.
   // Therefore we need to define our own logic to filter contacts after the fetch.
   private func isMatchingName(contact: CNContact, name: String?) -> Bool {
     guard let name = name else {
-        return true
+      return true
     }
-    
+
     let fullName = CNContactFormatter.string(from: contact, style: .fullName) ?? ""
     let phoneticFullName = CNContactFormatter.string(from: contact, style: .phoneticFullName) ?? ""
     return fullName.localizedCaseInsensitiveContains(name) ||
       phoneticFullName.localizedCaseInsensitiveContains(name)
   }
-  
+
   static func getAll(
     containerRepository: ContainerRepository,
     contactRepository: ContactRepository,

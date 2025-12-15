@@ -7,11 +7,11 @@ struct NewRelationRecord: NewRecord {
 
 struct ExistingRelationRecord: ExistingRecord {
   @Field(FieldOption.required) var id: String
-  @Field var name:String
+  @Field var name: String
   @Field var label: String?
-  
+
   init() {}
-  
+
   init(id: String, name: String, label: String?) {
     self.id = id
     self.name = name

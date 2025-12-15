@@ -1,7 +1,7 @@
 import Contacts
 import ExpoModulesCore
 
-struct ContactDateMapper: PropertyMapper {
+struct BirthdayMapper: PropertyMapper {
   typealias TDto = ContactDateNext?
 
   var descriptor: CNKeyDescriptor { CNContactBirthdayKey as CNKeyDescriptor }
@@ -33,17 +33,5 @@ struct ContactDateMapper: PropertyMapper {
       month: month,
       day: day
     )
-  }
-}
-
-extension ContactDateNext {
-  func toDateComponent() throws -> DateComponents {
-    var dateComponents = DateComponents()
-    if let year = self.year {
-      dateComponents.year = year
-    }
-    dateComponents.month = month
-    dateComponents.day = day
-    return dateComponents
   }
 }

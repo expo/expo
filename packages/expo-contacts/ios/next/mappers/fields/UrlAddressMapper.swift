@@ -1,5 +1,6 @@
 import Contacts
 
+// swiftlint:disable legacy_objc_type
 struct UrlAddressMapper: ContactRecordMapper {
   typealias TExistingRecord = ExistingUrlAddressRecord
   typealias TNewRecord = NewUrlAddressRecord
@@ -10,7 +11,7 @@ struct UrlAddressMapper: ContactRecordMapper {
     let value = (record.url ?? "") as NSString
     return CNLabeledValue(label: record.label, value: value)
   }
-  
+
   func existingRecordToCNLabeledValue(_ record: ExistingUrlAddressRecord) -> CNLabeledValue<NSString> {
     let value = (record.url ?? "") as NSString
     return CNLabeledValue(label: record.label, value: value)
@@ -23,7 +24,7 @@ struct UrlAddressMapper: ContactRecordMapper {
       url: labeledValue.value as String
     )
   }
-  
+
   func apply(patch: PatchUrlAddressRecord, to cnLabeledValue: CNLabeledValue<NSString>) -> CNLabeledValue<NSString> {
     var toModify = cnLabeledValue
     if case .value(let label) = patch.label {
@@ -35,3 +36,4 @@ struct UrlAddressMapper: ContactRecordMapper {
     return toModify
   }
 }
+// swiftlint:enable legacy_objc_type

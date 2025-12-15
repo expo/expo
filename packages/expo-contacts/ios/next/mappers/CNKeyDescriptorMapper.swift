@@ -1,10 +1,11 @@
 import Contacts
 import ExpoModulesCore
 
-class CNKeyDescriptorMapper{
+class CNKeyDescriptorMapper {
   static func map(from fields: [ContactField]) -> [CNKeyDescriptor] {
+    // swiftlint:disable:next closure_body_length
     fields.compactMap { field in
-      switch(field) {
+      switch field {
       case .FULL_NAME:
         return CNContactFormatter.descriptorForRequiredKeys(for: .fullName)
       case .GIVEN_NAME:
@@ -59,41 +60,46 @@ class CNKeyDescriptorMapper{
         return CNContactInstantMessageAddressesKey as CNKeyDescriptor
       case .SOCIAL_PROFILES:
         return CNContactSocialProfilesKey as CNKeyDescriptor
-      case .EXTRA_NAMES,
-          .IS_FAVOURITE:
+      case .EXTRA_NAMES, .IS_FAVOURITE:
         return nil
       }
     }
   }
-  
+
   static func map(from patchRecord: PatchContactRecord) -> [CNKeyDescriptor] {
     var keys: [CNKeyDescriptor] = []
-    
-    if case .value = patchRecord.givenName { keys.append(CNContactGivenNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.middleName { keys.append(CNContactMiddleNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.familyName { keys.append(CNContactFamilyNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.maidenName { keys.append(CNContactPreviousFamilyNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.nickname { keys.append(CNContactNicknameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.prefix { keys.append(CNContactNamePrefixKey as CNKeyDescriptor) }
-    if case .value = patchRecord.suffix { keys.append(CNContactNameSuffixKey as CNKeyDescriptor) }
-    if case .value = patchRecord.company { keys.append(CNContactOrganizationNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.phoneticGivenName { keys.append(CNContactPhoneticGivenNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.phoneticMiddleName { keys.append(CNContactPhoneticMiddleNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.phoneticFamilyName { keys.append(CNContactPhoneticFamilyNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.department { keys.append(CNContactDepartmentNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.jobTitle { keys.append(CNContactJobTitleKey as CNKeyDescriptor) }
-    if case .value = patchRecord.phoneticCompanyName { keys.append(CNContactPhoneticOrganizationNameKey as CNKeyDescriptor) }
-    if case .value = patchRecord.note { keys.append(CNContactNoteKey as CNKeyDescriptor) }
-    if case .value = patchRecord.image { keys.append(CNContactImageDataKey as CNKeyDescriptor) }
-    if case .value = patchRecord.emails { keys.append(CNContactEmailAddressesKey as CNKeyDescriptor) }
-    if case .value = patchRecord.phones { keys.append(CNContactPhoneNumbersKey as CNKeyDescriptor) }
-    if case .value = patchRecord.dates { keys.append(CNContactDatesKey as CNKeyDescriptor) }
-    if case .value = patchRecord.addresses { keys.append(CNContactPostalAddressesKey as CNKeyDescriptor) }
-    if case .value = patchRecord.relations { keys.append(CNContactRelationsKey as CNKeyDescriptor) }
-    if case .value = patchRecord.urlAddresses { keys.append(CNContactUrlAddressesKey as CNKeyDescriptor) }
-    if case .value = patchRecord.imAddresses { keys.append(CNContactInstantMessageAddressesKey as CNKeyDescriptor) }
-    if case .value = patchRecord.socialProfiles { keys.append(CNContactSocialProfilesKey as CNKeyDescriptor) }
+
+    appendKey(ifPresent: patchRecord.givenName, key: CNContactGivenNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.middleName, key: CNContactMiddleNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.familyName, key: CNContactFamilyNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.maidenName, key: CNContactPreviousFamilyNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.nickname, key: CNContactNicknameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.prefix, key: CNContactNamePrefixKey, to: &keys)
+    appendKey(ifPresent: patchRecord.suffix, key: CNContactNameSuffixKey, to: &keys)
+    appendKey(ifPresent: patchRecord.company, key: CNContactOrganizationNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.department, key: CNContactDepartmentNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.jobTitle, key: CNContactJobTitleKey, to: &keys)
+    appendKey(ifPresent: patchRecord.phoneticGivenName, key: CNContactPhoneticGivenNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.phoneticMiddleName, key: CNContactPhoneticMiddleNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.phoneticFamilyName, key: CNContactPhoneticFamilyNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.phoneticCompanyName, key: CNContactPhoneticOrganizationNameKey, to: &keys)
+    appendKey(ifPresent: patchRecord.note, key: CNContactNoteKey, to: &keys)
+    appendKey(ifPresent: patchRecord.image, key: CNContactImageDataKey, to: &keys)
+    appendKey(ifPresent: patchRecord.emails, key: CNContactEmailAddressesKey, to: &keys)
+    appendKey(ifPresent: patchRecord.phones, key: CNContactPhoneNumbersKey, to: &keys)
+    appendKey(ifPresent: patchRecord.dates, key: CNContactDatesKey, to: &keys)
+    appendKey(ifPresent: patchRecord.addresses, key: CNContactPostalAddressesKey, to: &keys)
+    appendKey(ifPresent: patchRecord.relations, key: CNContactRelationsKey, to: &keys)
+    appendKey(ifPresent: patchRecord.urlAddresses, key: CNContactUrlAddressesKey, to: &keys)
+    appendKey(ifPresent: patchRecord.imAddresses, key: CNContactInstantMessageAddressesKey, to: &keys)
+    appendKey(ifPresent: patchRecord.socialProfiles, key: CNContactSocialProfilesKey, to: &keys)
 
     return keys
+  }
+
+  static func appendKey<T>(ifPresent value: ValueOrUndefined<T>, key: String, to array: inout [CNKeyDescriptor]) {
+    if case .value = value {
+      array.append(key as CNKeyDescriptor)
+    }
   }
 }

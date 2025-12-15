@@ -2,13 +2,10 @@ import Contacts
 
 struct StringMapper: PropertyMapper {
   typealias TDto = String?
-  
-  let descriptor: CNKeyDescriptor
-  
-  let keyPath: ReferenceWritableKeyPath<CNMutableContact, String>
-  
+  internal let descriptor: CNKeyDescriptor
+  private let keyPath: ReferenceWritableKeyPath<CNMutableContact, String>
   private let keyString: String
-  
+
   init(descriptor: String, keyPath: ReferenceWritableKeyPath<CNMutableContact, String>) {
     self.descriptor = descriptor as CNKeyDescriptor
     self.keyPath = keyPath
@@ -17,7 +14,6 @@ struct StringMapper: PropertyMapper {
 
   func extract(from contact: CNContact) throws -> String? {
     let value = contact.value(forKey: keyString) as? String
-    
     return (value?.isEmpty ?? true) ? nil : value
   }
 

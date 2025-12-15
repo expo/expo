@@ -14,7 +14,7 @@ struct CreateContactRecord: Record {
   @Field var company: String?
   @Field var department: String?
   @Field var jobTitle: String?
-  @Field var phoneticOrganizationName:String?
+  @Field var phoneticOrganizationName: String?
   @Field var note: String?
   @Field var image: String?
   @Field var emails: [NewEmailRecord]?

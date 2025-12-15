@@ -1,26 +1,34 @@
 import ExpoModulesCore
 
 struct NewPostalAddressRecord: NewRecord {
-  @Field var label: String? = nil
-  @Field var street: String? = nil
-  @Field var city: String? = nil
-  @Field var region: String? = nil
-  @Field var postcode: String? = nil
-  @Field var country: String? = nil
+  @Field var label: String?
+  @Field var street: String?
+  @Field var city: String?
+  @Field var region: String?
+  @Field var postcode: String?
+  @Field var country: String?
 }
 
 struct ExistingPostalAddressRecord: ExistingRecord {
   @Field(FieldOption.required) var id: String
-  @Field var label: String? = nil
-  @Field var street: String? = nil
-  @Field var city: String? = nil
-  @Field var region: String? = nil
-  @Field var postcode: String? = nil
-  @Field var country: String? = nil
-  
+  @Field var label: String?
+  @Field var street: String?
+  @Field var city: String?
+  @Field var region: String?
+  @Field var postcode: String?
+  @Field var country: String?
+
   init() {}
-  
-  init(id: String, label: String?, street: String?, city: String?, region: String?, postcode: String?, country: String?) {
+
+  init(
+    id: String,
+    label: String?,
+    street: String?,
+    city: String?,
+    region: String?,
+    postcode: String?,
+    country: String?
+  ) {
     self.id = id
     self.label = label
     self.street = street
@@ -37,7 +45,6 @@ struct PatchPostalAddressRecord: PatchRecord {
   @Field var street: ValueOrUndefined<String?> = .undefined
   @Field var city: ValueOrUndefined<String?> = .undefined
   @Field var region: ValueOrUndefined<String?> = .undefined
-  @Field var postalCode: ValueOrUndefined<String?> = .undefined
+  @Field var postcode: ValueOrUndefined<String?> = .undefined
   @Field var country: ValueOrUndefined<String?> = .undefined
-  @Field var isoCountryCode: ValueOrUndefined<String?> = .undefined
 }

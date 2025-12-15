@@ -10,12 +10,12 @@ struct PhoneMapper: ContactRecordMapper {
     let phoneNumber = CNPhoneNumber(stringValue: record.number ?? "")
     return CNLabeledValue(label: record.label, value: phoneNumber)
   }
-  
+
   func existingRecordToCNLabeledValue(_ record: ExistingPhoneRecord) -> CNLabeledValue<CNPhoneNumber> {
     let phoneNumber = CNPhoneNumber(stringValue: record.number ?? "")
     return CNLabeledValue(label: record.label, value: phoneNumber)
   }
-  
+
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<CNPhoneNumber>) -> ExistingPhoneRecord {
     return ExistingPhoneRecord(
       id: labeledValue.identifier,
@@ -23,7 +23,7 @@ struct PhoneMapper: ContactRecordMapper {
       label: labeledValue.label
     )
   }
-  
+
   func apply(patch: PatchPhoneRecord, to cnLabeledValue: CNLabeledValue<CNPhoneNumber>) -> CNLabeledValue<CNPhoneNumber> {
     var toModify = cnLabeledValue
     if case .value(let label) = patch.label {

@@ -6,27 +6,27 @@ internal final class FailedToGetMutableContact: Exception {
   }
 }
 
-internal final class FailedToGetContactField: GenericException<String>{
+internal final class FailedToGetContactField: GenericException<String> {
   override var reason: String {
     "Could not get a field from the contact for key: \(param)"
   }
 }
 
-internal final class FailedToGetContactProperty: GenericException<String>{
+internal final class FailedToGetContactProperty: GenericException<String> {
   override var reason: String {
     "Could not get a property from the contact for id: \(param)"
   }
 }
 
-internal final class ContactNotFoundException: GenericException<String>{
+internal final class ContactNotFoundException: GenericException<String> {
   override var reason: String {
-   "Failed to find a contact with id: \(param)"
+    "Failed to find a contact with id: \(param)"
   }
 }
 
-internal final class GroupNotFoundException: GenericException<String>{
+internal final class GroupNotFoundException: GenericException<String> {
   override var reason: String {
-   "Failed to find a group with id: \(param)"
+    "Failed to find a group with id: \(param)"
   }
 }
 

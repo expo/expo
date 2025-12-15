@@ -3,17 +3,17 @@ import Foundation
 
 struct NonGregorianBirthdayMapper: PropertyMapper {
   typealias TDto = NonGregorianBirthday?
-  
+
   var descriptor: CNKeyDescriptor { CNContactNonGregorianBirthdayKey as CNKeyDescriptor }
 
   func extract(from contact: CNContact) throws -> NonGregorianBirthday? {
     return toDto(value: contact.nonGregorianBirthday)
   }
-  
+
   func apply(_ value: NonGregorianBirthday?, to contact: CNMutableContact) throws {
     contact.nonGregorianBirthday = try toDomain(value: value)
   }
-  
+
   private func toDomain(value: NonGregorianBirthday?) throws -> DateComponents? {
     guard let dto = value else {
       return nil
@@ -22,21 +22,21 @@ struct NonGregorianBirthdayMapper: PropertyMapper {
     dateComponents.calendar = Calendar(identifier: dto.calendar.toNativeIdentifier)
     return dateComponents
   }
-  
+
   private func toDto(value: DateComponents?) -> NonGregorianBirthday? {
     guard let components = value else {
       return nil
     }
-    
+
     guard let calendarIdentifier = components.calendar?.identifier,
-          let supportedCalendar = NonGregorianBirthdayCalendar.from(nativeIdentifier: calendarIdentifier) else {
+      let supportedCalendar = NonGregorianBirthdayCalendar.from(nativeIdentifier: calendarIdentifier) else {
       return nil
     }
-    
+
     guard let month = components.month, let day = components.day else {
       return nil
     }
-    
+
     return NonGregorianBirthday(
       year: components.year,
       month: month,

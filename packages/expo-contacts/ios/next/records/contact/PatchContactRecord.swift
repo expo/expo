@@ -17,8 +17,8 @@ struct PatchContactRecord: Record {
   @Field var phoneticCompanyName: ValueOrUndefined<String?> = .undefined
   @Field var note: ValueOrUndefined<String?> = .undefined
   @Field var image: ValueOrUndefined<String?> = .undefined
-  @Field var birthday: ValueOrUndefined<ContactDateNext?>  = .undefined
-  @Field var nonGregorianBirthday: ValueOrUndefined<NonGregorianBirthday?>  = .undefined
+  @Field var birthday: ValueOrUndefined<ContactDateNext?> = .undefined
+  @Field var nonGregorianBirthday: ValueOrUndefined<NonGregorianBirthday?> = .undefined
   @Field var emails: ValueOrUndefined<[Either<PatchEmailRecord, NewEmailRecord>]?> = .undefined
   @Field var phones: ValueOrUndefined<[Either<PatchPhoneRecord, NewPhoneRecord>]?> = .undefined
   @Field var dates: ValueOrUndefined<[Either<PatchDateRecord, NewDateRecord>]?> = .undefined

@@ -11,9 +11,9 @@ struct ExistingImAddressRecord: ExistingRecord {
   @Field var label: String
   @Field var username: String?
   @Field var service: String?
-  
+
   init() {}
-  
+
   init(id: String, label: String, username: String, service: String) {
     self.id = id
     self.label = label

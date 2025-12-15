@@ -17,12 +17,12 @@ class PropertyManager<Mapper: PropertyMapper> {
     self.mapper = mapper
     self.isReadOnly = isReadOnly
   }
-  
+
   func get() throws -> Mapper.TDto {
     let contact = try contactRepository.getMutableById(id: contactId, keysToFetch: [mapper.descriptor])
     return try mapper.extract(from: contact)
   }
-  
+
   func set(_ value: Mapper.TDto) throws {
     guard !isReadOnly else {
       throw FailedToSetReadOnlyProperty()

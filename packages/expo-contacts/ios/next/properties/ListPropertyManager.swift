@@ -9,20 +9,20 @@ class ListPropertyManager<
   let key: CNKeyDescriptor
   let keyString: String
   let contactRepository: ContactRepository
-  
+
   let newRecordToCNLabeledValue: (TNewRecord) throws -> CNLabeledValue<TDomainValue>
   let existingRecordToCNLabeledValue: (TExistingRecord) throws -> CNLabeledValue<TDomainValue>
   let cnLabeledValueToExistingRecord: (CNLabeledValue<TDomainValue>) throws -> TExistingRecord
-  
+
   init<Mapper: ContactRecordMapper>(
     contactId: String,
     key: String,
     mapper: Mapper,
     contactRepository: ContactRepository
-  ) where Mapper.TExistingRecord == TExistingRecord,
-        Mapper.TNewRecord == TNewRecord,
-        Mapper.TDomainValue == TDomainValue
-  {
+  ) where
+  Mapper.TExistingRecord == TExistingRecord,
+  Mapper.TNewRecord == TNewRecord,
+  Mapper.TDomainValue == TDomainValue {
     self.contactId = contactId
     self.key = key as CNKeyDescriptor
     self.keyString = key
@@ -31,7 +31,7 @@ class ListPropertyManager<
     self.cnLabeledValueToExistingRecord = mapper.cnLabeledValueToExistingRecord
     self.contactRepository = contactRepository
   }
-  
+
   func get() async throws -> [TExistingRecord] {
     guard let contact = contactRepository.getById(id: contactId, keysToFetch: [key]) else {
       throw ContactNotFoundException(contactId)
@@ -41,7 +41,7 @@ class ListPropertyManager<
     }
     return try labeledValues.map(cnLabeledValueToExistingRecord)
   }
-  
+
   func add(_ record: TNewRecord) async throws -> String {
     let newLabeledValue = try newRecordToCNLabeledValue(record)
     try await modifyContactField { currentList in
@@ -49,7 +49,7 @@ class ListPropertyManager<
     }
     return newLabeledValue.identifier
   }
-  
+
   func update(_ existingRecord: TExistingRecord) async throws -> Bool {
     try await modifyContactField { currentList in
       guard let list = currentList else {
@@ -59,7 +59,7 @@ class ListPropertyManager<
     }
     return true
   }
-  
+
   func delete(_ existingRecord: TExistingRecord) async throws -> Bool {
     try await modifyContactField { currentList in
       guard let list = currentList else {
@@ -69,19 +69,19 @@ class ListPropertyManager<
     }
     return true
   }
-  
+
   private func modifyContactField(
     using transform: ([CNLabeledValue<TDomainValue>]?) throws -> [CNLabeledValue<TDomainValue>]
   ) async throws {
     let contact = try contactRepository.getMutableById(id: contactId, keysToFetch: [key])
     let currentList = contact.value(forKey: keyString) as? [CNLabeledValue<TDomainValue>]
-    
+
     let newList = try transform(currentList)
-    
+
     contact.setValue(newList, forKey: keyString)
     try contactRepository.update(contact: contact)
   }
-  
+
   private func createUpdatedList(
     from currentList: [CNLabeledValue<TDomainValue>],
     with existingRecord: TExistingRecord
@@ -89,19 +89,19 @@ class ListPropertyManager<
     guard let index = currentList.firstIndex(where: { $0.identifier == existingRecord.id }) else {
       throw FailedToGetContactProperty(existingRecord.id)
     }
-    
+
     let newLabeledValue = try existingRecordToCNLabeledValue(existingRecord)
     let originalValue = currentList[index]
-    
+
     let updatedValue = originalValue
       .settingValue(newLabeledValue.value)
       .settingLabel(newLabeledValue.label)
-  
+
     var mutableList = currentList
     mutableList[index] = updatedValue
     return mutableList
   }
-  
+
   private func createFilteredList(
     from currentList: [CNLabeledValue<TDomainValue>],
     byRemoving existingRecord: TExistingRecord

@@ -1,7 +1,7 @@
 import Contacts
 
 class CNContactSortOrderMapper {
-  static func map(_ sortOrder: SortOrder) -> CNContactSortOrder{
+  static func map(_ sortOrder: SortOrder) -> CNContactSortOrder {
     switch sortOrder {
     case .givenName:
       return .givenName

@@ -15,10 +15,17 @@ struct ExistingSocialProfileRecord: ExistingRecord {
   @Field var service: String?
   @Field var url: String?
   @Field var userId: String?
-  
+
   init() {}
-  
-  init(id: String, label: String, username: String? = nil, service: String? = nil, url: String? = nil, userId: String? = nil) {
+
+  init(
+    id: String,
+    label: String,
+    username: String? = nil,
+    service: String? = nil,
+    url: String? = nil,
+    userId: String? = nil
+  ) {
     self.id = id
     self.label = label
     self.username = username

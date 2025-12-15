@@ -7,7 +7,7 @@ class FormDelegate: OnContactPickingResultHandler {
   private let contactRepository: ContactRepository
   private let groupRepository: GroupRepository
   private let contactFactory: ContactFactory
-  
+
   init(
     store: CNContactStore,
     appContext: AppContext?,
@@ -21,13 +21,13 @@ class FormDelegate: OnContactPickingResultHandler {
     self.groupRepository = groupRepository
     self.contactFactory = contactFactory
   }
-  
+
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
   private var contactPickerDelegate: ContactPickerControllerDelegate?
   private var contactPickingPromise: Promise?
   private var contactManipulationPromise: Promise?
-  
+
   func presentEditForm(for contact: ContactNext, options: FormOptions?, promise: Promise) throws {
     if contactManipulationPromise != nil {
       throw ContactManipulationInProgressException()
@@ -38,20 +38,19 @@ class FormDelegate: OnContactPickingResultHandler {
     ) else {
       throw ContactNotFoundException(contact.id)
     }
-    
+
     var controller = ContactsViewController(for: foundContact)
     try setControllerOptions(controller: &controller, options: options)
-    
-    
+
     if let parent = appContext?.utilities?.currentViewController() {
       let navController = UINavigationController(rootViewController: controller)
       presentingViewController = navController
-      
+
       controller.onViewDisappeared = {
         promise.resolve()
         self.contactManipulationPromise = nil
       }
-      
+
       contactManipulationPromise = promise
       parent.present(navController, animated: options?.preventAnimation ?? false != true)
     } else {
@@ -59,23 +58,23 @@ class FormDelegate: OnContactPickingResultHandler {
       throw MissingViewControllerException()
     }
   }
-  
+
   func presentAddForm(contact: CNContact, options: FormOptions?, promise: Promise) throws {
     if contactManipulationPromise != nil {
       throw ContactManipulationInProgressException()
     }
     var controller = ContactsViewController(for: contact)
     try setControllerOptions(controller: &controller, options: options)
-    
+
     if let parent = appContext?.utilities?.currentViewController() {
       let navController = UINavigationController(rootViewController: controller)
       presentingViewController = navController
-      
+
       controller.onViewDisappeared = {
         promise.resolve()
         self.contactManipulationPromise = nil
       }
-      
+
       contactManipulationPromise = promise
       parent.present(navController, animated: options?.preventAnimation ?? false != true)
     } else {
@@ -83,22 +82,16 @@ class FormDelegate: OnContactPickingResultHandler {
       throw MissingViewControllerException()
     }
   }
-  
+
   func presentPicker(promise: Promise) throws {
     if contactPickingPromise != nil {
       throw ContactPickingInProgressException()
     }
-
     let pickerController = CNContactPickerViewController()
-
     contactPickerDelegate = ContactPickerControllerDelegate(onContactPickingResultHandler: self)
-
     pickerController.delegate = self.contactPickerDelegate
-
     let currentController = appContext?.utilities?.currentViewController()
-
     contactPickingPromise = promise
-
     currentController?.present(pickerController, animated: true)
   }
 
@@ -131,7 +124,7 @@ class FormDelegate: OnContactPickingResultHandler {
       controller.parentGroup = try groupRepository.getById(groupId: groupId)
     }
   }
-  
+
   func presentAccessPicker(promise: Promise) throws {
     guard #available(iOS 18.0, *) else {
       throw AccessPickerUnavailableException()
@@ -141,7 +134,7 @@ class FormDelegate: OnContactPickingResultHandler {
     }
     ContactAccessPicker.present(inViewController: currentViewController, promise: promise)
   }
-  
+
   func didPickContact(contact: CNContact) throws {
     defer {
       contactPickingPromise = nil
@@ -156,4 +149,3 @@ class FormDelegate: OnContactPickingResultHandler {
     contactPickingPromise = nil
   }
 }
-
