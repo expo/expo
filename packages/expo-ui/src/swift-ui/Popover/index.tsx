@@ -19,7 +19,7 @@ export type PopoverViewProps = {
    */
   attachmentAnchor?: 'leading' | 'trailing' | 'center' | 'top' | 'bottom';
   /**
-   * The edge of the `attachmentAnchor` that defines the location of the popover’s arrow. The default is `none`, which results in the system allowing any arrow edge.
+   * The edge of the `attachmentAnchor` that defines the location of the popover's arrow. The default is `none`, which results in the system allowing any arrow edge.
    * @default 'none'
    */
   arrowEdge?: 'leading' | 'trailing' | 'top' | 'bottom' | 'none';
