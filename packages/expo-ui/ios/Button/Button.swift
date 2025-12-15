@@ -18,9 +18,9 @@ struct Button: ExpoSwiftUI.View {
         }
       }
     } else {
-      SwiftUI.Button(role: props.role?.toNativeRole()) {
+      SwiftUI.Button(role: props.role?.toNativeRole(), action: {
         props.onButtonPress()
-      } label: {
+      }) {
         Children()
       }
     }
