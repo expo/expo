@@ -228,7 +228,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         }
       )
       .onAppear {
-        state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
+        if !state.hasInitializedCamera {
+          state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
+          state.hasInitializedCamera = true
+        }
       }
     }
   }
